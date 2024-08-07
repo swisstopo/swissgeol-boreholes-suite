@@ -14,7 +14,7 @@ export interface Workgroup {
   createdAt?: Date | string;
   settings?: string;
   isSupplier?: boolean;
-  boreholesCount: number;
+  boreholeCount: number;
 }
 
 export interface WorkgroupRole {

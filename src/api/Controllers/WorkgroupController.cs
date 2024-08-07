@@ -36,14 +36,6 @@ public class WorkgroupController : ControllerBase
             .ToListAsync()
             .ConfigureAwait(false);
 
-        foreach (var workgroup in workgroups)
-        {
-            if (workgroup.Boreholes != null)
-            {
-                workgroup.Boreholes = workgroup.Boreholes.Select(b => new Borehole() { Id = b.Id }).ToList();
-            }
-        }
-
         return workgroups;
     }
 

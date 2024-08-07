@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -52,6 +53,7 @@ public class Workgroup : IIdentifyable
     /// <summary>
     /// Gets the boreholes for the workgroup.
     /// </summary>
+    [JsonIgnore]
     public ICollection<Borehole>? Boreholes { get; set; }
 
     /// <summary>

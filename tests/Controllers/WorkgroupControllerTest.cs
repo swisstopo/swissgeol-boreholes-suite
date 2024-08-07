@@ -59,7 +59,7 @@ public class WorkgroupControllerTest
         var workgroupToEdit = await context.WorkgroupsWithIncludes.AsNoTracking().SingleOrDefaultAsync(u => u.Id == createdWorkgroup.Id);
         Assert.AreEqual("New Workgroup", workgroupToEdit.Name);
         Assert.IsFalse(workgroupToEdit.IsDisabled);
-        Assert.AreEqual(1, workgroupToEdit.Boreholes.Count);
+        Assert.AreEqual(1, workgroupToEdit.BoreholeCount);
 
         workgroupToEdit.Name = "Updated Workgroup";
         workgroupToEdit.DisabledAt = DateTime.UtcNow;
@@ -74,7 +74,7 @@ public class WorkgroupControllerTest
         Assert.AreEqual("Updated Workgroup", updatedWorkgroup.Name);
         Assert.IsTrue(updatedWorkgroup.IsDisabled);
         Assert.IsFalse(updatedWorkgroup.IsSupplier);
-        Assert.AreEqual(1, updatedWorkgroup.Boreholes.Count);
+        Assert.AreEqual(1, updatedWorkgroup.BoreholeCount);
     }
 
     [TestMethod]

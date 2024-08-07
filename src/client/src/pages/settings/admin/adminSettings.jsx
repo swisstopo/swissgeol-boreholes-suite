@@ -779,7 +779,7 @@ class AdminSettings extends React.Component {
                           />
                         </p>
                       </Modal.Description>
-                    ) : this.state.deleteWorkgroup.boreholesCount === 0 ? (
+                    ) : this.state.deleteWorkgroup.boreholeCount === 0 ? (
                       <Modal.Description>
                         <p>
                           <TranslationText id="msgDeleteWorkgroup" />
@@ -906,7 +906,7 @@ class AdminSettings extends React.Component {
                       )}
                       {this.state.deleteWorkgroup !== null &&
                       this.state.deleteWorkgroup.disabled === null &&
-                      this.state.deleteWorkgroup.boreholesCount === 0 ? (
+                      this.state.deleteWorkgroup.boreholeCount === 0 ? (
                         <Button
                           color="red"
                           onClick={() => {
@@ -999,7 +999,7 @@ class AdminSettings extends React.Component {
                               {workgroup.name}{" "}
                               {workgroup.supplier === true ? <span style={{ color: "red" }}>(supplier)</span> : ""}
                             </Table.Cell>
-                            <Table.Cell>{workgroup.boreholesCount}</Table.Cell>
+                            <Table.Cell>{workgroup.boreholeCount}</Table.Cell>
                             <Table.Cell
                               style={{
                                 paddingTop: "20px",
