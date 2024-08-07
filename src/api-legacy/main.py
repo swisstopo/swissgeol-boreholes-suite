@@ -88,7 +88,6 @@ if __name__ == "__main__":
         # user handlers
         SettingHandler,
         UserHandler,
-        WorkgroupAdminHandler,
 
         # Borehole handlers
         BoreholeViewerHandler,
@@ -131,8 +130,6 @@ if __name__ == "__main__":
 
         # User handlers
         (r'/api/v1/user', UserHandler),
-
-        (r'/api/v1/user/workgroup/edit', WorkgroupAdminHandler),
 
         # Borehole handlers
         (r'/api/v1/borehole', BoreholeViewerHandler),

@@ -26,6 +26,10 @@ public class BdmsContext : DbContext
     public DbSet<UserWorkgroupRole> UserWorkgroupRoles { get; set; }
     public DbSet<Workflow> Workflows { get; set; }
     public DbSet<Workgroup> Workgroups { get; set; }
+
+    public IQueryable<Workgroup> WorkgroupsWithIncludes => Workgroups
+        .Include(w => w.Boreholes);
+
     public DbSet<BoreholeFile> BoreholeFiles { get; set; }
     public DbSet<LithologicalDescription> LithologicalDescriptions { get; set; }
     public DbSet<FaciesDescription> FaciesDescriptions { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -24,13 +25,18 @@ public class Workgroup : IIdentifyable
     /// Gets or sets the <see cref="Workgroup"/> created date.
     /// </summary>
     [Column("created_wgp")]
-    public DateTime? Created { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Workgroup"/> disabled date.
     /// </summary>
     [Column("disabled_wgp")]
-    public DateTime? Disabled { get; set; }
+    public DateTime? DisabledAt { get; set; }
+
+    /// <summary>
+    /// Gets the value whether the <see cref="Workgroup"/> is disabled or not.
+    /// </summary>
+    public bool IsDisabled => DisabledAt.HasValue;
 
     /// <summary>
     /// Gets or sets the Settings for the <see cref="Workgroup"/>.
@@ -47,7 +53,13 @@ public class Workgroup : IIdentifyable
     /// <summary>
     /// Gets the boreholes for the workgroup.
     /// </summary>
-    public ICollection<Borehole> Boreholes { get; set; }
+    [JsonIgnore]
+    public ICollection<Borehole>? Boreholes { get; set; }
+
+    /// <summary>
+    /// Number of boreholes in the workgroup.
+    /// </summary>
+    public int BoreholeCount => Boreholes?.Count ?? 0;
 
     /// <inheritdoc/>
     public override string ToString() => Name;

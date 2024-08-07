@@ -36,6 +36,12 @@ public class UserWorkgroupRole
     [Column("id_rol_fk", TypeName = "int")]
     public Role Role { get; set; }
 
+    /// <summary>
+    /// Gets or sets whether the role is active or not.
+    /// </summary>
+    [NotMapped]
+    public bool? IsActive { get; set; }
+
     /// <inheritdoc/>
     public override string ToString() => $"WorkgroupId: {WorkgroupId}, {Role}";
 }
