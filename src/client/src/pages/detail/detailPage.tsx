@@ -1,7 +1,7 @@
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.js";
 import { FC } from "react";
 import DetailSideNav from "./detailSideNav";
-import BoreholeForm from "./form/borehole/boreholeForm";
+import DetailPageContent from "./detailPageContent";
 import DetailHeader from "./detailHeader.tsx";
 
 export const DetailPage: FC = () => {
@@ -13,7 +13,7 @@ export const DetailPage: FC = () => {
           <DetailSideNav />
         </SidebarBox>
         <MainContentBox>
-          <BoreholeForm />
+          <DetailPageContent />
         </MainContentBox>
       </LayoutBox>
     </>
