@@ -8,7 +8,7 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class ChronostratigraphyController : BdmsControllerBase<ChronostratigraphyLayer>
+public class ChronostratigraphyController : BoreholeControllerBase<ChronostratigraphyLayer>
 {
     public ChronostratigraphyController(BdmsContext context, ILogger<ChronostratigraphyLayer> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)

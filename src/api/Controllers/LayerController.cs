@@ -8,7 +8,7 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class LayerController : BdmsControllerBase<Layer>
+public class LayerController : BoreholeControllerBase<Layer>
 {
     public LayerController(BdmsContext context, ILogger<Layer> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)

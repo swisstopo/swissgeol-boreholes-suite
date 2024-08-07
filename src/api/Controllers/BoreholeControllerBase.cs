@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BDMS.Controllers;
 
+/// <summary>
+/// Base controller for all borehole editing actions.
+/// </summary>
+/// <typeparam name="TEntity">The controller to edit a borehole.</typeparam>
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public abstract class BdmsControllerBase<TEntity> : ControllerBase
+public abstract class BoreholeControllerBase<TEntity> : ControllerBase
     where TEntity : IIdentifyable, IChangeTracking, new()
 {
     private readonly BdmsContext context;
@@ -27,7 +31,7 @@ public abstract class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     protected IBoreholeLockService BoreholeLockService => boreholeLockService;
 
-    protected BdmsControllerBase(BdmsContext context, ILogger<TEntity> logger, IBoreholeLockService boreholeLockService)
+    protected BoreholeControllerBase(BdmsContext context, ILogger<TEntity> logger, IBoreholeLockService boreholeLockService)
     {
         this.context = context;
         this.logger = logger;
