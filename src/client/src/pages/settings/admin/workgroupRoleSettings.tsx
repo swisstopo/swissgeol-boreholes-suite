@@ -10,29 +10,29 @@ export interface WorkgroupRoleSettingsProps {
 
 export const WorkgroupRoleSettings: FC<WorkgroupRoleSettingsProps> = props => {
   const { workgroup, user, setRole } = props;
-  const uwg = user.workgroupRoles?.filter(w => w.workgroupId === workgroup?.id);
+  const workgroupRoles = user.workgroupRoles?.filter(w => w.workgroupId === workgroup?.id);
   return (
-    uwg !== undefined && (
+    workgroupRoles !== undefined && (
       <Form>
         <Form.Group autoComplete="off" widths="equal">
           <Form.Field>
             <Checkbox
-              checked={uwg.some(x => x.role === Role.View)}
+              checked={workgroupRoles.some(x => x.role === Role.View)}
               label="VIEW"
               onChange={e => {
                 e.stopPropagation();
-                setRole(uwg, workgroup, Role.View);
+                setRole(workgroupRoles, workgroup, Role.View);
               }}
             />
           </Form.Field>
           {workgroup.isSupplier === false ? (
             <Form.Field>
               <Checkbox
-                checked={uwg.some(x => x.role === Role.Editor)}
+                checked={workgroupRoles.some(x => x.role === Role.Editor)}
                 label="EDITOR"
                 onChange={e => {
                   e.stopPropagation();
-                  setRole(uwg, workgroup, Role.Editor);
+                  setRole(workgroupRoles, workgroup, Role.Editor);
                 }}
               />
             </Form.Field>
@@ -40,11 +40,11 @@ export const WorkgroupRoleSettings: FC<WorkgroupRoleSettingsProps> = props => {
           {workgroup.isSupplier === false ? (
             <Form.Field>
               <Checkbox
-                checked={uwg.some(x => x.role === Role.Controller)}
+                checked={workgroupRoles.some(x => x.role === Role.Controller)}
                 label="CONTROLLER"
                 onChange={e => {
                   e.stopPropagation();
-                  setRole(uwg, workgroup, Role.Controller);
+                  setRole(workgroupRoles, workgroup, Role.Controller);
                 }}
               />
             </Form.Field>
@@ -54,22 +54,22 @@ export const WorkgroupRoleSettings: FC<WorkgroupRoleSettingsProps> = props => {
           {workgroup.isSupplier === false ? (
             <Form.Field>
               <Checkbox
-                checked={uwg.some(x => x.role === Role.Validator)}
+                checked={workgroupRoles.some(x => x.role === Role.Validator)}
                 label="VALIDATOR"
                 onChange={e => {
                   e.stopPropagation();
-                  setRole(uwg, workgroup, Role.Validator);
+                  setRole(workgroupRoles, workgroup, Role.Validator);
                 }}
               />
             </Form.Field>
           ) : null}
           <Form.Field>
             <Checkbox
-              checked={uwg.some(x => x.role === Role.Publisher)}
+              checked={workgroupRoles.some(x => x.role === Role.Publisher)}
               label="PUBLISHER"
               onChange={e => {
                 e.stopPropagation();
-                setRole(uwg, workgroup, Role.Publisher);
+                setRole(workgroupRoles, workgroup, Role.Publisher);
               }}
             />
           </Form.Field>
