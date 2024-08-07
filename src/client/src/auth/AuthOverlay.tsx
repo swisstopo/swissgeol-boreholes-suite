@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { FC, PropsWithChildren, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,19 +6,16 @@ import { Alert, Button, CircularProgress } from "@mui/material";
 import { loadUser } from "../api-lib";
 import { SplashScreen } from "./SplashScreen.tsx";
 
-interface AuthOverlayProps {
-  children?: React.ReactNode;
-}
-
 interface User {
   data: object;
   error?: string;
 }
+
 interface ReduxState {
   core_user: User;
 }
 
-export const AuthOverlay: React.FC<AuthOverlayProps> = ({ children }) => {
+export const AuthOverlay: FC<PropsWithChildren> = ({ children }) => {
   const auth = useAuth();
   const dispatch = useDispatch();
   const user = useSelector<ReduxState, User>(state => state.core_user);
