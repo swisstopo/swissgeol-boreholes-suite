@@ -12,6 +12,8 @@ export const getFormFieldError = (
   const fieldNameElements = fieldName ? fieldName.split(".") : [];
   let currentElement = errors;
   for (let i = 0; i < fieldNameElements.length; i++) {
+    // @ts-expect-error - we know that currentElement either has a key of fieldNameElements[i] or it doesn't,
+    // which is what we're checking for
     currentElement = currentElement[fieldNameElements[i]];
     if (!currentElement) {
       break;
