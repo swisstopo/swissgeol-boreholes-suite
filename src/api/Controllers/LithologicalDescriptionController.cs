@@ -8,7 +8,7 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class LithologicalDescriptionController : BdmsControllerBase<LithologicalDescription>
+public class LithologicalDescriptionController : BoreholeControllerBase<LithologicalDescription>
 {
     public LithologicalDescriptionController(BdmsContext context, ILogger<LithologicalDescription> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)

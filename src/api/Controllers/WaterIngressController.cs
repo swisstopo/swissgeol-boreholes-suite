@@ -9,7 +9,7 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class WaterIngressController : BdmsControllerBase<WaterIngress>
+public class WaterIngressController : BoreholeControllerBase<WaterIngress>
 {
     public WaterIngressController(BdmsContext context, ILogger<WaterIngress> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)

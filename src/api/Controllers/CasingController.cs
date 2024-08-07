@@ -9,7 +9,7 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class CasingController : BdmsControllerBase<Casing>
+public class CasingController : BoreholeControllerBase<Casing>
 {
     public CasingController(BdmsContext context, ILogger<Casing> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)
