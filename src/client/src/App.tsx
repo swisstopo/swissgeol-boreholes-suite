@@ -5,7 +5,7 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./AppTheme";
 import OverviewPage from "./pages/overview/overviewPage";
-import SettingCmp from "./pages/settings/settingsPage";
+import SettingsPage from "./pages/settings/settingsPage";
 import { DataLoader } from "./pages/settings/dataLoader";
 import AcceptTerms from "./term/accept";
 import { AlertProvider } from "./components/alert/alertContext";
@@ -17,6 +17,7 @@ import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx
 import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext.tsx";
 import HeaderComponent from "./components/header/headerComponent.tsx";
 import { AppBox } from "./components/styledComponents";
+import { DetailPage } from "./pages/detail/detailPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -54,13 +55,14 @@ class App extends React.Component {
                           <HeaderComponent />
                           <Router>
                             <Switch>
-                              <Route render={props => <SettingCmp {...props} />} key={1} path={"/setting"} />
+                              <Route render={props => <SettingsPage {...props} />} key={0} path={"/setting"} />
+                              <Route exact={false} key={1} path={"/:id"} render={() => <DetailPage />} />
                               <Route
                                 render={props => {
                                   return <OverviewPage {...props} />;
                                 }}
                                 exact={false}
-                                key={0}
+                                key={2}
                                 path={"/"}
                               />
                               <Route

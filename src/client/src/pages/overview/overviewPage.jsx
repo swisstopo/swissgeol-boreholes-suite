@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Route, Switch, useLocation, withRouter } from "react-router-dom";
+import { useLocation, withRouter } from "react-router-dom";
 import MainSideNav from "./layout/mainSideNav.tsx";
 import MapView from "./layout/mapView.jsx";
 import { SideDrawer } from "./layout/sideDrawer.tsx";
@@ -9,9 +9,6 @@ import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.js";
-import DetailHeader from "../detail/detailHeader";
-import DetailSideNav from "../detail/detailSideNav";
-import BoreholeForm from "../detail/form/borehole/boreholeForm";
 
 const OverviewPage = props => {
   const [sort, setSort] = useState(null);
@@ -50,54 +47,33 @@ const OverviewPage = props => {
   }, [location.pathname]);
 
   return (
-    <>
-      <Route exact={false} path={"/:id"} render={() => <DetailHeader />} />
-      <LayoutBox>
-        <SidebarBox>
-          <Switch>
-            <Route
-              exact
-              path={"/"}
-              render={() => (
-                <MainSideNav
-                  workgroup={workgroup}
-                  setWorkgroup={setWorkgroup}
-                  enabledWorkgroups={enabledWorkgroups}
-                  setEnabledWorkgroups={setEnabledWorkgroups}
-                  toggleDrawer={toggleSideDrawer}
-                  drawerOpen={sideDrawerOpen}
-                  setSideDrawerContent={setSideDrawerContent}
-                  sideDrawerContent={sideDrawerContent}
-                />
-              )}
-            />
-            <Route component={DetailSideNav} path="/:id" />
-          </Switch>
-        </SidebarBox>
-        <SideDrawer drawerOpen={sideDrawerOpen} drawerContent={sideDrawerComponentMap[sideDrawerContent]} />
-        <MainContentBox>
-          <Switch>
-            <Route
-              exact
-              path={"/"}
-              render={() => (
-                <MapView
-                  {...props}
-                  sort={sort}
-                  setSort={setSort}
-                  toggleBottomDrawer={toggleBottomDrawer}
-                  bottomDrawerOpen={bottomDrawerOpen}
-                  displayErrorMessage={message => {
-                    showAlert(message, "error");
-                  }}
-                />
-              )}
-            />
-            <Route exact={false} path={"/:id"} render={() => <BoreholeForm />} />
-          </Switch>
-        </MainContentBox>
-      </LayoutBox>
-    </>
+    <LayoutBox>
+      <SidebarBox>
+        <MainSideNav
+          workgroup={workgroup}
+          setWorkgroup={setWorkgroup}
+          enabledWorkgroups={enabledWorkgroups}
+          setEnabledWorkgroups={setEnabledWorkgroups}
+          toggleDrawer={toggleSideDrawer}
+          drawerOpen={sideDrawerOpen}
+          setSideDrawerContent={setSideDrawerContent}
+          sideDrawerContent={sideDrawerContent}
+        />
+      </SidebarBox>
+      <SideDrawer drawerOpen={sideDrawerOpen} drawerContent={sideDrawerComponentMap[sideDrawerContent]} />
+      <MainContentBox>
+        <MapView
+          {...props}
+          sort={sort}
+          setSort={setSort}
+          toggleBottomDrawer={toggleBottomDrawer}
+          bottomDrawerOpen={bottomDrawerOpen}
+          displayErrorMessage={message => {
+            showAlert(message, "error");
+          }}
+        />
+      </MainContentBox>
+    </LayoutBox>
   );
 };
 
