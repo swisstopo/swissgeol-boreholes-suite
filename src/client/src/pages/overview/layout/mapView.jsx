@@ -42,7 +42,14 @@ class MapView extends React.Component {
         <Modal
           onUnmount={() => {
             if (!(featureIds?.length === 0)) {
-              loadEditingBoreholes(boreholes.page, search.filter, boreholes.orderby, boreholes.direction, featureIds);
+              loadEditingBoreholes(
+                boreholes.page,
+                boreholes.limit,
+                search.filter,
+                boreholes.orderby,
+                boreholes.direction,
+                featureIds,
+              );
             }
           }}
           open={Array.isArray(store.mselected)}>
@@ -139,8 +146,8 @@ const mapDispatchToProps = (dispatch, ownprops) => {
         filter: filter,
       });
     },
-    loadEditingBoreholes: (page, filter = {}, orderby = "creation", direction = null, featureIds = []) => {
-      dispatch(loadEditingBoreholes(page, 100, filter, orderby, direction, featureIds));
+    loadEditingBoreholes: (page, limit = 100, filter = {}, orderby = "creation", direction = null, featureIds = []) => {
+      dispatch(loadEditingBoreholes(page, limit, filter, orderby, direction, featureIds));
     },
   };
 };

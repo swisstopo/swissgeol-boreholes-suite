@@ -11,6 +11,7 @@ interface BottomBarContainerProps {
   search: { filter: string };
   loadEditingBoreholes: (
     page: number,
+    limit: number,
     filter: string,
     orderby: string,
     direction: string,
@@ -22,7 +23,7 @@ const BottomBarContainer = ({ boreholes, loadEditingBoreholes, search }: BottomB
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 100,
-    page: 1,
+    page: 0,
   });
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [sortModel, setSortModel] = useState<GridSortModel>([
@@ -35,7 +36,8 @@ const BottomBarContainer = ({ boreholes, loadEditingBoreholes, search }: BottomB
 
   useEffect(() => {
     loadEditingBoreholes(
-      paginationModel.page || 1,
+      paginationModel.page + 1, // mui datagrid pagination starts at 0, whereas server pagination starts at 1
+      paginationModel.pageSize,
       search.filter,
       sortModel[0]?.field || "",
       sortModel[0]?.sort === "asc" ? "ASC" : "DESC",

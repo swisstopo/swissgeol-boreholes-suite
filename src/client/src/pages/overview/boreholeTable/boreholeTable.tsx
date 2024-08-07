@@ -1,6 +1,6 @@
 import { DataGrid, GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
 import { TablePaginationActions } from "../TablePaginationActions.tsx";
-import { FC } from "react";
+import { FC, useMemo, useRef } from "react";
 import { theme } from "../../../AppTheme.ts";
 import { useTranslation } from "react-i18next";
 import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
@@ -27,6 +27,17 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   setSortModel,
 }: BoreholeTableProps) => {
   const { t } = useTranslation();
+
+  const rowCountRef = useRef(boreholes?.length || 0);
+
+  const rowCount = useMemo(() => {
+    if (boreholes?.length > 0) {
+      rowCountRef.current = boreholes.length;
+    }
+    return rowCountRef.current;
+  }, [boreholes?.length]);
+
+  console.log(rowCount);
 
   const columns: GridColDef[] = [
     { field: "original_name", headerName: t("name"), flex: 1 },
@@ -92,13 +103,13 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       columnHeaderHeight={42}
       rowHeight={42}
       loading={boreholes.isFetching}
-      rowCount={boreholes.length}
+      rowCount={rowCount}
       rows={boreholes.data}
       columns={columns}
       paginationMode="server"
       paginationModel={paginationModel}
       onPaginationModelChange={setPaginationModel}
-      pageSizeOptions={[100]}
+      pageSizeOptions={[25, 50, 100]}
       slotProps={{
         pagination: {
           ActionsComponent: TablePaginationActions,
