@@ -528,7 +528,7 @@ class AdminSettings extends React.Component {
                 </Table.Header>
                 <Table.Body data-cy="user-list-table-body">
                   {this.state.users &&
-                    this.state.users.map(currentUser =>
+                    this.state.users?.map(currentUser =>
                       (this.state.usersSearch !== "" &&
                         (currentUser.name.toUpperCase().includes(this.state.usersSearch.toUpperCase()) ||
                           currentUser.firstName.toUpperCase().includes(this.state.usersSearch.toUpperCase()) ||
@@ -960,7 +960,7 @@ class AdminSettings extends React.Component {
                     </Table.Row>
                   </Table.Header>
                   <Table.Body data-cy="workgroup-list-table-body">
-                    {this.state.workgroups.map(workgroup => {
+                    {this.state.workgroups?.map(workgroup => {
                       const showWorkgroup =
                         (this.state.workgroupsSearch !== "" &&
                           workgroup.name.toUpperCase().includes(this.state.workgroupsSearch.toUpperCase())) ||
