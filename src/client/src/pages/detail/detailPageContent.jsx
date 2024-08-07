@@ -4,28 +4,28 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Redirect, Route, Switch, withRouter } from "react-router-dom";
-import { loadBorehole, patchBorehole, updateBorehole } from "../../../../api-lib";
-import EditorBoreholeFilesTable from "../../attachments/table/editorBoreholeFilesTable.tsx";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
+import { loadBorehole, patchBorehole, updateBorehole } from "../../api-lib";
+import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
+import TranslationText from "../../components/legacyComponents/translationText.jsx";
 import { Dimmer, Loader } from "semantic-ui-react";
-import Lithology from "../stratigraphy/lithology";
-import IdentifierSegment from "../location/indentifierSegment.jsx";
-import NameSegment from "../location/nameSegment.jsx";
-import RestrictionSegment from "../location/restrictionSegment.jsx";
-import BoreholePanel from "./boreholePanel.jsx";
-import LocationSegment from "../location/locationSegment.jsx";
-import WaterIngress from "../hydrogeology/waterIngress.jsx";
-import GroundwaterLevelMeasurement from "../hydrogeology/groundwaterLevelMeasurement.jsx";
-import Hydrotest from "../hydrogeology/hydrotest.jsx";
-import FieldMeasurement from "../hydrogeology/fieldMeasurement.jsx";
-import ChronostratigraphyPanel from "../stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
-import LithostratigraphyPanel from "../stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
-import Completion from "../completion/completion.jsx";
+import Lithology from "./form/stratigraphy/lithology";
+import IdentifierSegment from "./form/location/indentifierSegment.jsx";
+import NameSegment from "./form/location/nameSegment.jsx";
+import RestrictionSegment from "./form/location/restrictionSegment.jsx";
+import BoreholePanel from "./form/borehole/boreholePanel.jsx";
+import LocationSegment from "./form/location/locationSegment.jsx";
+import WaterIngress from "./form/hydrogeology/waterIngress.jsx";
+import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement.jsx";
+import Hydrotest from "./form/hydrogeology/hydrotest.jsx";
+import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
+import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
+import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
+import Completion from "./form/completion/completion.jsx";
 import { Box } from "@mui/material";
-import WorkflowForm from "../workflow/workflowForm.jsx";
-import { AlertContext } from "../../../../components/alert/alertContext";
+import WorkflowForm from "./form/workflow/workflowForm.jsx";
+import { AlertContext } from "../../components/alert/alertContext";
 
-class BoreholeForm extends React.Component {
+class DetailPageContent extends React.Component {
   static contextType = AlertContext;
 
   constructor(props) {
@@ -417,7 +417,7 @@ class BoreholeForm extends React.Component {
   }
 }
 
-BoreholeForm.propTypes = {
+DetailPageContent.propTypes = {
   borehole: PropTypes.object,
   getBorehole: PropTypes.func,
   id: PropTypes.number,
@@ -431,7 +431,7 @@ BoreholeForm.propTypes = {
   workflow: PropTypes.object,
 };
 
-BoreholeForm.defaultProps = {
+DetailPageContent.defaultProps = {
   id: undefined,
 };
 
@@ -457,6 +457,6 @@ const mapDispatchToProps = dispatch => {
 };
 
 const ConnectedBoreholeForm = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(BoreholeForm)),
+  connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(DetailPageContent)),
 );
 export default ConnectedBoreholeForm;
