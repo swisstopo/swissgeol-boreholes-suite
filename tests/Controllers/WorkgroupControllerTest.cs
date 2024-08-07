@@ -115,4 +115,86 @@ public class WorkgroupControllerTest
         var result = await workgroupController.Delete(workgroup.Id);
         ActionResultAssert.IsInternalServerError(result, "The workgroup is associated with boreholes and cannot be deleted.");
     }
+
+    [TestMethod]
+    public async Task SetRole()
+    {
+        var user = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == "editor");
+        var workgroup = new Models.Workgroup { Name = "WINDDESPERADO" };
+        var createResult = await workgroupController.Create(workgroup);
+        ActionResultAssert.IsOk(createResult);
+        var createdWorkgroup = (createResult as OkObjectResult).Value as Models.Workgroup;
+
+        // Set role for user
+        var setRoleResult = await workgroupController.SetRole(
+            new Models.UserWorkgroupRole()
+            {
+                UserId = user.Id,
+                WorkgroupId = createdWorkgroup.Id,
+                Role = Models.Role.Editor,
+                IsActive = true,
+            });
+        ActionResultAssert.IsOk(setRoleResult);
+        var userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
+        Assert.AreEqual(1, userWorkgroupRoles.Count);
+        Assert.AreEqual(Models.Role.Editor, userWorkgroupRoles[0].Role);
+
+        // Cannot set the same role twice
+        setRoleResult = await workgroupController.SetRole(
+            new Models.UserWorkgroupRole()
+            {
+                UserId = user.Id,
+                WorkgroupId = createdWorkgroup.Id,
+                Role = Models.Role.Editor,
+                IsActive = true,
+            });
+        ActionResultAssert.IsOk(setRoleResult);
+        userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
+        Assert.AreEqual(1, userWorkgroupRoles.Count);
+        Assert.AreEqual(Models.Role.Editor, userWorkgroupRoles[0].Role);
+
+        // Set another role for user
+        setRoleResult = await workgroupController.SetRole(
+            new Models.UserWorkgroupRole()
+            {
+                UserId = user.Id,
+                WorkgroupId = createdWorkgroup.Id,
+                Role = Models.Role.View,
+                IsActive = true,
+            });
+        ActionResultAssert.IsOk(setRoleResult);
+        userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
+        Assert.AreEqual(2, userWorkgroupRoles.Count);
+        Assert.IsTrue(userWorkgroupRoles.Any(r => r.Role == Models.Role.Editor));
+        Assert.IsTrue(userWorkgroupRoles.Any(r => r.Role == Models.Role.View));
+
+        // Cannot remove a role that does not exist
+        setRoleResult = await workgroupController.SetRole(
+            new Models.UserWorkgroupRole()
+            {
+                UserId = user.Id,
+                WorkgroupId = createdWorkgroup.Id,
+                Role = Models.Role.Publisher,
+                IsActive = false,
+            });
+        ActionResultAssert.IsOk(setRoleResult);
+        userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
+        Assert.AreEqual(2, userWorkgroupRoles.Count);
+        Assert.IsTrue(userWorkgroupRoles.Any(r => r.Role == Models.Role.Editor));
+        Assert.IsTrue(userWorkgroupRoles.Any(r => r.Role == Models.Role.View));
+
+        // Remove a role
+        setRoleResult = await workgroupController.SetRole(
+            new Models.UserWorkgroupRole()
+            {
+                UserId = user.Id,
+                WorkgroupId = createdWorkgroup.Id,
+                Role = Models.Role.Editor,
+                IsActive = false,
+            });
+        ActionResultAssert.IsOk(setRoleResult);
+        userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
+        Assert.AreEqual(1, userWorkgroupRoles.Count);
+        Assert.AreEqual(Models.Role.View, userWorkgroupRoles[0].Role);
+    }
 }
