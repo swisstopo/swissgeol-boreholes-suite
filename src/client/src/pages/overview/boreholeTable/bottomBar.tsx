@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import ArrowDownIcon from "../../../assets/icons/arrow_down.svg?react";
 import ArrowUpIcon from "../../../assets/icons/arrow_up.svg?react";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
@@ -13,6 +13,8 @@ interface BottomBarProps {
   bottomDrawerOpen: boolean;
   boreholes: Boreholes;
   selectionModel: GridRowSelectionModel;
+  multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
+  search: { filter: string };
   // deleteSelected: () => void;
   // duplicateSelected: () => void;
   // bulkEditSelected: () => void;
@@ -22,6 +24,8 @@ const BottomBar = ({
   toggleBottomDrawer,
   bottomDrawerOpen,
   selectionModel,
+  multipleSelected,
+  search,
   // deleteSelected,
   // duplicateSelected,
   // bulkEditSelected,
@@ -33,7 +37,9 @@ const BottomBar = ({
     console.log("deleteSelected");
   }
 
-  function bulkEditSelected() {}
+  function bulkEditSelected() {
+    multipleSelected(selectionModel, search.filter);
+  }
 
   function duplicateSelected() {}
 
@@ -52,12 +58,12 @@ const BottomBar = ({
         alignItems: "center",
       }}>
       {selectionModel.length > 0 ? (
-        <>
+        <Stack direction="row" spacing={1} alignItems="center">
           <DeleteButton label="delete" onClick={deleteSelected} />
           {selectionModel.length === 1 && <CopyButton onClick={duplicateSelected} />}
           <EditButton label={"bulkEdit"} onClick={bulkEditSelected} />
-          {t("selectedCount", { count: selectionModel.length })}
-        </>
+          <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
+        </Stack>
       ) : (
         <BoreholeNumbersPreview isFetching={boreholes.isFetching} boreholeCount={boreholes.length} />
       )}

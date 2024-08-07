@@ -22,7 +22,8 @@ class MapView extends React.Component {
   }
 
   render() {
-    const { loadEditingBoreholes, search, store, setting, lock, boreholes, displayErrorMessage } = this.props;
+    const { loadEditingBoreholes, multipleSelected, search, store, setting, lock, boreholes, displayErrorMessage } =
+      this.props;
 
     const {
       filterPolygon,
@@ -41,16 +42,14 @@ class MapView extends React.Component {
         }}>
         <Modal
           onUnmount={() => {
-            if (!(featureIds?.length === 0)) {
-              loadEditingBoreholes(
-                boreholes.page,
-                boreholes.limit,
-                search.filter,
-                boreholes.orderby,
-                boreholes.direction,
-                featureIds,
-              );
-            }
+            loadEditingBoreholes(
+              boreholes.page,
+              boreholes.limit,
+              search.filter,
+              boreholes.orderby,
+              boreholes.direction,
+              featureIds,
+            );
           }}
           open={Array.isArray(store.mselected)}>
           <Modal.Content>
@@ -80,7 +79,12 @@ class MapView extends React.Component {
           setFeatureIds={setFeatureIds}
           displayErrorMessage={displayErrorMessage}
         />
-        <BottomBarContainer boreholes={boreholes} loadEditingBoreholes={loadEditingBoreholes} search={search} />
+        <BottomBarContainer
+          boreholes={boreholes}
+          loadEditingBoreholes={loadEditingBoreholes}
+          multipleSelected={multipleSelected}
+          search={search}
+        />
       </div>
     );
   }

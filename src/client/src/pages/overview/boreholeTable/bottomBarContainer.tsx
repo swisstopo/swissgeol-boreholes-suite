@@ -17,9 +17,10 @@ interface BottomBarContainerProps {
     direction: string,
     featureIds: number[],
   ) => void;
+  multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
 }
 
-const BottomBarContainer = ({ boreholes, loadEditingBoreholes, search }: BottomBarContainerProps) => {
+const BottomBarContainer = ({ boreholes, loadEditingBoreholes, multipleSelected, search }: BottomBarContainerProps) => {
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 100,
@@ -55,6 +56,8 @@ const BottomBarContainer = ({ boreholes, loadEditingBoreholes, search }: BottomB
         toggleBottomDrawer={toggleBottomDrawer}
         bottomDrawerOpen={bottomDrawerOpen}
         selectionModel={selectionModel}
+        multipleSelected={multipleSelected}
+        search={search}
         boreholes={boreholes}
       />
       <BottomDrawer drawerOpen={bottomDrawerOpen}>
