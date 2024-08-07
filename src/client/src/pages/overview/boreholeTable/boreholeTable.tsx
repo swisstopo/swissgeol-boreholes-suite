@@ -4,6 +4,8 @@ import { FC, useMemo, useRef } from "react";
 import { theme } from "../../../AppTheme.ts";
 import { useTranslation } from "react-i18next";
 import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { useDomains } from "../../../api/fetchApiV2";
+import i18n from "i18next";
 
 export interface BoreholeTableProps {
   highlightRow: number | null;
@@ -27,6 +29,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   setSortModel,
 }: BoreholeTableProps) => {
   const { t } = useTranslation();
+  const domains = useDomains();
 
   const rowCountRef = useRef(boreholes?.length || 0);
 
@@ -36,8 +39,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     }
     return rowCountRef.current;
   }, [boreholes?.length]);
-
-  console.log(rowCount);
 
   const columns: GridColDef[] = [
     { field: "original_name", headerName: t("name"), flex: 1 },
@@ -49,7 +50,18 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       headerName: t("workgroup"),
       flex: 1,
     },
-    { field: "borehole_type", headerName: t("borehole_type"), flex: 1 },
+    {
+      field: "borehole_type",
+      valueGetter: (value: number) => {
+        const domain = domains?.data?.find((d: { id: number }) => d.id === value);
+        if (domain) {
+          return domain[i18n.language];
+        }
+        return "";
+      },
+      headerName: t("borehole_type"),
+      flex: 1,
+    },
     {
       field: "total_depth",
       valueGetter: value => {
@@ -58,10 +70,15 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       headerName: t("totaldepth"),
       flex: 1,
     },
+
     {
       field: "extended",
-      valueGetter: (value: { purpose: string }) => {
-        return value.purpose;
+      valueGetter: (value: { purpose: number }) => {
+        const domain = domains?.data?.find((d: { id: number }) => d.id === value.purpose);
+        if (domain) {
+          return domain[i18n.language];
+        }
+        return "";
       },
       headerName: t("purpose"),
       flex: 1,
@@ -74,21 +91,15 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       headerName: t("reference_elevation"),
       flex: 1,
     },
-    {
-      field: "location",
-      valueGetter: (value, row) => {
-        return row.location_x + " / " + row.location_y;
-      },
-      headerName: t("location"),
-      flex: 1,
-    },
   ];
 
   return (
     <DataGrid
       sx={{
+        fontFamily: theme.typography.fontFamily,
+        fontSize: "16px",
         ".MuiDataGrid-columnHeader": {
-          backgroundColor: theme.palette.background.lightgrey,
+          backgroundColor: theme.palette.boxShadow,
         },
         ".MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
           outline: "none",
@@ -97,7 +108,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
           margin: 0,
         },
         ".MuiDataGrid-footerContainer": {
-          minHeight: "42px !important",
+          height: "42px !important",
         },
       }}
       columnHeaderHeight={42}
@@ -107,6 +118,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       rows={boreholes.data}
       columns={columns}
       paginationMode="server"
+      hideFooterPagination={!boreholes.length}
       paginationModel={paginationModel}
       onPaginationModelChange={setPaginationModel}
       pageSizeOptions={[25, 50, 100]}
