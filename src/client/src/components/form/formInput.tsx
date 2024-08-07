@@ -1,18 +1,46 @@
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
-import { getFormFieldError } from "./form";
+import { FormValueType, getFormFieldError } from "./form";
 import { FormField } from "./formField";
+import { FC } from "react";
+import { InputProps, SxProps } from "@mui/material";
+import { isValid } from "date-fns";
 
-export const FormInput = props => {
-  const { fieldName, label, required, disabled, type, multiline, rows, value, sx, inputProps, onUpdate } = props;
+export interface FormInputProps {
+  fieldName: string;
+  label: string;
+  required?: boolean;
+  disabled?: boolean;
+  type?: FormValueType;
+  multiline?: boolean;
+  rows?: number;
+  value?: string | number;
+  sx?: SxProps;
+  inputProps?: InputProps;
+  onUpdate?: (value: string) => void;
+}
+
+export const FormInput: FC<FormInputProps> = ({
+  fieldName,
+  label,
+  required,
+  disabled,
+  type,
+  multiline,
+  rows,
+  value,
+  sx,
+  inputProps,
+  onUpdate,
+}) => {
   const { t } = useTranslation();
   const { formState, register, setValue } = useFormContext();
 
-  const getDefaultValue = value => {
-    if (value != null) {
-      if (type === "datetime-local") {
+  const getDefaultValue = (value: string | number | undefined) => {
+    if (value) {
+      if (type === FormValueType.DateTime) {
         // re-format from 'YYYY-MM-DDTHH:mm:ss.sssZ' to 'YYYY-MM-DDTHH:mm'.
-        return value.slice(0, 16);
+        return (value as string).slice(0, 16);
       } else {
         return value;
       }
@@ -23,24 +51,23 @@ export const FormInput = props => {
 
   return (
     <FormField
-      name={fieldName}
       required={required || false}
       error={getFormFieldError(fieldName, formState.errors)}
       sx={{ ...sx }}
-      type={type || "text"}
+      type={type || FormValueType.Text}
       multiline={multiline || false}
       rows={rows}
       label={t(label)}
       {...register(fieldName, {
         required: required || false,
-        valueAsNumber: type === "number",
+        valueAsNumber: type === FormValueType.Number,
         validate: value => {
           if (value === "") {
             return true;
           }
-          if (type === "date" || type === "datetime-local") {
-            var date = new Date(value);
-            return !isNaN(date) && date.getFullYear() > 1800 && date.getFullYear() < 3000;
+          if (type === FormValueType.Date || type === FormValueType.DateTime) {
+            const date = new Date(value);
+            return isValid(date) && date.getFullYear() > 1800 && date.getFullYear() < 3000;
           }
           return true;
         },
