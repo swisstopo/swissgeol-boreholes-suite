@@ -47,6 +47,9 @@ public class WorkgroupController : ControllerBase
         return workgroups;
     }
 
+    /// <summary>
+    /// Create a new workgroup./>.
+    /// </summary>
     [HttpPost]
     [SwaggerResponse(StatusCodes.Status200OK, "The workgroup was created successfully.")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The workgroup could not be created due to invalid input.")]
