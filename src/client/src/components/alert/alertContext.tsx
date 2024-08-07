@@ -1,6 +1,6 @@
-import { createContext, FC, useEffect, useState } from "react";
+import { createContext, FC, PropsWithChildren, useEffect, useState } from "react";
 import { AlertColor } from "@mui/material";
-import { AlertContextInterface, AlertOptions, AlertProviderProps } from "./alertInterfaces";
+import { AlertContextInterface, AlertOptions } from "./alertInterfaces";
 
 export const AlertContext = createContext<AlertContextInterface>({
   alertIsOpen: false,
@@ -11,7 +11,7 @@ export const AlertContext = createContext<AlertContextInterface>({
   closeAlert: () => {},
 });
 
-export const AlertProvider: FC<AlertProviderProps> = ({ children }) => {
+export const AlertProvider: FC<PropsWithChildren> = ({ children }) => {
   const [currentAlert, setCurrentAlert] = useState<AlertOptions>();
   const [alerts, setAlerts] = useState<AlertOptions[]>([]);
 

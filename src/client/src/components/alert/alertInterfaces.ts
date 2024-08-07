@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import { AlertColor } from "@mui/material";
 
 export interface AlertContextInterface {
@@ -14,8 +13,4 @@ export interface AlertOptions {
   text: string;
   severity?: AlertColor;
   allowAutoHide?: boolean;
-}
-
-export interface AlertProviderProps {
-  children: ReactNode;
 }
