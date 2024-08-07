@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import { createContext, FC, PropsWithChildren, useState } from "react";
 
 interface BasemapContextType {
   currentBasemapName: string;
@@ -10,7 +10,7 @@ export const BasemapContext = createContext<BasemapContextType>({
   setBasemapName: () => {},
 });
 
-export const BasemapProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const BasemapProvider: FC<PropsWithChildren> = ({ children }) => {
   const [currentBasemapName, setCurrentBasemapName] = useState<string>("ch.swisstopo.pixelkarte-farbe");
 
   const setBasemapName = (layerName: string) => {
