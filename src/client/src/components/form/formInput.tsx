@@ -37,15 +37,13 @@ export const FormInput: FC<FormInputProps> = ({
   const { formState, register, setValue } = useFormContext();
 
   const getDefaultValue = (value: string | number | undefined) => {
-    if (value) {
-      if (type === FormValueType.DateTime) {
-        // re-format from 'YYYY-MM-DDTHH:mm:ss.sssZ' to 'YYYY-MM-DDTHH:mm'.
-        return (value as string).slice(0, 16);
-      } else {
-        return value;
-      }
-    } else {
+    if (value === undefined) {
       return "";
+    } else if (type === FormValueType.DateTime) {
+      // re-format from 'YYYY-MM-DDTHH:mm:ss.sssZ' to 'YYYY-MM-DDTHH:mm'.
+      return (value as string).slice(0, 16);
+    } else {
+      return value;
     }
   };
 
