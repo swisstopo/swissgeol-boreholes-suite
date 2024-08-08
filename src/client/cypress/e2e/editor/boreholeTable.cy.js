@@ -8,15 +8,29 @@ describe("Borehole editor table tests", () => {
 
     cy.wait("@edit_list");
     cy.get("div[id=map]").should("be.visible");
-    cy.get("tbody").children().should("have.length", 100);
+
+    cy.get(".MuiDataGrid-root").should("be.visible");
+    cy.get(".loading-indicator").should("not.exist");
+    cy.get(".MuiDataGrid-row").should("have.length", 100);
 
     // sort by Name descending
-    cy.contains("th", "Name").click();
-    cy.wait("@edit_list");
+    cy.get(".MuiDataGrid-columnHeader").contains("Name").click();
 
-    cy.get("tbody").children().eq(0).contains("td", "Aaliyah Casper");
-    cy.get("tbody").children().eq(1).contains("td", "Aaliyah Lynch");
-    cy.get("tbody").children().eq(2).contains("td", "Aaron Bartell");
+    cy.get(".MuiDataGrid-row")
+      .eq(0) // index is 0-based, so eq(1) is the second row
+      .within(() => {
+        cy.contains("Aaliyah Casper").should("exist");
+      });
+    cy.get(".MuiDataGrid-row")
+      .eq(1) // index is 0-based, so eq(1) is the second row
+      .within(() => {
+        cy.contains("Aaliyah Lynch").should("exist");
+      });
+    cy.get(".MuiDataGrid-row")
+      .eq(2) // index is 0-based, so eq(1) is the second row
+      .within(() => {
+        cy.contains("Aaron Bartell").should("exist");
+      });
 
     // sort by borehole type
     cy.contains("th", "Borehole type").click();
@@ -28,7 +42,7 @@ describe("Borehole editor table tests", () => {
     // sort by borehole status
     cy.contains("th", "Drilling purpose").click();
     cy.wait("@edit_list");
-    cy.get("tbody").children().eq(0).contains("td", "open, no completion");
+    cy.get(".MuiDataGrid-virtualScrollerRenderZone").children().eq(0).contains("td", "open, no completion");
     cy.get("tbody").children().eq(1).contains("td", "open, no completion");
     cy.get("tbody").children().eq(2).contains("td", "open, no completion");
 
