@@ -1,10 +1,19 @@
-import { DataGrid, GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridEventListener,
+  GridPaginationModel,
+  GridRowSelectionModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
 import { TablePaginationActions } from "../TablePaginationActions.tsx";
 import { FC, useMemo, useRef } from "react";
 import { theme } from "../../../AppTheme.ts";
 import { useTranslation } from "react-i18next";
 import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../../api/fetchApiV2";
+import { useHistory } from "react-router-dom";
+
 import i18n from "i18next";
 
 export interface BoreholeTableProps {
@@ -29,6 +38,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   setSortModel,
 }: BoreholeTableProps) => {
   const { t } = useTranslation();
+  const history = useHistory();
   const domains = useDomains();
 
   const rowCountRef = useRef(boreholes?.length || 0);
@@ -93,8 +103,13 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     },
   ];
 
+  const handleRowClick: GridEventListener<"rowClick"> = params => {
+    history.push(`/${params.row.id}`);
+  };
+
   return (
     <DataGrid
+      onRowClick={handleRowClick}
       sx={{
         fontFamily: theme.typography.fontFamily,
         fontSize: "16px",
@@ -130,6 +145,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       disableColumnSelector
       disableColumnFilter
       checkboxSelection
+      disableRowSelectionOnClick
       rowSelectionModel={selectionModel}
       onRowSelectionModelChange={setSelectionModel}
       hideFooterSelectedRowCount
