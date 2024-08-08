@@ -1,8 +1,7 @@
 export interface ReduxRootState {
-  filters: any;
   core_user: User;
   core_borehole_editor_list: Boreholes;
-  core_borehole: Boreholes;
+  core_borehole: Borehole;
 }
 
 export interface User {
@@ -36,7 +35,7 @@ interface Workflow {
   workflow: number;
 }
 
-interface BoreholeAttribute {
+interface BoreholeAttributes {
   workgroup: Workgroup;
   workflow: Workflow;
   id: number;
@@ -66,10 +65,17 @@ interface BoreholeAttribute {
 }
 
 export interface Boreholes {
-  // Incomplete type definition, add other properties as needed
   isFetching: boolean;
   length: number;
   orderby: string;
   direction: string;
-  data: BoreholeAttribute[];
+  data: BoreholeAttributes[];
+}
+
+export interface Borehole {
+  isFetching: boolean;
+  length: number;
+  orderby: string;
+  direction: string;
+  data: BoreholeAttributes;
 }
