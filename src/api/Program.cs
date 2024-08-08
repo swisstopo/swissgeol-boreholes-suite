@@ -54,7 +54,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 
-var connectionString = builder.Configuration.GetConnectionString("BdmsContext");
+var connectionString = builder.Configuration.GetConnectionString(nameof(BdmsContext));
 builder.Services.AddNpgsql<BdmsContext>(connectionString, options =>
 {
     options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
@@ -73,7 +73,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v2", new OpenApiInfo
     {
         Version = "v2",
-        Title = "BDMS REST API v2",
+        Title = "Boreholes REST API v2",
     });
     options.AddSecurityDefinition("OpenIdConnect", new OpenApiSecurityScheme
     {
@@ -139,6 +139,11 @@ builder.Services
 builder.Services.AddScoped<IBoreholeLockService, BoreholeLockService>();
 builder.Services.AddSingleton(TimeProvider.System);
 
+builder.Services
+    .AddHealthChecks()
+    .AddDbContextCheck<BdmsContext>("Database")
+    .AddCheck<S3HealthCheck>("S3");
+
 var app = builder.Build();
 
 // Migrate db changes on startup
@@ -166,5 +171,6 @@ app.UseMiddleware<LegacyApiAuthenticationMiddleware>();
 
 app.MapControllers();
 app.MapReverseProxy();
+app.MapHealthChecks("/health").AllowAnonymous();
 
 app.Run();
