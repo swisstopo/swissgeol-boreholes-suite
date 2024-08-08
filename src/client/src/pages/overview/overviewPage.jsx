@@ -11,7 +11,6 @@ import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.js";
 
 const OverviewPage = props => {
-  const [sort, setSort] = useState(null);
   const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const location = useLocation();
@@ -64,8 +63,6 @@ const OverviewPage = props => {
       <MainContentBox>
         <MapView
           {...props}
-          sort={sort}
-          setSort={setSort}
           toggleBottomDrawer={toggleBottomDrawer}
           bottomDrawerOpen={bottomDrawerOpen}
           displayErrorMessage={message => {
