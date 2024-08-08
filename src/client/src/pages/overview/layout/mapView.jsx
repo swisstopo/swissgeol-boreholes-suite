@@ -60,7 +60,7 @@ class MapView extends React.Component {
           searchState={{
             ...search,
           }}
-          highlighted={this.state.hover !== null ? [this.state.hover.id] : []}
+          highlighted={this.state.hover !== null ? [this.state.hover] : []}
           hover={id => {
             this.setState({
               maphover: id,
@@ -85,6 +85,17 @@ class MapView extends React.Component {
           multipleSelected={multipleSelected}
           deleteBoreholes={deleteBoreholes}
           search={search}
+          onHover={item => {
+            if (this.rowHover) {
+              clearTimeout(this.rowHover);
+              this.rowHover = false;
+            }
+            this.rowHover = setTimeout(() => {
+              this.setState({
+                hover: item,
+              });
+            }, 250);
+          }}
         />
       </div>
     );

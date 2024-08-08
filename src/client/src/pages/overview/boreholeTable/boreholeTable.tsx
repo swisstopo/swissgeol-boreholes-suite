@@ -5,9 +5,10 @@ import {
   GridPaginationModel,
   GridRowSelectionModel,
   GridSortModel,
+  useGridApiRef,
 } from "@mui/x-data-grid";
 import { TablePaginationActions } from "../TablePaginationActions.tsx";
-import { FC, useMemo, useRef } from "react";
+import { FC, useEffect, useMemo, useRef } from "react";
 import { theme } from "../../../AppTheme.ts";
 import { useTranslation } from "react-i18next";
 import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
@@ -18,7 +19,6 @@ import i18n from "i18next";
 
 export interface BoreholeTableProps {
   highlightRow: number | null;
-  onHoverRow: (id: number | null) => void;
   boreholes: Boreholes;
   paginationModel: GridPaginationModel;
   setPaginationModel: (model: GridPaginationModel) => void;
@@ -26,6 +26,7 @@ export interface BoreholeTableProps {
   setSelectionModel: (model: GridRowSelectionModel) => void;
   sortModel: GridSortModel;
   setSortModel: (model: GridSortModel) => void;
+  onHover: (id: string | null) => void;
 }
 
 export const BoreholeTable: FC<BoreholeTableProps> = ({
@@ -36,11 +37,12 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   setSelectionModel,
   sortModel,
   setSortModel,
+  onHover,
 }: BoreholeTableProps) => {
   const { t } = useTranslation();
   const history = useHistory();
   const domains = useDomains();
-
+  const apiRef = useGridApiRef();
   const rowCountRef = useRef(boreholes?.length || 0);
 
   const rowCount = useMemo(() => {
@@ -107,8 +109,31 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     history.push(`/${params.row.id}`);
   };
 
+  useEffect(() => {
+    if (apiRef.current) {
+      const handleRowMouseEnter: GridEventListener<"rowMouseEnter"> = params => {
+        onHover(params.row.id);
+      };
+
+      const handleRowMouseLeave: GridEventListener<"rowMouseLeave"> = () => {
+        onHover(null);
+      };
+
+      const api = apiRef.current;
+      const unsubscribeMouseEnter = api.subscribeEvent("rowMouseEnter", handleRowMouseEnter);
+      const unsubscribeMouseLeave = api.subscribeEvent("rowMouseLeave", handleRowMouseLeave);
+
+      // Clean up subscriptions
+      return () => {
+        unsubscribeMouseEnter();
+        unsubscribeMouseLeave();
+      };
+    }
+  }, [apiRef, onHover]);
+
   return (
     <DataGrid
+      apiRef={apiRef}
       onRowClick={handleRowClick}
       sx={{
         fontFamily: theme.typography.fontFamily,
