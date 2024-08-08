@@ -85,6 +85,7 @@ class MapView extends React.Component {
           multipleSelected={multipleSelected}
           deleteBoreholes={deleteBoreholes}
           search={search}
+          rowToHighlight={this.state.maphover}
           onHover={item => {
             if (this.rowHover) {
               clearTimeout(this.rowHover);

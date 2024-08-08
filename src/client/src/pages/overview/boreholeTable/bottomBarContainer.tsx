@@ -20,6 +20,7 @@ interface BottomBarContainerProps {
   ) => void;
   multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
   onHover: (id: string | null) => void;
+  rowToHighlight: number | null;
 }
 
 const BottomBarContainer = ({
@@ -28,6 +29,7 @@ const BottomBarContainer = ({
   multipleSelected,
   search,
   onHover,
+  rowToHighlight,
 }: BottomBarContainerProps) => {
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
@@ -86,7 +88,7 @@ const BottomBarContainer = ({
           setSelectionModel={setSelectionModel}
           sortModel={sortModel}
           setSortModel={setSortModel}
-          highlightRow={null}
+          rowToHighlight={rowToHighlight}
           onHover={onHover}
         />
       </BottomDrawer>

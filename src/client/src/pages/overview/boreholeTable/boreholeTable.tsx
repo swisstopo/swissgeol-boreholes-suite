@@ -1,24 +1,23 @@
+import { FC, useEffect, useMemo, useRef } from "react";
 import {
   DataGrid,
   GridColDef,
   GridEventListener,
   GridPaginationModel,
+  GridRowId,
   GridRowSelectionModel,
   GridSortModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import { TablePaginationActions } from "../TablePaginationActions.tsx";
-import { FC, useEffect, useMemo, useRef } from "react";
+import { styled } from "@mui/system";
 import { theme } from "../../../AppTheme.ts";
-import { useTranslation } from "react-i18next";
-import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { useDomains } from "../../../api/fetchApiV2";
 import { useHistory } from "react-router-dom";
-
-import i18n from "i18next";
+import { useTranslation } from "react-i18next";
+import { useDomains } from "../../../api/fetchApiV2";
+import { TablePaginationActions } from "../TablePaginationActions.tsx";
+import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
 
 export interface BoreholeTableProps {
-  highlightRow: number | null;
   boreholes: Boreholes;
   paginationModel: GridPaginationModel;
   setPaginationModel: (model: GridPaginationModel) => void;
@@ -27,6 +26,7 @@ export interface BoreholeTableProps {
   sortModel: GridSortModel;
   setSortModel: (model: GridSortModel) => void;
   onHover: (id: string | null) => void;
+  rowToHighlight: number | null;
 }
 
 export const BoreholeTable: FC<BoreholeTableProps> = ({
@@ -38,8 +38,9 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   sortModel,
   setSortModel,
   onHover,
+  rowToHighlight,
 }: BoreholeTableProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const history = useHistory();
   const domains = useDomains();
   const apiRef = useGridApiRef();
@@ -109,6 +110,10 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     history.push(`/${params.row.id}`);
   };
 
+  const getRowClassName = (params: { id: GridRowId }) => {
+    return rowToHighlight === params.id ? "highlighted-row" : "";
+  };
+
   useEffect(() => {
     if (apiRef.current) {
       const handleRowMouseEnter: GridEventListener<"rowMouseEnter"> = params => {
@@ -131,26 +136,32 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     }
   }, [apiRef, onHover]);
 
+  const StyledDataGrid = styled(DataGrid)(() => ({
+    fontFamily: theme.typography.fontFamily,
+    fontSize: "16px",
+    ".MuiDataGrid-columnHeader": {
+      backgroundColor: theme.palette.boxShadow,
+    },
+    ".MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
+      outline: "none",
+    },
+    ".MuiTablePagination-toolbar p": {
+      margin: 0,
+    },
+    ".MuiDataGrid-footerContainer": {
+      height: "42px !important",
+    },
+    "& .highlighted-row": {
+      backgroundColor: theme.palette.background.lightgrey,
+      color: theme.palette.primary.main,
+    },
+  }));
+
   return (
-    <DataGrid
+    <StyledDataGrid
       apiRef={apiRef}
       onRowClick={handleRowClick}
-      sx={{
-        fontFamily: theme.typography.fontFamily,
-        fontSize: "16px",
-        ".MuiDataGrid-columnHeader": {
-          backgroundColor: theme.palette.boxShadow,
-        },
-        ".MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
-          outline: "none",
-        },
-        ".MuiTablePagination-toolbar p": {
-          margin: 0,
-        },
-        ".MuiDataGrid-footerContainer": {
-          height: "42px !important",
-        },
-      }}
+      getRowClassName={getRowClassName}
       columnHeaderHeight={42}
       rowHeight={42}
       loading={boreholes.isFetching}
