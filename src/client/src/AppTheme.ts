@@ -109,7 +109,7 @@ export const theme = createTheme({
           minWidth: "auto",
           marginLeft: "5px",
           padding: "8px 12px",
-          borderRadius: "2px",
+          borderRadius: "4px",
           boxShadow: "none",
           "&:hover": {
             boxShadow: "none",
