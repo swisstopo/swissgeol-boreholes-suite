@@ -5,7 +5,7 @@ import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Button, Divider } from "semantic-ui-react";
 import { patchCodeConfig, patchSettings } from "../../api-lib/index";
-import TranslationText from "../../commons/form/translationText";
+import TranslationText from "../../components/legacyComponents/translationText.jsx";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
 import { optionsFromCapabilities } from "ol/source/WMTS";
 import { register } from "ol/proj/proj4";

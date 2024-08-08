@@ -1,5 +1,5 @@
-import { createContext, FC, useState } from "react";
-import { PromptAction, PromptContextInterface, PromptOptions, PromptProviderProps } from "./promptInterface";
+import { createContext, FC, PropsWithChildren, useState } from "react";
+import { PromptAction, PromptContextInterface, PromptOptions } from "./promptInterface";
 
 export const PromptContext = createContext<PromptContextInterface>({
   message: "",
@@ -9,7 +9,7 @@ export const PromptContext = createContext<PromptContextInterface>({
   closePrompt: () => {},
 });
 
-export const PromptProvider: FC<PromptProviderProps> = ({ children }) => {
+export const PromptProvider: FC<PropsWithChildren> = ({ children }) => {
   const [prompt, setPrompt] = useState<PromptOptions>();
 
   const showPrompt = (message: string, actions: PromptAction[]) => {
