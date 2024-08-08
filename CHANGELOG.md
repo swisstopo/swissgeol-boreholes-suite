@@ -23,6 +23,7 @@
 - Removed unused `IsViewer` flag from user.
 - Removed unused `UserEvent` from user.
 - Migrated `User` API endpoints to .NET API.
+- Changed boreholes table design.
 
 ### Fixed
 
