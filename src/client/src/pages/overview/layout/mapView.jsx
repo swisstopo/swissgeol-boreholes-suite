@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { Modal } from "semantic-ui-react";
-import { loadEditingBoreholes } from "../../../api-lib";
+import { deleteBoreholes, loadEditingBoreholes } from "../../../api-lib";
 import MapComponent from "../../../components/map/mapComponent.jsx";
 import MultipleForm from "../../../components/legacyComponents/multiple/multipleForm.jsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
@@ -83,6 +83,7 @@ class MapView extends React.Component {
           boreholes={boreholes}
           loadEditingBoreholes={loadEditingBoreholes}
           multipleSelected={multipleSelected}
+          deleteBoreholes={deleteBoreholes}
           search={search}
         />
       </div>
@@ -91,7 +92,6 @@ class MapView extends React.Component {
 }
 
 MapView.propTypes = {
-  delete: PropTypes.func,
   boreholes: PropTypes.object,
   history: PropTypes.shape({
     push: PropTypes.func,
@@ -139,13 +139,6 @@ const mapDispatchToProps = (dispatch, ownprops) => {
     multipleSelected: (selection, filter = null) => {
       dispatch({
         type: "EDITOR_MULTIPLE_SELECTED",
-        selection: selection,
-        filter: filter,
-      });
-    },
-    delete: (selection, filter = null) => {
-      dispatch({
-        type: "EDITOR_MULTIPLE_DELETION",
         selection: selection,
         filter: filter,
       });

@@ -5,6 +5,7 @@ import { BottomDrawer } from "./bottomDrawer.tsx";
 import { GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
 import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
+import { deleteBoreholes } from "../../../api-lib";
 
 interface BottomBarContainerProps {
   boreholes: Boreholes;
@@ -36,6 +37,10 @@ const BottomBarContainer = ({ boreholes, loadEditingBoreholes, multipleSelected,
   const { featureIds } = useContext(FilterContext);
 
   useEffect(() => {
+    reloadBoreholes();
+  }, [sortModel, paginationModel, search, loadEditingBoreholes, featureIds]);
+
+  const reloadBoreholes = () => {
     loadEditingBoreholes(
       paginationModel.page + 1, // mui datagrid pagination starts at 0, whereas server pagination starts at 1
       paginationModel.pageSize,
@@ -44,8 +49,7 @@ const BottomBarContainer = ({ boreholes, loadEditingBoreholes, multipleSelected,
       sortModel[0]?.sort === "asc" ? "ASC" : "DESC",
       featureIds,
     );
-  }, [sortModel, paginationModel, search, loadEditingBoreholes, featureIds]);
-
+  };
   const toggleBottomDrawer = () => {
     setBottomDrawerOpen(!bottomDrawerOpen);
   };
@@ -57,6 +61,12 @@ const BottomBarContainer = ({ boreholes, loadEditingBoreholes, multipleSelected,
         bottomDrawerOpen={bottomDrawerOpen}
         selectionModel={selectionModel}
         multipleSelected={multipleSelected}
+        deleteMultiple={() => {
+          // @ts-expect-error legacy api calls not typed
+          deleteBoreholes(selectionModel).then(() => {
+            reloadBoreholes();
+          });
+        }}
         search={search}
         boreholes={boreholes}
       />
