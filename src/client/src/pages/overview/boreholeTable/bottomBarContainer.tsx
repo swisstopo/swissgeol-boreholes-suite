@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
@@ -45,20 +45,21 @@ const BottomBarContainer = ({
   ]);
   const { featureIds } = useContext(FilterContext);
 
-  useEffect(() => {
-    reloadBoreholes();
-  }, [sortModel, paginationModel, search, loadEditingBoreholes, featureIds]);
-
-  const reloadBoreholes = () => {
+  const reloadBoreholes = useCallback(() => {
     loadEditingBoreholes(
-      paginationModel.page + 1, // mui datagrid pagination starts at 0, whereas server pagination starts at 1
+      paginationModel.page + 1, // MUI Datagrid pagination starts at 0, whereas server pagination starts at 1
       paginationModel.pageSize,
       search.filter,
       sortModel[0]?.field || "",
       sortModel[0]?.sort === "asc" ? "ASC" : "DESC",
       featureIds,
     );
-  };
+  }, [paginationModel, search, sortModel, loadEditingBoreholes, featureIds]);
+
+  useEffect(() => {
+    reloadBoreholes();
+  }, [sortModel, paginationModel, search, loadEditingBoreholes, featureIds, reloadBoreholes]);
+
   const toggleBottomDrawer = () => {
     setBottomDrawerOpen(!bottomDrawerOpen);
   };
