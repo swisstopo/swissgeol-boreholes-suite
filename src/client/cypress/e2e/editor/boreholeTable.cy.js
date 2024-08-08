@@ -1,6 +1,6 @@
-import { loginAsAdmin, loginAsEditor, returnToOverview } from "./helpers/testHelpers.js";
+import { loginAsAdmin, loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
 
-describe("Borehole list tests", () => {
+describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
     loginAsAdmin();
     cy.visit("/");
@@ -10,64 +10,9 @@ describe("Borehole list tests", () => {
     cy.get("div[id=map]").should("be.visible");
     cy.get("tbody").children().should("have.length", 100);
 
-    // sort by creation date descending
-    cy.contains("th", "Creation date").click();
+    // sort by Name descending
+    cy.contains("th", "Name").click();
     cy.wait("@edit_list");
-
-    cy.contains("th", "Creation date")
-      .children()
-      .first()
-      .then($icon => {
-        if ($icon.hasClass("up")) {
-          // If the list was sorted ascending click again.
-          cy.contains("th", "Creation date").click();
-        }
-      });
-
-    cy.get("tbody").children().eq(0).contains("td", "01.01.2022");
-    cy.get("tbody").children().eq(1).contains("td", "31.12.2021");
-    cy.get("tbody").children().eq(2).contains("td", "31.12.2021");
-
-    cy.contains("th", "Creation date").click();
-    cy.wait("@edit_list");
-    cy.get("tbody").children().eq(0).contains("td", "01.01.2021");
-    cy.get("tbody").children().eq(1).contains("td", "01.01.2021");
-    cy.get("tbody").children().eq(2).contains("td", "01.01.2021");
-
-    // sort by creator descending
-    cy.contains("th", "Created by").click();
-
-    cy.contains("th", "Created by")
-      .children()
-      .first()
-      .then($icon => {
-        if ($icon.hasClass("up")) {
-          // If the list was sorted ascending click again.
-          cy.contains("th", "Created by").click();
-        }
-      });
-
-    cy.get("tbody").children().eq(0).contains("td", "p. user");
-    cy.get("tbody").children().eq(1).contains("td", "p. user");
-    cy.get("tbody").children().eq(2).contains("td", "p. user");
-
-    cy.contains("th", "Created by").click();
-    cy.get("tbody").children().eq(0).contains("td", "A. User");
-    cy.get("tbody").children().eq(1).contains("td", "A. User");
-    cy.get("tbody").children().eq(2).contains("td", "A. User");
-
-    // sort by name ascending
-    cy.contains("th", "Original name").click();
-    cy.wait("@edit_list");
-    cy.contains("th", "Original name")
-      .children()
-      .first()
-      .then($icon => {
-        if ($icon.hasClass("down")) {
-          // If the list was sorted descending click again.
-          cy.contains("th", "Original name").click();
-        }
-      });
 
     cy.get("tbody").children().eq(0).contains("td", "Aaliyah Casper");
     cy.get("tbody").children().eq(1).contains("td", "Aaliyah Lynch");
@@ -81,14 +26,14 @@ describe("Borehole list tests", () => {
     cy.get("tbody").children().eq(2).contains("td", "virtual borehole");
 
     // sort by borehole status
-    cy.contains("th", "Borehole status").click();
+    cy.contains("th", "Drilling purpose").click();
     cy.wait("@edit_list");
     cy.get("tbody").children().eq(0).contains("td", "open, no completion");
     cy.get("tbody").children().eq(1).contains("td", "open, no completion");
     cy.get("tbody").children().eq(2).contains("td", "open, no completion");
 
     // sort by total depth
-    cy.contains("th", "Borehole length").click();
+    cy.contains("th", "Borehole length [m MD]").click();
     cy.wait("@edit_list");
     cy.get("tbody").children().eq(0).contains("td", "1'998.0731671667068");
     cy.get("tbody").children().eq(1).contains("td", "1'997.7856427420795");
@@ -101,18 +46,8 @@ describe("Borehole list tests", () => {
     cy.get('[data-cy="showTableButton"]').click();
 
     // sort by name ascending
-    cy.contains("th", "Original name").click();
+    cy.contains("th", "Name").click();
     cy.wait("@edit_list");
-
-    cy.contains("th", "Original name")
-      .children()
-      .first()
-      .then($icon => {
-        if (!$icon.hasClass("up")) {
-          // Sort list ascending
-          cy.contains("th", "Original name").click();
-        }
-      });
 
     cy.wait("@edit_list");
 
