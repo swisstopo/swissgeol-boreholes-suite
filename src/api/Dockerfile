@@ -6,13 +6,13 @@ WORKDIR /src
 RUN apt-get -y update
 RUN apt-get -y install git vim curl htop
 RUN dotnet tool install --global dotnet-ef --version 8.0.0
-ENV PATH $PATH:/root/.dotnet/tools
+ENV PATH=$PATH:/root/.dotnet/tools
 
 # Restore dependencies and tools
 COPY BDMS.csproj .
 RUN dotnet restore
 
-ENTRYPOINT dotnet watch run --no-launch-profile
+ENTRYPOINT ["dotnet", "watch", "run", "--no-launch-profile"]
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG VERSION
@@ -55,4 +55,4 @@ HEALTHCHECK CMD curl --fail http://localhost:8080/health || exit 1
 
 # Switch to the non-root user 'app' defined in the base image
 USER $APP_UID
-ENTRYPOINT dotnet "BDMS.dll"
+ENTRYPOINT ["dotnet", "BDMS.dll"]
