@@ -6,7 +6,7 @@ import Delete from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 import { addCasing, updateCasing, useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
-import { FormInput, FormSelect } from "../../../../components/form/form";
+import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { extractCasingDepth } from "./casingUtils.jsx";
@@ -149,12 +149,34 @@ const CasingInput = props => {
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
             <FormInput fieldName="name" label="name" value={item.name} required={true} />
             <Stack direction="row">
-              <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" disabled={true} />
-              <FormInput fieldName="toDepth" label="todepth" value={item.toDepth} type="number" disabled={true} />
+              <FormInput
+                fieldName="fromDepth"
+                label="fromdepth"
+                value={item.fromDepth}
+                type={FormValueType.Number}
+                disabled={true}
+              />
+              <FormInput
+                fieldName="toDepth"
+                label="todepth"
+                value={item.toDepth}
+                type={FormValueType.Number}
+                disabled={true}
+              />
             </Stack>
             <Stack direction="row">
-              <FormInput fieldName="dateStart" label="dateStartCasing" value={item.dateStart} type="date" />
-              <FormInput fieldName="dateFinish" label="dateFinishCasing" value={item.dateFinish} type="date" />
+              <FormInput
+                fieldName="dateStart"
+                label="dateStartCasing"
+                value={item.dateStart}
+                type={FormValueType.Date}
+              />
+              <FormInput
+                fieldName="dateFinish"
+                label="dateFinishCasing"
+                value={item.dateFinish}
+                type={FormValueType.Date}
+              />
             </Stack>
             <Stack direction="row">
               <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
@@ -185,7 +207,7 @@ const CasingInput = props => {
                             fieldName={`casingElements.${index}.fromDepth`}
                             label="fromdepth"
                             value={field.fromDepth}
-                            type="number"
+                            type={FormValueType.Number}
                             required={true}
                             onUpdate={updateDepth}
                           />
@@ -193,7 +215,7 @@ const CasingInput = props => {
                             fieldName={`casingElements.${index}.toDepth`}
                             label="todepth"
                             value={field.toDepth}
-                            type="number"
+                            type={FormValueType.Number}
                             required={true}
                             onUpdate={updateDepth}
                           />
@@ -228,13 +250,13 @@ const CasingInput = props => {
                             fieldName={`casingElements.${index}.innerDiameter`}
                             label="casingInnerDiameter"
                             value={field.innerDiameter}
-                            type="number"
+                            type={FormValueType.Number}
                           />
                           <FormInput
                             fieldName={`casingElements.${index}.outerDiameter`}
                             label="casingOuterDiameter"
                             value={field.outerDiameter}
-                            type="number"
+                            type={FormValueType.Number}
                           />
                         </StackFullWidth>
                       </StackFullWidth>

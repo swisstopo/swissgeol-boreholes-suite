@@ -85,8 +85,8 @@ export const DataCards = props => {
         cardLabel = `${cyLabel}-card.${index}.edit`;
       }
       return (
-        <DataCardItem key={item.id}>
-          <DataCard key={item.id} data-cy={cardLabel}>
+        <DataCardItem key={index}>
+          <DataCard key={index} data-cy={cardLabel}>
             {isEditable && isSelected
               ? renderInput({
                   item: item,

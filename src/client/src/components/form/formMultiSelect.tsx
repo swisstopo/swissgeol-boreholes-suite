@@ -1,12 +1,37 @@
-import { Box, Chip, MenuItem } from "@mui/material";
+import { Box, Chip, MenuItem, SxProps } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 import { Controller, useFormContext } from "react-hook-form";
-import { FormField, getFormFieldBackgroundColor } from "./form";
-import { useState } from "react";
+import { getFormFieldError } from "./form";
+import { FormField } from "./formField";
+import { FC, useState } from "react";
 
-export const FormMultiSelect = props => {
-  const { fieldName, label, tooltipLabel, required, disabled, selected, values, sx } = props;
+export interface FormMultiSelectProps {
+  fieldName: string;
+  label: string;
+  tooltipLabel?: string;
+  required?: boolean;
+  disabled?: boolean;
+  selected?: number[];
+  values?: FormMultiSelectValue[];
+  sx?: SxProps;
+}
+
+export interface FormMultiSelectValue {
+  key: number;
+  name: string;
+}
+
+export const FormMultiSelect: FC<FormMultiSelectProps> = ({
+  fieldName,
+  label,
+  tooltipLabel,
+  required,
+  disabled,
+  selected,
+  values,
+  sx,
+}) => {
   const { t } = useTranslation();
   const { formState, register, setValue, getValues, control } = useFormContext();
   const [open, setOpen] = useState(false);
@@ -19,7 +44,7 @@ export const FormMultiSelect = props => {
     setOpen(true);
   };
 
-  const ChipBox = selection => {
+  const ChipBox = (selection: number[]) => {
     return (
       <Box
         sx={{
@@ -39,8 +64,8 @@ export const FormMultiSelect = props => {
               onClick={e => e.stopPropagation()}
               onDelete={e => {
                 e.stopPropagation();
-                var selectedValues = getValues()[fieldName];
-                var updatedValues = selectedValues.filter(value => value !== selectedValue);
+                const selectedValues = getValues()[fieldName];
+                const updatedValues = selectedValues.filter((value: number) => value !== selectedValue);
                 setValue(fieldName, updatedValues, { shouldValidate: true });
               }}
             />
@@ -59,7 +84,7 @@ export const FormMultiSelect = props => {
       defaultValue={selected || []}
       render={({ field }) => (
         <>
-          {values?.length > 0 ? (
+          {Array.isArray(values) && values.length > 0 ? (
             <FormField
               {...field}
               select
@@ -68,16 +93,11 @@ export const FormMultiSelect = props => {
                 open: open,
                 onClose: handleClose,
                 onOpen: handleOpen,
-                renderValue: selection => ChipBox(selection),
+                renderValue: (selection: number[]) => ChipBox(selection),
               }}
               required={required || false}
-              sx={{
-                backgroundColor: getFormFieldBackgroundColor(fieldName, formState?.errors),
-                ...sx,
-              }}
-              size="small"
+              sx={{ ...sx }}
               label={t(label)}
-              variant="outlined"
               {...register(fieldName, {
                 required: required || false,
                 onChange: e => {
@@ -90,6 +110,7 @@ export const FormMultiSelect = props => {
                 },
               })}
               value={field.value || []}
+              error={getFormFieldError(fieldName, formState.errors)}
               disabled={disabled || false}
               data-cy={fieldName + "-formMultiSelect"}
               InputLabelProps={{ shrink: true }}>
@@ -106,13 +127,9 @@ export const FormMultiSelect = props => {
             <FormField
               {...field}
               required={required || false}
-              sx={{
-                backgroundColor: getFormFieldBackgroundColor(formState.errors[fieldName]),
-                ...sx,
-              }}
-              size="small"
+              error={getFormFieldError(fieldName, formState.errors)}
+              sx={{ ...sx }}
               label={t(label)}
-              variant="outlined"
               {...register(fieldName, {
                 required: required || false,
               })}

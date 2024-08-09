@@ -5,8 +5,8 @@ import { getHydrotestParameterUnits } from "./parameterUnits";
 import { deleteHydrotest, useDomains } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { StackFullWidth } from "../../../../components/styledComponents.js";
-import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
-import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay.tsx";
+import { FormDisplay, FormValueType } from "../../../../components/form/form";
+import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
 
 const HydrotestDisplay = props => {
   const { item, isEditable } = props;
@@ -17,11 +17,11 @@ const HydrotestDisplay = props => {
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteHydrotest}>
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay label="hydrotestKind" value={item?.kindCodelists} type={FormDisplayType.Domain} />
-        <FormDisplay label="flowDirection" value={item?.flowDirectionCodelists} type={FormDisplayType.Domain} />
+        <FormDisplay label="hydrotestKind" value={item?.kindCodelists} type={FormValueType.Domain} />
+        <FormDisplay label="flowDirection" value={item?.flowDirectionCodelists} type={FormValueType.Domain} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay label="evaluationMethod" value={item?.evaluationMethodCodelists} type={FormDisplayType.Domain} />
+        <FormDisplay label="evaluationMethod" value={item?.evaluationMethodCodelists} type={FormValueType.Domain} />
       </StackFullWidth>
       {item?.hydrotestResults?.length > 0 && (
         <FormResultTableDisplay

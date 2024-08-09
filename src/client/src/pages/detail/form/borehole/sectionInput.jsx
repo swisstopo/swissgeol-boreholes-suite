@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { Checkbox, Divider, FormControlLabel, IconButton } from "@mui/material";
+import { Divider, IconButton } from "@mui/material";
 import { StackFullWidth } from "../../../../components/styledComponents.js";
-import { FormDisplayType, FormInput, FormSelect } from "../../../../components/form/form.js";
+import { FormCheckbox, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
@@ -14,7 +14,7 @@ import { DevTool } from "../../../../../hookformDevtools.ts";
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { data: domains } = useDomains();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const sectionElementDefaults = {
     fromDepth: null,
@@ -114,14 +114,14 @@ const SectionInput = ({ item, parentId }) => {
                         fieldName={`sectionElements.${index}.fromDepth`}
                         label="fromdepth"
                         value={field.fromDepth}
-                        type="number"
+                        type={FormValueType.Number}
                         required={true}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.toDepth`}
                         label="todepth"
                         value={field.toDepth}
-                        type="number"
+                        type={FormValueType.Number}
                         required={true}
                       />
                     </StackFullWidth>
@@ -180,13 +180,13 @@ const SectionInput = ({ item, parentId }) => {
                         fieldName={`sectionElements.${index}.drillingStartDate`}
                         label="drilling_start_date"
                         value={field.drillingStartDate}
-                        type={FormDisplayType.Date}
+                        type={FormValueType.Date}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingEndDate`}
                         label="drilling_end_date"
                         value={field.drillingEndDate}
-                        type={FormDisplayType.Date}
+                        type={FormValueType.Date}
                       />
                     </StackFullWidth>
                     <StackFullWidth direction="row" spacing={1}>
@@ -194,13 +194,13 @@ const SectionInput = ({ item, parentId }) => {
                         fieldName={`sectionElements.${index}.drillingDiameter`}
                         label="drill_diameter"
                         value={field.drillingDiameter}
-                        type={FormDisplayType.Number}
+                        type={FormValueType.Number}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingCoreDiameter`}
                         label="drill_core_diameter"
                         value={field.drillingCoreDiameter}
-                        type={FormDisplayType.Number}
+                        type={FormValueType.Number}
                       />
                     </StackFullWidth>
                     <StackFullWidth
@@ -208,16 +208,11 @@ const SectionInput = ({ item, parentId }) => {
                       spacing={1}
                       justifyContent={"space-between"}
                       alignItems={"center"}>
-                      <FormControlLabel
-                        sx={{ marginTop: "10px!important", marginRight: "10px!important" }}
-                        control={
-                          <Checkbox
-                            data-cy={"overcoring-formCheckbox"}
-                            disabled={true}
-                            checked={index < fields.length - 1}
-                          />
-                        }
-                        label={t("overcoring")}
+                      <FormCheckbox
+                        fieldName="overcoring"
+                        label="overcoring"
+                        checked={index < fields.length - 1}
+                        disabled={true}
                       />
                       {index === fields.length - 1 && (
                         <AddButton

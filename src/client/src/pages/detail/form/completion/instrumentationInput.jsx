@@ -3,7 +3,7 @@ import { Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { addInstrumentation, getCasings, updateInstrumentation, useDomains } from "../../../../api/fetchApiV2.js";
 import { completionSchemaConstants } from "./completionSchemaConstants.js";
-import { FormInput, FormSelect } from "../../../../components/form/form.js";
+import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.jsx";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.jsx";
 
@@ -35,8 +35,20 @@ const InstrumentationInput = ({ item, parentId }) => {
       promptLabel="instrument"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <Stack direction="row">
-        <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />
-        <FormInput fieldName="toDepth" label="todepth" value={item.toDepth} type="number" required={true} />
+        <FormInput
+          fieldName="fromDepth"
+          label="fromdepth"
+          value={item.fromDepth}
+          type={FormValueType.Number}
+          required={true}
+        />
+        <FormInput
+          fieldName="toDepth"
+          label="todepth"
+          value={item.toDepth}
+          type={FormValueType.Number}
+          required={true}
+        />
       </Stack>
       <Stack direction="row">
         <FormInput fieldName="name" label="name" value={item.name} required={true} />

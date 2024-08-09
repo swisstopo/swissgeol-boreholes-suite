@@ -1,4 +1,4 @@
-import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
+import { FormDisplay, FormValueType } from "../../../../components/form/form";
 import ObservationDisplay from "./observationDisplay";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { deleteGroundwaterLevelMeasurement } from "../../../../api/fetchApiV2.js";
@@ -11,7 +11,7 @@ const GroundwaterLevelMeasurementDisplay = props => {
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteGroundwaterLevelMeasurement}>
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay label="gwlm_kind" value={item?.kind} type={FormDisplayType.Domain} />
+        <FormDisplay label="gwlm_kind" value={item?.kind} type={FormValueType.Domain} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="gwlm_levelm" value={item?.levelM} />

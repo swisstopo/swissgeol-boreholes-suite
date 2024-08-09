@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
+import { FormDisplay, FormValueType } from "../../../../components/form/form";
 import { StackFullWidth } from "../../../../components/styledComponents.js";
 import { useGetCasingName } from "../completion/casingUtils.jsx";
 
@@ -38,8 +38,8 @@ const ObservationDisplay = props => {
             <FormDisplay label="toDepthMasl" value={observation?.toDepthMasl} />
           </StackFullWidth>
           <StackFullWidth direction="row" spacing={1}>
-            <FormDisplay label="startTime" value={observation?.startTime} type={FormDisplayType.DateTime} />
-            <FormDisplay label="endTime" value={observation?.endTime} type={FormDisplayType.DateTime} />
+            <FormDisplay label="startTime" value={observation?.startTime} type={FormValueType.DateTime} />
+            <FormDisplay label="endTime" value={observation?.endTime} type={FormValueType.DateTime} />
           </StackFullWidth>
           <FormDisplay
             label="duration"
@@ -50,7 +50,7 @@ const ObservationDisplay = props => {
             }
           />
           <StackFullWidth direction="row" spacing={1}>
-            <FormDisplay label="reliability" value={observation?.reliability} type={FormDisplayType.Domain} />
+            <FormDisplay label="reliability" value={observation?.reliability} type={FormValueType.Domain} />
             <FormDisplay label="casingName" value={getCasingNameWithCompletion(observation)} />
           </StackFullWidth>
           <FormDisplay label="comment" value={observation?.comment} />

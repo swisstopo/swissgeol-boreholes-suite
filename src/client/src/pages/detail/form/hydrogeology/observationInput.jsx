@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Stack } from "@mui/material";
-import { FormInput, FormSelect } from "../../../../components/form/form";
+import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { useTranslation } from "react-i18next";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
@@ -25,16 +25,36 @@ const ObservationInput = props => {
   return (
     <>
       <Stack direction="row">
-        <FormInput fieldName="fromDepthM" label="fromdepth" value={observation.fromDepthM} type="number" />
-        <FormInput fieldName="toDepthM" label="todepth" value={observation.toDepthM} type="number" />
+        <FormInput
+          fieldName="fromDepthM"
+          label="fromdepth"
+          value={observation.fromDepthM}
+          type={FormValueType.Number}
+        />
+        <FormInput fieldName="toDepthM" label="todepth" value={observation.toDepthM} type={FormValueType.Number} />
       </Stack>
       <Stack direction="row">
-        <FormInput fieldName="fromDepthMasl" label="fromDepthMasl" value={observation.fromDepthMasl} type="number" />
-        <FormInput fieldName="toDepthMasl" label="toDepthMasl" value={observation.toDepthMasl} type="number" />
+        <FormInput
+          fieldName="fromDepthMasl"
+          label="fromDepthMasl"
+          value={observation.fromDepthMasl}
+          type={FormValueType.Number}
+        />
+        <FormInput
+          fieldName="toDepthMasl"
+          label="toDepthMasl"
+          value={observation.toDepthMasl}
+          type={FormValueType.Number}
+        />
       </Stack>
       <Stack direction="row">
-        <FormInput fieldName="startTime" label="startTime" value={observation.startTime} type="datetime-local" />
-        <FormInput fieldName="endTime" label="endTime" value={observation.endTime} type="datetime-local" />
+        <FormInput
+          fieldName="startTime"
+          label="startTime"
+          value={observation.startTime}
+          type={FormValueType.DateTime}
+        />
+        <FormInput fieldName="endTime" label="endTime" value={observation.endTime} type={FormValueType.DateTime} />
       </Stack>
       <Stack direction="row">
         <StackHalfWidth direction="row">
