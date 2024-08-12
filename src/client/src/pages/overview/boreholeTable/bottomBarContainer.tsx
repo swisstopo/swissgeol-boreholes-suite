@@ -1,14 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
-import { GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
+import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { deleteBoreholes } from "../../../api-lib";
 import { copyBorehole } from "../../../api/fetchApiV2";
+import { useSelector } from "react-redux";
 
 interface BottomBarContainerProps {
   boreholes: Boreholes;
@@ -34,32 +34,31 @@ const BottomBarContainer = ({
   onHover,
   rowToHighlight,
 }: BottomBarContainerProps) => {
+  const user: User = useSelector((state: ReduxRootState) => state.core_user);
+  const history = useHistory();
+  const { featureIds } = useContext(FilterContext);
+  const [workgroupId, setWorkgroupId] = useState<number | null>(user.data.workgroups[0]?.id);
   const [isBusy, setIsBusy] = useState(false);
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
-    pageSize: 100,
-    page: 0,
+    pageSize: boreholes.limit ?? 100,
+    page: boreholes.page ? boreholes.page - 1 : 0, // MUI pagination starts at 0, whereas server pagination starts at 1
   });
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: "original_name",
-      sort: "desc",
+      field: boreholes.orderby ?? "original_name",
+      sort: boreholes.direction ? (boreholes.direction.toLowerCase() as GridSortDirection) : "asc",
     },
   ]);
-  const { featureIds } = useContext(FilterContext);
-
-  const history = useHistory();
-
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
 
   const reloadBoreholes = useCallback(() => {
     loadEditingBoreholes(
-      paginationModel.page + 1, // MUI Datagrid pagination starts at 0, whereas server pagination starts at 1
+      paginationModel.page + 1, // MUI pagination starts at 0, whereas server pagination starts at 1
       paginationModel.pageSize,
       search.filter,
-      sortModel[0]?.field || "",
-      sortModel[0]?.sort === "asc" ? "ASC" : "DESC",
+      sortModel[0]?.field || "original_name",
+      sortModel[0]?.sort === "desc" ? "DESC" : "ASC",
       featureIds,
     );
   }, [paginationModel, search, sortModel, loadEditingBoreholes, featureIds]);
@@ -70,10 +69,9 @@ const BottomBarContainer = ({
 
   const onCopyBorehole = async () => {
     setIsBusy(true);
-    const workgroup = user.data.workgroups.filter(w => w.disabled === null && !w.supplier && w.roles.includes("EDIT"));
-    const newBoreholeId = await copyBorehole(selectionModel, workgroup[0].id);
+    const newBoreholeId = await copyBorehole(selectionModel, workgroupId);
     setIsBusy(false);
-    history.push(`/${newBoreholeId}/borehole`);
+    history.push(`/${newBoreholeId}`);
   };
 
   const onDeleteMultiple = async () => {
@@ -100,6 +98,8 @@ const BottomBarContainer = ({
         onDeleteMultiple={onDeleteMultiple}
         search={search}
         boreholes={boreholes}
+        workgroup={workgroupId}
+        setWorkgroup={setWorkgroupId}
       />
       <BottomDrawer drawerOpen={bottomDrawerOpen}>
         <BoreholeTable

@@ -5,7 +5,7 @@ describe("Tests for 'Location' edit page.", () => {
     newEditableBorehole();
 
     // enter original name
-    cy.contains("label", "Original name").next().children("input").type("SCATORPS");
+    cy.contains("label", "Original name").next().children("input").type("AAA_SCATORPS");
     cy.wait("@edit_patch");
 
     // stop editing
@@ -15,12 +15,14 @@ describe("Tests for 'Location' edit page.", () => {
 
     // search the newly created borehole and delete it
     cy.get('[data-cy="borehole-table"]').within(() => {
-      cy.contains("SCATORPS").parent().find(".checkbox").click();
-      cy.contains("button", "Delete").click();
+      cy.contains(".MuiDataGrid-row", "AAA_SCATORPS")
+        .find('.MuiCheckbox-root input[type="checkbox"]')
+        .check({ force: true });
     });
-    cy.get(".modal button.negative").click();
+    cy.get('[data-cy="delete-button"]').click();
+    cy.get('.MuiButton-containedPrimary[data-cy="delete-button"]').click();
     cy.wait(["@edit_deletelist", "@edit_list"]);
-    cy.get('[data-cy="borehole-table"]').contains("SCATORPS").should("not.exist");
+    cy.get('[data-cy="borehole-table"]').contains("AAA_SCATORPS").should("not.exist");
   });
 
   it("removes error highlight of identifier fields if at least one identifier is present.", () => {

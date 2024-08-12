@@ -3,7 +3,7 @@ import TranslationText from "../legacyComponents/translationText";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "../../assets/icons/edit.svg?react";
-import CopyIcon from "@mui/icons-material/ContentCopy";
+import CopyIcon from "../../assets/icons/copy.svg?react";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import TrashIcon from "../../assets/icons/trash.svg?react";

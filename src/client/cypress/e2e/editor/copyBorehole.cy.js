@@ -7,12 +7,14 @@ describe("Test copying of boreholes", () => {
     loginAsAdmin();
     cy.visit("/");
     cy.get('[data-cy="showTableButton"]').click();
-    cy.get('[data-cy="borehole-table"] tbody').children().eq(1).find(".checkbox").scrollIntoView().click();
+    cy.get(".MuiDataGrid-checkboxInput").eq(1).scrollIntoView().click();
 
     cy.contains("button", "Create a copy").click();
 
-    cy.get(".modal").contains("button", "Create a copy").click();
+    cy.get(".MuiDialogContentText-root").should("contain.text", "Select a workgroup to create a copy.");
+    cy.get(".MuiButton-contained").contains("Create a copy").click();
     cy.wait("@borehole_copy");
+    cy.wait("@borehole_get");
 
     cy.contains("label", "Original name").next().children("input").should("contain.value", " (Copy)");
 

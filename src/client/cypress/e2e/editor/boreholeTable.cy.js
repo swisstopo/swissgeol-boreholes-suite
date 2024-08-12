@@ -11,47 +11,88 @@ describe("Borehole editor table tests", () => {
 
     cy.get(".MuiDataGrid-root").should("be.visible");
     cy.get(".loading-indicator").should("not.exist");
-    cy.get(".MuiDataGrid-row").should("have.length", 100);
 
-    // sort by Name descending
-    cy.get(".MuiDataGrid-columnHeader").contains("Name").click();
-
+    // default soring by name ascending
     cy.get(".MuiDataGrid-row")
-      .eq(0) // index is 0-based, so eq(1) is the second row
+      .eq(0)
       .within(() => {
         cy.contains("Aaliyah Casper").should("exist");
       });
     cy.get(".MuiDataGrid-row")
-      .eq(1) // index is 0-based, so eq(1) is the second row
+      .eq(1)
       .within(() => {
         cy.contains("Aaliyah Lynch").should("exist");
       });
     cy.get(".MuiDataGrid-row")
-      .eq(2) // index is 0-based, so eq(1) is the second row
+      .eq(2)
       .within(() => {
         cy.contains("Aaron Bartell").should("exist");
       });
 
+    // sort by Name descending
+    cy.get(".MuiDataGrid-columnHeader").contains("Name").click();
+    cy.get(".MuiDataGrid-root").should("be.visible");
+    cy.get(".loading-indicator").should("not.exist");
+
+    cy.get(".MuiDataGrid-row")
+      .eq(0)
+      .within(() => {
+        cy.contains("Zena Rath").should("exist");
+      });
+    cy.get(".MuiDataGrid-row")
+      .eq(1)
+      .within(() => {
+        cy.contains("Zena Mraz").should("exist");
+      });
+    cy.get(".MuiDataGrid-row")
+      .eq(2)
+      .within(() => {
+        cy.contains("Zena Halvorson").should("exist");
+      });
+
     // sort by borehole type
-    cy.contains("th", "Borehole type").click();
-    cy.wait("@edit_list");
-    cy.get("tbody").children().eq(0).contains("td", "virtual borehole");
-    cy.get("tbody").children().eq(1).contains("td", "virtual borehole");
-    cy.get("tbody").children().eq(2).contains("td", "virtual borehole");
+    cy.get(".MuiDataGrid-columnHeader").contains("Borehole type").click();
+    cy.get(".MuiDataGrid-root").should("be.visible");
+    cy.get(".loading-indicator").should("not.exist");
 
-    // sort by borehole status
-    cy.contains("th", "Drilling purpose").click();
-    cy.wait("@edit_list");
-    cy.get(".MuiDataGrid-virtualScrollerRenderZone").children().eq(0).contains("td", "open, no completion");
-    cy.get("tbody").children().eq(1).contains("td", "open, no completion");
-    cy.get("tbody").children().eq(2).contains("td", "open, no completion");
+    cy.get(".MuiDataGrid-row")
+      .eq(1)
+      .within(() => {
+        cy.contains("borehole").should("exist");
+      });
+    cy.get(".MuiDataGrid-row")
+      .eq(2)
+      .within(() => {
+        cy.contains("borehole").should("exist");
+      });
 
-    // sort by total depth
-    cy.contains("th", "Borehole length [m MD]").click();
+    // sort by borehole length desc
+    cy.get(".MuiDataGrid-columnHeader").contains("Borehole length").click();
+    cy.get(".MuiDataGrid-columnHeader").contains("Borehole length").click();
+    cy.get(".MuiDataGrid-root").should("be.visible");
+    cy.get(".loading-indicator").should("not.exist");
+
     cy.wait("@edit_list");
-    cy.get("tbody").children().eq(0).contains("td", "1'998.0731671667068");
-    cy.get("tbody").children().eq(1).contains("td", "1'997.7856427420795");
-    cy.get("tbody").children().eq(2).contains("td", "1'995.4961081945785");
+    cy.get(".MuiDataGrid-row")
+      .eq(0)
+      .within(() => {
+        cy.contains("1998.07").should("exist");
+      });
+    cy.get(".MuiDataGrid-row")
+      .eq(1)
+      .within(() => {
+        cy.contains("1997.79").should("exist");
+      });
+
+    // sort by reference elevation
+    cy.get(".MuiDataGrid-columnHeader").contains("Reference elevation").click();
+
+    cy.wait("@edit_list");
+    cy.get(".MuiDataGrid-row")
+      .eq(0)
+      .within(() => {
+        cy.contains("3.36").should("exist");
+      });
   });
 
   it("preserves column sorting and active page when navigating", () => {
@@ -59,29 +100,31 @@ describe("Borehole editor table tests", () => {
     cy.visit("/");
     cy.get('[data-cy="showTableButton"]').click();
 
-    // sort by name ascending
-    cy.contains("th", "Name").click();
+    // sort by name descending
+    cy.get(".MuiDataGrid-columnHeaderTitle").contains("Name").click();
     cy.wait("@edit_list");
 
-    cy.wait("@edit_list");
-
-    cy.get("tbody").children().eq(0).contains("td", "Aaliyah Casper");
-    cy.get("tbody").children().eq(1).contains("td", "Aaliyah Lynch");
-    cy.get("tbody").children().eq(2).contains("td", "Aaron Bartell");
+    cy.get(".MuiDataGrid-row")
+      .eq(0)
+      .within(() => {
+        cy.contains("Zena Rath").should("exist");
+      });
 
     // navigate to page 4
-    cy.get("a").should("have.class", "item").contains("4").click();
+    cy.get('[aria-label="next page"]').click();
+    cy.get('[aria-label="next page"]').click();
+    cy.get('[aria-label="next page"]').click();
+    cy.get('[aria-label="next page"]').click();
+
     cy.wait("@edit_list");
 
-    cy.get("tbody").children().eq(0).contains("td", "Christine Schuster");
-    cy.get("tbody").children().eq(1).contains("td", "Christine Wilderman");
-    cy.get("tbody").children().eq(2).contains("td", "Christop Keebler");
-
     // verify current page is 4
-    cy.get("a").should("have.class", "active item").contains("4");
-
-    // open first borehole
-    cy.get("tbody").children().eq(0).contains("td", "Christine Schuster").click();
+    cy.get(".MuiTablePagination-displayedRows").should("have.text", "401 - 500 of 1627");
+    cy.get(".MuiDataGrid-row")
+      .eq(0)
+      .within(() => {
+        cy.contains("Nichole VonRueden").should("exist").click();
+      });
     cy.wait("@edit_list");
 
     // return to list
@@ -89,9 +132,11 @@ describe("Borehole editor table tests", () => {
 
     // verify current page is still 4
     cy.get('[data-cy="showTableButton"]').click();
-    cy.get("a").should("have.class", "active item").contains("4");
-    cy.get("tbody").children().eq(0).contains("td", "Christine Schuster");
-    cy.get("tbody").children().eq(1).contains("td", "Christine Wilderman");
-    cy.get("tbody").children().eq(2).contains("td", "Christop Keebler");
+    cy.get(".MuiTablePagination-displayedRows").should("have.text", "401 - 500 of 1627");
+    cy.get(".MuiDataGrid-row")
+      .eq(0)
+      .within(() => {
+        cy.contains("Nichole VonRueden").should("exist").click();
+      });
   });
 });

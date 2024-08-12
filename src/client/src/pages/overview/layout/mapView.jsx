@@ -160,7 +160,7 @@ const mapDispatchToProps = (dispatch, ownprops) => {
       limit = 100,
       filter = {},
       orderby = "original_name",
-      direction = null,
+      direction = "ASC",
       featureIds = [],
     ) => {
       dispatch(loadEditingBoreholes(page, limit, filter, orderby, direction, featureIds));

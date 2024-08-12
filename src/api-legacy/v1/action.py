@@ -90,6 +90,12 @@ class Action():
         elif orderby == 'totaldepth':
             _orderby = 'total_depth'
 
+        elif orderby == 'total_depth':
+            _orderby = 'total_depth'
+
+        elif orderby == 'reference_elevation':
+            _orderby = 'reference_elevation_bho'
+
         elif orderby == 'top_bedrock_fresh_md':
             _orderby = 'top_bedrock_fresh_md'
 

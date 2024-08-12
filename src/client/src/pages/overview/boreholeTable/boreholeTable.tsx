@@ -15,7 +15,8 @@ import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useDomains } from "../../../api/fetchApiV2";
 import { TablePaginationActions } from "../TablePaginationActions.tsx";
-import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { useSelector } from "react-redux";
 
 export interface BoreholeTableProps {
   boreholes: Boreholes;
@@ -47,6 +48,8 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const domains = useDomains();
   const apiRef = useGridApiRef();
   const rowCountRef = useRef(boreholes?.length || 0);
+  const user: User = useSelector((state: ReduxRootState) => state.core_user);
+  const userIsEditor = user.data.roles.includes("EDIT");
 
   const rowCount = useMemo(() => {
     if (boreholes?.length > 0) {
@@ -161,6 +164,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 
   return (
     <StyledDataGrid
+      data-cy="borehole-table"
       apiRef={apiRef}
       onRowClick={handleRowClick}
       getRowClassName={getRowClassName}
@@ -189,7 +193,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       }}
       disableColumnSelector
       disableColumnFilter
-      checkboxSelection
+      checkboxSelection={userIsEditor}
       disableRowSelectionOnClick
       rowSelectionModel={selectionModel}
       onRowSelectionModelChange={setSelectionModel}

@@ -222,13 +222,6 @@ export const createBorehole = values => {
   );
 };
 
-export const createAndEditBoreholeAsAdmin = values => {
-  return createBorehole(values).then(value => {
-    loginAsAdmin();
-    cy.visit(`/${value}`);
-  });
-};
-
 export const startBoreholeEditing = () => {
   startEditing();
   cy.wait("@edit_lock");

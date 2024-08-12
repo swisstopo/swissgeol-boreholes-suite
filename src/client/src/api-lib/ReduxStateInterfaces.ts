@@ -65,10 +65,12 @@ interface BoreholeAttributes {
 }
 
 export interface Boreholes {
+  limit: number;
   isFetching: boolean;
   length: number;
   orderby: string;
   direction: string;
+  page: number;
   data: BoreholeAttributes[];
 }
 

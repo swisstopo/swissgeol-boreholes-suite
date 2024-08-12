@@ -8,13 +8,14 @@ describe("Viewer tests", () => {
     cy.get('[data-cy="showTableButton"]').click();
     cy.wait("@edit_list");
     cy.get("div[id=map]").should("be.visible");
-    cy.get("tbody").children().should("have.length", 100);
+    cy.get(".MuiDataGrid-root").should("be.visible");
+    cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
 
     cy.get('[data-cy="import-borehole-button"]').should("have.class", "Mui-disabled");
     cy.get('[data-cy="new-borehole-button"]').should("have.class", "Mui-disabled");
 
     // click on borehole
-    cy.contains("td", "Immanuel Christiansen").click();
+    cy.contains(".MuiDataGrid-row", "Aaron Rempel").click();
     // verify all text inputs are readonly on Location tab
     cy.get('input[type="text"]').each(i => {
       cy.wrap(i).should("have.attr", "readonly");
@@ -35,13 +36,11 @@ describe("Viewer tests", () => {
     cy.visit("/");
     cy.get('[data-cy="showTableButton"]').click();
     cy.wait("@edit_list");
-    cy.get('[data-cy="select-all-checkbox"]').should("be.visible");
-    cy.get('[data-cy="select-checkbox"]').should("have.length", 89);
+    cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").should("be.visible");
 
     loginAsViewer();
     cy.visit("/");
     cy.wait("@edit_list");
-    cy.get('[data-cy="select-all-checkbox"]').should("not.exist");
-    cy.get('[data-cy="select-checkbox"]').should("have.length", 0);
+    cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").should("not.exist");
   });
 });

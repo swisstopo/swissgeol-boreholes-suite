@@ -1,14 +1,18 @@
-import { useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ArrowDownIcon from "../../../assets/icons/arrow_down.svg?react";
 import ArrowUpIcon from "../../../assets/icons/arrow_up.svg?react";
+import TrashIcon from "../../../assets/icons/trash.svg?react";
+import CopyIcon from "../../../assets/icons/copy.svg?react";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../AppTheme.ts";
-import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { BulkEditButton, CopyButton, DeleteButton } from "../../../components/buttons/buttons.tsx";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { ConfirmDeleteDialog } from "../../../components/dialog/confirmDeleteDialog.tsx";
+import { PromptContext } from "../../../components/prompt/promptContext.tsx";
+import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
+import { useSelector } from "react-redux";
 
 interface BottomBarProps {
   toggleBottomDrawer: (open: boolean) => void;
@@ -19,6 +23,8 @@ interface BottomBarProps {
   search: { filter: string };
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
+  workgroup: number | null;
+  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const BottomBar = ({
@@ -30,20 +36,45 @@ const BottomBar = ({
   search,
   onCopyBorehole,
   boreholes,
+  workgroup,
+  setWorkgroup,
 }: BottomBarProps) => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const { showPrompt, promptIsOpen } = useContext(PromptContext);
+  const user: User = useSelector((state: ReduxRootState) => state.core_user);
+  const [copyPromptOpen, setCopyPromptOpen] = useState(false);
+  const enabledWorkgroups = user.data.workgroups.filter(
+    w => w.disabled === null && !w.supplier && w.roles.includes("EDIT"),
+  );
 
-  function deleteSelected() {
-    setOpen(true);
-  }
+  const showCopyPromptForSelectedWorkgroup = useCallback(() => {
+    setCopyPromptOpen(true);
+    showPrompt(
+      t("selectWorkgroupToCreateCopy"),
+      [
+        {
+          label: t("cancel"),
+        },
+        {
+          label: "copy",
+          icon: <CopyIcon />,
+          variant: "contained",
+          action: onCopyBorehole,
+        },
+      ],
+      <WorkgroupSelect workgroup={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroup={setWorkgroup} />,
+      "400px",
+    );
+  }, [enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, t, workgroup]);
+
+  //Ensures prompt content with the WorkgroupSelect is updated when a workgroup is selected.
+  useEffect(() => {
+    if (promptIsOpen && copyPromptOpen) showCopyPromptForSelectedWorkgroup();
+    if (!promptIsOpen) setCopyPromptOpen(false);
+  }, [copyPromptOpen, promptIsOpen, showCopyPromptForSelectedWorkgroup, workgroup]);
 
   function bulkEditSelected() {
     multipleSelected(selectionModel, search.filter);
-  }
-
-  function copySelected() {
-    onCopyBorehole();
   }
 
   return (
@@ -57,8 +88,28 @@ const BottomBar = ({
       }}>
       {selectionModel.length > 0 ? (
         <Stack direction="row" spacing={1} alignItems="center">
-          <DeleteButton label="delete" onClick={deleteSelected} />
-          {selectionModel.length === 1 && <CopyButton onClick={copySelected} />}
+          <DeleteButton
+            label="delete"
+            onClick={() =>
+              showPrompt(
+                selectionModel.length > 1
+                  ? t("deleteBoreholesMessage", { count: selectionModel.length })
+                  : t("deleteBoreholeMessage"),
+                [
+                  {
+                    label: t("cancel"),
+                  },
+                  {
+                    label: t("delete"),
+                    icon: <TrashIcon />,
+                    variant: "contained",
+                    action: onDeleteMultiple,
+                  },
+                ],
+              )
+            }
+          />
+          {selectionModel.length === 1 && <CopyButton onClick={() => showCopyPromptForSelectedWorkgroup()} />}
           <BulkEditButton label={"bulkEditing"} onClick={bulkEditSelected} />
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
@@ -73,14 +124,6 @@ const BottomBar = ({
         endIcon={bottomDrawerOpen ? <ArrowDownIcon /> : <ArrowUpIcon />}>
         {bottomDrawerOpen ? t("hideTable") : t("showTable")}
       </Button>
-      {/*</Box>*/}
-      <ConfirmDeleteDialog
-        onConfirmCallback={onDeleteMultiple}
-        open={open}
-        setOpen={setOpen}
-        width={326}
-        deleteMessage={t("sure")}
-      />
     </Stack>
   );
 };
