@@ -178,6 +178,12 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
           ActionsComponent: TablePaginationActions,
         },
       }}
+      localeText={{
+        MuiTablePagination: {
+          labelRowsPerPage: t("rowsPerPage"),
+          labelDisplayedRows: ({ from, to, count }) => `${from} - ${to} ${t("of")} ${count}`,
+        },
+      }}
       disableColumnSelector
       disableColumnFilter
       checkboxSelection
