@@ -8,12 +8,12 @@ COPY . ./bms
 
 ARG VERSION
 ARG REVISION
-ENV APP_VERSION ${VERSION}
-ENV APP_REVISION ${REVISION}
+ENV APP_VERSION=${VERSION}
+ENV APP_REVISION=${REVISION}
 
-CMD python -u bms/main.py \
+CMD ["/bin/sh", "-c", "python -u bms/main.py \
     --pg-host=${DB_HOST} \
     --pg-port=${DB_PORT} \
     --pg-database=${DB_DATABASE} \
     --pg-user=${DB_USERNAME} \
-    --pg-password=${DB_PASSWORD}
+    --pg-password=${DB_PASSWORD}"]

@@ -8,7 +8,7 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
+public class FaciesDescriptionController : BoreholeControllerBase<FaciesDescription>
 {
     public FaciesDescriptionController(BdmsContext context, ILogger<FaciesDescription> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)

@@ -8,7 +8,7 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class GroundwaterLevelMeasurementController : BdmsControllerBase<GroundwaterLevelMeasurement>
+public class GroundwaterLevelMeasurementController : BoreholeControllerBase<GroundwaterLevelMeasurement>
 {
     public GroundwaterLevelMeasurementController(BdmsContext context, ILogger<GroundwaterLevelMeasurement> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)
