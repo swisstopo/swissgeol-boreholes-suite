@@ -30,6 +30,10 @@ export const EditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
   return <BdmsBaseButton ref={ref} {...props} label="edit" variant="contained" icon={<EditIcon />} />;
 });
 
+export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  return <BdmsBaseButton ref={ref} {...props} label="bulkEditing" variant="outlined" icon={<EditIcon />} />;
+});
+
 export const EndEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return <BdmsBaseButton ref={ref} {...props} label="editingStop" variant="contained" icon={<CheckmarkIcon />} />;
 });

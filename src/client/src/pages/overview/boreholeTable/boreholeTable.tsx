@@ -27,6 +27,7 @@ export interface BoreholeTableProps {
   setSortModel: (model: GridSortModel) => void;
   onHover: (id: string | null) => void;
   rowToHighlight: number | null;
+  isBusy: boolean;
 }
 
 export const BoreholeTable: FC<BoreholeTableProps> = ({
@@ -39,6 +40,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   setSortModel,
   onHover,
   rowToHighlight,
+  isBusy,
 }: BoreholeTableProps) => {
   const { t, i18n } = useTranslation();
   const history = useHistory();
@@ -164,8 +166,8 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       getRowClassName={getRowClassName}
       columnHeaderHeight={42}
       rowHeight={42}
-      loading={boreholes.isFetching}
       sortingOrder={["asc", "desc"]}
+      loading={boreholes.isFetching || isBusy}
       rowCount={rowCount}
       rows={boreholes.data}
       columns={columns}

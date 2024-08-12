@@ -1,11 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
 import { GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
-import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { deleteBoreholes } from "../../../api-lib";
+import { copyBorehole } from "../../../api/fetchApiV2";
 
 interface BottomBarContainerProps {
   boreholes: Boreholes;
@@ -31,6 +34,7 @@ const BottomBarContainer = ({
   onHover,
   rowToHighlight,
 }: BottomBarContainerProps) => {
+  const [isBusy, setIsBusy] = useState(false);
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 100,
@@ -44,6 +48,10 @@ const BottomBarContainer = ({
     },
   ]);
   const { featureIds } = useContext(FilterContext);
+
+  const history = useHistory();
+
+  const user: User = useSelector((state: ReduxRootState) => state.core_user);
 
   const reloadBoreholes = useCallback(() => {
     loadEditingBoreholes(
@@ -60,6 +68,23 @@ const BottomBarContainer = ({
     reloadBoreholes();
   }, [sortModel, paginationModel, search, loadEditingBoreholes, featureIds, reloadBoreholes]);
 
+  const onCopyBorehole = async () => {
+    setIsBusy(true);
+    const workgroup = user.data.workgroups.filter(w => w.disabled === null && !w.supplier && w.roles.includes("EDIT"));
+    const newBoreholeId = await copyBorehole(selectionModel, workgroup[0].id);
+    setIsBusy(false);
+    history.push(`/${newBoreholeId}/borehole`);
+  };
+
+  const onDeleteMultiple = async () => {
+    setIsBusy(true);
+    // @ts-expect-error legacy api calls not typed
+    await deleteBoreholes(selectionModel).then(() => {
+      reloadBoreholes();
+    });
+    setIsBusy(false);
+  };
+
   const toggleBottomDrawer = () => {
     setBottomDrawerOpen(!bottomDrawerOpen);
   };
@@ -71,12 +96,8 @@ const BottomBarContainer = ({
         bottomDrawerOpen={bottomDrawerOpen}
         selectionModel={selectionModel}
         multipleSelected={multipleSelected}
-        deleteMultiple={() => {
-          // @ts-expect-error legacy api calls not typed
-          deleteBoreholes(selectionModel).then(() => {
-            reloadBoreholes();
-          });
-        }}
+        onCopyBorehole={onCopyBorehole}
+        onDeleteMultiple={onDeleteMultiple}
         search={search}
         boreholes={boreholes}
       />
@@ -91,6 +112,7 @@ const BottomBarContainer = ({
           setSortModel={setSortModel}
           rowToHighlight={rowToHighlight}
           onHover={onHover}
+          isBusy={isBusy}
         />
       </BottomDrawer>
     </>
