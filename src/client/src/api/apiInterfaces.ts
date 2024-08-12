@@ -1,27 +1,29 @@
 export enum Role {
-  View,
-  Editor,
-  Controller,
-  Validator,
-  Publisher,
+  View = "View",
+  Editor = "Editor",
+  Controller = "Controller",
+  Validator = "Validator",
+  Publisher = "Publisher",
 }
 
 export interface Workgroup {
-  // TODO: Add boreholes
   id: number;
   name: string;
-  created?: Date;
-  disabled?: Date;
+  isDisabled?: boolean;
+  disabledAt?: Date | string;
+  createdAt?: Date | string;
   settings?: string;
   isSupplier?: boolean;
+  boreholeCount: number;
 }
 
 export interface WorkgroupRole {
   userId: number;
-  user: User;
+  user?: User;
   workgroupId: number;
-  workgroup: Workgroup;
+  workgroup?: Workgroup;
   role: Role;
+  isActive?: boolean;
 }
 
 export interface Term {

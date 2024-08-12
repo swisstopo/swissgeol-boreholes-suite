@@ -7,19 +7,10 @@ import { deleteUser, fetchUser, fetchUsers, updateUser } from "../../../api/user
 
 import { Button, Checkbox, Form, Icon, Input, Label, Loader, Modal, Table } from "semantic-ui-react";
 
-import {
-  createWorkgroup,
-  deleteWorkgroup,
-  disableWorkgroup,
-  enableWorkgroup,
-  listWorkgroups,
-  setRole,
-  updateWorkgroup,
-} from "../../../api-lib/index";
-
 import DateText from "../../../components/legacyComponents/dateText.js";
 import TranslationText from "../../../components/legacyComponents/translationText.jsx";
 import { WorkgroupRoleSettings } from "./workgroupRoleSettings";
+import { createWorkgroup, deleteWorkgroup, fetchWorkgroups, setRole, updateWorkgroup } from "../../../api/workgroup";
 
 class AdminSettings extends React.Component {
   static contextType = AlertContext;
@@ -34,8 +25,8 @@ class AdminSettings extends React.Component {
       usersSearch: "",
       workgroupFilter: "enabled", // 'all', 'enabled' or 'disabled',
       workgroupsSearch: "",
-      users: false,
-      workgroups: false,
+      users: null,
+      workgroups: null,
 
       roleUpdate: false,
 
@@ -54,11 +45,12 @@ class AdminSettings extends React.Component {
     };
     this.reset = this.reset.bind(this);
     this.listUsers = this.listUsers.bind(this);
+    this.listWorkgroups = this.listWorkgroups.bind(this);
   }
 
   componentDidMount() {
     this.listUsers();
-    this.props.listWorkgroups();
+    this.listWorkgroups();
   }
 
   reset(state, andThen) {
@@ -98,6 +90,22 @@ class AdminSettings extends React.Component {
     );
   }
 
+  async listWorkgroups(reloadUser) {
+    const workgroups = await fetchWorkgroups();
+    this.setState({
+      workgroups: workgroups,
+    });
+
+    // immediately update currently selected workgroup.
+    if (reloadUser) {
+      await fetchUser(this.state.user.id).then(user => {
+        this.setState({
+          user: user,
+        });
+      });
+    }
+  }
+
   async listUsers() {
     const users = await fetchUsers();
     this.setState({
@@ -118,9 +126,8 @@ class AdminSettings extends React.Component {
         roleUpdate: true,
       },
       () => {
-        let isRoleActive = uwg !== undefined && uwg.some(x => x.role.toLowerCase().startsWith(role.toLowerCase()));
-
-        setRole(this.state.user.id, workgroup.id, role === "Publisher" ? "PUBLIC" : role, !isRoleActive).then(() => {
+        let isRoleActive = uwg !== undefined && uwg.some(x => x.role === role);
+        setRole(this.state.user.id, workgroup.id, role, !isRoleActive).then(() => {
           this.listUsers();
         });
       },
@@ -342,7 +349,7 @@ class AdminSettings extends React.Component {
                       <TranslationText extra={{ user: this.state.deleteUser.name }} id="msgEnablingUser" />
                     </p>
                   </Modal.Description>
-                ) : this.state.deleteUser !== null && this.state.deleteUser.deletable ? (
+                ) : this.state.deleteUser.deletable ? (
                   <Modal.Description>
                     <p>
                       <TranslationText id="msgDeleteUser" />
@@ -521,7 +528,7 @@ class AdminSettings extends React.Component {
                 </Table.Header>
                 <Table.Body data-cy="user-list-table-body">
                   {this.state.users &&
-                    this.state.users.map(currentUser =>
+                    this.state.users?.map(currentUser =>
                       (this.state.usersSearch !== "" &&
                         (currentUser.name.toUpperCase().includes(this.state.usersSearch.toUpperCase()) ||
                           currentUser.firstName.toUpperCase().includes(this.state.usersSearch.toUpperCase()) ||
@@ -656,12 +663,14 @@ class AdminSettings extends React.Component {
                       label="&nbsp;"
                       onClick={() => {
                         if (this.state.wId === null) {
-                          createWorkgroup(this.state.wName).then(() => {
-                            this.props.listWorkgroups(true);
+                          createWorkgroup({ name: this.state.wName }).then(() => {
+                            this.listWorkgroups(true);
                           });
                         } else {
-                          updateWorkgroup(this.state.wId, this.state.wName).then(() => {
-                            this.props.listWorkgroups(true);
+                          const workgroup = this.state.workgroup;
+                          workgroup.name = this.state.wName;
+                          updateWorkgroup(workgroup).then(() => {
+                            this.listWorkgroups(true);
                           });
                         }
                       }}>
@@ -752,14 +761,14 @@ class AdminSettings extends React.Component {
                   open={this.state.deleteWorkgroup !== null}
                   size="tiny">
                   <Modal.Header>
-                    {this.state.deleteWorkgroup !== null && this.state.deleteWorkgroup.disabled !== null ? (
+                    {this.state.deleteWorkgroup !== null && this.state.deleteWorkgroup.disabledAt !== null ? (
                       <TranslationText extra={{ what: t("workgroup") }} id="enabling" />
                     ) : (
                       <TranslationText extra={{ what: t("workgroup") }} id="disabling" />
                     )}
                   </Modal.Header>
                   <Modal.Content>
-                    {this.state.deleteWorkgroup === null ? null : this.state.deleteWorkgroup.disabled !== null ? (
+                    {this.state.deleteWorkgroup === null ? null : this.state.deleteWorkgroup.disabledAt !== null ? (
                       <Modal.Description>
                         <p>
                           <TranslationText
@@ -770,7 +779,7 @@ class AdminSettings extends React.Component {
                           />
                         </p>
                       </Modal.Description>
-                    ) : this.state.deleteWorkgroup !== null && this.state.deleteWorkgroup.boreholes === 0 ? (
+                    ) : this.state.deleteWorkgroup.boreholeCount === 0 ? (
                       <Modal.Description>
                         <p>
                           <TranslationText id="msgDeleteWorkgroup" />
@@ -844,16 +853,18 @@ class AdminSettings extends React.Component {
                         </span>
                       </Button>
                       <div style={{ flex: "1 1 100%" }} />
-                      {this.state.deleteWorkgroup === null ? null : this.state.deleteWorkgroup.disabled !== null ? (
+                      {this.state.deleteWorkgroup === null ? null : this.state.deleteWorkgroup.disabledAt !== null ? (
                         <Button
                           onClick={() => {
-                            enableWorkgroup(this.state.deleteWorkgroup.id).then(() => {
+                            const workgroup = this.state.deleteWorkgroup;
+                            workgroup.disabledAt = null;
+                            updateWorkgroup(workgroup).then(() => {
                               this.setState(
                                 {
                                   deleteWorkgroup: null,
                                 },
                                 () => {
-                                  this.props.listWorkgroups(true);
+                                  this.listWorkgroups(true);
                                 },
                               );
                             });
@@ -870,13 +881,15 @@ class AdminSettings extends React.Component {
                       ) : (
                         <Button
                           onClick={() => {
-                            disableWorkgroup(this.state.deleteWorkgroup.id).then(() => {
+                            const workgroup = this.state.deleteWorkgroup;
+                            workgroup.disabledAt = Date.now();
+                            updateWorkgroup(workgroup).then(() => {
                               this.resetWorkgroup(
                                 {
                                   deleteWorkgroup: null,
                                 },
                                 () => {
-                                  this.props.listWorkgroups(true);
+                                  this.listWorkgroups(true);
                                 },
                               );
                             });
@@ -893,7 +906,7 @@ class AdminSettings extends React.Component {
                       )}
                       {this.state.deleteWorkgroup !== null &&
                       this.state.deleteWorkgroup.disabled === null &&
-                      this.state.deleteWorkgroup.boreholes === 0 ? (
+                      this.state.deleteWorkgroup.boreholeCount === 0 ? (
                         <Button
                           color="red"
                           onClick={() => {
@@ -903,7 +916,7 @@ class AdminSettings extends React.Component {
                                   deleteWorkgroup: null,
                                 },
                                 () => {
-                                  this.props.listWorkgroups(true);
+                                  this.listWorkgroups(true);
                                 },
                               );
                             });
@@ -947,86 +960,90 @@ class AdminSettings extends React.Component {
                     </Table.Row>
                   </Table.Header>
                   <Table.Body data-cy="workgroup-list-table-body">
-                    {this.props.workgroups.data.map(workgroup =>
-                      (this.state.workgroupsSearch !== "" &&
-                        workgroup.name.toUpperCase().includes(this.state.workgroupsSearch.toUpperCase())) ||
-                      (this.state.workgroupsSearch === "" &&
-                        (this.state.workgroupFilter === "all" ||
-                          (this.state.workgroupFilter === "disabled" && workgroup.disabled !== null) ||
-                          (this.state.workgroupFilter === "enabled" && workgroup.disabled === null))) ? (
-                        <Table.Row
-                          active={this.state.wId === workgroup.id}
-                          key={"stng-workgroups-" + workgroup.id}
-                          onClick={() => {
-                            if (this.state.wId === workgroup.id) {
-                              this.resetWorkgroup();
-                            } else {
-                              this.setState({
-                                wId: workgroup.id,
-                                wName: workgroup.name,
-                                wDisabled: workgroup.disabled,
-                                workgroup: workgroup,
-                              });
-                            }
-                          }}>
-                          <Table.Cell>
-                            {workgroup.disabled !== null ? (
-                              <Label
-                                circular
-                                color={"red"}
-                                empty
-                                style={{
-                                  marginRight: "1em",
-                                }}
-                              />
-                            ) : null}
-                            {workgroup.name}{" "}
-                            {workgroup.supplier === true ? <span style={{ color: "red" }}>(supplier)</span> : ""}
-                          </Table.Cell>
-                          <Table.Cell>{workgroup.boreholes}</Table.Cell>
-                          <Table.Cell
-                            style={{
-                              paddingTop: "20px",
-                            }}>
-                            <WorkgroupRoleSettings
-                              user={this.state.user}
-                              workgroup={workgroup}
-                              setRole={this.setRole.bind(this)}
-                            />
-                            {workgroup.disabled !== null ? (
-                              <span
-                                style={{
-                                  color: "#787878",
-                                  fontStyle: "italic",
-                                  marginLeft: "0.5em",
-                                }}>
-                                <TranslationText id="disabled" />
-                                &nbsp;
-                                <DateText date={workgroup.disabled} fromnow />
-                                &nbsp;(
-                                <DateText date={workgroup.disabled} hours />)
-                              </span>
-                            ) : null}
-                          </Table.Cell>
-                          <Table.Cell>
-                            <span
-                              className="linker link"
-                              onClick={e => {
-                                e.stopPropagation();
+                    {this.state.workgroups?.map(workgroup => {
+                      const showWorkgroup =
+                        (this.state.workgroupsSearch !== "" &&
+                          workgroup.name.toUpperCase().includes(this.state.workgroupsSearch.toUpperCase())) ||
+                        (this.state.workgroupsSearch === "" &&
+                          (this.state.workgroupFilter === "all" ||
+                            (this.state.workgroupFilter === "disabled" && workgroup.disabledAt !== null) ||
+                            (this.state.workgroupFilter === "enabled" && workgroup.disabledAt === null)));
+                      return (
+                        showWorkgroup && (
+                          <Table.Row
+                            active={this.state.wId === workgroup.id}
+                            key={"stng-workgroups-" + workgroup.id}
+                            onClick={() => {
+                              if (this.state.wId === workgroup.id) {
+                                this.resetWorkgroup();
+                              } else {
                                 this.setState({
-                                  deleteWorkgroup: workgroup,
+                                  wId: workgroup.id,
+                                  wName: workgroup.name,
+                                  wDisabled: workgroup.disabledAt,
+                                  workgroup: workgroup,
                                 });
+                              }
+                            }}>
+                            <Table.Cell>
+                              {workgroup.disabledAt !== null ? (
+                                <Label
+                                  circular
+                                  color={"red"}
+                                  empty
+                                  style={{
+                                    marginRight: "1em",
+                                  }}
+                                />
+                              ) : null}
+                              {workgroup.name}{" "}
+                              {workgroup.supplier === true ? <span style={{ color: "red" }}>(supplier)</span> : ""}
+                            </Table.Cell>
+                            <Table.Cell>{workgroup.boreholeCount}</Table.Cell>
+                            <Table.Cell
+                              style={{
+                                paddingTop: "20px",
                               }}>
-                              {workgroup.disabled !== null ? (
-                                <TranslationText id="enableWorkgroup" />
-                              ) : (
-                                <TranslationText id="disableWorkgroup" />
-                              )}
-                            </span>
-                          </Table.Cell>
-                        </Table.Row>
-                      ) : null,
-                    )}
+                              <WorkgroupRoleSettings
+                                user={this.state.user}
+                                workgroup={workgroup}
+                                setRole={this.setRole.bind(this)}
+                              />
+                              {workgroup.disabledAt !== null ? (
+                                <span
+                                  style={{
+                                    color: "#787878",
+                                    fontStyle: "italic",
+                                    marginLeft: "0.5em",
+                                  }}>
+                                  <TranslationText id="disabled" />
+                                  &nbsp;
+                                  <DateText date={workgroup.disabledAt} fromnow />
+                                  &nbsp;(
+                                  <DateText date={workgroup.disabledAt} hours />)
+                                </span>
+                              ) : null}
+                            </Table.Cell>
+                            <Table.Cell>
+                              <span
+                                className="linker link"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  this.setState({
+                                    deleteWorkgroup: workgroup,
+                                  });
+                                }}>
+                                {workgroup.disabledAt !== null ? (
+                                  <TranslationText id="enableWorkgroup" />
+                                ) : (
+                                  <TranslationText id="disableWorkgroup" />
+                                )}
+                              </span>
+                            </Table.Cell>
+                          </Table.Row>
+                        )
+                      );
+                    })}
                   </Table.Body>
                 </Table>
               </div>
@@ -1039,7 +1056,6 @@ class AdminSettings extends React.Component {
 }
 
 AdminSettings.propTypes = {
-  listWorkgroups: PropTypes.func,
   t: PropTypes.func,
   user: PropTypes.object,
   users: PropTypes.object,
@@ -1052,17 +1068,5 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    dispatch: dispatch,
-    listWorkgroups: (ru = false) => {
-      if (ru === true) {
-        fetchUser();
-      }
-      return dispatch(listWorkgroups());
-    },
-  };
-};
-
-const ConnectedAdminSettings = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(AdminSettings));
+const ConnectedAdminSettings = connect(mapStateToProps)(withTranslation(["common"])(AdminSettings));
 export default ConnectedAdminSettings;

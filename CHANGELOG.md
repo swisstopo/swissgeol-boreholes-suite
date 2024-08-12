@@ -24,6 +24,7 @@
 - Removed unused `IsViewer` flag from user.
 - Removed unused `UserEvent` from user.
 - Migrated `User` API endpoints to .NET API.
+- Migrated `Workgroup` API endpoints to .NET API.
 
 ### Fixed
 
