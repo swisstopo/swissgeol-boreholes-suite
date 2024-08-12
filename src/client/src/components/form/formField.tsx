@@ -8,8 +8,7 @@ interface FormFieldProps {
   [key: string]: any;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const FormField = forwardRef((props: FormFieldProps, ref: ForwardedRef<any>) => {
+export const FormField = forwardRef((props: FormFieldProps, ref: ForwardedRef<HTMLDivElement>) => {
   return (
     <TextField
       ref={ref}
