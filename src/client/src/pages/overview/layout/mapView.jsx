@@ -155,7 +155,14 @@ const mapDispatchToProps = (dispatch, ownprops) => {
         filter: filter,
       });
     },
-    loadEditingBoreholes: (page, limit = 100, filter = {}, orderby = "creation", direction = null, featureIds = []) => {
+    loadEditingBoreholes: (
+      page,
+      limit = 100,
+      filter = {},
+      orderby = "original_name",
+      direction = null,
+      featureIds = [],
+    ) => {
       dispatch(loadEditingBoreholes(page, limit, filter, orderby, direction, featureIds));
     },
   };

@@ -191,9 +191,8 @@ class BoreholeProducerHandler(Producer):
                         request['orderby'] is not None
                     ) and (
                         'orderby' in self.user['setting']['eboreholetable'] and
-                        self.user[
-                            'setting'
-                        ]['eboreholetable']['orderby'] != request['orderby']
+                        ('orderby' not in self.user['setting']['eboreholetable'] or
+                        self.user['setting']['eboreholetable']['orderby'] != request['orderby'])
                     ):
                         await (PatchSetting(conn)).execute(
                             self.user['id'],
@@ -208,9 +207,8 @@ class BoreholeProducerHandler(Producer):
                     if 'direction' in request and (
                         request['direction'] is not None
                     ) and (
-                        self.user[
-                            'setting'
-                        ]['eboreholetable']['direction'] != request['direction']
+                        ('direction' not in self.user['setting']['eboreholetable'] or
+                        self.user['setting']['eboreholetable']['direction'] != request['direction'])
                     ):
                         await (PatchSetting(conn)).execute(
                             self.user['id'],

@@ -165,6 +165,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       columnHeaderHeight={42}
       rowHeight={42}
       loading={boreholes.isFetching}
+      sortingOrder={["asc", "desc"]}
       rowCount={rowCount}
       rows={boreholes.data}
       columns={columns}

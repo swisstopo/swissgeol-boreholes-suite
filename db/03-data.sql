@@ -17,8 +17,8 @@ VALUES
         '        "direction": "ASC"'
         '    },'
         '    "eboreholetable": {'
-        '        "orderby": "creation",'
-        '        "direction": "DESC"'
+        '        "orderby": "original_name",'
+        '        "direction": "ASC"'
         '    },'
         '   "map": {'
         '       "explorer": {},'
@@ -66,7 +66,7 @@ SELECT pg_catalog.setval('bdms.workgroups_id_wgp_seq', 2, false);
 
 INSERT INTO bdms.users VALUES (
     1, NULL, true, true, 'admin', crypt('swissforages', gen_salt('md5')),
-'{"filter": {"custom": {"borehole_identifier": true, "project_name": true, "landuse": true, "alternate_name": true, "canton": true, "city": true}, "restriction": true, "restriction_until": true, "extended": {"original_name": true, "method": true, "status": true}, "kind": true, "elevation_z": true, "length": true, "drilling_date": true, "zoom2selected": true}, "boreholetable": {"orderby": "original_name", "direction": "ASC"}, "eboreholetable": {"orderby": "creation", "direction": "DESC"}, "map": {"explorer": {}, "editor": {}}, "appearance": {"explorer": 1}}',
+'{"filter": {"custom": {"borehole_identifier": true, "project_name": true, "landuse": true, "alternate_name": true, "canton": true, "city": true}, "restriction": true, "restriction_until": true, "extended": {"original_name": true, "method": true, "status": true}, "kind": true, "elevation_z": true, "length": true, "drilling_date": true, "zoom2selected": true}, "boreholetable": {"orderby": "original_name", "direction": "ASC"}, "eboreholetable": {"orderby": "original_name", "direction": "ASC"}, "map": {"explorer": {}, "editor": {}}, "appearance": {"explorer": 1}}',
 'admin', NULL, 'user');
 
 INSERT INTO bdms.users_roles(
