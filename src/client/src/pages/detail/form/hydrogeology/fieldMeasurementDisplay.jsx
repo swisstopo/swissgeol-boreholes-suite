@@ -4,7 +4,7 @@ import { TableCell } from "@mui/material";
 import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 import { deleteFieldMeasurement, useDomains } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
-import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay.tsx";
+import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
 
 const FieldMeasurementDisplay = props => {
   const { item, isEditable } = props;

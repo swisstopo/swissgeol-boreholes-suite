@@ -1,5 +1,5 @@
 import { StackFullWidth } from "../../../../components/styledComponents.js";
-import { FormDisplay, FormDisplayType } from "../../../../components/form/form.js";
+import { FormDisplay, FormValueType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { useGetCasingName } from "./casingUtils.jsx";
 import { deleteInstrumentation } from "../../../../api/fetchApiV2.js";
@@ -19,8 +19,8 @@ const InstrumentationDisplay = props => {
         <FormDisplay label="casingName" value={getCasingNameWithCompletion(item)} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay label="kindInstrument" value={item?.kind} type={FormDisplayType.Domain} />
-        <FormDisplay label="statusInstrument" value={item?.status} type={FormDisplayType.Domain} />
+        <FormDisplay label="kindInstrument" value={item?.kind} type={FormValueType.Domain} />
+        <FormDisplay label="statusInstrument" value={item?.status} type={FormValueType.Domain} />
       </StackFullWidth>
       <FormDisplay label="notes" value={item?.notes} />
     </DataDisplayCard>

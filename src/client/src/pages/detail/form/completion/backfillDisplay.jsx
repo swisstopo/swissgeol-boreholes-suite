@@ -1,5 +1,5 @@
 import { StackFullWidth, StackHalfWidth } from "../../../../components/styledComponents.js";
-import { FormDisplay, FormDisplayType } from "../../../../components/form/form.js";
+import { FormDisplay, FormValueType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { useGetCasingName } from "./casingUtils";
 import { deleteBackfill } from "../../../../api/fetchApiV2";
@@ -15,8 +15,8 @@ const BackfillDisplay = props => {
         <FormDisplay label="todepth" value={item?.toDepth} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay label="kindBackfill" value={item?.kind} type={FormDisplayType.Domain} />
-        <FormDisplay label="materialBackfill" value={item?.material} type={FormDisplayType.Domain} />
+        <FormDisplay label="kindBackfill" value={item?.kind} type={FormValueType.Domain} />
+        <FormDisplay label="materialBackfill" value={item?.material} type={FormValueType.Domain} />
       </StackFullWidth>
       <StackHalfWidth>
         <FormDisplay label="casingName" value={getCasingNameWithCompletion(item)} />

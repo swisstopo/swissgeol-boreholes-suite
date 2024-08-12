@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IconButton, Stack } from "@mui/material";
-import { FormDisplay, FormDisplayType } from "../../../../components/form/form.js";
+import { FormDisplay, FormValueType } from "../../../../components/form/form";
 import { CopyButton, DeleteButton, EditButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -19,8 +19,8 @@ const CompletionHeaderDisplay = props => {
         <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap">
           <FormDisplay label="name" value={completion?.name} sx={{ flex: "1 1 180px" }} />
           <Stack direction="row" justifyContent="space-between" alignItems="center" flex={"0 0 400px"}>
-            <FormDisplay label="completionKind" value={completion?.kind} type={FormDisplayType.Domain} />
-            <FormDisplay label="mainCompletion" value={completion?.isPrimary} type={FormDisplayType.Boolean} />
+            <FormDisplay label="completionKind" value={completion?.kind} type={FormValueType.Domain} />
+            <FormDisplay label="mainCompletion" value={completion?.isPrimary} type={FormValueType.Boolean} />
           </Stack>
         </Stack>
         {expanded && (
@@ -30,7 +30,7 @@ const CompletionHeaderDisplay = props => {
               <FormDisplay
                 label="dateAbandonmentCompletion"
                 value={completion?.abandonDate}
-                type={FormDisplayType.Date}
+                type={FormValueType.Date}
                 sx={{ flex: "0 0 400px" }}
               />
             </Stack>

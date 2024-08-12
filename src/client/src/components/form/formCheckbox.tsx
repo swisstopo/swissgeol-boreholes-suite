@@ -1,9 +1,17 @@
-import { Checkbox, FormControlLabel } from "@mui/material";
+import { Checkbox, FormControlLabel, SxProps } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
+import { FC } from "react";
 
-export const FormCheckbox = props => {
-  const { fieldName, label, checked, disabled, sx } = props;
+export interface FormCheckboxProps {
+  fieldName: string;
+  label: string;
+  checked: boolean;
+  disabled?: boolean;
+  sx?: SxProps;
+}
+
+export const FormCheckbox: FC<FormCheckboxProps> = ({ fieldName, label, checked, disabled, sx }) => {
   const { t } = useTranslation();
   const { register } = useFormContext();
 
