@@ -4,12 +4,13 @@ import {
   GridColDef,
   GridEventListener,
   GridPaginationModel,
-  GridRowId,
+  GridRowParams,
   GridRowSelectionModel,
   GridSortModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import { styled } from "@mui/system";
+import LockIcon from "../../../assets/icons/lock.svg?react";
+import { Box, styled } from "@mui/system";
 import { theme } from "../../../AppTheme.ts";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -88,7 +89,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       headerName: t("totaldepth"),
       flex: 1,
     },
-
     {
       field: "extended",
       valueGetter: (value: { purpose: number }) => {
@@ -109,14 +109,36 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       headerName: t("reference_elevation"),
       flex: 1,
     },
+    {
+      field: "lock",
+      headerName: "",
+      width: 70,
+      renderCell: value => {
+        if (value.row.lock) {
+          return (
+            <Box sx={{ color: theme.palette.error.main }}>
+              <LockIcon />
+            </Box>
+          );
+        }
+      },
+    },
   ];
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
     history.push(`/${params.row.id}`);
   };
 
-  const getRowClassName = (params: { id: GridRowId }) => {
-    return rowToHighlight === params.id ? "highlighted-row" : "";
+  const getRowClassName = (params: GridRowParams) => {
+    console.log(params);
+    let css = "";
+    if (params.row.lock) {
+      css = "locked-row ";
+    }
+    if (rowToHighlight === params.id) {
+      css = "highlighted-row ";
+    }
+    return css;
   };
 
   useEffect(() => {
@@ -160,6 +182,10 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       backgroundColor: theme.palette.background.lightgrey,
       color: theme.palette.primary.main,
     },
+    "& .locked-row": {
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.action.disabled,
+    },
   }));
 
   return (
@@ -194,6 +220,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       disableColumnSelector
       disableColumnFilter
       checkboxSelection={userIsEditor}
+      isRowSelectable={(params: GridRowParams) => params.row.lock === null}
       disableRowSelectionOnClick
       rowSelectionModel={selectionModel}
       onRowSelectionModelChange={setSelectionModel}
