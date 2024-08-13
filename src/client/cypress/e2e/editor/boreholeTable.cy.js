@@ -111,7 +111,7 @@ describe("Borehole editor table tests", () => {
       });
 
     // navigate to page 4
-    cy.get('[aria-label="next page"]').click();
+    cy.get('[aria-label="next page"]').scrollIntoView().click();
     cy.wait("@edit_list");
     cy.get('[aria-label="next page"]').click();
     cy.wait("@edit_list");
