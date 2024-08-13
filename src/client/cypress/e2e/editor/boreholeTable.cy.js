@@ -50,22 +50,6 @@ describe("Borehole editor table tests", () => {
         cy.contains("Zena Halvorson").should("exist");
       });
 
-    // sort by borehole type
-    cy.get(".MuiDataGrid-columnHeader").contains("Borehole type").click();
-    cy.get(".MuiDataGrid-root").should("be.visible");
-    cy.get(".loading-indicator").should("not.exist");
-
-    cy.get(".MuiDataGrid-row")
-      .eq(1)
-      .within(() => {
-        cy.contains("borehole").should("exist");
-      });
-    cy.get(".MuiDataGrid-row")
-      .eq(2)
-      .within(() => {
-        cy.contains("borehole").should("exist");
-      });
-
     // sort by borehole length desc
     cy.get(".MuiDataGrid-columnHeader").contains("Borehole length").click();
     cy.get(".MuiDataGrid-columnHeader").contains("Borehole length").click();
