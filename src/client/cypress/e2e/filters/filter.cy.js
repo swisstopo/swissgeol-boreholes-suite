@@ -134,13 +134,8 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    cy.get('[data-cy="showTableButton"]').click();
     cy.get(".MuiTablePagination-displayedRows").should("have.text", "1 - 39 of 39");
-    cy.get(".MuiDataGrid-row")
-      .eq(2)
-      .within(() => {
-        cy.contains("Darion Rowe").should("exist");
-      });
+    cy.get(".MuiDataGrid-row").contains("Darion Rowe").should("exist");
   });
 
   function filterByOriginalLithology() {

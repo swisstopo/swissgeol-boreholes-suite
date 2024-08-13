@@ -1,4 +1,4 @@
-import { createBorehole, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import { createBorehole, loginAsAdmin, startBoreholeEditing, stopBoreholeEditing } from "../helpers/testHelpers";
 import adminUser from "../../fixtures/adminUser.json";
 
 beforeEach(() => {
@@ -132,12 +132,14 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get("@borehole_id").then(id => {
       cy.visit(`/${id}/borehole`);
       startBoreholeEditing();
+      cy.visit("/");
+      cy.get('[data-cy="showTableButton"]').click();
+      cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
+      cy.contains(".MuiDataGrid-row", "AAA_JUNIORSOUFFLE")
+        .find('.MuiCheckbox-root input[type="checkbox"]')
+        .should("be.disabled");
+      cy.visit(`/${id}/borehole`);
+      stopBoreholeEditing();
     });
-    cy.visit("/");
-    cy.get('[data-cy="showTableButton"]').click();
-    cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
-    cy.contains(".MuiDataGrid-row", "AAA_JUNIORSOUFFLE")
-      .find('.MuiCheckbox-root input[type="checkbox"]')
-      .should("be.disabled");
   });
 });

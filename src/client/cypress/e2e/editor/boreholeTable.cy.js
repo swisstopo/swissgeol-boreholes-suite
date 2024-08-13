@@ -112,10 +112,12 @@ describe("Borehole editor table tests", () => {
 
     // navigate to page 4
     cy.get('[aria-label="next page"]').click();
+    cy.wait("@edit_list");
     cy.get('[aria-label="next page"]').click();
+    cy.wait("@edit_list");
     cy.get('[aria-label="next page"]').click();
+    cy.wait("@edit_list");
     cy.get('[aria-label="next page"]').click();
-
     cy.wait("@edit_list");
 
     // verify current page is 4
@@ -132,6 +134,7 @@ describe("Borehole editor table tests", () => {
 
     // verify current page is still 4
     cy.get('[data-cy="showTableButton"]').click();
+    cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
     cy.get(".MuiTablePagination-displayedRows").should("have.text", "401 - 500 of 1627");
     cy.get(".MuiDataGrid-row")
       .eq(0)
