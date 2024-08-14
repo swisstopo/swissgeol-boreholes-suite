@@ -205,7 +205,7 @@ class BoreholeProducerHandler(Producer):
                                 'setting'
                             ]['eboreholetable']['orderby']
                         else :
-                            request['orderby'] = 'ASC'
+                            request['orderby'] = 'original_name'
 
                     if 'direction' in request and (
                         request['direction'] is not None

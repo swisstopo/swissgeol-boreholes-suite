@@ -1,5 +1,6 @@
 import { loginAsAdmin, loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
 import {
+  clickOnRowWithText,
   showTableAndWaitForData,
   verifiyPaginationText,
   verifyRowContains,
@@ -71,6 +72,9 @@ describe("Borehole editor table tests", () => {
     // verify current page is 4
     verifiyPaginationText("401 - 500 of 1626");
     verifyRowContains("Nichole VonRueden", 0);
+
+    // navigate to detail
+    clickOnRowWithText("Nichole VonRueden");
 
     // return to list
     returnToOverview();

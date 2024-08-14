@@ -130,7 +130,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   };
 
   const getRowClassName = (params: GridRowParams) => {
-    console.log(params);
     let css = "";
     if (params.row.lock) {
       css = "locked-row ";
