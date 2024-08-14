@@ -1,17 +1,5 @@
-import { loginAsAdmin, loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
-import {
-  clickOnRowWithText,
-  showTableAndWaitForData,
-  verifiyPaginationText,
-  verifyRowContains,
-  waitForTableData,
-} from "../helpers/dataGridHelpers";
-
-function sortBy(headerTextContent) {
-  cy.get(".MuiDataGrid-columnHeader").contains(headerTextContent).click();
-  cy.wait("@edit_list");
-  cy.get(".loading-indicator").should("not.exist");
-}
+import { loginAsAdmin } from "../helpers/testHelpers.js";
+import { showTableAndWaitForData, sortBy, verifyRowContains } from "../helpers/dataGridHelpers";
 
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {

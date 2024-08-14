@@ -4,8 +4,7 @@ export const verifiyPaginationText = text => {
 
 export const sortBy = headerTextContent => {
   cy.get(".MuiDataGrid-columnHeader").contains(headerTextContent).click();
-  cy.wait("@edit_list");
-  cy.get(".loading-indicator").should("not.exist");
+  waitForTableData();
 };
 
 export const verifyRowContains = (rowContent, rowIndex) => {
