@@ -6,7 +6,6 @@ export const PromptContext = createContext<PromptContextInterface>({
   actions: [],
   promptIsOpen: false,
   dialogContent: null,
-  dialogWidth: null,
   showPrompt: () => {},
   closePrompt: () => {},
 });
@@ -14,17 +13,11 @@ export const PromptContext = createContext<PromptContextInterface>({
 export const PromptProvider: FC<PropsWithChildren> = ({ children }) => {
   const [prompt, setPrompt] = useState<PromptOptions>();
 
-  const showPrompt = (
-    message: string,
-    actions: PromptAction[],
-    dialogContent: ReactNode = null,
-    dialogWidth: string | null = null,
-  ) => {
+  const showPrompt = (message: string, actions: PromptAction[], dialogContent: ReactNode = null) => {
     setPrompt({
       message: message,
       actions: actions,
       dialogContent: dialogContent,
-      dialogWidth: dialogWidth,
     });
   };
 
@@ -39,7 +32,6 @@ export const PromptProvider: FC<PropsWithChildren> = ({ children }) => {
         message: prompt?.message,
         actions: prompt?.actions,
         dialogContent: prompt?.dialogContent,
-        dialogWidth: prompt?.dialogWidth ?? null,
         showPrompt,
         closePrompt,
       }}>

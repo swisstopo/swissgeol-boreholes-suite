@@ -4,14 +4,14 @@ import { PromptContext } from "./promptContext.js";
 import { BdmsButton } from "../buttons/buttons.tsx";
 
 export const Prompt = () => {
-  const { promptIsOpen, message, actions, dialogContent, dialogWidth, closePrompt } = useContext(PromptContext);
+  const { promptIsOpen, message, actions, dialogContent, closePrompt } = useContext(PromptContext);
   return (
     <Dialog
       open={promptIsOpen}
       data-cy="prompt"
       sx={{
         margin: "auto",
-        width: dialogWidth ?? "326px",
+        width: "390px",
         position: "absolute",
         "& .MuiDialog-paper": {
           p: 3,

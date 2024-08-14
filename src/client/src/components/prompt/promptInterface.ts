@@ -11,10 +11,9 @@ export interface PromptAction {
 export interface PromptContextInterface {
   message?: string;
   dialogContent?: ReactNode;
-  dialogWidth?: string | null;
   actions?: PromptAction[];
   promptIsOpen: boolean;
-  showPrompt: (message: string, actions: PromptAction[], dialogContent?: ReactNode, dialogWidth?: string) => void;
+  showPrompt: (message: string, actions: PromptAction[], dialogContent?: ReactNode) => void;
   closePrompt: () => void;
 }
 
@@ -22,5 +21,4 @@ export interface PromptOptions {
   message: string;
   actions: PromptAction[];
   dialogContent: ReactNode;
-  dialogWidth: string | null;
 }
