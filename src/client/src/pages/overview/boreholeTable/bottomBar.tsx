@@ -43,29 +43,33 @@ const BottomBar = ({
   const { showPrompt, promptIsOpen } = useContext(PromptContext);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
+  const [currentWorkgroup, setCurrentWorkgroup] = useState<number | null>(null);
   const enabledWorkgroups = user.data.workgroups.filter(
     w => w.disabled === null && !w.supplier && w.roles.includes("EDIT"),
   );
 
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
     setCopyPromptOpen(true);
-    showPrompt(
-      t("selectWorkgroupToCreateCopy"),
-      [
-        {
-          label: t("cancel"),
-        },
-        {
-          label: "copy",
-          icon: <CopyIcon />,
-          variant: "contained",
-          action: onCopyBorehole,
-        },
-      ],
-      <WorkgroupSelect workgroup={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroup={setWorkgroup} />,
-      "400px",
-    );
-  }, [enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, t, workgroup]);
+    setCurrentWorkgroup(workgroup);
+    if (workgroup != currentWorkgroup || !copyPromptOpen) {
+      showPrompt(
+        t("selectWorkgroupToCreateCopy"),
+        [
+          {
+            label: t("cancel"),
+          },
+          {
+            label: "copy",
+            icon: <CopyIcon />,
+            variant: "contained",
+            action: onCopyBorehole,
+          },
+        ],
+        <WorkgroupSelect workgroup={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroup={setWorkgroup} />,
+        "400px",
+      );
+    }
+  }, [copyPromptOpen, currentWorkgroup, enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, t, workgroup]);
 
   //Ensures prompt content with the WorkgroupSelect is updated when a workgroup is selected.
   useEffect(() => {
