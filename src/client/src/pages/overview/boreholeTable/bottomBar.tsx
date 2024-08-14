@@ -80,6 +80,7 @@ const BottomBar = ({
   return (
     <Stack
       direction="row"
+      alignItems={"center"}
       sx={{
         height: "68px",
         p: 2,
