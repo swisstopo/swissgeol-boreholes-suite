@@ -1,4 +1,4 @@
-import { loginAsAdmin, returnToOverview } from "../helpers/testHelpers.js";
+import { loginAsAdmin, loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
 import {
   clickOnRowWithText,
   showTableAndWaitForData,
