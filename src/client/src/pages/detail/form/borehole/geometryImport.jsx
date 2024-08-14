@@ -20,6 +20,7 @@ import {
   useBoreholeGeometryMutations,
 } from "../../../../api/fetchApiV2.js";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
+import { FormSelect } from "../../../../components/form/form";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { StackHalfWidth } from "../../../../components/styledComponents.js";
