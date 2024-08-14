@@ -176,6 +176,13 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     ".MuiDataGrid-footerContainer": {
       height: "42px !important",
     },
+    ".MuiTablePagination-selectLabel": {
+      fontSize: "12px",
+    },
+    ".MuiTablePagination-displayedRows": {
+      fontSize: "12px",
+    },
+
     "& .highlighted-row": {
       backgroundColor: theme.palette.background.lightgrey,
       color: theme.palette.primary.main,
