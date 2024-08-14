@@ -1,5 +1,5 @@
 import { createContext, FC, PropsWithChildren, ReactNode, useState } from "react";
-import { PromptAction, PromptContextInterface, PromptOptions, PromptProviderProps } from "./promptInterface";
+import { PromptAction, PromptContextInterface, PromptOptions } from "./promptInterface";
 
 export const PromptContext = createContext<PromptContextInterface>({
   message: "",
