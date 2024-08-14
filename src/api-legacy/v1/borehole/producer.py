@@ -200,9 +200,12 @@ class BoreholeProducerHandler(Producer):
                             request['orderby']
                         )
                     else:
-                        request['orderby'] = self.user[
-                            'setting'
-                        ]['eboreholetable']['orderby']
+                        if 'orderby' in self.user['setting']['eboreholetable']:
+                            request['orderby'] = self.user[
+                                'setting'
+                            ]['eboreholetable']['orderby']
+                        else :
+                            request['orderby'] = 'ASC'
 
                     if 'direction' in request and (
                         request['direction'] is not None
