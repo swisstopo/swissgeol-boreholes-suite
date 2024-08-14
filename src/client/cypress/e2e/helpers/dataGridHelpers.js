@@ -1,4 +1,4 @@
-export const verifiyPaginationText = text => {
+export const verifyPaginationText = text => {
   cy.get(".MuiTablePagination-displayedRows").should("have.text", text);
 };
 

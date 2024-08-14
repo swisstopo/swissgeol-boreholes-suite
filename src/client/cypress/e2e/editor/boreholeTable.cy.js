@@ -1,5 +1,12 @@
-import { loginAsAdmin } from "../helpers/testHelpers.js";
-import { showTableAndWaitForData, sortBy, verifyRowContains } from "../helpers/dataGridHelpers";
+import { loginAsAdmin, returnToOverview } from "../helpers/testHelpers.js";
+import {
+  clickOnRowWithText,
+  showTableAndWaitForData,
+  sortBy,
+  verifyPaginationText,
+  verifyRowContains,
+  waitForTableData,
+} from "../helpers/dataGridHelpers";
 
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
@@ -58,7 +65,7 @@ describe("Borehole editor table tests", () => {
     waitForTableData();
 
     // verify current page is 4
-    verifiyPaginationText("401 - 500 of 1626");
+    verifyPaginationText("401–500 of 1626");
     verifyRowContains("Nichole VonRueden", 0);
 
     // navigate to detail
@@ -69,7 +76,7 @@ describe("Borehole editor table tests", () => {
 
     // verify current page is still 4
     showTableAndWaitForData();
-    verifiyPaginationText("401 - 500 of 1626");
+    verifyPaginationText("401–500 of 1626");
     verifyRowContains("Nichole VonRueden", 0);
   });
 });

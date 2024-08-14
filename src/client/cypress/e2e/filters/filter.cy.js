@@ -1,5 +1,5 @@
 import { loginAsAdmin } from "../helpers/testHelpers.js";
-import { showTableAndWaitForData, verifiyPaginationText } from "../helpers/dataGridHelpers";
+import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
@@ -91,7 +91,7 @@ describe("Search filter tests", () => {
 
     // check content of table
     showTableAndWaitForData();
-    verifiyPaginationText("1 - 100 of 329"); // when testing with cypress locally use electron browser, otherwise text might be displayed as "1-100 of 329"
+    verifyPaginationText("1–100 of 329");
   });
 
   it("filters boreholes by color and uscs3", () => {
@@ -117,7 +117,7 @@ describe("Search filter tests", () => {
 
     cy.wait("@edit_list");
     showTableAndWaitForData();
-    verifiyPaginationText("1 - 100 of 229");
+    verifyPaginationText("1–100 of 229");
 
     let uscs3Dropdown = cy.contains("label", "USCS 3").next();
     uscs3Dropdown.scrollIntoView().click({ force: true });
@@ -135,7 +135,7 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    verifiyPaginationText("1 - 39 of 39");
+    verifyPaginationText("1–39 of 39");
     cy.get(".MuiDataGrid-row").contains("Darion Rowe").should("exist");
   });
 
@@ -152,7 +152,7 @@ describe("Search filter tests", () => {
     filterByOriginalLithology();
     cy.wait("@edit_list");
     showTableAndWaitForData();
-    verifiyPaginationText("1 - 21 of 21");
+    verifyPaginationText("1–21 of 21");
   });
   it("filters boreholes by creation date", () => {
     loginAsAdmin();
@@ -180,7 +180,7 @@ describe("Search filter tests", () => {
 
     // check content of table
     showTableAndWaitForData();
-    verifiyPaginationText("1 - 3 of 3");
+    verifyPaginationText("1–3 of 3");
   });
 
   it("filters boreholes by workgroup", () => {
