@@ -7,16 +7,6 @@ import { acceptTerms, draftTerms, getTerms, getTermsDraft, publishTerms } from "
 import { loadUser, setAuthentication, unsetAuthentication } from "./actions/user";
 
 import {
-  createWorkgroup,
-  deleteWorkgroup,
-  disableWorkgroup,
-  enableWorkgroup,
-  listWorkgroups,
-  setRole,
-  updateWorkgroup,
-} from "./actions/workgroups";
-
-import {
   createBorehole,
   deleteBorehole,
   deleteBoreholes,
@@ -64,13 +54,6 @@ export {
   setAuthentication,
   unsetAuthentication,
   loadUser,
-  createWorkgroup,
-  enableWorkgroup,
-  disableWorkgroup,
-  deleteWorkgroup,
-  listWorkgroups,
-  setRole,
-  updateWorkgroup,
   loadBorehole,
   updateBorehole,
   loadBoreholes,

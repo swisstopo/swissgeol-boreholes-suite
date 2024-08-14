@@ -7,4 +7,8 @@ export interface Codelist {
   id: number;
   geolcode: number;
   schema: string;
+  de: string;
+  en: string;
+  fr: string;
+  it: string;
 }

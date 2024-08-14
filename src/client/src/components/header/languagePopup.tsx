@@ -5,13 +5,15 @@ import CheckIcon from "@mui/icons-material/Check";
 import ArrowDownIcon from "../../assets/icons/arrow_down.svg?react";
 import ArrowUpIcon from "../../assets/icons/arrow_up.svg?react";
 import i18n from "../../i18n";
+import { Language } from "../../appInterfaces";
 
-const languages = ["de", "fr", "it", "en"];
+const defaultLanguage = Language.DE;
 
 export function LanguagePopup() {
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
+  const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const isOpen = Boolean(anchorEl);
+  const languages: string[] = Object.values(Language);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -25,9 +27,9 @@ export function LanguagePopup() {
     const handleLanguageChange = () => {
       const languageIndex = languages.indexOf(i18n.language);
       if (languageIndex !== -1) {
-        setSelectedLanguage(languages[languageIndex]);
+        setSelectedLanguage(languages[languageIndex] as Language);
       } else {
-        setSelectedLanguage(languages[0]);
+        setSelectedLanguage(defaultLanguage);
       }
     };
     handleLanguageChange();
@@ -37,6 +39,7 @@ export function LanguagePopup() {
     return () => {
       i18n.off("languageChanged", handleLanguageChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onLanguageChanged = (language: string) => {

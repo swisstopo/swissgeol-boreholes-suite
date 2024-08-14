@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { addBackfill, getCasings, updateBackfill, useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
-import { FormInput, FormSelect } from "../../../../components/form/form";
+import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
 import { StackFullWidth, StackHalfWidth } from "../../../../components/styledComponents";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
@@ -35,8 +35,20 @@ const BackfillInput = ({ item, parentId }) => {
       promptLabel="backfill"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <StackFullWidth direction="row">
-        <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />
-        <FormInput fieldName="toDepth" label="todepth" value={item.toDepth} type="number" required={true} />
+        <FormInput
+          fieldName="fromDepth"
+          label="fromdepth"
+          value={item.fromDepth}
+          type={FormValueType.Number}
+          required={true}
+        />
+        <FormInput
+          fieldName="toDepth"
+          label="todepth"
+          value={item.toDepth}
+          type={FormValueType.Number}
+          required={true}
+        />
       </StackFullWidth>
       <StackFullWidth direction="row">
         <FormSelect

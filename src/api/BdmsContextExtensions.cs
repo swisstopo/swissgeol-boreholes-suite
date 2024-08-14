@@ -45,8 +45,8 @@ public static class BdmsContextExtensions
            .StrictMode(true)
            .RuleFor(o => o.Id, f => workgroup_ids++)
            .RuleFor(o => o.Name, f => f.Music.Genre())
-           .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .1f))
-           .RuleFor(o => o.Disabled, f => f.Date.Past().ToUniversalTime().OrNull(f, .1f))
+           .RuleFor(o => o.CreatedAt, f => f.Date.Past().ToUniversalTime().OrNull(f, .1f))
+           .RuleFor(o => o.DisabledAt, f => f.Date.Past().ToUniversalTime().OrNull(f, .1f))
            .RuleFor(o => o.IsSupplier, f => f.Random.Bool().OrNull(f, .1f))
            .RuleFor(o => o.Settings, f => null)
            .RuleFor(o => o.Boreholes, _ => default!);

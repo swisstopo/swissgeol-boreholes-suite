@@ -129,6 +129,24 @@ export const theme = createTheme({
         },
       },
     },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          "& .MuiFilledInput-root": {
+            backgroundColor: "#F8F9FA",
+          },
+          "& .MuiFilledInput-root:hover:not(.Mui-disabled, .Mui-error):before": {
+            borderColor: "#4FA7BC",
+          },
+          "& .MuiFilledInput-root:not(.Mui-error):before": {
+            borderColor: "#4FA7BC",
+          },
+          "& .MuiFilledInput-root:not(.Mui-error):after": {
+            borderColor: "#4FA7BC",
+          },
+        },
+      },
+    },
     MuiTab: {
       styleOverrides: {
         root: {

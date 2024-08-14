@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Box, IconButton, InputAdornment, Stack, Typography } from "@mui/material";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { FormInput, FormSelect } from "../../../../components/form/form";
+import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { addFieldMeasurement, updateFieldMeasurement, useDomains } from "../../../../api/fetchApiV2";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
@@ -188,7 +188,7 @@ const FieldMeasurementInput = props => {
                     fieldName={`fieldMeasurementResults.${index}.value`}
                     label="value"
                     value={field.value}
-                    type="number"
+                    type={FormValueType.Number}
                     required={true}
                     inputProps={{
                       endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,

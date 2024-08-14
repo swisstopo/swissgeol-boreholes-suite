@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useState } from "react";
+import { createContext, FC, PropsWithChildren, useState } from "react";
 import Polygon from "ol/geom/Polygon";
 
 interface FilterContextInterface {
@@ -12,10 +12,6 @@ interface FilterContextInterface {
   setActiveFilterLength: (length: number) => void;
 }
 
-interface FilterProviderProps {
-  children: ReactNode;
-}
-
 export const FilterContext = createContext<FilterContextInterface>({
   filterPolygon: null,
   setFilterPolygon: () => {},
@@ -27,7 +23,7 @@ export const FilterContext = createContext<FilterContextInterface>({
   setActiveFilterLength: () => {},
 });
 
-export const FilterProvider: React.FC<FilterProviderProps> = ({ children }) => {
+export const FilterProvider: FC<PropsWithChildren> = ({ children }) => {
   const [filterPolygon, setFilterPolygon] = useState<Polygon | null>(null);
   const [polygonSelectionEnabled, setPolygonSelectionEnabled] = useState(false);
   const [featureIds, setFeatureIds] = useState<number[]>([]);

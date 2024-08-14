@@ -5,7 +5,7 @@ import { Stack } from "@mui/material";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
 import { completionSchemaConstants } from "./completionSchemaConstants.js";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
-import { FormCheckbox, FormInput, FormSelect } from "../../../../components/form/form.js";
+import { FormCheckbox, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 
@@ -137,7 +137,7 @@ const CompletionHeaderInput = props => {
               <FormInput
                 fieldName="abandonDate"
                 label="dateAbandonmentCompletion"
-                type="date"
+                type={FormValueType.Date}
                 value={selectedCompletion?.abandonDate}
                 sx={{ flex: "0 0 400px" }}
               />

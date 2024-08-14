@@ -5,7 +5,7 @@ import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
 import DataInputCard from "../../../../components/dataCard/dataInputCard.jsx";
-import { FormSelect } from "../../../../components/form/form.js";
+import { FormSelect } from "../../../../components/form/form";
 import { addWaterIngress, updateWaterIngress, useDomains } from "../../../../api/fetchApiV2.js";
 
 const WaterIngressInput = props => {

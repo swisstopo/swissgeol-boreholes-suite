@@ -7,6 +7,7 @@
 - Tooltips to main side navigation.
 - Location hash for tabs in borehole detail view.
 - Language dropdown in the header.
+- Added health check endpoint for the .NET API.
 
 ### Changed
 
@@ -24,6 +25,8 @@
 - Removed unused `UserEvent` from user.
 - Migrated `User` API endpoints to .NET API.
 - Changed boreholes table design.
+- Migrated `Workgroup` API endpoints to .NET API.
+- Use `filled` style for form components.
 
 ### Fixed
 
