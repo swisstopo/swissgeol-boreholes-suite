@@ -3,14 +3,11 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { Modal } from "semantic-ui-react";
-import { loadEditingBoreholes } from "../../../api-lib";
-import _ from "lodash";
+import { deleteBoreholes, loadEditingBoreholes } from "../../../api-lib";
 import MapComponent from "../../../components/map/mapComponent.jsx";
-import BoreholeEditorTable from "../table/boreholeEditorTable.jsx";
 import MultipleForm from "../../../components/legacyComponents/multiple/multipleForm.jsx";
-import { BottomDrawer } from "./bottomDrawer.tsx";
-import BottomBar from "./bottomBar.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
+import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 
 class MapView extends React.Component {
   static contextType = FilterContext;
@@ -25,20 +22,8 @@ class MapView extends React.Component {
   }
 
   render() {
-    const {
-      loadEditingBoreholes,
-      search,
-      store,
-      setting,
-      lock,
-      sort,
-      setSort,
-      toggleBottomDrawer,
-      boreholes,
-      bottomDrawerOpen,
-      multipleSelected,
-      displayErrorMessage,
-    } = this.props;
+    const { loadEditingBoreholes, multipleSelected, search, store, setting, lock, boreholes, displayErrorMessage } =
+      this.props;
 
     const {
       filterPolygon,
@@ -57,7 +42,14 @@ class MapView extends React.Component {
         }}>
         <Modal
           onUnmount={() => {
-            loadEditingBoreholes(boreholes.page, search.filter, boreholes.orderby, boreholes.direction);
+            loadEditingBoreholes(
+              boreholes.page,
+              boreholes.limit,
+              search.filter,
+              boreholes.orderby,
+              boreholes.direction,
+              featureIds,
+            );
           }}
           open={Array.isArray(store.mselected)}>
           <Modal.Content>
@@ -68,7 +60,7 @@ class MapView extends React.Component {
           searchState={{
             ...search,
           }}
-          highlighted={this.state.hover !== null ? [this.state.hover.id] : []}
+          highlighted={this.state.hover !== null ? [this.state.hover] : []}
           hover={id => {
             this.setState({
               maphover: id,
@@ -87,60 +79,31 @@ class MapView extends React.Component {
           setFeatureIds={setFeatureIds}
           displayErrorMessage={displayErrorMessage}
         />
-        <BottomBar toggleBottomDrawer={toggleBottomDrawer} bottomDrawerOpen={bottomDrawerOpen} boreholes={boreholes} />
-        <BottomDrawer drawerOpen={bottomDrawerOpen}>
-          <BoreholeEditorTable
-            activeItem={!_.isNil(store.bselected) ? store.bselected.id : null}
-            filter={{
-              ...search.filter,
-            }}
-            highlight={this.state.maphover}
-            onDelete={selection => {
-              delete (selection, search.filter);
-            }}
-            onHover={item => {
-              if (this.rowHover) {
-                clearTimeout(this.rowHover);
-                this.rowHover = false;
-              }
-              this.rowHover = setTimeout(() => {
-                this.setState({
-                  hover: item,
-                });
-              }, 250);
-            }}
-            onMultiple={selection => {
-              multipleSelected(selection, search.filter);
-            }}
-            onSelected={borehole => {
-              // Lock borehole
-              if (borehole !== null) {
-                lock(borehole.id);
-              }
-            }}
-            onReorder={(column, direction) => {
-              setSort({
-                column: column,
-                direction: direction,
-              });
-            }}
-            featureIds={filterPolygon ? featureIds : null}
-            sort={sort}
-            scrollPosition={this.state.tableScrollPosition}
-            onScrollChange={position => {
+        <BottomBarContainer
+          boreholes={boreholes}
+          loadEditingBoreholes={loadEditingBoreholes}
+          multipleSelected={multipleSelected}
+          deleteBoreholes={deleteBoreholes}
+          search={search}
+          rowToHighlight={this.state.maphover}
+          onHover={item => {
+            if (this.rowHover) {
+              clearTimeout(this.rowHover);
+              this.rowHover = false;
+            }
+            this.rowHover = setTimeout(() => {
               this.setState({
-                tableScrollPosition: position,
+                hover: item,
               });
-            }}
-          />
-        </BottomDrawer>
+            }, 250);
+          }}
+        />
       </div>
     );
   }
 }
 
 MapView.propTypes = {
-  delete: PropTypes.func,
   boreholes: PropTypes.object,
   history: PropTypes.shape({
     push: PropTypes.func,
@@ -192,15 +155,15 @@ const mapDispatchToProps = (dispatch, ownprops) => {
         filter: filter,
       });
     },
-    delete: (selection, filter = null) => {
-      dispatch({
-        type: "EDITOR_MULTIPLE_DELETION",
-        selection: selection,
-        filter: filter,
-      });
-    },
-    loadEditingBoreholes: (page, filter = {}, orderby = "creation", direction = null) => {
-      dispatch(loadEditingBoreholes(page, 100, filter, orderby, direction));
+    loadEditingBoreholes: (
+      page,
+      limit = 100,
+      filter = {},
+      orderby = "original_name",
+      direction = "ASC",
+      featureIds = [],
+    ) => {
+      dispatch(loadEditingBoreholes(page, limit, filter, orderby, direction, featureIds));
     },
   };
 };

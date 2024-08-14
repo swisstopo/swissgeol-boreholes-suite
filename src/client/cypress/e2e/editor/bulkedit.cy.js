@@ -1,21 +1,23 @@
-import { createBorehole, loginAsAdmin } from "../helpers/testHelpers";
+import { createBorehole, loginAsAdmin, startBoreholeEditing, stopBoreholeEditing } from "../helpers/testHelpers";
 import adminUser from "../../fixtures/adminUser.json";
+import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
+
+beforeEach(() => {
+  loginAsAdmin();
+  cy.visit("/");
+  showTableAndWaitForData();
+});
 
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
-    loginAsAdmin();
-    cy.visit("/");
-    cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
+    checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
-    cy.wait("@edit_ids");
+    cy.get(".ui .header").should("have.text", "Bulk modification");
   });
 
   it("checks if all toggle buttons do something", () => {
-    loginAsAdmin();
-    cy.visit("/");
-    cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
+    checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
-
     cy.get(".modal .toggle")
       .should("have.length", 18)
       .each(el => {
@@ -27,9 +29,7 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   it("displays workgroup toggle only if user has permission for more than one workgroup", () => {
-    loginAsAdmin();
-    cy.visit("/");
-    cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
+    checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get(".modal .toggle").should("have.length", 18);
 
@@ -47,7 +47,8 @@ describe("Test the borehole bulk edit feature.", () => {
       body: JSON.stringify(adminUser2Workgroups),
     }).as("adminUser2Workgroups");
     cy.visit("/");
-    cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
+    showTableAndWaitForData();
+    checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 
     cy.get(".modal .toggle").should("have.length", 19);
@@ -63,20 +64,20 @@ describe("Test the borehole bulk edit feature.", () => {
 
   it("fills all bulkedit fields and saves.", () => {
     // create boreholes
-    createBorehole({ "extended.original_name": "NINTIC" }).as("borehole_id_1");
-    createBorehole({ "extended.original_name": "LOMONE" }).as("borehole_id_2");
+    createBorehole({ "extended.original_name": "AAA_NINTIC" }).as("borehole_id_1");
+    createBorehole({ "extended.original_name": "AAA_LOMONE" }).as("borehole_id_2");
 
     loginAsAdmin();
     cy.visit("/");
-    cy.get('[data-cy="showTableButton"]').click();
+    showTableAndWaitForData();
     cy.wait("@borehole");
 
     // select the boreholes for bulk edit
     cy.get('[data-cy="borehole-table"]').within(() => {
-      cy.contains("NINTIC").parent().find(".checkbox").click({ force: true });
-      cy.contains("LOMONE").parent().find(".checkbox").click({ force: true });
-      cy.contains("button", "Bulk editing").click();
+      checkRowWithText("AAA_NINTIC");
+      checkRowWithText("AAA_LOMONE");
     });
+    cy.contains("button", "Bulk editing").click();
 
     // select all bulk edit fields and insert values
     cy.get(".modal .toggle").click({ multiple: true });
@@ -114,5 +115,20 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Save").click();
     cy.wait("@edit_multipatch").its("response.body.success").should("eq", true);
     cy.wait("@edit_list");
+  });
+
+  it("cannot select locked boreholes for bulk edit", () => {
+    createBorehole({ "extended.original_name": "AAA_JUNIORSOUFFLE" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      cy.visit(`/${id}/borehole`);
+      startBoreholeEditing();
+      cy.visit("/");
+      showTableAndWaitForData();
+      cy.contains(".MuiDataGrid-row", "AAA_JUNIORSOUFFLE")
+        .find('.MuiCheckbox-root input[type="checkbox"]')
+        .should("be.disabled");
+      cy.visit(`/${id}/borehole`);
+      stopBoreholeEditing();
+    });
   });
 });

@@ -79,6 +79,9 @@ declare module "@mui/material/styles" {
         color: string;
         lineHeight: string;
       };
+      body2: {
+        fontSize: string;
+      };
       fullPageMessage: {
         fontSize: string;
         color: string;
@@ -163,6 +166,9 @@ declare module "@mui/material/styles" {
         fontSize: string;
         color: string;
         lineHeight: string;
+      };
+      body2: {
+        fontSize: string;
       };
       fullPageMessage: {
         fontSize: string;

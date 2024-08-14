@@ -21,7 +21,7 @@ import {
 } from "../../../../api/fetchApiV2.js";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { FormSelect } from "../../../../components/form/form";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { StackHalfWidth } from "../../../../components/styledComponents.js";
 import { DevTool } from "../../../../../hookformDevtools.ts";
@@ -97,7 +97,7 @@ const GeometryImport = ({ boreholeId }) => {
                             <InputAdornment position="end">
                               <Tooltip title={t("copyToClipboard")}>
                                 <IconButton onClick={() => navigator.clipboard.writeText(expectedCSVHeader)}>
-                                  <ContentCopyIcon />
+                                  <CopyIcon />
                                 </IconButton>
                               </Tooltip>
                             </InputAdornment>

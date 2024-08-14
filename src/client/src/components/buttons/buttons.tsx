@@ -3,7 +3,7 @@ import TranslationText from "../legacyComponents/translationText";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "../../assets/icons/edit.svg?react";
-import CopyIcon from "@mui/icons-material/ContentCopy";
+import CopyIcon from "../../assets/icons/copy.svg?react";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import TrashIcon from "../../assets/icons/trash.svg?react";
@@ -30,6 +30,10 @@ export const EditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
   return <BdmsBaseButton ref={ref} {...props} label="edit" variant="contained" icon={<EditIcon />} />;
 });
 
+export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  return <BdmsBaseButton ref={ref} {...props} label="bulkEditing" variant="outlined" icon={<EditIcon />} />;
+});
+
 export const EndEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return <BdmsBaseButton ref={ref} {...props} label="editingStop" variant="contained" icon={<CheckmarkIcon />} />;
 });
@@ -48,4 +52,8 @@ export const SaveButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
 
 export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return <BdmsBaseButton ref={ref} {...props} variant="outlined" icon={<TrashIcon />} />;
+});
+
+export const DeletePrimaryButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  return <BdmsBaseButton ref={ref} {...props} variant="contained" icon={<TrashIcon />} />;
 });

@@ -118,8 +118,8 @@ class PatchSetting(Action):
                             "direction": "ASC"
                         },
                         "eboreholetable": {
-                            "orderby": "creation",
-                            "direction": "DESC"
+                            "orderby": "original_name",
+                            "direction": "ASC"
                         },
                         "map": {
                             "explorer": {},

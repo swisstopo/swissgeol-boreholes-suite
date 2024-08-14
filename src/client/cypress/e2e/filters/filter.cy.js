@@ -1,4 +1,5 @@
 import { loginAsAdmin } from "../helpers/testHelpers.js";
+import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
@@ -89,12 +90,8 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    cy.get('[data-cy="borehole-table"] tbody')
-      .children()
-      .should("have.length", 100)
-      .each(el => {
-        cy.wrap(el).contains("v. user");
-      });
+    showTableAndWaitForData();
+    verifyPaginationText("1–100 of 329");
   });
 
   it("filters boreholes by color and uscs3", () => {
@@ -119,7 +116,8 @@ describe("Search filter tests", () => {
       });
 
     cy.wait("@edit_list");
-    cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 100);
+    showTableAndWaitForData();
+    verifyPaginationText("1–100 of 229");
 
     let uscs3Dropdown = cy.contains("label", "USCS 3").next();
     uscs3Dropdown.scrollIntoView().click({ force: true });
@@ -137,7 +135,8 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 39);
+    verifyPaginationText("1–39 of 39");
+    cy.get(".MuiDataGrid-row").contains("Darion Rowe").should("exist");
   });
 
   function filterByOriginalLithology() {
@@ -152,9 +151,9 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="show-filter-button"]').click();
     filterByOriginalLithology();
     cy.wait("@edit_list");
-    cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 21);
+    showTableAndWaitForData();
+    verifyPaginationText("1–21 of 21");
   });
-
   it("filters boreholes by creation date", () => {
     loginAsAdmin();
     cy.visit("/");
@@ -180,17 +179,17 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 3);
-
-    cy.contains("td", "09.11.2021");
+    showTableAndWaitForData();
+    verifyPaginationText("1–3 of 3");
   });
 
   it("filters boreholes by workgroup", () => {
     loginAsAdmin();
     cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
+    showTableAndWaitForData();
     cy.contains("Workgroup").click();
-    cy.contains("Default").click();
+    cy.contains("Name").click();
     cy.wait("@borehole");
   });
 });

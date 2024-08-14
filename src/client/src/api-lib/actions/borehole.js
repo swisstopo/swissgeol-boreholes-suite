@@ -17,13 +17,6 @@ export function loadBoreholes(
   });
 }
 
-export function getdBoreholeIds(filter = undefined) {
-  return fetch("/borehole/edit", {
-    action: "IDS",
-    filter: filter,
-  });
-}
-
 export function loadEditingBoreholes(
   page = undefined,
   limit = undefined,
