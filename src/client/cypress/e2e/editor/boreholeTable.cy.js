@@ -69,7 +69,7 @@ describe("Borehole editor table tests", () => {
     waitForTableData();
 
     // verify current page is 4
-    verifiyPaginationText("401 - 500 of 1627");
+    verifiyPaginationText("401 - 500 of 1626");
     verifyRowContains("Nichole VonRueden", 0);
 
     // return to list
@@ -77,7 +77,7 @@ describe("Borehole editor table tests", () => {
 
     // verify current page is still 4
     showTableAndWaitForData();
-    verifiyPaginationText("401 - 500 of 1627");
+    verifiyPaginationText("401 - 500 of 1626");
     verifyRowContains("Nichole VonRueden", 0);
   });
 });
