@@ -18,6 +18,7 @@ import { useDomains } from "../../../api/fetchApiV2";
 import { TablePaginationActions } from "../TablePaginationActions.tsx";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useSelector } from "react-redux";
+import { muiLocales } from "../../../mui.locales.ts";
 
 export interface BoreholeTableProps {
   boreholes: Boreholes;
@@ -210,12 +211,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
           ActionsComponent: TablePaginationActions,
         },
       }}
-      localeText={{
-        MuiTablePagination: {
-          labelRowsPerPage: t("rowsPerPage"),
-          labelDisplayedRows: ({ from, to, count }) => `${from} - ${to} ${t("of")} ${count}`,
-        },
-      }}
+      localeText={muiLocales[i18n.language]}
       disableColumnSelector
       disableColumnFilter
       checkboxSelection={userIsEditor}
