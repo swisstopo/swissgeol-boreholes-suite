@@ -61,7 +61,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   }, [boreholes?.length]);
 
   const columns: GridColDef[] = [
-    { field: "alternate_name", headerName: t("name"), flex: 1 },
+    { field: "original_name", headerName: t("name"), flex: 1 },
     {
       field: "workgroup",
       valueGetter: (value: { name: string }) => {
