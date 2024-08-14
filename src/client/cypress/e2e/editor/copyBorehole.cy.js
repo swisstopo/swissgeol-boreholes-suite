@@ -1,4 +1,5 @@
 import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import { showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 describe("Test copying of boreholes", () => {
   it("copies a borehole", () => {
@@ -6,7 +7,7 @@ describe("Test copying of boreholes", () => {
 
     loginAsAdmin();
     cy.visit("/");
-    cy.get('[data-cy="showTableButton"]').click();
+    showTableAndWaitForData();
     cy.get(".MuiDataGrid-checkboxInput").eq(1).scrollIntoView().click();
 
     cy.contains("button", "Create a copy").click();

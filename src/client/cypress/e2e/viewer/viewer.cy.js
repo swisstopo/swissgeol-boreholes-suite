@@ -1,15 +1,12 @@
 import { loginAsAdmin, loginAsViewer } from "../helpers/testHelpers";
+import { showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 describe("Viewer tests", () => {
   it("Assures viewer cannot add, edit or delete boreholes", () => {
     loginAsViewer();
     cy.visit("/");
 
-    cy.get('[data-cy="showTableButton"]').click();
-    cy.wait("@edit_list");
-    cy.get("div[id=map]").should("be.visible");
-    cy.get(".MuiDataGrid-root").should("be.visible");
-    cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
+    showTableAndWaitForData();
 
     cy.get('[data-cy="import-borehole-button"]').should("have.class", "Mui-disabled");
     cy.get('[data-cy="new-borehole-button"]').should("have.class", "Mui-disabled");

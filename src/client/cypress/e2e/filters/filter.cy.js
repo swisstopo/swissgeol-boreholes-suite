@@ -1,4 +1,5 @@
 import { loginAsAdmin } from "../helpers/testHelpers.js";
+import { verifiyPaginationText } from "../helpers/dataGridHelpers";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
@@ -90,7 +91,7 @@ describe("Search filter tests", () => {
 
     // check content of table
     cy.get('[data-cy="showTableButton"]').click();
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "1 - 100 of 329"); // when testing with cypress locally use electron browser, otherwise text might be displayed as "1-100 of 329"
+    verifiyPaginationText("1 - 100 of 329"); // when testing with cypress locally use electron browser, otherwise text might be displayed as "1-100 of 329"
   });
 
   it("filters boreholes by color and uscs3", () => {
@@ -116,7 +117,7 @@ describe("Search filter tests", () => {
 
     cy.wait("@edit_list");
     cy.get('[data-cy="showTableButton"]').click();
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "1 - 100 of 229");
+    verifiyPaginationText("1 - 100 of 229");
 
     let uscs3Dropdown = cy.contains("label", "USCS 3").next();
     uscs3Dropdown.scrollIntoView().click({ force: true });
@@ -134,7 +135,7 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "1 - 39 of 39");
+    verifiyPaginationText("1 - 39 of 39");
     cy.get(".MuiDataGrid-row").contains("Darion Rowe").should("exist");
   });
 
@@ -151,7 +152,7 @@ describe("Search filter tests", () => {
     filterByOriginalLithology();
     cy.wait("@edit_list");
     cy.get('[data-cy="showTableButton"]').click();
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "1 - 21 of 21");
+    verifiyPaginationText("1 - 21 of 21");
   });
   it("filters boreholes by creation date", () => {
     loginAsAdmin();
@@ -179,8 +180,9 @@ describe("Search filter tests", () => {
 
     // check content of table
     cy.get('[data-cy="showTableButton"]').click();
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "1 - 3 of 3");
+    verifiyPaginationText("1 - 3 of 3");
   });
+
   it("filters boreholes by workgroup", () => {
     loginAsAdmin();
     cy.visit("/");

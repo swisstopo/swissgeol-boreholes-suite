@@ -1,4 +1,5 @@
 import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
+import { showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
   it("creates and deletes a borehole.", () => {
@@ -11,7 +12,7 @@ describe("Tests for 'Location' edit page.", () => {
     // stop editing
     stopBoreholeEditing();
     returnToOverview();
-    cy.get('[data-cy="showTableButton"]').click();
+    showTableAndWaitForData();
 
     // search the newly created borehole and delete it
     cy.get('[data-cy="borehole-table"]').within(() => {

@@ -1,13 +1,11 @@
 import { createBorehole, loginAsAdmin, startBoreholeEditing, stopBoreholeEditing } from "../helpers/testHelpers";
 import adminUser from "../../fixtures/adminUser.json";
+import { showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 beforeEach(() => {
   loginAsAdmin();
   cy.visit("/");
-  cy.get('[data-cy="showTableButton"]').click();
-  cy.get(".MuiDataGrid-root").should("be.visible");
-  cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
-  cy.get(".loading-indicator").should("not.exist");
+  showTableAndWaitForData();
 });
 
 describe("Test the borehole bulk edit feature.", () => {
@@ -49,10 +47,7 @@ describe("Test the borehole bulk edit feature.", () => {
       body: JSON.stringify(adminUser2Workgroups),
     }).as("adminUser2Workgroups");
     cy.visit("/");
-    cy.get('[data-cy="showTableButton"]').click();
-    cy.get(".MuiDataGrid-root").should("be.visible");
-    cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
-    cy.get(".loading-indicator").should("not.exist");
+    showTableAndWaitForData();
     cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").find('input[type="checkbox"]').check({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
@@ -74,7 +69,7 @@ describe("Test the borehole bulk edit feature.", () => {
 
     loginAsAdmin();
     cy.visit("/");
-    cy.get('[data-cy="showTableButton"]').click();
+    showTableAndWaitForData();
     cy.wait("@borehole");
 
     // select the boreholes for bulk edit
@@ -133,8 +128,7 @@ describe("Test the borehole bulk edit feature.", () => {
       cy.visit(`/${id}/borehole`);
       startBoreholeEditing();
       cy.visit("/");
-      cy.get('[data-cy="showTableButton"]').click();
-      cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
+      showTableAndWaitForData();
       cy.contains(".MuiDataGrid-row", "AAA_JUNIORSOUFFLE")
         .find('.MuiCheckbox-root input[type="checkbox"]')
         .should("be.disabled");

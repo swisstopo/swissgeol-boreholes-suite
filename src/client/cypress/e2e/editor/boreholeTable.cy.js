@@ -1,129 +1,83 @@
 import { loginAsAdmin, loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
+import {
+  showTableAndWaitForData,
+  verifiyPaginationText,
+  verifyRowContains,
+  waitForTableData,
+} from "../helpers/dataGridHelpers";
+
+function sortBy(headerTextContent) {
+  cy.get(".MuiDataGrid-columnHeader").contains(headerTextContent).click();
+  cy.wait("@edit_list");
+  cy.get(".loading-indicator").should("not.exist");
+}
 
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
     loginAsAdmin();
     cy.visit("/");
-    cy.get('[data-cy="showTableButton"]').click();
-
-    cy.wait("@edit_list");
-    cy.get("div[id=map]").should("be.visible");
-
-    cy.get(".MuiDataGrid-root").should("be.visible");
-    cy.get(".loading-indicator").should("not.exist");
+    showTableAndWaitForData();
 
     // default soring by name ascending
-    cy.get(".MuiDataGrid-row")
-      .eq(0)
-      .within(() => {
-        cy.contains("Aaliyah Casper").should("exist");
-      });
-    cy.get(".MuiDataGrid-row")
-      .eq(1)
-      .within(() => {
-        cy.contains("Aaliyah Lynch").should("exist");
-      });
-    cy.get(".MuiDataGrid-row")
-      .eq(2)
-      .within(() => {
-        cy.contains("Aaron Bartell").should("exist");
-      });
+    verifyRowContains("Aaliyah Casper", 0);
+    verifyRowContains("Aaliyah Lynch", 1);
+    verifyRowContains("Aaron Bartell", 2);
 
     // sort by Name descending
-    cy.get(".MuiDataGrid-columnHeader").contains("Name").click();
-    cy.get(".MuiDataGrid-root").should("be.visible");
-    cy.get(".loading-indicator").should("not.exist");
+    sortBy("Name");
+    verifyRowContains("Zena Rath", 0);
+    verifyRowContains("Zena Mraz", 1);
+    verifyRowContains("Zena Halvorson", 2);
 
-    cy.get(".MuiDataGrid-row")
-      .eq(0)
-      .within(() => {
-        cy.contains("Zena Rath").should("exist");
-      });
-    cy.get(".MuiDataGrid-row")
-      .eq(1)
-      .within(() => {
-        cy.contains("Zena Mraz").should("exist");
-      });
-    cy.get(".MuiDataGrid-row")
-      .eq(2)
-      .within(() => {
-        cy.contains("Zena Halvorson").should("exist");
-      });
-
-    // sort by borehole length desc
-    cy.get(".MuiDataGrid-columnHeader").contains("Borehole length").click();
-    cy.get(".MuiDataGrid-columnHeader").contains("Borehole length").click();
-    cy.get(".MuiDataGrid-root").should("be.visible");
-    cy.get(".loading-indicator").should("not.exist");
-
-    cy.wait("@edit_list");
-    cy.get(".MuiDataGrid-row")
-      .eq(0)
-      .within(() => {
-        cy.contains("1998.07").should("exist");
-      });
-    cy.get(".MuiDataGrid-row")
-      .eq(1)
-      .within(() => {
-        cy.contains("1997.79").should("exist");
-      });
+    // sort by borehole length descending
+    sortBy("Borehole length");
+    sortBy("Borehole length");
+    verifyRowContains("1998.07", 0);
+    verifyRowContains("1997.79", 1);
+    verifyRowContains("1995.5", 2);
 
     // sort by reference elevation
-    cy.get(".MuiDataGrid-columnHeader").contains("Reference elevation").click();
+    sortBy("Reference elevation");
+    verifyRowContains("3.36", 0);
+    verifyRowContains("4.26", 1);
+    verifyRowContains("4.58", 2);
 
-    cy.wait("@edit_list");
-    cy.get(".MuiDataGrid-row")
-      .eq(0)
-      .within(() => {
-        cy.contains("3.36").should("exist");
-      });
+    // sort by borehole type
+    sortBy("Borehole type");
+    verifyRowContains("borehole", 0);
+    verifyRowContains("borehole", 1);
+    verifyRowContains("borehole", 2);
   });
 
   it("preserves column sorting and active page when navigating", () => {
     loginAsEditor();
     cy.visit("/");
-    cy.get('[data-cy="showTableButton"]').click();
+    showTableAndWaitForData();
 
     // sort by name descending
-    cy.get(".MuiDataGrid-columnHeaderTitle").contains("Name").click();
-    cy.wait("@edit_list");
-
-    cy.get(".MuiDataGrid-row")
-      .eq(0)
-      .within(() => {
-        cy.contains("Zena Rath").should("exist");
-      });
+    sortBy("Name");
+    verifyRowContains("Zena Rath", 0);
 
     // navigate to page 4
     cy.get('[aria-label="next page"]').scrollIntoView().click();
-    cy.wait("@edit_list");
+    waitForTableData();
     cy.get('[aria-label="next page"]').scrollIntoView().click();
-    cy.wait("@edit_list");
+    waitForTableData();
     cy.get('[aria-label="next page"]').scrollIntoView().click();
-    cy.wait("@edit_list");
+    waitForTableData();
     cy.get('[aria-label="next page"]').scrollIntoView().click();
-    cy.wait("@edit_list");
+    waitForTableData();
 
     // verify current page is 4
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "401 - 500 of 1627");
-    cy.get(".MuiDataGrid-row")
-      .eq(0)
-      .within(() => {
-        cy.contains("Nichole VonRueden").should("exist").click();
-      });
-    cy.wait("@edit_list");
+    verifiyPaginationText("401 - 500 of 1627");
+    verifyRowContains("Nichole VonRueden", 0);
 
     // return to list
     returnToOverview();
 
     // verify current page is still 4
-    cy.get('[data-cy="showTableButton"]').click();
-    cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "401 - 500 of 1627");
-    cy.get(".MuiDataGrid-row")
-      .eq(0)
-      .within(() => {
-        cy.contains("Nichole VonRueden").should("exist").click();
-      });
+    showTableAndWaitForData();
+    verifiyPaginationText("401 - 500 of 1627");
+    verifyRowContains("Nichole VonRueden", 0);
   });
 });
