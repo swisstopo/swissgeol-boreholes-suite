@@ -79,6 +79,9 @@ export const theme = createTheme({
       color: "#787878",
       lineHeight: "1.4em",
     },
+    body2: {
+      fontSize: "16px",
+    },
     fullPageMessage: {
       fontSize: "23px",
       color: "#000000",

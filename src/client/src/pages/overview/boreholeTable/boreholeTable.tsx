@@ -164,8 +164,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   }, [apiRef, onHover]);
 
   const StyledDataGrid = styled(DataGrid)(() => ({
-    fontFamily: theme.typography.fontFamily,
-    fontSize: "16px",
     ".MuiDataGrid-columnHeader": {
       backgroundColor: theme.palette.boxShadow,
     },
