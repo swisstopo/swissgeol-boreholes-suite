@@ -1,4 +1,5 @@
 import { loginAsAdmin, newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
+import { verifiyPaginationText } from "../helpers/dataGridHelpers";
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
@@ -50,18 +51,18 @@ describe("Tests for filtering data by reference system.", () => {
     cy.contains("h6", "Location").click();
     cy.get('[class="ui fitted toggle checkbox"]').eq(0).children().first().check({ force: true });
     cy.get('[data-cy="radiobutton-all"]').click();
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "1 - 100 of 1627"); // when testing with cypress locally use electron browser, otherwise text might be displayed as "1-100 of 1627"
+    verifiyPaginationText("1 - 100 of 1627"); // when testing with cypress locally use electron browser, otherwise text might be displayed as "1-100 of 1627"
 
     cy.get('[data-cy="spatial-reference-filter"]').should("exist");
 
     cy.get('[data-cy="radiobutton-LV95"]').click();
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "1 - 100 of 813");
+    verifiyPaginationText("1 - 100 of 813");
 
     cy.get('[data-cy="radiobutton-LV03"]').click();
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "1 - 100 of 814");
+    verifiyPaginationText("1 - 100 of 814");
 
     // click reset label
     cy.get('[data-cy="reset-filter-button"]').click();
-    cy.get(".MuiTablePagination-displayedRows").should("have.text", "1 - 100 of 1627");
+    verifiyPaginationText("1 - 100 of 1627");
   });
 });

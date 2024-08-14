@@ -1,5 +1,5 @@
 import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
-import { showTableAndWaitForData } from "../helpers/dataGridHelpers";
+import { checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
   it("creates and deletes a borehole.", () => {
@@ -16,10 +16,9 @@ describe("Tests for 'Location' edit page.", () => {
 
     // search the newly created borehole and delete it
     cy.get('[data-cy="borehole-table"]').within(() => {
-      cy.contains(".MuiDataGrid-row", "AAA_SCATORPS")
-        .find('.MuiCheckbox-root input[type="checkbox"]')
-        .check({ force: true });
+      checkRowWithText("AAA_SCATORPS");
     });
+
     cy.get('[data-cy="delete-button"]').click();
     cy.get('.MuiButton-containedPrimary[data-cy="delete-button"]').click();
     cy.wait(["@edit_deletelist", "@edit_list"]);

@@ -1,5 +1,5 @@
 import { loginAsAdmin, loginAsViewer } from "../helpers/testHelpers";
-import { showTableAndWaitForData } from "../helpers/dataGridHelpers";
+import { clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 describe("Viewer tests", () => {
   it("Assures viewer cannot add, edit or delete boreholes", () => {
@@ -12,7 +12,7 @@ describe("Viewer tests", () => {
     cy.get('[data-cy="new-borehole-button"]').should("have.class", "Mui-disabled");
 
     // click on borehole
-    cy.contains(".MuiDataGrid-row", "Aaron Rempel").click();
+    clickOnRowWithText("Aaron Rempel");
     // verify all text inputs are readonly on Location tab
     cy.get('input[type="text"]').each(i => {
       cy.wrap(i).should("have.attr", "readonly");
@@ -31,7 +31,7 @@ describe("Viewer tests", () => {
   it("Assures viewer cannot multiselect boreholes", () => {
     loginAsAdmin();
     cy.visit("/");
-    cy.get('[data-cy="showTableButton"]').click();
+    showTableAndWaitForData();
     cy.wait("@edit_list");
     cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").should("be.visible");
 

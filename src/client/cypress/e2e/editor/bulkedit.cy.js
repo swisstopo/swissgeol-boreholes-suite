@@ -1,6 +1,6 @@
 import { createBorehole, loginAsAdmin, startBoreholeEditing, stopBoreholeEditing } from "../helpers/testHelpers";
 import adminUser from "../../fixtures/adminUser.json";
-import { showTableAndWaitForData } from "../helpers/dataGridHelpers";
+import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 beforeEach(() => {
   loginAsAdmin();
@@ -10,13 +10,13 @@ beforeEach(() => {
 
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
-    cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").find('input[type="checkbox"]').check({ force: true });
+    checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get(".ui .header").should("have.text", "Bulk modification");
   });
 
   it("checks if all toggle buttons do something", () => {
-    cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").find('input[type="checkbox"]').check({ force: true });
+    checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get(".modal .toggle")
       .should("have.length", 18)
@@ -29,7 +29,7 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   it("displays workgroup toggle only if user has permission for more than one workgroup", () => {
-    cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").find('input[type="checkbox"]').check({ force: true });
+    checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get(".modal .toggle").should("have.length", 18);
 
@@ -48,7 +48,7 @@ describe("Test the borehole bulk edit feature.", () => {
     }).as("adminUser2Workgroups");
     cy.visit("/");
     showTableAndWaitForData();
-    cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").find('input[type="checkbox"]').check({ force: true });
+    checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 
     cy.get(".modal .toggle").should("have.length", 19);
@@ -74,13 +74,8 @@ describe("Test the borehole bulk edit feature.", () => {
 
     // select the boreholes for bulk edit
     cy.get('[data-cy="borehole-table"]').within(() => {
-      cy.contains(".MuiDataGrid-row", "AAA_NINTIC")
-        .find('.MuiCheckbox-root input[type="checkbox"]')
-        .check({ force: true });
-
-      cy.contains(".MuiDataGrid-row", "AAA_LOMONE")
-        .find('.MuiCheckbox-root input[type="checkbox"]')
-        .check({ force: true });
+      checkRowWithText("AAA_NINTIC");
+      checkRowWithText("AAA_LOMONE");
     });
     cy.contains("button", "Bulk editing").click();
 
