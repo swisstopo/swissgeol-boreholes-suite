@@ -144,7 +144,6 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Restriction, _ => default!)
            .RuleFor(o => o.RestrictionUntil, f => f.Date.Future().ToUniversalTime().OrNull(f, .9f))
            .RuleFor(o => o.OriginalName, f => f.Name.FullName())
-           .RuleFor(o => o.AlternateName, f => f.Person.UserName.OrNull(f, .1f))
            .RuleFor(o => o.LocationPrecisionId, f => f.PickRandom(locationPrecisionIds).OrNull(f, .1f))
            .RuleFor(o => o.LocationPrecision, _ => default!)
            .RuleFor(o => o.ElevationPrecisionId, f => f.PickRandom(elevationPrecisionIds).OrNull(f, .1f))
@@ -186,7 +185,10 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.PrecisionLocationX, f => f.PickRandom(Enumerable.Range(0, 10)))
            .RuleFor(o => o.PrecisionLocationY, f => f.PickRandom(Enumerable.Range(0, 10)))
            .RuleFor(o => o.PrecisionLocationXLV03, f => f.PickRandom(Enumerable.Range(0, 10)))
-           .RuleFor(o => o.PrecisionLocationYLV03, f => f.PickRandom(Enumerable.Range(0, 10)));
+           .RuleFor(o => o.PrecisionLocationYLV03, f => f.PickRandom(Enumerable.Range(0, 10)))
+           .FinishWith((f, o) => {
+                   o.AlternateName = o.OriginalName;
+               });;
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
         context.BulkInsert(boreholeRange.Select(SeededBoreholes).ToList(), bulkConfig);
