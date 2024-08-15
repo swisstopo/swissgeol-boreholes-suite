@@ -83,6 +83,7 @@ class ListEditingBorehole(Action):
                     )
                 END AS lock,
                 original_name_bho as original_name,
+                alternate_name_bho as alternate_name,
                 borehole_type_id as borehole_type,
                 restriction_id_cli as restriction,
                 to_char(
