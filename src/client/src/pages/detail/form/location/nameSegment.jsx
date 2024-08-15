@@ -25,6 +25,7 @@ const NameSegment = props => {
               onChange={e => {
                 setAlternateName(e.target.value);
                 updateChange("extended.original_name", e.target.value);
+                updateChange("custom.alternate_name", e.target.value);
               }}
               spellCheck="false"
               value={borehole.data.extended.original_name ?? ""}

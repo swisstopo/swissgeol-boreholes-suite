@@ -159,7 +159,7 @@ const mapDispatchToProps = (dispatch, ownprops) => {
       page,
       limit = 100,
       filter = {},
-      orderby = "original_name",
+      orderby = "alternate_name",
       direction = "ASC",
       featureIds = [],
     ) => {
