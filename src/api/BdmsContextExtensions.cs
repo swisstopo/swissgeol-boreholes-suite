@@ -144,6 +144,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Restriction, _ => default!)
            .RuleFor(o => o.RestrictionUntil, f => f.Date.Future().ToUniversalTime().OrNull(f, .9f))
            .RuleFor(o => o.OriginalName, f => f.Name.FullName())
+           .RuleFor(o => o.AlternateName, f => "")
            .RuleFor(o => o.LocationPrecisionId, f => f.PickRandom(locationPrecisionIds).OrNull(f, .1f))
            .RuleFor(o => o.LocationPrecision, _ => default!)
            .RuleFor(o => o.ElevationPrecisionId, f => f.PickRandom(elevationPrecisionIds).OrNull(f, .1f))
