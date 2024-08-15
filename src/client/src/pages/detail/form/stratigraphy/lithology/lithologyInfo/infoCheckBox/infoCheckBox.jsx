@@ -1,10 +1,11 @@
 import * as Styled from "./styles.js";
 import { Button, Checkbox, Icon, Popup } from "semantic-ui-react";
-import TranslationText from "../../../../../../../components/legacyComponents/translationText.jsx";
 import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2.js";
+import { useTranslation } from "react-i18next";
 
 const InfoCheckBox = props => {
   const { profileInfo, updateChange, isEditable, onUpdated } = props.data;
+  const { t } = useTranslation();
 
   return (
     <Styled.CheckBoxContainer>
@@ -19,7 +20,7 @@ const InfoCheckBox = props => {
           }}
           toggle
         />
-        <TranslationText id="mainStratigraphy" />
+        {t("mainStratigraphy")}
       </Styled.FormContainer>
       {isEditable && (
         <div style={{ display: "flex" }} data-cy="clone-and-delete-buttons">
@@ -44,7 +45,7 @@ const InfoCheckBox = props => {
                 <Icon name="trash alternate" />
               </Button>
             }>
-            <TranslationText id="deleteForever" />?
+            {t("deleteForever")}?
             <br />
             <Button
               icon
@@ -55,7 +56,7 @@ const InfoCheckBox = props => {
               }}
               secondary
               size="tiny">
-              <TranslationText id="yes" />
+              {t("yes")}
             </Button>
           </Popup>
         </div>

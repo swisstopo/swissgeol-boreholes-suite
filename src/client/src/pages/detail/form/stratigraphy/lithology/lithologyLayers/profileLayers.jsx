@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import * as Styled from "./styles.js";
-import TranslationText from "../../../../../../components/legacyComponents/translationText.jsx";
 import ProfileLayersValidation from "./lithologyLayersValidation";
 import { createLayerApi, getData } from "./api";
 import {
@@ -312,11 +311,7 @@ const ProfileLayers = props => {
           </TableBody>
         </Table>
       </TableContainer>
-      {!hasLayers && (
-        <Styled.Empty>
-          <TranslationText id="nothingToShow" />
-        </Styled.Empty>
-      )}
+      {!hasLayers && <Styled.Empty>{t("nothingToShow")}</Styled.Empty>}
     </Styled.Container>
   );
 };

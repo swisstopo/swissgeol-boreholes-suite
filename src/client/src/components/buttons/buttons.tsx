@@ -1,5 +1,4 @@
 import { forwardRef } from "react";
-import TranslationText from "../legacyComponents/translationText";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "../../assets/icons/edit.svg?react";
@@ -9,11 +8,14 @@ import SaveIcon from "@mui/icons-material/Save";
 import TrashIcon from "../../assets/icons/trash.svg?react";
 import CheckmarkIcon from "../../assets/icons/checkmark.svg?react";
 import { ButtonProps } from "./buttonsInterface";
+import { capitalizeFirstLetter } from "../../utils.ts";
+import { useTranslation } from "react-i18next";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  const { t } = useTranslation();
   return (
     <Button ref={ref} {...props} data-cy={props.label?.toLowerCase() + "-button"} startIcon={props.icon}>
-      <TranslationText firstUpperCase id={props.label} />
+      {props.label && capitalizeFirstLetter(t(props.label))}
     </Button>
   );
 });

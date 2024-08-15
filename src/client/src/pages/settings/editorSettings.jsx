@@ -135,6 +135,7 @@ class EditorSettings extends React.Component {
       toggleFieldArray,
       toggleFilterArray,
       toggleField,
+      t,
     } = this.props;
     return (
       <div
@@ -210,7 +211,7 @@ class EditorSettings extends React.Component {
                   textAlign: "right",
                 }}>
                 <Button color="red" size="small">
-                  {filter.isSelected === true ? <TranslationText id="collapse" /> : <TranslationText id="expand" />}
+                  {filter.isSelected === true ? t("collapse") : t("expand")}
                 </Button>
               </div>
             </div>

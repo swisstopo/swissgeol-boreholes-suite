@@ -6,6 +6,7 @@ import { deleteLayer, gapLayer } from "../../../../../../api-lib";
 import { addBedrock, fetchLayerById } from "../../../../../../api/fetchApiV2.js";
 import ErrorTypes from "./errorTypes";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
+import { useTranslation } from "react-i18next";
 
 const LithologyLayersError = props => {
   const { title, isEditable, id, isInside, onUpdated, layerIndex, layerLength, closeDelete } = props.data;
@@ -15,6 +16,7 @@ const LithologyLayersError = props => {
   const [resolvingAction, setResolvingAction] = useState(null);
   const [isDelete, setIsDelete] = useState(false);
   const { showAlert } = useContext(AlertContext);
+  const { t } = useTranslation();
 
   useEffect(() => {
     let e;
@@ -147,11 +149,7 @@ const LithologyLayersError = props => {
 
       {showSolution === id && !isDelete && (
         <Styled.SolutionContainer>
-          {error.id !== 5 && (
-            <Styled.HowToResolveContainer>
-              <TranslationText id="errorHowToResolve" />
-            </Styled.HowToResolveContainer>
-          )}
+          {error.id !== 5 && <Styled.HowToResolveContainer>{t("errorHowToResolve")}</Styled.HowToResolveContainer>}
           {error?.solutions?.map((e, index) => (
             <div key={index} style={{ marginTop: 2 }}>
               {error.solutions.length > 1 && (
@@ -175,7 +173,7 @@ const LithologyLayersError = props => {
                 onCancelClicked();
               }}>
               <Icon name="cancel" />
-              <TranslationText id="cancel" />
+              {t("cancel")}
             </Styled.CardButton>
             {error?.id !== 5 && (
               <Styled.CardButton
@@ -187,13 +185,13 @@ const LithologyLayersError = props => {
                 {error?.id !== 0 && (
                   <>
                     <Icon name="check" />
-                    <TranslationText id="confirm" />
+                    {t("confirm")}
                   </>
                 )}
                 {error?.id === 0 && (
                   <>
                     <Icon name="add" />
-                    <TranslationText id="add" />
+                    {t("add")}
                   </>
                 )}
               </Styled.CardButton>
@@ -209,9 +207,7 @@ const LithologyLayersError = props => {
             <TranslationText id={error?.messageId} />
           </Styled.ErrorMessageContainer>
 
-          <Styled.HowToResolveContainer>
-            <TranslationText id="deletelayerconfirmation" />
-          </Styled.HowToResolveContainer>
+          <Styled.HowToResolveContainer>{t("deletelayerconfirmation")}</Styled.HowToResolveContainer>
           {error?.solutions?.map((e, index) => (
             <div key={index} style={{ marginTop: 2 }}>
               {(index === 0 ||
@@ -240,11 +236,11 @@ const LithologyLayersError = props => {
               }}
               size="mini">
               <Icon name="cancel" />
-              <TranslationText id="cancel" />
+              {t("cancel")}
             </Styled.CardButton>
             <Styled.CardButton disabled={resolvingAction === null} icon negative onClick={sendDataToServer} size="mini">
               <Icon name="trash" />
-              <TranslationText id="confirm" />
+              {t("confirm")}
             </Styled.CardButton>
           </Styled.CardButtonContainer>
         </Styled.SolutionContainer>

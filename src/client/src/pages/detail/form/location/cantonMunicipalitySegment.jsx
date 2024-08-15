@@ -1,9 +1,9 @@
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
-
 import { Form, Icon, Input, Segment } from "semantic-ui-react";
+import { useTranslation } from "react-i18next";
 
 const CantonMunicipalitySegment = props => {
   const { size, country, canton, municipality, isEditable } = props;
+  const { t } = useTranslation();
 
   return (
     <Segment>
@@ -11,7 +11,7 @@ const CantonMunicipalitySegment = props => {
         <Form.Group widths="equal">
           <Form.Field>
             <label>
-              <TranslationText id="country" />
+              {t("country")}
               &nbsp;
               <Icon name="map marker" />
             </label>
@@ -19,7 +19,7 @@ const CantonMunicipalitySegment = props => {
           </Form.Field>
           <Form.Field>
             <label>
-              <TranslationText id="canton" />
+              {t("canton")}
               &nbsp;
               <Icon name="map marker" />
             </label>
@@ -27,7 +27,7 @@ const CantonMunicipalitySegment = props => {
           </Form.Field>
           <Form.Field>
             <label>
-              <TranslationText id="city" />
+              {t("city")}
               &nbsp;
               <Icon name="map marker" />
             </label>

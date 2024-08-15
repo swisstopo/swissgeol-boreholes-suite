@@ -1,11 +1,12 @@
 import { useCallback } from "react";
 import { Box, Stack } from "@mui/material/";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { FileDropzone } from "../../../detail/attachments/fileDropzone.jsx";
 import { StackHalfWidth } from "../../../../components/styledComponents.js";
 import { downloadCodelistCsv } from "../../../../api/fetchApiV2.js";
 import { ImportContentProps } from "../commons/actionsInterfaces.js";
 import Downloadlink from "../../../detail/attachments/downloadlink.jsx";
+import { useTranslation } from "react-i18next";
+import { capitalizeFirstLetter } from "../../../../utils.ts";
 
 const SeparatorLine = () => {
   return (
@@ -40,6 +41,8 @@ const ImportModalContent = ({
   setSelectedLithologyFile,
   selectedFile,
 }: ImportContentProps) => {
+  const { t } = useTranslation();
+
   const handleBoreholeAttachmentChange = useCallback(
     (attachmentsFromDropzone: Blob[]) => {
       setSelectedBoreholeAttachments(attachmentsFromDropzone);
@@ -65,17 +68,15 @@ const ImportModalContent = ({
     <>
       <p>
         <Box>
-          <TranslationText id="csvCodeListReferenceExplanation" />
+          {t("csvCodeListReferenceExplanation")}
           <Downloadlink style={{ marginLeft: "0.2em" }} caption="Codelist" onDownload={downloadCodelistCsv} />
         </Box>
       </p>
       {SeparatorLine()}
-      <h3>
-        <TranslationText firstUpperCase id="boreholes" />
-      </h3>
+      <h3>{capitalizeFirstLetter(t("boreholes"))}</h3>
       <Stack direction="row" alignItems="flex-start">
         <StackHalfWidth direction="column">
-          <TranslationText id="csvFormatExplanation" />
+          {t("csvFormatExplanation")}
           {ExampleHeadings(
             "import_id;id_geodin_shortname;id_info_geol;id_original;" +
               "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
@@ -100,13 +101,9 @@ const ImportModalContent = ({
           dataCy={"import-boreholeFile-input"}
         />
       </Stack>
-      <h3>
-        <TranslationText firstUpperCase id="attachments" />
-      </h3>
+      <h3>{capitalizeFirstLetter(t("attachments"))}</h3>
       <Stack direction="row" alignItems="flex-start">
-        <StackHalfWidth>
-          <TranslationText id="importBoreholeAttachment" />
-        </StackHalfWidth>
+        <StackHalfWidth>{t("importBoreholeAttachment")}</StackHalfWidth>
         <FileDropzone
           onHandleFileChange={handleBoreholeAttachmentChange}
           defaultText={"dropZoneAttachmentsText"}
@@ -118,12 +115,10 @@ const ImportModalContent = ({
         />
       </Stack>
       {SeparatorLine()}
-      <h3>
-        <TranslationText firstUpperCase id="lithology" />
-      </h3>
+      <h3>{capitalizeFirstLetter(t("lithology"))}</h3>
       <Stack direction="row" alignItems="flex-start">
         <StackHalfWidth>
-          <TranslationText id="csvFormatExplanation" />
+          {t("csvFormatExplanation")}
           {ExampleHeadings(
             "import_id;strati_import_id;strati_date;strati_name;from_depth;to_depth;" +
               "is_last;description_quality_id;lithology_id;" +

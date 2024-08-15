@@ -2,6 +2,7 @@ import TranslationText from "../../../../components/legacyComponents/translation
 import { Form, Segment } from "semantic-ui-react";
 import { FormControl, FormControlLabel, RadioGroup } from "@mui/material";
 import { DisabledRadio } from "../styledComponents.jsx";
+import { useTranslation } from "react-i18next";
 
 import _ from "lodash";
 import moment from "moment";
@@ -12,7 +13,7 @@ import DateField from "../../../../components/legacyComponents/dateField.jsx";
 
 const RestrictionSegment = props => {
   const { size, borehole, updateChange, user } = props;
-
+  const { t } = useTranslation();
   const isEditable =
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
@@ -21,9 +22,7 @@ const RestrictionSegment = props => {
       <Form size={size}>
         <Form.Group widths="equal">
           <Form.Field error={borehole.data.restriction === null} required>
-            <label>
-              <TranslationText id="restriction" />
-            </label>
+            <label>{t("restriction")}</label>
             <DomainDropdown
               onSelected={selected => {
                 updateChange("restriction", selected.id, false);
@@ -42,9 +41,7 @@ const RestrictionSegment = props => {
                 moment(borehole.data.restriction_until).isValid())
             }
             required={borehole.data.restriction === 20111003}>
-            <label>
-              <TranslationText id="restriction_until" />
-            </label>
+            <label>{t("restriction_until")}</label>
             <DateField
               date={borehole.data.restriction_until}
               onChange={selected => {
@@ -56,9 +53,7 @@ const RestrictionSegment = props => {
         </Form.Group>
         <Form.Group widths="equal">
           <Form.Field required>
-            <label>
-              <TranslationText id="national_interest" />
-            </label>
+            <label>{t("national_interest")}</label>
             <FormControl className="radio-group">
               <RadioGroup
                 row

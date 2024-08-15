@@ -152,9 +152,7 @@ class AdminSettings extends React.Component {
           <Form>
             <Form.Group widths="equal">
               <Form.Field>
-                <label>
-                  <TranslationText id="username" />
-                </label>
+                <label>{t("username")}</label>
                 <div
                   data-cy="administration-username-label"
                   className="ui fluid input"
@@ -168,9 +166,7 @@ class AdminSettings extends React.Component {
                 </div>
               </Form.Field>
               <Form.Field>
-                <label>
-                  <TranslationText id="firstname" />
-                </label>
+                <label>{t("firstname")}</label>
                 <div
                   data-cy="administration-firstname-label"
                   className="ui fluid input"
@@ -184,9 +180,7 @@ class AdminSettings extends React.Component {
                 </div>
               </Form.Field>
               <Form.Field>
-                <label>
-                  <TranslationText id="lastname" />
-                </label>
+                <label>{t("lastname")}</label>
                 <div
                   data-cy="administration-lastname-label"
                   className="ui fluid input"
@@ -200,9 +194,7 @@ class AdminSettings extends React.Component {
                 </div>
               </Form.Field>
               <Form.Field>
-                <label>
-                  <TranslationText id="admin" />
-                </label>
+                <label>{t("admin")}</label>
                 <div
                   className="ui fluid input"
                   style={{
@@ -351,9 +343,7 @@ class AdminSettings extends React.Component {
                   </Modal.Description>
                 ) : this.state.deleteUser.deletable ? (
                   <Modal.Description>
-                    <p>
-                      <TranslationText id="msgDeleteUser" />
-                    </p>
+                    <p>{t("msgDeleteUser")}</p>
                     <ul>
                       <li>
                         <span
@@ -361,10 +351,10 @@ class AdminSettings extends React.Component {
                             fontWeight: "bold",
                             textTransform: "capitalize",
                           }}>
-                          <TranslationText id="disable" />:
+                          {t("disable")}:
                         </span>
                         <br />
-                        <TranslationText id="msgReenablingTip" />
+                        {t("msgReenablingTip")}
                         <br />
                         &nbsp;
                       </li>
@@ -374,18 +364,16 @@ class AdminSettings extends React.Component {
                             fontWeight: "bold",
                             textTransform: "capitalize",
                           }}>
-                          <TranslationText id="deleteForever" />
+                          {t("deleteForever")}
                         </span>
                         <br />
-                        <TranslationText id="msgDeletingUserTip" />
+                        {t("msgDeletingUserTip")}
                       </li>
                     </ul>
                   </Modal.Description>
                 ) : (
                   <Modal.Description>
-                    <p>
-                      <TranslationText id="msgDisablingUser" />
-                    </p>
+                    <p>{t("msgDisablingUser")}</p>
                     <ul>
                       <li>
                         <span
@@ -393,10 +381,11 @@ class AdminSettings extends React.Component {
                             fontWeight: "bold",
                             textTransform: "capitalize",
                           }}>
-                          <TranslationText id="disable" />:
+                          {t("msgDisablingUser")}
+                          {t("disable")}:
                         </span>
                         <br />
-                        <TranslationText id="msgReenablingTip" />
+                        {t("msgReenablingTip")}
                       </li>
                     </ul>
                   </Modal.Description>
@@ -421,7 +410,7 @@ class AdminSettings extends React.Component {
                         textTransform: "capitalize",
                         whiteSpace: "nowrap",
                       }}>
-                      <TranslationText id="cancel" />
+                      {t("cancel")}
                     </span>
                   </Button>
                   <div style={{ flex: "1 1 100%" }} />
@@ -448,7 +437,7 @@ class AdminSettings extends React.Component {
                           textTransform: "capitalize",
                           whiteSpace: "nowrap",
                         }}>
-                        <TranslationText id="enable" />
+                        {t("enable")}
                       </span>
                     </Button>
                   ) : (
@@ -472,7 +461,7 @@ class AdminSettings extends React.Component {
                           textTransform: "capitalize",
                           whiteSpace: "nowrap",
                         }}>
-                        <TranslationText id="disable" />
+                        {t("disable")}
                       </span>
                     </Button>
                   )}
@@ -497,7 +486,7 @@ class AdminSettings extends React.Component {
                           textTransform: "capitalize",
                           whiteSpace: "nowrap",
                         }}>
-                        <TranslationText id="deleteForever" />
+                        {t("deleteForever")}
                       </span>
                     </Button>
                   ) : null}
@@ -508,21 +497,15 @@ class AdminSettings extends React.Component {
               <Table celled compact selectable size="small">
                 <Table.Header>
                   <Table.Row>
-                    <Table.HeaderCell>
-                      <TranslationText id="username" />
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>
-                      <TranslationText id="firstname" />
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>
-                      <TranslationText id="lastname" />
-                    </Table.HeaderCell>
+                    <Table.HeaderCell>{t("username")}</Table.HeaderCell>
+                    <Table.HeaderCell>{t("firstname")}</Table.HeaderCell>
+                    <Table.HeaderCell>{t("lastname")}</Table.HeaderCell>
                     <Table.HeaderCell
                       colSpan="2"
                       style={{
                         width: "4em",
                       }}>
-                      <TranslationText id="admin" />
+                      {t("admin")}
                     </Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
@@ -575,7 +558,7 @@ class AdminSettings extends React.Component {
                                   fontStyle: "italic",
                                   marginLeft: "0.5em",
                                 }}>
-                                <TranslationText id="disabled" />
+                                {t("disabled")}
                                 &nbsp;
                                 <DateText date={currentUser.disabledAt} fromnow />
                                 &nbsp;(
@@ -586,7 +569,7 @@ class AdminSettings extends React.Component {
                           <Table.Cell>{currentUser.firstName}</Table.Cell>
                           <Table.Cell>{currentUser.lastName}</Table.Cell>
                           <Table.Cell textAlign="center">
-                            {currentUser.isAdmin === true ? <TranslationText id="yes" /> : <TranslationText id="no" />}
+                            {currentUser.isAdmin === true ? t("yes") : t("no")}
                           </Table.Cell>
                           <Table.Cell
                             style={{
@@ -601,11 +584,7 @@ class AdminSettings extends React.Component {
                                   deleteUser: currentUser,
                                 });
                               }}>
-                              {currentUser.disabledAt !== null ? (
-                                <TranslationText id="enable" />
-                              ) : (
-                                <TranslationText id="disable" />
-                              )}
+                              {currentUser.disabledAt !== null ? t("enable") : t("disable")}
                             </span>
                           </Table.Cell>
                         </Table.Row>
@@ -645,7 +624,7 @@ class AdminSettings extends React.Component {
                 <Form.Group autoComplete="off" widths="equal">
                   <Form.Input
                     fluid
-                    label={<TranslationText id="workgroup" />}
+                    label={t("workgroup")}
                     onChange={e => {
                       this.setState({
                         wName: e.target.value,
@@ -781,9 +760,7 @@ class AdminSettings extends React.Component {
                       </Modal.Description>
                     ) : this.state.deleteWorkgroup.boreholeCount === 0 ? (
                       <Modal.Description>
-                        <p>
-                          <TranslationText id="msgDeleteWorkgroup" />
-                        </p>
+                        <p>{t("msgDeleteWorkgroup")}</p>
                         <ul>
                           <li>
                             <span
@@ -791,10 +768,10 @@ class AdminSettings extends React.Component {
                                 fontWeight: "bold",
                                 textTransform: "capitalize",
                               }}>
-                              <TranslationText id="disable" />
+                              {t("disable")}
                             </span>
                             <br />
-                            <TranslationText id="msgReenablingTip" />
+                            {t("msgReenablingTip")}
                             <br />
                             &nbsp;
                           </li>
@@ -804,18 +781,16 @@ class AdminSettings extends React.Component {
                                 fontWeight: "bold",
                                 textTransform: "capitalize",
                               }}>
-                              <TranslationText id="deleteForever" />:
+                              {t("deleteForever")}:
                             </span>
                             <br />
-                            <TranslationText id="msgDeletingWorkgroupTip" />
+                            {t("msgDeletingWorkgroupTip")}
                           </li>
                         </ul>
                       </Modal.Description>
                     ) : (
                       <Modal.Description>
-                        <p>
-                          <TranslationText id="msgDisablingWorkgroup" />
-                        </p>
+                        <p>{t("msgDisablingWorkgroup")}</p>
                         <ul>
                           <li>
                             <span
@@ -823,10 +798,10 @@ class AdminSettings extends React.Component {
                                 fontWeight: "bold",
                                 textTransform: "capitalize",
                               }}>
-                              <TranslationText id="disable" />:
+                              {t("disable")}:
                             </span>
                             <br />
-                            <TranslationText id="msgReenablingTip" />
+                            {t("msgReenablingTip")}
                           </li>
                         </ul>
                       </Modal.Description>
@@ -849,7 +824,7 @@ class AdminSettings extends React.Component {
                             textTransform: "capitalize",
                             whiteSpace: "nowrap",
                           }}>
-                          <TranslationText id="cancel" />
+                          {t("cancel")}
                         </span>
                       </Button>
                       <div style={{ flex: "1 1 100%" }} />
@@ -875,7 +850,7 @@ class AdminSettings extends React.Component {
                               textTransform: "capitalize",
                               whiteSpace: "nowrap",
                             }}>
-                            <TranslationText id="enable" />
+                            {t("enable")}
                           </span>
                         </Button>
                       ) : (
@@ -900,7 +875,7 @@ class AdminSettings extends React.Component {
                               textTransform: "capitalize",
                               whiteSpace: "nowrap",
                             }}>
-                            <TranslationText id="disable" />
+                            {t("disable")}
                           </span>
                         </Button>
                       )}
@@ -926,7 +901,7 @@ class AdminSettings extends React.Component {
                               textTransform: "capitalize",
                               whiteSpace: "nowrap",
                             }}>
-                            <TranslationText id="deleteForever" />
+                            {t("deleteForever")}
                           </span>
                         </Button>
                       ) : null}
@@ -940,21 +915,21 @@ class AdminSettings extends React.Component {
                         style={{
                           whiteSpace: "nowrap",
                         }}>
-                        <TranslationText id="workgroup" />
+                        {t("workgroup")}
                       </Table.HeaderCell>
                       <Table.HeaderCell
                         style={{
                           textTransform: "capitalize",
                           whiteSpace: "nowrap",
                         }}>
-                        <TranslationText id="boreholes" />
+                        {t("boreholes")}
                       </Table.HeaderCell>
                       <Table.HeaderCell
                         style={{
                           textTransform: "capitalize",
                           whiteSpace: "nowrap",
                         }}>
-                        <TranslationText id="roles" />
+                        {t("roles")}
                       </Table.HeaderCell>
                       <Table.HeaderCell />
                     </Table.Row>
@@ -1016,7 +991,7 @@ class AdminSettings extends React.Component {
                                     fontStyle: "italic",
                                     marginLeft: "0.5em",
                                   }}>
-                                  <TranslationText id="disabled" />
+                                  {t("disabled")}
                                   &nbsp;
                                   <DateText date={workgroup.disabledAt} fromnow />
                                   &nbsp;(
@@ -1033,11 +1008,7 @@ class AdminSettings extends React.Component {
                                     deleteWorkgroup: workgroup,
                                   });
                                 }}>
-                                {workgroup.disabledAt !== null ? (
-                                  <TranslationText id="enableWorkgroup" />
-                                ) : (
-                                  <TranslationText id="disableWorkgroup" />
-                                )}
+                                {workgroup.disabledAt !== null ? t("enableWorkgroup") : t("disableWorkgroup")}
                               </span>
                             </Table.Cell>
                           </Table.Row>

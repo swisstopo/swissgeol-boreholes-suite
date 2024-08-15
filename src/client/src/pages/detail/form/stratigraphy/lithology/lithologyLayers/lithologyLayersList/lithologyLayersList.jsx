@@ -4,7 +4,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Stack, Tooltip } from "@mui/material";
-import TranslationText from "../../../../../../../components/legacyComponents/translationText.jsx";
 import { NumericFormat } from "react-number-format";
 import { withTranslation } from "react-i18next";
 import * as Styled from "./styles.js";
@@ -168,13 +167,7 @@ const LithologyLayersList = props => {
                 {showTopPopup ? (
                   <Popup
                     basic
-                    content={
-                      itemWithValidation?.validation?.invertedDepth ? (
-                        <TranslationText id="invertedDepth" />
-                      ) : (
-                        <TranslationText id="errrorStartPoint" />
-                      )
-                    }
+                    content={itemWithValidation?.validation?.invertedDepth ? t("invertedDepth") : t("errrorStartPoint")}
                     position="bottom left"
                     trigger={
                       <div>{itemWithValidation?.validation?.invertedDepth && itemWithValidation?.depth_from} m MD</div>
@@ -219,13 +212,7 @@ const LithologyLayersList = props => {
                 {showBottomPopup ? (
                   <Popup
                     basic
-                    content={
-                      itemWithValidation?.validation?.invertedDepth ? (
-                        <TranslationText id="invertedDepth" />
-                      ) : (
-                        <TranslationText id="errorEndPoint" />
-                      )
-                    }
+                    content={itemWithValidation?.validation?.invertedDepth ? t("invertedDepth") : t("errorEndPoint")}
                     hoverable
                     position="bottom left"
                     trigger={

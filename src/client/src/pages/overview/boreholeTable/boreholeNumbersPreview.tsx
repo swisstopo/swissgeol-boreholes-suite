@@ -1,7 +1,8 @@
 import { NumericFormat } from "react-number-format";
 import { FC } from "react";
-import { CircularProgress } from "@mui/material";
-import TranslationText from "../../../components/legacyComponents/translationText";
+import { CircularProgress, Typography } from "@mui/material";
+import { capitalizeFirstLetter } from "../../../utils.ts";
+import { useTranslation } from "react-i18next";
 
 interface BoreholeNumbersPreviewProps {
   isFetching: boolean;
@@ -9,19 +10,22 @@ interface BoreholeNumbersPreviewProps {
 }
 
 export const BoreholeNumbersPreview: FC<BoreholeNumbersPreviewProps> = ({ isFetching, boreholeCount }) => {
+  const { t } = useTranslation();
   return (
     <>
-      <TranslationText firstUpperCase id="boreholes" />:{" "}
+      <Typography>{capitalizeFirstLetter(t("boreholes"))}: </Typography>
       {isFetching ? (
         <CircularProgress sx={{ marginLeft: "15px", width: "15px !important", height: "15px !important" }} />
       ) : (
-        <NumericFormat
-          data-cy="boreholes-number-preview"
-          value={boreholeCount}
-          thousandSeparator="'"
-          displayType="text"
-          style={{ marginLeft: "0.5em" }}
-        />
+        <Typography>
+          <NumericFormat
+            data-cy="boreholes-number-preview"
+            value={boreholeCount}
+            thousandSeparator="'"
+            displayType="text"
+            style={{ marginLeft: "0.5em" }}
+          />
+        </Typography>
       )}
     </>
   );
