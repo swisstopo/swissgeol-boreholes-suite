@@ -34,9 +34,9 @@ describe("Borehole editor table tests", () => {
 
     // sort by reference elevation
     sortBy("Reference elevation");
-    verifyRowContains("3.36", 0);
-    verifyRowContains("4.26", 1);
-    verifyRowContains("4.58", 2);
+    verifyRowContains("1.8", 0);
+    verifyRowContains("3.47", 1);
+    verifyRowContains("13.13", 2);
 
     // sort by borehole type
     sortBy("Borehole type");
