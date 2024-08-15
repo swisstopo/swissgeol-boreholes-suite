@@ -114,7 +114,7 @@ const DetailHeader = () => {
             <DeleteButton
               label="deleteBorehole"
               onClick={() =>
-                showPrompt(t("deleteBoreholeMessage"), [
+                showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
                   {
                     label: t("cancel"),
                   },
