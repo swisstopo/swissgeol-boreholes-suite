@@ -617,6 +617,7 @@ describe("completion crud tests", () => {
           expect(location.hash).to.eq("#casing");
         });
         cy.reload(forceReload);
+        cy.get('[data-cy="accept-button"]').click();
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${id}/completion/${completion1Id}`);
           expect(location.hash).to.eq("#casing");
@@ -627,6 +628,7 @@ describe("completion crud tests", () => {
           expect(location.hash).to.eq("#instrumentation");
         });
         cy.reload(forceReload);
+        cy.get('[data-cy="accept-button"]').click();
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${id}/completion/${completion1Id}`);
           expect(location.hash).to.eq("#instrumentation");
