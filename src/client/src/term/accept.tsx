@@ -16,7 +16,7 @@ export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
   const [hasAccepted, setHasAccepted] = useState(false);
   const [terms, setTerms] = useState<Terms>({ en: en, de: de, fr: fr, it: it });
   const [isFetching, setIsFetching] = useState(true);
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     // @ts-expect-error : The getTerms function is not typed
