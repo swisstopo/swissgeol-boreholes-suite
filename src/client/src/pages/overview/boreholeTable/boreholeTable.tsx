@@ -179,6 +179,10 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     ".MuiTablePagination-selectLabel": {
       fontSize: "12px",
     },
+    ".MuiTablePagination-selectIcon": {
+      width: "14px",
+      height: "14px",
+    },
     ".MuiTablePagination-displayedRows": {
       fontSize: "12px",
     },

@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material/styles";
+import ArrowDownIcon from "./assets/icons/arrow_down.svg?react";
 
 export const theme = createTheme({
   palette: {
@@ -130,6 +131,11 @@ export const theme = createTheme({
             display: "none",
           },
         },
+      },
+    },
+    MuiSelect: {
+      defaultProps: {
+        IconComponent: ArrowDownIcon,
       },
     },
     MuiFormControl: {
