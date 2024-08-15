@@ -95,22 +95,17 @@ const BottomBar = ({
           <DeleteButton
             label="delete"
             onClick={() =>
-              showPrompt(
-                selectionModel.length > 1
-                  ? t("deleteBoreholesMessage", { count: selectionModel.length })
-                  : t("deleteBoreholeMessage"),
-                [
-                  {
-                    label: t("cancel"),
-                  },
-                  {
-                    label: t("delete"),
-                    icon: <TrashIcon />,
-                    variant: "contained",
-                    action: onDeleteMultiple,
-                  },
-                ],
-              )
+              showPrompt(t("deleteBoreholesMessage", { count: selectionModel.length }), [
+                {
+                  label: t("cancel"),
+                },
+                {
+                  label: t("delete"),
+                  icon: <TrashIcon />,
+                  variant: "contained",
+                  action: onDeleteMultiple,
+                },
+              ])
             }
           />
           {selectionModel.length === 1 && <CopyButton onClick={() => showCopyPromptForSelectedWorkgroup()} />}
