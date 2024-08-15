@@ -134,7 +134,7 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
       });
       setLevels(levels);
     }
-  }, [i18n.language, labels, reset, schemaData, selectedIds]);
+  }, [i18n.language, labels, reset, schemaData, selectedIds, t]);
 
   return (
     <>
