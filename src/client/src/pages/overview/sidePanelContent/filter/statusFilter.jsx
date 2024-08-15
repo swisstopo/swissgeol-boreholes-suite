@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Form, Radio } from "semantic-ui-react";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
+import { capitalizeFirstLetter } from "../../../../utils";
 
 class StatusFilter extends Component {
   isVisible(filter) {
@@ -12,7 +12,7 @@ class StatusFilter extends Component {
     return _.get(settings, filter) === true;
   }
   render() {
-    const { search } = this.props;
+    const { search, t } = this.props;
     return (
       <Form
         size="tiny"
@@ -34,7 +34,7 @@ class StatusFilter extends Component {
               fontSize: "1.1em",
               fontWeight: "bold",
             }}>
-            <TranslationText firstUpperCase id="alls" />
+            {capitalizeFirstLetter(t("alls"))}
           </span>
         </Form.Field>
         {["statusedit", "statuscontrol", "statusvalid", "statuspublic"].map(role => (
@@ -52,7 +52,7 @@ class StatusFilter extends Component {
                 color: "black",
                 fontSize: "1.1em",
               }}>
-              <TranslationText firstUpperCase id={role} />
+              {capitalizeFirstLetter(t({ role }))}
             </span>
           </Form.Field>
         ))}

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { withTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useLocation, withRouter } from "react-router-dom";
 import { List } from "semantic-ui-react";
 import ListItem from "@mui/material/ListItem";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
-import TranslationText from "../../components/legacyComponents/translationText.jsx";
 import { theme } from "../../AppTheme.ts";
 import { Typography } from "@mui/material";
+import { capitalizeFirstLetter } from "../../utils";
 
 /**
  * A component that renders the side navigation for a borehole detail. The component is used without explicitly passing props.
@@ -25,6 +25,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
   const [stratigraphyIsVisible, setStratigraphyIsVisible] = useState(false);
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation();
 
   const id = match?.params?.id;
 
@@ -81,9 +82,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
             }}>
             <List.Content>
               <List.Header as="h3" data-cy="location-menu-item">
-                <Typography>
-                  <TranslationText firstUpperCase id="location" />
-                </Typography>
+                <Typography>{capitalizeFirstLetter(t("location"))}</Typography>
               </List.Header>
             </List.Content>
           </ParentListItem>
@@ -94,9 +93,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
             }}>
             <List.Content>
               <List.Header as="h3" data-cy="borehole-menu-item">
-                <Typography>
-                  <TranslationText firstUpperCase id="borehole" />
-                </Typography>
+                <Typography>{capitalizeFirstLetter(t("borehole"))}</Typography>
               </List.Header>
             </List.Content>
           </ParentListItem>
@@ -106,9 +103,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
             }}>
             <List.Content>
               <List.Header as="h3" data-cy="stratigraphy-menu-item">
-                <Typography>
-                  <TranslationText firstUpperCase id="stratigraphy" />
-                </Typography>
+                <Typography>{capitalizeFirstLetter(t("stratigraphy"))}</Typography>
               </List.Header>
             </List.Content>
           </ParentListItem>
@@ -121,9 +116,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
                 }}>
                 <List.Content>
                   <List.Header as="h3" data-cy="lithology-menu-item">
-                    <Typography>
-                      <TranslationText firstUpperCase id="lithology" />
-                    </Typography>
+                    <Typography>{capitalizeFirstLetter(t("lithology"))}</Typography>
                   </List.Header>
                 </List.Content>
               </ChildListItem>
@@ -134,9 +127,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
                 }}>
                 <List.Content>
                   <List.Header as="h3" data-cy="chronostratigraphy-menu-item">
-                    <Typography>
-                      <TranslationText firstUpperCase id="chronostratigraphy" />
-                    </Typography>
+                    <Typography>{capitalizeFirstLetter(t("chronostratigraphy"))}</Typography>
                   </List.Header>
                 </List.Content>
               </ChildListItem>
@@ -147,9 +138,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
                 }}>
                 <List.Content>
                   <List.Header as="h3" data-cy="lithostratigraphy-menu-item">
-                    <Typography>
-                      <TranslationText firstUpperCase id="lithostratigraphy" />
-                    </Typography>
+                    <Typography>{capitalizeFirstLetter(t("lithostratigraphy"))}</Typography>
                   </List.Header>
                 </List.Content>
               </ChildListItem>
@@ -162,9 +151,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
             }}>
             <List.Content>
               <List.Header as="h3" data-cy="completion-menu-item">
-                <Typography>
-                  <TranslationText firstUpperCase id="completion" />
-                </Typography>
+                <Typography>{capitalizeFirstLetter(t("completion"))}</Typography>
               </List.Header>
             </List.Content>
           </ParentListItem>
@@ -174,9 +161,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
             }}>
             <List.Content>
               <List.Header as="h3" data-cy="hydrogeology-menu-item">
-                <Typography>
-                  <TranslationText firstUpperCase id="hydrogeology" />
-                </Typography>
+                <Typography>{capitalizeFirstLetter(t("hydrogeology"))}</Typography>
               </List.Header>
             </List.Content>
           </ParentListItem>
@@ -189,9 +174,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
                 }}>
                 <List.Content>
                   <List.Header as="h3" data-cy="wateringress-menu-item">
-                    <Typography>
-                      <TranslationText firstUpperCase id="waterIngress" />
-                    </Typography>
+                    <Typography>{capitalizeFirstLetter(t("waterIngress"))}</Typography>
                   </List.Header>
                 </List.Content>
               </ChildListItem>
@@ -202,9 +185,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
                 }}>
                 <List.Content>
                   <List.Header as="h3" data-cy="groundwaterlevelmeasurement-menu-item">
-                    <Typography>
-                      <TranslationText firstUpperCase id="groundwaterLevelMeasurement" />
-                    </Typography>
+                    <Typography>{capitalizeFirstLetter(t("groundwaterLevelMeasurement"))}</Typography>
                   </List.Header>
                 </List.Content>
               </ChildListItem>
@@ -215,9 +196,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
                 }}>
                 <List.Content>
                   <List.Header as="h3" data-cy="fieldmeasurement-menu-item">
-                    <Typography>
-                      <TranslationText firstUpperCase id="fieldMeasurement" />
-                    </Typography>
+                    <Typography>{capitalizeFirstLetter(t("fieldMeasurement"))}</Typography>
                   </List.Header>
                 </List.Content>
               </ChildListItem>
@@ -228,9 +207,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
                 }}>
                 <List.Content>
                   <List.Header as="h3" data-cy="hydrotest-menu-item">
-                    <Typography>
-                      <TranslationText firstUpperCase id="hydrotest" />
-                    </Typography>
+                    <Typography>{capitalizeFirstLetter(t("hydrotest"))}</Typography>
                   </List.Header>
                 </List.Content>
               </ChildListItem>
@@ -243,9 +220,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
             }}>
             <List.Content>
               <List.Header as="h3" data-cy="attachments-menu-item">
-                <Typography>
-                  <TranslationText firstUpperCase id="attachments" />
-                </Typography>
+                <Typography>{capitalizeFirstLetter(t("attachments"))}</Typography>
               </List.Header>
             </List.Content>
           </ParentListItem>
@@ -257,9 +232,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
             }}>
             <List.Content>
               <List.Header as="h3" data-cy="status-menu-item">
-                <Typography>
-                  <TranslationText firstUpperCase id="flowPublicationStatus" />
-                </Typography>
+                <Typography>{capitalizeFirstLetter(t("flowPublicationStatus"))}</Typography>
               </List.Header>
             </List.Content>
           </ParentListItem>
@@ -275,6 +248,6 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedDetailSideNav = withRouter(connect(mapStateToProps)(withTranslation(["common"])(DetailSideNav)));
+const ConnectedDetailSideNav = withRouter(connect(mapStateToProps)(DetailSideNav));
 
 export default ConnectedDetailSideNav;

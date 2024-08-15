@@ -1,7 +1,7 @@
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { Form, Segment, TextArea } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
+import { capitalizeFirstLetter } from "../../../../utils";
 
 const BoreholeGeneralSegment = props => {
   const { size, borehole, updateChange, isEditable } = props;
@@ -48,9 +48,7 @@ const BoreholeGeneralSegment = props => {
             </Form.Group>
             <Form.Group widths="equal">
               <Form.Field required>
-                <label>
-                  <TranslationText firstUpperCase id="boreholestatus" />
-                </label>
+                <label>{capitalizeFirstLetter(t("boreholestatus"))}</label>
                 <DomainDropdown
                   onSelected={selected => {
                     updateChange("extended.status", selected.id, false);

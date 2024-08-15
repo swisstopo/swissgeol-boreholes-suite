@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import { Box, Stack } from "@mui/material/";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { FileDropzone } from "../../../detail/attachments/fileDropzone.jsx";
 import { StackHalfWidth } from "../../../../components/styledComponents.js";
 import { downloadCodelistCsv } from "../../../../api/fetchApiV2.js";
 import { ImportContentProps } from "../commons/actionsInterfaces.js";
 import Downloadlink from "../../../detail/attachments/downloadlink.jsx";
 import { useTranslation } from "react-i18next";
+import { capitalizeFirstLetter } from "../../../../utils.ts";
 
 const SeparatorLine = () => {
   return (
@@ -73,9 +73,7 @@ const ImportModalContent = ({
         </Box>
       </p>
       {SeparatorLine()}
-      <h3>
-        <TranslationText firstUpperCase id="boreholes" />
-      </h3>
+      <h3>{capitalizeFirstLetter(t("boreholes"))}</h3>
       <Stack direction="row" alignItems="flex-start">
         <StackHalfWidth direction="column">
           {t("csvFormatExplanation")}
@@ -103,9 +101,7 @@ const ImportModalContent = ({
           dataCy={"import-boreholeFile-input"}
         />
       </Stack>
-      <h3>
-        <TranslationText firstUpperCase id="attachments" />
-      </h3>
+      <h3>{capitalizeFirstLetter(t("attachments"))}</h3>
       <Stack direction="row" alignItems="flex-start">
         <StackHalfWidth>{t("importBoreholeAttachment")}</StackHalfWidth>
         <FileDropzone
@@ -119,9 +115,7 @@ const ImportModalContent = ({
         />
       </Stack>
       {SeparatorLine()}
-      <h3>
-        <TranslationText firstUpperCase id="lithology" />
-      </h3>
+      <h3>{capitalizeFirstLetter(t("lithology"))}</h3>
       <Stack direction="row" alignItems="flex-start">
         <StackHalfWidth>
           {t("csvFormatExplanation")}
