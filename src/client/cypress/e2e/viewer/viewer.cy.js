@@ -1,4 +1,5 @@
 import { loginAsAdmin, loginAsViewer } from "../helpers/testHelpers";
+import { clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 describe("Viewer tests", () => {
   it("Assures viewer cannot add, edit or delete boreholes", () => {
@@ -33,7 +34,6 @@ describe("Viewer tests", () => {
     cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").should("be.visible");
 
     loginAsViewer();
-    cy.visit("/");
     cy.wait("@edit_list");
     cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").should("not.exist");
   });

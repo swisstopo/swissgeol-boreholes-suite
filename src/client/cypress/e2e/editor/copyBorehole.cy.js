@@ -6,7 +6,6 @@ describe("Test copying of boreholes", () => {
     createBorehole({ "extended.original_name": "NINTIC" }).as("borehole_id_1");
 
     loginAsAdmin();
-    cy.visit("/");
     showTableAndWaitForData();
     cy.get(".MuiDataGrid-checkboxInput").eq(1).scrollIntoView().click();
 

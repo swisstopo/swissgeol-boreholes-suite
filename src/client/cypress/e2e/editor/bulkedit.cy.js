@@ -4,7 +4,6 @@ import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "
 
 beforeEach(() => {
   loginAsAdmin();
-  cy.visit("/");
   showTableAndWaitForData();
 });
 
@@ -68,7 +67,6 @@ describe("Test the borehole bulk edit feature.", () => {
     createBorehole({ "extended.original_name": "AAA_LOMONE" }).as("borehole_id_2");
 
     loginAsAdmin();
-    cy.visit("/");
     showTableAndWaitForData();
     cy.wait("@borehole");
 
