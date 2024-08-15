@@ -74,6 +74,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get('[data-cy="borehole-table"]').within(() => {
       checkRowWithText("AAA_NINTIC");
       checkRowWithText("AAA_LOMONE");
+      section;
     });
     cy.contains("button", "Bulk editing").click();
 

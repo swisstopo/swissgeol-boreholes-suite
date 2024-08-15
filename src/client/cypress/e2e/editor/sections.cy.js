@@ -8,8 +8,7 @@ describe("Section crud tests", () => {
 
     // open section editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/borehole#sections`);
+      loginAsAdmin(`/${id}/borehole#sections`);
     });
 
     // start editing session
