@@ -15,7 +15,7 @@ import { theme } from "../../../AppTheme.ts";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useDomains } from "../../../api/fetchApiV2";
-import { TablePaginationActions } from "../TablePaginationActions.tsx";
+import { TablePaginationActions } from "./TablePaginationActions.tsx";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useSelector } from "react-redux";
 import { muiLocales } from "../../../mui.locales.ts";
