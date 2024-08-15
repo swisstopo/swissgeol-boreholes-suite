@@ -5,7 +5,6 @@ import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { loadDomains } from "../../../../api-lib/index.js";
 import { Dropdown, Form, Header, Icon, Input, List, Modal } from "semantic-ui-react";
-import TranslationText from "../../translationText.jsx";
 import DomainText from "../domainText.jsx";
 
 class DomainTree extends React.Component {
@@ -157,7 +156,7 @@ class DomainTree extends React.Component {
   }
 
   render() {
-    const { domains, schema, isEditable } = this.props;
+    const { domains, schema, isEditable, t } = this.props;
     if (!Object.prototype.hasOwnProperty.call(domains.data, schema)) {
       if (domains.isFetching === true) {
         return "loading translations";
@@ -173,7 +172,7 @@ class DomainTree extends React.Component {
             style={{
               color: "red",
             }}>
-            <TranslationText id="reset" />
+            {t("reset")}
           </span>
         ),
       },
@@ -215,7 +214,7 @@ class DomainTree extends React.Component {
                     style={{
                       color: "red",
                     }}>
-                    <TranslationText id="reset" />
+                    {t("reset")}
                   </span>
                 ),
               },
@@ -367,9 +366,7 @@ class DomainTree extends React.Component {
                     flex: "1 1 100%",
                   }}>
                   <Form.Field>
-                    <label>
-                      <TranslationText id="filterByHierarchicalUnits" />
-                    </label>
+                    <label>{t("filterByHierarchicalUnits")}</label>
                   </Form.Field>
                 </Form>
                 {this.state.levels.map((lev, idx) => {
@@ -465,9 +462,7 @@ class DomainTree extends React.Component {
                     flex: "1 1 100%",
                   }}>
                   <Form.Field>
-                    <label>
-                      <TranslationText id="filterByName" />
-                    </label>
+                    <label>{t("filterByName")}</label>
                     <Input
                       fluid
                       icon="search"

@@ -1,5 +1,4 @@
 import _ from "lodash";
-
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import DomainTree from "../../../../components/legacyComponents/domain/tree/domainTree.jsx";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
@@ -10,9 +9,11 @@ import { parseIfString } from "../../../../components/legacyComponents/formUtils
 import { DisabledRadio } from "../styledComponents.jsx";
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.js";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const BoreholeDetailSegment = props => {
   const { size, borehole, updateChange, updateNumber, isEditable } = props;
+  const { t } = useTranslation();
 
   const [depthTVD, setDepthTVD] = useState(null);
 
@@ -61,9 +62,7 @@ const BoreholeDetailSegment = props => {
       <Form autoComplete="off" error size={size}>
         <Form.Group widths="equal">
           <Form.Field required>
-            <label>
-              <TranslationText id="totaldepth" />
-            </label>
+            <label>{t("totaldepth")}</label>
             <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
@@ -77,9 +76,7 @@ const BoreholeDetailSegment = props => {
           </Form.Field>
 
           <Form.Field required>
-            <label>
-              <TranslationText id="qt_depth" />
-            </label>
+            <label>{t("qt_depth")}</label>
             <DomainDropdown
               onSelected={selected => {
                 updateChange("custom.qt_depth", selected.id, false);
@@ -94,9 +91,7 @@ const BoreholeDetailSegment = props => {
               opacity: 0.6,
               pointerEvents: "none",
             }}>
-            <label>
-              <TranslationText id="total_depth_tvd" />
-            </label>
+            <label>{t("total_depth_tvd")}</label>
             <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
@@ -110,9 +105,7 @@ const BoreholeDetailSegment = props => {
         </Form.Group>
         <Form.Group widths="equal">
           <Form.Field required>
-            <label>
-              <TranslationText id="top_bedrock_fresh_md" />
-            </label>
+            <label>{t("top_bedrock_fresh_md")}</label>
             <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
@@ -131,9 +124,7 @@ const BoreholeDetailSegment = props => {
               opacity: 0.6,
               pointerEvents: "none",
             }}>
-            <label>
-              <TranslationText id="top_bedrock_fresh_tvd" />
-            </label>
+            <label>{t("top_bedrock_fresh_tvd")}</label>
             <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
@@ -147,9 +138,7 @@ const BoreholeDetailSegment = props => {
         </Form.Group>
         <Form.Group widths="equal">
           <Form.Field required>
-            <label>
-              <TranslationText id="top_bedrock_weathered_md" />
-            </label>
+            <label>{t("top_bedrock_weathered_md")}</label>
             <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
@@ -166,9 +155,7 @@ const BoreholeDetailSegment = props => {
               opacity: 0.6,
               pointerEvents: "none",
             }}>
-            <label>
-              <TranslationText id="top_bedrock_weathered_tvd" />
-            </label>
+            <label>{t("top_bedrock_weathered_tvd")}</label>
             <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
@@ -181,23 +168,19 @@ const BoreholeDetailSegment = props => {
           </Form.Field>
         </Form.Group>
         <Form.Field required>
-          <label>
-            <TranslationText id="lithology_top_bedrock" />
-          </label>
+          <label>{t("lithology_top_bedrock")}</label>
           <DomainTree
             onSelected={selected => {
               updateChange("custom.lithology_top_bedrock", selected.id, false);
             }}
             schema="custom.lithology_top_bedrock"
             selected={borehole.data.custom.lithology_top_bedrock}
-            title={<TranslationText id="lithology_top_bedrock" />}
+            title={t("lithology_top_bedrock")}
             isEditable={isEditable}
           />
         </Form.Field>
         <Form.Field required>
-          <label>
-            <TranslationText id="lithostratigraphy_top_bedrock" />
-          </label>
+          <label>{t("lithostratigraphy_top_bedrock")}</label>
           <DomainTree
             levels={{
               1: "super",
@@ -211,14 +194,12 @@ const BoreholeDetailSegment = props => {
             }}
             schema="custom.lithostratigraphy_top_bedrock"
             selected={borehole.data.custom.lithostratigraphy_top_bedrock}
-            title={<TranslationText id="lithostratigraphy_top_bedrock" />}
+            title={t("lithostratigraphy_top_bedrock")}
             isEditable={isEditable}
           />
         </Form.Field>
         <Form.Field required>
-          <label>
-            <TranslationText id="chronostratigraphy_top_bedrock" />
-          </label>
+          <label>{t("chronostratigraphy_top_bedrock")}</label>
           <DomainTree
             levels={{
               1: "1st_order_eon",
@@ -233,14 +214,12 @@ const BoreholeDetailSegment = props => {
             }}
             schema="custom.chronostratigraphy_top_bedrock"
             selected={borehole.data.custom.chronostratigraphy_top_bedrock}
-            title={<TranslationText id="chronostratigraphy_top_bedrock" />}
+            title={t("chronostratigraphy_top_bedrock")}
             isEditable={isEditable}
           />
         </Form.Field>
         <Form.Field required>
-          <label>
-            <TranslationText id="groundwater" />
-          </label>
+          <label>{t("groundwater")}</label>
           <FormControl className="radio-group">
             <RadioGroup
               row

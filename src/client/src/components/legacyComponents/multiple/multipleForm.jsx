@@ -339,7 +339,7 @@ class MultipleForm extends React.Component {
               <Form.Field key={"workgroup"}>
                 <label>{t("workgroup")}</label>
                 {workgroups.length === 0 ? (
-                  <TranslationText id="disabled" />
+                  t("disabled")
                 ) : workgroups.length === 1 ? (
                   workgroups[0].workgroup
                 ) : (

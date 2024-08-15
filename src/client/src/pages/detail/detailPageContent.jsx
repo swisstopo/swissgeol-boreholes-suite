@@ -6,7 +6,6 @@ import _ from "lodash";
 import { Redirect, Route, Switch, withRouter } from "react-router-dom";
 import { loadBorehole, patchBorehole, updateBorehole } from "../../api-lib";
 import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
-import TranslationText from "../../components/legacyComponents/translationText.jsx";
 import { Dimmer, Loader } from "semantic-ui-react";
 import Lithology from "./form/stratigraphy/lithology";
 import IdentifierSegment from "./form/location/indentifierSegment.jsx";
@@ -273,9 +272,9 @@ class DetailPageContent extends React.Component {
               <Loader>
                 {(() => {
                   if (borehole.isFetching || this.state.loadingFetch === true) {
-                    return <TranslationText id="layer_loading_fetch" />;
+                    return t("layer_loading_fetch");
                   } else if (this.state.creationFetch === true) {
-                    return <TranslationText id="layer_creation_fetch" />;
+                    return t("layer_creation_fetch");
                   }
                 })()}
               </Loader>

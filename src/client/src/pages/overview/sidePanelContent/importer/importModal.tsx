@@ -103,7 +103,7 @@ const ImportModal = ({
         <Header as="h4" floated="right">
           <span>
             <a href={`/help/import`} rel="noopener noreferrer" target="_BLANK">
-              <TranslationText id="header_help" />
+              {t("header_help")}
             </a>
           </span>
         </Header>
@@ -127,7 +127,7 @@ const ImportModal = ({
           loading={creating}
           onClick={handleFormSubmit}
           secondary>
-          <Icon name={"upload"} /> {<TranslationText id="import" />}
+          <Icon name={"upload"} /> {t("import")}
         </Button>
       </Modal.Actions>
     </Modal>

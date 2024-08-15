@@ -1,8 +1,9 @@
-import TranslationText from "../../../../components/legacyComponents/translationText";
 import { Box, FormControl, MenuItem, Select } from "@mui/material/";
 import { WorkgroupSelectProps } from "./actionsInterfaces.ts";
+import { useTranslation } from "react-i18next";
 
 const WorkgroupSelect = ({ workgroup, enabledWorkgroups, setWorkgroup }: WorkgroupSelectProps) => {
+  const { t } = useTranslation();
   return (
     <>
       <Box
@@ -15,7 +16,7 @@ const WorkgroupSelect = ({ workgroup, enabledWorkgroups, setWorkgroup }: Workgro
             return;
           }
           if (wg?.length === 0) {
-            return <TranslationText id="disabled" />;
+            return t("disabled");
           } else if (wg?.length === 1) {
             return wg[0].workgroup;
           }

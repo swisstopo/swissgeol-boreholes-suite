@@ -1,9 +1,12 @@
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { Form, Segment, TextArea } from "semantic-ui-react";
+import { useTranslation } from "react-i18next";
 
 const BoreholeGeneralSegment = props => {
   const { size, borehole, updateChange, isEditable } = props;
+  const { t } = useTranslation();
+
   return (
     <Segment>
       <div
@@ -19,9 +22,7 @@ const BoreholeGeneralSegment = props => {
             <Form.Group widths="equal">
               {/* drilling type in Borehole */}
               <Form.Field error={borehole.data.borehole_type === null} required>
-                <label>
-                  <TranslationText id="borehole_type" />
-                </label>
+                <label>{t("borehole_type")}</label>
                 <DomainDropdown
                   onSelected={selected => {
                     updateChange("borehole_type", selected.id, false);
@@ -34,9 +35,7 @@ const BoreholeGeneralSegment = props => {
             </Form.Group>
             <Form.Group widths="equal">
               <Form.Field required>
-                <label>
-                  <TranslationText id="purpose" />
-                </label>
+                <label>{t("purpose")}</label>
                 <DomainDropdown
                   onSelected={selected => {
                     updateChange("extended.purpose", selected.id, false);
@@ -71,7 +70,7 @@ const BoreholeGeneralSegment = props => {
           }}>
           <Form autoComplete="off" error size={size}>
             <Form.Field>
-              <TranslationText id="remarks" />
+              {t("remarks")}
               <TextArea
                 onChange={e => {
                   updateChange("custom.remarks", e.target.value);

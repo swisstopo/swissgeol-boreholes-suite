@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import * as Styled from "./styles.js";
 import { Button } from "semantic-ui-react";
-import TranslationText from "../../../../../../components/legacyComponents/translationText.jsx";
 import { createNewStratigraphy } from "./api";
 import { fetchStratigraphyByBoreholeId } from "../../../../../../api/fetchApiV2.js";
 import ProfileHeaderList from "./profileHeaderList";
+import { useTranslation } from "react-i18next";
 
 const ProfileHeader = props => {
   const { boreholeID, isEditable, reloadHeader, selectedStratigraphy, setSelectedStratigraphy, setIsLoadingData } =
     props;
-
+  const { t } = useTranslation();
   const [profiles, setProfiles] = useState([]);
 
   const setStratigraphy = useCallback(
@@ -58,7 +58,7 @@ const ProfileHeader = props => {
         {isEditable && (
           <Button
             data-cy="add-stratigraphy-button"
-            content={<TranslationText id="stratigraphy" />}
+            content={t("stratigraphy")}
             icon="add"
             onClick={createStratigraphy}
             secondary

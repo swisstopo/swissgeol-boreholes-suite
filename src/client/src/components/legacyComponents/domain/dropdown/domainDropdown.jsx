@@ -7,7 +7,6 @@ import _ from "lodash";
 import { loadDomains } from "../../../../api-lib/index.js";
 
 import { Form, Header } from "semantic-ui-react";
-import TranslationText from "../../translationText.jsx";
 
 class DomainDropdown extends React.Component {
   constructor(props) {
@@ -115,7 +114,7 @@ class DomainDropdown extends React.Component {
   }
 
   render() {
-    const { domains, schema, search, multiple, additionalValues, readOnly } = this.props,
+    const { domains, schema, search, multiple, additionalValues, readOnly, t } = this.props,
       { selected } = this.state;
     if (!Object.prototype.hasOwnProperty.call(domains.data, schema)) {
       if (domains.isFetching === true) {
@@ -134,7 +133,7 @@ class DomainDropdown extends React.Component {
             style={{
               color: "red",
             }}>
-            <TranslationText id="reset" />
+            {t("reset")}
           </span>
         ),
       });

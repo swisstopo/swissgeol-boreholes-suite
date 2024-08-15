@@ -5,14 +5,15 @@ import Highlighter from "react-highlight-words";
 import { Button, Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
 import { getWms } from "../../../../api-lib/index";
 import { AlertContext } from "../../../../components/alert/alertContext";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 import { theme } from "../../../../AppTheme";
+import { useTranslation } from "react-i18next";
 
 const MapSettings = props => {
   const { showAlert } = useContext(AlertContext);
   const { setting, i18n, rmExplorerMap, addExplorerMap, handleAddItem, handleOnChange, state, setState } = props;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -36,7 +37,7 @@ const MapSettings = props => {
             fontSize: 18,
             fontWeight: "bold",
           }}>
-          <TranslationText id="map" />
+          {t("map")}
         </div>
         <div
           style={{
@@ -44,7 +45,7 @@ const MapSettings = props => {
             textAlign: "right",
           }}>
           <Button color="red" size="small">
-            {state.map === true ? <TranslationText id="collapse" /> : <TranslationText id="expand" />}
+            {state.map === true ? t("collapse") : t("expand")}
           </Button>
         </div>
       </div>
@@ -137,7 +138,7 @@ const MapSettings = props => {
                     }}
                     // size='mini'
                   >
-                    <TranslationText id="load" />
+                    {t("load")}
                   </Button>
                 </div>
                 {state.wmts !== null ? (
@@ -346,7 +347,7 @@ const MapSettings = props => {
                     style={{
                       flex: 1,
                     }}>
-                    <TranslationText id="usersMap" />
+                    {t("usersMap")}
                   </div>
                   <div>
                     <Input

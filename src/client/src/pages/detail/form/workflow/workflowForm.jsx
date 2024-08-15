@@ -168,7 +168,7 @@ class WorkflowForm extends React.Component {
                         style={{
                           color: "#787878",
                         }}>
-                        <TranslationText id="you" />
+                        {t("you")}
                       </span>
                     ) : null}
                   </div>
@@ -193,7 +193,7 @@ class WorkflowForm extends React.Component {
                           color: theme.palette.error.main,
                           fontStyle: "italic",
                         }}>
-                        <TranslationText id="noComments" />
+                        {t("noComments")}
                       </div>
                     )}
                   </div>
@@ -202,7 +202,7 @@ class WorkflowForm extends React.Component {
               {workflow.data === null || (readOnly === true && workflows.data.length > 1) ? null : (
                 <div>
                   <span>
-                    <TranslationText id="yourcomments" />
+                    {t("yourcomments")}
                     &nbsp;
                     {readOnly ? <TranslationText append=")" id="disabled" prepend="(" /> : null}:
                   </span>
@@ -216,7 +216,7 @@ class WorkflowForm extends React.Component {
                     <div>
                       <Icon loading name="spinner" size="small" />
                       &nbsp;
-                      <TranslationText id="saving" />
+                      {t("saving")}
                     </div>
                   ) : null}
                 </div>
@@ -295,7 +295,7 @@ class WorkflowForm extends React.Component {
                                     color: theme.palette.success.main,
                                     fontSize: "0.9em",
                                   }}>
-                                  <TranslationText id="rejected" />
+                                  {t("rejected")}
                                   <br />
                                   <DateText date={status[role].finished} hours />
                                 </span>
@@ -304,7 +304,7 @@ class WorkflowForm extends React.Component {
                                   style={{
                                     fontSize: "0.9em",
                                   }}>
-                                  <TranslationText id="submitted" />
+                                  {t("submitted")}
                                   <br />
                                   <DateText date={status[role].finished} hours />
                                 </span>
@@ -348,7 +348,7 @@ class WorkflowForm extends React.Component {
                                       });
                                     }}
                                     size="mini">
-                                    <TranslationText id="flowRestart" />
+                                    {t("flowRestart")}
                                   </Button>
                                 )}
                               {status[role].finished === null &&
@@ -368,7 +368,7 @@ class WorkflowForm extends React.Component {
                                           });
                                         }}
                                         size="mini">
-                                        <TranslationText id="reject" />
+                                        {t("reject")}
                                       </Button>
                                     )}
 
@@ -383,7 +383,7 @@ class WorkflowForm extends React.Component {
                                       }}
                                       secondary
                                       size="mini">
-                                      <TranslationText id="submit" />
+                                      {t("submit")}
                                     </Button>
                                     <Modal
                                       // basic
@@ -397,9 +397,7 @@ class WorkflowForm extends React.Component {
                                       size="mini">
                                       <Header content={t(`status-submit-msg-${role.toLowerCase()}`)} />
                                       <Modal.Content>
-                                        <p>
-                                          <TranslationText id="sure" />
-                                        </p>
+                                        <p>{t("sure")}</p>
                                       </Modal.Content>
                                       <Modal.Actions>
                                         {this.state.modal < 3 ? (
@@ -419,7 +417,7 @@ class WorkflowForm extends React.Component {
                                             secondary>
                                             <Icon name="checkmark" />
                                             &nbsp;
-                                            <TranslationText id="submit" />
+                                            {t("submit")}
                                           </Button>
                                         ) : (
                                           <Button
@@ -435,7 +433,7 @@ class WorkflowForm extends React.Component {
                                             }}>
                                             <Icon name="checkmark" />
                                             &nbsp;
-                                            <TranslationText id="reject" />
+                                            {t("reject")}
                                           </Button>
                                         )}
                                       </Modal.Actions>
@@ -503,9 +501,7 @@ class WorkflowForm extends React.Component {
             size="mini">
             <Header content={t(`flowRestart`)} />
             <Modal.Content>
-              <p>
-                <TranslationText id="sure" />
-              </p>
+              <p>{t("sure")}</p>
             </Modal.Content>
             <Modal.Actions>
               <Button
@@ -529,7 +525,7 @@ class WorkflowForm extends React.Component {
                 }}>
                 <Icon name="checkmark" />
                 &nbsp;
-                <TranslationText id="yes" />
+                {t("yes")}
               </Button>
               <Button
                 negative
@@ -538,7 +534,7 @@ class WorkflowForm extends React.Component {
                     modalRestart: false,
                   });
                 }}>
-                <TranslationText id="cancel" />
+                {t("cancel")}
               </Button>
             </Modal.Actions>
           </Modal>

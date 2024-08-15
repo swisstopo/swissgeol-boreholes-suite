@@ -3,7 +3,6 @@ import _ from "lodash";
 
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import DomainText from "../../../../components/legacyComponents/domain/domainText.jsx";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { Form, Icon, Input, Segment } from "semantic-ui-react";
 import { addIdentifier, removeIdentifier } from "../../../../api-lib";
 import { useTranslation } from "react-i18next";
@@ -25,13 +24,9 @@ const IdentifierSegment = props => {
           borderBottom: "thin solid #d2d2d2",
           paddingBottom: "0.4em",
         }}>
-        <div className="flex_fill">
-          <TranslationText id="borehole_identifier" />
-        </div>
-        <div className="flex_fill">
-          <TranslationText id="borehole_identifier_value" />
-        </div>
-        <div>{borehole.data.lock !== null ? <TranslationText id="delete" /> : null}</div>
+        <div className="flex_fill">{t("borehole_identifier")}</div>
+        <div className="flex_fill">{t("borehole_identifier_value")}</div>
+        <div>{borehole.data.lock !== null ? t("delete") : null}</div>
       </div>
       <div
         className="flex_row"
@@ -47,7 +42,7 @@ const IdentifierSegment = props => {
               style={{
                 visibility: "hidden",
               }}>
-              <TranslationText id="delete" />
+              {t("delete")}
             </div>
           ) : null}
         </div>
@@ -82,7 +77,7 @@ const IdentifierSegment = props => {
                         }
                       });
                     }}>
-                    <TranslationText id="delete" />
+                    {t("delete")}
                   </div>
                 ) : null}
               </div>

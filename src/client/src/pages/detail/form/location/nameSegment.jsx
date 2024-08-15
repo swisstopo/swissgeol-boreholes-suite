@@ -1,8 +1,9 @@
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { Form, Input, Segment } from "semantic-ui-react";
+import { useTranslation } from "react-i18next";
 
 const NameSegment = props => {
   const { size, borehole, updateChange, user } = props;
+  const { t } = useTranslation();
 
   const isEditable =
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
@@ -12,9 +13,7 @@ const NameSegment = props => {
       <Form autoComplete="off" error size={size}>
         <Form.Group widths="equal">
           <Form.Field error={borehole.data.extended.original_name === ""} required>
-            <label>
-              <TranslationText id="original_name" />
-            </label>
+            <label>{t("original_name")}</label>
             <Input
               autoCapitalize="off"
               autoComplete="off"
@@ -28,9 +27,7 @@ const NameSegment = props => {
             />
           </Form.Field>
           <Form.Field>
-            <label>
-              <TranslationText id="project_name" />
-            </label>
+            <label>{t("project_name")}</label>
             <Input
               autoCapitalize="off"
               autoComplete="off"
@@ -46,9 +43,7 @@ const NameSegment = props => {
         </Form.Group>
         <Form.Group widths="equal">
           <Form.Field>
-            <label>
-              <TranslationText id="alternate_name" />
-            </label>
+            <label>{t("alternate_name")}</label>
             <Input
               autoCapitalize="off"
               autoComplete="off"

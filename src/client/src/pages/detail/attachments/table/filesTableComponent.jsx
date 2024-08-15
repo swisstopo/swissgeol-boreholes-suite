@@ -3,10 +3,10 @@ import { withTranslation } from "react-i18next";
 import { Button, Checkbox, Icon, Table, TextArea } from "semantic-ui-react";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import DownloadLink from "../downloadlink.jsx";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { downloadBoreholeAttachment } from "../../../../api/fetchApiV2.js";
 
 const FilesTableComponent = props => {
+  const { t } = props;
   return (
     <div
       className="flex_col flex_fill"
@@ -16,23 +16,11 @@ const FilesTableComponent = props => {
       <Table singleLine>
         <Table.Header>
           <Table.Row>
-            {props.editor === true && (
-              <Table.HeaderCell>
-                <TranslationText id="public" />
-              </Table.HeaderCell>
-            )}
-            <Table.HeaderCell>
-              <TranslationText id="name" />
-            </Table.HeaderCell>
-            <Table.HeaderCell>
-              <TranslationText id="description" />
-            </Table.HeaderCell>
-            <Table.HeaderCell>
-              <TranslationText id="type" />
-            </Table.HeaderCell>
-            <Table.HeaderCell>
-              <TranslationText id="uploaded" />
-            </Table.HeaderCell>
+            {props.editor === true && <Table.HeaderCell>{t("public")}</Table.HeaderCell>}
+            <Table.HeaderCell>{t("name")}</Table.HeaderCell>
+            <Table.HeaderCell>{t("description")}</Table.HeaderCell>
+            <Table.HeaderCell>{t("type")}</Table.HeaderCell>
+            <Table.HeaderCell>{t("uploaded")}</Table.HeaderCell>
             {props.unlocked === true ? <Table.HeaderCell /> : null}
           </Table.Row>
         </Table.Header>

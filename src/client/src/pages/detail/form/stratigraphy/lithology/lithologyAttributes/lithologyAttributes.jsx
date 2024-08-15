@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import * as Styled from "./styles.js";
 import { Checkbox } from "semantic-ui-react";
-import TranslationText from "../../../../../../components/legacyComponents/translationText.jsx";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import LithologyAttributeList from "./lithologyAttributeList/lithologyAttributeList.jsx";
@@ -156,7 +155,7 @@ const LithologyAttributes = props => {
     <Styled.Container disable={!id}>
       {showCheckbox() && (
         <Styled.CheckboxContainer>
-          <TranslationText id="showallfields" />
+          {t("showallfields")}
           <Checkbox checked={showAll} onChange={() => setShowAll(!showAll)} toggle />
         </Styled.CheckboxContainer>
       )}

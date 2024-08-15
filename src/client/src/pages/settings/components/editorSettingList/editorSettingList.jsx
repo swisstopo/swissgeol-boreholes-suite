@@ -2,6 +2,7 @@ import * as Styled from "./styles";
 import { Button, Segment } from "semantic-ui-react";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import _ from "lodash";
+import { useTranslation } from "react-i18next";
 
 const EditorSettingList = props => {
   const {
@@ -16,6 +17,8 @@ const EditorSettingList = props => {
     toggleFilterArray,
     type,
   } = props;
+
+  const { t } = useTranslation();
 
   const isChecked = item => {
     return listName === "lithologyfields"
@@ -62,13 +65,13 @@ const EditorSettingList = props => {
             onClick={() => {
               sendSelectAll(true);
             }}>
-            <TranslationText id="selectAll" />
+            {t("selectAll")}
           </Button>
           <Button
             onClick={() => {
               sendSelectAll(false);
             }}>
-            <TranslationText id="unselectAll" />
+            {t("unselectAll")}
           </Button>
         </Button.Group>
       </Segment>

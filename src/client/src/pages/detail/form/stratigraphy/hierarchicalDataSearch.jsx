@@ -6,7 +6,7 @@ import * as Styled from "../../../overview/sidePanelContent/filter/listFilterSty
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 
 const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { data: schemaData } = useDomainSchema(schema);
 
   const [levels, setLevels] = useState([]);
@@ -83,7 +83,7 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
                 style={{
                   color: "red",
                 }}>
-                <TranslationText id="reset" />
+                {t("reset")}
               </span>
             ),
           });

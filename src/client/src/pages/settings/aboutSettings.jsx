@@ -1,6 +1,5 @@
 import React from "react";
 import { withTranslation } from "react-i18next";
-import TranslationText from "../../components/legacyComponents/translationText.jsx";
 import { Header } from "semantic-ui-react";
 
 class AboutSettings extends React.Component {
@@ -20,6 +19,7 @@ class AboutSettings extends React.Component {
   }
 
   render() {
+    const { t } = this.props;
     return (
       <div
         style={{
@@ -33,7 +33,7 @@ class AboutSettings extends React.Component {
             textDecoration: "none",
             paddingBottom: "1em",
           }}>
-          {this.props.t("common:about")}
+          {t("common:about")}
         </Header>
         <div
           style={{
@@ -43,7 +43,7 @@ class AboutSettings extends React.Component {
             style={{
               fontWeight: "bold",
             }}>
-            <TranslationText id="sourceCode" />
+            {t("sourceCode")}
             :&nbsp;
           </span>
           <span>
@@ -60,7 +60,7 @@ class AboutSettings extends React.Component {
             style={{
               fontWeight: "bold",
             }}>
-            <TranslationText id="version" />
+            {t("version")}
             :&nbsp;
           </span>
           <span>
@@ -83,7 +83,7 @@ class AboutSettings extends React.Component {
             style={{
               fontWeight: "bold",
             }}>
-            <TranslationText id="license" />
+            {t("version")}
             :&nbsp;
           </span>
           <span>
@@ -102,7 +102,7 @@ class AboutSettings extends React.Component {
             textDecoration: "none",
             paddingTop: "2em",
           }}>
-          {this.props.t("common:licenseInformation")}
+          {t("common:licenseInformation")}
         </Header>
         {Object.keys(this.state.license).map(key => (
           <div key={key} data-cy={"credits-" + key}>
