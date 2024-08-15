@@ -140,6 +140,7 @@ const goToRouteAndAccptTerms = route => {
   cy.visit(route);
   cy.get('[data-cy="accept-button"]').click();
 };
+
 export const loginAsAdmin = (route = "/") => {
   login("admin");
   cy.intercept("/api/v1/user", {
