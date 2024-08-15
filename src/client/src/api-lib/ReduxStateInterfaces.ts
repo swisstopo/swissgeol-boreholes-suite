@@ -35,40 +35,49 @@ interface Workflow {
   workflow: number;
 }
 
-export interface Borehole {
-  // Incomplete type definition, add other properties as needed
-  isFetching: boolean;
-  data: {
-    workgroup: Workgroup;
-    workflow: Workflow;
+interface BoreholeAttributes {
+  workgroup: Workgroup;
+  workflow: Workflow;
+  id: number;
+  spatial_reference_system: number;
+  role: Role;
+  lock: {
     id: number;
-    spatial_reference_system: number;
-    role: Role;
-    lock: {
-      id: number;
-    };
-    location_precision: number;
-    reference_elevation: number;
-    height_reference_system: number;
-    reference_elevation_type: number;
-    qt_reference_elevation: number;
-    elevation_precision: number;
-    elevation_z: number;
-    location_x: number;
-    location_y: number;
-    location_x_lv03: number;
-    location_y_lv03: number;
-    precision_location_x: number;
-    precision_location_y: number;
-    precision_location_x_lv03: number;
-    precision_location_y_lv03: number;
-    extended: {
-      original_name: string;
-    };
+  };
+  location_precision: number;
+  reference_elevation: number;
+  height_reference_system: number;
+  reference_elevation_type: number;
+  qt_reference_elevation: number;
+  elevation_precision: number;
+  elevation_z: number;
+  location_x: number;
+  location_y: number;
+  location_x_lv03: number;
+  location_y_lv03: number;
+  precision_location_x: number;
+  precision_location_y: number;
+  precision_location_x_lv03: number;
+  precision_location_y_lv03: number;
+  extended: {
+    original_name: string;
   };
 }
 
 export interface Boreholes {
+  limit: number;
   isFetching: boolean;
   length: number;
+  orderby: string;
+  direction: string;
+  page: number;
+  data: BoreholeAttributes[];
+}
+
+export interface Borehole {
+  isFetching: boolean;
+  length: number;
+  orderby: string;
+  direction: string;
+  data: BoreholeAttributes;
 }

@@ -651,7 +651,6 @@ class MapComponent extends React.Component {
             flex: "1 1 100%",
             cursor: this.state.hover === null ? null : "pointer",
             position: "relative",
-            boxShadow: "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px",
           }}
         />
         <NamePopup state={this.state}></NamePopup>
