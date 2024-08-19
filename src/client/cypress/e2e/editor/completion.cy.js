@@ -1,5 +1,21 @@
-import { createBorehole, createCompletion } from "../helpers/testHelpers";
-import { addItem, copyItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import {
+  createBorehole,
+  createCompletion,
+  handlePrompt,
+  loginAsAdmin,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
+import { addItem, cancelEditing, copyItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import {
+  evaluateCheckbox,
+  evaluateDisplayValue,
+  evaluateInput,
+  evaluateSelect,
+  evaluateTextarea,
+  setInput,
+  setSelect,
+  toggleCheckbox,
+} from "../helpers/formHelpers";
 
 const toggleHeaderOpen = () => {
   cy.get('[data-cy="completion-header-display"]')
@@ -136,7 +152,7 @@ describe("completion crud tests", () => {
   });
 
   it("switches tabs", () => {
-    var boreholeId;
+    let boreholeId;
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
@@ -166,7 +182,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1");
     setSelect("kindId", 1);
     saveChanges();
-    var completion1Id;
+    let completion1Id;
     cy.location().should(location => {
       completion1Id = location.pathname.split("/").pop();
       expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
@@ -176,7 +192,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-2");
     setSelect("kindId", 1);
     saveChanges();
-    var completion2Id;
+    let completion2Id;
     cy.location().should(location => {
       completion2Id = location.pathname.split("/").pop();
       expect(completion1Id).to.not.eq(completion2Id);
