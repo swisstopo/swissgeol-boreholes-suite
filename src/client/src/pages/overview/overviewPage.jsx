@@ -8,7 +8,7 @@ import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
-import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.js";
+import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 
 const OverviewPage = props => {
   const [sideDrawerOpen, setSideDrawerOpen] = useState(false);

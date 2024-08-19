@@ -2,7 +2,7 @@ import { FormDisplay, FormValueType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";
 import { deleteWaterIngress } from "../../../../api/fetchApiV2";
-import { StackFullWidth } from "../../../../components/styledComponents.js";
+import { StackFullWidth } from "../../../../components/styledComponents.ts";
 
 const WaterIngressDisplay = props => {
   const { item, isEditable } = props;

@@ -24,6 +24,7 @@
 - Removed unused `IsViewer` flag from user.
 - Removed unused `UserEvent` from user.
 - Migrated `User` API endpoints to .NET API.
+- Disclaimer is now displayed at every login.
 - Changed boreholes table design.
 - Migrated `Workgroup` API endpoints to .NET API.
 - Use `filled` style for form components.

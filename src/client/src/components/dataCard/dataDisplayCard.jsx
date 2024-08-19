@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { DataCardButtonContainer } from "./dataCard.jsx";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
 import { PromptContext } from "../prompt/promptContext.tsx";
-import { StackFullWidth } from "../styledComponents.js";
+import { StackFullWidth } from "../styledComponents.ts";
 import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
 import TrashIcon from "../../assets/icons/trash.svg?react";
 

@@ -1,4 +1,4 @@
-import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.js";
+import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { FC } from "react";
 import DetailSideNav from "./detailSideNav";
 import DetailPageContent from "./detailPageContent";

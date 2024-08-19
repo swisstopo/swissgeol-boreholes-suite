@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Divider, IconButton } from "@mui/material";
-import { StackFullWidth } from "../../../../components/styledComponents.js";
+import { StackFullWidth } from "../../../../components/styledComponents.ts";
 import { FormCheckbox, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
 import { useContext, useEffect } from "react";

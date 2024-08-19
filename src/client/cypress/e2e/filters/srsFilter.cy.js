@@ -9,7 +9,6 @@ describe("Tests for filtering data by reference system.", () => {
 
   it("can set filters as editor", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
     goToEditorLocationFilter();
 

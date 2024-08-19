@@ -49,8 +49,7 @@ describe("Test for the borehole form.", () => {
     createBorehole({ "extended.original_name": "LSENALZE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
-      loginAsAdmin();
-      cy.visit(`/${id}/borehole`);
+      loginAsAdmin(`/${id}/borehole`);
     });
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);

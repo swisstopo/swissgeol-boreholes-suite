@@ -108,6 +108,8 @@
   "disableWorkgroup": "Désactiver le groupe de travail",
   "disabled": "Désactivé",
   "disabling": "Désactiver {{quoi}}",
+  "disclaimer_publish_message": "Der von Ihnen erstellte Disclaimer wird ab sofort bei jedem Login angezeigt.",
+  "disclaimer_publish_title": "La clause de non-responsabilité sera publiée",
   "done": "OK",
   "draft": "Ébauche",
   "drill_core_diameter": "Diamètre de la carotte [mm]",

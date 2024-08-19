@@ -108,6 +108,8 @@
   "disableWorkgroup": "Disattivare gruppo di lavoro",
   "disabled": "Disattivato",
   "disabling": "Disattivazione {{what}}",
+  "disclaimer_publish_message": "Il disclaimer che hai creato verrà ora visualizzato ogni volta che accedi.",
+  "disclaimer_publish_title": "Il disclaimer sarà pubblicato",
   "done": "OK",
   "draft": "Bozza",
   "drill_core_diameter": "Diametro della carota [mm]",

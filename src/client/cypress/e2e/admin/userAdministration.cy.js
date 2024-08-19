@@ -2,9 +2,7 @@ import { loginAsAdmin } from "../helpers/testHelpers";
 
 describe("Admin settings test", () => {
   beforeEach(() => {
-    loginAsAdmin();
-    cy.visit("/setting/admin");
-
+    loginAsAdmin("/setting/admin");
     cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 8);
   });
 

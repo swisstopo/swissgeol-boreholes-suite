@@ -1,10 +1,15 @@
-import { createBorehole, loginAsAdmin, startBoreholeEditing, stopBoreholeEditing } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  goToRouteAndAcceptTerms,
+  loginAsAdmin,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 import adminUser from "../../fixtures/adminUser.json";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 beforeEach(() => {
   loginAsAdmin();
-  cy.visit("/");
   showTableAndWaitForData();
 });
 
@@ -33,7 +38,6 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get(".modal .toggle").should("have.length", 18);
 
-    loginAsAdmin("admin");
     const adminUser2Workgroups = Object.assign({}, adminUser);
     adminUser2Workgroups.data.workgroups.push({
       id: 6,
@@ -46,7 +50,7 @@ describe("Test the borehole bulk edit feature.", () => {
       statusCode: 200,
       body: JSON.stringify(adminUser2Workgroups),
     }).as("adminUser2Workgroups");
-    cy.visit("/");
+    goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
@@ -72,7 +76,6 @@ describe("Test the borehole bulk edit feature.", () => {
     );
 
     loginAsAdmin();
-    cy.visit("/");
     showTableAndWaitForData();
     cy.wait("@borehole");
 
@@ -126,14 +129,14 @@ describe("Test the borehole bulk edit feature.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      cy.visit(`/${id}/borehole`);
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
-      cy.visit("/");
+      goToRouteAndAcceptTerms(`/`);
       showTableAndWaitForData();
       cy.contains(".MuiDataGrid-row", "AAA_JUNIORSOUFFLE")
         .find('.MuiCheckbox-root input[type="checkbox"]')
         .should("be.disabled");
-      cy.visit(`/${id}/borehole`);
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
       stopBoreholeEditing();
     });
   });

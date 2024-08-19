@@ -60,8 +60,7 @@ describe("Tests for the lithostratigraphy editor.", () => {
 
     // open lithostratigraphy editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/stratigraphy/lithostratigraphy`);
+      loginAsAdmin(`/${id}/stratigraphy/lithostratigraphy`);
     });
     cy.wait("@get-layers-by-profileId");
 

@@ -140,10 +140,9 @@ class TermSettings extends React.Component {
                 {t("publish")}
               </Button>
               <Modal open={this.state.confirmPublication} size="mini">
-                <Modal.Header>{t("messages:disclaimer_publish_title")}</Modal.Header>
+                <Modal.Header>{t("disclaimer_publish_title")}</Modal.Header>
                 <Modal.Content>
-                  <p>{t("messages:disclaimer_publish_message")}</p>
-                  <p>{t("messages:disclaimer_publish_note")}</p>
+                  <p>{t("disclaimer_publish_message")}</p>
                 </Modal.Content>
                 <Modal.Actions>
                   <Button

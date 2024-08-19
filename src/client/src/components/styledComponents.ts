@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { styled } from "@mui/system";
 import { theme } from "../AppTheme";
 
@@ -18,10 +18,6 @@ export const StackFullWidth = styled(Stack)(() => ({
 
 export const StackHalfWidth = styled(Stack)(() => ({
   width: "50%",
-}));
-
-export const TypographyWithBottomMargin = styled(Typography)(() => ({
-  marginBottom: "1em",
 }));
 
 export const AppBox = styled(Box)({
@@ -44,4 +40,22 @@ export const MainContentBox = styled(Box)({
   flexDirection: "column",
   overflow: "hidden",
   position: "relative",
+});
+
+export const DialogHeaderContainer = styled(Box)({
+  borderBottom: "1px solid " + theme.palette.border,
+  paddingTop: theme.spacing(3),
+  paddingRight: theme.spacing(3),
+  paddingLeft: theme.spacing(3),
+  paddingBottom: theme.spacing(2),
+});
+
+export const DialogMainContent = styled(Box)({
+  padding: theme.spacing(3),
+  flexGrow: 1,
+});
+
+export const DialogFooterContainer = styled(Box)({
+  borderTop: "1px solid " + theme.palette.border,
+  padding: theme.spacing(3),
 });

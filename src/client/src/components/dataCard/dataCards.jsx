@@ -4,7 +4,7 @@ import { CircularProgress, Typography } from "@mui/material";
 import { DataCard, DataCardButtonContainer, DataCardContainer, DataCardItem } from "./dataCard";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
 import { AddButton } from "../buttons/buttons.tsx";
-import { FullPage, FullPageCentered } from "../styledComponents.js";
+import { FullPage, FullPageCentered } from "../styledComponents.ts";
 
 const DataCardsContainer = props => {
   return <DataCardContainer>{props.children()}</DataCardContainer>;

@@ -21,8 +21,7 @@ describe("Casing crud tests", () => {
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      loginAsAdmin(`/${id}/completion`);
     });
 
     cy.wait("@get-completions-by-boreholeId");
@@ -131,8 +130,7 @@ describe("Casing crud tests", () => {
           { fromDepth: 0, toDepth: 12, kindId: 25000103 },
         ]);
       });
-      loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      loginAsAdmin(`/${id}/completion`);
     });
 
     // casing 1

@@ -7,7 +7,7 @@ import { theme } from "./AppTheme";
 import OverviewPage from "./pages/overview/overviewPage";
 import SettingsPage from "./pages/settings/settingsPage";
 import { DataLoader } from "./pages/settings/dataLoader";
-import AcceptTerms from "./term/accept";
+import { AcceptTerms } from "./term/accept";
 import { AlertProvider } from "./components/alert/alertContext";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { DataCardProvider } from "./components/dataCard/dataCardContext.jsx";
@@ -16,7 +16,7 @@ import { Prompt } from "./components/prompt/prompt.tsx";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx";
 import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext.tsx";
 import HeaderComponent from "./components/header/headerComponent.tsx";
-import { AppBox } from "./components/styledComponents";
+import { AppBox } from "./components/styledComponents.ts";
 import { DetailPage } from "./pages/detail/detailPage.tsx";
 
 const queryClient = new QueryClient();

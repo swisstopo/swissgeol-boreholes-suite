@@ -4,7 +4,7 @@ import ObservationDisplay from "./observationDisplay";
 import { getHydrotestParameterUnits } from "./parameterUnits";
 import { deleteHydrotest, useDomains } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
-import { StackFullWidth } from "../../../../components/styledComponents.js";
+import { StackFullWidth } from "../../../../components/styledComponents.ts";
 import { FormDisplay, FormValueType } from "../../../../components/form/form";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
 

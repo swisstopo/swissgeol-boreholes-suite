@@ -11,7 +11,6 @@ import {
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
     loginAsAdmin();
-    cy.visit("/");
     showTableAndWaitForData();
 
     // default soring by name ascending
@@ -47,7 +46,6 @@ describe("Borehole editor table tests", () => {
 
   it("preserves column sorting and active page when navigating", () => {
     loginAsEditor();
-    cy.visit("/");
     showTableAndWaitForData();
 
     // sort by name descending

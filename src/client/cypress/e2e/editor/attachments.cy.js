@@ -12,8 +12,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   it("creates, downloads and deletes attachments.", () => {
     createBorehole({ "extended.original_name": "JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      loginAsAdmin();
-      cy.visit(`/${boreholeId}`);
+      loginAsAdmin(`/${boreholeId}`);
 
       startBoreholeEditing();
 

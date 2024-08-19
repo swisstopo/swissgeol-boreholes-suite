@@ -1,10 +1,12 @@
 import {
   createBorehole,
   createCompletion,
+  goToRouteAndAcceptTerms,
   handlePrompt,
   loginAsAdmin,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
+import { addItem, cancelEditing, copyItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 import {
   evaluateCheckbox,
   evaluateDisplayValue,
@@ -15,7 +17,6 @@ import {
   setSelect,
   toggleCheckbox,
 } from "../helpers/formHelpers";
-import { addItem, cancelEditing, copyItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 const toggleHeaderOpen = () => {
   cy.get('[data-cy="completion-header-display"]')
@@ -84,8 +85,7 @@ describe("completion crud tests", () => {
   it("adds, edits, copies and deletes completions", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      loginAsAdmin(`/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
     cy.contains("No completion available");
@@ -153,12 +153,11 @@ describe("completion crud tests", () => {
   });
 
   it("switches tabs", () => {
-    var boreholeId;
+    let boreholeId;
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
-      loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      loginAsAdmin(`/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
     cy.contains("No completion available");
@@ -184,7 +183,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1");
     setSelect("kindId", 1);
     saveChanges();
-    var completion1Id;
+    let completion1Id;
     cy.location().should(location => {
       completion1Id = location.pathname.split("/").pop();
       expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
@@ -194,7 +193,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-2");
     setSelect("kindId", 1);
     saveChanges();
-    var completion2Id;
+    let completion2Id;
     cy.location().should(location => {
       completion2Id = location.pathname.split("/").pop();
       expect(completion1Id).to.not.eq(completion2Id);
@@ -403,8 +402,7 @@ describe("completion crud tests", () => {
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      loginAsAdmin(`/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
 
@@ -615,11 +613,12 @@ describe("completion crud tests", () => {
     cy.get("@borehole_id").then(id => {
       cy.get("@completion1_id").then(completion1Id => {
         // Preserves hash when reloading
-        cy.visit(`/${id}/completion/${completion1Id}`);
+        goToRouteAndAcceptTerms(`/${id}/completion/${completion1Id}`);
         cy.location().should(location => {
           expect(location.hash).to.eq("#casing");
         });
         cy.reload(forceReload);
+        cy.get('[data-cy="accept-button"]').click();
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${id}/completion/${completion1Id}`);
           expect(location.hash).to.eq("#casing");
@@ -630,6 +629,7 @@ describe("completion crud tests", () => {
           expect(location.hash).to.eq("#instrumentation");
         });
         cy.reload(forceReload);
+        cy.get('[data-cy="accept-button"]').click();
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${id}/completion/${completion1Id}`);
           expect(location.hash).to.eq("#instrumentation");

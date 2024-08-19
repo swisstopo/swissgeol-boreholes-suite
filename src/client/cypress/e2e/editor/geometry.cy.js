@@ -7,8 +7,7 @@ describe("Geometry crud tests", () => {
 
     // open section editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/borehole#geometry`);
+      loginAsAdmin(`/${id}/borehole#geometry`);
     });
 
     // start editing session

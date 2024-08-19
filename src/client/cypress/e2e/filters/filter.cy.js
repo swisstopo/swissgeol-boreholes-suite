@@ -4,14 +4,12 @@ import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGr
 describe("Search filter tests", () => {
   it("has search filters", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Filters");
   });
 
   it("shows the correct dropdowns", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("h6", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
@@ -48,7 +46,6 @@ describe("Search filter tests", () => {
   it("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Show all fields")
@@ -80,7 +77,6 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by creator name", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
@@ -96,7 +92,6 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by color and uscs3", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
@@ -147,7 +142,6 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by original lithology in editor mode", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
     filterByOriginalLithology();
     cy.wait("@edit_list");
@@ -156,7 +150,6 @@ describe("Search filter tests", () => {
   });
   it("filters boreholes by creation date", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
@@ -185,7 +178,6 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by workgroup", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
     showTableAndWaitForData();
     cy.contains("Workgroup").click();

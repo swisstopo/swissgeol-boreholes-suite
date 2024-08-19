@@ -4,7 +4,6 @@ import { clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGrid
 describe("Viewer tests", () => {
   it("Assures viewer cannot add, edit or delete boreholes", () => {
     loginAsViewer();
-    cy.visit("/");
 
     showTableAndWaitForData();
 
@@ -30,13 +29,11 @@ describe("Viewer tests", () => {
 
   it("Assures viewer cannot multiselect boreholes", () => {
     loginAsAdmin();
-    cy.visit("/");
     showTableAndWaitForData();
     cy.wait("@edit_list");
     cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").should("be.visible");
 
     loginAsViewer();
-    cy.visit("/");
     cy.wait("@edit_list");
     cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").should("not.exist");
   });

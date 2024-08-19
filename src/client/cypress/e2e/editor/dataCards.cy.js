@@ -6,8 +6,7 @@ describe("Tests for the data cards in the editor.", () => {
   it("resets datacards when stop editing", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/hydrogeology/wateringress`);
+      loginAsAdmin(`/${id}/hydrogeology/wateringress`);
     });
 
     startBoreholeEditing();
@@ -35,8 +34,7 @@ describe("Tests for the data cards in the editor.", () => {
   it("checks for unsaved changes when switching between cards", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/hydrogeology/wateringress`);
+      loginAsAdmin(`/${id}/hydrogeology/wateringress`);
     });
     startBoreholeEditing();
 
