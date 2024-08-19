@@ -1,9 +1,9 @@
 import { FC, PropsWithChildren } from "react";
 import { Stack, Typography } from "@mui/material";
 import styled from "@mui/material/styles/styled";
-import TranslationKeys from "./translationKeys";
 import { useTranslation } from "react-i18next";
 import { theme } from "../AppTheme.ts";
+import { LanguagePopup } from "../components/header/languagePopup.tsx";
 
 export const SplashScreen: FC<PropsWithChildren> = ({ children }) => {
   const { t } = useTranslation();
@@ -54,7 +54,7 @@ export const SplashScreen: FC<PropsWithChildren> = ({ children }) => {
               <Typography sx={{ fontSize: "0.8em", alignSelf: "center" }}>Borehole Data Management System</Typography>
             </Stack>
             {children}
-            <TranslationKeys />
+            <LanguagePopup />
           </Stack>
         </RowContainer>
       </InnerContainer>
