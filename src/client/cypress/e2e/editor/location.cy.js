@@ -5,9 +5,31 @@ describe("Tests for 'Location' edit page.", () => {
   it("creates and deletes a borehole.", () => {
     newEditableBorehole();
 
+    const originalNameInput = cy.contains("label", "Original name").next().children("input");
+    const alternateNameInput = cy.contains("label", "Name").next().children("input");
+
     // enter original name
-    cy.contains("label", "Original name").next().children("input").type("AAA_SCATORPS");
+    originalNameInput.type("Original Name");
     cy.wait("@edit_patch");
+
+    // ensure alternate name contains original name
+    alternateNameInput.should("have.value", "Original Name");
+
+    // change alternate name
+    alternateNameInput.clear().type("Alternate name changed");
+    cy.wait("@edit_patch");
+
+    // ensure alternate name and original name contain correct values
+    originalNameInput.should("have.value", "Original Name");
+    alternateNameInput.should("have.value", "Alternate name changed");
+
+    // change original name
+    originalNameInput.clear().type("AAA_SCATORPS");
+    cy.wait("@edit_patch");
+
+    // ensure alternate name and original name contain correct values
+    originalNameInput.should("have.value", "AAA_SCATORPS");
+    alternateNameInput.should("have.value", "AAA_SCATORPS");
 
     // stop editing
     stopBoreholeEditing();

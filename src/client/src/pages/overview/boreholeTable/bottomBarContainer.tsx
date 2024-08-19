@@ -47,7 +47,7 @@ const BottomBarContainer = ({
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: boreholes.orderby ?? "original_name",
+      field: boreholes.orderby ?? "alternate_name",
       sort: boreholes.direction ? (boreholes.direction.toLowerCase() as GridSortDirection) : "asc",
     },
   ]);
@@ -57,7 +57,7 @@ const BottomBarContainer = ({
       paginationModel.page + 1, // MUI pagination starts at 0, whereas server pagination starts at 1
       paginationModel.pageSize,
       search.filter,
-      sortModel[0]?.field || "original_name",
+      sortModel[0]?.field || "alternate_name",
       sortModel[0]?.sort === "desc" ? "DESC" : "ASC",
       featureIds,
     );

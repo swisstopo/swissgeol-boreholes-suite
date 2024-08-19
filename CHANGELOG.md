@@ -27,6 +27,7 @@
 - Changed boreholes table design.
 - Migrated `Workgroup` API endpoints to .NET API.
 - Use `filled` style for form components.
+- The borehole table now displays the attribute `alternate_name` instead of `origianal_name` in the `Name` column.
 
 ### Fixed
 

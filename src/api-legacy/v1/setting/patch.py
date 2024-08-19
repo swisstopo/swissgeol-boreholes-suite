@@ -114,11 +114,11 @@ class PatchSetting(Action):
                         "filter": {},
                         "viewerFilter": {},
                         "boreholetable": {
-                            "orderby": "original_name",
+                            "orderby": "alternate_name",
                             "direction": "ASC"
                         },
                         "eboreholetable": {
-                            "orderby": "original_name",
+                            "orderby": "alternate_name",
                             "direction": "ASC"
                         },
                         "map": {

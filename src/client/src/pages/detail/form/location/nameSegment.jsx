@@ -1,8 +1,12 @@
 import { Form, Input, Segment } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const NameSegment = props => {
   const { size, borehole, updateChange, user } = props;
+  const [alternateName, setAlternateName] = useState(
+    borehole.data.custom.alternate_name || borehole.data.extended.original_name,
+  );
   const { t } = useTranslation();
 
   const isEditable =
@@ -19,7 +23,9 @@ const NameSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
+                setAlternateName(e.target.value);
                 updateChange("extended.original_name", e.target.value);
+                updateChange("custom.alternate_name", e.target.value);
               }}
               spellCheck="false"
               value={borehole.data.extended.original_name ?? ""}
@@ -49,10 +55,11 @@ const NameSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
+                setAlternateName(e.target.value);
                 updateChange("custom.alternate_name", e.target.value);
               }}
               spellCheck="false"
-              value={borehole.data.custom.alternate_name ?? ""}
+              value={alternateName}
               readOnly={!isEditable}
             />
           </Form.Field>
