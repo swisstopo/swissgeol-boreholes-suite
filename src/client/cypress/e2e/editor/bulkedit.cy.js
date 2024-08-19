@@ -38,7 +38,6 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get(".modal .toggle").should("have.length", 18);
 
-    loginAsAdmin("admin");
     const adminUser2Workgroups = Object.assign({}, adminUser);
     adminUser2Workgroups.data.workgroups.push({
       id: 6,
@@ -51,7 +50,7 @@ describe("Test the borehole bulk edit feature.", () => {
       statusCode: 200,
       body: JSON.stringify(adminUser2Workgroups),
     }).as("adminUser2Workgroups");
-    cy.visit("/");
+    goToRouteAndAccptTerms(`/`);
     showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
