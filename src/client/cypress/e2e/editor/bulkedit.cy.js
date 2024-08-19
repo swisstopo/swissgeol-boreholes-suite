@@ -50,7 +50,7 @@ describe("Test the borehole bulk edit feature.", () => {
       statusCode: 200,
       body: JSON.stringify(adminUser2Workgroups),
     }).as("adminUser2Workgroups");
-    goToRouteAndAccptTerms(`/`);
+    goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
