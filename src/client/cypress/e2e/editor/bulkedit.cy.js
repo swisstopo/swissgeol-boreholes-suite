@@ -1,4 +1,10 @@
-import { createBorehole, loginAsAdmin, startBoreholeEditing, stopBoreholeEditing } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  goToRouteAndAccptTerms,
+  loginAsAdmin,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 import adminUser from "../../fixtures/adminUser.json";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
@@ -74,7 +80,6 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get('[data-cy="borehole-table"]').within(() => {
       checkRowWithText("AAA_NINTIC");
       checkRowWithText("AAA_LOMONE");
-      section;
     });
     cy.contains("button", "Bulk editing").click();
 
@@ -119,14 +124,14 @@ describe("Test the borehole bulk edit feature.", () => {
   it("cannot select locked boreholes for bulk edit", () => {
     createBorehole({ "extended.original_name": "AAA_JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      cy.visit(`/${id}/borehole`);
+      goToRouteAndAccptTerms(`/${id}/borehole`);
       startBoreholeEditing();
-      cy.visit("/");
+      goToRouteAndAccptTerms(`/`);
       showTableAndWaitForData();
       cy.contains(".MuiDataGrid-row", "AAA_JUNIORSOUFFLE")
         .find('.MuiCheckbox-root input[type="checkbox"]')
         .should("be.disabled");
-      cy.visit(`/${id}/borehole`);
+      goToRouteAndAccptTerms(`/${id}/borehole`);
       stopBoreholeEditing();
     });
   });

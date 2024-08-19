@@ -136,7 +136,7 @@ export const login = user => {
  * Login into the application as admin.
  */
 
-const goToRouteAndAccptTerms = route => {
+export const goToRouteAndAccptTerms = route => {
   cy.visit(route);
   cy.get('[data-cy="accept-button"]').click();
 };
