@@ -3,7 +3,7 @@ import {
   createCasing,
   createCompletion,
   createFieldMeasurement,
-  goToRouteAndAccptTerms,
+  goToRouteAndAcceptTerms,
   handlePrompt,
   loginAsAdmin,
   selectLanguage,
@@ -91,7 +91,7 @@ describe("Tests for the field measurement editor.", () => {
     cy.get("@borehole_id").then(id => {
       createFieldMeasurement(id, "2012-11-14T12:06Z", 15203157, 15203209, 15203219, 10, null, 0, 10);
       createFieldMeasurement(id, "2012-11-14T12:07Z", 15203157, 15203209, 15203219, 10, null, 0, 12);
-      goToRouteAndAccptTerms(`/${id}/hydrogeology/fieldmeasurement`);
+      goToRouteAndAcceptTerms(`/${id}/hydrogeology/fieldmeasurement`);
 
       startBoreholeEditing();
       cy.get('[data-cy="fieldMeasurement-card.0"] [data-cy="todepth-formDisplay"]').contains("10");

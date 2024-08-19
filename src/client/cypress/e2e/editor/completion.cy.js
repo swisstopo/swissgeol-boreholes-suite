@@ -1,7 +1,7 @@
 import {
   createBorehole,
   createCompletion,
-  goToRouteAndAccptTerms,
+  goToRouteAndAcceptTerms,
   handlePrompt,
   loginAsAdmin,
   startBoreholeEditing,
@@ -613,7 +613,7 @@ describe("completion crud tests", () => {
     cy.get("@borehole_id").then(id => {
       cy.get("@completion1_id").then(completion1Id => {
         // Preserves hash when reloading
-        goToRouteAndAccptTerms(`/${id}/completion/${completion1Id}`);
+        goToRouteAndAcceptTerms(`/${id}/completion/${completion1Id}`);
         cy.location().should(location => {
           expect(location.hash).to.eq("#casing");
         });

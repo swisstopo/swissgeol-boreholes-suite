@@ -136,7 +136,7 @@ export const login = user => {
  * Login into the application as admin.
  */
 
-export const goToRouteAndAccptTerms = route => {
+export const goToRouteAndAcceptTerms = route => {
   cy.visit(route);
   cy.get('[data-cy="accept-button"]').click();
 };
@@ -147,7 +147,7 @@ export const loginAsAdmin = (route = "/") => {
     statusCode: 200,
     body: JSON.stringify(adminUser),
   }).as("stubAdminUser");
-  goToRouteAndAccptTerms(route);
+  goToRouteAndAcceptTerms(route);
 };
 
 /**
@@ -159,7 +159,7 @@ export const loginAsEditor = (route = "/") => {
     statusCode: 200,
     body: JSON.stringify(editorUser),
   }).as("stubEditorUser");
-  goToRouteAndAccptTerms(route);
+  goToRouteAndAcceptTerms(route);
 };
 
 /**
@@ -171,7 +171,7 @@ export const loginAsViewer = (route = "/") => {
     statusCode: 200,
     body: JSON.stringify(viewerUser),
   }).as("stubViewerUser");
-  goToRouteAndAccptTerms(route);
+  goToRouteAndAcceptTerms(route);
 };
 
 export const newEditableBorehole = () => {

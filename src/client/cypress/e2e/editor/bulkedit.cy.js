@@ -1,6 +1,6 @@
 import {
   createBorehole,
-  goToRouteAndAccptTerms,
+  goToRouteAndAcceptTerms,
   loginAsAdmin,
   startBoreholeEditing,
   stopBoreholeEditing,
@@ -129,14 +129,14 @@ describe("Test the borehole bulk edit feature.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAccptTerms(`/${id}/borehole`);
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
-      goToRouteAndAccptTerms(`/`);
+      goToRouteAndAcceptTerms(`/`);
       showTableAndWaitForData();
       cy.contains(".MuiDataGrid-row", "AAA_JUNIORSOUFFLE")
         .find('.MuiCheckbox-root input[type="checkbox"]')
         .should("be.disabled");
-      goToRouteAndAccptTerms(`/${id}/borehole`);
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
       stopBoreholeEditing();
     });
   });
