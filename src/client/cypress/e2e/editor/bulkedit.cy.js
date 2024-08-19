@@ -68,8 +68,12 @@ describe("Test the borehole bulk edit feature.", () => {
 
   it("fills all bulkedit fields and saves.", () => {
     // create boreholes
-    createBorehole({ "extended.original_name": "AAA_NINTIC" }).as("borehole_id_1");
-    createBorehole({ "extended.original_name": "AAA_LOMONE" }).as("borehole_id_2");
+    createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as(
+      "borehole_id_1",
+    );
+    createBorehole({ "extended.original_name": "AAA_LOMONE", "custom.alternate_name": "AAA_LOMONE" }).as(
+      "borehole_id_2",
+    );
 
     loginAsAdmin();
     showTableAndWaitForData();
@@ -121,7 +125,9 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   it("cannot select locked boreholes for bulk edit", () => {
-    createBorehole({ "extended.original_name": "AAA_JUNIORSOUFFLE" }).as("borehole_id");
+    createBorehole({ "extended.original_name": "AAA_JUNIORSOUFFLE", "custom.alternate_name": "AAA_JUNIORSOUFFLE" }).as(
+      "borehole_id",
+    );
     cy.get("@borehole_id").then(id => {
       goToRouteAndAccptTerms(`/${id}/borehole`);
       startBoreholeEditing();

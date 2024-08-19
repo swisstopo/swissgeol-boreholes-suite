@@ -41,6 +41,9 @@ class Action():
         if orderby == 'original_name':
             _orderby = 'original_name_bho'
 
+        if orderby == 'alternate_name':
+            _orderby = 'alternate_name_bho'
+
         elif orderby == 'restriction':
             _orderby = 'restriction_id_cli'
 
