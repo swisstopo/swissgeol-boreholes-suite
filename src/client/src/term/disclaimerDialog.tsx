@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogProps, Stack, Typography } from "@mui/material";
 import { DialogFooterContainer, DialogHeaderContainer, DialogMainContent } from "../components/styledComponents.ts";
-import TranslationKeys from "../auth/translationKeys";
 import { AcceptButton } from "../components/buttons/buttons.tsx";
 import { MarkdownWrapper } from "./markdownWrapper.tsx";
+import { LanguagePopup } from "../components/header/languagePopup.tsx";
 
 interface DisclaimerDialogProps {
   onClose?: () => void;
@@ -34,7 +34,7 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
             <Typography variant="h5" sx={{ flexGrow: 1 }}>
               {t("terms")}
             </Typography>
-            <TranslationKeys />
+            <LanguagePopup />
           </Stack>
         </DialogHeaderContainer>
         <DialogMainContent>
