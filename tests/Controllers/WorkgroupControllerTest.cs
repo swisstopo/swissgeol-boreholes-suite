@@ -41,7 +41,6 @@ public class WorkgroupControllerTest
         Assert.AreEqual(workgroup.Name, createdWorkgroup.Name);
         Assert.IsNotNull(createdWorkgroup.CreatedAt);
         Assert.IsFalse(createdWorkgroup.IsDisabled);
-        Assert.IsFalse(createdWorkgroup.IsSupplier);
         Assert.AreEqual("{}", createdWorkgroup.Settings);
     }
 
@@ -63,7 +62,6 @@ public class WorkgroupControllerTest
 
         workgroupToEdit.Name = "Updated Workgroup";
         workgroupToEdit.DisabledAt = DateTime.UtcNow;
-        workgroupToEdit.IsSupplier = true;
         workgroupToEdit.Boreholes.Clear();
 
         var result = await workgroupController.Edit(workgroupToEdit);
@@ -73,7 +71,6 @@ public class WorkgroupControllerTest
         Assert.AreEqual(createdWorkgroup.Id, updatedWorkgroup.Id);
         Assert.AreEqual("Updated Workgroup", updatedWorkgroup.Name);
         Assert.IsTrue(updatedWorkgroup.IsDisabled);
-        Assert.IsFalse(updatedWorkgroup.IsSupplier);
         Assert.AreEqual(1, updatedWorkgroup.BoreholeCount);
     }
 
