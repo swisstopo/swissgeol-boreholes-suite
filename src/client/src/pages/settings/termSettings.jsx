@@ -4,9 +4,7 @@ import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import Markdown from "markdown-to-jsx";
 import { Button, Form, Modal, TextArea } from "semantic-ui-react";
-
 import TranslationKeys from "../../auth/translationKeys";
-
 import { draftTerms, getTermsDraft, publishTerms } from "../../api-lib/index";
 
 class TermSettings extends React.Component {
@@ -240,9 +238,6 @@ TermSettings.propTypes = {
   t: PropTypes.func,
   user: PropTypes.object,
 };
-
-// TermSettings.defaultProps = {
-// };
 
 const mapStateToProps = state => {
   return {
