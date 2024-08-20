@@ -1,5 +1,5 @@
 import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
-import { deleteItem } from "../helpers/buttonHelpers";
+import { addItem, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Tests for the lithological description column.", () => {
   it("Creates, updates and deletes lithological descriptions ", () => {
@@ -9,7 +9,7 @@ describe("Tests for the lithological description column.", () => {
     // navigate to stratigraphy
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="lithology-menu-item"]').click();
-    cy.get('[data-cy="add-stratigraphy-button"]').click();
+    addItem("addStratigraphy");
     cy.wait("@stratigraphy_POST");
 
     // add three layers

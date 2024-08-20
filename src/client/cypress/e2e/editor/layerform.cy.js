@@ -1,4 +1,5 @@
 import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
+import { addItem } from "../helpers/buttonHelpers";
 
 describe("Tests for the layer form.", () => {
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {
@@ -8,7 +9,7 @@ describe("Tests for the layer form.", () => {
     // navigate to stratigraphy
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="lithology-menu-item"]').click();
-    cy.get('[data-cy="add-stratigraphy-button"]').click();
+    addItem("addStratigraphy");
     cy.wait("@stratigraphy_POST");
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
