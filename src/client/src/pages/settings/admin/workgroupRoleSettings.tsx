@@ -25,7 +25,7 @@ export const WorkgroupRoleSettings: FC<WorkgroupRoleSettingsProps> = props => {
               }}
             />
           </Form.Field>
-          {workgroup.isSupplier === false ? (
+          {
             <Form.Field>
               <Checkbox
                 checked={workgroupRoles.some(x => x.role === Role.Editor)}
@@ -36,8 +36,8 @@ export const WorkgroupRoleSettings: FC<WorkgroupRoleSettingsProps> = props => {
                 }}
               />
             </Form.Field>
-          ) : null}
-          {workgroup.isSupplier === false ? (
+          }
+          {
             <Form.Field>
               <Checkbox
                 checked={workgroupRoles.some(x => x.role === Role.Controller)}
@@ -48,10 +48,10 @@ export const WorkgroupRoleSettings: FC<WorkgroupRoleSettingsProps> = props => {
                 }}
               />
             </Form.Field>
-          ) : null}
+          }
         </Form.Group>
         <Form.Group autoComplete="off" widths="equal">
-          {workgroup.isSupplier === false ? (
+          {
             <Form.Field>
               <Checkbox
                 checked={workgroupRoles.some(x => x.role === Role.Validator)}
@@ -62,7 +62,7 @@ export const WorkgroupRoleSettings: FC<WorkgroupRoleSettingsProps> = props => {
                 }}
               />
             </Form.Field>
-          ) : null}
+          }
           <Form.Field>
             <Checkbox
               checked={workgroupRoles.some(x => x.role === Role.Publisher)}

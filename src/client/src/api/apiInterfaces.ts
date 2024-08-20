@@ -13,7 +13,6 @@ export interface Workgroup {
   disabledAt?: Date | string;
   createdAt?: Date | string;
   settings?: string;
-  isSupplier?: boolean;
   boreholeCount: number;
 }
 

@@ -45,12 +45,6 @@ public class Workgroup : IIdentifyable
     public string? Settings { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the <see cref="Workgroup"/> is supplier.
-    /// </summary>
-    [Column("supplier_wgp")]
-    public bool? IsSupplier { get; set; }
-
-    /// <summary>
     /// Gets the boreholes for the workgroup.
     /// </summary>
     [JsonIgnore]

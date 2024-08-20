@@ -64,10 +64,6 @@ public class WorkgroupController : ControllerBase
 
             workgroup.Settings = "{}";
             workgroup.CreatedAt = DateTime.UtcNow;
-            if (workgroup.IsSupplier == null)
-            {
-                workgroup.IsSupplier = false;
-            }
 
             var enityEntry = await context.Workgroups.AddAsync(workgroup).ConfigureAwait(false);
             await context.SaveChangesAsync().ConfigureAwait(false);
