@@ -142,8 +142,7 @@ class BaseHandler(web.RequestHandler):
                                     'id', id_wgp,
                                     'workgroup', name_wgp,
                                     'roles', array_agg(name_rol),
-                                    'disabled', disabled_wgp,
-                                    'supplier', supplier_wgp
+                                    'disabled', disabled_wgp
                                 ) as j
                             FROM
                                 bdms.users_roles,
