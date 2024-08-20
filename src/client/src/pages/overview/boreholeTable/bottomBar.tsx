@@ -44,9 +44,7 @@ const BottomBar = ({
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
   const [currentWorkgroup, setCurrentWorkgroup] = useState<number | null>(null);
-  const enabledWorkgroups = user.data.workgroups.filter(
-    w => w.disabled === null && !w.supplier && w.roles.includes("EDIT"),
-  );
+  const enabledWorkgroups = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
 
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
     setCopyPromptOpen(true);

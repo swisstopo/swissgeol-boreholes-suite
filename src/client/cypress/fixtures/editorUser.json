@@ -13,8 +13,7 @@
         "id": 1,
         "workgroup": "Default",
         "roles": ["EDIT"],
-        "disabled": null,
-        "supplier": false
+        "disabled": null
       }
     ]
   }

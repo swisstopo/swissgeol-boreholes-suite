@@ -971,8 +971,7 @@ class AdminSettings extends React.Component {
                                   }}
                                 />
                               ) : null}
-                              {workgroup.name}{" "}
-                              {workgroup.supplier === true ? <span style={{ color: "red" }}>(supplier)</span> : ""}
+                              {workgroup.name}
                             </Table.Cell>
                             <Table.Cell>{workgroup.boreholeCount}</Table.Cell>
                             <Table.Cell
