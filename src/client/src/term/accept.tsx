@@ -25,10 +25,10 @@ export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
       setIsFetching(false);
       if (termsObject.data) {
         setTerms({
-          en: termsObject.data?.en,
-          fr: termsObject.data?.fr,
-          de: termsObject.data?.de,
-          it: termsObject.data?.it,
+          en: termsObject.data?.en || en,
+          fr: termsObject.data?.fr || fr,
+          de: termsObject.data?.de || de,
+          it: termsObject.data?.it || it,
         });
       }
     });
