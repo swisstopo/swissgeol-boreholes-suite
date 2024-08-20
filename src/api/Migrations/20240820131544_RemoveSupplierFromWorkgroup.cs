@@ -2,29 +2,28 @@
 
 #nullable disable
 
-namespace BDMS.Migrations
+namespace BDMS.Migrations;
+
+/// <inheritdoc />
+public partial class RemoveSupplierFromWorkgroup : Migration
 {
     /// <inheritdoc />
-    public partial class RemoveSupplierFromWorkgroup : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "supplier_wgp",
-                schema: "bdms",
-                table: "workgroups");
-        }
+        migrationBuilder.DropColumn(
+            name: "supplier_wgp",
+            schema: "bdms",
+            table: "workgroups");
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<bool>(
-                name: "supplier_wgp",
-                schema: "bdms",
-                table: "workgroups",
-                type: "boolean",
-                nullable: true);
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.AddColumn<bool>(
+            name: "supplier_wgp",
+            schema: "bdms",
+            table: "workgroups",
+            type: "boolean",
+            nullable: true);
     }
 }
