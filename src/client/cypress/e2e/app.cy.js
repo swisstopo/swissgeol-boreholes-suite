@@ -1,3 +1,5 @@
+import { selectLanguage } from "./helpers/testHelpers";
+
 describe("General app tests", () => {
   it("Displays the login page in the correct language", () => {
     // default is english
@@ -10,15 +12,15 @@ describe("General app tests", () => {
     cy.contains("Welcome to");
 
     // german
-    cy.contains("span", "DE").click();
+    selectLanguage("de");
     cy.contains("Willkommen bei");
 
     // french
-    cy.contains("span", "FR").click();
+    selectLanguage("fr");
     cy.contains("Bienvenue sur");
 
     // italian
-    cy.contains("span", "IT").click();
+    selectLanguage("it");
     cy.contains("Benvenuti su");
   });
 });
