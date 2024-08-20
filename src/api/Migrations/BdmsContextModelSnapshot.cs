@@ -1843,6 +1843,27 @@ namespace BDMS.Migrations
                     b.ToTable("terms", "bdms");
                 });
 
+            modelBuilder.Entity("BDMS.Models.TermsAccepted", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_usr_fk");
+
+                    b.Property<int>("TermId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_tes_fk");
+
+                    b.Property<DateTime>("AcceptedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("accepted_tea");
+
+                    b.HasKey("UserId", "TermId");
+
+                    b.HasIndex("TermId");
+
+                    b.ToTable("terms_accepted", "bdms");
+                });
+
             modelBuilder.Entity("BDMS.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -1851,6 +1872,10 @@ namespace BDMS.Migrations
                         .HasColumnName("id_usr");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_usr");
 
                     b.Property<DateTime?>("DisabledAt")
                         .HasColumnType("timestamp with time zone")
@@ -1874,6 +1899,10 @@ namespace BDMS.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("username");
+
+                    b.Property<string>("Settings")
+                        .HasColumnType("text")
+                        .HasColumnName("settings_usr");
 
                     b.Property<string>("SubjectId")
                         .IsRequired()
@@ -1900,6 +1929,8 @@ namespace BDMS.Migrations
                         .HasColumnName("id_rol_fk");
 
                     b.HasKey("UserId", "WorkgroupId", "Role");
+
+                    b.HasIndex("WorkgroupId");
 
                     b.ToTable("users_roles", "bdms");
                 });
@@ -1955,11 +1986,11 @@ namespace BDMS.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_wgp");
 
-                    b.Property<DateTime?>("Disabled")
+                    b.Property<DateTime?>("DisabledAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("disabled_wgp");
 
@@ -3004,13 +3035,42 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
+            modelBuilder.Entity("BDMS.Models.TermsAccepted", b =>
+                {
+                    b.HasOne("BDMS.Models.Term", "Term")
+                        .WithMany()
+                        .HasForeignKey("TermId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "User")
+                        .WithMany("TermsAccepted")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Term");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BDMS.Models.UserWorkgroupRole", b =>
                 {
-                    b.HasOne("BDMS.Models.User", null)
+                    b.HasOne("BDMS.Models.User", "User")
                         .WithMany("WorkgroupRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BDMS.Models.Workgroup", "Workgroup")
+                        .WithMany()
+                        .HasForeignKey("WorkgroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("Workgroup");
                 });
 
             modelBuilder.Entity("BDMS.Models.Workflow", b =>
@@ -3192,6 +3252,8 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.User", b =>
                 {
+                    b.Navigation("TermsAccepted");
+
                     b.Navigation("WorkgroupRoles");
                 });
 
