@@ -61,7 +61,7 @@ const ProfileHeader = props => {
       />
       {isEditable && (
         <Box sx={{ marginLeft: "auto" }}>
-          <AddButton label={t("addStratigraphy")} onClick={createStratigraphy} />
+          <AddButton label={"addStratigraphy"} onClick={createStratigraphy} />
         </Box>
       )}
     </Stack>
