@@ -37,8 +37,7 @@ class Producer(BaseHandler):
                 (
                     w['disabled'] is not None or
                     (
-                        'EDIT' not in w['roles'] and
-                        w['supplier'] is False
+                        'EDIT' not in w['roles']
                     )
                 )
             ):
@@ -55,8 +54,7 @@ class Producer(BaseHandler):
                     locked_by_bho,
                     firstname || ' ' || lastname as name,
                     status[array_length(status, 1)]  ->> 'role' as "role",
-                    borehole.id_wgp_fk as wid,
-                    supplier_wgp as supplier
+                    borehole.id_wgp_fk as wid
 
                 FROM
                     bdms.borehole
@@ -148,4 +146,4 @@ class Producer(BaseHandler):
                 }
             )
 
-        return json.loads(rec[6])
+        return json.loads(rec[5])

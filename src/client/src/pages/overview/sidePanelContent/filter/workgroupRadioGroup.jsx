@@ -26,9 +26,7 @@ const WorkgroupRadioGroup = props => {
           <Radio
             checked={props.filter === workgroup.id}
             label={
-              workgroup[props.nameKey] +
-              (workgroup.supplier === true ? " (supplier)" : "") +
-              (workgroup.disabled !== null ? " ( " + props.t("common:disabled") + ")" : "")
+              workgroup[props.nameKey] + (workgroup.disabled !== null ? " ( " + props.t("common:disabled") + ")" : "")
             }
             name="radioGroup"
             onChange={() => {

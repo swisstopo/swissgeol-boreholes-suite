@@ -25,44 +25,38 @@ export const WorkgroupRoleSettings: FC<WorkgroupRoleSettingsProps> = props => {
               }}
             />
           </Form.Field>
-          {workgroup.isSupplier === false ? (
-            <Form.Field>
-              <Checkbox
-                checked={workgroupRoles.some(x => x.role === Role.Editor)}
-                label="EDITOR"
-                onChange={e => {
-                  e.stopPropagation();
-                  setRole(workgroupRoles, workgroup, Role.Editor);
-                }}
-              />
-            </Form.Field>
-          ) : null}
-          {workgroup.isSupplier === false ? (
-            <Form.Field>
-              <Checkbox
-                checked={workgroupRoles.some(x => x.role === Role.Controller)}
-                label="CONTROLLER"
-                onChange={e => {
-                  e.stopPropagation();
-                  setRole(workgroupRoles, workgroup, Role.Controller);
-                }}
-              />
-            </Form.Field>
-          ) : null}
+          <Form.Field>
+            <Checkbox
+              checked={workgroupRoles.some(x => x.role === Role.Editor)}
+              label="EDITOR"
+              onChange={e => {
+                e.stopPropagation();
+                setRole(workgroupRoles, workgroup, Role.Editor);
+              }}
+            />
+          </Form.Field>
+          <Form.Field>
+            <Checkbox
+              checked={workgroupRoles.some(x => x.role === Role.Controller)}
+              label="CONTROLLER"
+              onChange={e => {
+                e.stopPropagation();
+                setRole(workgroupRoles, workgroup, Role.Controller);
+              }}
+            />
+          </Form.Field>
         </Form.Group>
         <Form.Group autoComplete="off" widths="equal">
-          {workgroup.isSupplier === false ? (
-            <Form.Field>
-              <Checkbox
-                checked={workgroupRoles.some(x => x.role === Role.Validator)}
-                label="VALIDATOR"
-                onChange={e => {
-                  e.stopPropagation();
-                  setRole(workgroupRoles, workgroup, Role.Validator);
-                }}
-              />
-            </Form.Field>
-          ) : null}
+          <Form.Field>
+            <Checkbox
+              checked={workgroupRoles.some(x => x.role === Role.Validator)}
+              label="VALIDATOR"
+              onChange={e => {
+                e.stopPropagation();
+                setRole(workgroupRoles, workgroup, Role.Validator);
+              }}
+            />
+          </Form.Field>
           <Form.Field>
             <Checkbox
               checked={workgroupRoles.some(x => x.role === Role.Publisher)}

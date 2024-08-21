@@ -20,7 +20,6 @@ export interface UserData {
 }
 
 export interface Workgroup {
-  supplier: boolean;
   disabled: null;
   id: number;
   workgroup: string;
