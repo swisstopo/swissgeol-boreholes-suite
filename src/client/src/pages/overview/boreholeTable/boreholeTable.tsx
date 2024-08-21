@@ -111,9 +111,25 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       flex: 1,
     },
     {
+      field: "location_x",
+      valueGetter: (value, row) => {
+        return `${Math.round(row.location_x * 100) / 100 || "-"}`;
+      },
+      headerName: t("location_x"),
+      flex: 1,
+    },
+    {
+      field: "location_y",
+      valueGetter: (value, row) => {
+        return `${Math.round(row.location_y * 100) / 100 || "-"}`;
+      },
+      headerName: t("location_y"),
+      flex: 1,
+    },
+    {
       field: "lock",
       headerName: "",
-      width: 70,
+      width: 20,
       renderCell: value => {
         if (value.row.lock) {
           return (
