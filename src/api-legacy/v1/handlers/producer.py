@@ -146,4 +146,4 @@ class Producer(BaseHandler):
                 }
             )
 
-        return json.loads(rec[6])
+        return json.loads(rec[5])
