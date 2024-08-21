@@ -47,6 +47,12 @@ class Action():
         elif orderby == 'restriction':
             _orderby = 'restriction_id_cli'
 
+        elif orderby == 'location_x':
+            _orderby = 'location_x_bho'
+
+        elif orderby == 'location_y':
+            _orderby = 'location_y_bho'
+
         elif orderby == 'elevation_z':
             _orderby = 'elevation_z_bho'
 
