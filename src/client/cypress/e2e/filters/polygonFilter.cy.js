@@ -9,6 +9,7 @@ function drawPolygon() {
   canvas.trigger("pointerdown", { x: 550, y: 810 }).trigger("pointerup", { x: 550, y: 810 });
   canvas.trigger("pointerdown", { x: 640, y: 810 }).trigger("pointerup", { x: 640, y: 810 });
   canvas.trigger("pointerdown", { x: 450, y: 300 }).trigger("pointerup", { x: 450, y: 300 });
+  cy.wait(2000);
 }
 
 function assertIsFilteredByPolygon() {
