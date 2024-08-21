@@ -44,7 +44,6 @@ describe("Test the borehole bulk edit feature.", () => {
       workgroup: "Blue",
       roles: ["EDIT"],
       disabled: null,
-      supplier: false,
     });
     cy.intercept("/api/v1/user", {
       statusCode: 200,

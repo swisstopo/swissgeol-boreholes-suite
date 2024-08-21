@@ -110,8 +110,7 @@ class GetBorehole(Action):
                     FROM (
                         SELECT
                             id_wgp as id,
-                            name_wgp as name,
-                            supplier_wgp as supplier
+                            name_wgp as name
                     ) t
                 ) as workgroup,
                 pubblications,

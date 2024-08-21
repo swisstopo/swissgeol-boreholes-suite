@@ -108,11 +108,11 @@ class BoreholeProducerHandler(Producer):
                             'PATCH',
                         ]
                     ):
-                        # add supplier exception
+                        # add auth exception
                         await self.check_edit(
                             request['id'], self.user, conn
                         )
-                        if res['role'] != 'EDIT' and res['supplier'] is False:
+                        if res['role'] != 'EDIT':
                             raise AuthorizationException()
 
                 if (

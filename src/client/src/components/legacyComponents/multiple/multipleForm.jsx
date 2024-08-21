@@ -293,7 +293,7 @@ class MultipleForm extends React.Component {
 
   render() {
     const { t } = this.props;
-    const workgroups = this.props.user.data.workgroups.filter(w => w.disabled === null && w.supplier === false);
+    const workgroups = this.props.user.data.workgroups.filter(w => w.disabled === null);
     return (
       <div
         style={{
