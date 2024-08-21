@@ -2,14 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { createNewStratigraphy } from "./api";
 import { fetchStratigraphyByBoreholeId } from "../../../../../../api/fetchApiV2.js";
 import ProfileHeaderList from "./profileHeaderList";
-import { useTranslation } from "react-i18next";
 import { AddButton } from "../../../../../../components/buttons/buttons";
 import { Box, Stack } from "@mui/material";
 
 const ProfileHeader = props => {
   const { boreholeID, isEditable, reloadHeader, selectedStratigraphy, setSelectedStratigraphy, setIsLoadingData } =
     props;
-  const { t } = useTranslation();
   const [profiles, setProfiles] = useState([]);
 
   const setStratigraphy = useCallback(
