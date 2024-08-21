@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import * as Styled from "./styles.js";
-import { Button } from "semantic-ui-react";
 import { createNewStratigraphy } from "./api";
 import { fetchStratigraphyByBoreholeId } from "../../../../../../api/fetchApiV2.js";
 import ProfileHeaderList from "./profileHeaderList";
-import { useTranslation } from "react-i18next";
+import { AddButton } from "../../../../../../components/buttons/buttons";
+import { Box, Stack } from "@mui/material";
 
 const ProfileHeader = props => {
   const { boreholeID, isEditable, reloadHeader, selectedStratigraphy, setSelectedStratigraphy, setIsLoadingData } =
     props;
-  const { t } = useTranslation();
   const [profiles, setProfiles] = useState([]);
 
   const setStratigraphy = useCallback(
@@ -53,26 +51,18 @@ const ProfileHeader = props => {
   };
 
   return (
-    <Styled.Container>
-      <Styled.ButtonContainer>
-        {isEditable && (
-          <Button
-            data-cy="add-stratigraphy-button"
-            content={t("stratigraphy")}
-            icon="add"
-            onClick={createStratigraphy}
-            secondary
-            size="small"
-          />
-        )}
-
-        <ProfileHeaderList
-          profiles={profiles}
-          selectedStratigraphy={selectedStratigraphy}
-          setSelectedStratigraphy={setStratigraphy}
-        />
-      </Styled.ButtonContainer>
-    </Styled.Container>
+    <Stack direction="row">
+      <ProfileHeaderList
+        profiles={profiles}
+        selectedStratigraphy={selectedStratigraphy}
+        setSelectedStratigraphy={setStratigraphy}
+      />
+      {isEditable && (
+        <Box sx={{ marginLeft: "auto" }}>
+          <AddButton label={"addStratigraphy"} onClick={createStratigraphy} />
+        </Box>
+      )}
+    </Stack>
   );
 };
 
