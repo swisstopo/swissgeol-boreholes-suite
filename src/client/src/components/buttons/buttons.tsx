@@ -60,6 +60,6 @@ export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
   return <BdmsBaseButton ref={ref} {...props} variant="outlined" icon={<TrashIcon />} />;
 });
 
-export const DeletePrimaryButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} variant="contained" icon={<TrashIcon />} />;
+export const SavePrimaryButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  return <BdmsBaseButton ref={ref} {...props} label="save" variant="contained" icon={<SaveIcon />} />;
 });
