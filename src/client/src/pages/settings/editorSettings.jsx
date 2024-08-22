@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-import { Button, Divider } from "semantic-ui-react";
+import { Divider } from "semantic-ui-react";
 import { patchCodeConfig, patchSettings } from "../../api-lib/index";
 import TranslationText from "../../components/legacyComponents/translationText.jsx";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
@@ -17,6 +17,7 @@ import MapSettings from "./components/editorSettingList/mapSettings";
 import { locationEditorData } from "./data/locationEditorData";
 import { registrationEditorData } from "./data/registrationEditorData";
 import { theme } from "../../AppTheme";
+import { Button } from "@mui/material";
 
 const projections = {
   "EPSG:21781":
@@ -210,9 +211,7 @@ class EditorSettings extends React.Component {
                   flex: 1,
                   textAlign: "right",
                 }}>
-                <Button color="red" size="small">
-                  {filter.isSelected === true ? t("collapse") : t("expand")}
-                </Button>
+                <Button variant="outlined">{filter.isSelected === true ? t("collapse") : t("expand")}</Button>
               </div>
             </div>
             {filter.isSelected === true && this.handleButtonSelected(filter.name, filter.isSelected) !== null ? (

@@ -1,8 +1,9 @@
 import * as Styled from "./styles";
-import { Button, Segment } from "semantic-ui-react";
+import { Segment } from "semantic-ui-react";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
+import { Button } from "@mui/material";
 
 const EditorSettingList = props => {
   const {
@@ -60,20 +61,20 @@ const EditorSettingList = props => {
   return (
     <Styled.Container>
       <Segment>
-        <Button.Group size="mini">
-          <Button
-            onClick={() => {
-              sendSelectAll(true);
-            }}>
-            {t("selectAll")}
-          </Button>
-          <Button
-            onClick={() => {
-              sendSelectAll(false);
-            }}>
-            {t("unselectAll")}
-          </Button>
-        </Button.Group>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            sendSelectAll(true);
+          }}>
+          {t("selectAll")}
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            sendSelectAll(false);
+          }}>
+          {t("unselectAll")}
+        </Button>
       </Segment>
       {attribute?.map((item, index) => (
         <Segment key={index}>
