@@ -1,19 +1,39 @@
 import { useContext } from "react";
 import _ from "lodash";
 import Highlighter from "react-highlight-words";
-
-import { Button, Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
+import { Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
+import { Button, CircularProgress, IconButton } from "@mui/material";
 import { getWms } from "../../../../api-lib/index";
 import { AlertContext } from "../../../../components/alert/alertContext";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 import { theme } from "../../../../AppTheme";
 import { useTranslation } from "react-i18next";
+import TrashIcon from "../../../../assets/icons/trash.svg?react";
+import AddIcon from "../../../../assets/icons/add.svg?react";
 
 const MapSettings = props => {
   const { showAlert } = useContext(AlertContext);
   const { setting, i18n, rmExplorerMap, addExplorerMap, handleAddItem, handleOnChange, state, setState } = props;
   const { t } = useTranslation();
+
+  function getIconButton(layer, layerType) {
+    return (
+      <IconButton
+        size="small"
+        onClick={e => {
+          e.stopPropagation();
+          if (_.has(setting.data.map.explorer, layerType === "WMS" ? layer.Name : layer.identifier)) {
+            rmExplorerMap(layer);
+          } else {
+            addExplorerMap(layer, layerType, state.wms, _.values(setting.data.map.explorer).length);
+          }
+        }}
+        color={_.has(setting.data.map.explorer, layer.Name) ? "error" : "primary"}>
+        {_.has(setting.data.map.explorer, layer.Name) ? <TrashIcon /> : <AddIcon />}
+      </IconButton>
+    );
+  }
 
   return (
     <>
@@ -44,9 +64,7 @@ const MapSettings = props => {
             flex: 1,
             textAlign: "right",
           }}>
-          <Button color="red" size="small">
-            {state.map === true ? t("collapse") : t("expand")}
-          </Button>
+          <Button variant="outlined">{state.map ? t("collapse") : t("expand")}</Button>
         </div>
       </div>
       {state.map === true ? (
@@ -90,8 +108,8 @@ const MapSettings = props => {
                     />
                   </div>
                   <Button
-                    compact
-                    loading={state.wmsFetch === true}
+                    sx={{ height: "37px", width: "80px" }}
+                    variant="contained"
                     onClick={() => {
                       setState(
                         {
@@ -131,14 +149,8 @@ const MapSettings = props => {
                           });
                         },
                       );
-                    }}
-                    secondary
-                    style={{
-                      marginLeft: "1em",
-                    }}
-                    // size='mini'
-                  >
-                    {t("load")}
+                    }}>
+                    {state.wmsFetch ? <CircularProgress size={22} color="inherit" /> : t("load")}
                   </Button>
                 </div>
                 {state.wmts !== null ? (
@@ -203,28 +215,7 @@ const MapSettings = props => {
                                 }}>
                                 <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Title} />
                               </div>
-                              <div>
-                                <Button
-                                  color={_.has(setting.data.map.explorer, layer.Name) ? "grey" : "blue"}
-                                  icon={
-                                    _.has(setting.data.map.explorer, layer.Name) ? "trash alternate outline" : "add"
-                                  }
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    if (_.has(setting.data.map.explorer, layer.Name)) {
-                                      rmExplorerMap(layer);
-                                    } else {
-                                      addExplorerMap(
-                                        layer,
-                                        "WMS",
-                                        state.wms,
-                                        _.values(setting.data.map.explorer).length,
-                                      );
-                                    }
-                                  }}
-                                  size="mini"
-                                />
-                              </div>
+                              <div>{getIconButton(layer, "WMS")}</div>
                             </div>
                             <div
                               style={{
@@ -288,30 +279,7 @@ const MapSettings = props => {
                                 }}>
                                 <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Title} />
                               </div>
-                              <div>
-                                <Button
-                                  color={_.has(setting.data.map.explorer, layer.Identifier) ? "grey" : "blue"}
-                                  icon={
-                                    _.has(setting.data.map.explorer, layer.Identifier)
-                                      ? "trash alternate outline"
-                                      : "add"
-                                  }
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    if (_.has(setting.data.map.explorer, layer.Identifier)) {
-                                      rmExplorerMap(layer);
-                                    } else {
-                                      addExplorerMap(
-                                        layer,
-                                        "WMTS",
-                                        state.wmts,
-                                        _.values(setting.data.map.explorer).length,
-                                      );
-                                    }
-                                  }}
-                                  size="mini"
-                                />
-                              </div>
+                              <div>{getIconButton(layer, "WMTS")}</div>
                             </div>
                             <div
                               style={{
@@ -405,17 +373,16 @@ const MapSettings = props => {
                               <Highlighter searchWords={[state.searchWmtsUser]} textToHighlight={layer.Title} />
                             </div>
                             <div>
-                              <Button
-                                color="grey"
-                                icon="trash alternate outline"
+                              <IconButton
                                 onClick={e => {
                                   e.stopPropagation();
                                   if (_.has(setting.data.map.explorer, layer.Identifier)) {
                                     rmExplorerMap(layer);
                                   }
                                 }}
-                                size="mini"
-                              />
+                                color="error">
+                                <TrashIcon />
+                              </IconButton>
                             </div>
                           </div>
                           <div

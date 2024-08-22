@@ -3,9 +3,11 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import Markdown from "markdown-to-jsx";
-import { Button, Form, Modal, TextArea } from "semantic-ui-react";
+import { Button } from "@mui/material";
+import { Form, Modal, TextArea } from "semantic-ui-react";
 import TranslationKeys from "../../auth/translationKeys";
 import { draftTerms, getTermsDraft, publishTerms } from "../../api-lib/index";
+import { CancelButton } from "../../components/buttons/buttons";
 
 class TermSettings extends React.Component {
   constructor(props) {
@@ -125,15 +127,14 @@ class TermSettings extends React.Component {
                 textAlign: "right",
               }}>
               <Button
+                sx={{
+                  display: this.state.draft === true && this.state.dirty === false ? null : "none",
+                }}
+                variant="contained"
                 onClick={() => {
                   this.setState({
                     confirmPublication: true,
                   });
-                }}
-                primary
-                style={{
-                  display: this.state.draft === true && this.state.dirty === false ? null : "none",
-                  textTransform: "capitalize",
                 }}>
                 {t("publish")}
               </Button>
@@ -143,39 +144,26 @@ class TermSettings extends React.Component {
                   <p>{t("disclaimer_publish_message")}</p>
                 </Modal.Content>
                 <Modal.Actions>
-                  <Button
-                    negative
+                  <CancelButton
                     onClick={() => {
                       this.setState({
                         confirmPublication: false,
                       });
                     }}
-                    style={{
-                      textTransform: "capitalize",
-                    }}>
-                    {t("cancel")}
-                  </Button>
-                  <Button
-                    onClick={() => this.publishTerms()}
-                    primary
-                    style={{
-                      textTransform: "capitalize",
-                    }}>
+                  />
+                  <Button variant="contained" onClick={() => this.publishTerms()}>
                     {t("publish")}
                   </Button>
                 </Modal.Actions>
               </Modal>
               <Button
+                sx={{
+                  display: this.state.dirty === true ? null : "none",
+                }}
+                variant="contained"
                 disabled={this.state.dirty === false}
-                loading={this.state.saving}
                 onClick={() => {
                   this.draftTerms();
-                }}
-                secondary
-                style={{
-                  marginLeft: "1em",
-                  textTransform: "capitalize",
-                  display: this.state.dirty === true ? null : "none",
                 }}>
                 {t("save")}
               </Button>
