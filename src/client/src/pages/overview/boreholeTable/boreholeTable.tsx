@@ -202,7 +202,13 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     ".MuiTablePagination-displayedRows": {
       fontSize: "12px",
     },
-
+    ".MuiIconButton-root": {
+      color: "#0000008A",
+      backgroundColor: "rgba(0, 0, 0, 0)",
+    },
+    ".MuiIconButton-root.Mui-disabled": {
+      color: "#828e9a",
+    },
     "& .highlighted-row": {
       backgroundColor: theme.palette.background.lightgrey,
       color: theme.palette.primary.main,

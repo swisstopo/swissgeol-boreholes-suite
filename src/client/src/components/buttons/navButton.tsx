@@ -31,7 +31,9 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>((props, r
         marginBottom: "25px",
         padding: "10px 16px",
         color: props.selected ? theme.palette.primary.contrastText : theme.palette.neutral.contrastText,
-        backgroundColor: props.selected ? theme.palette.background.menuItemActive + " !important" : undefined,
+        backgroundColor: props.selected
+          ? theme.palette.background.menuItemActive + " !important"
+          : "rgba(0, 0, 0, 0.0)",
         borderRadius: "10px",
         width: "fit-content",
         transition: "background-color 0.3s ease, color 0.3s ease, width 0.3s ease",

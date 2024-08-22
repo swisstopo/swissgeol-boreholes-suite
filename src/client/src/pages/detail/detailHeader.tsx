@@ -82,21 +82,16 @@ const DetailHeader = () => {
       }}>
       <Stack direction="row" sx={{ flex: "1 1 100%" }}>
         <IconButton
+          color="primary"
           data-cy="backButton"
           onClick={() => {
             history.push("/");
           }}
           sx={{
-            backgroundColor: theme.palette.primary.main,
-            color: "white",
             width: "36px",
             height: "36px",
             marginRight: "18px",
             borderRadius: "2px",
-            "&:hover": {
-              opacity: 0.7,
-              backgroundColor: theme.palette.primary.main,
-            },
           }}>
           <ArrowLeftIcon />
         </IconButton>
