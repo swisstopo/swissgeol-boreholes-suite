@@ -119,16 +119,73 @@ export const theme = createTheme({
             boxShadow: "none",
           },
         },
+        contained: {
+          backgroundColor: "#337083",
+          "&:hover": {
+            backgroundColor: "#295969",
+          },
+          "&:focussed": {
+            backgroundColor: "#295969",
+            boxShadow: "0px 0px 0px 3px #8655F6",
+          },
+          "&:active": {
+            backgroundColor: "#1F444F",
+          },
+          "&:disabled": {
+            backgroundColor: "#C1D3D9",
+          },
+        },
+        outlined: {
+          color: "#337083",
+          backgroundColor: "#FFFFFF",
+          "&:hover": {
+            color: "#295969",
+            backgroundColor: "#D6E2E6",
+          },
+          "&:focussed": {
+            color: "#295969",
+            backgroundColor: "#D6E2E6",
+            boxShadow: "0px 0px 0px 3px #8655F6",
+          },
+          "&:active": {
+            color: "#1F444F",
+            backgroundColor: "#ADC6CD",
+          },
+          "&:disabled": {
+            backgroundColor: "#FFFFFF",
+            color: "#C1D3D9",
+          },
+        },
       },
     },
     MuiIconButton: {
       styleOverrides: {
         root: {
-          "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
-            backgroundColor: "rgba(0, 0, 0, 0.0)",
-          },
           "& .MuiTouchRipple-root": {
             display: "none",
+          },
+        },
+        colorPrimary: {
+          backgroundColor: "#337083",
+          color: "#FFFFFF",
+          "&:hover": {
+            backgroundColor: "#295969",
+          },
+          "&:focussed": {
+            backgroundColor: "#295969",
+            boxShadow: "0px 0px 0px 3px #8655F6",
+          },
+          "&:active": {
+            backgroundColor: "#1F444F",
+          },
+          "&:disabled": {
+            backgroundColor: "#C1D3D9",
+          },
+        },
+        colorError: {
+          "&:hover": {
+            color: "#801519",
+            backgroundColor: "rgba(0, 0, 0, 0)",
           },
         },
       },

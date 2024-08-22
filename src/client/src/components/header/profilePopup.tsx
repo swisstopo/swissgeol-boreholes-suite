@@ -1,6 +1,5 @@
 import { useAuth } from "react-oidc-context";
 import { Button, IconButton, Popover, Stack, Typography } from "@mui/material";
-import { theme } from "../../AppTheme.ts";
 import ProfileIcon from "../../assets/icons/profile.svg?react";
 import { UserData } from "../../api-lib/ReduxStateInterfaces.ts";
 import { MouseEvent, useState } from "react";
@@ -22,17 +21,7 @@ export function ProfilePopup({ user }: { user: UserData }) {
 
   return (
     <>
-      <IconButton
-        onClick={handleClick}
-        aria-describedby={id}
-        sx={{
-          backgroundColor: theme.palette.primary.main,
-          color: "white",
-          "&:hover": {
-            opacity: 0.7,
-            backgroundColor: theme.palette.primary.main,
-          },
-        }}>
+      <IconButton onClick={handleClick} color="primary" aria-describedby={id}>
         <ProfileIcon />
       </IconButton>
       <Popover
