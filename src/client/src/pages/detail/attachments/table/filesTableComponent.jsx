@@ -1,9 +1,11 @@
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
-import { Button, Checkbox, Icon, Table, TextArea } from "semantic-ui-react";
+import { Checkbox, Icon, Table, TextArea } from "semantic-ui-react";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import DownloadLink from "../downloadlink.jsx";
 import { downloadBoreholeAttachment } from "../../../../api/fetchApiV2.js";
+import { IconButton } from "@mui/material";
+import TrashIcon from "../../../../assets/icons/trash.svg?react";
 
 const FilesTableComponent = props => {
   const { t } = props;
@@ -89,17 +91,14 @@ const FilesTableComponent = props => {
               </Table.Cell>
               {props.unlocked === true ? (
                 <Table.Cell>
-                  <Button
-                    basic
-                    color="red"
-                    icon
+                  <IconButton
                     onClick={e => {
                       e.stopPropagation();
                       props.detachFile(props.id, boreholeFile.fileId);
                     }}
-                    size="mini">
-                    <Icon name="trash alternate outline" />
-                  </Button>
+                    color="error">
+                    <TrashIcon />
+                  </IconButton>
                 </Table.Cell>
               ) : null}
             </Table.Row>
