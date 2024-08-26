@@ -88,7 +88,7 @@ describe("Tests for the lithological description column.", () => {
     // delete last layer
     cy.get('[data-cy="description-1"] [data-testid="DeleteIcon"] ').click();
 
-    deleteItem();
+    deleteItem("description-button-box");
     cy.wait("@lithological_description"); // delete request
     cy.wait("@lithological_description"); // updated get request
     cy.wait(5000);
@@ -119,7 +119,7 @@ describe("Tests for the lithological description column.", () => {
 
     // assert error message
     cy.get('[data-cy="description-1"]').contains("You are about to delete this layer, how do you want to proceed?");
-    deleteItem();
+    deleteItem("description-button-box");
     cy.wait("@lithological_description"); // delete request
     cy.wait("@lithological_description"); // updated get request
     cy.get('[data-cy="description-1"]').contains("There is an undefined interval in the sequence");
