@@ -1,7 +1,8 @@
 import * as Styled from "./styles.js";
-import { Button, Checkbox, Icon, Popup } from "semantic-ui-react";
+import { Checkbox, Popup } from "semantic-ui-react";
 import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2.js";
 import { useTranslation } from "react-i18next";
+import { CopyButton, DeleteButton } from "../../../../../../../components/buttons/buttons";
 
 const InfoCheckBox = props => {
   const { profileInfo, updateChange, isEditable, onUpdated } = props.data;
@@ -24,40 +25,23 @@ const InfoCheckBox = props => {
       </Styled.FormContainer>
       {isEditable && (
         <div style={{ display: "flex" }} data-cy="clone-and-delete-buttons">
-          <Button
-            // disabled={!_.isEmpty(consistency)}
-            icon
+          <CopyButton
             onClick={() => {
               copyStratigraphy(profileInfo?.id).then(() => {
                 onUpdated("cloneStratigraphy");
               });
-            }}
-            size="tiny">
-            <Icon name="clone outline" />
-          </Button>
-          <Popup
-            flowing
-            hoverable
-            on="click"
-            position="right center"
-            trigger={
-              <Button icon size="tiny">
-                <Icon name="trash alternate" />
-              </Button>
-            }>
+            }}></CopyButton>
+          <Popup flowing hoverable on="click" position="right center" trigger={<DeleteButton label="delete" />}>
             {t("deleteForever")}?
             <br />
-            <Button
-              icon
+            <DeleteButton
+              label="delete"
               onClick={() => {
                 deleteStratigraphy(profileInfo?.id).then(() => {
                   onUpdated("deleteStratigraphy");
                 });
               }}
-              secondary
-              size="tiny">
-              {t("yes")}
-            </Button>
+            />
           </Popup>
         </div>
       )}

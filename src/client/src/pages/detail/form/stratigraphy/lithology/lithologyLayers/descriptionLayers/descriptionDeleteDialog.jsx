@@ -22,7 +22,10 @@ const DescriptionDeleteDialog = props => {
       <Typography sx={{ color: theme.palette.error.main }} variant="subtitle2">
         {t("deletelayerconfirmation")}
       </Typography>
-      <Box alignSelf="flex-end" sx={{ marginTop: "auto", marginRight: "0.5em", marginBottom: "0.5em" }}>
+      <Box
+        data-cy="description-button-box"
+        alignSelf="flex-end"
+        sx={{ marginTop: "auto", marginRight: "0.5em", marginBottom: "0.5em" }}>
         <CancelButton
           onClick={e => {
             e.stopPropagation();

@@ -4,16 +4,14 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { produce } from "immer";
-
+import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import DomainDropdown from "../domain/dropdown/domainDropdown.jsx";
 import DomainTree from "../domain/tree/domainTree.jsx";
 import DateField from "../dateField.jsx";
 import TranslationText from "../translationText.jsx";
-
 import { Button, Form, Header, Input } from "semantic-ui-react";
-import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
-
 import { patchBoreholes } from "../../../api-lib/index.js";
+import { CancelButton, SavePrimaryButton } from "../../buttons/buttons";
 
 class MultipleForm extends React.Component {
   constructor(props) {
@@ -392,20 +390,14 @@ class MultipleForm extends React.Component {
           style={{
             textAlign: "right",
           }}>
-          <Button
-            negative
+          <CancelButton
             onClick={() => {
               this.props.undo();
-            }}>
-            Cancel
-          </Button>
-          <Button
+            }}></CancelButton>
+          <SavePrimaryButton
             onClick={() => {
               this.save();
-            }}
-            positive>
-            Save
-          </Button>
+            }}></SavePrimaryButton>
         </div>
       </div>
     );
