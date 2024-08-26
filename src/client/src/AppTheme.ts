@@ -124,7 +124,7 @@ export const theme = createTheme({
           "&:hover": {
             backgroundColor: "#295969",
           },
-          "&:focussed": {
+          "&:focus-visible": {
             backgroundColor: "#295969",
             boxShadow: "0px 0px 0px 3px #8655F6",
           },
@@ -142,7 +142,7 @@ export const theme = createTheme({
             color: "#295969",
             backgroundColor: "#D6E2E6",
           },
-          "&:focussed": {
+          "&:focus-visible": {
             color: "#295969",
             backgroundColor: "#D6E2E6",
             boxShadow: "0px 0px 0px 3px #8655F6",
@@ -171,7 +171,7 @@ export const theme = createTheme({
           "&:hover": {
             backgroundColor: "#295969",
           },
-          "&:focussed": {
+          "&:focus-visible": {
             backgroundColor: "#295969",
             boxShadow: "0px 0px 0px 3px #8655F6",
           },
