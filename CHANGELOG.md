@@ -31,6 +31,7 @@
 - The borehole table now displays the attribute `alternate_name` instead of `origianal_name` in the `Name` column.
 - Removed `supplier_wgp` column from `workgroup` table.
 - Fixed typo in `consistency` codelist.
+- Updated the style of various buttons.
 
 ### Fixed
 
