@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-d
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "@mui/material/styles";
+import { GlobalStyles } from "@mui/material";
 import { theme } from "./AppTheme";
 import OverviewPage from "./pages/overview/overviewPage";
 import SettingsPage from "./pages/settings/settingsPage";
@@ -41,6 +42,13 @@ class App extends React.Component {
   render() {
     return (
       <ThemeProvider theme={theme}>
+        <GlobalStyles
+          styles={{
+            body: {
+              fontFamily: theme.typography.fontFamily,
+            },
+          }}
+        />
         <DataLoader>
           <AcceptTerms>
             <AlertProvider>
