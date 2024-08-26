@@ -3,9 +3,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-
-import { Button, Header, Icon, Label, Modal } from "semantic-ui-react";
-
+import { Button, CircularProgress, Stack, Typography } from "@mui/material";
+import { Header, Icon, Label, Modal } from "semantic-ui-react";
+import CancelIcon from "../../../../assets/icons/cancel.svg?react";
+import RestartIcon from "../../../../assets/icons/restart.svg?react";
 import {
   loadBorehole,
   loadWorkflows,
@@ -21,7 +22,7 @@ import CommentArea from "./commentArea.jsx";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { theme } from "../../../../AppTheme.ts";
-import { Stack } from "@mui/material";
+import { CancelButton } from "../../../../components/buttons/buttons";
 
 class WorkflowForm extends React.Component {
   static contextType = AlertContext;
@@ -113,9 +114,9 @@ class WorkflowForm extends React.Component {
             height: "100%",
             maxWidth: "800px",
           }}>
-          <h3>
+          <Typography variant="h5">
             <TranslationText id={"flowPublication"} />
-          </h3>
+          </Typography>
           {filtered.length > 1 ? (
             <div
               className="link"
@@ -223,9 +224,9 @@ class WorkflowForm extends React.Component {
               )}
             </div>
           </div>
-          <h3>
+          <Typography variant="h5" sx={{ marginTop: 1 }}>
             <TranslationText id={"flowPublicationStatus"} />
-          </h3>
+          </Typography>
           {workflows.data.length === 0 && workflows.isFetching === true
             ? null
             : (() => {
@@ -338,17 +339,21 @@ class WorkflowForm extends React.Component {
                                 (status[role].finished === null ||
                                   (status[role].finished && role === "PUBLIC" && current === null)) && (
                                   <Button
+                                    sx={{ marginRight: 1 }}
                                     data-cy="workflow_restart"
                                     disabled={readOnly}
-                                    loading={workflows.isRejecting === true}
-                                    primary
+                                    variant="outlined"
+                                    startIcon={<RestartIcon />}
                                     onClick={() => {
                                       this.setState({
                                         modalRestart: true,
                                       });
-                                    }}
-                                    size="mini">
-                                    {t("flowRestart")}
+                                    }}>
+                                    {workflows.isRejecting ? (
+                                      <CircularProgress size={22} color="inherit" />
+                                    ) : (
+                                      t("flowRestart")
+                                    )}
                                   </Button>
                                 )}
                               {status[role].finished === null &&
@@ -359,31 +364,36 @@ class WorkflowForm extends React.Component {
                                   <>
                                     {role !== "EDIT" && (
                                       <Button
+                                        startIcon={<CancelIcon />}
+                                        variant="outlined"
+                                        sx={{ marginRight: 1 }}
                                         disabled={readOnly || workflows.isSubmitting}
-                                        loading={workflows.isRejecting === true}
-                                        negative
                                         onClick={() => {
                                           this.setState({
                                             modal: 3,
                                           });
-                                        }}
-                                        size="mini">
-                                        {t("reject")}
+                                        }}>
+                                        {workflows.isRejecting ? (
+                                          <CircularProgress size={22} color="inherit" />
+                                        ) : (
+                                          t("reject")
+                                        )}
                                       </Button>
                                     )}
-
                                     <Button
-                                      disabled={readOnly || workflows.isRejecting}
+                                      variant="contained"
                                       data-cy="workflow_submit"
-                                      loading={workflows.isSubmitting === true}
+                                      disabled={readOnly || workflows.isRejecting}
                                       onClick={() => {
                                         this.setState({
                                           modal: 1,
                                         });
-                                      }}
-                                      secondary
-                                      size="mini">
-                                      {t("submit")}
+                                      }}>
+                                      {workflows.isSubmitting ? (
+                                        <CircularProgress size={22} color="inherit" />
+                                      ) : (
+                                        t("submit")
+                                      )}
                                     </Button>
                                     <Modal
                                       // basic
@@ -402,9 +412,8 @@ class WorkflowForm extends React.Component {
                                       <Modal.Actions>
                                         {this.state.modal < 3 ? (
                                           <Button
+                                            variant="contained"
                                             data-cy="workflow_dialog_submit"
-                                            disabled={readOnly || workflows.isRejecting}
-                                            loading={workflows.isSubmitting === true}
                                             onClick={() => {
                                               this.props
                                                 .submitWorkflow(status[role].id, this.state.modal === 2)
@@ -414,26 +423,30 @@ class WorkflowForm extends React.Component {
                                                   });
                                                 });
                                             }}
-                                            secondary>
-                                            <Icon name="checkmark" />
-                                            &nbsp;
-                                            {t("submit")}
+                                            disabled={readOnly || workflows.isRejecting}>
+                                            {workflows.isSubmitting ? (
+                                              <CircularProgress size={22} color="inherit" />
+                                            ) : (
+                                              t("submit")
+                                            )}
                                           </Button>
                                         ) : (
                                           <Button
-                                            disabled={readOnly || workflows.isSubmitting}
-                                            loading={workflows.isRejecting === true}
-                                            negative
+                                            variant="contained"
+                                            startIcon={<CancelIcon />}
                                             onClick={() => {
                                               this.props.rejectWorkflow(status[role].id).then(() => {
                                                 this.setState({
                                                   modal: 0,
                                                 });
                                               });
-                                            }}>
-                                            <Icon name="checkmark" />
-                                            &nbsp;
-                                            {t("reject")}
+                                            }}
+                                            disabled={readOnly || workflows.isSubmitting}>
+                                            {workflows.isRejecting ? (
+                                              <CircularProgress size={22} color="inherit" />
+                                            ) : (
+                                              t("reject")
+                                            )}
                                           </Button>
                                         )}
                                       </Modal.Actions>
@@ -466,9 +479,9 @@ class WorkflowForm extends React.Component {
                               marginLeft: "0.7em",
                               whiteSpace: "nowrap",
                             }}>
-                            <h4 style={{ color: "#909090" }}>
+                            <Typography variant="h6" sx={{ color: "#909090" }}>
                               <TranslationText id={`status${role.toLowerCase()}`} />
-                            </h4>
+                            </Typography>
                           </div>
                           <div
                             style={{
@@ -505,9 +518,9 @@ class WorkflowForm extends React.Component {
             </Modal.Content>
             <Modal.Actions>
               <Button
-                loading={this.state.resetting === true}
+                sx={{ width: "100px" }}
                 data-cy="workflow_dialog_confirm_restart"
-                secondary
+                variant="contained"
                 onClick={() => {
                   this.setState(
                     {
@@ -523,19 +536,14 @@ class WorkflowForm extends React.Component {
                     },
                   );
                 }}>
-                <Icon name="checkmark" />
-                &nbsp;
-                {t("yes")}
+                {this.state.resetting ? <CircularProgress size={22} color="inherit" /> : t("yes")}
               </Button>
-              <Button
-                negative
+              <CancelButton
                 onClick={() => {
                   this.setState({
                     modalRestart: false,
                   });
-                }}>
-                {t("cancel")}
-              </Button>
+                }}></CancelButton>
             </Modal.Actions>
           </Modal>
         </div>
