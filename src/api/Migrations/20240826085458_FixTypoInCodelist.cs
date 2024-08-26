@@ -3,6 +3,7 @@
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class FixTypoInCodelist : Migration
@@ -13,3 +14,5 @@ public partial class FixTypoInCodelist : Migration
         migrationBuilder.Sql(@"UPDATE bdms.codelist SET text_cli_fr ='ferme (moyenne)' WHERE id_cli = 21103003;");
     }
 }
+
+#pragma warning restore CA1505
