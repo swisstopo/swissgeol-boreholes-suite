@@ -21,11 +21,8 @@ public class AnonymousAuthenticationMiddleware(RequestDelegate next, IConfigurat
     {
         if (configuration.IsAnonymousModeEnabled())
         {
-            var groupClaimType = configuration.GetValue<string>("Auth:GroupClaimType")
-                ?? throw new InvalidOperationException("The configuration 'Auth:GroupClaimType' is missing.");
-
-            var authorizedGroupName = configuration.GetValue<string>("Auth:AuthorizedGroupName")
-                ?? throw new InvalidOperationException("The configuration 'Auth:AuthorizedGroupName' is missing.");
+            var groupClaimType = configuration.GetAuthGroupClaimType();
+            var authorizedGroupName = configuration.GetAuthorizedGroupName();
 
             // Get pre-configured anonymous user.
             var anonymousUser = dbContext.Users.SingleOrDefault(u => u.SubjectId == AnonymousUserIdentifier && !u.IsAdmin);

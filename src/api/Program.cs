@@ -28,11 +28,8 @@ builder.Services.AddTransient<IClaimsTransformation, DatabaseAuthenticationClaim
 
 builder.Services.AddAuthorization(options =>
 {
-    var groupClaimType = builder.Configuration.GetValue<string>("Auth:GroupClaimType")
-        ?? throw new InvalidOperationException("The configuration 'Auth:GroupClaimType' is missing.");
-
-    var authorizedGroupName = builder.Configuration.GetValue<string>("Auth:AuthorizedGroupName")
-        ?? throw new InvalidOperationException("The configuration 'Auth:AuthorizedGroupName' is missing.");
+    var groupClaimType = builder.Configuration.GetAuthGroupClaimType();
+    var authorizedGroupName = builder.Configuration.GetAuthorizedGroupName();
 
     options.AddPolicy(PolicyNames.Admin, options => options
     .RequireClaim(groupClaimType, authorizedGroupName)
