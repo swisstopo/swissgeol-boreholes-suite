@@ -28,6 +28,8 @@ const DetailSideNav = ({ borehole, history, match }) => {
   const { t } = useTranslation();
 
   const id = match?.params?.id;
+  const env = import.meta.env;
+  const isAnonymousModeEnabled = env.VITE_ANONYMOUS_MODE_ENABLED === "true";
 
   const ParentListItem = styled(ListItem)(({ active }) => ({
     padding: "1em",
@@ -213,29 +215,33 @@ const DetailSideNav = ({ borehole, history, match }) => {
               </ChildListItem>
             </>
           )}
-          <ParentListItem
-            active={location.pathname === `/${id}/attachments`}
-            onClick={() => {
-              history.push(`/${id}/attachments`);
-            }}>
-            <List.Content>
-              <List.Header as="h3" data-cy="attachments-menu-item">
-                <Typography>{capitalizeFirstLetter(t("attachments"))}</Typography>
-              </List.Header>
-            </List.Content>
-          </ParentListItem>
-          <ParentListItem
-            active={location.pathname === `/${id}/status`}
-            style={{ borderBottom: `1px solid ${theme.palette.boxShadow}` }}
-            onClick={() => {
-              history.push(`/${id}/status`);
-            }}>
-            <List.Content>
-              <List.Header as="h3" data-cy="status-menu-item">
-                <Typography>{capitalizeFirstLetter(t("flowPublicationStatus"))}</Typography>
-              </List.Header>
-            </List.Content>
-          </ParentListItem>
+          {!isAnonymousModeEnabled && (
+            <>
+              <ParentListItem
+                active={location.pathname === `/${id}/attachments`}
+                onClick={() => {
+                  history.push(`/${id}/attachments`);
+                }}>
+                <List.Content>
+                  <List.Header as="h3" data-cy="attachments-menu-item">
+                    <Typography>{capitalizeFirstLetter(t("attachments"))}</Typography>
+                  </List.Header>
+                </List.Content>
+              </ParentListItem>
+              <ParentListItem
+                active={location.pathname === `/${id}/status`}
+                style={{ borderBottom: `1px solid ${theme.palette.boxShadow}` }}
+                onClick={() => {
+                  history.push(`/${id}/status`);
+                }}>
+                <List.Content>
+                  <List.Header as="h3" data-cy="status-menu-item">
+                    <Typography>{capitalizeFirstLetter(t("flowPublicationStatus"))}</Typography>
+                  </List.Header>
+                </List.Content>
+              </ParentListItem>
+            </>
+          )}
         </List>
       </Box>
     </Box>
