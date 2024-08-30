@@ -73,7 +73,7 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 
 ### Anonymer Modus (read-only)
 
-Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten öffentlich zugänglich zu machen. In diesem Modus ist die Applikation nur im read-only Modus verfügbar. Die Konfiguration erfolgt über die Umgebungsvariable `ANONYMOUS_MODE_ENABLED`. Die Applikation wird im anonymen Modus gestartet, wenn `VITE_ANONYMOUS_MODE_ENABLED` auf `true` gesetzt ist.
+Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten öffentlich zugänglich zu machen. In diesem Modus ist die Applikation nur im read-only Modus verfügbar. Die Konfiguration erfolgt über die Umgebungsvariable `ANONYMOUS_MODE_ENABLED`. Die Applikation wird im anonymen Modus gestartet, wenn `ANONYMOUS_MODE_ENABLED` auf `true` gesetzt ist.
 
 ## Developer best practices
 
