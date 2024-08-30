@@ -9,6 +9,7 @@ import { styled } from "@mui/material/styles";
 import { theme } from "../../AppTheme.ts";
 import { Typography } from "@mui/material";
 import { capitalizeFirstLetter } from "../../utils";
+import { useAuth } from "../../auth/useBdmsAuth";
 
 /**
  * A component that renders the side navigation for a borehole detail. The component is used without explicitly passing props.
@@ -26,10 +27,9 @@ const DetailSideNav = ({ borehole, history, match }) => {
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const location = useLocation();
   const { t } = useTranslation();
+  const auth = useAuth();
 
   const id = match?.params?.id;
-  const env = import.meta.env;
-  const isAnonymousModeEnabled = env.VITE_ANONYMOUS_MODE_ENABLED === "true";
 
   const ParentListItem = styled(ListItem)(({ active }) => ({
     padding: "1em",
@@ -215,7 +215,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
               </ChildListItem>
             </>
           )}
-          {!isAnonymousModeEnabled && (
+          {!auth.anonymousModeEnabled && (
             <>
               <ParentListItem
                 active={location.pathname === `/${id}/attachments`}

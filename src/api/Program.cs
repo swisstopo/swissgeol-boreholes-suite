@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using static BDMS.EnvironmentExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -166,7 +165,7 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = string.Empty;
 });
 
-if (IsAnonymousModeEnabled())
+if (builder.Configuration.IsAnonymousModeEnabled())
 {
     app.UseMiddleware<AnonymousAuthenticationMiddleware>();
 }

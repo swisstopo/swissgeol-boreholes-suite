@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { AuthProvider } from "react-oidc-context";
-import { WebStorageStateStore } from "oidc-client-ts";
 import { CircularProgress } from "@mui/material";
-import { CognitoUserManager } from "./CognitoUserManager";
+import { WebStorageStateStore } from "oidc-client-ts";
+import { useEffect, useState } from "react";
+import { AuthProvider as OidcAuthProvider } from "react-oidc-context";
 import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
-import { SplashScreen } from "./SplashScreen";
 import { AuthOverlay } from "./AuthOverlay";
+import { BdmsAuthContext } from "./BdmsAuthContext";
+import { CognitoUserManager } from "./CognitoUserManager";
+import { SplashScreen } from "./SplashScreen";
 
 export const BdmsAuthProvider = props => {
   const [serverConfig, setServerConfig] = useState(undefined);
@@ -41,17 +42,26 @@ export const BdmsAuthProvider = props => {
     setOidcConfig({
       onSigninCallback,
       userManager,
+      customSettings: {
+        anonymousModeEnabled: serverConfig.anonymousModeEnabled,
+      },
     });
   }, [serverConfig]);
 
-  return oidcConfig ? (
-    <AuthProvider {...oidcConfig}>
-      <AuthenticationStoreSync />
-      <AuthOverlay>{props.children}</AuthOverlay>
-    </AuthProvider>
-  ) : (
-    <SplashScreen>
-      <CircularProgress />
-    </SplashScreen>
+  if (!oidcConfig) {
+    return (
+      <SplashScreen>
+        <CircularProgress />
+      </SplashScreen>
+    );
+  }
+
+  return (
+    <OidcAuthProvider {...oidcConfig}>
+      <BdmsAuthContext.Provider value={oidcConfig.customSettings}>
+        <AuthenticationStoreSync />
+        <AuthOverlay>{props.children}</AuthOverlay>
+      </BdmsAuthContext.Provider>
+    </OidcAuthProvider>
   );
 };

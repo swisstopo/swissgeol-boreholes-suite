@@ -5,10 +5,11 @@ import { ProfilePopup } from "./profilePopup.tsx";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { useSelector } from "react-redux";
 import { LanguagePopup } from "./languagePopup.tsx";
+import { useAuth } from "../../auth/useBdmsAuth";
 
 const HeaderComponent = () => {
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  const env = import.meta.env;
+  const auth = useAuth();
 
   return (
     <Stack
@@ -33,7 +34,7 @@ const HeaderComponent = () => {
       <Stack direction="row" alignItems="center" spacing={4}>
         <VersionTag />
         <LanguagePopup />
-        {env.VITE_ANONYMOUS_MODE_ENABLED !== "true" && <ProfilePopup user={user.data} />}
+        {!auth.anonymousModeEnabled && <ProfilePopup user={user.data} />}
       </Stack>
     </Stack>
   );

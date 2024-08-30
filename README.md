@@ -59,13 +59,14 @@ Die Applikation nutzt das OpenID Connect (OIDC) Protokoll für die Authentifizie
 
 Die Applikation benötigt für die Authentifizierung und Autorisierung eine gültige OIDC-Konfiguration. Diese Konfiguration wird ausschliesslich in BDMS.Api benötigt. Sie wird über `/api/v2/settings/auth` dem Client zur Verfügung gestellt. Die Werte werden durch den OIDC Server vergeben. Die folgenden Konfigurationen müssen gesetzt werden:
 
-| Parameter                | Beschreibung                                                                                                                                                                                                                                         |
-| :----------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Auth:Authority           | Die URL des OpenID Connect Servers. Es ist vorausgesetzt, dass der Server ein gültiges [OpenID Connect Discovery Dokument](https://openid.net/specs/openid-connect-discovery-1_0.html) zur Verfügung stellt.                                         |
-| Auth:Audience            | Der Wert des `aud` Claims, welcher in den `identity_token` des [OIDC Servers](https://openid.net/specs/openid-connect-core-1_0.html#IDToken) enthalten ist. Die Audience wird als `client_id` verwendet beim Authentifizieren auf dem OIDC Endpunkt. |
-| Auth:Scopes              | Die benötigten Scopes, welche beim Authentifizieren auf dem OIDC Endpunkt angefragt werden. Default: `openid profile`                                                                                                                                |
-| Auth:GroupClaimType      | Der Name des Claims, welcher die Gruppenzugehörigkeit des Benutzers enthält. Default: `cognito:groups`                                                                                                                                               |
-| Auth:AuthorizedGroupName | Der Name der Gruppe, welche autorisiert ist, um auf die API zuzugreifen.                                                                                                                                                                             |
+| Parameter                 | Beschreibung                                                                                                                                                                                                                                         |
+| :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth:Authority            | Die URL des OpenID Connect Servers. Es ist vorausgesetzt, dass der Server ein gültiges [OpenID Connect Discovery Dokument](https://openid.net/specs/openid-connect-discovery-1_0.html) zur Verfügung stellt.                                         |
+| Auth:Audience             | Der Wert des `aud` Claims, welcher in den `identity_token` des [OIDC Servers](https://openid.net/specs/openid-connect-core-1_0.html#IDToken) enthalten ist. Die Audience wird als `client_id` verwendet beim Authentifizieren auf dem OIDC Endpunkt. |
+| Auth:Scopes               | Die benötigten Scopes, welche beim Authentifizieren auf dem OIDC Endpunkt angefragt werden. Default: `openid profile`                                                                                                                                |
+| Auth:GroupClaimType       | Der Name des Claims, welcher die Gruppenzugehörigkeit des Benutzers enthält. Default: `cognito:groups`                                                                                                                                               |
+| Auth:AuthorizedGroupName  | Der Name der Gruppe, welche autorisiert ist, um auf die API zuzugreifen.                                                                                                                                                                             |
+| Auth:AnonymousModeEnabled | Gibt an, ob die OIDC-Konfiguration ignoriert und die Authentifizierung abgestellt werden soll. Ist für den Betrieb im anonymen Modus (read-only) erforderlich.                                                                                       |
 
 ### Legacy API Authentifizierung
 
@@ -73,7 +74,7 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 
 ### Anonymer Modus (read-only)
 
-Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten öffentlich zugänglich zu machen. In diesem Modus ist die Applikation nur im read-only Modus verfügbar. Die Konfiguration erfolgt über die Umgebungsvariable `ANONYMOUS_MODE_ENABLED`. Die Applikation wird im anonymen Modus gestartet, wenn `ANONYMOUS_MODE_ENABLED` auf `true` gesetzt ist.
+Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten öffentlich zugänglich zu machen. In diesem Modus ist die Applikation nur im read-only Modus verfügbar. Die Konfiguration erfolgt über OIDC-Konfiguration (siehe oben). Die Applikation wird im anonymen Modus gestartet, wenn `Auth:AnonymousModeEnabled` auf `true` gesetzt ist.
 
 ## Developer best practices
 

@@ -8,6 +8,7 @@
 - Location hash for tabs in borehole detail view.
 - Language dropdown in the header.
 - Added health check endpoint for the .NET API.
+- Added possibility to run the boreholes web application in read-only mode.
 
 ### Changed
 

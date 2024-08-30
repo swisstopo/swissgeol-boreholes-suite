@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "react-oidc-context";
+import { useAuth } from "./useBdmsAuth";
 import { useDispatch } from "react-redux";
 import { setAuthentication, unsetAuthentication } from "../api-lib";
 

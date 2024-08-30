@@ -68,7 +68,6 @@ services:
         condition: service_healthy
     environment:
       VITE_APP_PROXY_HOST_API: http://localhost:5000/
-      VITE_ANONYMOUS_MODE_ENABLED: true
     extra_hosts:
       - "localhost:host-gateway"
   api-legacy:
@@ -119,9 +118,9 @@ services:
       Auth__Audience: "bdms-client"
       Auth__GroupClaimType: "local_groups_claim"
       Auth__AuthorizedGroupName: "boreholes_dev_group"
+      Auth__AnonymousModeEnabled: true
       S3__ENDPOINT: http://minio:9000
       S3__SECURE: 1
-      ANONYMOUS_MODE_ENABLED: true
     extra_hosts:
       - "localhost:host-gateway"
   oidc-server:

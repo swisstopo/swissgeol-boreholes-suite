@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using static BDMS.EnvironmentExtensions;
 
 namespace BDMS.Authentication;
 
@@ -20,7 +19,7 @@ public class AnonymousAuthenticationMiddleware(RequestDelegate next, IConfigurat
     /// <returns>A <see cref="Task"/> that represents the execution of this middleware.</returns>
     public async Task InvokeAsync(HttpContext context, BdmsContext dbContext)
     {
-        if (IsAnonymousModeEnabled())
+        if (configuration.IsAnonymousModeEnabled())
         {
             var groupClaimType = configuration.GetValue<string>("Auth:GroupClaimType")
                 ?? throw new InvalidOperationException("The configuration 'Auth:GroupClaimType' is missing.");
