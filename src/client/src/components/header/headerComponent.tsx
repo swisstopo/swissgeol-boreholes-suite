@@ -8,6 +8,7 @@ import { LanguagePopup } from "./languagePopup.tsx";
 
 const HeaderComponent = () => {
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
+  const env = import.meta.env;
 
   return (
     <Stack
@@ -32,7 +33,7 @@ const HeaderComponent = () => {
       <Stack direction="row" alignItems="center" spacing={4}>
         <VersionTag />
         <LanguagePopup />
-        <ProfilePopup user={user.data} />
+        {env.VITE_ANONYMOUS_MODE_ENABLED !== "true" && <ProfilePopup user={user.data} />}
       </Stack>
     </Stack>
   );
