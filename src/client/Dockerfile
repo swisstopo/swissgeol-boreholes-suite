@@ -2,6 +2,7 @@ FROM node:20-buster-slim AS development
 ARG VERSION
 ARG REVISION
 ENV VITE_APP_VERSION=${VERSION}+${REVISION}
+ENV VITE_ANONYMOUS_MODE_ENABLED=false
 RUN apt-get -y update
 RUN apt-get -y install git vim curl htop python3 python3-pip
 RUN python3 -m pip install mkdocs
@@ -23,6 +24,7 @@ FROM node:20-buster-slim AS deploy
 ARG VERSION
 ARG REVISION
 ENV VITE_APP_VERSION=${VERSION}+${REVISION}
+ENV VITE_ANONYMOUS_MODE_ENABLED=false
 RUN apt-get -y update
 RUN apt-get -y install git
 

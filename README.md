@@ -71,23 +71,28 @@ Die Applikation benötigt für die Authentifizierung und Autorisierung eine gül
 
 Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsoft.github.io/reverse-proxy/articles/config-files.html) durch das neue API weitergeleitet. Die Authentifizierung wird über das neue API übernommen. Die Authentifizierung erfolgt mit der [LegacyApiAuthenticationMiddleware](src\api\Authentication\LegacyApiAuthenticationMiddleware.cs) welche den `Authorization` Header mit dem `sub` Claim des Benutzers befüllt. **⚠️Da die Validierung des `identity_tokens` dabei verloren geht, darf das Legacy API nicht öffentlich verfügbar sein**. Die Konfiguration des Legacy API Endpunkts erfolgt über die [Konfiguration](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration) von `ReverseProxy:Clusters:pythonApi:Destinations:legacyApi:Address`.
 
+### Anonymer Modus (read-only)
+
+Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten öffentlich zugänglich zu machen. In diesem Modus ist die Applikation nur im read-only Modus verfügbar. Die Konfiguration erfolgt über die Umgebungsvariable `ANONYMOUS_MODE_ENABLED`. Die Applikation wird im anonymen Modus gestartet, wenn `VITE_ANONYMOUS_MODE_ENABLED` auf `true` gesetzt ist.
+
 ## Developer best practices
 
 #### UI/UX
 
 - Das UI-Design ist in [Figma](https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/SwissGeol?node-id=7390-40928&t=DemUCUzYlysJ5lB4-0) definiert. Unter Pages/Screens sind die definitiven Designs zu finden.
 - Standardmässig werden die [Lucid Icons](https://lucide.dev/icons/) verwendet. Custom-Icons können aus [Figma](https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/SwissGeol?node-id=7390-40928&t=DemUCUzYlysJ5lB4-0) kopiert und als SVG eingebunden werden. Um die Icons farblich stylen zu können, müssen `fill` und `stroke` wie folgt angepasst werden `fill="currentColor" stroke="currentColor"`.
-- [MUI](https://mui.com/) wird als UI-Component library verwendet. Allgemeine Styles werden im [AppTheme.ts](./src/client/src/AppTheme.ts) definiert und diese Styles wo immer möglich verwendet. [MUI Styled Components](https://mui.com/system/styled/) im gleichen File mit der Komponente definieren, sobald die Styles mehrfach gebraucht werden. Übergreifende Styled Components werden in [styledComponents.ts](./src/client/src/components/styledComponents.ts) definiert. 
+- [MUI](https://mui.com/) wird als UI-Component library verwendet. Allgemeine Styles werden im [AppTheme.ts](./src/client/src/AppTheme.ts) definiert und diese Styles wo immer möglich verwendet. [MUI Styled Components](https://mui.com/system/styled/) im gleichen File mit der Komponente definieren, sobald die Styles mehrfach gebraucht werden. Übergreifende Styled Components werden in [styledComponents.ts](./src/client/src/components/styledComponents.ts) definiert.
 
 #### Typescript
 
 - Neue Komponenten werden in Typescript geschrieben.
 - Es werden bevorzugt Interfaces statt Types verwendet.
 - Interfaces, die API Calls abbilden, werden unter [apiInterfaces.ts](./src/client/api/apiInterfaces.ts) definiert ([ReduxStateInterfaces.ts](./src/client/src/api-lib/ReduxStateInterfaces.ts) für das Legacy API).
-- Existieren mehrere Interfaces für eine Komponente, werden sie in einem separaten File neben der Komponente abgelegt. 
+- Existieren mehrere Interfaces für eine Komponente, werden sie in einem separaten File neben der Komponente abgelegt.
 - Das Interface für die React props der Komponente kann im selben File mit der Komponente definiert werden.
 
 #### Translation
+
 - Texte werden mit dem `useTranslation` hook von `react-i18next` übersetzt. Das `withTranslation HOC` wird nicht mehr verwendet.
 - Neue Übersetzungskeys alphabetisch sortiert und in CamelCase in den `common.json` Files unter [public/locale](./src/client/public/locale) erfassen.
 

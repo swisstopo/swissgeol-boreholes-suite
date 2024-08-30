@@ -17,6 +17,13 @@ interface ReduxState {
 
 export const AuthOverlay: FC<PropsWithChildren> = ({ children }) => {
   const auth = useAuth();
+
+  // Bypass authentication in anonymous mode.
+  const env = import.meta.env;
+  if (env.VITE_ANONYMOUS_MODE_ENABLED === "true") {
+    auth.isAuthenticated = true;
+  }
+
   const dispatch = useDispatch();
   const user = useSelector<ReduxState, User>(state => state.core_user);
   const { t } = useTranslation();
