@@ -1,5 +1,5 @@
 import { Theme, ThemeOptions } from "@mui/material/styles";
-import { ComponentType } from "react";
+import { ComponentType, SVGProps } from "react";
 
 declare module "@mui/material/Button" {
   interface ButtonPropsColorOverrides {
@@ -228,7 +228,7 @@ declare module "@mui/material/styles" {
     };
     MuiSelect: {
       defaultProps: {
-        IconComponent: ComponentType<never>;
+        IconComponent: ComponentType<SVGProps<SVGSVGElement> & { title?: string | undefined }>;
       };
     };
     MuiFormControl: {
