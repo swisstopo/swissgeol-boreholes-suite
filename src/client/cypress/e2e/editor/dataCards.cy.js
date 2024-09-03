@@ -6,10 +6,10 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { addItem, cancelEditing, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Tests for the data cards in the editor.", () => {
-  it("resets datacards when stop editing", () => {
+  it("resets datacards when stop editing or cancel", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin(`/${id}/hydrogeology/wateringress`);
@@ -17,6 +17,14 @@ describe("Tests for the data cards in the editor.", () => {
 
     startBoreholeEditing();
     cy.wait(500);
+
+    //Add card and cancel editing in datacard
+    addItem("addwateringress");
+    cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
+    cancelEditing();
+    cy.get('[data-cy="waterIngress-card.0.edit"]').should("not.exist");
+
+    //Add card and stop editing borehole
     addItem("addwateringress");
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
     stopBoreholeEditing();
