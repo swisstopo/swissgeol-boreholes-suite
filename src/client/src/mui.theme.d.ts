@@ -59,10 +59,8 @@ declare module "@mui/material/styles" {
         secondary: string;
       };
       ai: {
-        mainTop: string;
-        mainBottom: string;
-        activeTop: string;
-        activeBottom: string;
+        main: string;
+        secondary: string;
         contrastText: string;
       };
       boxShadow: string;
@@ -155,10 +153,8 @@ declare module "@mui/material/styles" {
         secondary: string;
       };
       ai: {
-        mainTop: string;
-        mainBottom: string;
-        activeTop: string;
-        activeBottom: string;
+        main: string;
+        secondary: string;
         contrastText: string;
       };
       boxShadow: string;
