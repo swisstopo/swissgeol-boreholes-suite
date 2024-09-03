@@ -3,7 +3,7 @@ import { Icon, Popup } from "semantic-ui-react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import ClearIcon from "@mui/icons-material/Clear";
-import { Stack, Tooltip } from "@mui/material";
+import { Stack, Tooltip, Typography } from "@mui/material";
 import { NumericFormat } from "react-number-format";
 import { withTranslation } from "react-i18next";
 import * as Styled from "./styles.js";
@@ -162,7 +162,7 @@ const LithologyLayersList = props => {
         {showDelete !== itemWithValidation?.id && (
           <>
             <Styled.CardInfo id="info">
-              <Styled.Text warning={isTopHasWarning} id="text">
+              <Typography variant="subtitle1">
                 {isTopHasWarning && <Icon name="warning sign" style={{ color: "red" }} />}
                 {showTopPopup ? (
                   <Popup
@@ -181,23 +181,23 @@ const LithologyLayersList = props => {
                     displayType="text"
                   />
                 )}
-              </Styled.Text>
-
-              <Styled.Text
-                bold
-                style={{
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
                   textOverflow: "ellipsis",
                   overflow: "hidden",
+                  lineHeight: "1.2",
+                  fontWeight: "bold",
                   display: "-webkit-box",
                   WebkitLineClamp: "2",
                   WebkitBoxOrient: "vertical",
-                  lineHeight: "1.2",
                 }}>
                 {mainProps}
-              </Styled.Text>
-              <Styled.Text
-                small
-                style={{
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                sx={{
                   textOverflow: "ellipsis",
                   overflow: "hidden",
                   display: "-webkit-box",
@@ -206,8 +206,8 @@ const LithologyLayersList = props => {
                   lineHeight: "1.3",
                 }}>
                 {secondaryProps}
-              </Styled.Text>
-              <Styled.Text warning={isBottomHasWarning}>
+              </Typography>
+              <Typography variant="subtitle1">
                 {isBottomHasWarning && <Icon name="warning sign" style={{ color: "red" }} />}
                 {showBottomPopup ? (
                   <Popup
@@ -227,7 +227,7 @@ const LithologyLayersList = props => {
                     displayType="text"
                   />
                 )}
-              </Styled.Text>
+              </Typography>
             </Styled.CardInfo>
             {isEditable && (
               <Stack direction="row" sx={{ marginLeft: "auto", padding: "3px" }}>

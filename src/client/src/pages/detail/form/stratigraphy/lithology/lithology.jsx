@@ -9,7 +9,7 @@ import { stratigraphyData } from "./data/stratigraphydata.js";
 import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
 import { Loader } from "semantic-ui-react";
 
-const Lithology = () => {
+const Lithology = ({ checkLock }) => {
   const { user, borehole } = useSelector(state => ({
     borehole: state.core_borehole,
     user: state.core_user,
@@ -106,6 +106,7 @@ const Lithology = () => {
                 selectedStratigraphyID: selectedStratigraphy ? selectedStratigraphy.id : null,
                 isEditable,
                 onUpdated,
+                checkLock,
                 attribute: attributesBasedKind?.profileInfo,
               }}
             />
@@ -131,6 +132,7 @@ const Lithology = () => {
                   isEditable,
                   onUpdated,
                   reloadAttribute,
+                  checkLock,
                   attribute: attributesBasedKind?.profileAttribute,
                 }}
               />
