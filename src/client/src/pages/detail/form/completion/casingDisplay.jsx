@@ -11,19 +11,6 @@ const CasingDisplay = props => {
   const { t, i18n } = useTranslation();
   const domains = useDomains();
 
-  const tableCellStyles = {
-    paddingRight: "3px",
-    paddingLeft: "3px",
-    flex: 1,
-    fontSize: "13px",
-  };
-
-  const tableHeaderStyles = {
-    fontWeight: 900,
-    padding: "3px",
-    flex: 1,
-  };
-
   var depth = extractCasingDepth(item);
 
   return (
@@ -43,24 +30,20 @@ const CasingDisplay = props => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ ...tableHeaderStyles, border: "none" }} colSpan={2}>
+              <TableCell sx={{ border: "none" }} colSpan={2}>
                 {t("depthMD")}
               </TableCell>
-              <TableCell sx={tableHeaderStyles} rowSpan={2}>
-                {t("kindCasingLayer")}
-              </TableCell>
-              <TableCell sx={tableHeaderStyles} rowSpan={2}>
-                {t("materialCasingLayer")}
-              </TableCell>
-              <TableCell sx={{ ...tableHeaderStyles, border: "none" }} colSpan={2}>
+              <TableCell rowSpan={2}>{t("kindCasingLayer")}</TableCell>
+              <TableCell rowSpan={2}>{t("materialCasingLayer")}</TableCell>
+              <TableCell sx={{ border: "none" }} colSpan={2}>
                 {t("diameter")}
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell sx={{ ...tableHeaderStyles }}>{t("from")}</TableCell>
-              <TableCell sx={tableHeaderStyles}>{t("to")}</TableCell>
-              <TableCell sx={tableHeaderStyles}>{t("inner")}</TableCell>
-              <TableCell sx={tableHeaderStyles}>{t("outer")}</TableCell>
+              <TableCell>{t("from")}</TableCell>
+              <TableCell>{t("to")}</TableCell>
+              <TableCell>{t("inner")}</TableCell>
+              <TableCell>{t("outer")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -68,26 +51,20 @@ const CasingDisplay = props => {
               ?.sort((a, b) => a.fromDepth - b.fromDepth)
               .map((element, index) => (
                 <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={tableCellStyles}
-                    data-cy={`casingElements.${index}.fromDepth-formDisplay`}>
+                  <TableCell component="th" scope="row" data-cy={`casingElements.${index}.fromDepth-formDisplay`}>
                     {element.fromDepth}
                   </TableCell>
-                  <TableCell sx={tableCellStyles} data-cy={`casingElements.${index}.toDepth-formDisplay`}>
-                    {element.toDepth}
-                  </TableCell>
-                  <TableCell sx={tableCellStyles} data-cy={`casingElements.${index}.kindId-formDisplay`}>
+                  <TableCell data-cy={`casingElements.${index}.toDepth-formDisplay`}>{element.toDepth}</TableCell>
+                  <TableCell data-cy={`casingElements.${index}.kindId-formDisplay`}>
                     {domains?.data?.find(d => d.id === element.kindId)?.[i18n.language] || ""}
                   </TableCell>
-                  <TableCell sx={tableCellStyles} data-cy={`casingElements.${index}.materialId-formDisplay`}>
+                  <TableCell data-cy={`casingElements.${index}.materialId-formDisplay`}>
                     {domains?.data?.find(d => d.id === element.materialId)?.[i18n.language] || ""}
                   </TableCell>
-                  <TableCell sx={tableCellStyles} data-cy={`casingElements.${index}.innerDiameter-formDisplay`}>
+                  <TableCell data-cy={`casingElements.${index}.innerDiameter-formDisplay`}>
                     {element.innerDiameter}
                   </TableCell>
-                  <TableCell sx={tableCellStyles} data-cy={`casingElements.${index}.outerDiameter-formDisplay`}>
+                  <TableCell data-cy={`casingElements.${index}.outerDiameter-formDisplay`}>
                     {element.outerDiameter}
                   </TableCell>
                 </TableRow>

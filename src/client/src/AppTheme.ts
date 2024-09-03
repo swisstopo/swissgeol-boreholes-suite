@@ -53,7 +53,7 @@ export const theme = createTheme({
   typography: {
     fontFamily: "Inter",
     h6: {
-      fontSize: "14px",
+      fontSize: "12px",
       lineHeight: "20px",
       fontWeight: 500,
       color: "#337083",
@@ -236,6 +236,23 @@ export const theme = createTheme({
         root: {
           fontSize: "16px",
           color: "#1c2834",
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontSize: "13px",
+          fontWeight: 700,
+          padding: "3px",
+          flex: 1,
+          verticalAlign: "top",
+        },
+        body: {
+          paddingRight: "3px",
+          paddingLeft: "3px",
+          flex: 1,
+          fontSize: "13px",
         },
       },
     },

@@ -24,18 +24,11 @@ export const FormResultTableDisplay: React.FC<FormResultTableDisplayProps> = ({
   const { t } = useTranslation();
 
   const tableCellStyles: React.CSSProperties = {
-    paddingRight: "3px",
-    paddingLeft: "3px",
-    flex: 1,
     width: "20%",
     maxWidth: "20%",
-    fontSize: "13px",
   };
 
   const tableHeaderStyles: React.CSSProperties = {
-    fontWeight: 900,
-    padding: "3px",
-    flex: 1,
     width: "20%",
     maxWidth: "20%",
   };
