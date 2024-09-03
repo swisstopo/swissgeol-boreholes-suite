@@ -22,21 +22,22 @@ interface LabelingToggleButtonProps extends ButtonProps {
 }
 
 export const LabelingToggleButton = forwardRef<HTMLButtonElement, LabelingToggleButtonProps>((props, ref) => {
+  const { panelOpen, panelPosition, ...defaultProps } = props;
   return (
     <IconButton
       ref={ref}
-      {...props}
+      {...defaultProps}
       color="ai"
       sx={{
         position: "absolute",
         zIndex: 1000,
         width: "44px",
         height: "44px",
-        borderRadius: props.panelPosition === "right" ? "4px 0 0 4px" : "4px 0 0 0",
+        borderRadius: panelPosition === "right" ? "4px 0 0 4px" : "4px 0 0 0",
         right: 0,
-        bottom: props.panelPosition === "bottom" ? "0" : undefined,
+        bottom: panelPosition === "bottom" ? "0" : undefined,
       }}>
-      {props.panelOpen ? props.panelPosition === "right" ? <ChevronRight /> : <ChevronDown /> : <Sparkles />}
+      {panelOpen ? panelPosition === "right" ? <ChevronRight /> : <ChevronDown /> : <Sparkles />}
     </IconButton>
   );
 });
