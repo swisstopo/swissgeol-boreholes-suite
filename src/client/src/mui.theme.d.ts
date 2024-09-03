@@ -1,6 +1,26 @@
 import { Theme, ThemeOptions } from "@mui/material/styles";
 
+declare module "@mui/material/Button" {
+  interface ButtonPropsColorOverrides {
+    ai: true;
+  }
+}
+
+declare module "@mui/material/IconButton" {
+  interface IconButtonPropsColorOverrides {
+    ai: true;
+  }
+}
+
 declare module "@mui/material/styles" {
+  interface Palette {
+    ai: Palette["ai"];
+  }
+
+  interface PaletteOptions {
+    ai?: PaletteOptions["ai"];
+  }
+
   interface CustomTheme extends Theme {
     palette: {
       action: {
@@ -37,6 +57,13 @@ declare module "@mui/material/styles" {
       mapIcon: {
         main: string;
         secondary: string;
+      };
+      ai: {
+        mainTop: string;
+        mainBottom: string;
+        activeTop: string;
+        activeBottom: string;
+        contrastText: string;
       };
       boxShadow: string;
       background: {
@@ -88,6 +115,7 @@ declare module "@mui/material/styles" {
       };
     };
   }
+
   // allow configuration using `createTheme`
   interface CustomThemeOptions extends ThemeOptions {
     palette?: {
@@ -125,6 +153,13 @@ declare module "@mui/material/styles" {
       mapIcon: {
         main: string;
         secondary: string;
+      };
+      ai: {
+        mainTop: string;
+        mainBottom: string;
+        activeTop: string;
+        activeBottom: string;
+        contrastText: string;
       };
       boxShadow: string;
       background: {

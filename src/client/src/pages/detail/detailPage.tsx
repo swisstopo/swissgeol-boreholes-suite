@@ -1,4 +1,4 @@
-import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import { MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -6,6 +6,10 @@ import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts"
 import DetailSideNav from "./detailSideNav";
 import DetailPageContent from "./detailPageContent";
 import DetailHeader from "./detailHeader.tsx";
+import { Box } from "@mui/material";
+import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
+import LabelingPanel from "./labeling/labelingPanel.tsx";
+import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 
 interface DetailPageContentProps {
   editingEnabled: boolean;
@@ -18,6 +22,7 @@ export const DetailPage: FC = () => {
   const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const location = useLocation();
+  const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
 
   useEffect(() => {
     setEditingEnabled(borehole.data.lock !== null);
@@ -53,14 +58,29 @@ export const DetailPage: FC = () => {
         setEditingEnabled={setEditingEnabled}
         editableByCurrentUser={editableByCurrentUser}
       />
-      <LayoutBox>
-        <SidebarBox>
-          <DetailSideNav />
-        </SidebarBox>
-        <MainContentBox>
-          <DetailPageContent {...props} />
-        </MainContentBox>
-      </LayoutBox>
+      <Box sx={{ display: "flex", flexDirection: "column", flex: "1 1 100%", overflow: "hidden" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+          }}>
+          <SidebarBox>
+            <DetailSideNav />
+          </SidebarBox>
+          <Box sx={{ display: "flex", flexDirection: "row", width: "100%" }}>
+            <MainContentBox
+              sx={{
+                width: panelOpen && panelPosition === "right" ? "50%" : "100%",
+              }}>
+              <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
+              <DetailPageContent {...props} />
+            </MainContentBox>
+            {panelOpen && panelPosition === "right" && <LabelingPanel />}
+          </Box>
+        </Box>
+        {panelOpen && panelPosition === "bottom" && <LabelingPanel />}
+      </Box>
     </>
   );
 };

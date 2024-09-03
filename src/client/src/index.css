@@ -1,3 +1,8 @@
+.lucide {
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.5px;
+}
 
 .ol-popup {
   position: absolute;
