@@ -3,15 +3,18 @@ import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import ListItem from "../../components/legacyComponents/listItem";
+import { useAuth } from "../../auth/useBdmsAuth";
 
 const MenuSettings = props => {
   const { history, t, location } = props;
+  const auth = useAuth();
 
   return (
     <div>
       <ListItem path="/" name="done" location={location} history={history} icon="arrow left" t={t} hasTranslation />
-      <ListItem path="/setting" name={t("header_settings")} location={location} history={history} icon="cog" />
-
+      {!auth.anonymousModeEnabled && (
+        <ListItem path="/setting" name={t("header_settings")} location={location} history={history} icon="cog" />
+      )}
       {props.user.data.admin === true && (
         <>
           <ListItem path="/setting/admin" name="Admin" location={location} history={history} icon="user outline" />

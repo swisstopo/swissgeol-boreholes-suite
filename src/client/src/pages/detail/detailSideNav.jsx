@@ -9,6 +9,7 @@ import { styled } from "@mui/material/styles";
 import { theme } from "../../AppTheme.ts";
 import { Typography } from "@mui/material";
 import { capitalizeFirstLetter } from "../../utils";
+import { useAuth } from "../../auth/useBdmsAuth";
 
 /**
  * A component that renders the side navigation for a borehole detail. The component is used without explicitly passing props.
@@ -26,6 +27,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const location = useLocation();
   const { t } = useTranslation();
+  const auth = useAuth();
 
   const id = match?.params?.id;
 
@@ -213,29 +215,33 @@ const DetailSideNav = ({ borehole, history, match }) => {
               </ChildListItem>
             </>
           )}
-          <ParentListItem
-            active={location.pathname === `/${id}/attachments`}
-            onClick={() => {
-              history.push(`/${id}/attachments`);
-            }}>
-            <List.Content>
-              <List.Header as="h3" data-cy="attachments-menu-item">
-                <Typography>{capitalizeFirstLetter(t("attachments"))}</Typography>
-              </List.Header>
-            </List.Content>
-          </ParentListItem>
-          <ParentListItem
-            active={location.pathname === `/${id}/status`}
-            style={{ borderBottom: `1px solid ${theme.palette.boxShadow}` }}
-            onClick={() => {
-              history.push(`/${id}/status`);
-            }}>
-            <List.Content>
-              <List.Header as="h3" data-cy="status-menu-item">
-                <Typography>{capitalizeFirstLetter(t("flowPublicationStatus"))}</Typography>
-              </List.Header>
-            </List.Content>
-          </ParentListItem>
+          {!auth.anonymousModeEnabled && (
+            <>
+              <ParentListItem
+                active={location.pathname === `/${id}/attachments`}
+                onClick={() => {
+                  history.push(`/${id}/attachments`);
+                }}>
+                <List.Content>
+                  <List.Header as="h3" data-cy="attachments-menu-item">
+                    <Typography>{capitalizeFirstLetter(t("attachments"))}</Typography>
+                  </List.Header>
+                </List.Content>
+              </ParentListItem>
+              <ParentListItem
+                active={location.pathname === `/${id}/status`}
+                style={{ borderBottom: `1px solid ${theme.palette.boxShadow}` }}
+                onClick={() => {
+                  history.push(`/${id}/status`);
+                }}>
+                <List.Content>
+                  <List.Header as="h3" data-cy="status-menu-item">
+                    <Typography>{capitalizeFirstLetter(t("flowPublicationStatus"))}</Typography>
+                  </List.Header>
+                </List.Content>
+              </ParentListItem>
+            </>
+          )}
         </List>
       </Box>
     </Box>

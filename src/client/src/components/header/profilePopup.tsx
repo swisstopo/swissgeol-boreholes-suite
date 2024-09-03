@@ -1,4 +1,4 @@
-import { useAuth } from "react-oidc-context";
+import { useAuth } from "../../auth/useBdmsAuth";
 import { Button, IconButton, Popover, Stack, Typography } from "@mui/material";
 import ProfileIcon from "../../assets/icons/profile.svg?react";
 import { UserData } from "../../api-lib/ReduxStateInterfaces.ts";

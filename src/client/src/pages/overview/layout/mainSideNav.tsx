@@ -17,6 +17,7 @@ import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { useTranslation } from "react-i18next";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
+import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
@@ -42,6 +43,7 @@ const MainSideNav = ({
   const history = useHistory();
   const menuRef = useRef(null);
   const { t } = useTranslation();
+  const auth = useAuth();
   const [creating, setCreating] = useState<boolean>(false);
   const [modal, setModal] = useState<boolean>(false);
   const [upload, setUpload] = useState<boolean>(false);
@@ -118,25 +120,29 @@ const MainSideNav = ({
           selected={isFilterPanelVisible}
           onClick={handleToggleFilter}
         />
-        <NavButton
-          data-cy="new-borehole-button"
-          icon={<AddIcon />}
-          label={t("add")}
-          selected={isAddPanelVisible}
-          disabled={user.data.roles.indexOf("EDIT") === -1}
-          onClick={handleToggleAdd}
-        />
-        <NavButton
-          data-cy="import-borehole-button"
-          icon={<UploadIcon />}
-          label={t("upload")}
-          disabled={user.data.roles.indexOf("EDIT") === -1}
-          onClick={() => {
-            toggleDrawer(false);
-            setModal(true);
-            setUpload(true);
-          }}
-        />
+        {!auth.anonymousModeEnabled && (
+          <>
+            <NavButton
+              data-cy="new-borehole-button"
+              icon={<AddIcon />}
+              label={t("add")}
+              selected={isAddPanelVisible}
+              disabled={user.data.roles.indexOf("EDIT") === -1}
+              onClick={handleToggleAdd}
+            />
+            <NavButton
+              data-cy="import-borehole-button"
+              icon={<UploadIcon />}
+              label={t("upload")}
+              disabled={user.data.roles.indexOf("EDIT") === -1}
+              onClick={() => {
+                toggleDrawer(false);
+                setModal(true);
+                setUpload(true);
+              }}
+            />
+          </>
+        )}
         <NavButton
           data-cy="layers-button"
           icon={<LayersIcon />}

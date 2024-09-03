@@ -6,8 +6,10 @@ import AdminSettings from "./admin/adminSettings";
 import AboutSettings from "./aboutSettings";
 import TermSettings from "./termSettings";
 import { theme } from "../../AppTheme";
+import { useAuth } from "../../auth/useBdmsAuth";
 
 const SettingsPage = () => {
+  const auth = useAuth();
   return (
     <div
       style={{
@@ -40,7 +42,7 @@ const SettingsPage = () => {
             <Route component={AdminSettings} path={"/setting/admin"} />
             <Route component={TermSettings} path={"/setting/term"} />
             <Route component={AboutSettings} path={"/setting/about"} />
-            <Route component={EditorSettings} path={"/setting"} />
+            <Route component={auth.anonymousModeEnabled ? AboutSettings : EditorSettings} path={"/setting"} />
           </Switch>
         </div>
       </div>

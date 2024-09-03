@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren, useEffect } from "react";
-import { useAuth } from "react-oidc-context";
+import { useAuth } from "./useBdmsAuth";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Alert, Button, CircularProgress } from "@mui/material";
@@ -17,6 +17,12 @@ interface ReduxState {
 
 export const AuthOverlay: FC<PropsWithChildren> = ({ children }) => {
   const auth = useAuth();
+
+  // Bypass authentication in anonymous mode.
+  if (auth.anonymousModeEnabled) {
+    auth.isAuthenticated = true;
+  }
+
   const dispatch = useDispatch();
   const user = useSelector<ReduxState, User>(state => state.core_user);
   const { t } = useTranslation();
