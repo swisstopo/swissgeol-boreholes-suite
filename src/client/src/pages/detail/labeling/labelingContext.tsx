@@ -8,7 +8,7 @@ export const LabelingContext = createContext<LabelingContextInterface>({
 });
 
 export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [panelPosition, setPanelPosition] = useState<"right" | "bottom">("bottom");
+  const [panelPosition, setPanelPosition] = useState<"right" | "bottom">("right");
   const [panelOpen, setPanelOpen] = useState(false);
 
   const togglePanel = () => {
