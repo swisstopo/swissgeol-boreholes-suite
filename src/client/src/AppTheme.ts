@@ -53,7 +53,7 @@ export const theme = createTheme({
   typography: {
     fontFamily: "Inter",
     h6: {
-      fontSize: "12px",
+      fontSize: "14px",
       lineHeight: "20px",
       fontWeight: 500,
       color: "#337083",
