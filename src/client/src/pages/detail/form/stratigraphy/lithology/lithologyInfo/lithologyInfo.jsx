@@ -9,8 +9,7 @@ import _ from "lodash";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 
 const LithologyInfo = props => {
-  const { selectedStratigraphyID: id, isEditable, onUpdated, attribute } = props.data;
-
+  const { selectedStratigraphyID: id, isEditable, onUpdated, attribute, checkLock } = props.data;
   const mounted = useRef(false);
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
@@ -45,10 +44,7 @@ const LithologyInfo = props => {
   }, [id, setData]);
 
   const updateChange = (attribute, value, isNumber = false) => {
-    if (!isEditable) {
-      showAlert(t("common:errorStartEditing"), "error");
-      return;
-    }
+    if (!checkLock()) return;
     setState(prevState => ({ ...prevState, isPatching: true }));
     _.set(state.profileInfo, attribute, value);
 
@@ -89,6 +85,7 @@ const LithologyInfo = props => {
           data={{
             attribute,
             updateChange,
+            isEditable,
             profileInfo: state.profileInfo,
           }}
         />

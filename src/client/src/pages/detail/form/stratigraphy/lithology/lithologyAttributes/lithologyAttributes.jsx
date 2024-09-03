@@ -10,7 +10,7 @@ import { AlertContext } from "../../../../../../components/alert/alertContext.ts
 import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.js";
 
 const LithologyAttributes = props => {
-  const { id, isEditable, onUpdated, attribute, reloadAttribute, selectedStratigraphyID } = props.data;
+  const { id, isEditable, checkLock, onUpdated, attribute, reloadAttribute, selectedStratigraphyID } = props.data;
 
   const { codes, geocode } = useSelector(state => ({
     codes: state.core_domain_list,
@@ -88,11 +88,7 @@ const LithologyAttributes = props => {
   }, [id, reloadAttribute, mapResponseToLayer]);
 
   const updateChange = (attribute, value, isNumber = false) => {
-    if (!isEditable) {
-      showAlert(t("common:errorStartEditing"), "error");
-      return;
-    }
-
+    if (!checkLock()) return;
     setState(prevState => ({ ...prevState, isPatching: true }));
     _.set(state.layer, attribute, value);
 
@@ -168,6 +164,7 @@ const LithologyAttributes = props => {
             updateChange,
             layer: state.layer,
             isVisibleFunction,
+            isEditable,
           }}
         />
       )}

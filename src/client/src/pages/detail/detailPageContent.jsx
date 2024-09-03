@@ -105,7 +105,7 @@ class DetailPageContent extends React.Component {
   }
 
   checkLock() {
-    const { t } = this.props;
+    const { t, editingEnabled, editableByCurrentUser } = this.props;
     if (this.props.borehole.data.role !== "EDIT") {
       this.context.showAlert(
         t("common:errorStartEditingWrongStatus", {
@@ -115,8 +115,10 @@ class DetailPageContent extends React.Component {
       );
       return false;
     }
-    if (this.props.borehole.data.lock === null || this.props.borehole.data.lock.id !== this.props.user.data.id) {
-      this.context.showAlert(t("common:errorStartEditing"), "error");
+    if (!editingEnabled) {
+      if (editableByCurrentUser) {
+        this.context.showAlert(t("errorStartEditing"), "error");
+      }
       return false;
     }
     return true;
@@ -127,9 +129,7 @@ class DetailPageContent extends React.Component {
   }
 
   updateNumber(attribute, value, to = true) {
-    if (this.checkLock() === false) {
-      return;
-    }
+    if (!this.checkLock()) return;
     const state = {
       ...this.state,
       patchFetch: true,
@@ -232,10 +232,8 @@ class DetailPageContent extends React.Component {
   }
 
   render() {
-    const { t, borehole, user } = this.props;
+    const { t, borehole, user, editingEnabled } = this.props;
     const size = null; // 'small'
-    const isEditable =
-      borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
     if (borehole.error !== null) {
       return <div>{t(borehole.error, borehole.data)}</div>;
     }
@@ -330,24 +328,24 @@ class DetailPageContent extends React.Component {
                     borehole={borehole}
                     updateChange={this.updateChange}
                     updateNumber={this.updateNumber}
-                    isEditable={isEditable}
+                    isEditable={editingEnabled}
                   />
                 )}
               />
               <Route
                 exact
                 path={"/:id/stratigraphy/lithology"}
-                render={() => <Lithology id={parseInt(id, 10)} unlocked={isEditable} />}
+                render={() => <Lithology id={parseInt(id, 10)} unlocked={editingEnabled} checkLock={this.checkLock} />}
               />
               <Route
                 exact
                 path={"/:id/stratigraphy/chronostratigraphy"}
-                render={() => <ChronostratigraphyPanel id={parseInt(id, 10)} isEditable={isEditable} />}
+                render={() => <ChronostratigraphyPanel id={parseInt(id, 10)} isEditable={editingEnabled} />}
               />
               <Route
                 exact
                 path={"/:id/stratigraphy/lithostratigraphy"}
-                render={() => <LithostratigraphyPanel id={parseInt(id, 10)} isEditable={isEditable} />}
+                render={() => <LithostratigraphyPanel id={parseInt(id, 10)} isEditable={editingEnabled} />}
               />
               <Route
                 path={"/:id/stratigraphy"}
@@ -364,27 +362,27 @@ class DetailPageContent extends React.Component {
               <Route
                 exact
                 path={"/:id/attachments"}
-                render={() => <EditorBoreholeFilesTable id={parseInt(id, 10)} unlocked={isEditable} />}
+                render={() => <EditorBoreholeFilesTable id={parseInt(id, 10)} unlocked={editingEnabled} />}
               />
               <Route
                 exact
                 path={"/:id/hydrogeology/wateringress"}
-                render={() => <WaterIngress isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
+                render={() => <WaterIngress isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
               />
               <Route
                 exact
                 path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
-                render={() => <GroundwaterLevelMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
+                render={() => <GroundwaterLevelMeasurement isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
               />
               <Route
                 exact
                 path={"/:id/hydrogeology/fieldmeasurement"}
-                render={() => <FieldMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
+                render={() => <FieldMeasurement isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
               />
               <Route
                 exact
                 path={"/:id/hydrogeology/hydrotest"}
-                render={() => <Hydrotest isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
+                render={() => <Hydrotest isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
               />
               <Route
                 path={"/:id/hydrogeology"}
@@ -400,9 +398,9 @@ class DetailPageContent extends React.Component {
               />
               <Route
                 path={"/:boreholeId/completion/:completionId"}
-                render={() => <Completion isEditable={isEditable} />}
+                render={() => <Completion isEditable={editingEnabled} />}
               />
-              <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />
+              <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={editingEnabled} />} />
               <Route
                 exact
                 path={"/:id/status"}
@@ -428,6 +426,8 @@ DetailPageContent.propTypes = {
   t: PropTypes.func,
   updateBorehole: PropTypes.func,
   workflow: PropTypes.object,
+  editingEnabled: PropTypes.bool,
+  editableByCurrentUser: PropTypes.bool,
 };
 
 DetailPageContent.defaultProps = {
@@ -455,7 +455,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedBoreholeForm = withRouter(
+const ConnectedDetailPageContent = withRouter(
   connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(DetailPageContent)),
 );
-export default ConnectedBoreholeForm;
+export default ConnectedDetailPageContent;

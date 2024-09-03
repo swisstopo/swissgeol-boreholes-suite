@@ -7,8 +7,7 @@ import _ from "lodash";
 import { useCallback, useMemo, useState } from "react";
 
 const InfoList = props => {
-  const { attribute, profileInfo, updateChange } = props.data;
-
+  const { attribute, profileInfo, updateChange, isEditable } = props.data;
   const [inputDisplayValues, setInputDisplayValues] = useState({});
 
   // This adds a delay to each keystroke before calling the updateChange method in the parent component.
@@ -48,6 +47,7 @@ const InfoList = props => {
                     autoCapitalize="off"
                     autoComplete="off"
                     autoCorrect="off"
+                    readOnly={!isEditable}
                     onChange={e => {
                       updateInputDisplayValue(item.value, e.target.value);
                       debouncedUpdateChange(
@@ -74,6 +74,7 @@ const InfoList = props => {
                   <DomainDropdown
                     data-cy={item.value}
                     multiple={item.multiple}
+                    readOnly={!isEditable}
                     onSelected={e => updateChange(item.value, item.multiple ? e.map(mlpr => mlpr.id) : e.id, false)}
                     schema={item.schema}
                     search={item.search}
@@ -85,6 +86,7 @@ const InfoList = props => {
               {item.type === "Date" && (
                 <Styled.AttributesItem>
                   <DateField
+                    isEditable={isEditable}
                     data-cy={item.value}
                     date={profileInfo?.[item.value] ? profileInfo[item.value] : null}
                     onChange={selected => {
