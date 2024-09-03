@@ -8,6 +8,7 @@ export const LabelingContext = createContext<LabelingContextInterface>({
 });
 
 export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- This will be used later
   const [panelPosition, setPanelPosition] = useState<"right" | "bottom">("right");
   const [panelOpen, setPanelOpen] = useState(false);
 
