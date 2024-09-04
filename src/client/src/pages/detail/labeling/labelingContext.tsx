@@ -1,5 +1,5 @@
 import { LabelingContextInterface, PanelPosition } from "./labelingInterfaces.tsx";
-import { createContext, FC, PropsWithChildren, useEffect, useLayoutEffect, useState } from "react";
+import { createContext, FC, PropsWithChildren, useCallback, useEffect, useLayoutEffect, useState } from "react";
 
 export const LabelingContext = createContext<LabelingContextInterface>({
   panelPosition: "right",
@@ -24,13 +24,9 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
     localStorage.setItem(panelPositionStorageName, panelPosition);
   }, [panelPosition]);
 
-  const togglePanel = (isOpen?: boolean) => {
-    if (isOpen !== undefined) {
-      setPanelOpen(isOpen);
-    } else {
-      setPanelOpen(!panelOpen);
-    }
-  };
+  const togglePanel = useCallback((isOpen?: boolean) => {
+    setPanelOpen(prevState => (isOpen !== undefined ? isOpen : !prevState));
+  }, []);
 
   return (
     <LabelingContext.Provider

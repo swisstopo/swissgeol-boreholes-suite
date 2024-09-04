@@ -49,7 +49,7 @@ export const DetailPage: FC = () => {
     const isBoreholeInEditWorkflow = borehole?.data.workflow?.role === "EDIT";
 
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
-  }, [editingEnabled, user, borehole, location]);
+  }, [editingEnabled, user, borehole, location, togglePanel]);
 
   const props: DetailPageContentProps = {
     editingEnabled: editingEnabled,
