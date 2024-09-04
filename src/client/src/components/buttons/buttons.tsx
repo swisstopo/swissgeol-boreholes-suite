@@ -1,13 +1,12 @@
 import { forwardRef } from "react";
 import { Button } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import CopyIcon from "../../assets/icons/copy.svg?react";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import { ButtonProps } from "./buttonsInterface";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { useTranslation } from "react-i18next";
-import { Check, Pencil, Trash2 } from "lucide-react";
+import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
@@ -23,7 +22,7 @@ export const BdmsButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
 });
 
 export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label={props.label} variant="outlined" icon={<AddIcon />} />;
+  return <BdmsBaseButton ref={ref} {...props} label={props.label} variant="outlined" icon={<Plus />} />;
 });
 
 export const EditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
