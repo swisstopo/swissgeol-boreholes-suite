@@ -23,6 +23,7 @@ export const DetailPage: FC = () => {
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
+  const showLabeling = false;
 
   useEffect(() => {
     setEditingEnabled(borehole.data.lock !== null);
@@ -68,7 +69,9 @@ export const DetailPage: FC = () => {
               width: panelOpen && panelPosition === "right" ? "50%" : "100%",
               height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
             }}>
-            <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
+            {showLabeling && (
+              <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
+            )}
             <DetailPageContent {...props} />
           </MainContentBox>
           {panelOpen && <LabelingPanel />}
