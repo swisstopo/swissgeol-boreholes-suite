@@ -39,8 +39,11 @@ export const theme = createTheme({
       secondary: "#a65462",
     },
     ai: {
+      background: "#46596B",
       main: "#5B21B6",
-      secondary: "#4F46E5",
+      mainEnd: "#8B5CF6",
+      active: "#4F46E5",
+      activeEnd: "#E53940",
       contrastText: "#ffffff",
     },
     boxShadow: "#DFE4E9",

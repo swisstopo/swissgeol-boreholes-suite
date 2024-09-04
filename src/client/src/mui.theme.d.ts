@@ -48,8 +48,11 @@ declare module "@mui/material/styles" {
       secondary: string;
     };
     ai: {
+      background: string;
       main: string;
-      secondary: string;
+      mainEnd: string;
+      active: string;
+      activeEnd: string;
       contrastText: string;
     };
     boxShadow: string;

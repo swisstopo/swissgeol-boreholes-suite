@@ -2,6 +2,7 @@ import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
 import { PanelBottom, PanelRight } from "lucide-react";
 import { MouseEvent } from "react";
+import { theme } from "../../../AppTheme.ts";
 
 const LabelingPanel = () => {
   const { panelPosition, setPanelPosition } = useLabelingContext();
@@ -9,7 +10,7 @@ const LabelingPanel = () => {
   return (
     <Box
       sx={{
-        backgroundColor: "#46596B",
+        backgroundColor: theme.palette.ai.background,
         height: panelPosition === "bottom" ? "50%" : "100%",
         width: panelPosition === "right" ? "50%" : "100%",
       }}
