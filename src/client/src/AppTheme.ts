@@ -212,6 +212,28 @@ export const theme = createTheme({
         },
       },
     },
+    MuiToggleButtonGroup: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#ffffff",
+        },
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          border: "0",
+          borderRadius: "4px !important",
+          margin: "4px",
+          padding: "7px",
+          color: "#337083",
+          "&.Mui-selected": {
+            color: "#2F4356",
+            backgroundColor: "#D6E2E6",
+          },
+        },
+      },
+    },
     MuiSelect: {
       defaultProps: {
         IconComponent: ArrowDownIcon,

@@ -3,6 +3,7 @@ import { useContext } from "react";
 
 export interface LabelingContextInterface {
   panelPosition: "right" | "bottom";
+  setPanelPosition: (position: "right" | "bottom") => void;
   panelOpen: boolean;
   togglePanel: () => void;
 }

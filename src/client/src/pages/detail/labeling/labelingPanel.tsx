@@ -1,16 +1,38 @@
-import { Box } from "@mui/material";
+import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useLabelingContext } from "./labelingInterfaces.tsx";
+import { PanelBottom, PanelRight } from "lucide-react";
+import { MouseEvent } from "react";
 
 const LabelingPanel = () => {
-  const { panelPosition } = useLabelingContext();
+  const { panelPosition, setPanelPosition } = useLabelingContext();
+
   return (
     <Box
       sx={{
-        backgroundColor: "#f0f0f0",
+        backgroundColor: "#46596B",
         height: panelPosition === "bottom" ? "50%" : "100%",
         width: panelPosition === "right" ? "50%" : "100%",
-      }}
-    />
+      }}>
+      <ToggleButtonGroup
+        value={panelPosition}
+        onChange={(event: MouseEvent<HTMLElement>, nextPosition: "right" | "bottom") => {
+          setPanelPosition(nextPosition);
+        }}
+        exclusive
+        sx={{
+          position: "absolute",
+          bottom: "10px",
+          right: "10px",
+          zIndex: "500",
+        }}>
+        <ToggleButton value="bottom">
+          <PanelBottom />
+        </ToggleButton>
+        <ToggleButton value="right">
+          <PanelRight />
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </Box>
   );
 };
 

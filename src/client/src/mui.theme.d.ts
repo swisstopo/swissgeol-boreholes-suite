@@ -1,12 +1,6 @@
 import { Theme, ThemeOptions } from "@mui/material/styles";
 import { ComponentType, SVGProps } from "react";
 
-declare module "@mui/material/Button" {
-  interface ButtonPropsColorOverrides {
-    ai: true;
-  }
-}
-
 declare module "@mui/material/IconButton" {
   interface IconButtonPropsColorOverrides {
     ai: true;
@@ -222,6 +216,28 @@ declare module "@mui/material/styles" {
           };
           "&:disabled": {
             background: string;
+          };
+        };
+      };
+    };
+    MuiToggleButtonGroup: {
+      styleOverrides: {
+        root: {
+          backgroundColor: string;
+        };
+      };
+    };
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          border: string;
+          borderRadius: string;
+          margin: string;
+          padding: string;
+          color: string;
+          "&.Mui-selected": {
+            color: string;
+            backgroundColor: string;
           };
         };
       };
