@@ -12,15 +12,16 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
   const [panelPosition, setPanelPosition] = useState<PanelPosition>("right");
   const [panelOpen, setPanelOpen] = useState(false);
 
+  const panelPositionStorageName = "labelingPanelPosition";
   useLayoutEffect(() => {
-    const storedPosition = localStorage.getItem("panelPosition") as PanelPosition;
+    const storedPosition = localStorage.getItem(panelPositionStorageName) as PanelPosition;
     if (storedPosition) {
       setPanelPosition(storedPosition);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("panelPosition", panelPosition);
+    localStorage.setItem(panelPositionStorageName, panelPosition);
   }, [panelPosition]);
 
   const togglePanel = () => {
