@@ -239,5 +239,22 @@ export const theme = createTheme({
         },
       },
     },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontSize: "13px",
+          fontWeight: 700,
+          padding: "3px",
+          flex: 1,
+          verticalAlign: "top",
+        },
+        body: {
+          paddingRight: "3px",
+          paddingLeft: "3px",
+          flex: 1,
+          fontSize: "13px",
+        },
+      },
+    },
   },
 });

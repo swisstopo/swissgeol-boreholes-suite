@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as Styled from "./styles.js";
 import { Checkbox } from "semantic-ui-react";
 import _ from "lodash";
@@ -6,11 +6,10 @@ import { useTranslation } from "react-i18next";
 import LithologyAttributeList from "./lithologyAttributeList/lithologyAttributeList.jsx";
 import { useSelector } from "react-redux";
 import { useQueryClient } from "react-query";
-import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.js";
 
 const LithologyAttributes = props => {
-  const { id, isEditable, onUpdated, attribute, reloadAttribute, selectedStratigraphyID } = props.data;
+  const { id, isEditable, checkLock, onUpdated, attribute, reloadAttribute, selectedStratigraphyID } = props.data;
 
   const { codes, geocode } = useSelector(state => ({
     codes: state.core_domain_list,
@@ -56,8 +55,6 @@ const LithologyAttributes = props => {
   });
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { showAlert } = useContext(AlertContext);
-
   const mounted = useRef(false);
 
   const mapResponseToLayer = useCallback(response => {
@@ -88,11 +85,7 @@ const LithologyAttributes = props => {
   }, [id, reloadAttribute, mapResponseToLayer]);
 
   const updateChange = (attribute, value, isNumber = false) => {
-    if (!isEditable) {
-      showAlert(t("common:errorStartEditing"), "error");
-      return;
-    }
-
+    if (!checkLock()) return;
     setState(prevState => ({ ...prevState, isPatching: true }));
     _.set(state.layer, attribute, value);
 
@@ -168,6 +161,7 @@ const LithologyAttributes = props => {
             updateChange,
             layer: state.layer,
             isVisibleFunction,
+            isEditable,
           }}
         />
       )}
