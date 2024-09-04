@@ -6,7 +6,6 @@ import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.
 import UploadIcon from "../../../assets/icons/upload.svg?react";
 import SettingsIcon from "../../../assets/icons/settings.svg?react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
-import LayersIcon from "../../../assets/icons/layers.svg?react";
 import { theme } from "../../../AppTheme.ts";
 import ImportModal from "../sidePanelContent/importer/importModal.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
@@ -16,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
-import { Filter, Plus } from "lucide-react";
+import { Filter, Layers, Plus } from "lucide-react";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
@@ -144,7 +143,7 @@ const MainSideNav = ({
         )}
         <NavButton
           data-cy="layers-button"
-          icon={<LayersIcon />}
+          icon={<Layers />}
           label={t("usersMap")}
           selected={isLayersPanelVisible}
           onClick={handleToggleLayers}
