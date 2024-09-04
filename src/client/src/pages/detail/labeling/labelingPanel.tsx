@@ -12,7 +12,8 @@ const LabelingPanel = () => {
         backgroundColor: "#46596B",
         height: panelPosition === "bottom" ? "50%" : "100%",
         width: panelPosition === "right" ? "50%" : "100%",
-      }}>
+      }}
+      data-cy="labeling-panel">
       <ToggleButtonGroup
         value={panelPosition}
         onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
@@ -25,10 +26,10 @@ const LabelingPanel = () => {
           right: "10px",
           zIndex: "500",
         }}>
-        <ToggleButton value="bottom">
+        <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
           <PanelBottom />
         </ToggleButton>
-        <ToggleButton value="right">
+        <ToggleButton value="right" data-cy="labeling-panel-position-right">
           <PanelRight />
         </ToggleButton>
       </ToggleButtonGroup>
