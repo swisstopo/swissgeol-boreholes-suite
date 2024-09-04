@@ -4,11 +4,10 @@ import AddIcon from "@mui/icons-material/Add";
 import CopyIcon from "../../assets/icons/copy.svg?react";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
-import TrashIcon from "../../assets/icons/trash.svg?react";
 import { ButtonProps } from "./buttonsInterface";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { useTranslation } from "react-i18next";
-import { Check, Pencil } from "lucide-react";
+import { Check, Pencil, Trash2 } from "lucide-react";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
@@ -56,7 +55,7 @@ export const AcceptButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
 });
 
 export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} variant="outlined" icon={<TrashIcon />} />;
+  return <BdmsBaseButton ref={ref} {...props} variant="outlined" icon={<Trash2 />} />;
 });
 
 export const SavePrimaryButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {

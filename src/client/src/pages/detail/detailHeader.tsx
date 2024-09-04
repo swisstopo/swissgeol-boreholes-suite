@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
-import TrashIcon from "../../assets/icons/trash.svg?react";
 import { useHistory } from "react-router-dom";
 import { DeleteButton, EditButton, EndEditButton } from "../../components/buttons/buttons.tsx";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +8,7 @@ import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts"
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
 import { useTranslation } from "react-i18next";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
-import { Check, ChevronLeft } from "lucide-react";
+import { Check, ChevronLeft, Trash2 } from "lucide-react";
 
 interface DetailHeaderProps {
   editingEnabled: boolean;
@@ -95,7 +94,7 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
                   },
                   {
                     label: t("delete"),
-                    icon: <TrashIcon />,
+                    icon: <Trash2 />,
                     variant: "contained",
                     action: () => {
                       handleDelete();

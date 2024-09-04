@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
-import TrashIcon from "../../../assets/icons/trash.svg?react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 import { useTranslation } from "react-i18next";
@@ -11,7 +10,7 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
 import { useSelector } from "react-redux";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 
 interface BottomBarProps {
   toggleBottomDrawer: (open: boolean) => void;
@@ -98,7 +97,7 @@ const BottomBar = ({
                 },
                 {
                   label: t("delete"),
-                  icon: <TrashIcon />,
+                  icon: <Trash2 />,
                   variant: "contained",
                   action: onDeleteMultiple,
                 },

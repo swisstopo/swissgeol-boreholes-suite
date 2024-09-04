@@ -5,7 +5,7 @@ import DateText from "../../../../components/legacyComponents/dateText.js";
 import DownloadLink from "../downloadlink.jsx";
 import { downloadBoreholeAttachment } from "../../../../api/fetchApiV2.js";
 import { IconButton } from "@mui/material";
-import TrashIcon from "../../../../assets/icons/trash.svg?react";
+import { Trash2 } from "lucide-react";
 
 const FilesTableComponent = props => {
   const { t } = props;
@@ -97,7 +97,7 @@ const FilesTableComponent = props => {
                       props.detachFile(props.id, boreholeFile.fileId);
                     }}
                     color="error">
-                    <TrashIcon />
+                    <Trash2 />
                   </IconButton>
                 </Table.Cell>
               ) : null}
