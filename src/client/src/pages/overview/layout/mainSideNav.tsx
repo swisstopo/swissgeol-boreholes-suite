@@ -4,7 +4,6 @@ import { useHistory } from "react-router-dom";
 import { Badge, Stack } from "@mui/material";
 import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.tsx";
 import UploadIcon from "../../../assets/icons/upload.svg?react";
-import SettingsIcon from "../../../assets/icons/settings.svg?react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
 import { theme } from "../../../AppTheme.ts";
 import ImportModal from "../sidePanelContent/importer/importModal.tsx";
@@ -15,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
-import { Filter, Layers, Plus } from "lucide-react";
+import { Filter, Layers, Plus, Settings } from "lucide-react";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
@@ -156,7 +155,7 @@ const MainSideNav = ({
         }}>
         <NavButton
           data-cy="settings-button"
-          icon={<SettingsIcon />}
+          icon={<Settings />}
           label={t("header_settings")}
           onClick={() => history.push(`/setting`)}
         />
