@@ -1,7 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
-import ArrowDownIcon from "../../../assets/icons/arrow_down.svg?react";
-import ArrowUpIcon from "../../../assets/icons/arrow_up.svg?react";
 import TrashIcon from "../../../assets/icons/trash.svg?react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
@@ -13,6 +11,7 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
 import { useSelector } from "react-redux";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 interface BottomBarProps {
   toggleBottomDrawer: (open: boolean) => void;
@@ -118,7 +117,7 @@ const BottomBar = ({
         onClick={() => toggleBottomDrawer(!bottomDrawerOpen)}
         data-cy="showTableButton"
         sx={{ fontWeight: "normal", fontSize: "14px" }}
-        endIcon={bottomDrawerOpen ? <ArrowDownIcon /> : <ArrowUpIcon />}>
+        endIcon={bottomDrawerOpen ? <ChevronDown /> : <ChevronUp />}>
         {bottomDrawerOpen ? t("hideTable") : t("showTable")}
       </Button>
     </Stack>

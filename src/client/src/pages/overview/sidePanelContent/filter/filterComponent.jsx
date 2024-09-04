@@ -14,13 +14,13 @@ import { lithostratigraphySearchData } from "./filterData/lithostratigraphySearc
 import { FilterReset } from "./filterReset.tsx";
 import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import ArrowDownIcon from "../../../../assets/icons/arrow_down.svg?react";
 import ListFilter from "./listFilter.jsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
 import { theme } from "../../../../AppTheme.ts";
 import FilterChips from "./FilterChips.tsx";
 import { FilterContext } from "./filterContext.tsx";
+import { ChevronDown } from "lucide-react";
 
 class FilterComponent extends React.Component {
   static contextType = FilterContext;
@@ -238,7 +238,7 @@ class FilterComponent extends React.Component {
             return (
               <this.StyledAccordion key={idx} expanded={filter?.isSelected}>
                 <AccordionSummary
-                  expandIcon={<ArrowDownIcon />}
+                  expandIcon={<ChevronDown />}
                   onClick={() => {
                     this.setState(prevState => ({
                       ...prevState,

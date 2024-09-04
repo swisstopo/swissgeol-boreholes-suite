@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
-import ArrowLeftIcon from "../../assets/icons/arrow_left.svg?react";
 import CheckmarkIcon from "../../assets/icons/checkmark.svg?react";
 import TrashIcon from "../../assets/icons/trash.svg?react";
 import { useHistory } from "react-router-dom";
@@ -11,6 +10,7 @@ import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts"
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
 import { useTranslation } from "react-i18next";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
+import { ChevronLeft } from "lucide-react";
 
 interface DetailHeaderProps {
   editingEnabled: boolean;
@@ -74,7 +74,7 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
             marginRight: "18px",
             borderRadius: "2px",
           }}>
-          <ArrowLeftIcon />
+          <ChevronLeft />
         </IconButton>
         <Typography variant="h2"> {borehole?.data.extended.original_name}</Typography>
         <Chip
