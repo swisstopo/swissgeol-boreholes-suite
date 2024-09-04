@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "../../assets/icons/edit.svg?react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
@@ -9,7 +8,7 @@ import TrashIcon from "../../assets/icons/trash.svg?react";
 import { ButtonProps } from "./buttonsInterface";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { useTranslation } from "react-i18next";
-import { Check } from "lucide-react";
+import { Check, Pencil } from "lucide-react";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
@@ -29,11 +28,11 @@ export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref)
 });
 
 export const EditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="edit" variant="contained" icon={<EditIcon />} />;
+  return <BdmsBaseButton ref={ref} {...props} label="edit" variant="contained" icon={<Pencil />} />;
 });
 
 export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="bulkEditing" variant="outlined" icon={<EditIcon />} />;
+  return <BdmsBaseButton ref={ref} {...props} label="bulkEditing" variant="outlined" icon={<Pencil />} />;
 });
 
 export const EndEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
