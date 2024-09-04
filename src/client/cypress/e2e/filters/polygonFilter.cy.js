@@ -49,8 +49,9 @@ describe("Polygon filter tests", () => {
     cy.get('[data-cy="polygon-filter-chip"]').children().eq(1).click();
 
     assertPolygonFilterInactive();
-
     cy.wait("@borehole_geojson");
+    // wait for map to redraw
+    cy.wait(2000);
 
     // Redraw polygon
     cy.get('[data-cy="polygon-filter-button"]').click();
