@@ -432,7 +432,7 @@ class WorkflowForm extends React.Component {
                                         ) : (
                                           <Button
                                             variant="contained"
-                                            startIcon={<CancelIcon />}
+                                            startIcon={<X />}
                                             onClick={() => {
                                               this.props.rejectWorkflow(status[role].id).then(() => {
                                                 this.setState({
