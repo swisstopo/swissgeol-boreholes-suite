@@ -68,6 +68,7 @@ declare module "@mui/material/styles" {
   }
 
   interface AppThemeTypography extends Typography {
+    fontFamily: string;
     fullPageMessage: {
       fontSize: string;
       color: string;
@@ -75,6 +76,7 @@ declare module "@mui/material/styles" {
   }
 
   interface AppThemeTypographyOptions extends TypographyOptions {
+    fontFamily: string;
     fullPageMessage?: {
       fontSize: string;
       color: string;
