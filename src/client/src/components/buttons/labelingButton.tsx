@@ -36,7 +36,8 @@ export const LabelingToggleButton = forwardRef<HTMLButtonElement, LabelingToggle
         borderRadius: panelPosition === "right" ? "4px 0 0 4px" : "4px 0 0 0",
         right: 0,
         bottom: panelPosition === "bottom" ? "0" : undefined,
-      }}>
+      }}
+      data-cy="labeling-toggle-button">
       {panelOpen ? panelPosition === "right" ? <ChevronRight /> : <ChevronDown /> : <Sparkles />}
     </IconButton>
   );
