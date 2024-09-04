@@ -1,11 +1,41 @@
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
 import { PanelBottom, PanelRight } from "lucide-react";
-import { MouseEvent } from "react";
+import { FC, MouseEvent, useCallback, useEffect, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
+import { File, FileResponse } from "../attachments/fileInterfaces.ts";
+import { getBoreholeAttachments } from "../../../api/fetchApiV2";
+import LabelingFileSelector from "./labelingFileSelector.tsx";
 
-const LabelingPanel = () => {
+interface LabelingPanelProps {
+  boreholeId: number;
+}
+
+const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const { panelPosition, setPanelPosition } = useLabelingContext();
+  const [isLoadingFiles, setIsLoadingFiles] = useState(true);
+  const [files, setFiles] = useState<File[]>();
+  const [selectedFile, setSelectedFile] = useState<File>();
+
+  const loadFiles = useCallback(async () => {
+    if (boreholeId) {
+      setIsLoadingFiles(true);
+      const response: FileResponse[] = await getBoreholeAttachments(boreholeId);
+      if (response) {
+        setFiles(response.map((fileResponse: FileResponse) => fileResponse.file));
+      }
+    }
+    setIsLoadingFiles(false);
+  }, [boreholeId]);
+
+  const addFile = () => {};
+
+  useEffect(() => {
+    if (files === undefined) {
+      loadFiles();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box
@@ -34,6 +64,16 @@ const LabelingPanel = () => {
           <PanelRight />
         </ToggleButton>
       </ToggleButtonGroup>
+      {selectedFile ? (
+        <div></div>
+      ) : (
+        <LabelingFileSelector
+          isLoadingFiles={isLoadingFiles}
+          files={files}
+          setSelectedFile={setSelectedFile}
+          addFile={addFile}
+        />
+      )}
     </Box>
   );
 };

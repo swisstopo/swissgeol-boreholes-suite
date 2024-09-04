@@ -78,7 +78,7 @@ export const DetailPage: FC = () => {
             )}
             <DetailPageContent {...props} />
           </MainContentBox>
-          {editingEnabled && panelOpen && <LabelingPanel />}
+          {editingEnabled && panelOpen && <LabelingPanel boreholeId={borehole.data.id} />}
         </Box>
       </LayoutBox>
     </>
