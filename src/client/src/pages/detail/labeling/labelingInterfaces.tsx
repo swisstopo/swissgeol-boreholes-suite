@@ -1,9 +1,11 @@
 import { LabelingContext } from "./labelingContext.tsx";
 import { useContext } from "react";
 
+export type PanelPosition = "right" | "bottom";
+
 export interface LabelingContextInterface {
-  panelPosition: "right" | "bottom";
-  setPanelPosition: (position: "right" | "bottom") => void;
+  panelPosition: PanelPosition;
+  setPanelPosition: (position: PanelPosition) => void;
   panelOpen: boolean;
   togglePanel: () => void;
 }

@@ -1,5 +1,5 @@
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { useLabelingContext } from "./labelingInterfaces.tsx";
+import { PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
 import { PanelBottom, PanelRight } from "lucide-react";
 import { MouseEvent } from "react";
 
@@ -15,7 +15,7 @@ const LabelingPanel = () => {
       }}>
       <ToggleButtonGroup
         value={panelPosition}
-        onChange={(event: MouseEvent<HTMLElement>, nextPosition: "right" | "bottom") => {
+        onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
           setPanelPosition(nextPosition);
         }}
         exclusive
