@@ -7,7 +7,7 @@ export interface LabelingContextInterface {
   panelPosition: PanelPosition;
   setPanelPosition: (position: PanelPosition) => void;
   panelOpen: boolean;
-  togglePanel: () => void;
+  togglePanel: (isOpen?: boolean) => void;
 }
 
 export const useLabelingContext = () => useContext(LabelingContext);
