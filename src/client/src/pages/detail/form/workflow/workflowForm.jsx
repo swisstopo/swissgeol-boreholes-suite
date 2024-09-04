@@ -5,7 +5,6 @@ import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Button, CircularProgress, Stack, Typography } from "@mui/material";
 import { Header, Icon, Label, Modal } from "semantic-ui-react";
-import CancelIcon from "../../../../assets/icons/cancel.svg?react";
 import RestartIcon from "../../../../assets/icons/restart.svg?react";
 import {
   loadBorehole,
@@ -23,6 +22,7 @@ import DateText from "../../../../components/legacyComponents/dateText.js";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { theme } from "../../../../AppTheme.ts";
 import { CancelButton } from "../../../../components/buttons/buttons";
+import { X } from "lucide-react";
 
 class WorkflowForm extends React.Component {
   static contextType = AlertContext;
@@ -364,7 +364,7 @@ class WorkflowForm extends React.Component {
                                   <>
                                     {role !== "EDIT" && (
                                       <Button
-                                        startIcon={<CancelIcon />}
+                                        startIcon={<X />}
                                         variant="outlined"
                                         sx={{ marginRight: 1 }}
                                         disabled={readOnly || workflows.isSubmitting}
