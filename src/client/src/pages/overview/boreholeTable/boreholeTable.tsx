@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useRef } from "react";
+import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
 import {
   DataGrid,
   GridColDef,
@@ -6,6 +6,7 @@ import {
   GridPaginationModel,
   GridRowParams,
   GridRowSelectionModel,
+  GridScrollParams,
   GridSortModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
@@ -19,6 +20,7 @@ import { TablePaginationActions } from "./TablePaginationActions.tsx";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useSelector } from "react-redux";
 import { muiLocales } from "../../../mui.locales.ts";
+import { TableContext } from "../tableContext.tsx";
 
 export interface BoreholeTableProps {
   boreholes: Boreholes;
@@ -49,7 +51,9 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const history = useHistory();
   const domains = useDomains();
   const apiRef = useGridApiRef();
+  const { tableScrollPosition, setTableScrollPosition } = useContext(TableContext);
   const rowCountRef = useRef(boreholes?.length || 0);
+  const scrollPositionRef = useRef(tableScrollPosition);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const userIsEditor = user.data.roles.includes("EDIT");
 
@@ -59,6 +63,8 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     }
     return rowCountRef.current;
   }, [boreholes?.length]);
+
+  const isLoading = boreholes.isFetching || isBusy;
 
   const columns: GridColDef[] = [
     { field: "alternate_name", headerName: t("name"), flex: 1 },
@@ -163,21 +169,43 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         setHover(params.row.id);
       };
 
+      const handleScrollPosition: GridEventListener<"scrollPositionChange"> = (params: GridScrollParams) => {
+        scrollPositionRef.current = { top: params.top, left: params.left };
+      };
+
       const handleRowMouseLeave: GridEventListener<"rowMouseLeave"> = () => {
         setHover(null);
       };
 
-      const api = apiRef.current;
-      const unsubscribeMouseEnter = api.subscribeEvent("rowMouseEnter", handleRowMouseEnter);
-      const unsubscribeMouseLeave = api.subscribeEvent("rowMouseLeave", handleRowMouseLeave);
+      const unsubscribeMouseEnter = apiRef.current.subscribeEvent("rowMouseEnter", handleRowMouseEnter);
+      const unsubscribeMouseLeave = apiRef.current.subscribeEvent("rowMouseLeave", handleRowMouseLeave);
+      const unsubscribeScroll = apiRef.current.subscribeEvent("scrollPositionChange", handleScrollPosition);
 
       // Clean up subscriptions
       return () => {
         unsubscribeMouseEnter();
         unsubscribeMouseLeave();
+        unsubscribeScroll();
       };
     }
   }, [apiRef, setHover]);
+
+  // Store table scroll position in context on unmount
+  useEffect(() => {
+    return () => {
+      setTableScrollPosition(scrollPositionRef.current);
+    };
+  }, []);
+
+  // Restore table scroll position
+  useEffect(() => {
+    if (apiRef.current && !isLoading) {
+      // Workaround to restore scroll position see #https://github.com/mui/mui-x/issues/5071
+      setTimeout(() => {
+        apiRef.current.scroll(tableScrollPosition);
+      }, 100);
+    }
+  }, [apiRef, isLoading, setTableScrollPosition]);
 
   return (
     <DataGrid

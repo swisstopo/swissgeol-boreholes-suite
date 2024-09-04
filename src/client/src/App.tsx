@@ -19,6 +19,7 @@ import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterC
 import HeaderComponent from "./components/header/headerComponent.tsx";
 import { AppBox } from "./components/styledComponents.ts";
 import { DetailPage } from "./pages/detail/detailPage.tsx";
+import { TableProvider } from "./pages/overview/tableContext.tsx";
 
 const queryClient = new QueryClient();
 
@@ -58,35 +59,37 @@ class App extends React.Component {
                 <DataCardProvider>
                   <BasemapProvider>
                     <FilterProvider>
-                      <QueryClientProvider client={queryClient}>
-                        <AppBox>
-                          <HeaderComponent />
-                          <Router>
-                            <Switch>
-                              <Route render={props => <SettingsPage {...props} />} key={0} path={"/setting"} />
-                              <Route exact={false} key={1} path={"/:id"} render={() => <DetailPage />} />
-                              <Route
-                                render={props => {
-                                  return <OverviewPage {...props} />;
-                                }}
-                                exact={false}
-                                key={2}
-                                path={"/"}
-                              />
-                              <Route
-                                component={() => (
-                                  <Redirect
-                                    to={{
-                                      pathname: "/",
-                                    }}
-                                  />
-                                )}
-                              />
-                            </Switch>
-                          </Router>
-                        </AppBox>
-                        <ReactQueryDevtools />
-                      </QueryClientProvider>
+                      <TableProvider>
+                        <QueryClientProvider client={queryClient}>
+                          <AppBox>
+                            <HeaderComponent />
+                            <Router>
+                              <Switch>
+                                <Route render={props => <SettingsPage {...props} />} key={0} path={"/setting"} />
+                                <Route exact={false} key={1} path={"/:id"} render={() => <DetailPage />} />
+                                <Route
+                                  render={props => {
+                                    return <OverviewPage {...props} />;
+                                  }}
+                                  exact={false}
+                                  key={2}
+                                  path={"/"}
+                                />
+                                <Route
+                                  component={() => (
+                                    <Redirect
+                                      to={{
+                                        pathname: "/",
+                                      }}
+                                    />
+                                  )}
+                                />
+                              </Switch>
+                            </Router>
+                          </AppBox>
+                          <ReactQueryDevtools />
+                        </QueryClientProvider>
+                      </TableProvider>
                     </FilterProvider>
                   </BasemapProvider>
                 </DataCardProvider>

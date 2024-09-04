@@ -13,10 +13,9 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
 import { useSelector } from "react-redux";
+import { TableContext } from "../tableContext.tsx";
 
 interface BottomBarProps {
-  toggleBottomDrawer: (open: boolean) => void;
-  bottomDrawerOpen: boolean;
   boreholes: Boreholes;
   selectionModel: GridRowSelectionModel;
   multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
@@ -28,8 +27,6 @@ interface BottomBarProps {
 }
 
 const BottomBar = ({
-  toggleBottomDrawer,
-  bottomDrawerOpen,
   selectionModel,
   multipleSelected,
   onDeleteMultiple,
@@ -41,6 +38,7 @@ const BottomBar = ({
 }: BottomBarProps) => {
   const { t } = useTranslation();
   const { showPrompt, promptIsOpen } = useContext(PromptContext);
+  const { bottomDrawerOpen, setBottomDrawerOpen } = useContext(TableContext);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
   const [currentWorkgroup, setCurrentWorkgroup] = useState<number | null>(null);
@@ -115,7 +113,7 @@ const BottomBar = ({
       )}
       <Box sx={{ flex: 1 }}></Box>
       <Button
-        onClick={() => toggleBottomDrawer(!bottomDrawerOpen)}
+        onClick={() => setBottomDrawerOpen(!bottomDrawerOpen)}
         data-cy="showTableButton"
         sx={{ fontWeight: "normal", fontSize: "14px" }}
         endIcon={bottomDrawerOpen ? <ArrowDownIcon /> : <ArrowUpIcon />}>
