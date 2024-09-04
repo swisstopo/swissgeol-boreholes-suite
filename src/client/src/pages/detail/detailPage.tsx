@@ -23,7 +23,7 @@ export const DetailPage: FC = () => {
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
-  const showLabeling = true;
+  const showLabeling = false;
 
   useEffect(() => {
     setEditingEnabled(borehole.data.lock !== null);
