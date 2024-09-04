@@ -54,7 +54,7 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
             setFilterPolygon(null);
             setFeatureIds([]);
           }}
-          deleteIcon={<DeleteIcon style={{ width: "16px", height: "16px" }} />}
+          deleteIcon={<CircleX style={{ width: "16px", height: "16px" }} />}
         />
       )}
     </Box>
