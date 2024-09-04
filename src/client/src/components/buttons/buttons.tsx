@@ -6,10 +6,10 @@ import CopyIcon from "../../assets/icons/copy.svg?react";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import TrashIcon from "../../assets/icons/trash.svg?react";
-import CheckmarkIcon from "../../assets/icons/checkmark.svg?react";
 import { ButtonProps } from "./buttonsInterface";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { useTranslation } from "react-i18next";
+import { Check } from "lucide-react";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
@@ -37,7 +37,7 @@ export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
 });
 
 export const EndEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="editingStop" variant="contained" icon={<CheckmarkIcon />} />;
+  return <BdmsBaseButton ref={ref} {...props} label="editingStop" variant="contained" icon={<Check />} />;
 });
 
 export const CopyButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {

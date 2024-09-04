@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
-import CheckmarkIcon from "../../assets/icons/checkmark.svg?react";
 import TrashIcon from "../../assets/icons/trash.svg?react";
 import { useHistory } from "react-router-dom";
 import { DeleteButton, EditButton, EndEditButton } from "../../components/buttons/buttons.tsx";
@@ -10,7 +9,7 @@ import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts"
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
 import { useTranslation } from "react-i18next";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
-import { ChevronLeft } from "lucide-react";
+import { Check, ChevronLeft } from "lucide-react";
 
 interface DetailHeaderProps {
   editingEnabled: boolean;
@@ -81,7 +80,7 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
           sx={{ marginLeft: "18px" }}
           label={t(`status${borehole?.data.workflow?.role.toLowerCase()}`)}
           color={borehole?.data.workflow?.finished != null ? "success" : "warning"}
-          icon={borehole?.data.workflow?.finished != null ? <CheckmarkIcon /> : <div />}
+          icon={borehole?.data.workflow?.finished != null ? <Check /> : <div />}
         />
       </Stack>
       {editableByCurrentUser && (
