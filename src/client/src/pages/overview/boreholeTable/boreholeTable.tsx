@@ -51,6 +51,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const history = useHistory();
   const domains = useDomains();
   const apiRef = useGridApiRef();
+  const firstRender = useRef(true);
   const { tableScrollPosition, setTableScrollPosition } = useContext(TableContext);
   const rowCountRef = useRef(boreholes?.length || 0);
   const scrollPositionRef = useRef(tableScrollPosition);
@@ -63,8 +64,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     }
     return rowCountRef.current;
   }, [boreholes?.length]);
-
-  const isLoading = boreholes.isFetching || isBusy;
 
   const columns: GridColDef[] = [
     { field: "alternate_name", headerName: t("name"), flex: 1 },
@@ -195,17 +194,21 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     return () => {
       setTableScrollPosition(scrollPositionRef.current);
     };
-  }, []);
+  }, [setTableScrollPosition]);
 
   // Restore table scroll position
+  const isLoading = boreholes.isFetching || isBusy;
   useEffect(() => {
     if (apiRef.current && !isLoading) {
       // Workaround to restore scroll position see #https://github.com/mui/mui-x/issues/5071
-      setTimeout(() => {
-        apiRef.current.scroll(tableScrollPosition);
-      }, 100);
+      if (firstRender.current) {
+        setTimeout(() => {
+          apiRef.current.scroll(tableScrollPosition);
+          firstRender.current = false;
+        }, 1000);
+      }
     }
-  }, [apiRef, isLoading, setTableScrollPosition]);
+  }, [apiRef, isLoading, tableScrollPosition]);
 
   return (
     <DataGrid
@@ -255,7 +258,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       columnHeaderHeight={42}
       rowHeight={42}
       sortingOrder={["asc", "desc"]}
-      loading={boreholes.isFetching || isBusy}
+      loading={isLoading}
       rowCount={rowCount}
       rows={boreholes.data}
       columns={columns}
