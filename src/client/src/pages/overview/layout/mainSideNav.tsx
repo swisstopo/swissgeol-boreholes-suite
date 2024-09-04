@@ -4,7 +4,6 @@ import { useHistory } from "react-router-dom";
 import { Badge, Stack } from "@mui/material";
 import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.tsx";
 import FilterIcon from "../../../assets/icons/filter.svg?react";
-import AddIcon from "../../../assets/icons/add.svg?react";
 import UploadIcon from "../../../assets/icons/upload.svg?react";
 import SettingsIcon from "../../../assets/icons/settings.svg?react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
@@ -18,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { Plus } from "lucide-react";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
@@ -124,7 +124,7 @@ const MainSideNav = ({
           <>
             <NavButton
               data-cy="new-borehole-button"
-              icon={<AddIcon />}
+              icon={<Plus />}
               label={t("add")}
               selected={isAddPanelVisible}
               disabled={user.data.roles.indexOf("EDIT") === -1}
