@@ -9,6 +9,7 @@ import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
+import { Stack } from "@mui/material";
 
 interface MapViewProps {
   displayErrorMessage: string;
@@ -65,11 +66,10 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   );
 
   return (
-    <div
-      style={{
+    <Stack
+      direction="column"
+      sx={{
         flex: "1 1.5 100%",
-        display: "flex",
-        flexDirection: "column",
       }}>
       <Modal
         onUnmount={() => {
@@ -117,6 +117,6 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         rowToHighlight={rowToHighlight}
         setHover={setHover}
       />
-    </div>
+    </Stack>
   );
 };
