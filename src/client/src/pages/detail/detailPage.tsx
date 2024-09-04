@@ -1,4 +1,4 @@
-import { MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -58,29 +58,22 @@ export const DetailPage: FC = () => {
         setEditingEnabled={setEditingEnabled}
         editableByCurrentUser={editableByCurrentUser}
       />
-      <Box sx={{ display: "flex", flexDirection: "column", flex: "1 1 100%", overflow: "hidden" }}>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
-          }}>
-          <SidebarBox>
-            <DetailSideNav />
-          </SidebarBox>
-          <Box sx={{ display: "flex", flexDirection: "row", width: "100%" }}>
-            <MainContentBox
-              sx={{
-                width: panelOpen && panelPosition === "right" ? "50%" : "100%",
-              }}>
-              <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
-              <DetailPageContent {...props} />
-            </MainContentBox>
-            {panelOpen && panelPosition === "right" && <LabelingPanel />}
-          </Box>
+      <LayoutBox>
+        <SidebarBox>
+          <DetailSideNav />
+        </SidebarBox>
+        <Box sx={{ display: "flex", flexDirection: panelPosition === "right" ? "row" : "column", width: "100%" }}>
+          <MainContentBox
+            sx={{
+              width: panelOpen && panelPosition === "right" ? "50%" : "100%",
+              height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+            }}>
+            <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
+            <DetailPageContent {...props} />
+          </MainContentBox>
+          {panelOpen && <LabelingPanel />}
         </Box>
-        {panelOpen && panelPosition === "bottom" && <LabelingPanel />}
-      </Box>
+      </LayoutBox>
     </>
   );
 };
