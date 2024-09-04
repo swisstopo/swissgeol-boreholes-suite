@@ -30,6 +30,10 @@ export const DetailPage: FC = () => {
   }, [borehole.data.lock]);
 
   useEffect(() => {
+    if (!editingEnabled) {
+      togglePanel(false);
+    }
+
     if (borehole.data.lock !== null && borehole.data.lock.id !== user.data.id) {
       setEditableByCurrentUser(false);
       return;
@@ -69,12 +73,12 @@ export const DetailPage: FC = () => {
               width: panelOpen && panelPosition === "right" ? "50%" : "100%",
               height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
             }}>
-            {showLabeling && (
+            {editingEnabled && showLabeling && (
               <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
             )}
             <DetailPageContent {...props} />
           </MainContentBox>
-          {panelOpen && <LabelingPanel />}
+          {editingEnabled && panelOpen && <LabelingPanel />}
         </Box>
       </LayoutBox>
     </>

@@ -24,8 +24,12 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
     localStorage.setItem(panelPositionStorageName, panelPosition);
   }, [panelPosition]);
 
-  const togglePanel = () => {
-    setPanelOpen(!panelOpen);
+  const togglePanel = (isOpen?: boolean) => {
+    if (isOpen !== undefined) {
+      setPanelOpen(isOpen);
+    } else {
+      setPanelOpen(!panelOpen);
+    }
   };
 
   return (
