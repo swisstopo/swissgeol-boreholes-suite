@@ -213,6 +213,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   return (
     <DataGrid
       sx={{
+        cursor: "pointer",
         ".MuiDataGrid-columnHeader": {
           backgroundColor: theme.palette.boxShadow,
         },
