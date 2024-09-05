@@ -313,6 +313,7 @@ class MapComponent extends React.Component {
     });
 
     updateBasemap(this.map, this.context.currentBasemapName);
+    window.olMap = this.map;
   }
 
   handleHighlights(currentHighlights, hoverCallback, previousHighlights) {
