@@ -1,5 +1,5 @@
 import { Box, Button, CircularProgress, Divider, Typography } from "@mui/material";
-import { File as FileInterface } from "../attachments/fileInterfaces.ts";
+import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { File as FileIcon } from "lucide-react";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { FC, useCallback, useRef } from "react";
@@ -10,25 +10,29 @@ interface LabelingFileSelectorProps {
   isLoadingFiles: boolean;
   files?: FileInterface[];
   setSelectedFile: (file: FileInterface) => void;
-  addFile: () => void;
+  addFile: (file: File) => void;
 }
 
 const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, files, setSelectedFile, addFile }) => {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
-    if (fileRejections.length > 0) {
-      console.error(fileRejections[0].errors[0].message);
-    } else {
-      console.log("acceptedFiles", acceptedFiles);
-    }
-  }, []);
+  const onDrop = useCallback(
+    (acceptedFiles: File[], fileRejections: FileRejection[]) => {
+      if (fileRejections.length > 0) {
+        // TODO: Show error somewhere
+        console.error(fileRejections[0].errors[0].message);
+      } else {
+        addFile(acceptedFiles[0]);
+      }
+    },
+    [addFile],
+  );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxFiles: 1,
-    maxSize: 210000000,
+    maxSize: maxFileSizeKB,
     noDrag: false,
     noClick: true,
   });
@@ -57,7 +61,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
         <Box
           sx={{
             backgroundColor: "#ffffff",
-            padding: "16px 16px 16px 11px",
+            padding: 2,
             width: "292px",
             borderRadius: "4px",
             display: "flex",
