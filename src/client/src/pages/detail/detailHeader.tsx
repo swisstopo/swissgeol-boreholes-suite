@@ -84,9 +84,9 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
           icon={borehole?.data.workflow?.finished != null ? <CheckmarkIcon /> : <div />}
         />
       </Stack>
-      {editableByCurrentUser && (
-        <>
-          {editingEnabled && (
+      {editableByCurrentUser &&
+        (editingEnabled ? (
+          <>
             <DeleteButton
               label="deleteBorehole"
               onClick={() =>
@@ -105,10 +105,11 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
                 ])
               }
             />
-          )}
-          {editingEnabled ? <EndEditButton onClick={stopEditing} /> : <EditButton onClick={startEditing} />}
-        </>
-      )}
+            <EndEditButton onClick={stopEditing} sx={{ marginLeft: "5px" }} />
+          </>
+        ) : (
+          <EditButton onClick={startEditing} />
+        ))}
     </Stack>
   );
 };
