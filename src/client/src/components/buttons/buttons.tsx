@@ -22,41 +22,59 @@ export const BdmsButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
 });
 
 export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label={props.label} variant="outlined" icon={<Plus />} />;
+  return (
+    <BdmsBaseButton ref={ref} {...props} label={props.label} variant={props.variant ?? "outlined"} icon={<Plus />} />
+  );
 });
 
 export const EditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="edit" variant="contained" icon={<Pencil />} />;
+  return (
+    <BdmsBaseButton ref={ref} {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />
+  );
 });
 
 export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="bulkEditing" variant="outlined" icon={<Pencil />} />;
+  return (
+    <BdmsBaseButton
+      ref={ref}
+      {...props}
+      label="bulkEditing"
+      variant={props.variant ?? "outlined"}
+      icon={<Pencil />}
+    />
+  );
 });
 
 export const EndEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="editingStop" variant="contained" icon={<Check />} />;
+  return (
+    <BdmsBaseButton
+      ref={ref}
+      {...props}
+      label="editingStop"
+      variant={props.variant ?? "contained"}
+      icon={<Check />}
+    />
+  );
 });
 
 export const CopyButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="copy" variant="outlined" icon={<CopyIcon />} />;
+  return <BdmsBaseButton ref={ref} {...props} label="copy" variant={props.variant ?? "outlined"} icon={<CopyIcon />} />;
 });
 
 export const CancelButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="cancel" variant="outlined" icon={<CloseIcon />} />;
+  return (
+    <BdmsBaseButton ref={ref} {...props} label="cancel" variant={props.variant ?? "outlined"} icon={<CloseIcon />} />
+  );
 });
 
 export const SaveButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="save" variant="outlined" icon={<SaveIcon />} />;
+  return <BdmsBaseButton ref={ref} {...props} label="save" variant={props.variant ?? "outlined"} icon={<SaveIcon />} />;
 });
 
 export const AcceptButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="accept" variant="contained" />;
+  return <BdmsBaseButton ref={ref} {...props} label="accept" variant={props.variant ?? "contained"} />;
 });
 
 export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} variant="outlined" icon={<Trash2 />} />;
-});
-
-export const SavePrimaryButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="save" variant="contained" icon={<SaveIcon />} />;
+  return <BdmsBaseButton ref={ref} {...props} variant={props.variant ?? "outlined"} icon={<Trash2 />} />;
 });

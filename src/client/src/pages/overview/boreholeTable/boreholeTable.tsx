@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef } from "react";
+import React, { FC, useEffect, useMemo, useRef } from "react";
 import {
   DataGrid,
   GridColDef,
@@ -9,7 +9,7 @@ import {
   GridSortModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import { Box, styled } from "@mui/system";
+import { Box } from "@mui/system";
 import { theme } from "../../../AppTheme.ts";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -28,7 +28,7 @@ export interface BoreholeTableProps {
   setSelectionModel: (model: GridRowSelectionModel) => void;
   sortModel: GridSortModel;
   setSortModel: (model: GridSortModel) => void;
-  onHover: (id: string | null) => void;
+  setHover: React.Dispatch<React.SetStateAction<number | null>>;
   rowToHighlight: number | null;
   isBusy: boolean;
 }
@@ -41,7 +41,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   setSelectionModel,
   sortModel,
   setSortModel,
-  onHover,
+  setHover,
   rowToHighlight,
   isBusy,
 }: BoreholeTableProps) => {
@@ -160,11 +160,11 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   useEffect(() => {
     if (apiRef.current) {
       const handleRowMouseEnter: GridEventListener<"rowMouseEnter"> = params => {
-        onHover(params.row.id);
+        setHover(params.row.id);
       };
 
       const handleRowMouseLeave: GridEventListener<"rowMouseLeave"> = () => {
-        onHover(null);
+        setHover(null);
       };
 
       const api = apiRef.current;
@@ -177,50 +177,49 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         unsubscribeMouseLeave();
       };
     }
-  }, [apiRef, onHover]);
-
-  const StyledDataGrid = styled(DataGrid)(() => ({
-    ".MuiDataGrid-columnHeader": {
-      backgroundColor: theme.palette.boxShadow,
-    },
-    ".MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
-      outline: "none",
-    },
-    ".MuiTablePagination-toolbar p": {
-      margin: 0,
-    },
-    ".MuiDataGrid-footerContainer": {
-      height: "42px !important",
-    },
-    ".MuiTablePagination-selectLabel": {
-      fontSize: "12px",
-    },
-    ".MuiTablePagination-selectIcon": {
-      width: "14px",
-      height: "14px",
-    },
-    ".MuiTablePagination-displayedRows": {
-      fontSize: "12px",
-    },
-    ".MuiIconButton-root": {
-      color: "#0000008A",
-      backgroundColor: "rgba(0, 0, 0, 0)",
-    },
-    ".MuiIconButton-root.Mui-disabled": {
-      color: "#828e9a",
-    },
-    "& .highlighted-row": {
-      backgroundColor: theme.palette.background.lightgrey,
-      color: theme.palette.primary.main,
-    },
-    "& .locked-row": {
-      backgroundColor: theme.palette.background.default,
-      color: theme.palette.action.disabled,
-    },
-  }));
+  }, [apiRef, setHover]);
 
   return (
-    <StyledDataGrid
+    <DataGrid
+      sx={{
+        ".MuiDataGrid-columnHeader": {
+          backgroundColor: theme.palette.boxShadow,
+        },
+        ".MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
+          outline: "none",
+        },
+        ".MuiTablePagination-toolbar p": {
+          margin: 0,
+        },
+        ".MuiDataGrid-footerContainer": {
+          height: "42px !important",
+        },
+        ".MuiTablePagination-selectLabel": {
+          fontSize: "12px",
+        },
+        ".MuiTablePagination-selectIcon": {
+          width: "14px",
+          height: "14px",
+        },
+        ".MuiTablePagination-displayedRows": {
+          fontSize: "12px",
+        },
+        ".MuiIconButton-root": {
+          color: "#0000008A",
+          backgroundColor: "rgba(0, 0, 0, 0)",
+        },
+        ".MuiIconButton-root.Mui-disabled": {
+          color: "#828e9a",
+        },
+        "& .highlighted-row": {
+          backgroundColor: theme.palette.background.lightgrey,
+          color: theme.palette.primary.main,
+        },
+        "& .locked-row": {
+          backgroundColor: theme.palette.background.default,
+          color: theme.palette.action.disabled,
+        },
+      }}
       data-cy="borehole-table"
       apiRef={apiRef}
       onRowClick={handleRowClick}
