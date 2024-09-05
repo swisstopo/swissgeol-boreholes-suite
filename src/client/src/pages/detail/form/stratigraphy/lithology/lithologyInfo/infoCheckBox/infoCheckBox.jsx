@@ -6,6 +6,7 @@ import { CopyButton, DeleteButton } from "../../../../../../../components/button
 import { PromptContext } from "../../../../../../../components/prompt/promptContext";
 import { useContext } from "react";
 import { Trash2 } from "lucide-react";
+import { Stack } from "@mui/material";
 
 const InfoCheckBox = props => {
   const { profileInfo, updateChange, isEditable, onUpdated } = props.data;
@@ -28,7 +29,7 @@ const InfoCheckBox = props => {
         {t("mainStratigraphy")}
       </Styled.FormContainer>
       {isEditable && (
-        <div style={{ display: "flex" }} data-cy="clone-and-delete-buttons">
+        <Stack direction="row" data-cy="clone-and-delete-buttons" gap={2} mr={1}>
           <CopyButton
             onClick={() => {
               copyStratigraphy(profileInfo?.id).then(() => {
@@ -55,9 +56,8 @@ const InfoCheckBox = props => {
                 },
               ]);
             }}
-            sx={{ marginLeft: "5px" }}
           />
-        </div>
+        </Stack>
       )}
     </Styled.CheckBoxContainer>
   );
