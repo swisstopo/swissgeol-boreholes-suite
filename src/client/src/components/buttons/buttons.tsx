@@ -69,7 +69,5 @@ export const AcceptButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
 });
 
 export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return (
-    <BdmsBaseButton ref={ref} {...props} variant={props.variant ?? "outlined"} icon={<Trash2 />} />
-  );
+  return <BdmsBaseButton ref={ref} {...props} variant={props.variant ?? "outlined"} icon={<Trash2 />} />;
 });
