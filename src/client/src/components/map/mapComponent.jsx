@@ -57,7 +57,6 @@ class MapComponent extends React.Component {
     this.onHover = this.onHover.bind(this);
     this.onSelected = this.onSelected.bind(this);
     this.handleMapInteractions = this.handleMapInteractions.bind(this);
-    this.setExtentAndResolution = this.setExtentAndResolution.bind(this);
     this.getFeaturesAtPixel = this.getFeaturesAtPixel.bind(this);
     this.zoomToCluster = this.zoomToCluster.bind(this);
     this.zoomToPoint = this.zoomToPoint.bind(this);
@@ -91,8 +90,6 @@ class MapComponent extends React.Component {
         features = this.filterByPolygon(features);
         this.points.clear();
         this.points.addFeatures(features);
-
-        this.setExtentAndResolution();
       }
     } catch (error) {
       console.error("Failed to fetch and display GeoJSON:", error);
@@ -218,15 +215,6 @@ class MapComponent extends React.Component {
     });
   }
 
-  //////  SET MAP EXTENT AND RESOLUTION //////
-  setExtentAndResolution() {
-    let extent = this.props.searchState.extent?.length ? this.props.searchState.extent : this.points.getExtent();
-    this.map.getView().fit(extent);
-    if (this.props.searchState.resolution) {
-      this.map.getView().setResolution(this.props.searchState.resolution);
-    }
-  }
-
   //////  HANDLE CUSTOM USER LAYERS //////
   addWMTSLayer(identifier, layer) {
     const wmtsLayer = new TileLayer({
@@ -316,8 +304,8 @@ class MapComponent extends React.Component {
       target: "map",
       view: new View({
         minResolution: 0.1,
-        resolution: 500,
-        center: initialCenter,
+        resolution: this.props.mapResolution,
+        center: this.props.mapCenter ?? initialCenter,
         projection: projection,
         extent: initialExtent,
         showFullExtent: true,
@@ -551,6 +539,11 @@ class MapComponent extends React.Component {
         this.handleFilter(searchState, prevProps.searchState, view);
       }
     }
+  }
+
+  componentWillUnmount() {
+    this.props.setMapResolution(this.map.getView().getResolution());
+    this.props.setMapCenter(this.map.getView().getCenter());
   }
 
   //////// Event handlers ////////

@@ -10,6 +10,7 @@ import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Stack } from "@mui/material";
+import { OverViewContext } from "../overViewContext.tsx";
 
 interface MapViewProps {
   displayErrorMessage: string;
@@ -27,6 +28,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     featureIds,
     setFeatureIds,
   } = useContext(FilterContext);
+  const { mapResolution, setMapResolution, mapCenter, setMapCenter } = useContext(OverViewContext);
 
   const boreholes: Boreholes = useSelector((state: ReduxRootState) => state.core_borehole_editor_list);
   const setting: Setting = useSelector((state: ReduxRootState) => state.setting);
@@ -102,6 +104,10 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
             lock(id);
           }
         }}
+        mapResolution={mapResolution}
+        setMapResolution={setMapResolution}
+        mapCenter={mapCenter}
+        setMapCenter={setMapCenter}
         polygonSelectionEnabled={polygonSelectionEnabled}
         setPolygonSelectionEnabled={setPolygonSelectionEnabled}
         filterPolygon={filterPolygon}
