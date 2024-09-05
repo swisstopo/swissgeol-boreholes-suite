@@ -52,6 +52,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const domains = useDomains();
   const apiRef = useGridApiRef();
   const firstRender = useRef(true);
+  const hasLoaded = useRef(false);
   const { tableScrollPosition, setTableScrollPosition } = useContext(TableContext);
   const rowCountRef = useRef(boreholes?.length || 0);
   const scrollPositionRef = useRef(tableScrollPosition);
@@ -198,15 +199,21 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 
   // Restore table scroll position
   const isLoading = boreholes.isFetching || isBusy;
+
   useEffect(() => {
-    if (apiRef.current && !isLoading) {
-      // Workaround to restore scroll position see #https://github.com/mui/mui-x/issues/5071
-      if (firstRender.current) {
-        setTimeout(() => {
-          apiRef.current.scroll(tableScrollPosition);
-          firstRender.current = false;
-        }, 1000);
-      }
+    if (!apiRef.current) return;
+
+    if (isLoading) {
+      hasLoaded.current = true;
+      return;
+    }
+
+    // Workaround to restore scroll position see #https://github.com/mui/mui-x/issues/5071 and https://github.com/mui/mui-x/issues/4674
+    if (firstRender.current && hasLoaded.current) {
+      requestIdleCallback(() => {
+        apiRef.current.scroll(tableScrollPosition);
+        firstRender.current = false;
+      });
     }
   }, [apiRef, isLoading, tableScrollPosition]);
 
