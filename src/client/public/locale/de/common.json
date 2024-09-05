@@ -153,6 +153,7 @@
   "epoch": "Epoche",
   "era": "Ära",
   "errorAttention": "Achtung",
+  "errorBoreholeFileLoading": "Beim Laden der Bohrungsdateien ist ein Fehler aufgetreten.",
   "errorDuplicatedUploadPerBorehole": "Diese Datei wurde bereits für diese Bohrung hochgeladen und kann nicht ein zweites Mal hochgeladen werden.",
   "errorDuringBoreholeFileUpload": "Beim Hochladen ist ein Fehler aufgetreten.",
   "errorEndPoint": "Sie sollten den Endpunkt hinzufügen",

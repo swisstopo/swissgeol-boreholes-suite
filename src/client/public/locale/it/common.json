@@ -153,6 +153,7 @@
   "epoch": "Epoca",
   "era": "Era",
   "errorAttention": "Attenzione",
+  "errorBoreholeFileLoading": "Si è verificato un errore durante il caricamento dei file di perforazione.",
   "errorDuplicatedUploadPerBorehole": "Questo file è già stato caricato, per questa perforazione, e quindi non può essere caricato una seconda volta.",
   "errorDuringBoreholeFileUpload": "Si è verificato un errore durante il caricamento.",
   "errorEndPoint": "Per favore aggiungere il punto finale",
