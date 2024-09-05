@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useLocation, withRouter } from "react-router-dom";
 import MainSideNav from "./layout/mainSideNav.tsx";
-import MapView from "./layout/mapView.jsx";
+import { MapView } from "./layout/mapView.tsx";
 import { SideDrawer } from "./layout/sideDrawer.tsx";
 import FilterComponent from "./sidePanelContent/filter/filterComponent.jsx";
 import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
@@ -10,9 +10,8 @@ import { AlertContext } from "../../components/alert/alertContext.tsx";
 import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 
-const OverviewPage = props => {
+const OverviewPage = () => {
   const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
-  const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const location = useLocation();
   const [workgroup, setWorkgroup] = useState(0);
   const [enabledWorkgroups, setEnabledWorkgroups] = useState([]);
@@ -21,10 +20,6 @@ const OverviewPage = props => {
 
   const toggleSideDrawer = open => {
     setSideDrawerOpen(open);
-  };
-
-  const toggleBottomDrawer = open => {
-    setBottomDrawerOpen(open);
   };
 
   const sideDrawerComponentMap = {
@@ -62,9 +57,6 @@ const OverviewPage = props => {
       <SideDrawer drawerOpen={sideDrawerOpen} drawerContent={sideDrawerComponentMap[sideDrawerContent]} />
       <MainContentBox>
         <MapView
-          {...props}
-          toggleBottomDrawer={toggleBottomDrawer}
-          bottomDrawerOpen={bottomDrawerOpen}
           displayErrorMessage={message => {
             showAlert(message, "error");
           }}

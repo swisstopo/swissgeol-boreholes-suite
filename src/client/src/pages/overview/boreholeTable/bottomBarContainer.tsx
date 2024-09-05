@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 interface BottomBarContainerProps {
   boreholes: Boreholes;
   search: { filter: string };
+  setHover: React.Dispatch<React.SetStateAction<number | null>>;
   loadEditingBoreholes: (
     page: number,
     limit: number,
@@ -22,7 +23,6 @@ interface BottomBarContainerProps {
     featureIds: number[],
   ) => void;
   multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
-  onHover: (id: string | null) => void;
   rowToHighlight: number | null;
 }
 
@@ -31,7 +31,7 @@ const BottomBarContainer = ({
   loadEditingBoreholes,
   multipleSelected,
   search,
-  onHover,
+  setHover,
   rowToHighlight,
 }: BottomBarContainerProps) => {
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
@@ -65,7 +65,7 @@ const BottomBarContainer = ({
 
   useEffect(() => {
     reloadBoreholes();
-  }, [sortModel, paginationModel, search, loadEditingBoreholes, featureIds, reloadBoreholes]);
+  }, [reloadBoreholes]);
 
   const onCopyBorehole = async () => {
     setIsBusy(true);
@@ -111,7 +111,7 @@ const BottomBarContainer = ({
           sortModel={sortModel}
           setSortModel={setSortModel}
           rowToHighlight={rowToHighlight}
-          onHover={onHover}
+          setHover={setHover}
           isBusy={isBusy}
         />
       </BottomDrawer>
