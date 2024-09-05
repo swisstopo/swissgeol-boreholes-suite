@@ -3,9 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-
-import { loadDomains } from "../../../../api-lib/index.js";
-
+import { loadDomains } from "../../../../api-lib";
 import { Form, Header } from "semantic-ui-react";
 
 class DomainDropdown extends React.Component {
@@ -207,7 +205,7 @@ class DomainDropdown extends React.Component {
     );
     if (readOnly) {
       let selectedOption = options.find(option => option.value === selected);
-      return <Form.Input fluid readOnly value={selectedOption.text} />;
+      return <Form.Input fluid readOnly value={selectedOption?.text || ""} />;
     }
     return (
       <Form.Select

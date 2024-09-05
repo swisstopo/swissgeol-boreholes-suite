@@ -11,9 +11,8 @@ import { useTranslation } from "react-i18next";
 import { parseIfString } from "../../../../../../../components/legacyComponents/formUtils.ts";
 
 const LithologyAttributeList = props => {
-  const { attribute, showAll, updateChange, layer, isVisibleFunction } = props.data;
+  const { attribute, showAll, updateChange, layer, isVisibleFunction, isEditable } = props.data;
   const { t } = useTranslation();
-
   const [inputDisplayValues, setInputDisplayValues] = useState({});
 
   // This adds a delay to each keystroke before calling the updateChange method in the parent component.
@@ -63,6 +62,7 @@ const LithologyAttributeList = props => {
                         item?.isNumber,
                       );
                     }}
+                    readOnly={!isEditable}
                     spellCheck="false"
                     style={{ width: "100%" }}
                     value={
@@ -79,6 +79,7 @@ const LithologyAttributeList = props => {
                     data-cy={item.value}
                     autoCapitalize="off"
                     autoComplete="off"
+                    readOnly={!isEditable}
                     autoCorrect="off"
                     onChange={e => {
                       updateInputDisplayValue(item.value, e.target.value);
@@ -112,6 +113,7 @@ const LithologyAttributeList = props => {
                     debouncedUpdateChange(item.value, e.target.value);
                   }}
                   style={{ width: "100%" }}
+                  readOnly={!isEditable}
                   value={
                     _.isNil(inputDisplayValues[item.value])
                       ? _.isNil(layer?.[item.value])
@@ -156,6 +158,7 @@ const LithologyAttributeList = props => {
                       false,
                     );
                   }}
+                  readOnly={!isEditable}
                   schema={item.schema}
                   search={item.search}
                   selected={_.isNil(layer?.[item.value]) ? null : layer[item.value]}
@@ -172,7 +175,7 @@ const LithologyAttributeList = props => {
                   schema={item.schema}
                   selected={_.isNil(layer?.[item.value]) ? null : layer[item.value]}
                   title={<TranslationText id={item.label} />}
-                  isEditable={true}
+                  isEditable={isEditable}
                 />
               </Styled.AttributesItem>
             )}

@@ -19,6 +19,7 @@ import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterC
 import HeaderComponent from "./components/header/headerComponent.tsx";
 import { AppBox } from "./components/styledComponents.ts";
 import { DetailPage } from "./pages/detail/detailPage.tsx";
+import { LabelingProvider } from "./pages/detail/labeling/labelingContext.tsx";
 import { TableProvider } from "./pages/overview/tableContext.tsx";
 
 const queryClient = new QueryClient();
@@ -66,7 +67,16 @@ class App extends React.Component {
                             <Router>
                               <Switch>
                                 <Route render={props => <SettingsPage {...props} />} key={0} path={"/setting"} />
-                                <Route exact={false} key={1} path={"/:id"} render={() => <DetailPage />} />
+                                <Route
+                                  exact={false}
+                                  key={1}
+                                  path={"/:id"}
+                                  render={() => (
+                                    <LabelingProvider>
+                                      <DetailPage />
+                                    </LabelingProvider>
+                                  )}
+                                />
                                 <Route
                                   render={props => {
                                     return <OverviewPage {...props} />;
