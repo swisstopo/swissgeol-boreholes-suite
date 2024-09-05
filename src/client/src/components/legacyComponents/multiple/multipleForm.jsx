@@ -387,7 +387,7 @@ class MultipleForm extends React.Component {
             {this.getDomain("chronostratigraphy_top_bedrock", "custom.chronostratigraphy_top_bedrock")}
           </Form>
         </div>
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
+        <Stack direction="row" justifyContent="flex-end" spacing={2}>
           <CancelButton
             onClick={() => {
               this.props.undo();
