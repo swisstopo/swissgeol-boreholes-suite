@@ -27,12 +27,7 @@ export const detachFile = async (boreholeId: number, boreholeFileId: number) => 
 };
 
 export async function getFiles<FileResponse>(boreholeId: number): Promise<FileResponse[]> {
-  const response = await fetchApiV2(`boreholefile/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
-  if (response.ok) {
-    throw new ApiError("errorBoreholeFileLoading", response.status);
-  } else {
-    return (await response.json()) as FileResponse[];
-  }
+  return (await fetchApiV2(`boreholefile/getAllForBorehole?boreholeId=${boreholeId}`, "GET")) as FileResponse[];
 }
 
 export const downloadFile = async (boreholeFileId: number) => {
