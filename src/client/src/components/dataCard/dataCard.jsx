@@ -62,7 +62,7 @@ export const DataCardButtonContainer = forwardRef((props, ref) => {
         marginTop: "15px",
         marginRight: "10px",
       }}>
-      <Stack direction="row" justifyContent="flex-end" alignItems="center">
+      <Stack direction="row" justifyContent="flex-end" alignItems="center" gap="5px">
         {props.children}
       </Stack>
     </Box>
