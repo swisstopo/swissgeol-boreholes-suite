@@ -1,14 +1,34 @@
 export interface ReduxRootState {
+  filters: Filters;
+  editor: EditorStore;
+  setting: Setting;
   core_user: User;
   core_borehole_editor_list: Boreholes;
   core_borehole: Borehole;
 }
 
-export interface User {
-  data: UserData;
+export interface Setting {
+  data: SettingData;
+}
+
+export interface SettingData {
+  map: {
+    explorer: string;
+  };
+}
+export interface Filters {
+  filter: string;
+}
+
+export interface EditorStore {
+  mselected: string;
 }
 
 export type Role = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";
+
+export interface User {
+  data: UserData;
+}
 
 export interface UserData {
   // Incomplete type definition, add other properties as needed
