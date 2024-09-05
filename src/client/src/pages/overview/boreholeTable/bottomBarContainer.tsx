@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useLayoutEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
@@ -9,6 +9,7 @@ import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { deleteBoreholes } from "../../../api-lib";
 import { copyBorehole } from "../../../api/fetchApiV2";
 import { useSelector } from "react-redux";
+import { TableContext } from "../tableContext.tsx";
 
 interface BottomBarContainerProps {
   boreholes: Boreholes;
@@ -37,9 +38,9 @@ const BottomBarContainer = ({
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const history = useHistory();
   const { featureIds } = useContext(FilterContext);
+  const { bottomDrawerOpen } = useContext(TableContext);
   const [workgroupId, setWorkgroupId] = useState<number | null>(user.data.workgroups[0]?.id);
   const [isBusy, setIsBusy] = useState(false);
-  const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: boreholes.limit ?? 100,
     page: boreholes.page ? boreholes.page - 1 : 0, // MUI pagination starts at 0, whereas server pagination starts at 1
@@ -63,7 +64,8 @@ const BottomBarContainer = ({
     );
   }, [paginationModel, search, sortModel, loadEditingBoreholes, featureIds]);
 
-  useEffect(() => {
+  // Layouteffect prevents cached table data to appear before reload
+  useLayoutEffect(() => {
     reloadBoreholes();
   }, [reloadBoreholes]);
 
@@ -83,15 +85,9 @@ const BottomBarContainer = ({
     setIsBusy(false);
   };
 
-  const toggleBottomDrawer = () => {
-    setBottomDrawerOpen(!bottomDrawerOpen);
-  };
-
   return (
     <>
       <BottomBar
-        toggleBottomDrawer={toggleBottomDrawer}
-        bottomDrawerOpen={bottomDrawerOpen}
         selectionModel={selectionModel}
         multipleSelected={multipleSelected}
         onCopyBorehole={onCopyBorehole}

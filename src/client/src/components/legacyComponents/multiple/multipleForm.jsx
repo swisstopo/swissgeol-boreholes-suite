@@ -96,6 +96,7 @@ class MultipleForm extends React.Component {
     patchBoreholes(this.props.selected, fields)
       .then(() => {
         undo();
+        this.props.loadBoreholes();
       })
       .catch(function (error) {
         console.error(error);
