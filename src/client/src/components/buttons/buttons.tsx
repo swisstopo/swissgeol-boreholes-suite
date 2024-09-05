@@ -38,7 +38,7 @@ export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
       {...props}
       label="bulkEditing"
       variant={props.variant ?? "outlined"}
-      color="secondary"
+      color={props.color ?? "secondary"}
       icon={<Pencil />}
     />
   );
@@ -70,12 +70,6 @@ export const AcceptButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
 
 export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
-      ref={ref}
-      {...props}
-      variant={props.variant ?? "outlined"}
-      color={props.color ?? "primary"}
-      icon={<Trash2 />}
-    />
+    <BdmsBaseButton ref={ref} {...props} variant={props.variant ?? "outlined"} color={props.color} icon={<Trash2 />} />
   );
 });

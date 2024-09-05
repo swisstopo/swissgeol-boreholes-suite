@@ -191,8 +191,8 @@ export const theme = createTheme({
                   borderColor: "#1F444F",
                 },
                 "&:disabled": {
-                  backgroundColor: "#FFFFFF",
-                  borderColor: "#FFFFFF",
+                  backgroundColor: "rgba(0,0,0,0)",
+                  borderColor: "#828E94",
                 },
               },
             },
