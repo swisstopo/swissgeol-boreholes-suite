@@ -38,6 +38,14 @@ export const theme = createTheme({
       main: "#337083",
       secondary: "#a65462",
     },
+    ai: {
+      background: "#46596B",
+      main: "#5B21B6",
+      mainEnd: "#8B5CF6",
+      active: "#4F46E5",
+      activeEnd: "#E53940",
+      contrastText: "#ffffff",
+    },
     boxShadow: "#DFE4E9",
     background: {
       default: "#ffffff",
@@ -185,6 +193,45 @@ export const theme = createTheme({
           "&:hover": {
             color: "#801519",
             backgroundColor: "rgba(0, 0, 0, 0)",
+          },
+        },
+        colorAi: {
+          color: "#ffffff",
+          background: "linear-gradient(#5B21B6, #8B5CF6)",
+          "&:hover": {
+            background: "linear-gradient(#4F46E5, #E53940)",
+          },
+          "&:focus-visible": {
+            background: "linear-gradient(#4F46E5, #E53940)",
+            boxShadow: "0px 0px 0px 3px #8655F6",
+          },
+          "&:active": {
+            background: "linear-gradient(#4F46E5, #E53940)",
+          },
+          "&:disabled": {
+            background: "linear-gradient(#4F46E5, #E53940)",
+          },
+        },
+      },
+    },
+    MuiToggleButtonGroup: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#ffffff",
+        },
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          border: "0",
+          borderRadius: "4px !important",
+          margin: "4px",
+          padding: "7px",
+          color: "#337083",
+          "&.Mui-selected": {
+            color: "#2F4356",
+            backgroundColor: "#D6E2E6",
           },
         },
       },
