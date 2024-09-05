@@ -6,6 +6,10 @@ import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts"
 import DetailSideNav from "./detailSideNav";
 import DetailPageContent from "./detailPageContent";
 import DetailHeader from "./detailHeader.tsx";
+import { Box } from "@mui/material";
+import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
+import LabelingPanel from "./labeling/labelingPanel.tsx";
+import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 
 interface DetailPageContentProps {
   editingEnabled: boolean;
@@ -18,12 +22,18 @@ export const DetailPage: FC = () => {
   const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const location = useLocation();
+  const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
+  const showLabeling = false;
 
   useEffect(() => {
     setEditingEnabled(borehole.data.lock !== null);
   }, [borehole.data.lock]);
 
   useEffect(() => {
+    if (!editingEnabled) {
+      togglePanel(false);
+    }
+
     if (borehole.data.lock !== null && borehole.data.lock.id !== user.data.id) {
       setEditableByCurrentUser(false);
       return;
@@ -39,7 +49,7 @@ export const DetailPage: FC = () => {
     const isBoreholeInEditWorkflow = borehole?.data.workflow?.role === "EDIT";
 
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
-  }, [editingEnabled, user, borehole, location]);
+  }, [editingEnabled, user, borehole, location, togglePanel]);
 
   const props: DetailPageContentProps = {
     editingEnabled: editingEnabled,
@@ -57,9 +67,19 @@ export const DetailPage: FC = () => {
         <SidebarBox>
           <DetailSideNav />
         </SidebarBox>
-        <MainContentBox>
-          <DetailPageContent {...props} />
-        </MainContentBox>
+        <Box sx={{ display: "flex", flexDirection: panelPosition === "right" ? "row" : "column", width: "100%" }}>
+          <MainContentBox
+            sx={{
+              width: panelOpen && panelPosition === "right" ? "50%" : "100%",
+              height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+            }}>
+            {editingEnabled && showLabeling && (
+              <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
+            )}
+            <DetailPageContent {...props} />
+          </MainContentBox>
+          {editingEnabled && panelOpen && <LabelingPanel />}
+        </Box>
       </LayoutBox>
     </>
   );
