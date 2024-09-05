@@ -9,10 +9,10 @@ import {
 
 import FilesTableComponent from "./filesTableComponent";
 import { Box, Button, Input } from "@mui/material";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { FileResponse } from "../fileInterfaces.ts";
 import { useTranslation } from "react-i18next";
+import UploadIcon from "../../../../assets/icons/upload.svg?react";
 
 export interface EditorBoreholeFilesTable2Props {
   id: number;
@@ -113,7 +113,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
               role={undefined}
               variant="outlined"
               tabIndex={-1}
-              endIcon={<UploadFileIcon />}
+              endIcon={<UploadIcon />}
               sx={{
                 paddingLeft: "12px",
                 paddingRight: "12px",

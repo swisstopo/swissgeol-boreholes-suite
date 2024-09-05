@@ -3,12 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Badge, Stack } from "@mui/material";
 import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.tsx";
-import FilterIcon from "../../../assets/icons/filter.svg?react";
-import AddIcon from "../../../assets/icons/add.svg?react";
 import UploadIcon from "../../../assets/icons/upload.svg?react";
-import SettingsIcon from "../../../assets/icons/settings.svg?react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
-import LayersIcon from "../../../assets/icons/layers.svg?react";
 import { theme } from "../../../AppTheme.ts";
 import ImportModal from "../sidePanelContent/importer/importModal.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
@@ -18,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { Filter, Layers, Plus, Settings } from "lucide-react";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
@@ -115,7 +112,7 @@ const MainSideNav = ({
         {activeFilterCount > 0 && <Badge sx={{ margin: "1px" }} badgeContent={activeFilterCount}></Badge>}
         <NavButton
           data-cy="show-filter-button"
-          icon={<FilterIcon />}
+          icon={<Filter />}
           label={t("searchfilters")}
           selected={isFilterPanelVisible}
           onClick={handleToggleFilter}
@@ -124,7 +121,7 @@ const MainSideNav = ({
           <>
             <NavButton
               data-cy="new-borehole-button"
-              icon={<AddIcon />}
+              icon={<Plus />}
               label={t("add")}
               selected={isAddPanelVisible}
               disabled={user.data.roles.indexOf("EDIT") === -1}
@@ -145,7 +142,7 @@ const MainSideNav = ({
         )}
         <NavButton
           data-cy="layers-button"
-          icon={<LayersIcon />}
+          icon={<Layers />}
           label={t("usersMap")}
           selected={isLayersPanelVisible}
           onClick={handleToggleLayers}
@@ -158,7 +155,7 @@ const MainSideNav = ({
         }}>
         <NavButton
           data-cy="settings-button"
-          icon={<SettingsIcon />}
+          icon={<Settings />}
           label={t("header_settings")}
           onClick={() => history.push(`/setting`)}
         />

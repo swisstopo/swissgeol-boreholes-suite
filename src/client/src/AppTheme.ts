@@ -1,5 +1,5 @@
 import { createTheme } from "@mui/material/styles";
-import ArrowDownIcon from "./assets/icons/arrow_down.svg?react";
+import { ChevronDown } from "lucide-react";
 
 export const theme = createTheme({
   palette: {
@@ -317,7 +317,7 @@ export const theme = createTheme({
     },
     MuiSelect: {
       defaultProps: {
-        IconComponent: ArrowDownIcon,
+        IconComponent: ChevronDown,
       },
     },
     MuiFormControl: {
@@ -378,6 +378,15 @@ export const theme = createTheme({
           paddingLeft: "3px",
           flex: 1,
           fontSize: "13px",
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontSize: "12px",
+          backgroundColor: "#1C2834",
+          color: "#ffffff",
         },
       },
     },
