@@ -202,6 +202,10 @@ class FilterComponent extends React.Component {
                 polygonSelectionEnabled && !filterPolygon
                   ? theme.palette.background.filterItemActive
                   : theme.palette.background.default,
+              color:
+                polygonSelectionEnabled && !filterPolygon
+                  ? theme.palette.primary.contrastText
+                  : theme.palette.primary.main,
               width: "100%",
               marginLeft: 0,
               height: "48px",
