@@ -1,10 +1,10 @@
 import { Box, Chip, Tooltip } from "@mui/material";
 import { Filter } from "./FilterInterface.ts";
 import { useTranslation } from "react-i18next";
-import DeleteIcon from "../../../../assets/icons/delete.svg?react";
 import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
 import { useContext } from "react";
 import { FilterContext } from "./filterContext.tsx";
+import { CircleX } from "lucide-react";
 
 interface FilterChipsProps {
   activeFilters: Filter[];
@@ -38,7 +38,7 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
               color="secondary"
               label={filterLabel.length < 15 ? filterLabel : filterLabel.substring(0, 15) + "..."}
               onDelete={() => onRemoveFilter(filter)}
-              deleteIcon={<DeleteIcon style={{ width: "16px", height: "16px" }} />}
+              deleteIcon={<CircleX style={{ width: "16px", height: "16px" }} />}
             />
           </Tooltip>
         );
@@ -54,7 +54,7 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
             setFilterPolygon(null);
             setFeatureIds([]);
           }}
-          deleteIcon={<DeleteIcon style={{ width: "16px", height: "16px" }} />}
+          deleteIcon={<CircleX style={{ width: "16px", height: "16px" }} />}
         />
       )}
     </Box>

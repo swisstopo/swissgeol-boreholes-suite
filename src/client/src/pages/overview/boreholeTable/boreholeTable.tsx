@@ -10,7 +10,6 @@ import {
   GridSortModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import LockIcon from "../../../assets/icons/lock.svg?react";
 import { Box } from "@mui/system";
 import { theme } from "../../../AppTheme.ts";
 import { useHistory } from "react-router-dom";
@@ -21,6 +20,7 @@ import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInte
 import { useSelector } from "react-redux";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TableContext } from "../tableContext.tsx";
+import { LockKeyhole } from "lucide-react";
 
 export interface BoreholeTableProps {
   boreholes: Boreholes;
@@ -139,7 +139,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         if (value.row.lock) {
           return (
             <Box sx={{ color: theme.palette.error.main }}>
-              <LockIcon />
+              <LockKeyhole />
             </Box>
           );
         }

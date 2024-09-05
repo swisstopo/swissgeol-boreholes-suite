@@ -3,8 +3,7 @@ import { IconButton, Stack } from "@mui/material";
 import { FormDisplay, FormValueType } from "../../../../components/form/form";
 import { CopyButton, DeleteButton, EditButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const CompletionHeaderDisplay = props => {
   const { completion, isEditable, setEditing, copyCompletion, deleteCompletion } = props;
@@ -60,8 +59,11 @@ const CompletionHeaderDisplay = props => {
             )}
           </>
         )}
-        <IconButton onClick={toggleHeader} sx={{ paddingBottom: "0" }} data-cy="completion-toggle-header">
-          {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        <IconButton
+          onClick={toggleHeader}
+          sx={{ paddingBottom: "0", "&:hover": { backgroundColor: "transparent" } }}
+          data-cy="completion-toggle-header">
+          {expanded ? <ChevronUp /> : <ChevronDown />}
         </IconButton>
       </Stack>
     </>

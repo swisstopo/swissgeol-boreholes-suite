@@ -9,8 +9,7 @@ import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 import { theme } from "../../../../AppTheme";
 import { useTranslation } from "react-i18next";
-import TrashIcon from "../../../../assets/icons/trash.svg?react";
-import AddIcon from "../../../../assets/icons/add.svg?react";
+import { Plus, Trash2 } from "lucide-react";
 
 const MapSettings = props => {
   const { showAlert } = useContext(AlertContext);
@@ -30,7 +29,7 @@ const MapSettings = props => {
           }
         }}
         color={_.has(setting.data.map.explorer, layer.Name) ? "error" : "primary"}>
-        {_.has(setting.data.map.explorer, layer.Name) ? <TrashIcon /> : <AddIcon />}
+        {_.has(setting.data.map.explorer, layer.Name) ? <Trash2 /> : <Plus />}
       </IconButton>
     );
   }
@@ -381,7 +380,7 @@ const MapSettings = props => {
                                   }
                                 }}
                                 color="error">
-                                <TrashIcon />
+                                <Trash2 />
                               </IconButton>
                             </div>
                           </div>
