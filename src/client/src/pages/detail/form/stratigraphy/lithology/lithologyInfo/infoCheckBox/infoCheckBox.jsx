@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { CopyButton, DeleteButton } from "../../../../../../../components/buttons/buttons";
 import { PromptContext } from "../../../../../../../components/prompt/promptContext";
 import { useContext } from "react";
-import TrashIcon from "../../../../../../../assets/icons/trash.svg?react";
+import { Trash2 } from "lucide-react";
 
 const InfoCheckBox = props => {
   const { profileInfo, updateChange, isEditable, onUpdated } = props.data;
@@ -45,7 +45,7 @@ const InfoCheckBox = props => {
                 },
                 {
                   label: t("delete"),
-                  icon: <TrashIcon />,
+                  icon: <Trash2 />,
                   variant: "contained",
                   action: () => {
                     deleteStratigraphy(profileInfo?.id).then(() => {

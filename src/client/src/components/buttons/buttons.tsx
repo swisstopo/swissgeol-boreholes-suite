@@ -28,32 +28,18 @@ export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref)
 });
 
 export const EditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return (
-    <BdmsBaseButton ref={ref} {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />
-  );
+  return <BdmsBaseButton ref={ref} {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />;
 });
 
 export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
-      ref={ref}
-      {...props}
-      label="bulkEditing"
-      variant={props.variant ?? "outlined"}
-      icon={<Pencil />}
-    />
+    <BdmsBaseButton ref={ref} {...props} label="bulkEditing" variant={props.variant ?? "outlined"} icon={<Pencil />} />
   );
 });
 
 export const EndEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
-      ref={ref}
-      {...props}
-      label="editingStop"
-      variant={props.variant ?? "contained"}
-      icon={<Check />}
-    />
+    <BdmsBaseButton ref={ref} {...props} label="editingStop" variant={props.variant ?? "contained"} icon={<Check />} />
   );
 });
 
