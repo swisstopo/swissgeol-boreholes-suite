@@ -1,9 +1,6 @@
 import { useContext } from "react";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
-import ArrowLeftIcon from "../../assets/icons/arrow_left.svg?react";
-import CheckmarkIcon from "../../assets/icons/checkmark.svg?react";
-import TrashIcon from "../../assets/icons/trash.svg?react";
 import { useHistory } from "react-router-dom";
 import { DeleteButton, EditButton, EndEditButton } from "../../components/buttons/buttons.tsx";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,6 +8,7 @@ import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts"
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
 import { useTranslation } from "react-i18next";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
+import { Check, ChevronLeft, Trash2 } from "lucide-react";
 
 interface DetailHeaderProps {
   editingEnabled: boolean;
@@ -74,14 +72,14 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
             marginRight: "18px",
             borderRadius: "2px",
           }}>
-          <ArrowLeftIcon />
+          <ChevronLeft />
         </IconButton>
         <Typography variant="h2"> {borehole?.data.extended.original_name}</Typography>
         <Chip
           sx={{ marginLeft: "18px" }}
           label={t(`status${borehole?.data.workflow?.role.toLowerCase()}`)}
           color={borehole?.data.workflow?.finished != null ? "success" : "warning"}
-          icon={borehole?.data.workflow?.finished != null ? <CheckmarkIcon /> : <div />}
+          icon={borehole?.data.workflow?.finished != null ? <Check /> : <div />}
         />
       </Stack>
       {editableByCurrentUser &&
@@ -96,7 +94,7 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
                   },
                   {
                     label: t("delete"),
-                    icon: <TrashIcon />,
+                    icon: <Trash2 />,
                     variant: "contained",
                     action: () => {
                       handleDelete();

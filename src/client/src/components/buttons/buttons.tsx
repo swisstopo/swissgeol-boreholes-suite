@@ -1,15 +1,12 @@
 import { forwardRef } from "react";
 import { Button } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "../../assets/icons/edit.svg?react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
-import TrashIcon from "../../assets/icons/trash.svg?react";
-import CheckmarkIcon from "../../assets/icons/checkmark.svg?react";
 import { ButtonProps } from "./buttonsInterface";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { useTranslation } from "react-i18next";
+import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
@@ -26,37 +23,23 @@ export const BdmsButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
 
 export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton ref={ref} {...props} label={props.label} variant={props.variant ?? "outlined"} icon={<AddIcon />} />
+    <BdmsBaseButton ref={ref} {...props} label={props.label} variant={props.variant ?? "outlined"} icon={<Plus />} />
   );
 });
 
 export const EditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return (
-    <BdmsBaseButton ref={ref} {...props} label="edit" variant={props.variant ?? "contained"} icon={<EditIcon />} />
-  );
+  return <BdmsBaseButton ref={ref} {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />;
 });
 
 export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
-      ref={ref}
-      {...props}
-      label="bulkEditing"
-      variant={props.variant ?? "outlined"}
-      icon={<EditIcon />}
-    />
+    <BdmsBaseButton ref={ref} {...props} label="bulkEditing" variant={props.variant ?? "outlined"} icon={<Pencil />} />
   );
 });
 
 export const EndEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
-      ref={ref}
-      {...props}
-      label="editingStop"
-      variant={props.variant ?? "contained"}
-      icon={<CheckmarkIcon />}
-    />
+    <BdmsBaseButton ref={ref} {...props} label="editingStop" variant={props.variant ?? "contained"} icon={<Check />} />
   );
 });
 
@@ -79,5 +62,5 @@ export const AcceptButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
 });
 
 export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} variant={props.variant ?? "outlined"} icon={<TrashIcon />} />;
+  return <BdmsBaseButton ref={ref} {...props} variant={props.variant ?? "outlined"} icon={<Trash2 />} />;
 });

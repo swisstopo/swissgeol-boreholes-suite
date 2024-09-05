@@ -5,8 +5,6 @@ import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Button, CircularProgress, Stack, Typography } from "@mui/material";
 import { Header, Icon, Label, Modal } from "semantic-ui-react";
-import CancelIcon from "../../../../assets/icons/cancel.svg?react";
-import RestartIcon from "../../../../assets/icons/restart.svg?react";
 import {
   loadBorehole,
   loadWorkflows,
@@ -23,6 +21,7 @@ import DateText from "../../../../components/legacyComponents/dateText.js";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { theme } from "../../../../AppTheme.ts";
 import { CancelButton } from "../../../../components/buttons/buttons";
+import { RotateCcw, X } from "lucide-react";
 
 class WorkflowForm extends React.Component {
   static contextType = AlertContext;
@@ -343,7 +342,7 @@ class WorkflowForm extends React.Component {
                                     data-cy="workflow_restart"
                                     disabled={readOnly}
                                     variant="outlined"
-                                    startIcon={<RestartIcon />}
+                                    startIcon={<RotateCcw />}
                                     onClick={() => {
                                       this.setState({
                                         modalRestart: true,
@@ -364,7 +363,7 @@ class WorkflowForm extends React.Component {
                                   <>
                                     {role !== "EDIT" && (
                                       <Button
-                                        startIcon={<CancelIcon />}
+                                        startIcon={<X />}
                                         variant="outlined"
                                         sx={{ marginRight: 1 }}
                                         disabled={readOnly || workflows.isSubmitting}
@@ -433,7 +432,7 @@ class WorkflowForm extends React.Component {
                                         ) : (
                                           <Button
                                             variant="contained"
-                                            startIcon={<CancelIcon />}
+                                            startIcon={<X />}
                                             onClick={() => {
                                               this.props.rejectWorkflow(status[role].id).then(() => {
                                                 this.setState({
