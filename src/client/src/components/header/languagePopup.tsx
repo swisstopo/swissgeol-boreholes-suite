@@ -1,11 +1,9 @@
 import { Button, List, ListItem, ListItemIcon, ListItemText, Popover } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
 import { MouseEvent, useEffect, useState } from "react";
-import CheckIcon from "@mui/icons-material/Check";
-import ArrowDownIcon from "../../assets/icons/arrow_down.svg?react";
-import ArrowUpIcon from "../../assets/icons/arrow_up.svg?react";
 import i18n from "../../i18n";
 import { Language } from "../../appInterfaces";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 const defaultLanguage = Language.DE;
 
@@ -51,7 +49,7 @@ export function LanguagePopup() {
     <>
       <Button
         onClick={handleClick}
-        endIcon={anchorEl ? <ArrowUpIcon /> : <ArrowDownIcon />}
+        endIcon={anchorEl ? <ChevronUp /> : <ChevronDown />}
         sx={{
           width: "67px",
           fontSize: "14px",
@@ -89,7 +87,7 @@ export function LanguagePopup() {
               }}>
               {selectedLanguage === language && (
                 <ListItemIcon sx={{ minWidth: "20px" }}>
-                  <CheckIcon fontSize="small" sx={{ mr: 1 }} />
+                  <Check style={{ marginRight: "10px", width: "18px", height: "18px" }} />{" "}
                 </ListItemIcon>
               )}
               <ListItemText

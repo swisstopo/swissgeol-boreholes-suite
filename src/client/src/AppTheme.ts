@@ -1,5 +1,5 @@
 import { createTheme } from "@mui/material/styles";
-import ArrowDownIcon from "./assets/icons/arrow_down.svg?react";
+import { ChevronDown } from "lucide-react";
 
 export const theme = createTheme({
   palette: {
@@ -191,8 +191,30 @@ export const theme = createTheme({
                   borderColor: "#1F444F",
                 },
                 "&:disabled": {
+                  backgroundColor: "rgba(0,0,0,0)",
+                  borderColor: "#828E94",
+                },
+              },
+            },
+            {
+              props: { variant: "text", color: "primary" },
+              style: {
+                backgroundColor: "#FFFFFF",
+                color: "#337083",
+                "&:hover": {
+                  color: "#2F4356",
+                  backgroundColor: "#D6E2E6",
+                },
+                "&:focus-visible": {
+                  color: "#295969",
+                  backgroundColor: "#D6E2E6",
+                },
+                "&:active": {
+                  color: "#1F444F",
+                  backgroundColor: "#ADC6CD",
+                },
+                "&:disabled": {
                   backgroundColor: "#FFFFFF",
-                  borderColor: "#FFFFFF",
                 },
               },
             },
@@ -295,7 +317,7 @@ export const theme = createTheme({
     },
     MuiSelect: {
       defaultProps: {
-        IconComponent: ArrowDownIcon,
+        IconComponent: ChevronDown,
       },
     },
     MuiFormControl: {
@@ -356,6 +378,15 @@ export const theme = createTheme({
           paddingLeft: "3px",
           flex: 1,
           fontSize: "13px",
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontSize: "12px",
+          backgroundColor: "#1C2834",
+          color: "#ffffff",
         },
       },
     },

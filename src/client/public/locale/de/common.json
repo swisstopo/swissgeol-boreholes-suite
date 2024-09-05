@@ -85,6 +85,7 @@
   "csvFormatExplanation": "Das CSV-UTF8 File sollte die folgenden Spaltenüberschriften enthalten",
   "csvOptionalExplanation": "Spaltenüberschriften in eckigen Klammern sind optional",
   "cuttings": "Bohrgut (Bohrklein, Kern)",
+  "dataExtraction": "Datenextraktion",
   "date": "Datum",
   "dateAbandonmentCompletion": "Datum Stilllegung",
   "dateFinishCasing": "Datum Ausbau Ende",

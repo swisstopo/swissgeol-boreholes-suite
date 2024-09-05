@@ -1,8 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
-import ArrowDownIcon from "../../../assets/icons/arrow_down.svg?react";
-import ArrowUpIcon from "../../../assets/icons/arrow_up.svg?react";
-import TrashIcon from "../../../assets/icons/trash.svg?react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 import { useTranslation } from "react-i18next";
@@ -13,10 +10,10 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
 import { useSelector } from "react-redux";
+import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { TableContext } from "../tableContext.tsx";
 
 interface BottomBarProps {
-  toggleBottomDrawer: (open: boolean) => void;
-  bottomDrawerOpen: boolean;
   boreholes: Boreholes;
   selectionModel: GridRowSelectionModel;
   multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
@@ -28,8 +25,6 @@ interface BottomBarProps {
 }
 
 const BottomBar = ({
-  toggleBottomDrawer,
-  bottomDrawerOpen,
   selectionModel,
   multipleSelected,
   onDeleteMultiple,
@@ -41,6 +36,7 @@ const BottomBar = ({
 }: BottomBarProps) => {
   const { t } = useTranslation();
   const { showPrompt, promptIsOpen } = useContext(PromptContext);
+  const { bottomDrawerOpen, setBottomDrawerOpen } = useContext(TableContext);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
   const [currentWorkgroup, setCurrentWorkgroup] = useState<number | null>(null);
@@ -100,7 +96,7 @@ const BottomBar = ({
                 },
                 {
                   label: t("delete"),
-                  icon: <TrashIcon />,
+                  icon: <Trash2 />,
                   variant: "contained",
                   action: onDeleteMultiple,
                 },
@@ -118,10 +114,12 @@ const BottomBar = ({
       )}
       <Box sx={{ flex: 1 }}></Box>
       <Button
-        onClick={() => toggleBottomDrawer(!bottomDrawerOpen)}
+        variant="text"
+        color="secondary"
+        onClick={() => setBottomDrawerOpen(!bottomDrawerOpen)}
         data-cy="showTableButton"
         sx={{ fontWeight: "normal", fontSize: "14px" }}
-        endIcon={bottomDrawerOpen ? <ArrowDownIcon /> : <ArrowUpIcon />}>
+        endIcon={bottomDrawerOpen ? <ChevronDown /> : <ChevronUp />}>
         {bottomDrawerOpen ? t("hideTable") : t("showTable")}
       </Button>
     </Stack>

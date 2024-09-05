@@ -5,7 +5,7 @@ import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
 import { PromptContext } from "../prompt/promptContext.tsx";
 import { StackFullWidth } from "../styledComponents.ts";
 import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
-import TrashIcon from "../../assets/icons/trash.svg?react";
+import { Trash2 } from "lucide-react";
 
 export const DataDisplayCard = props => {
   const { item, deleteData, isEditable } = props;
@@ -29,7 +29,7 @@ export const DataDisplayCard = props => {
                 },
                 {
                   label: t("delete"),
-                  icon: <TrashIcon />,
+                  icon: <Trash2 />,
                   variant: "contained",
                   action: () => {
                     deleteData(item.id).then(() => {

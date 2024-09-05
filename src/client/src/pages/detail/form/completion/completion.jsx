@@ -17,7 +17,7 @@ import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import TrashIcon from "../../../../assets/icons/trash.svg?react";
+import { Trash2 } from "lucide-react";
 
 const Completion = props => {
   const { isEditable } = props;
@@ -222,7 +222,7 @@ const Completion = props => {
       },
       {
         label: t("delete"),
-        icon: <TrashIcon />,
+        icon: <Trash2 />,
         variant: "contained",
         action: onDeleteConfirmed,
       },
