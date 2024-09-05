@@ -54,6 +54,7 @@ export const theme = createTheme({
       dark: "rgba(0, 0, 0, 0.5)",
       menuItemActive: "#A65462",
       filterItemActive: "#1C2834",
+      listItemActive: "#DFE4E9",
     },
 
     border: "#E0E2E6",
@@ -139,7 +140,7 @@ export const theme = createTheme({
                 "&:focus-visible": {
                   backgroundColor: "#295969",
                 },
-                "&:active": {
+                "&:active, &.Mui-active": {
                   backgroundColor: "#1F444F",
                 },
                 "&:disabled": {
@@ -160,7 +161,7 @@ export const theme = createTheme({
                   color: "#295969",
                   backgroundColor: "#D6E2E6",
                 },
-                "&:active": {
+                "&:active, &.Mui-active": {
                   color: "#1F444F",
                   backgroundColor: "#ADC6CD",
                 },
@@ -185,7 +186,7 @@ export const theme = createTheme({
                   backgroundColor: "#D6E2E6",
                   borderColor: "#295969",
                 },
-                "&:active": {
+                "&:active, &.Mui-active": {
                   color: "#1F444F",
                   backgroundColor: "#ADC6CD",
                   borderColor: "#1F444F",
@@ -209,7 +210,7 @@ export const theme = createTheme({
                   color: "#295969",
                   backgroundColor: "#D6E2E6",
                 },
-                "&:active": {
+                "&:active, &.Mui-active": {
                   color: "#1F444F",
                   backgroundColor: "#ADC6CD",
                 },
@@ -231,7 +232,7 @@ export const theme = createTheme({
                   color: "#295969",
                   backgroundColor: "#D6E2E6",
                 },
-                "&:active": {
+                "&:active, &.Mui-active": {
                   color: "#1F444F",
                   backgroundColor: "#ADC6CD",
                 },
