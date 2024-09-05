@@ -84,32 +84,34 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
           icon={borehole?.data.workflow?.finished != null ? <CheckmarkIcon /> : <div />}
         />
       </Stack>
-      {editableByCurrentUser &&
-        (editingEnabled ? (
-          <>
-            <DeleteButton
-              label="deleteBorehole"
-              onClick={() =>
-                showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
-                  {
-                    label: t("cancel"),
-                  },
-                  {
-                    label: t("delete"),
-                    icon: <TrashIcon />,
-                    variant: "contained",
-                    action: () => {
-                      handleDelete();
+      <Stack direction="row" gap={2}>
+        {editableByCurrentUser &&
+          (editingEnabled ? (
+            <>
+              <DeleteButton
+                label="deleteBorehole"
+                onClick={() =>
+                  showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
+                    {
+                      label: t("cancel"),
                     },
-                  },
-                ])
-              }
-            />
-            <EndEditButton onClick={stopEditing} sx={{ marginLeft: "5px" }} />
-          </>
-        ) : (
-          <EditButton onClick={startEditing} />
-        ))}
+                    {
+                      label: t("delete"),
+                      icon: <TrashIcon />,
+                      variant: "contained",
+                      action: () => {
+                        handleDelete();
+                      },
+                    },
+                  ])
+                }
+              />
+              <EndEditButton onClick={stopEditing} />
+            </>
+          ) : (
+            <EditButton onClick={startEditing} />
+          ))}
+      </Stack>
     </Stack>
   );
 };

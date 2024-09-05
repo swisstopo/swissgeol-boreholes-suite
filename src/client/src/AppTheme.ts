@@ -125,43 +125,100 @@ export const theme = createTheme({
           "&:hover": {
             boxShadow: "none",
           },
-        },
-        contained: {
-          backgroundColor: "#337083",
-          "&:hover": {
-            backgroundColor: "#295969",
-          },
           "&:focus-visible": {
-            backgroundColor: "#295969",
             boxShadow: "0px 0px 0px 3px #8655F6",
           },
-          "&:active": {
-            backgroundColor: "#1F444F",
-          },
-          "&:disabled": {
-            backgroundColor: "#C1D3D9",
-          },
-        },
-        outlined: {
-          color: "#337083",
-          backgroundColor: "#FFFFFF",
-          "&:hover": {
-            color: "#295969",
-            backgroundColor: "#D6E2E6",
-          },
-          "&:focus-visible": {
-            color: "#295969",
-            backgroundColor: "#D6E2E6",
-            boxShadow: "0px 0px 0px 3px #8655F6",
-          },
-          "&:active": {
-            color: "#1F444F",
-            backgroundColor: "#ADC6CD",
-          },
-          "&:disabled": {
-            backgroundColor: "#FFFFFF",
-            color: "#C1D3D9",
-          },
+          variants: [
+            {
+              props: { variant: "contained", color: "primary" },
+              style: {
+                backgroundColor: "#337083",
+                "&:hover": {
+                  backgroundColor: "#295969",
+                },
+                "&:focus-visible": {
+                  backgroundColor: "#295969",
+                },
+                "&:active": {
+                  backgroundColor: "#1F444F",
+                },
+                "&:disabled": {
+                  backgroundColor: "#C1D3D9",
+                },
+              },
+            },
+            {
+              props: { variant: "outlined", color: "primary" },
+              style: {
+                color: "#337083",
+                backgroundColor: "#FFFFFF",
+                "&:hover": {
+                  color: "#295969",
+                  backgroundColor: "#D6E2E6",
+                },
+                "&:focus-visible": {
+                  color: "#295969",
+                  backgroundColor: "#D6E2E6",
+                },
+                "&:active": {
+                  color: "#1F444F",
+                  backgroundColor: "#ADC6CD",
+                },
+                "&:disabled": {
+                  backgroundColor: "#FFFFFF",
+                },
+              },
+            },
+            {
+              props: { variant: "outlined", color: "secondary" },
+              style: {
+                backgroundColor: "rgba(0,0,0,0)",
+                color: "#337083",
+                borderColor: "#337083",
+                "&:hover": {
+                  color: "#2F4356",
+                  backgroundColor: "#D6E2E6",
+                  borderColor: "#2F4356",
+                },
+                "&:focus-visible": {
+                  color: "#295969",
+                  backgroundColor: "#D6E2E6",
+                  borderColor: "#295969",
+                },
+                "&:active": {
+                  color: "#1F444F",
+                  backgroundColor: "#ADC6CD",
+                  borderColor: "#1F444F",
+                },
+                "&:disabled": {
+                  backgroundColor: "#FFFFFF",
+                  borderColor: "#FFFFFF",
+                },
+              },
+            },
+            {
+              props: { variant: "text", color: "secondary" },
+              style: {
+                backgroundColor: "rgba(0,0,0,0)",
+                color: "#337083",
+                "&:hover": {
+                  color: "#2F4356",
+                  backgroundColor: "#D6E2E6",
+                },
+                "&:focus-visible": {
+                  color: "#295969",
+                  backgroundColor: "#D6E2E6",
+                },
+                "&:active": {
+                  color: "#1F444F",
+                  backgroundColor: "#ADC6CD",
+                },
+                "&:disabled": {
+                  backgroundColor: "rgba(0,0,0,0)",
+                },
+              },
+            },
+          ],
         },
       },
     },

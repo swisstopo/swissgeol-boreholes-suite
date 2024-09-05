@@ -92,6 +92,7 @@ const BottomBar = ({
         <Stack direction="row" spacing={1} alignItems="center">
           <DeleteButton
             label="delete"
+            color="secondary"
             onClick={() =>
               showPrompt(t("deleteBoreholesMessage", { count: selectionModel.length }), [
                 {
@@ -106,7 +107,9 @@ const BottomBar = ({
               ])
             }
           />
-          {selectionModel.length === 1 && <CopyButton onClick={() => showCopyPromptForSelectedWorkgroup()} />}
+          {selectionModel.length === 1 && (
+            <CopyButton color="secondary" onClick={() => showCopyPromptForSelectedWorkgroup()} />
+          )}
           <BulkEditButton label={"bulkEditing"} onClick={bulkEditSelected} />
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
