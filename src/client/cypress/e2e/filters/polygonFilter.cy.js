@@ -1,7 +1,7 @@
 import { loginAsAdmin } from "../helpers/testHelpers.js";
 
 const buttonInactiveColor = "rgb(255, 255, 255)";
-const buttonActiveColor = "rgb(28, 40, 52)";
+const buttonActiveColor = "rgb(214, 226, 230)";
 
 function drawPolygon() {
   const canvas = cy.get("canvas");
