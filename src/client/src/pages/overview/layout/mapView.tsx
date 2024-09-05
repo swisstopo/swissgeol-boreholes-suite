@@ -71,20 +71,21 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       sx={{
         flex: "1 1.5 100%",
       }}>
-      <Modal
-        onUnmount={() => {
-          loadBoreholes(
-            boreholes.page,
-            boreholes.limit,
-            search.filter,
-            boreholes.orderby,
-            boreholes.direction,
-            featureIds,
-          );
-        }}
-        open={Array.isArray(editorStore.mselected)}>
+      <Modal open={Array.isArray(editorStore.mselected)}>
         <Modal.Content>
-          <MultipleForm selected={editorStore.mselected} />
+          <MultipleForm
+            loadBoreholes={() => {
+              loadBoreholes(
+                boreholes.page,
+                boreholes.limit,
+                search.filter,
+                boreholes.orderby,
+                boreholes.direction,
+                featureIds,
+              );
+            }}
+            selected={editorStore.mselected}
+          />
         </Modal.Content>
       </Modal>
       <MapComponent

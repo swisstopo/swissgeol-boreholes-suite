@@ -73,7 +73,7 @@ describe("Borehole editor table tests", () => {
     returnToOverview();
 
     // verify current page is still 4
-    showTableAndWaitForData();
+    waitForTableData();
     verifyPaginationText("401–500 of 1626");
     verifyRowContains("Nichole VonRueden", 0);
   });
