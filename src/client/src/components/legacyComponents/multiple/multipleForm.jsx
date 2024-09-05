@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { produce } from "immer";
-import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { FormControl, FormControlLabel, Radio, RadioGroup, Stack } from "@mui/material";
 import DomainDropdown from "../domain/dropdown/domainDropdown.jsx";
 import DomainTree from "../domain/tree/domainTree.jsx";
 import DateField from "../dateField.jsx";
@@ -387,10 +387,7 @@ class MultipleForm extends React.Component {
             {this.getDomain("chronostratigraphy_top_bedrock", "custom.chronostratigraphy_top_bedrock")}
           </Form>
         </div>
-        <div
-          style={{
-            textAlign: "right",
-          }}>
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
           <CancelButton
             onClick={() => {
               this.props.undo();
@@ -402,7 +399,7 @@ class MultipleForm extends React.Component {
               this.save();
             }}
           />
-        </div>
+        </Stack>
       </div>
     );
   }
