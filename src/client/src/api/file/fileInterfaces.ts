@@ -1,4 +1,6 @@
-import { Borehole } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { Borehole } from "../../api-lib/ReduxStateInterfaces.ts";
+
+export const maxFileSizeKB = 210_000_000;
 
 export interface File {
   id: number;

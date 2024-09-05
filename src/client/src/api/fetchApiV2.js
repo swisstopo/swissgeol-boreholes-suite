@@ -1,5 +1,5 @@
 import store from "../reducers";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getAuthorizationHeader } from "./authentication";
 
 /**
@@ -439,39 +439,6 @@ export const updateFieldMeasurement = async fieldmeasurement => {
 
 export const deleteFieldMeasurement = async id => {
   return await fetchApiV2(`fieldmeasurement?id=${id}`, "DELETE");
-};
-
-// Upload borehole attachment
-export const uploadBoreholeAttachment = async (boreholeId, attachment) => {
-  return await fetchApiV2(`boreholefile/upload?boreholeId=${boreholeId}`, "POST", attachment, true);
-};
-
-// Detach borehole attachment
-export const detachBoreholeAttachment = async (boreholeId, boreholeFileId) => {
-  return await fetchApiV2(`boreholefile/detachFile?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`, "POST");
-};
-
-// Get borehole attachment list
-export const getBoreholeAttachments = async boreholeId => {
-  return await fetchApiV2(`boreholefile/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
-};
-
-// Download borehole attachment
-export const downloadBoreholeAttachment = async boreholeFileId => {
-  return await fetchApiV2(`boreholefile/download?boreholeFileId=${boreholeFileId}`, "GET", null, false, true);
-};
-
-// Update borehole attachment
-export const updateBoreholeAttachment = async (boreholeId, fileId, description, isPublic) => {
-  return await fetchApiV2(
-    `boreholefile/update?boreholeId=${boreholeId}&boreholeFileId=${fileId}`,
-    "PUT",
-    {
-      description: description,
-      public: isPublic,
-    },
-    false,
-  );
 };
 
 export const getCompletions = async boreholeId => {

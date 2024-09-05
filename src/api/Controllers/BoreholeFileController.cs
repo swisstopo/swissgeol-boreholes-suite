@@ -42,8 +42,8 @@ public class BoreholeFileController : ControllerBase
 
         try
         {
-            await boreholeFileUploadService.UploadFileAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
-            return Ok();
+            var boreholeFile = await boreholeFileUploadService.UploadFileAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
+            return Ok(boreholeFile);
         }
         catch (InvalidOperationException ex)
         {
