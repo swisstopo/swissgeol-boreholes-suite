@@ -95,6 +95,7 @@ declare module "@mui/material/styles" {
     MuiBadge: object;
     MuiDialogContentText: object;
     MuiTableCell: object;
+    MuiTooltip: object;
   }
 
   interface AppThemeComponentsOptions extends ComponentsOptions {
@@ -109,6 +110,7 @@ declare module "@mui/material/styles" {
     MuiBadge: object;
     MuiDialogContentText: object;
     MuiTableCell: object;
+    MuiTooltip: object;
   }
 
   interface AppTheme extends Theme {

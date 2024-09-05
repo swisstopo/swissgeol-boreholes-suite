@@ -84,6 +84,7 @@
   "csvFormatExplanation": "The CSV-UTF8 file should contain the following column headings",
   "csvOptionalExplanation": "Column headings in square brackets are optional",
   "cuttings": "Borehole cuttings / core",
+  "dataExtraction": "Data extraction",
   "date": "Date",
   "dateAbandonmentCompletion": "Abandonment date",
   "dateFinishCasing": "Completion date: end",
