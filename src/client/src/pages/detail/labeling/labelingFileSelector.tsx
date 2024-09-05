@@ -69,12 +69,12 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
             e.preventDefault();
             e.dataTransfer.dropEffect = "none";
           }}>
-          <Typography variant="h6" sx={{ fontWeight: "700", marginLeft: "5px" }}>
+          <Typography variant="h6" sx={{ fontWeight: "700" }}>
             {t("existingFiles")}
           </Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {isLoadingFiles ? (
-              <Box sx={{ marginLeft: "5px", display: "flex", flexDirection: "row", justifyContent: "center" }}>
+              <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
                 <CircularProgress />
               </Box>
             ) : files && files.length > 0 ? (
@@ -92,12 +92,10 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
                 </Button>
               ))
             ) : (
-              <Typography variant="body1" sx={{ marginLeft: "5px" }}>
-                {t("noFiles")}
-              </Typography>
+              <Typography variant="body1">{t("noFiles")}</Typography>
             )}
           </Box>
-          <Divider sx={{ marginLeft: "5px" }} />
+          <Divider />
           <AddButton variant="contained" label="addFile" onClick={() => fileInputRef.current?.click()} />
         </Box>
       </Box>
