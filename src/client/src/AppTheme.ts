@@ -197,6 +197,28 @@ export const theme = createTheme({
               },
             },
             {
+              props: { variant: "text", color: "primary" },
+              style: {
+                backgroundColor: "#FFFFFF",
+                color: "#337083",
+                "&:hover": {
+                  color: "#2F4356",
+                  backgroundColor: "#D6E2E6",
+                },
+                "&:focus-visible": {
+                  color: "#295969",
+                  backgroundColor: "#D6E2E6",
+                },
+                "&:active": {
+                  color: "#1F444F",
+                  backgroundColor: "#ADC6CD",
+                },
+                "&:disabled": {
+                  backgroundColor: "#FFFFFF",
+                },
+              },
+            },
+            {
               props: { variant: "text", color: "secondary" },
               style: {
                 backgroundColor: "rgba(0,0,0,0)",

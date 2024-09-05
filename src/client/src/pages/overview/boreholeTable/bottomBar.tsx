@@ -118,6 +118,8 @@ const BottomBar = ({
       )}
       <Box sx={{ flex: 1 }}></Box>
       <Button
+        variant="text"
+        color="secondary"
         onClick={() => toggleBottomDrawer(!bottomDrawerOpen)}
         data-cy="showTableButton"
         sx={{ fontWeight: "normal", fontSize: "14px" }}
