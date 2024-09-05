@@ -11,7 +11,7 @@ import DateField from "../dateField.jsx";
 import TranslationText from "../translationText.jsx";
 import { Button, Form, Header, Input } from "semantic-ui-react";
 import { patchBoreholes } from "../../../api-lib/index.js";
-import { CancelButton, SavePrimaryButton } from "../../buttons/buttons";
+import { CancelButton, SaveButton } from "../../buttons/buttons";
 
 class MultipleForm extends React.Component {
   constructor(props) {
@@ -394,11 +394,14 @@ class MultipleForm extends React.Component {
           <CancelButton
             onClick={() => {
               this.props.undo();
-            }}></CancelButton>
-          <SavePrimaryButton
+            }}
+          />
+          <SaveButton
+            variant="contained"
             onClick={() => {
               this.save();
-            }}></SavePrimaryButton>
+            }}
+          />
         </div>
       </div>
     );

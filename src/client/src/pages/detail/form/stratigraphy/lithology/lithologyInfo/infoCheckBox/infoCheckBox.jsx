@@ -1,12 +1,16 @@
 import * as Styled from "./styles.js";
-import { Checkbox, Popup } from "semantic-ui-react";
+import { Checkbox } from "semantic-ui-react";
 import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2.js";
 import { useTranslation } from "react-i18next";
 import { CopyButton, DeleteButton } from "../../../../../../../components/buttons/buttons";
+import { PromptContext } from "../../../../../../../components/prompt/promptContext";
+import { useContext } from "react";
+import TrashIcon from "../../../../../../../assets/icons/trash.svg?react";
 
 const InfoCheckBox = props => {
   const { profileInfo, updateChange, isEditable, onUpdated } = props.data;
   const { t } = useTranslation();
+  const { showPrompt } = useContext(PromptContext);
 
   return (
     <Styled.CheckBoxContainer>
@@ -31,18 +35,28 @@ const InfoCheckBox = props => {
                 onUpdated("cloneStratigraphy");
               });
             }}></CopyButton>
-          <Popup flowing hoverable on="click" position="right center" trigger={<DeleteButton label="delete" />}>
-            {t("deleteForever")}?
-            <br />
-            <DeleteButton
-              label="delete"
-              onClick={() => {
-                deleteStratigraphy(profileInfo?.id).then(() => {
-                  onUpdated("deleteStratigraphy");
-                });
-              }}
-            />
-          </Popup>
+          <DeleteButton
+            label="delete"
+            onClick={() => {
+              showPrompt(t("deleteMessage"), [
+                {
+                  label: t("cancel"),
+                  action: null,
+                },
+                {
+                  label: t("delete"),
+                  icon: <TrashIcon />,
+                  variant: "contained",
+                  action: () => {
+                    deleteStratigraphy(profileInfo?.id).then(() => {
+                      onUpdated("deleteStratigraphy");
+                    });
+                  },
+                },
+              ]);
+            }}
+            sx={{ marginLeft: "5px" }}
+          />
         </div>
       )}
     </Styled.CheckBoxContainer>

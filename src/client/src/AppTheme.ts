@@ -303,5 +303,14 @@ export const theme = createTheme({
         },
       },
     },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontSize: "12px",
+          backgroundColor: "#1C2834",
+          color: "#ffffff",
+        },
+      },
+    },
   },
 });
