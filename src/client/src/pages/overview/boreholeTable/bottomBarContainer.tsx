@@ -38,7 +38,7 @@ const BottomBarContainer = ({
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const history = useHistory();
   const { featureIds } = useContext(FilterContext);
-  const { bottomDrawerOpen, setBottomDrawerOpen } = useContext(TableContext);
+  const { bottomDrawerOpen } = useContext(TableContext);
   const [workgroupId, setWorkgroupId] = useState<number | null>(user.data.workgroups[0]?.id);
   const [isBusy, setIsBusy] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
@@ -83,10 +83,6 @@ const BottomBarContainer = ({
       reloadBoreholes();
     });
     setIsBusy(false);
-  };
-
-  const toggleBottomDrawer = () => {
-    setBottomDrawerOpen(!bottomDrawerOpen);
   };
 
   return (
