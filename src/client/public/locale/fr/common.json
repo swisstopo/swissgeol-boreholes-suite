@@ -84,6 +84,7 @@
   "csvFormatExplanation": "Le fichier CSV-UTF8 doit contenir les en-têtes de colonne suivants",
   "csvOptionalExplanation": "Les titres de colonnes entre crochets sont facultatifs",
   "cuttings": "Déblais de forage (cuttings / carotte)",
+  "dataExtraction": "Extraction de données",
   "date": "Date",
   "dateAbandonmentCompletion": "Date de l'abandon",
   "dateFinishCasing": "Date de fin de l'aménagement",
