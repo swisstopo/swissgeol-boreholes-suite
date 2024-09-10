@@ -24,20 +24,12 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
       if (fileRejections.length > 0) {
         const errorCode = fileRejections[0].errors[0].code;
-        switch (errorCode) {
-          case "file-invalid-type":
-            showAlert(t("fileInvalidType"), "error");
-            break;
-          case "too-many-files":
-            showAlert(t("fileTooMany"), "error");
-            break;
-          case "file-too-large":
-            showAlert(t("fileMaxSizeExceeded"), "error");
-            break;
-          default:
-            showAlert(fileRejections[0].errors[0].message, "error");
-            break;
-        }
+        const errorMessages: { [key: string]: string } = {
+          "file-invalid-type": t("fileInvalidType"),
+          "too-many-files": t("fileTooMany"),
+          "file-too-large": t("fileMaxSizeExceeded"),
+        };
+        showAlert(errorMessages[errorCode] || fileRejections[0].errors[0].message, "error");
       } else {
         addFile(acceptedFiles[0]);
       }
@@ -49,16 +41,14 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
     onDrop,
     maxFiles: 1,
     maxSize: maxFileSizeKB,
-    accept: {
-      [labelingFileFormat]: [],
-    },
+    accept: { [labelingFileFormat]: [] },
     noDrag: false,
     noClick: true,
   });
 
   return (
     <Box
-      style={{ padding: "84px 50px", height: "100%", width: "100%", cursor: "pointer" }}
+      sx={{ padding: "84px 50px", height: "100%", width: "100%", cursor: "pointer" }}
       {...getRootProps()}
       onDragOver={e => {
         e.stopPropagation();
