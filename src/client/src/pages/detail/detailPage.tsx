@@ -25,12 +25,18 @@ export const DetailPage: FC = () => {
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
 
-  // Fetch to be mocked in cypress test to show labeling area.
-  try {
-    fetch("api/show-labeling-in-cypress-test").then(response => setShowLabeling(response.status === 200));
-  } catch {
-    /* fetch will fail outside of test environment so state should not be updated */
-  }
+  useEffect(() => {
+    // Fetch to be mocked in cypress test to show labeling area.
+    const checkLabelingVisibility = async () => {
+      try {
+        const response = await fetch("api/show-labeling-in-cypress-test");
+        setShowLabeling(response.status === 200);
+      } catch {
+        /* fetch will fail outside of test environment so state should not be updated */
+      }
+    };
+    checkLabelingVisibility().catch();
+  }, []);
 
   useEffect(() => {
     setEditingEnabled(borehole.data.lock !== null);
