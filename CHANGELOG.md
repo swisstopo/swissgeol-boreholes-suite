@@ -48,6 +48,7 @@
 - Boreholes table loaded all boreholes instead of none when a filter combination with polygon was used that did not return any boreholes.
 - Boreholes table reset scroll position when hovering over a row.
 - When returning to the boreholes table from another page, the last scroll position was lost.
+- Status filter labels were not displayed correctly.
 
 ## v2.1.772 - 2024-06-27
 
