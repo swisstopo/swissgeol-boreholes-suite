@@ -107,7 +107,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
                     event.stopPropagation();
                     setSelectedFile(file);
                   }}>
-                  {file.name}
+                  <Box sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.name}</Box>
                 </Button>
               ))
             ) : (
