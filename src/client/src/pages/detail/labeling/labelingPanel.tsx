@@ -1,4 +1,4 @@
-import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
 import { File as FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -98,14 +98,13 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
       </ToggleButtonGroup>
       {selectedFile ? (
         <Box sx={{ height: "100%", width: "100%", position: "relative" }}>
-          <Box
+          <Stack
+            direction="row"
             sx={{
               position: "absolute",
               top: "10px",
               left: "10px",
               zIndex: "500",
-              display: "flex",
-              flexDirection: "row",
               gap: 1,
             }}>
             <ButtonSelect
@@ -124,7 +123,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                 }
               }}
             />
-          </Box>
+          </Stack>
         </Box>
       ) : (
         <LabelingFileSelector

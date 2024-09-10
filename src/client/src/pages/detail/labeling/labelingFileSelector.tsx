@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Divider, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { File as FileIcon } from "lucide-react";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
@@ -47,10 +47,8 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
         e.dataTransfer.dropEffect = "copy";
       }}>
       <input {...getInputProps()} data-cy="labeling-file-dropzone" ref={fileInputRef} />
-      <Box
+      <Stack
         sx={{
-          display: "flex",
-          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           height: "100%",
@@ -58,15 +56,13 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
           border: "2px solid transparent",
           borderImage: "repeating-linear-gradient(45deg, #ffffff, #ffffff 10px, transparent 10px, transparent 20px) 1",
         }}>
-        <Box
+        <Stack
           sx={{
             backgroundColor: "#ffffff",
             padding: 2,
             width: "292px",
             borderRadius: "4px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
+            gap: 2,
           }}
           onDragOver={e => {
             e.stopPropagation();
@@ -76,11 +72,11 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
           <Typography variant="h6" sx={{ fontWeight: "700" }}>
             {t("existingFiles")}
           </Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <Stack gap={1}>
             {isLoadingFiles ? (
-              <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+              <Stack direction="row" sx={{ justifyContent: "center" }}>
                 <CircularProgress />
-              </Box>
+              </Stack>
             ) : files && files.length > 0 ? (
               files.map((file: FileInterface) => (
                 <Button
@@ -98,11 +94,11 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
             ) : (
               <Typography variant="body1">{t("noFiles")}</Typography>
             )}
-          </Box>
+          </Stack>
           <Divider />
           <AddButton variant="contained" label="addFile" onClick={() => fileInputRef.current?.click()} />
-        </Box>
-      </Box>
+        </Stack>
+      </Stack>
     </Box>
   );
 };
