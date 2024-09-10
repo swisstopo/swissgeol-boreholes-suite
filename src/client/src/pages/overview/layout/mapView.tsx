@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import { Modal } from "semantic-ui-react";
 import { loadEditingBoreholes } from "../../../api-lib";
 import MapComponent from "../../../components/map/mapComponent.jsx";
-import MultipleForm from "../../../components/legacyComponents/multiple/multipleForm.jsx";
+import { BulkEditForm } from "../../../components/legacyComponents/multiple/bulkEditForm.jsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
@@ -75,7 +75,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       }}>
       <Modal open={Array.isArray(editorStore.mselected)}>
         <Modal.Content>
-          <MultipleForm
+          <BulkEditForm
             loadBoreholes={() => {
               loadBoreholes(
                 boreholes.page,
