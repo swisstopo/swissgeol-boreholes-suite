@@ -87,7 +87,8 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
             e.stopPropagation();
             e.preventDefault();
             e.dataTransfer.dropEffect = "none";
-          }}>
+          }}
+          data-cy="labeling-file-selector">
           <Typography variant="h6" sx={{ fontWeight: "700" }}>
             {t("existingFiles")}
           </Typography>

@@ -63,7 +63,8 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
         onClose={handleClose}
         sx={{ marginTop: "5px" }}
         anchorOrigin={anchorOrigin ?? { vertical: "bottom", horizontal: "left" }}
-        transformOrigin={transformOrigin ?? { vertical: "top", horizontal: "left" }}>
+        transformOrigin={transformOrigin ?? { vertical: "top", horizontal: "left" }}
+        data-cy="button-select-popover">
         <List sx={{ padding: 0 }}>
           {items.map(item => (
             <ListItem

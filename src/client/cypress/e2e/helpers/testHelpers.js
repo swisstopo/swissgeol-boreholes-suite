@@ -96,6 +96,8 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/boreholegeometry?boreholeId=**", req => {
     return (req.alias = `boreholegeometry_${req.method}`);
   });
+
+  cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("get-borehole-files");
 };
 
 /**
