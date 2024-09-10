@@ -78,9 +78,10 @@ describe("Test labeling tool", () => {
     isFileActive("borehole_attachment_1.pdf", false);
     isFileActive("borehole_attachment_3.pdf", true);
 
+    const crypto = window.crypto || window.msCrypto;
     cy.get("input[type=file]").selectFile(
       {
-        contents: Cypress.Buffer.from(Math.random().toString()),
+        contents: Cypress.Buffer.from(crypto.getRandomValues(new Uint32Array(1)).toString()),
         fileName: "WOLFHEART.pdf",
         mimeType: "application/pdf",
       },
