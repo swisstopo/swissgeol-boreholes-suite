@@ -185,6 +185,7 @@
   "fieldMeasurement": "Feldmessung",
   "fieldMeasurementResult": "Resultate der Feldmessung",
   "fieldMeasurementSampleType": "Beprobungstyp",
+  "fileInvalidType": "Dateityp nicht unterstützt",
   "fileMaxSizeExceeded": "Maximalen Dateigröße von 200 MB überschritten",
   "fileTooMany": "Zu viele Dateien ausgewählt",
   "filterByHierarchicalUnits": "Nach hierarchischen Einheiten filtern",

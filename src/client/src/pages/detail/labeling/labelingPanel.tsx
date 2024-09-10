@@ -1,9 +1,9 @@
 import { Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
+import { labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
 import { File as FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
-import { File as FileInterface, FileResponse } from "../../../api/file/fileInterfaces.ts";
+import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
 import { getFiles, uploadFile } from "../../../api/file/file.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
@@ -27,7 +27,11 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     if (boreholeId) {
       setIsLoadingFiles(true);
       getFiles<FileResponse>(boreholeId).then(response =>
-        setFiles(response.map((fileResponse: FileResponse) => fileResponse.file)),
+        setFiles(
+          response
+            .filter((fileResponse: FileResponse) => fileResponse.file.type === labelingFileFormat)
+            .map((fileResponse: FileResponse) => fileResponse.file),
+        ),
       );
     }
     setIsLoadingFiles(false);
@@ -70,10 +74,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         type="file"
         ref={fileInputRef}
         style={{ display: "none" }}
+        accept={labelingFileFormat}
         onChange={event => {
           const file = event.target.files?.[0];
           if (file) {
-            addFile(file);
+            if (file.size >= maxFileSizeKB) {
+              showAlert(t("fileMaxSizeExceeded"), "error");
+            } else if (file.type !== labelingFileFormat) {
+              showAlert(t("fileInvalidType"), "error");
+            } else {
+              addFile(file);
+            }
           }
         }}
       />

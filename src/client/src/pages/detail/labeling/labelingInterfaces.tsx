@@ -10,4 +10,6 @@ export interface LabelingContextInterface {
   togglePanel: (isOpen?: boolean) => void;
 }
 
+export const labelingFileFormat = "application/pdf";
+
 export const useLabelingContext = () => useContext(LabelingContext);

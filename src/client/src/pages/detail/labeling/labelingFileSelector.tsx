@@ -6,6 +6,7 @@ import { FC, useCallback, useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
+import { labelingFileFormat } from "./labelingInterfaces.tsx";
 
 interface LabelingFileSelectorProps {
   isLoadingFiles: boolean;
@@ -24,6 +25,9 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
       if (fileRejections.length > 0) {
         const errorCode = fileRejections[0].errors[0].code;
         switch (errorCode) {
+          case "file-invalid-type":
+            showAlert(t("fileInvalidType"), "error");
+            break;
           case "too-many-files":
             showAlert(t("fileTooMany"), "error");
             break;
@@ -38,13 +42,16 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
         addFile(acceptedFiles[0]);
       }
     },
-    [addFile],
+    [addFile, showAlert, t],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxFiles: 1,
     maxSize: maxFileSizeKB,
+    accept: {
+      [labelingFileFormat]: [],
+    },
     noDrag: false,
     noClick: true,
   });

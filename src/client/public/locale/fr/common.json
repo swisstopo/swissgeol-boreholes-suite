@@ -185,6 +185,7 @@
   "fieldMeasurement": "Mesure de terrain",
   "fieldMeasurementResult": "Résultats de la mesure de terrain",
   "fieldMeasurementSampleType": "Type d'échantillonnage",
+  "fileInvalidType": "Type de fichier invalide",
   "fileMaxSizeExceeded": "Dépassement de la taille maximale du fichier 200 MB",
   "fileTooMany": "Trop de fichiers sélectionnés en même temps",
   "filterByHierarchicalUnits": "Filtrer par unités hiérarchiques",
