@@ -19,7 +19,7 @@ import { TablePaginationActions } from "./TablePaginationActions.tsx";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useSelector } from "react-redux";
 import { muiLocales } from "../../../mui.locales.ts";
-import { TableContext } from "../tableContext.tsx";
+import { OverViewContext } from "../overViewContext.tsx";
 import { LockKeyhole } from "lucide-react";
 
 export interface BoreholeTableProps {
@@ -52,7 +52,8 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const domains = useDomains();
   const apiRef = useGridApiRef();
   const firstRender = useRef(true);
-  const { tableScrollPosition, setTableScrollPosition } = useContext(TableContext);
+  const { tableScrollPosition, setTableScrollPosition } = useContext(OverViewContext);
+  const hasLoaded = useRef(false);
   const rowCountRef = useRef(boreholes?.length || 0);
   const scrollPositionRef = useRef(tableScrollPosition);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
@@ -198,15 +199,21 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 
   // Restore table scroll position
   const isLoading = boreholes.isFetching || isBusy;
+
   useEffect(() => {
-    if (apiRef.current && !isLoading) {
-      // Workaround to restore scroll position see #https://github.com/mui/mui-x/issues/5071
-      if (firstRender.current) {
-        setTimeout(() => {
-          apiRef.current.scroll(tableScrollPosition);
-          firstRender.current = false;
-        }, 1000);
-      }
+    if (!apiRef.current) return;
+
+    if (isLoading) {
+      hasLoaded.current = true;
+      return;
+    }
+
+    // Workaround to restore scroll position see #https://github.com/mui/mui-x/issues/5071 and https://github.com/mui/mui-x/issues/4674
+    if (firstRender.current && hasLoaded.current) {
+      requestIdleCallback(() => {
+        apiRef.current.scroll(tableScrollPosition);
+        firstRender.current = false;
+      });
     }
   }, [apiRef, isLoading, tableScrollPosition]);
 

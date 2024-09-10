@@ -33,6 +33,7 @@
 - Removed `supplier_wgp` column from `workgroup` table.
 - Fixed typo in `consistency` codelist.
 - Updated the style of various buttons.
+- Map zoom level and center are now preserved when returning to the main map.
 
 ### Fixed
 
@@ -48,6 +49,7 @@
 - Boreholes table loaded all boreholes instead of none when a filter combination with polygon was used that did not return any boreholes.
 - Boreholes table reset scroll position when hovering over a row.
 - When returning to the boreholes table from another page, the last scroll position was lost.
+- Status filter labels were not displayed correctly.
 
 ## v2.1.772 - 2024-06-27
 

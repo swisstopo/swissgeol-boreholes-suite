@@ -5,6 +5,11 @@ import { startEditing, stopEditing } from "./buttonHelpers.js";
 
 export const bearerAuth = token => ({ bearer: token });
 
+export const interceptShowLabelingCall = () => {
+  cy.intercept("GET", "api/show-labeling-in-cypress-test", {
+    statusCode: 200,
+  }).as("show-labeling");
+};
 export const interceptApiCalls = () => {
   // Api V1
   cy.intercept("/api/v1/borehole").as("borehole");
