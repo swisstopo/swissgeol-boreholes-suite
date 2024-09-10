@@ -19,11 +19,24 @@ interface DetailPageContentProps {
 export const DetailPage: FC = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
+  const [showLabeling, setShowLabeling] = useState(false);
   const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
-  const showLabeling = false;
+
+  useEffect(() => {
+    // Fetch to be mocked in cypress test to show labeling area.
+    const checkLabelingVisibility = async () => {
+      try {
+        const response = await fetch("api/show-labeling-in-cypress-test");
+        setShowLabeling(response.status === 200);
+      } catch {
+        /* fetch will fail outside of test environment so state should not be updated */
+      }
+    };
+    checkLabelingVisibility().catch();
+  }, []);
 
   useEffect(() => {
     setEditingEnabled(borehole.data.lock !== null);

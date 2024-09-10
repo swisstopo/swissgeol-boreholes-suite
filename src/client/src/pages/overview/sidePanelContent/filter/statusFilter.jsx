@@ -52,7 +52,7 @@ class StatusFilter extends Component {
                 color: "black",
                 fontSize: "1.1em",
               }}>
-              {capitalizeFirstLetter(t({ role }))}
+              {capitalizeFirstLetter(t(role))}
             </span>
           </Form.Field>
         ))}
