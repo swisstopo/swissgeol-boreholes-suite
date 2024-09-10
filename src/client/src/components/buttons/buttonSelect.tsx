@@ -80,7 +80,7 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
                 "&:hover": { backgroundColor: theme.palette.background.listItemActive },
               }}>
               <ListItemIcon sx={{ minWidth: "20px" }}>
-                {selectedItem.key === item.key ? <Check /> : item.startIcon && item.startIcon}
+                {selectedItem.key === item.key ? <Check /> : item.startIcon}
               </ListItemIcon>
               <ListItemText
                 sx={{
