@@ -2,9 +2,10 @@ import { Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/
 import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { File as FileIcon } from "lucide-react";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
-import { FC, useCallback, useRef } from "react";
+import { FC, useCallback, useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { FileRejection, useDropzone } from "react-dropzone";
+import { AlertContext } from "../../../components/alert/alertContext.tsx";
 
 interface LabelingFileSelectorProps {
   isLoadingFiles: boolean;
@@ -16,12 +17,23 @@ interface LabelingFileSelectorProps {
 const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, files, setSelectedFile, addFile }) => {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { showAlert } = useContext(AlertContext);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
       if (fileRejections.length > 0) {
-        // TODO: Show error somewhere
-        console.error(fileRejections[0].errors[0].message);
+        const errorCode = fileRejections[0].errors[0].code;
+        switch (errorCode) {
+          case "too-many-files":
+            showAlert(t("fileTooMany"), "error");
+            break;
+          case "file-too-large":
+            showAlert(t("fileMaxSizeExceeded"), "error");
+            break;
+          default:
+            showAlert(fileRejections[0].errors[0].message, "error");
+            break;
+        }
       } else {
         addFile(acceptedFiles[0]);
       }

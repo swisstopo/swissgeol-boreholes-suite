@@ -18,7 +18,7 @@ export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
       return (await response.json()) as FileResponse;
     }
   } else {
-    throw new ApiError("maxfileSizeExceeded", 500);
+    throw new ApiError("fileMaxSizeExceeded", 500);
   }
 }
 
