@@ -9,7 +9,7 @@ import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { deleteBoreholes } from "../../../api-lib";
 import { copyBorehole } from "../../../api/fetchApiV2";
 import { useSelector } from "react-redux";
-import { TableContext } from "../tableContext.tsx";
+import { OverViewContext } from "../overViewContext.tsx";
 
 interface BottomBarContainerProps {
   boreholes: Boreholes;
@@ -38,7 +38,7 @@ const BottomBarContainer = ({
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const history = useHistory();
   const { featureIds } = useContext(FilterContext);
-  const { bottomDrawerOpen } = useContext(TableContext);
+  const { bottomDrawerOpen } = useContext(OverViewContext);
   const [workgroupId, setWorkgroupId] = useState<number | null>(user.data.workgroups[0]?.id);
   const [isBusy, setIsBusy] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
@@ -64,7 +64,7 @@ const BottomBarContainer = ({
     );
   }, [paginationModel, search, sortModel, loadEditingBoreholes, featureIds]);
 
-  // Layouteffect prevents cached table data to appear before reload
+  // LayoutEffect prevents cached table data to appear before reload
   useLayoutEffect(() => {
     reloadBoreholes();
   }, [reloadBoreholes]);

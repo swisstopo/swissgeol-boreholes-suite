@@ -19,7 +19,7 @@ import { TablePaginationActions } from "./TablePaginationActions.tsx";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useSelector } from "react-redux";
 import { muiLocales } from "../../../mui.locales.ts";
-import { TableContext } from "../tableContext.tsx";
+import { OverViewContext } from "../overViewContext.tsx";
 import { LockKeyhole } from "lucide-react";
 
 export interface BoreholeTableProps {
@@ -52,8 +52,8 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const domains = useDomains();
   const apiRef = useGridApiRef();
   const firstRender = useRef(true);
+  const { tableScrollPosition, setTableScrollPosition } = useContext(OverViewContext);
   const hasLoaded = useRef(false);
-  const { tableScrollPosition, setTableScrollPosition } = useContext(TableContext);
   const rowCountRef = useRef(boreholes?.length || 0);
   const scrollPositionRef = useRef(tableScrollPosition);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);

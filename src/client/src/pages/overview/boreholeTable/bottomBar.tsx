@@ -11,7 +11,7 @@ import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
 import { useSelector } from "react-redux";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
-import { TableContext } from "../tableContext.tsx";
+import { OverViewContext } from "../overViewContext.tsx";
 
 interface BottomBarProps {
   boreholes: Boreholes;
@@ -36,7 +36,7 @@ const BottomBar = ({
 }: BottomBarProps) => {
   const { t } = useTranslation();
   const { showPrompt, promptIsOpen } = useContext(PromptContext);
-  const { bottomDrawerOpen, setBottomDrawerOpen } = useContext(TableContext);
+  const { bottomDrawerOpen, setBottomDrawerOpen } = useContext(OverViewContext);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
   const [currentWorkgroup, setCurrentWorkgroup] = useState<number | null>(null);

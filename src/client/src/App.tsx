@@ -20,7 +20,7 @@ import HeaderComponent from "./components/header/headerComponent.tsx";
 import { AppBox } from "./components/styledComponents.ts";
 import { DetailPage } from "./pages/detail/detailPage.tsx";
 import { LabelingProvider } from "./pages/detail/labeling/labelingContext.tsx";
-import { TableProvider } from "./pages/overview/tableContext.tsx";
+import { OverviewProvider } from "./pages/overview/overViewContext.tsx";
 
 const queryClient = new QueryClient();
 
@@ -60,7 +60,7 @@ class App extends React.Component {
                 <DataCardProvider>
                   <BasemapProvider>
                     <FilterProvider>
-                      <TableProvider>
+                      <OverviewProvider>
                         <QueryClientProvider client={queryClient}>
                           <AppBox>
                             <HeaderComponent />
@@ -99,7 +99,7 @@ class App extends React.Component {
                           </AppBox>
                           <ReactQueryDevtools />
                         </QueryClientProvider>
-                      </TableProvider>
+                      </OverviewProvider>
                     </FilterProvider>
                   </BasemapProvider>
                 </DataCardProvider>
