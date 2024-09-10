@@ -1,7 +1,13 @@
-import { newUneditableBorehole, startBoreholeEditing, stopBoreholeEditing } from "../helpers/testHelpers.js";
+import {
+  interceptShowLabelingCall,
+  newUneditableBorehole,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers.js";
 
-describe.skip("Test labeling tool", () => {
+describe("Test labeling tool", () => {
   it("can show labeling panel", () => {
+    interceptShowLabelingCall();
     newUneditableBorehole().as("borehole_id");
     // only show in editing mode
     cy.get('[data-cy="labeling-toggle-button"]').should("not.exist");
