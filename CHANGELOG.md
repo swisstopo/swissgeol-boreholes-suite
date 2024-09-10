@@ -33,6 +33,7 @@
 - Removed `supplier_wgp` column from `workgroup` table.
 - Fixed typo in `consistency` codelist.
 - Updated the style of various buttons.
+- Map zoom level and center are now preserved when returning to the main map.
 
 ### Fixed
 

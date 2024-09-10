@@ -313,6 +313,7 @@ class MapComponent extends React.Component {
     });
 
     updateBasemap(this.map, this.context.currentBasemapName);
+    // Attach map object to window to make it accessible for E2E testing
     window.olMap = this.map;
   }
 
