@@ -194,7 +194,7 @@ public class BoreholeFileUploadService
 
             var url = await s3Client.GetPreSignedURLAsync(request).ConfigureAwait(false);
 
-            var tempFile = Path.GetTempFileName();
+            var tempFile = Path.GetRandomFileName();
             try
             {
                 using (var s3Stream = await s3Client.GetObjectStreamAsync(bucketName, key, null).ConfigureAwait(false))
