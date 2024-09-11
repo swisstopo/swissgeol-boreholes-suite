@@ -1,5 +1,5 @@
 import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
-import { fetchApiV2, fetchApiV2Base } from "../fetchApiV2";
+import { download, fetchApiV2, upload } from "../fetchApiV2";
 import { ApiError } from "../apiInterfaces.ts";
 
 export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
@@ -7,7 +7,7 @@ export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetchApiV2Base(`boreholefile/upload?boreholeId=${boreholeId}`, "POST", formData);
+    const response = await upload(`boreholefile/upload?boreholeId=${boreholeId}`, "POST", formData);
     if (!response.ok) {
       if (response.status === 400) {
         throw new ApiError("errorDuplicatedUploadPerBorehole", response.status);
@@ -36,21 +36,7 @@ export async function getFiles<FileResponse>(boreholeId: number): Promise<FileRe
 }
 
 export const downloadFile = async (boreholeFileId: number) => {
-  const response = await fetchApiV2Base(`boreholefile/download?boreholeFileId=${boreholeFileId}`, "GET");
-  if (!response.ok) {
-    throw new ApiError(response.statusText, response.status);
-  }
-
-  const fileName =
-    response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? "export.pdf";
-  const blob = await response.blob();
-  const downLoadUrl = window.URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = downLoadUrl;
-  link.setAttribute("download", fileName);
-  document.body.appendChild(link);
-  link.click();
-  return response;
+  return await download(`boreholefile/download?boreholeFileId=${boreholeFileId}`);
 };
 
 export const updateFile = async (
