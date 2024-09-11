@@ -133,6 +133,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                   setSelectedFile(files?.find(file => file.id === item.key));
                 }
               }}
+              sx={{ height: "44px" }}
             />
           </Stack>
         </Box>
