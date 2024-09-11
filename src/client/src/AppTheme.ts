@@ -307,6 +307,10 @@ export const theme = createTheme({
             borderRadius: "4px",
             padding: "8px",
             margin: "4px 0 4px 4px",
+
+            "&.Mui-disabled": {
+              border: "none",
+            },
           },
           "& .MuiButtonGroup-lastButton": {
             marginRight: "4px",
@@ -330,6 +334,8 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: "#ffffff",
+          boxShadow:
+            "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
         },
       },
     },
