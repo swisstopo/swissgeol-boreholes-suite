@@ -125,7 +125,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                 ...(files?.map(file => ({ key: file.id, value: file.name })) || []),
                 { key: -1, value: t("addFile"), startIcon: <Plus /> },
               ]}
-              selectedItem={{ key: selectedFile?.id || -1, value: selectedFile?.name || "test" }}
+              selectedItem={{ key: selectedFile?.id, value: selectedFile?.name }}
               onItemSelected={item => {
                 if (item.key === -1) {
                   handleFileInputClick();
