@@ -48,7 +48,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
 
   return (
     <Box
-      sx={{ padding: "84px 50px", height: "100%", width: "100%", cursor: "pointer" }}
+      sx={{ py: 10.5, px: 6, height: "100%", width: "100%", cursor: "pointer" }}
       {...getRootProps()}
       onDragOver={e => {
         e.stopPropagation();
