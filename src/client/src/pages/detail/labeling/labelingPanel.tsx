@@ -1,6 +1,6 @@
-import { Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
-import { File as FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
 import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
@@ -20,6 +20,9 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [files, setFiles] = useState<FileInterface[]>();
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
+  const [pageCount, setPageCount] = useState<number>(1);
+  const [activePage, setActivePage] = useState<number>(1);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showAlert } = useContext(AlertContext);
 
@@ -136,6 +139,37 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               sx={{ height: "44px" }}
             />
           </Stack>
+          <ButtonGroup
+            variant="contained"
+            sx={{
+              position: "absolute",
+              bottom: "10px",
+              left: "10px",
+              zIndex: "500",
+              height: "44px",
+            }}>
+            <Typography variant="h6" sx={{ alignContent: "center", padding: 1, paddingRight: 0, margin: 0.5 }}>
+              {activePage} / {pageCount}
+            </Typography>
+            <Button
+              variant="text"
+              color="secondary"
+              onClick={() => {
+                setActivePage(activePage - 1);
+              }}
+              disabled={activePage === 1}>
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="text"
+              color="secondary"
+              onClick={() => {
+                setActivePage(activePage + 1);
+              }}
+              disabled={activePage === pageCount}>
+              <ChevronRight />
+            </Button>
+          </ButtonGroup>
         </Box>
       ) : (
         <LabelingFileSelector
