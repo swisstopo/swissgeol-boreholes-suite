@@ -103,7 +103,7 @@ public class BoreholeFileController : ControllerBase
 
             if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
 
-            var fileUuid = boreholeFile.File.NameUuid.Replace(".pdf", "");
+            var fileUuid = boreholeFile.File.NameUuid.Replace(".pdf", "", StringComparison.OrdinalIgnoreCase);
             var fileCount = await boreholeFileUploadService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
             var result = await boreholeFileUploadService.GetDataExtrationImageUrl(fileUuid, index).ConfigureAwait(false);
 

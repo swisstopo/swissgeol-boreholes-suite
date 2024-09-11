@@ -192,7 +192,7 @@ public class BoreholeFileUploadService
                 Verb = HttpVerb.GET,
             };
 
-            var url = s3Client.GetPreSignedURL(request);
+            var url = await s3Client.GetPreSignedURLAsync(request).ConfigureAwait(false);
 
             var tempFile = Path.GetTempFileName();
             try
