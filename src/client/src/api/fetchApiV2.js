@@ -2,52 +2,31 @@ import store from "../reducers";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getAuthorizationHeader } from "./authentication";
 
+export async function fetchApiV2Base(url, method, body, contentType = null) {
+  const baseUrl = "/api/v2/";
+  const authentication = store.getState().core_user.authentication;
+  let headers = {
+    Authorization: getAuthorizationHeader(authentication),
+  };
+  if (contentType) headers = { ...headers, "Content-Type": contentType };
+  return await fetch(baseUrl + url, {
+    method: method,
+    cache: "no-cache",
+    credentials: "same-origin",
+    headers: headers,
+    body: body,
+  });
+}
+
 /**
  * Fetch data from the C# Api.
  * @param {*} url The resource url.
  * @param {*} method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param {*} payload The payload of the HTTP request (optional).
- * @param {*} isFileUpload Boolean indicating whether the request is used to upload a file, defaults to false.
  * @returns The HTTP response as JSON.
  */
-
-export async function fetchApiV2(url, method, payload = null, isFileUpload = false, isFileDownload = false) {
-  const baseUrl = "/api/v2/";
-  const authentication = store.getState().core_user.authentication;
-  const body = isFileUpload ? payload : JSON.stringify(payload);
-  let headers = {
-    Authorization: getAuthorizationHeader(authentication),
-  };
-  if (!isFileUpload && !isFileDownload) headers = { ...headers, "Content-Type": "application/json" };
-  const response = await fetch(baseUrl + url, {
-    method: method,
-    cache: "no-cache",
-    credentials: "same-origin",
-    headers: headers,
-    body: payload && body,
-  });
-  if (isFileUpload) {
-    return response;
-  }
-  if (isFileDownload) {
-    if (!response.ok) {
-      const error = new Error(response.statusText);
-      error.response = response;
-      throw error;
-    }
-
-    const fileName =
-      response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? "export.pdf";
-    const blob = await response.blob();
-    const downLoadUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = downLoadUrl;
-    link.setAttribute("download", fileName);
-    document.body.appendChild(link);
-    link.click();
-    return response;
-  }
-
+export async function fetchApiV2(url, method, payload = null) {
+  const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
