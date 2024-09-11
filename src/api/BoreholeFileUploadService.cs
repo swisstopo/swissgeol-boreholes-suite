@@ -140,6 +140,100 @@ public class BoreholeFileUploadService
         }
     }
 
+    public async Task<int> CountDataExtractionObjects(string objectName)
+    {
+        try
+        {
+            var baseObjectName = $"dataextraction/{objectName}";
+            int totalObjects = 0;
+
+            // Set up the ListObjectsV2 request
+            var listObjectsRequest = new ListObjectsV2Request
+            {
+                BucketName = bucketName,
+                Prefix = baseObjectName + "-",
+            };
+
+            do
+            {
+                // Execute the ListObjectsV2 request
+                var listObjectsResponse = await s3Client.ListObjectsV2Async(listObjectsRequest).ConfigureAwait(false);
+
+                // Increment the total count by the number of objects in this page
+                totalObjects += listObjectsResponse.S3Objects.Count;
+
+                // If there are more pages, update the continuation token
+                listObjectsRequest.ContinuationToken = listObjectsResponse.NextContinuationToken;
+            }
+            while (listObjectsRequest.ContinuationToken != null);
+
+            return totalObjects;
+        }
+        catch (AmazonS3Exception ex)
+        {
+            logger.LogError(ex, $"Error counting files with <{objectName}> in cloud storage.");
+            throw;
+        }
+    }
+
+    public async Task<(string Url, int Width, int Height)> GetDataExtrationImageUrl(string objectName, int index)
+    {
+        try
+        {
+            var key = $"dataextraction/{objectName}-{index}.png";
+            var expiresAt = DateTime.UtcNow.AddMinutes(15);
+
+            // Generate a pre-signed URL
+            var request = new GetPreSignedUrlRequest
+            {
+                BucketName = bucketName,
+                Key = key,
+                Expires = expiresAt,
+                Verb = HttpVerb.GET,
+            };
+
+            var url = s3Client.GetPreSignedURL(request);
+
+            var tempFile = Path.GetTempFileName();
+            try
+            {
+                using (var s3Stream = await s3Client.GetObjectStreamAsync(bucketName, key, null).ConfigureAwait(false))
+                using (var fileStream = new FileStream(tempFile, FileMode.Create))
+                {
+                    await s3Stream.CopyToAsync(fileStream).ConfigureAwait(false);
+                }
+
+                int width = 0;
+                int height = 0;
+
+                using (var stream = new FileStream(tempFile, FileMode.Open))
+                using (var reader = new BinaryReader(stream))
+                {
+                    reader.BaseStream.Position = 16;
+
+                    var widthBytes = reader.ReadBytes(4);
+                    Array.Reverse(widthBytes);
+                    width = BitConverter.ToInt32(widthBytes, 0);
+
+                    var heightBytes = reader.ReadBytes(4);
+                    Array.Reverse(heightBytes);
+                    height = BitConverter.ToInt32(heightBytes, 0);
+                }
+
+                return (url, width, height);
+            }
+            finally
+            {
+                System.IO.File.Delete(tempFile);
+            }
+        }
+        catch (AmazonS3Exception ex)
+        {
+            logger.LogError(ex, $"Error generating pre-signed URL or retrieving image size for file <{objectName}> in cloud storage.");
+            throw;
+        }
+    }
+
     /// <summary>
     /// Deletes a file from the cloud storage.
     /// </summary>

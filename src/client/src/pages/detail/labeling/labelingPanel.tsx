@@ -5,10 +5,18 @@ import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } 
 import { theme } from "../../../AppTheme.ts";
 import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
-import { getFiles, uploadFile } from "../../../api/file/file.ts";
+import { getDataExtractionFile, getFiles, uploadFile } from "../../../api/file/file.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { useTranslation } from "react-i18next";
+import ImageLayer from "ol/layer/Image.js";
+import Map from "ol/Map.js";
+import Projection from "ol/proj/Projection.js";
+import Static from "ol/source/ImageStatic.js";
+import View from "ol/View.js";
+import { getCenter } from "ol/extent.js";
+import ZoomControls from "../../../components/buttons/zoomControls";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
+import { defaults as defaultControls } from "ol/control/defaults";
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -22,7 +30,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
   const [pageCount, setPageCount] = useState<number>(1);
   const [activePage, setActivePage] = useState<number>(1);
-
+  const [map, setMap] = useState<Map>();
+  const [extent, setExtent] = useState<number[]>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showAlert } = useContext(AlertContext);
 
@@ -58,12 +67,95 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     fileInputRef.current?.click();
   };
 
+  const zoomIn = () => {
+    if (map) {
+      const view = map.getView();
+      const zoom = view.getZoom();
+      if (zoom) {
+        view.setZoom(zoom + 1);
+      }
+    }
+  };
+
+  const zoomOut = () => {
+    if (map) {
+      const view = map.getView();
+      const zoom = view.getZoom();
+      if (zoom) {
+        view.setZoom(zoom - 1);
+      }
+    }
+  };
+
+  const fitToExtent = () => {
+    if (map && extent) {
+      const view = map.getView();
+      view.fit(extent, { size: map.getSize() });
+    }
+  };
+
   useEffect(() => {
     if (files === undefined) {
       loadFiles();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (selectedFile) {
+      getDataExtractionFile(selectedFile.id, activePage).then(response => {
+        if (pageCount !== response.count) {
+          setPageCount(response.count);
+          if (activePage > response.count) {
+            setActivePage(1);
+          }
+        }
+
+        // const extent = [0, 0, response.width, response.height];
+        const extent = [0, 0, 1024, 968];
+        setExtent(extent);
+
+        const projection = new Projection({
+          code: "xkcd-image",
+          units: "pixels",
+          extent: extent,
+        });
+
+        // const fileLayer = new ImageLayer({
+        //   source: new Static({
+        //     url: response.url,
+        //     projection: projection,
+        //     imageExtent: extent,
+        //   }),
+        // });
+        const fileLayer = new ImageLayer({
+          source: new Static({
+            url: "https://imgs.xkcd.com/comics/online_communities.png",
+            projection: projection,
+            imageExtent: extent,
+          }),
+        });
+
+        const map = new Map({
+          layers: [fileLayer],
+          target: "map",
+          view: new View({
+            minResolution: 0.1,
+            zoom: 0,
+            projection: projection,
+            center: getCenter(extent),
+            extent: extent,
+            showFullExtent: true,
+          }),
+          controls: defaultControls({
+            attribution: false,
+            zoom: false,
+          }),
+        });
+        setMap(map);
+      });
+    }
+  }, [selectedFile, activePage]);
 
   return (
     <Box
@@ -130,6 +222,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               ]}
               selectedItem={{ key: selectedFile?.id || -1, value: selectedFile?.name || "test" }}
               onItemSelected={item => {
+                setActivePage(1);
                 if (item.key === -1) {
                   handleFileInputClick();
                 } else {
@@ -139,6 +232,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               sx={{ height: "44px" }}
             />
           </Stack>
+          <ZoomControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} />
           <ButtonGroup
             variant="contained"
             sx={{
@@ -148,28 +242,35 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               zIndex: "500",
               height: "44px",
             }}>
-            <Typography variant="h6" sx={{ alignContent: "center", padding: 1, paddingRight: 0, margin: 0.5 }}>
+            <Typography
+              variant="h6"
+              sx={{ alignContent: "center", padding: 1, paddingRight: pageCount > 1 ? 0 : 1, margin: 0.5 }}>
               {activePage} / {pageCount}
             </Typography>
-            <Button
-              variant="text"
-              color="secondary"
-              onClick={() => {
-                setActivePage(activePage - 1);
-              }}
-              disabled={activePage === 1}>
-              <ChevronLeft />
-            </Button>
-            <Button
-              variant="text"
-              color="secondary"
-              onClick={() => {
-                setActivePage(activePage + 1);
-              }}
-              disabled={activePage === pageCount}>
-              <ChevronRight />
-            </Button>
+            {pageCount > 1 && (
+              <>
+                <Button
+                  variant="text"
+                  color="secondary"
+                  onClick={() => {
+                    setActivePage(activePage - 1);
+                  }}
+                  disabled={activePage === 1}>
+                  <ChevronLeft />
+                </Button>
+                <Button
+                  variant="text"
+                  color="secondary"
+                  onClick={() => {
+                    setActivePage(activePage + 1);
+                  }}
+                  disabled={activePage === pageCount}>
+                  <ChevronRight />
+                </Button>
+              </>
+            )}
           </ButtonGroup>
+          <Box id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
         </Box>
       ) : (
         <LabelingFileSelector

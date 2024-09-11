@@ -88,6 +88,40 @@ public class BoreholeFileController : ControllerBase
         }
     }
 
+    [HttpGet("getDataExtractionFile")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> GetDataExtractionFiles([Required, Range(1, int.MaxValue)] int boreholeFileId, int index)
+    {
+        if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
+
+        try
+        {
+            var boreholeFile = await context.BoreholeFiles
+                .Include(f => f.File)
+                .FirstOrDefaultAsync(f => f.FileId == boreholeFileId)
+                .ConfigureAwait(false);
+
+            if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
+
+            var fileUuid = boreholeFile.File.NameUuid.Replace(".pdf", "");
+            var fileCount = await boreholeFileUploadService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
+            var result = await boreholeFileUploadService.GetDataExtrationImageUrl(fileUuid, index).ConfigureAwait(false);
+
+            return Ok(new
+            {
+                url = result.Url,
+                width = result.Width,
+                height = result.Height,
+                count = fileCount,
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while downloading the file.");
+            return Problem("An error occurred while downloading the file.");
+        }
+    }
+
     /// <summary>
     /// Get all <see cref="BoreholeFile"/> that are linked to the <see cref="Borehole"/> with <see cref="Borehole.Id"/> provided in <paramref name="boreholeId"/>.
     /// </summary>
