@@ -13,13 +13,13 @@ const ZoomControls = ({ onZoomIn, onZoomOut, onFitToExtent }) => {
         right: "16px",
         zIndex: "500",
       }}>
-      <Button variant="text" color="secondary" onClick={onZoomIn}>
+      <Button data-cy="zoom-in-button" variant="text" color="secondary" onClick={onZoomIn}>
         <Plus />
       </Button>
-      <Button variant="text" color="secondary" onClick={onFitToExtent}>
+      <Button data-cy="fit-to-extent-button" variant="text" color="secondary" onClick={onFitToExtent}>
         <Circle />
       </Button>
-      <Button variant="text" color="secondary" onClick={onZoomOut}>
+      <Button data-cy="zoom-out-button" variant="text" color="secondary" onClick={onZoomOut}>
         <Minus />
       </Button>
     </ButtonGroup>

@@ -1,4 +1,4 @@
-import { newEditableBorehole, delayedType } from "../helpers/testHelpers";
+import { delayedType, newEditableBorehole } from "../helpers/testHelpers";
 
 function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
   cy.get(inputAlias)
@@ -108,8 +108,8 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "");
 
     // zoom into map
-    cy.get('[data-cy="map-zoom-in"]').click({ force: true });
-    cy.get('[data-cy="map-zoom-in"]').click({ force: true });
+    cy.get('[data-cy="zoom-in-button"]').click({ force: true });
+    cy.get('[data-cy="zoom-in-button"]').click({ force: true });
 
     cy.wait(2000);
     // click on map
