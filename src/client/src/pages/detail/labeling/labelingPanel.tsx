@@ -51,7 +51,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
   const addFile = useCallback(
     async (file: File) => {
-      await uploadFile<FileResponse>(boreholeId, file)
+      uploadFile<FileResponse>(boreholeId, file)
         .then(fileResponse => {
           setSelectedFile(fileResponse.file);
           loadFiles();
@@ -220,7 +220,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                 ...(files?.map(file => ({ key: file.id, value: file.name })) || []),
                 { key: -1, value: t("addFile"), startIcon: <Plus /> },
               ]}
-              selectedItem={{ key: selectedFile?.id || -1, value: selectedFile?.name || "test" }}
+              selectedItem={{ key: selectedFile?.id, value: selectedFile?.name }}
               onItemSelected={item => {
                 setActivePage(1);
                 if (item.key === -1) {
