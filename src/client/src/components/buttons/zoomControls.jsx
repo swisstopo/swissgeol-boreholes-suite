@@ -9,8 +9,8 @@ const ZoomControls = ({ onZoomIn, onZoomOut, onFitToExtent }) => {
       orientation="vertical"
       sx={{
         position: "absolute",
-        top: "10px",
-        right: "10px",
+        top: "16px",
+        right: "16px",
         zIndex: "500",
       }}>
       <Button variant="text" color="secondary" onClick={onZoomIn}>

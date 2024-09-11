@@ -191,8 +191,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         exclusive
         sx={{
           position: "absolute",
-          bottom: "10px",
-          right: "10px",
+          bottom: "16px",
+          right: "16px",
           zIndex: "500",
         }}>
         <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
@@ -208,8 +208,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             direction="row"
             sx={{
               position: "absolute",
-              top: "10px",
-              left: "10px",
+              top: "16px",
+              left: "16px",
               zIndex: "500",
               gap: 1,
             }}>
@@ -237,8 +237,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             variant="contained"
             sx={{
               position: "absolute",
-              bottom: "10px",
-              left: "10px",
+              bottom: "16px",
+              left: "16px",
               zIndex: "500",
               height: "44px",
             }}>
