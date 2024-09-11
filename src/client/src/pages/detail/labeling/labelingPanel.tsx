@@ -38,15 +38,18 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const loadFiles = useCallback(async () => {
     if (boreholeId) {
       setIsLoadingFiles(true);
-      getFiles<FileResponse>(boreholeId).then(response =>
-        setFiles(
-          response
-            .filter((fileResponse: FileResponse) => fileResponse.file.type === labelingFileFormat)
-            .map((fileResponse: FileResponse) => fileResponse.file),
-        ),
-      );
+      getFiles<FileResponse>(boreholeId)
+        .then(response =>
+          setFiles(
+            response
+              .filter((fileResponse: FileResponse) => fileResponse.file.type === labelingFileFormat)
+              .map((fileResponse: FileResponse) => fileResponse.file),
+          ),
+        )
+        .finally(() => {
+          setIsLoadingFiles(false);
+        });
     }
-    setIsLoadingFiles(false);
   }, [boreholeId]);
 
   const addFile = useCallback(

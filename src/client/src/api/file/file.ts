@@ -1,5 +1,5 @@
 import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
-import { fetchApiV2 } from "../fetchApiV2";
+import { fetchApiV2, fetchApiV2Base } from "../fetchApiV2";
 import { ApiError } from "../apiInterfaces.ts";
 
 export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
@@ -7,7 +7,7 @@ export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetchApiV2(`boreholefile/upload?boreholeId=${boreholeId}`, "POST", formData, true);
+    const response = await fetchApiV2Base(`boreholefile/upload?boreholeId=${boreholeId}`, "POST", formData);
     if (!response.ok) {
       if (response.status === 400) {
         throw new ApiError("errorDuplicatedUploadPerBorehole", response.status);
@@ -36,7 +36,21 @@ export async function getFiles<FileResponse>(boreholeId: number): Promise<FileRe
 }
 
 export const downloadFile = async (boreholeFileId: number) => {
-  return await fetchApiV2(`boreholefile/download?boreholeFileId=${boreholeFileId}`, "GET", null, false, true);
+  const response = await fetchApiV2Base(`boreholefile/download?boreholeFileId=${boreholeFileId}`, "GET");
+  if (!response.ok) {
+    throw new ApiError(response.statusText, response.status);
+  }
+
+  const fileName =
+    response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? "export.pdf";
+  const blob = await response.blob();
+  const downLoadUrl = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = downLoadUrl;
+  link.setAttribute("download", fileName);
+  document.body.appendChild(link);
+  link.click();
+  return response;
 };
 
 export const updateFile = async (
@@ -45,15 +59,10 @@ export const updateFile = async (
   description: string,
   isPublic: boolean,
 ) => {
-  return await fetchApiV2(
-    `boreholefile/update?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`,
-    "PUT",
-    {
-      description: description,
-      public: isPublic,
-    },
-    false,
-  );
+  return await fetchApiV2(`boreholefile/update?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`, "PUT", {
+    description: description,
+    public: isPublic,
+  });
 };
 
 export const getDataExtractionFile = async (boreholeFileId: number, index: number) => {

@@ -50,8 +50,8 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
   return (
     <>
       <Button
-        variant={variant ?? "text"}
-        color={color ?? "primary"}
+        variant={variant}
+        color={color}
         onClick={handleClick}
         startIcon={startIcon}
         endIcon={anchorEl ? <ChevronUp /> : <ChevronDown />}
@@ -64,7 +64,7 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
         anchorEl={anchorEl}
         open={isOpen}
         onClose={handleClose}
-        sx={{ marginTop: "5px" }}
+        sx={{ marginTop: 0.5 }}
         anchorOrigin={anchorOrigin ?? { vertical: "bottom", horizontal: "left" }}
         transformOrigin={transformOrigin ?? { vertical: "top", horizontal: "left" }}
         data-cy="button-select-popover">
