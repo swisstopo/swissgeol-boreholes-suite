@@ -153,7 +153,7 @@
   "epoch": "Époque",
   "era": "Ere",
   "errorAttention": "Attention",
-  "errorBoreholeFileLoading": "Une erreur s'est produite lors du chargement des fichiers de perçage.",
+  "errorBoreholeFileLoading": "Une erreur s'est produite lors du chargement des fichiers de forage.",
   "errorDuplicatedUploadPerBorehole": "Ce fichier a déjà été téléchargé pour ce forage et ne peut pas être téléchargé une deuxième fois.",
   "errorDuringBoreholeFileUpload": "Une erreur s'est produite lors du téléchargement.",
   "errorEndPoint": "Veuillez ajouter la terminaison du forage",
