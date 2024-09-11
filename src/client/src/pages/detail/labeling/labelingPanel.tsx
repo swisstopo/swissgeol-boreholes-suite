@@ -39,7 +39,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
   const addFile = useCallback(
     async (file: File) => {
-      await uploadFile<FileResponse>(boreholeId, file)
+      uploadFile<FileResponse>(boreholeId, file)
         .then(fileResponse => {
           setSelectedFile(fileResponse.file);
           loadFiles();
