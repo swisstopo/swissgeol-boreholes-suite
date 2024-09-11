@@ -155,7 +155,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         setMap(map);
       });
     }
-  }, [selectedFile, activePage]);
+  }, [selectedFile, activePage, pageCount]);
 
   return (
     <Box
