@@ -88,6 +88,7 @@ declare module "@mui/material/styles" {
     MuiButtonBase: object;
     MuiButton: object;
     MuiIconButton: object;
+    MuiButtonGroup: object;
     MuiToggleButtonGroup: object;
     MuiToggleButton: object;
     MuiSelect: object;
@@ -103,6 +104,7 @@ declare module "@mui/material/styles" {
     MuiButtonBase: object;
     MuiButton: object;
     MuiIconButton: object;
+    MuiButtonGroup: object;
     MuiToggleButtonGroup: object;
     MuiToggleButton: object;
     MuiSelect: object;

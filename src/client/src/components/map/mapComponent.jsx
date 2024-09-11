@@ -20,7 +20,7 @@ import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
 import { getGeojson } from "../../api-lib";
 import { Box } from "@mui/material";
-import ZoomControls from "./zoomControls.jsx";
+import ZoomControls from "../buttons/zoomControls.jsx";
 import NamePopup from "./namePopup.jsx";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import { swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";

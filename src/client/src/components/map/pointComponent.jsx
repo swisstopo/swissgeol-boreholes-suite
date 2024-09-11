@@ -16,7 +16,7 @@ import { Button, Icon, Label, Segment } from "semantic-ui-react";
 import { Box } from "@mui/material";
 import { getHeight } from "../../api-lib";
 import { fetchApiV2 } from "../../api/fetchApiV2.js";
-import ZoomControls from "./zoomControls.jsx";
+import ZoomControls from "../buttons/zoomControls.jsx";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapContext } from "../basemapSelector/basemapContext.tsx";

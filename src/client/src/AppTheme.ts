@@ -294,6 +294,38 @@ export const theme = createTheme({
         },
       },
     },
+    MuiButtonGroup: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#ffffff",
+          height: "44px",
+
+          "& .MuiButtonGroup-grouped": {
+            minWidth: "36px",
+            minHeight: "36px",
+            border: "none",
+            borderRadius: "4px",
+            padding: "8px",
+            margin: "4px 0 4px 4px",
+          },
+          "& .MuiButtonGroup-lastButton": {
+            marginRight: "4px",
+          },
+
+          "&.MuiButtonGroup-vertical": {
+            height: "auto",
+            width: "44px",
+            "& .MuiButtonGroup-grouped": {
+              padding: "8px",
+              margin: "4px 4px 0 4px",
+            },
+            "& .MuiButtonGroup-lastButton": {
+              marginBottom: "4px",
+            },
+          },
+        },
+      },
+    },
     MuiToggleButtonGroup: {
       styleOverrides: {
         root: {
