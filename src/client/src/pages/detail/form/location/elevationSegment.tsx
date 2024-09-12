@@ -75,9 +75,6 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ size, borehole, user, upd
                   "reference_elevation",
                   e.target.value === "" ? null : parseFloatWithThousandsSeparator(e.target.value),
                 );
-                if (/^-?\d*[.,]?\d*$/.test(e.target.value)) {
-                  updateChange("reference_elevation", e.target.value === "" ? null : parseFloat(e.target.value));
-                }
               }}
               spellCheck="false"
               value={borehole.data.reference_elevation ?? ""}
