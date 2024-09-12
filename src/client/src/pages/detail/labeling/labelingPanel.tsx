@@ -12,11 +12,11 @@ import ImageLayer from "ol/layer/Image.js";
 import Map from "ol/Map.js";
 import Projection from "ol/proj/Projection.js";
 import Static from "ol/source/ImageStatic.js";
-import View from "ol/View.js";
 import { getCenter } from "ol/extent.js";
 import ZoomControls from "../../../components/buttons/zoomControls";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
 import { defaults as defaultControls } from "ol/control/defaults";
+import { View } from "ol";
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -33,6 +33,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const [map, setMap] = useState<Map>();
   const [extent, setExtent] = useState<number[]>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mapRef = useRef();
   const { showAlert } = useContext(AlertContext);
 
   const loadFiles = useCallback(async () => {
@@ -104,7 +105,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   }, [files, loadFiles]);
 
   useEffect(() => {
-    if (selectedFile) {
+    if (map === undefined && mapRef.current) {
+      const map = new Map({
+        layers: [],
+        target: mapRef.current,
+        controls: defaultControls({
+          attribution: false,
+          zoom: false,
+        }),
+      });
+      setMap(map);
+    } else if (map && selectedFile) {
       getDataExtractionFile(selectedFile.id, activePage).then(response => {
         if (pageCount !== response.count) {
           setPageCount(response.count);
@@ -135,10 +146,10 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           }),
         });
 
-        const map = new Map({
-          layers: [fileLayer],
-          target: "map",
-          view: new View({
+        map.getLayers().clear();
+        map.addLayer(fileLayer);
+        map.setView(
+          new View({
             minResolution: 0.1,
             zoom: 0,
             projection: projection,
@@ -146,20 +157,18 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             extent: extent,
             showFullExtent: true,
           }),
-          controls: defaultControls({
-            attribution: false,
-            zoom: false,
-          }),
-        });
-        setMap(map);
+        );
       });
     }
-  }, [selectedFile, activePage, pageCount]);
+  }, [selectedFile, activePage, pageCount, map, mapRef]);
 
   return (
     <Box
       sx={{
         backgroundColor: theme.palette.ai.background,
+        border: `1px solid ${theme.palette.ai.background}`,
+        borderRight: 0,
+        borderBottom: 0,
         height: panelPosition === "bottom" ? "50%" : "100%",
         width: panelPosition === "right" ? "50%" : "100%",
       }}
@@ -269,7 +278,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               </>
             )}
           </ButtonGroup>
-          <Box id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
+          <Box ref={mapRef} id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
         </Box>
       ) : (
         <LabelingFileSelector
