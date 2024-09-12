@@ -135,14 +135,15 @@ public class BoreholeFileController : ControllerBase
     {
         try
         {
-            string decodedImageName = Uri.UnescapeDataString($"dataextraction/{imageName}");
+            var decodedImageName = Uri.UnescapeDataString($"dataextraction/{imageName}");
             var fileBytes = await boreholeFileUploadService.GetObject(decodedImageName).ConfigureAwait(false);
             return File(fileBytes, "image/png", decodedImageName);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, $"An error occurred while downloading the file '{imageName}'.");
-            return Problem($"An error occurred while downloading the file '{imageName}'.", statusCode: StatusCodes.Status404NotFound);
+            var message = $"An error occurred while downloading the image.";
+            logger.LogError(ex, message);
+            return Problem(message);
         }
     }
 
