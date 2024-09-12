@@ -96,6 +96,8 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/boreholegeometry?boreholeId=**", req => {
     return (req.alias = `boreholegeometry_${req.method}`);
   });
+
+  cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("get-borehole-files");
 };
 
 /**
@@ -612,7 +614,7 @@ export const createBaseSelector = parent => {
 };
 
 export const selectLanguage = language => {
-  cy.get('[data-cy="language-selector"]').click({ force: true });
-  cy.get(`[data-cy="language-${language.toLowerCase()}"]`).click({ force: true });
+  cy.get('[data-cy="language-button-select"]').click({ force: true });
+  cy.get(`[data-cy="${language.toLowerCase()}-button-select-item"]`).click({ force: true });
   cy.wait(1000);
 };

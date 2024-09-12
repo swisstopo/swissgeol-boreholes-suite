@@ -3,9 +3,9 @@ import { withTranslation } from "react-i18next";
 import { Checkbox, Icon, Table, TextArea } from "semantic-ui-react";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import DownloadLink from "../downloadlink.jsx";
-import { downloadBoreholeAttachment } from "../../../../api/fetchApiV2.js";
 import { IconButton } from "@mui/material";
 import { Trash2 } from "lucide-react";
+import { downloadFile } from "../../../../api/file/file";
 
 const FilesTableComponent = props => {
   const { t } = props;
@@ -53,10 +53,7 @@ const FilesTableComponent = props => {
                 </Table.Cell>
               )}
               <Table.Cell>
-                <DownloadLink
-                  caption={boreholeFile.file.name}
-                  onDownload={() => downloadBoreholeAttachment(boreholeFile.fileId)}
-                />
+                <DownloadLink caption={boreholeFile.file.name} onDownload={() => downloadFile(boreholeFile.fileId)} />
               </Table.Cell>
               <Table.Cell>
                 {props.unlocked === true ? (
