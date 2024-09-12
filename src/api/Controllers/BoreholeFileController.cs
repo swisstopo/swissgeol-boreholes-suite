@@ -106,7 +106,7 @@ public class BoreholeFileController : ControllerBase
 
             var fileUuid = boreholeFile.File.NameUuid.Replace(".pdf", "", StringComparison.OrdinalIgnoreCase);
             var fileCount = await boreholeFileUploadService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
-            var result = await boreholeFileUploadService.GetDataExtrationImageUrl(fileUuid, index).ConfigureAwait(false);
+            var result = await boreholeFileUploadService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
 
             return Ok(new
             {

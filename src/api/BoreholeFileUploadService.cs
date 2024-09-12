@@ -176,7 +176,7 @@ public class BoreholeFileUploadService
         }
     }
 
-    public async Task<(string Url, int Width, int Height)> GetDataExtrationImageUrl(string objectName, int index)
+    public async Task<(string Url, int Width, int Height)> GetDataExtractionImageInfo(string objectName, int index)
     {
         try
         {
