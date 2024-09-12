@@ -62,8 +62,8 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
           alignItems: "center",
           height: "100%",
           width: "100%",
-          border: "2px solid transparent",
-          borderImage: "repeating-linear-gradient(45deg, #ffffff, #ffffff 10px, transparent 10px, transparent 20px) 1",
+          borderRadius: "24px",
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23fff' stroke-width='4' stroke-dasharray='12%2C 24' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E")`,
         }}>
         <Stack
           sx={{
