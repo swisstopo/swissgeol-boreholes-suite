@@ -175,7 +175,7 @@ public class BoreholeFileUploadService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error counting files with <{objectName}> in cloud storage.");
+            logger.LogError(ex, $"Error counting files in data extraction folder in cloud storage.");
             throw;
         }
     }
@@ -226,7 +226,7 @@ public class BoreholeFileUploadService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error generating pre-signed URL or retrieving image size for file <{objectName}> in cloud storage.");
+            logger.LogError(ex, $"Error generating retrieving image information from data extraction folder in cloud storage.");
             throw;
         }
     }
