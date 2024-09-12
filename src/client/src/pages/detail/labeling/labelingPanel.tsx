@@ -101,8 +101,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     if (files === undefined) {
       loadFiles();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [files, loadFiles]);
 
   useEffect(() => {
     if (selectedFile) {
