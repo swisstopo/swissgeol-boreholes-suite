@@ -2,6 +2,7 @@
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -120,6 +121,28 @@ public class BoreholeFileController : ControllerBase
         {
             logger.LogError(ex, "An error occurred while downloading the file.");
             return Problem("An error occurred while downloading the file.");
+        }
+    }
+
+    /// <summary>
+    /// Downloads an image from the data extraction folder in the cloud storage.
+    /// </summary>
+    /// <param name="imageName">The image name.</param>
+    /// <returns>The stream of the image.</returns>
+    [HttpGet("dataextraction/{*imageName}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> GetDataExtractionImage(string imageName)
+    {
+        try
+        {
+            string decodedImageName = Uri.UnescapeDataString($"dataextraction/{imageName}");
+            var fileBytes = await boreholeFileUploadService.GetObject(decodedImageName).ConfigureAwait(false);
+            return File(fileBytes, "image/png", decodedImageName);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"An error occurred while downloading the file '{imageName}'.");
+            return Problem($"An error occurred while downloading the file '{imageName}'.", statusCode: StatusCodes.Status404NotFound);
         }
     }
 

@@ -5,7 +5,7 @@ import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } 
 import { theme } from "../../../AppTheme.ts";
 import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
-import { getDataExtractionFile, getFiles, uploadFile } from "../../../api/file/file.ts";
+import { displayImage, getDataExtractionFile, getFiles, uploadFile } from "../../../api/file/file.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { useTranslation } from "react-i18next";
 import ImageLayer from "ol/layer/Image.js";
@@ -114,8 +114,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           }
         }
 
-        // const extent = [0, 0, response.width, response.height];
-        const extent = [0, 0, 1024, 968];
+        const extent = [0, 0, response.width, response.height];
         setExtent(extent);
 
         const projection = new Projection({
@@ -124,18 +123,16 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           extent: extent,
         });
 
-        // const fileLayer = new ImageLayer({
-        //   source: new Static({
-        //     url: response.url,
-        //     projection: projection,
-        //     imageExtent: extent,
-        //   }),
-        // });
         const fileLayer = new ImageLayer({
           source: new Static({
-            url: "https://imgs.xkcd.com/comics/online_communities.png",
+            url: response.url,
             projection: projection,
             imageExtent: extent,
+            imageLoadFunction: (image, src) => {
+              displayImage(src).then(blob => {
+                (image.getImage() as HTMLImageElement).src = URL.createObjectURL(blob);
+              });
+            },
           }),
         });
 

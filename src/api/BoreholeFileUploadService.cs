@@ -140,6 +140,10 @@ public class BoreholeFileUploadService
         }
     }
 
+    /// <summary>
+    /// Gets the number of data extraction images for a pdf.
+    /// </summary>
+    /// <param name="objectName">The uuid of the pdf.</param>
     public async Task<int> CountDataExtractionObjects(string objectName)
     {
         try
@@ -176,23 +180,16 @@ public class BoreholeFileUploadService
         }
     }
 
+    /// <summary>
+    /// Gets the info of a data extraction image .
+    /// </summary>
+    /// <param name="objectName">The uuid of the parent pdf.</param>
+    /// <param name="index">The page number in the pdf.</param>
     public async Task<(string Url, int Width, int Height)> GetDataExtractionImageInfo(string objectName, int index)
     {
         try
         {
             var key = $"dataextraction/{objectName}-{index}.png";
-            var expiresAt = DateTime.UtcNow.AddMinutes(15);
-
-            // Generate a pre-signed URL
-            var request = new GetPreSignedUrlRequest
-            {
-                BucketName = bucketName,
-                Key = key,
-                Expires = expiresAt,
-                Verb = HttpVerb.GET,
-            };
-
-            var url = await s3Client.GetPreSignedURLAsync(request).ConfigureAwait(false);
 
             var tempFile = Path.GetRandomFileName();
             try
@@ -220,7 +217,7 @@ public class BoreholeFileUploadService
                     height = BitConverter.ToInt32(heightBytes, 0);
                 }
 
-                return (url, width, height);
+                return (key, width, height);
             }
             finally
             {
