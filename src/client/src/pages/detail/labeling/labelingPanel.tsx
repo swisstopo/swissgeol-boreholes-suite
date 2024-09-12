@@ -5,7 +5,7 @@ import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } 
 import { theme } from "../../../AppTheme.ts";
 import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
-import { displayImage, getDataExtractionFile, getFiles, uploadFile } from "../../../api/file/file.ts";
+import { getDataExtractionFileInfo, getFiles, loadImage, uploadFile } from "../../../api/file/file.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { useTranslation } from "react-i18next";
 import ImageLayer from "ol/layer/Image.js";
@@ -116,7 +116,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
       });
       setMap(map);
     } else if (map && selectedFile) {
-      getDataExtractionFile(selectedFile.id, activePage).then(response => {
+      getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
         if (pageCount !== response.count) {
           setPageCount(response.count);
           if (activePage > response.count) {
@@ -135,11 +135,11 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
         const fileLayer = new ImageLayer({
           source: new Static({
-            url: response.url,
+            url: response.fileName,
             projection: projection,
             imageExtent: extent,
             imageLoadFunction: (image, src) => {
-              displayImage(src).then(blob => {
+              loadImage(src).then(blob => {
                 (image.getImage() as HTMLImageElement).src = URL.createObjectURL(blob);
               });
             },

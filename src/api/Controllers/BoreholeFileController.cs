@@ -90,9 +90,15 @@ public class BoreholeFileController : ControllerBase
         }
     }
 
-    [HttpGet("getDataExtractionFile")]
+    /// <summary>
+    /// Get the borehole file information for the data extraction file with the provided boreholeFileId and page index.
+    /// </summary>
+    /// <param name="boreholeFileId">The id of the borehole file.</param>
+    /// <param name="index">The index of the page in the borehole file, with 1 as index for the first page.</param>
+    /// <returns>The name and size of the selected image as well as the total image count for the borehole file.</returns>
+    [HttpGet("getDataExtractionFileInfo")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> GetDataExtractionFiles([Required, Range(1, int.MaxValue)] int boreholeFileId, int index)
+    public async Task<IActionResult> GetDataExtractionFileInfo([Required, Range(1, int.MaxValue)] int boreholeFileId, int index)
     {
         if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
 
@@ -111,7 +117,7 @@ public class BoreholeFileController : ControllerBase
 
             return Ok(new
             {
-                url = result.Url,
+                fileName = result.FileName,
                 width = result.Width,
                 height = result.Height,
                 count = fileCount,

@@ -51,9 +51,9 @@ export const updateFile = async (
   });
 };
 
-export const getDataExtractionFile = async (boreholeFileId: number, index: number) => {
+export const getDataExtractionFileInfo = async (boreholeFileId: number, index: number) => {
   const response = await fetchApiV2(
-    `boreholefile/getDataExtractionFile?boreholeFileId=${boreholeFileId}&index=${index}`,
+    `boreholefile/getDataExtractionFileInfo?boreholeFileId=${boreholeFileId}&index=${index}`,
     "GET",
   );
   if (response) {
@@ -63,8 +63,8 @@ export const getDataExtractionFile = async (boreholeFileId: number, index: numbe
   }
 };
 
-export async function displayImage(path: string) {
-  const response = await fetchApiV2Base("boreholefile/" + path, "GET");
+export async function loadImage(fileName: string) {
+  const response = await fetchApiV2Base("boreholefile/dataextraction/" + fileName, "GET");
   if (response.ok) {
     return response.blob();
   } else {

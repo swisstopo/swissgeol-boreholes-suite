@@ -22,7 +22,7 @@ export interface FileResponse {
 }
 
 export interface DataExtractionResponse {
-  url: string;
+  fileName: string;
   width: number;
   height: number;
   count: number;

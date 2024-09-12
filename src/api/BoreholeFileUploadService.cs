@@ -151,7 +151,6 @@ public class BoreholeFileUploadService
             var baseObjectName = $"dataextraction/{objectName}";
             int totalObjects = 0;
 
-            // Set up the ListObjectsV2 request
             var listObjectsRequest = new ListObjectsV2Request
             {
                 BucketName = bucketName,
@@ -160,13 +159,8 @@ public class BoreholeFileUploadService
 
             do
             {
-                // Execute the ListObjectsV2 request
                 var listObjectsResponse = await s3Client.ListObjectsV2Async(listObjectsRequest).ConfigureAwait(false);
-
-                // Increment the total count by the number of objects in this page
                 totalObjects += listObjectsResponse.S3Objects.Count;
-
-                // If there are more pages, update the continuation token
                 listObjectsRequest.ContinuationToken = listObjectsResponse.NextContinuationToken;
             }
             while (listObjectsRequest.ContinuationToken != null);
@@ -185,11 +179,12 @@ public class BoreholeFileUploadService
     /// </summary>
     /// <param name="objectName">The uuid of the parent pdf.</param>
     /// <param name="index">The page number in the pdf.</param>
-    public async Task<(string Url, int Width, int Height)> GetDataExtractionImageInfo(string objectName, int index)
+    public async Task<(string FileName, int Width, int Height)> GetDataExtractionImageInfo(string objectName, int index)
     {
         try
         {
-            var key = $"dataextraction/{objectName}-{index}.png";
+            var fileName = $"{objectName}-{index}.png";
+            var key = $"dataextraction/{fileName}";
 
             var tempFile = Path.GetRandomFileName();
             try
@@ -217,7 +212,7 @@ public class BoreholeFileUploadService
                     height = BitConverter.ToInt32(heightBytes, 0);
                 }
 
-                return (key, width, height);
+                return (fileName, width, height);
             }
             finally
             {
