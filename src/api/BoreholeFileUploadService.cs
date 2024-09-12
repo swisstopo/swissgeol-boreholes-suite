@@ -135,7 +135,7 @@ public class BoreholeFileUploadService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error downloading file <{objectName}> from cloud storage.");
+            logger.LogError(ex, $"Error downloading file from cloud storage.");
             throw;
         }
     }
