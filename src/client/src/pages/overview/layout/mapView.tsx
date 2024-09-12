@@ -112,6 +112,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         setPolygonSelectionEnabled={setPolygonSelectionEnabled}
         filterPolygon={filterPolygon}
         setFilterPolygon={setFilterPolygon}
+        featureIds={featureIds}
         setFeatureIds={setFeatureIds}
         displayErrorMessage={displayErrorMessage}
       />
