@@ -33,7 +33,7 @@ public class BoreholeFileUploadService
     /// </summary>
     /// <param name="file">The file to upload and link to the <see cref="Borehole"/>.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded <paramref name="file"/> to.</param>
-    public async Task UploadFileAndLinkToBorehole(IFormFile file, int boreholeId)
+    public async Task<BoreholeFile> UploadFileAndLinkToBorehole(IFormFile file, int boreholeId)
     {
         // Generate a hash based on the file content.
         var base64Hash = "";
@@ -83,10 +83,11 @@ public class BoreholeFileUploadService
             // Link file to the borehole.
             var boreholeFile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.UtcNow };
 
-            await context.BoreholeFiles.AddAsync(boreholeFile).ConfigureAwait(false);
+            var entityEntry = await context.BoreholeFiles.AddAsync(boreholeFile).ConfigureAwait(false);
             await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
 
             if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);
+            return entityEntry.Entity;
         }
         catch (Exception ex)
         {

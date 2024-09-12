@@ -63,6 +63,7 @@ declare module "@mui/material/styles" {
       dark: string;
       menuItemActive: string;
       filterItemActive: string;
+      listItemActive: string;
     };
     border: string;
   }

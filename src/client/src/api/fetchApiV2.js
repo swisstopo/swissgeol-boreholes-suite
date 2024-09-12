@@ -1,53 +1,33 @@
 import store from "../reducers";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getAuthorizationHeader } from "./authentication";
+import { ApiError } from "./apiInterfaces";
+
+export async function fetchApiV2Base(url, method, body, contentType = null) {
+  const baseUrl = "/api/v2/";
+  const authentication = store.getState().core_user.authentication;
+  let headers = {
+    Authorization: getAuthorizationHeader(authentication),
+  };
+  if (contentType) headers = { ...headers, "Content-Type": contentType };
+  return await fetch(baseUrl + url, {
+    method: method,
+    cache: "no-cache",
+    credentials: "same-origin",
+    headers: headers,
+    body: body,
+  });
+}
 
 /**
  * Fetch data from the C# Api.
  * @param {*} url The resource url.
  * @param {*} method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param {*} payload The payload of the HTTP request (optional).
- * @param {*} isFileUpload Boolean indicating whether the request is used to upload a file, defaults to false.
  * @returns The HTTP response as JSON.
  */
-
-export async function fetchApiV2(url, method, payload = null, isFileUpload = false, isFileDownload = false) {
-  const baseUrl = "/api/v2/";
-  const authentication = store.getState().core_user.authentication;
-  const body = isFileUpload ? payload : JSON.stringify(payload);
-  let headers = {
-    Authorization: getAuthorizationHeader(authentication),
-  };
-  if (!isFileUpload && !isFileDownload) headers = { ...headers, "Content-Type": "application/json" };
-  const response = await fetch(baseUrl + url, {
-    method: method,
-    cache: "no-cache",
-    credentials: "same-origin",
-    headers: headers,
-    body: payload && body,
-  });
-  if (isFileUpload) {
-    return response;
-  }
-  if (isFileDownload) {
-    if (!response.ok) {
-      const error = new Error(response.statusText);
-      error.response = response;
-      throw error;
-    }
-
-    const fileName =
-      response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? "export.pdf";
-    const blob = await response.blob();
-    const downLoadUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = downLoadUrl;
-    link.setAttribute("download", fileName);
-    document.body.appendChild(link);
-    link.click();
-    return response;
-  }
-
+export async function fetchApiV2(url, method, payload = null) {
+  const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -60,9 +40,31 @@ export async function fetchApiV2(url, method, payload = null, isFileUpload = fal
   }
 }
 
+export async function upload(url, method, payload) {
+  return await fetchApiV2Base(url, method, payload);
+}
+
+export async function download(url) {
+  const response = await fetchApiV2Base(url, "GET", null);
+  if (!response.ok) {
+    throw new ApiError(response.statusText, response.status);
+  }
+
+  const fileName =
+    response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? "export.pdf";
+  const blob = await response.blob();
+  const downLoadUrl = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = downLoadUrl;
+  link.setAttribute("download", fileName);
+  document.body.appendChild(link);
+  link.click();
+  return response;
+}
+
 // boreholes
 export const importBoreholes = async (workgroupId, combinedFormData) => {
-  return await fetchApiV2(`upload?workgroupId=${workgroupId}`, "POST", combinedFormData, true);
+  return await upload(`upload?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
 export const copyBorehole = async (boreholeId, workgroupId) => {
@@ -360,7 +362,7 @@ export const useBoreholeGeometryMutations = () => {
   const queryClient = useQueryClient();
   const useSetBoreholeGeometry = useMutation(
     async ({ boreholeId, formData }) => {
-      return await fetchApiV2(`boreholegeometry?boreholeId=${boreholeId}`, "POST", formData, true);
+      return await upload(`boreholegeometry?boreholeId=${boreholeId}`, "POST", formData);
     },
     {
       onSuccess: () => {
@@ -439,39 +441,6 @@ export const updateFieldMeasurement = async fieldmeasurement => {
 
 export const deleteFieldMeasurement = async id => {
   return await fetchApiV2(`fieldmeasurement?id=${id}`, "DELETE");
-};
-
-// Upload borehole attachment
-export const uploadBoreholeAttachment = async (boreholeId, attachment) => {
-  return await fetchApiV2(`boreholefile/upload?boreholeId=${boreholeId}`, "POST", attachment, true);
-};
-
-// Detach borehole attachment
-export const detachBoreholeAttachment = async (boreholeId, boreholeFileId) => {
-  return await fetchApiV2(`boreholefile/detachFile?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`, "POST");
-};
-
-// Get borehole attachment list
-export const getBoreholeAttachments = async boreholeId => {
-  return await fetchApiV2(`boreholefile/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
-};
-
-// Download borehole attachment
-export const downloadBoreholeAttachment = async boreholeFileId => {
-  return await fetchApiV2(`boreholefile/download?boreholeFileId=${boreholeFileId}`, "GET", null, false, true);
-};
-
-// Update borehole attachment
-export const updateBoreholeAttachment = async (boreholeId, fileId, description, isPublic) => {
-  return await fetchApiV2(
-    `boreholefile/update?boreholeId=${boreholeId}&boreholeFileId=${fileId}`,
-    "PUT",
-    {
-      description: description,
-      public: isPublic,
-    },
-    false,
-  );
 };
 
 export const getCompletions = async boreholeId => {
@@ -578,4 +547,4 @@ export const deleteSection = async id => {
   return await fetchApiV2(`section?id=${id}`, "DELETE");
 };
 
-export const downloadCodelistCsv = () => fetchApiV2(`codelist/csv`, "GET", null, false, true);
+export const downloadCodelistCsv = () => download(`codelist/csv`);

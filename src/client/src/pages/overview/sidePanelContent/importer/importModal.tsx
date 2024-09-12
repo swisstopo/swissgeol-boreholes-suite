@@ -58,28 +58,21 @@ const ImportModal = ({
           showAlert(`${await response.text()} ${t("boreholesImported")}.`, "success");
           refresh();
         } else {
-          let responseBody = await response.text();
-          try {
-            // Try to parse response body as JSON in case of ValidationProblemDetails
-            responseBody = JSON.parse(responseBody);
-          } finally {
-            if (response.status === 400) {
+          const responseBody = await response.json();
+          if (response.status === 400) {
+            if (responseBody.errors) {
               // If response is of type ValidationProblemDetails, open validation error modal.
-              if (responseBody.errors) {
-                setErrorsResponse(responseBody);
-                setValidationErrorModal(true);
-                refresh();
-              }
-
-              // If response is of type ProblemDetails, show error message.
-              else {
-                showAlert(responseBody.detail, "error");
-              }
-            } else if (response.status === 504) {
-              showAlert(t("boreholesImportLongRunning"), "error");
+              setErrorsResponse(responseBody);
+              setValidationErrorModal(true);
+              refresh();
             } else {
-              showAlert(t("boreholesImportError"), "error");
+              // If response is of type ProblemDetails, show error message.
+              showAlert(responseBody.detail, "error");
             }
+          } else if (response.status === 504) {
+            showAlert(t("boreholesImportLongRunning"), "error");
+          } else {
+            showAlert(t("boreholesImportError"), "error");
           }
         }
       })();

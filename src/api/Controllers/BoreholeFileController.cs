@@ -29,6 +29,7 @@ public class BoreholeFileController : ControllerBase
     /// </summary>
     /// <param name="file">The file to upload and link to the <see cref="Borehole"/>.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded <paramref name="file"/> to.</param>
+    /// <returns>The newly created borehole file.</returns>
     [HttpPost("upload")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
@@ -42,8 +43,8 @@ public class BoreholeFileController : ControllerBase
 
         try
         {
-            await boreholeFileUploadService.UploadFileAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
-            return Ok();
+            var boreholeFile = await boreholeFileUploadService.UploadFileAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
+            return Ok(boreholeFile);
         }
         catch (InvalidOperationException ex)
         {

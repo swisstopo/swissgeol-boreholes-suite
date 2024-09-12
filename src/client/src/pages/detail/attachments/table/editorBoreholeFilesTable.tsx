@@ -1,18 +1,11 @@
 import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from "react";
-
-import {
-  detachBoreholeAttachment,
-  getBoreholeAttachments,
-  updateBoreholeAttachment,
-  uploadBoreholeAttachment,
-} from "../../../../api/fetchApiV2";
-
 import FilesTableComponent from "./filesTableComponent";
 import { Box, Button, Input } from "@mui/material";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import { FileResponse } from "../fileInterfaces.ts";
+import { FileResponse } from "../../../../api/file/fileInterfaces.ts";
 import { useTranslation } from "react-i18next";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
+import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 
 export interface EditorBoreholeFilesTable2Props {
   id: number;
@@ -36,35 +29,19 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
 
   const loadFiles = async () => {
     if (id) {
-      const response = await getBoreholeAttachments(id);
-      if (response) {
-        setFiles(response);
-      }
+      getFiles<FileResponse>(id).then(setFiles);
     }
   };
 
-  const uploadFile = async (e: ChangeEvent<HTMLInputElement>) => {
+  const upload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target?.files && e.target?.files.length > 0) {
       const file = e.target?.files[0];
-      const maxSizeInBytes = 210_000_000; // 200 MB
 
-      if (file && file.size <= maxSizeInBytes) {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const uploadResponse = await uploadBoreholeAttachment(id, formData);
-        if (!uploadResponse.ok) {
-          if (uploadResponse.status === 400) {
-            showAlert(t("errorDuplicatedUploadPerBorehole"), "error");
-          } else {
-            showAlert(t("errorDuringBoreholeFileUpload"), "error");
-          }
-        } else {
-          loadFiles();
-        }
-      } else {
-        showAlert(t("maxfileSizeExceeded") + " (200 MB)", "error");
-      }
+      await uploadFile(id, file)
+        .then(() => loadFiles())
+        .catch(error => {
+          showAlert(t(error.message), "error");
+        });
     }
     formRef.current?.reset();
   };
@@ -88,7 +65,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
       }),
     );
     if (field === "public") {
-      updateBoreholeAttachment(id, fid, currentDescription, value);
+      updateFile(id, fid, currentDescription, value as boolean);
     } else {
       if (patchQueued) {
         clearTimeout(patchQueued);
@@ -96,7 +73,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
       }
       setPatchQueued(
         setTimeout(() => {
-          updateBoreholeAttachment(id, fid, value, currentIsPublic);
+          updateFile(id, fid, value as string, currentIsPublic);
         }, 250),
       );
     }
@@ -127,7 +104,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
               {t("upload")}
               <Input
                 type="file"
-                onChange={uploadFile}
+                onChange={upload}
                 sx={{
                   clip: "rect(0 0 0 0)",
                   clipPath: "inset(50%)",
@@ -146,7 +123,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
       )}
       <FilesTableComponent
         detachFile={(id: number, fid: number) => {
-          detachBoreholeAttachment(id, fid).then(() => {
+          detachFile(id, fid).then(() => {
             loadFiles();
           });
         }}

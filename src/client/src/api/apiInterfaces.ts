@@ -1,3 +1,14 @@
+export class ApiError extends Error {
+  status?: number;
+
+  constructor(message: string, status?: number) {
+    super(message);
+    this.name = "ApiError";
+    this.message = message;
+    this.status = status;
+  }
+}
+
 export enum Role {
   View = "View",
   Editor = "Editor",
