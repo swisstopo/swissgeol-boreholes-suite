@@ -665,6 +665,8 @@ MapComponent.propTypes = {
   hover: PropTypes.func,
   layers: PropTypes.object,
   selected: PropTypes.func,
+  setFeatureIds: PropTypes.func,
+  featureIds: PropTypes.array,
 };
 
 MapComponent.defaultProps = {
