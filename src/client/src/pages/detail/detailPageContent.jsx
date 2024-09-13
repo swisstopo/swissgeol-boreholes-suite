@@ -20,7 +20,7 @@ import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
 import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
 import Completion from "./form/completion/completion.jsx";
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import WorkflowForm from "./form/workflow/workflowForm.jsx";
 import { AlertContext } from "../../components/alert/alertContext";
 
@@ -282,14 +282,7 @@ class DetailPageContent extends React.Component {
                 exact
                 path={"/:id"}
                 render={() => (
-                  <div
-                    style={{
-                      flex: "1 1 0%",
-                      padding: "1em",
-                      overflowY: "auto",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}>
+                  <Stack direction="column" sx={{ overflowY: "auto" }}>
                     <IdentifierSegment
                       borehole={borehole}
                       identifier={this.state.identifier}
@@ -315,7 +308,7 @@ class DetailPageContent extends React.Component {
                       updateNumber={this.updateNumber}
                       checkLock={this.checkLock}
                       domains={this.props.domains}></LocationSegment>
-                  </div>
+                  </Stack>
                 )}
               />
               <Route

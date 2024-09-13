@@ -16,7 +16,7 @@ const LocationSegment = props => {
 
   return (
     <Stack direction="column">
-      <Stack direction="row" gap={1} sx={{ flexWrap: "wrap" }}>
+      <Stack direction="row" gap={2} sx={{ flexWrap: "wrap" }}>
         <Box sx={{ flexGrow: 1, minWidth: 600 }}>
           <CoordinatesSegment
             size={size}
