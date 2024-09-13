@@ -303,6 +303,7 @@ class DetailPageContent extends React.Component {
                         user={user}></RestrictionSegment>
                       <LocationSegment
                         size={size}
+                        showLabeling={this.props.showLabeling}
                         borehole={borehole}
                         user={user}
                         updateChange={this.updateChange}
@@ -423,6 +424,7 @@ DetailPageContent.propTypes = {
   workflow: PropTypes.object,
   editingEnabled: PropTypes.bool,
   editableByCurrentUser: PropTypes.bool,
+  showLabeling: PropTypes.bool,
 };
 
 DetailPageContent.defaultProps = {

@@ -14,6 +14,7 @@ import { LabelingToggleButton } from "../../components/buttons/labelingButton.ts
 interface DetailPageContentProps {
   editingEnabled: boolean;
   editableByCurrentUser: boolean;
+  showLabeling: boolean;
 }
 
 export const DetailPage: FC = () => {

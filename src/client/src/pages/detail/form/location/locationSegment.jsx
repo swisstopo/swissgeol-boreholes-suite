@@ -7,7 +7,7 @@ import ElevationSegment from "./elevationSegment";
 import { Box, Stack } from "@mui/material";
 
 const LocationSegment = props => {
-  const { size, borehole, user, updateChange, checkLock, updateNumber } = props;
+  const { size, borehole, user, updateChange, checkLock, updateNumber, showLabeling } = props;
 
   const [mapPointChange, setMapPointChange] = useState(false);
 
@@ -21,12 +21,13 @@ const LocationSegment = props => {
           <CoordinatesSegment
             size={size}
             borehole={borehole}
-            user={user}
             updateChange={updateChange}
             updateNumber={updateNumber}
             checkLock={checkLock}
             mapPointChange={mapPointChange}
             setMapPointChange={setMapPointChange}
+            showLabeling={showLabeling}
+            isEditable={isEditable}
           />
           <ElevationSegment
             size={size}
