@@ -274,7 +274,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       hideFooterPagination={!boreholes.length}
       paginationModel={paginationModel}
       onPaginationModelChange={setPaginationModel}
-      pageSizeOptions={[50]}
+      pageSizeOptions={[100]}
       slotProps={{
         pagination: {
           ActionsComponent: TablePaginationActions,
