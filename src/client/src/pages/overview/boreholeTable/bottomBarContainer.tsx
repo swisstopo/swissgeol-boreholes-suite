@@ -42,7 +42,7 @@ const BottomBarContainer = ({
   const [workgroupId, setWorkgroupId] = useState<number | null>(user.data.workgroups[0]?.id);
   const [isBusy, setIsBusy] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
-    pageSize: boreholes.limit ?? 100,
+    pageSize: boreholes.limit ?? 50,
     page: boreholes.page ? boreholes.page - 1 : 0, // MUI pagination starts at 0, whereas server pagination starts at 1
   });
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);

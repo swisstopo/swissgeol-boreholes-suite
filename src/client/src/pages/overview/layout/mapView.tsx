@@ -55,7 +55,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const loadBoreholes = useCallback(
     (
       page: number,
-      limit = 100,
+      limit = 50,
       filter = {},
       orderby = "alternate_name",
       direction = "ASC",
