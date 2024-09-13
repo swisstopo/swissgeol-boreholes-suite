@@ -15,9 +15,9 @@ const LocationSegment = props => {
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   return (
-    <Stack direction="column">
+    <Stack direction="column" gap={2}>
       <Stack direction="row" gap={2} sx={{ flexWrap: "wrap" }}>
-        <Box sx={{ flexGrow: 1, minWidth: 600 }}>
+        <Stack gap={2} sx={{ flexGrow: 1, minWidth: 600 }}>
           <CoordinatesSegment
             size={size}
             borehole={borehole}
@@ -36,7 +36,7 @@ const LocationSegment = props => {
             updateNumber={updateNumber}
             checkLock={checkLock}
           />
-        </Box>
+        </Stack>
         <Box sx={{ flexGrow: 1, minWidth: 600 }}>
           <PointComponent
             setMapPointChange={setMapPointChange}

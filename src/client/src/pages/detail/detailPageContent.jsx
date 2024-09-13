@@ -282,33 +282,35 @@ class DetailPageContent extends React.Component {
                 exact
                 path={"/:id"}
                 render={() => (
-                  <Stack direction="column" sx={{ overflowY: "auto" }}>
-                    <IdentifierSegment
-                      borehole={borehole}
-                      identifier={this.state.identifier}
-                      identifierValue={this.state.identifierValue}
-                      setState={this.setStateBound}
-                      updateBorehole={this.props.updateBorehole}
-                      user={user}></IdentifierSegment>
-                    <NameSegment
-                      size={size}
-                      borehole={borehole}
-                      updateChange={this.updateChange}
-                      user={user}></NameSegment>
-                    <RestrictionSegment
-                      size={size}
-                      borehole={borehole}
-                      updateChange={this.updateChange}
-                      user={user}></RestrictionSegment>
-                    <LocationSegment
-                      size={size}
-                      borehole={borehole}
-                      user={user}
-                      updateChange={this.updateChange}
-                      updateNumber={this.updateNumber}
-                      checkLock={this.checkLock}
-                      domains={this.props.domains}></LocationSegment>
-                  </Stack>
+                  <Box sx={{ overflowY: "auto" }}>
+                    <Stack gap={2} mr={2}>
+                      <IdentifierSegment
+                        borehole={borehole}
+                        identifier={this.state.identifier}
+                        identifierValue={this.state.identifierValue}
+                        setState={this.setStateBound}
+                        updateBorehole={this.props.updateBorehole}
+                        user={user}></IdentifierSegment>
+                      <NameSegment
+                        size={size}
+                        borehole={borehole}
+                        updateChange={this.updateChange}
+                        user={user}></NameSegment>
+                      <RestrictionSegment
+                        size={size}
+                        borehole={borehole}
+                        updateChange={this.updateChange}
+                        user={user}></RestrictionSegment>
+                      <LocationSegment
+                        size={size}
+                        borehole={borehole}
+                        user={user}
+                        updateChange={this.updateChange}
+                        updateNumber={this.updateNumber}
+                        checkLock={this.checkLock}
+                        domains={this.props.domains}></LocationSegment>
+                    </Stack>
+                  </Box>
                 )}
               />
               <Route

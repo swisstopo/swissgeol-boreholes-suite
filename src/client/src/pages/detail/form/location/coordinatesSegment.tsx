@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, FormControl, FormControlLabel, RadioGroup, Stack } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { Form, Segment } from "semantic-ui-react";
+import { Form } from "semantic-ui-react";
 import { NumericFormat } from "react-number-format";
 import { useTranslation } from "react-i18next";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
@@ -23,6 +23,7 @@ import {
   ReferenceSystemKey,
 } from "./coordinateSegmentInterfaces.js";
 import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
+import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -378,7 +379,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   };
 
   return (
-    <Segment>
+    <FormSegmentBox>
       <Form size={size}>
         <Form.Group widths="equal">
           <Form.Field required>
@@ -569,7 +570,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
           </Form.Field>
         </Form.Group>
       </Form>
-    </Segment>
+    </FormSegmentBox>
   );
 };
 

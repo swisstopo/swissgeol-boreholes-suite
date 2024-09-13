@@ -12,7 +12,7 @@ import { defaults as defaultControls } from "ol/control";
 import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
-import { Button, Icon, Label, Segment } from "semantic-ui-react";
+import { Button, Icon, Label } from "semantic-ui-react";
 import { Box } from "@mui/material";
 import { getHeight } from "../../api-lib";
 import { fetchApiV2 } from "../../api/fetchApiV2.js";
@@ -24,6 +24,7 @@ import { projections } from "./mapProjections.js";
 import { detailMapStyleFunction } from "./mapStyleFunctions.js";
 import TileLayer from "ol/layer/Tile.js";
 import XYZ from "ol/source/XYZ.js";
+import { FormSegmentBox } from "../styledComponents";
 
 class PointComponent extends React.Component {
   static contextType = BasemapContext;
@@ -298,10 +299,10 @@ class PointComponent extends React.Component {
   render() {
     const { isEditable } = this.props;
     return (
-      <Segment
+      <FormSegmentBox
         style={{
-          padding: "0px",
-          flex: "1 1 100%",
+          position: "relative",
+          padding: 0,
         }}>
         <div
           className="stbg"
@@ -309,11 +310,11 @@ class PointComponent extends React.Component {
           style={{
             padding: "0px",
             flex: "1 1 100%",
-            height: 560,
+            height: 570,
           }}
         />
         <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
-        <Box sx={{ position: "absolute", right: 0, top: 535 }}>
+        <Box sx={{ position: "absolute", right: 0, top: 545 }}>
           <BasemapSelector marginBottom="0px" />
         </Box>
         <Box
@@ -389,7 +390,7 @@ class PointComponent extends React.Component {
             </Button>
           </Button.Group>
         </Box>
-      </Segment>
+      </FormSegmentBox>
     );
   }
 }

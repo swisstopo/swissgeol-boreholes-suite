@@ -1,11 +1,12 @@
 import { FC } from "react";
-import { Form, Segment } from "semantic-ui-react";
+import { Form } from "semantic-ui-react";
 import { NumericFormat } from "react-number-format";
 import { useTranslation } from "react-i18next";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import DomainText from "../../../../components/legacyComponents/domain/domainText.jsx";
 import { parseFloatWithThousandsSeparator } from "../../../../components/legacyComponents/formUtils.js";
 import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 
 interface ElevationSegmentProps {
   size: string;
@@ -27,7 +28,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ size, borehole, user, upd
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   return (
-    <Segment>
+    <FormSegmentBox>
       <Form size={size}>
         <Form.Group widths="equal">
           <Form.Field error={borehole.data.elevation_z == null} required>
@@ -121,7 +122,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ size, borehole, user, upd
           </Form.Field>
         </Form.Group>
       </Form>
-    </Segment>
+    </FormSegmentBox>
   );
 };
 
