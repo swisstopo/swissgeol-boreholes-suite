@@ -5,7 +5,7 @@ import _ from "lodash";
 import CoordinatesSegment from "./coordinatesSegment.tsx";
 
 const LocationSegment = props => {
-  const { size, borehole, user, updateChange, checkLock, updateNumber } = props;
+  const { borehole, user, updateChange, checkLock, updateNumber } = props;
 
   const [mapPointChange, setMapPointChange] = useState(false);
 
@@ -23,7 +23,6 @@ const LocationSegment = props => {
           flex: "1",
         }}>
         <CoordinatesSegment
-          size={size}
           borehole={borehole}
           user={user}
           updateChange={updateChange}
@@ -32,7 +31,6 @@ const LocationSegment = props => {
           mapPointChange={mapPointChange}
           setMapPointChange={setMapPointChange}></CoordinatesSegment>
         <CantonMunicipalitySegment
-          size={size}
           country={borehole.data.custom.country}
           canton={borehole.data.custom.canton}
           municipality={borehole.data.custom.municipality}

@@ -7,7 +7,7 @@ import Geometry from "./geometry.jsx";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
 import { useHistory, useLocation } from "react-router-dom";
 
-const BoreholePanel = ({ size, boreholeId, borehole, updateChange, updateNumber, isEditable }) => {
+const BoreholePanel = ({ boreholeId, borehole, updateChange, updateNumber, isEditable }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
@@ -55,14 +55,12 @@ const BoreholePanel = ({ size, boreholeId, borehole, updateChange, updateNumber,
         {activeIndex === 0 && (
           <>
             <BoreholeGeneralSegment
-              size={size}
               borehole={borehole}
               updateChange={updateChange}
               updateNumber={updateNumber}
               isEditable={isEditable}
             />
             <BoreholeDetailSegment
-              size={size}
               borehole={borehole}
               updateChange={updateChange}
               updateNumber={updateNumber}

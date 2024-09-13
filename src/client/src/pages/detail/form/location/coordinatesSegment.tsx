@@ -26,7 +26,6 @@ import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } fro
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
-  size,
   borehole,
   user,
   updateChange,
@@ -379,7 +378,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   return (
     <Segment>
-      <Form size={size}>
+      <Form>
         <Form.Group widths="equal">
           <Form.Field required>
             <label>{t("spatial_reference_system")}</label>

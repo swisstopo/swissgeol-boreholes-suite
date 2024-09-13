@@ -2,12 +2,12 @@ import { Form, Icon, Input, Segment } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
 
 const CantonMunicipalitySegment = props => {
-  const { size, country, canton, municipality, isEditable } = props;
+  const { country, canton, municipality, isEditable } = props;
   const { t } = useTranslation();
 
   return (
     <Segment>
-      <Form autoCapitalize="off" autoComplete="off" autoCorrect="off" size={size} spellCheck="false">
+      <Form autoCapitalize="off" autoComplete="off" autoCorrect="off" spellCheck="false">
         <Form.Group widths="equal">
           <Form.Field>
             <label>
