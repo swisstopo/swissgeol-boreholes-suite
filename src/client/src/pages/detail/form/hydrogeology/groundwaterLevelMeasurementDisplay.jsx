@@ -14,8 +14,8 @@ const GroundwaterLevelMeasurementDisplay = props => {
         <FormDisplay label="gwlm_kind" value={item?.kind} type={FormValueType.Domain} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay label="gwlm_levelm" value={item?.levelM} />
         <FormDisplay label="gwlm_levelmasl" value={item?.levelMasl} />
+        <FormDisplay label="gwlm_levelm" value={item?.levelM} />
       </StackFullWidth>
     </DataDisplayCard>
   );
