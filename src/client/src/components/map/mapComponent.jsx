@@ -448,7 +448,10 @@ class MapComponent extends React.Component {
       }
     });
     const intersectingFeatures = intersectingVectorSource.getFeatures();
-    this.props.setFeatureIds(intersectingFeatures.map(f => f.getId()));
+    const intersectingFeatureIds = intersectingFeatures.map(f => f.getId());
+    if (!_.isEqual(intersectingFeatureIds, this.props.featureIds)) {
+      this.props.setFeatureIds(intersectingFeatureIds);
+    }
     return intersectingFeatures;
   }
 
@@ -662,6 +665,8 @@ MapComponent.propTypes = {
   hover: PropTypes.func,
   layers: PropTypes.object,
   selected: PropTypes.func,
+  setFeatureIds: PropTypes.func,
+  featureIds: PropTypes.array,
 };
 
 MapComponent.defaultProps = {
