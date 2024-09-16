@@ -11,7 +11,7 @@ ON CONFLICT (id_wgp)
 DO UPDATE SET name_wgp = EXCLUDED.name_wgp;
 
 -- Update existing boreholes to default workgroup
-UPDATE bdms.borehole SET id_wgp_fk = 1;
+UPDATE bdms.borehole SET id_wgp_fk = 1 WHERE id_wgp_fk <> 1;
 DELETE FROM bdms.workgroups WHERE id_wgp <> 1;
 
 -- Insert default anonymous user to enable anonymous access
@@ -24,11 +24,12 @@ SET admin_usr = false,
     username = 'Anonymous',
     firstname = 'Anonymous',
     lastname = 'Anonymous',
-    disabled_usr = NOW();
+    disabled_usr = NOW()
+WHERE username <> 'Anonymous';
 
 -- Purge attachments
-DELETE FROM bdms.borehole_files;
-DELETE FROM bdms.files;
+DELETE FROM bdms.borehole_files WHERE true;
+DELETE FROM bdms.files WHERE true;
 
 -- Purge non-free and non-published boreholes
 DELETE FROM bdms.borehole WHERE id_bho NOT IN (
@@ -48,6 +49,8 @@ WHERE id_rol_fk NOT IN (
 );
 
 -- Purge specific borehole fields
-UPDATE bdms.borehole SET original_name_bho = NULL;
+UPDATE bdms.borehole
+SET original_name_bho = NULL
+WHERE original_name_bho <> NULL;
 
 SELECT COUNT(*) AS "Free/Published Boreholes" FROM bdms.borehole;
