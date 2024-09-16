@@ -1,0 +1,28 @@
+services:
+  db:
+    extends:
+      file: ../../docker-compose.yml
+      service: db
+    # override the default configuration
+    volumes:
+      - /var/lib/postgresql/data
+  target-db:
+    image: postgis/postgis:15-3.4-alpine
+    restart: unless-stopped
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: SLICKERMONTANA
+      POSTGRES_PASSWORD: YELLOWYARD
+      POSTGRES_DB: ANGRYFELONY
+  api:
+    extends:
+      file: ../../docker-compose.yml
+      service: api
+    build:
+      args:
+        - VERSION=0.0.99
+        - REVISION=test
+    environment:
+      # use development environment to enable seeding the database
+      - ASPNETCORE_ENVIRONMENT=Development
