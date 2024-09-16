@@ -68,6 +68,7 @@ export const DetailPage: FC = () => {
   const props: DetailPageContentProps = {
     editingEnabled: editingEnabled,
     editableByCurrentUser: editableByCurrentUser,
+    showLabeling: showLabeling,
   };
 
   return (
