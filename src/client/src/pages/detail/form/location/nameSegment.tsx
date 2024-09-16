@@ -27,7 +27,7 @@ const NameSegment = ({ borehole, updateChange, user }: NameSegmentProps) => {
           <Form.Field error={borehole.data.extended.original_name === ""} required>
             <label>{t("original_name")}</label>
             <Input
-              data-cy="original_name"
+              data-cy="original-name"
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
