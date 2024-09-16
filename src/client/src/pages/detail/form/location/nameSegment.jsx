@@ -1,6 +1,7 @@
-import { Form, Input, Segment } from "semantic-ui-react";
+import { Form, Input } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { FormSegmentBox } from "../../../../components/styledComponents";
 
 const NameSegment = props => {
   const { size, borehole, updateChange, user } = props;
@@ -13,7 +14,7 @@ const NameSegment = props => {
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   return (
-    <Segment>
+    <FormSegmentBox>
       <Form autoComplete="off" error size={size}>
         <Form.Group widths="equal">
           <Form.Field error={borehole.data.extended.original_name === ""} required>
@@ -65,7 +66,7 @@ const NameSegment = props => {
           </Form.Field>
         </Form.Group>
       </Form>
-    </Segment>
+    </FormSegmentBox>
   );
 };
 

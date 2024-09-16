@@ -64,12 +64,6 @@ export interface FormValues {
   location_x_lv03: string;
   location_y_lv03: string;
   location_precision: string;
-  elevation_z: string;
-  elevation_precision: string;
-  reference_elevation: string;
-  reference_elevation_qt: string;
-  reference_elevation_type: string;
-  height_reference_system: number;
 }
 
 export interface CoordinatesSegmentProps {

@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import _ from "lodash";
-
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import DomainText from "../../../../components/legacyComponents/domain/domainText.jsx";
-import { Form, Icon, Input, Segment } from "semantic-ui-react";
+import { Form, Icon, Input } from "semantic-ui-react";
 import { addIdentifier, removeIdentifier } from "../../../../api-lib";
 import { useTranslation } from "react-i18next";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import { FormSegmentBox } from "../../../../components/styledComponents";
 
 const IdentifierSegment = props => {
   const { borehole, identifier, identifierValue, updateBorehole, setState, user } = props;
@@ -17,7 +17,7 @@ const IdentifierSegment = props => {
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   return (
-    <Segment>
+    <FormSegmentBox>
       <div
         className="flex_row bdms_bold"
         style={{
@@ -172,7 +172,7 @@ const IdentifierSegment = props => {
           </Form.Group>
         </Form>
       ) : null}
-    </Segment>
+    </FormSegmentBox>
   );
 };
 
