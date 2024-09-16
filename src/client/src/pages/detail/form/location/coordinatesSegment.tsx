@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, FormControl, FormControlLabel, RadioGroup, Stack } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, FormControl, FormControlLabel, RadioGroup, Stack } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { Form } from "semantic-ui-react";
 import { NumericFormat } from "react-number-format";
@@ -23,20 +23,24 @@ import {
   ReferenceSystemKey,
 } from "./coordinateSegmentInterfaces.js";
 import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
+import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
+import { useLabelingContext } from "../../labeling/labelingInterfaces.js";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   size,
   borehole,
-  user,
   updateChange,
   updateNumber,
   checkLock,
   mapPointChange,
   setMapPointChange,
+  showLabeling,
+  isEditable,
 }) => {
   const { t } = useTranslation();
+  const { panelOpen, togglePanel } = useLabelingContext();
 
   // --- State variables ---
   const [currentReferenceSystem, setCurrentReferenceSystem] = useState<number>(borehole.data.spatial_reference_system);
@@ -49,8 +53,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // --- Derived states ---
   const isLV95 = currentReferenceSystem === referenceSystems.LV95.code || currentReferenceSystem === null; // LV95 should be selected by default.
-  const isEditable: boolean =
-    borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   // --- UseCallback hooks ---
 
@@ -379,183 +381,196 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   };
 
   return (
-    <FormSegmentBox>
-      <Form size={size}>
-        <Form.Group widths="equal">
-          <Form.Field required>
-            <label>{t("spatial_reference_system")}</label>
-            <Controller
-              name="spatial_reference_system"
-              control={control}
-              defaultValue={referenceSystems.LV95.code}
-              render={({ field }) => (
-                <FormControl {...field} className="radio-group">
-                  <RadioGroup
-                    row
-                    value={currentReferenceSystem ?? referenceSystems.LV95.code}
-                    onChange={e => onReferenceSystemChange(parseFloat(e.target.value))}>
-                    <FormControlLabel
-                      value={referenceSystems.LV95.code}
-                      sx={{ flexGrow: 1 }}
-                      control={<DisabledRadio isEditable={!isEditable} />}
-                      label={<DomainText id={referenceSystems.LV95.code} schema="spatial_reference_system" />}
-                    />
-                    <FormControlLabel
-                      value={referenceSystems.LV03.code}
-                      sx={{ flexGrow: 1 }}
-                      control={<DisabledRadio isEditable={!isEditable} />}
-                      label={<DomainText id={referenceSystems.LV03.code} schema="spatial_reference_system" />}
-                    />
-                  </RadioGroup>
-                </FormControl>
-              )}
-            />
-          </Form.Field>
-        </Form.Group>
-        <Box>
-          <Stack direction="row" spacing={2} justifyContent="space-around" mb={2}>
-            <Stack direction="column" sx={{ flexGrow: 1 }}>
+    <Form size={size}>
+      <Card>
+        <CardHeader
+          title={t("coordinates")}
+          sx={{ p: 4, pb: 3 }}
+          titleTypographyProps={{ variant: "h5" }}
+          action={
+            showLabeling &&
+            isEditable && <LabelingButton className={panelOpen ? "Mui-active" : ""} onClick={() => togglePanel()} />
+          }
+        />
+        <CardContent sx={{ pl: 4, pr: 4 }}>
+          <Form.Group widths="equal">
+            <Form.Field required>
+              <label>{t("spatial_reference_system")}</label>
               <Controller
-                name="location_x"
+                name="spatial_reference_system"
                 control={control}
-                rules={{
-                  required: true,
-                  validate: inLV95XBounds,
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <Form.Field
-                    {...field}
-                    style={{
-                      opacity: !isLV95 ? 0.6 : 1,
-                      pointerEvents: !isLV95 ? "none" : "auto",
-                    }}
-                    error={error !== undefined}>
-                    <label>{t("location_x_LV95")}</label>
-                    <NumericFormat
-                      data-cy="LV95X"
-                      type="text"
-                      autoCapitalize="off"
-                      autoComplete="off"
-                      autoCorrect="off"
-                      readOnly={!isLV95 || !isEditable}
-                      onChange={e => {
-                        onCoordinateChange(ReferenceSystemKey.LV95, Direction.X, String(e.target.value));
-                      }}
-                      fixedDecimalScale
-                      spellCheck="false"
-                      value={field.value || ""}
-                      thousandSeparator="'"
-                    />
-                  </Form.Field>
+                defaultValue={referenceSystems.LV95.code}
+                render={({ field }) => (
+                  <FormControl {...field} className="radio-group">
+                    <RadioGroup
+                      row
+                      value={currentReferenceSystem ?? referenceSystems.LV95.code}
+                      onChange={e => onReferenceSystemChange(parseFloat(e.target.value))}>
+                      <FormControlLabel
+                        value={referenceSystems.LV95.code}
+                        sx={{ flexGrow: 1 }}
+                        control={<DisabledRadio isEditable={!isEditable} />}
+                        label={<DomainText id={referenceSystems.LV95.code} schema="spatial_reference_system" />}
+                      />
+                      <FormControlLabel
+                        value={referenceSystems.LV03.code}
+                        sx={{ flexGrow: 1 }}
+                        control={<DisabledRadio isEditable={!isEditable} />}
+                        label={<DomainText id={referenceSystems.LV03.code} schema="spatial_reference_system" />}
+                      />
+                    </RadioGroup>
+                  </FormControl>
                 )}
               />
-              <Controller
-                name="location_y"
-                control={control}
-                rules={{
-                  required: true,
-                  validate: inLV95YBounds,
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <Form.Field
-                    {...field}
-                    style={{
-                      opacity: !isLV95 ? 0.6 : 1,
-                      pointerEvents: !isLV95 ? "none" : "auto",
-                    }}
-                    error={error !== undefined}>
-                    <label>{t("location_y_LV95")}</label>
-                    <NumericFormat
-                      data-cy="LV95Y"
-                      type="text"
-                      autoCapitalize="off"
-                      autoComplete="off"
-                      autoCorrect="off"
-                      readOnly={!isLV95 || !isEditable}
-                      onChange={e => {
-                        onCoordinateChange(ReferenceSystemKey.LV95, Direction.Y, String(e.target.value));
+            </Form.Field>
+          </Form.Group>
+          <Box>
+            <Stack direction="row" spacing={2} justifyContent="space-around" mb={2}>
+              <Stack direction="column" sx={{ flexGrow: 1 }}>
+                <Controller
+                  name="location_x"
+                  control={control}
+                  rules={{
+                    required: true,
+                    validate: inLV95XBounds,
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <Form.Field
+                      {...field}
+                      style={{
+                        opacity: !isLV95 ? 0.6 : 1,
+                        pointerEvents: !isLV95 ? "none" : "auto",
                       }}
-                      fixedDecimalScale
-                      spellCheck="false"
-                      value={field.value || ""}
-                      thousandSeparator="'"
-                    />
-                  </Form.Field>
-                )}
-              />
+                      error={error !== undefined}>
+                      <label>{t("location_x_LV95")}</label>
+                      <NumericFormat
+                        data-cy="LV95X"
+                        type="text"
+                        autoCapitalize="off"
+                        autoComplete="off"
+                        autoCorrect="off"
+                        readOnly={!isLV95 || !isEditable}
+                        onChange={e => {
+                          onCoordinateChange(ReferenceSystemKey.LV95, Direction.X, String(e.target.value));
+                        }}
+                        fixedDecimalScale
+                        spellCheck="false"
+                        value={field.value || ""}
+                        thousandSeparator="'"
+                      />
+                    </Form.Field>
+                  )}
+                />
+                <Controller
+                  name="location_y"
+                  control={control}
+                  rules={{
+                    required: true,
+                    validate: inLV95YBounds,
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <Form.Field
+                      {...field}
+                      style={{
+                        opacity: !isLV95 ? 0.6 : 1,
+                        pointerEvents: !isLV95 ? "none" : "auto",
+                      }}
+                      error={error !== undefined}>
+                      <label>{t("location_y_LV95")}</label>
+                      <NumericFormat
+                        data-cy="LV95Y"
+                        type="text"
+                        autoCapitalize="off"
+                        autoComplete="off"
+                        autoCorrect="off"
+                        readOnly={!isLV95 || !isEditable}
+                        onChange={e => {
+                          onCoordinateChange(ReferenceSystemKey.LV95, Direction.Y, String(e.target.value));
+                        }}
+                        fixedDecimalScale
+                        spellCheck="false"
+                        value={field.value || ""}
+                        thousandSeparator="'"
+                      />
+                    </Form.Field>
+                  )}
+                />
+              </Stack>
+              <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
+                <Controller
+                  name="location_x_lv03"
+                  control={control}
+                  rules={{
+                    required: true,
+                    validate: inLV03XBounds,
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <Form.Field
+                      {...field}
+                      style={{
+                        opacity: isLV95 ? 0.6 : 1,
+                        pointerEvents: isLV95 ? "none" : "auto",
+                      }}
+                      error={error !== undefined}>
+                      <label>{t("location_x_LV03")}</label>
+                      <NumericFormat
+                        type="text"
+                        data-cy="LV03X"
+                        autoCapitalize="off"
+                        autoComplete="off"
+                        autoCorrect="off"
+                        readOnly={isLV95 || !isEditable}
+                        onChange={e => {
+                          onCoordinateChange(ReferenceSystemKey.LV03, Direction.X, String(e.target.value));
+                        }}
+                        valueIsNumericString
+                        spellCheck="false"
+                        value={field.value || ""}
+                        thousandSeparator="'"
+                      />
+                    </Form.Field>
+                  )}
+                />
+                <Controller
+                  name="location_y_lv03"
+                  control={control}
+                  rules={{
+                    required: true,
+                    validate: inLV03YBounds,
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <Form.Field
+                      {...field}
+                      style={{
+                        opacity: isLV95 ? 0.6 : 1,
+                        pointerEvents: isLV95 ? "none" : "auto",
+                      }}
+                      error={error !== undefined}>
+                      <label>{t("location_y_LV03")}</label>
+                      <NumericFormat
+                        data-cy="LV03Y"
+                        type="text"
+                        autoCapitalize="off"
+                        autoComplete="off"
+                        autoCorrect="off"
+                        readOnly={isLV95 || !isEditable}
+                        onChange={e => {
+                          onCoordinateChange(ReferenceSystemKey.LV03, Direction.Y, String(e.target.value));
+                        }}
+                        fixedDecimalScale
+                        spellCheck="false"
+                        value={field.value || ""}
+                        thousandSeparator="'"
+                      />
+                    </Form.Field>
+                  )}
+                />
+              </Stack>
             </Stack>
-            <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
-              <Controller
-                name="location_x_lv03"
-                control={control}
-                rules={{
-                  required: true,
-                  validate: inLV03XBounds,
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <Form.Field
-                    {...field}
-                    style={{
-                      opacity: isLV95 ? 0.6 : 1,
-                      pointerEvents: isLV95 ? "none" : "auto",
-                    }}
-                    error={error !== undefined}>
-                    <label>{t("location_x_LV03")}</label>
-                    <NumericFormat
-                      type="text"
-                      data-cy="LV03X"
-                      autoCapitalize="off"
-                      autoComplete="off"
-                      autoCorrect="off"
-                      readOnly={isLV95 || !isEditable}
-                      onChange={e => {
-                        onCoordinateChange(ReferenceSystemKey.LV03, Direction.X, String(e.target.value));
-                      }}
-                      valueIsNumericString
-                      spellCheck="false"
-                      value={field.value || ""}
-                      thousandSeparator="'"
-                    />
-                  </Form.Field>
-                )}
-              />
-              <Controller
-                name="location_y_lv03"
-                control={control}
-                rules={{
-                  required: true,
-                  validate: inLV03YBounds,
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <Form.Field
-                    {...field}
-                    style={{
-                      opacity: isLV95 ? 0.6 : 1,
-                      pointerEvents: isLV95 ? "none" : "auto",
-                    }}
-                    error={error !== undefined}>
-                    <label>{t("location_y_LV03")}</label>
-                    <NumericFormat
-                      data-cy="LV03Y"
-                      type="text"
-                      autoCapitalize="off"
-                      autoComplete="off"
-                      autoCorrect="off"
-                      readOnly={isLV95 || !isEditable}
-                      onChange={e => {
-                        onCoordinateChange(ReferenceSystemKey.LV03, Direction.Y, String(e.target.value));
-                      }}
-                      fixedDecimalScale
-                      spellCheck="false"
-                      value={field.value || ""}
-                      thousandSeparator="'"
-                    />
-                  </Form.Field>
-                )}
-              />
-            </Stack>
-          </Stack>
-        </Box>
+          </Box>
+        </CardContent>
+      </Card>
+      <FormSegmentBox>
         <Form.Group widths="equal">
           <Form.Field required>
             <label>{t("location_precision")}</label>
@@ -569,8 +584,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
             />
           </Form.Field>
         </Form.Group>
-      </Form>
-    </FormSegmentBox>
+      </FormSegmentBox>
+    </Form>
   );
 };
 

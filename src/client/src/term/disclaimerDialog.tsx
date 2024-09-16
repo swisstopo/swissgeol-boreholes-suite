@@ -31,7 +31,7 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
       <Stack sx={{ width: 500, borderRadius: 1 }}>
         <DialogHeaderContainer>
           <Stack direction="row">
-            <Typography variant="h5" sx={{ flexGrow: 1 }}>
+            <Typography variant="h4" sx={{ flexGrow: 1 }}>
               {t("terms")}
             </Typography>
             <LanguagePopup />

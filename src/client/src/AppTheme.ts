@@ -68,6 +68,12 @@ export const theme = createTheme({
       color: "#337083",
     },
     h5: {
+      fontSize: "16px",
+      lineHeight: "24px",
+      fontWeight: 700,
+      color: "#000000",
+    },
+    h4: {
       fontSize: "20px",
       lineHeight: "28px",
       fontWeight: 700,
@@ -245,6 +251,23 @@ export const theme = createTheme({
         },
       },
     },
+    MuiCardHeader: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#F1F3F5",
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          border: "1px solid #ACB4BD",
+          boxShadow: "none",
+          borderRadius: "8px !important",
+        },
+      },
+    },
+
     MuiIconButton: {
       styleOverrides: {
         root: {
@@ -285,7 +308,7 @@ export const theme = createTheme({
             background: "linear-gradient(#4338CA, #BF1F25)",
             boxShadow: "0px 0px 0px 3px #8655F6",
           },
-          "&:active": {
+          "&:active, &.Mui-active": {
             background: "linear-gradient(#4F46E5, #E53940)",
           },
           "&:disabled": {
