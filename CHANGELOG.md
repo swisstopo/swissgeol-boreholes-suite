@@ -9,6 +9,7 @@
 - Language dropdown in the header.
 - Added health check endpoint for the .NET API.
 - Added possibility to run the boreholes web application in read-only mode.
+- New view-sync Docker image for syncing free/published boreholes from a source to a target database.
 
 ### Changed
 
