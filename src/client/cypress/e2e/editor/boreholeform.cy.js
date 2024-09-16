@@ -1,4 +1,10 @@
-import { createBorehole, loginAsAdmin, newEditableBorehole } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  goToRouteAndAcceptTerms,
+  newEditableBorehole,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {
@@ -49,7 +55,7 @@ describe("Test for the borehole form.", () => {
     createBorehole({ "extended.original_name": "LSENALZE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
-      loginAsAdmin(`/${id}/borehole`);
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
     });
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
@@ -68,6 +74,36 @@ describe("Test for the borehole form.", () => {
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
       expect(location.hash).to.eq("#geometry");
+    });
+  });
+
+  it("completes alternate name", () => {
+    createBorehole({ "extended.original_name": "PHOTOSQUIRREL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}`);
+      const originalNameInput = cy.get('[data-cy="original_name"] > input');
+      const alternateNameInput = cy.get('[data-cy="alternate-name"] > input');
+      originalNameInput.should("have.value", "PHOTOSQUIRREL");
+      alternateNameInput.should("have.value", "PHOTOSQUIRREL");
+
+      startBoreholeEditing();
+      // changing original name should also change alternate name
+      originalNameInput.clear().type("PHOTOCAT");
+      cy.wait("@edit_patch");
+      originalNameInput.should("have.value", "PHOTOCAT");
+      alternateNameInput.should("have.value", "PHOTOCAT");
+
+      alternateNameInput.clear().type("PHOTOMOUSE");
+      cy.wait("@edit_patch");
+      originalNameInput.should("have.value", "PHOTOCAT");
+      alternateNameInput.should("have.value", "PHOTOMOUSE");
+
+      alternateNameInput.clear();
+      cy.wait("@edit_patch");
+      stopBoreholeEditing();
+      // should be reset to original name if alternate name is empty
+      originalNameInput.should("have.value", "PHOTOCAT");
+      alternateNameInput.should("have.value", "PHOTOCAT");
     });
   });
 });
