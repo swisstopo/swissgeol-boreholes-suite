@@ -308,7 +308,7 @@ export const theme = createTheme({
             background: "linear-gradient(#4338CA, #BF1F25)",
             boxShadow: "0px 0px 0px 3px #8655F6",
           },
-          "&:active": {
+          "&:active, &.Mui-active": {
             background: "linear-gradient(#4F46E5, #E53940)",
           },
           "&:disabled": {

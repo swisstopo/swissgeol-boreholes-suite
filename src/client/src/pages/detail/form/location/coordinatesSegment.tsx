@@ -387,7 +387,10 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
           title={t("coordinates")}
           sx={{ p: 4, pb: 3 }}
           titleTypographyProps={{ variant: "h5" }}
-          action={showLabeling && isEditable && <LabelingButton disabled={panelOpen} onClick={() => togglePanel()} />}
+          action={
+            showLabeling &&
+            isEditable && <LabelingButton className={panelOpen ? "Mui-active" : ""} onClick={() => togglePanel()} />
+          }
         />
         <CardContent sx={{ pl: 4, pr: 4 }}>
           <Form.Group widths="equal">
