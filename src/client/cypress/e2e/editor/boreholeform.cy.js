@@ -77,7 +77,7 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it.only("completes alternate name", () => {
+  it("completes alternate name", () => {
     createBorehole({ "extended.original_name": "PHOTOSQUIRREL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
