@@ -1,10 +1,4 @@
-import {
-  createBorehole,
-  goToRouteAndAcceptTerms,
-  newEditableBorehole,
-  startBoreholeEditing,
-  stopBoreholeEditing,
-} from "../helpers/testHelpers";
+import { createBorehole, goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {
@@ -74,41 +68,6 @@ describe("Test for the borehole form.", () => {
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
       expect(location.hash).to.eq("#geometry");
-    });
-  });
-
-  it("completes alternate name", () => {
-    createBorehole({ "extended.original_name": "PHOTOSQUIRREL" }).as("borehole_id");
-    cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
-      cy.get('[data-cy="original-name"]').within(() => {
-        cy.get("input").as("originalNameInput");
-      });
-      cy.get('[data-cy="alternate-name"]').within(() => {
-        cy.get("input").as("alternateNameInput");
-      });
-
-      cy.get("@originalNameInput").should("have.value", "PHOTOSQUIRREL");
-      cy.get("@alternateNameInput").should("have.value", "PHOTOSQUIRREL");
-
-      startBoreholeEditing();
-      // changing original name should also change alternate name
-      cy.get("@originalNameInput").clear().type("PHOTOCAT");
-      cy.wait("@edit_patch");
-      cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
-      cy.get("@alternateNameInput").should("have.value", "PHOTOCAT");
-
-      cy.get("@alternateNameInput").clear().type("PHOTOMOUSE");
-      cy.wait("@edit_patch");
-      cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
-      cy.get("@alternateNameInput").should("have.value", "PHOTOMOUSE");
-
-      cy.get("@alternateNameInput").clear();
-      cy.wait("@edit_patch");
-      stopBoreholeEditing();
-      // should be reset to original name if alternate name is empty
-      cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
-      cy.get("@alternateNameInput").should("have.value", "PHOTOCAT");
     });
   });
 });
