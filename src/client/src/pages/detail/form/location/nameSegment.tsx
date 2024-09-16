@@ -1,7 +1,8 @@
-import { Form, Input, Segment } from "semantic-ui-react";
+import { Form, Input } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { FormSegmentBox } from "../../../../components/styledComponents";
 
 interface NameSegmentProps {
   borehole: Borehole;
@@ -21,7 +22,7 @@ const NameSegment = ({ borehole, updateChange, user }: NameSegmentProps) => {
   }, [borehole.data]);
 
   return (
-    <Segment>
+    <FormSegmentBox>
       <Form autoComplete="off" error>
         <Form.Group widths="equal">
           <Form.Field error={borehole.data.extended.original_name === ""} required>
@@ -75,7 +76,7 @@ const NameSegment = ({ borehole, updateChange, user }: NameSegmentProps) => {
           </Form.Field>
         </Form.Group>
       </Form>
-    </Segment>
+    </FormSegmentBox>
   );
 };
 

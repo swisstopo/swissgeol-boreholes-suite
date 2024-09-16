@@ -20,7 +20,7 @@ import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
 import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
 import Completion from "./form/completion/completion.jsx";
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import WorkflowForm from "./form/workflow/workflowForm.jsx";
 import { AlertContext } from "../../components/alert/alertContext";
 
@@ -281,14 +281,8 @@ class DetailPageContent extends React.Component {
                 exact
                 path={"/:id"}
                 render={() => (
-                  <div
-                    style={{
-                      flex: "1 1 0%",
-                      padding: "1em",
-                      overflowY: "auto",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}>
+                  <Box sx={{ overflowY: "auto" }}>
+                    <Stack gap={2} mr={2}>
                     <IdentifierSegment
                       borehole={borehole}
                       identifier={this.state.identifier}
@@ -302,13 +296,14 @@ class DetailPageContent extends React.Component {
                       updateChange={this.updateChange}
                       user={user}></RestrictionSegment>
                     <LocationSegment
-                      borehole={borehole}
-                      user={user}
-                      updateChange={this.updateChange}
-                      updateNumber={this.updateNumber}
-                      checkLock={this.checkLock}
-                      domains={this.props.domains}></LocationSegment>
-                  </div>
+                        borehole={borehole}
+                        user={user}
+                        updateChange={this.updateChange}
+                        updateNumber={this.updateNumber}
+                        checkLock={this.checkLock}
+                        domains={this.props.domains}></LocationSegment>
+                    </Stack>
+                  </Box>
                 )}
               />
               <Route

@@ -1,0 +1,17 @@
+services:
+  view-sync:
+    build: .
+    environment:
+      - SOURCE_DB_HOST=host.docker.internal
+      - SOURCE_DB_PORT=5432
+      - SOURCE_DB_NAME=bdms
+      - SOURCE_DB_SCHEMA=bdms
+      - SOURCE_DB_USERNAME=SPAWNPLOW
+      - SOURCE_DB_PASSWORD=YELLOWSPATULA
+      - TARGET_DB_HOST=host.docker.internal
+      - TARGET_DB_PORT=5433
+      - TARGET_DB_NAME=ANGRYFELONY
+      - TARGET_DB_USERNAME=SLICKERMONTANA
+      - TARGET_DB_PASSWORD=YELLOWYARD
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
