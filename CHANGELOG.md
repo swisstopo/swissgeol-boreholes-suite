@@ -50,6 +50,7 @@
 - Boreholes table reset scroll position when hovering over a row.
 - When returning to the boreholes table from another page, the last scroll position was lost.
 - Status filter labels were not displayed correctly.
+- Order of groundwater level measurement attributes was incorrect.
 
 ## v2.1.772 - 2024-06-27
 
