@@ -7,12 +7,9 @@ import ElevationSegment from "./elevationSegment";
 import { Box, Stack } from "@mui/material";
 
 const LocationSegment = props => {
-  const { size, borehole, user, updateChange, checkLock, updateNumber, showLabeling } = props;
+  const { size, borehole, user, updateChange, checkLock, updateNumber, showLabeling, editingEnabled } = props;
 
   const [mapPointChange, setMapPointChange] = useState(false);
-
-  const isEditable =
-    borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   return (
     <Stack direction="column" gap={2}>
@@ -27,7 +24,7 @@ const LocationSegment = props => {
             mapPointChange={mapPointChange}
             setMapPointChange={setMapPointChange}
             showLabeling={showLabeling}
-            isEditable={isEditable}
+            editingEnabled={editingEnabled}
           />
           <ElevationSegment
             size={size}
@@ -45,7 +42,7 @@ const LocationSegment = props => {
               updateChange("location", [x, y, height, country, canton, municipality], false);
             }}
             id={borehole.data.id}
-            isEditable={isEditable}
+            isEditable={editingEnabled}
             x={_.isNil(borehole.data.location_x) ? null : _.toNumber(borehole.data.location_x)}
             y={_.isNil(borehole.data.location_y) ? null : _.toNumber(borehole.data.location_y)}
           />
@@ -56,7 +53,7 @@ const LocationSegment = props => {
         country={borehole.data.custom.country}
         canton={borehole.data.custom.canton}
         municipality={borehole.data.custom.municipality}
-        isEditable={isEditable}
+        isEditable={editingEnabled}
       />
     </Stack>
   );

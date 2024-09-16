@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Card, CardContent, CardHeader, Stack } from "@mui/material";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { Card, CardContent, CardHeader, Stack } from "@mui/material";
+import { FormProvider, useForm } from "react-hook-form";
 import { Form } from "semantic-ui-react";
-import { NumericFormat } from "react-number-format";
 import { useTranslation } from "react-i18next";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import {
@@ -15,6 +14,7 @@ import {
   Coordinates,
   CoordinatesSegmentProps,
   Direction,
+  FieldNameDirectionKeys,
   Location,
   ReferenceSystemCode,
   ReferenceSystemKey,
@@ -24,6 +24,7 @@ import { LabelingButton } from "../../../../components/buttons/labelingButton.ts
 import { useLabelingContext } from "../../labeling/labelingInterfaces.js";
 import { FormSegmentBox, StackFullWidth } from "../../../../components/styledComponents.ts";
 import { FormSelect } from "../../../../components/form/formSelect.tsx";
+import { CoordinatesTextfield } from "./CoordinatesTextfield.tsx";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -31,11 +32,10 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   borehole,
   updateChange,
   updateNumber,
-  checkLock,
   mapPointChange,
   setMapPointChange,
   showLabeling,
-  isEditable,
+  editingEnabled,
 }) => {
   const { t } = useTranslation();
   const { panelOpen, togglePanel } = useLabelingContext();
@@ -248,7 +248,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       setBoreholeId(borehole.data.id);
     }
 
-    if (mapPointChange && isEditable) {
+    if (mapPointChange && editingEnabled) {
       // set coordinate system to LV95 and transform LV95 coordinates to LV03 with fixed precision of 2.
       setCurrentReferenceSystem(ReferenceSystemCode.LV95);
       handleCoordinateTransformation(
@@ -266,7 +266,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     mapPointChange,
     setValuesForReferenceSystem,
     transformCoordinates,
-    isEditable,
+    editingEnabled,
     updateCoordinatesWithPrecision,
     setMapPointChange,
     updateNumber,
@@ -279,55 +279,55 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // passed to the onChange handler of the location values. Checks bounding box before updating.
   const onCoordinateChange = (referenceSystem: ReferenceSystemKey, direction: Direction, value: string) => {
-    if (!checkLock()) {
+    if (!editingEnabled) {
       return;
     }
+
     // prevent decimal point being removed when typing
     if (value.endsWith(".")) {
       return;
     }
-    if (isEditable) {
-      const floatValue = parseFloatWithThousandsSeparator(value);
-      // verify coordinates are in bounding box
+
+    const floatValue = parseFloatWithThousandsSeparator(value);
+    // verify coordinates are in bounding box
+    if (
+      boundingBox[referenceSystem][direction].Min < floatValue &&
+      floatValue < boundingBox[referenceSystem][direction].Max
+    ) {
+      const coordinates: Coordinates = getCoordinatesFromForm(referenceSystem, direction, floatValue);
+
+      const completeLV95 =
+        coordinates?.LV95.x != null &&
+        coordinates?.LV95.x > 0 &&
+        coordinates?.LV95.y !== null &&
+        coordinates?.LV95.y > 0;
+
+      const completeLV03 =
+        coordinates?.LV03.x !== null &&
+        coordinates?.LV03.x > 0 &&
+        coordinates?.LV03.y !== null &&
+        coordinates?.LV03.y > 0;
+
       if (
-        boundingBox[referenceSystem][direction].Min < floatValue &&
-        floatValue < boundingBox[referenceSystem][direction].Max
+        (referenceSystem === ReferenceSystemKey.LV95 && completeLV95) ||
+        (referenceSystem === ReferenceSystemKey.LV03 && completeLV03)
       ) {
-        const coordinates: Coordinates = getCoordinatesFromForm(referenceSystem, direction, floatValue);
+        const sourceSystem = referenceSystem;
+        const targetSystem =
+          sourceSystem === ReferenceSystemKey.LV95 ? ReferenceSystemKey.LV03 : ReferenceSystemKey.LV95;
+        const X = sourceSystem === ReferenceSystemKey.LV95 ? coordinates?.LV95.x : coordinates?.LV03.x;
+        const Y = sourceSystem === ReferenceSystemKey.LV95 ? coordinates?.LV95.y : coordinates?.LV03.y;
+        const changedCoordinatePrecision = getPrecisionFromString(value);
+        const otherCoordinatePrecision = getPrecisionFromString(
+          direction === Direction.X
+            ? formMethods.getValues(referenceSystems[referenceSystem].fieldName.Y)
+            : formMethods.getValues(referenceSystems[referenceSystem].fieldName.X),
+        );
+        const X_precision = direction === Direction.X ? changedCoordinatePrecision : otherCoordinatePrecision;
+        const Y_precision = direction === Direction.Y ? changedCoordinatePrecision : otherCoordinatePrecision;
 
-        const completeLV95 =
-          coordinates?.LV95.x != null &&
-          coordinates?.LV95.x > 0 &&
-          coordinates?.LV95.y !== null &&
-          coordinates?.LV95.y > 0;
-
-        const completeLV03 =
-          coordinates?.LV03.x !== null &&
-          coordinates?.LV03.x > 0 &&
-          coordinates?.LV03.y !== null &&
-          coordinates?.LV03.y > 0;
-
-        if (
-          (referenceSystem === ReferenceSystemKey.LV95 && completeLV95) ||
-          (referenceSystem === ReferenceSystemKey.LV03 && completeLV03)
-        ) {
-          const sourceSystem = referenceSystem;
-          const targetSystem =
-            sourceSystem === ReferenceSystemKey.LV95 ? ReferenceSystemKey.LV03 : ReferenceSystemKey.LV95;
-          const X = sourceSystem === ReferenceSystemKey.LV95 ? coordinates?.LV95.x : coordinates?.LV03.x;
-          const Y = sourceSystem === ReferenceSystemKey.LV95 ? coordinates?.LV95.y : coordinates?.LV03.y;
-          const changedCoordinatePrecision = getPrecisionFromString(value);
-          const otherCoordinatePrecision = getPrecisionFromString(
-            direction === Direction.X
-              ? formMethods.getValues(referenceSystems[referenceSystem].fieldName.Y)
-              : formMethods.getValues(referenceSystems[referenceSystem].fieldName.X),
-          );
-          const X_precision = direction === Direction.X ? changedCoordinatePrecision : otherCoordinatePrecision;
-          const Y_precision = direction === Direction.Y ? changedCoordinatePrecision : otherCoordinatePrecision;
-
-          if (X !== null && Y !== null) {
-            handleCoordinateTransformation(sourceSystem, targetSystem, X, Y, X_precision, Y_precision);
-          }
+        if (X !== null && Y !== null) {
+          handleCoordinateTransformation(sourceSystem, targetSystem, X, Y, X_precision, Y_precision);
         }
       }
     }
@@ -335,7 +335,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // passed to the onChange handler of the reference system radio buttons. Resets the form and updates the reference system.
   const onReferenceSystemChange = (value: ReferenceSystemCode) => {
-    if (!checkLock()) {
+    if (!editingEnabled) {
       return;
     }
     formMethods.reset(
@@ -353,6 +353,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     );
     updateNumber("spatial_reference_system", value);
     setCurrentReferenceSystem(value);
+    formMethods.setValue("spatial_reference_system", value);
     setValuesForReferenceSystem(ReferenceSystemKey.LV03, "", "");
     setValuesForReferenceSystem(ReferenceSystemKey.LV95, "", "");
   };
@@ -379,178 +380,82 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   };
 
   return (
-    <Form size={size}>
+    <>
       <FormProvider {...formMethods}>
-        <Card>
-          <CardHeader
-            title={t("coordinates")}
-            sx={{ p: 4, pb: 3 }}
-            titleTypographyProps={{ variant: "h5" }}
-            action={showLabeling && isEditable && <LabelingButton disabled={panelOpen} onClick={() => togglePanel()} />}
-          />
-          <CardContent sx={{ pl: 4, pr: 4 }}>
-            <StackFullWidth>
-              <FormSelect
-                fieldName={`spatial_reference_system`}
-                label="spatial_reference_system"
-                selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
-                required={true}
-                canReset={false}
-                variant="outlined"
-                onUpdate={e => onReferenceSystemChange(e)}
-                values={Object.entries(referenceSystems).map(([, value]) => ({
-                  key: value.code,
-                  name: value.name,
-                }))}
-              />
-            </StackFullWidth>
-
-            <Box>
-              <Stack direction="row" spacing={2} justifyContent="space-around" mb={2}>
-                <Stack direction="column" sx={{ flexGrow: 1 }}>
-                  <Controller
-                    name="location_x"
-                    control={formMethods.control}
-                    rules={{
-                      required: true,
-                      validate: inLV95XBounds,
-                    }}
-                    render={({ field, fieldState: { error } }) => (
-                      <Form.Field
-                        {...field}
-                        style={{
-                          opacity: !isLV95 ? 0.6 : 1,
-                          pointerEvents: !isLV95 ? "none" : "auto",
-                        }}
-                        error={error !== undefined}>
-                        <label>{t("location_x_LV95")}</label>
-                        <NumericFormat
-                          data-cy="LV95X"
-                          type="text"
-                          autoCapitalize="off"
-                          autoComplete="off"
-                          autoCorrect="off"
-                          readOnly={!isLV95 || !isEditable}
-                          onChange={e => {
-                            onCoordinateChange(ReferenceSystemKey.LV95, Direction.X, String(e.target.value));
-                          }}
-                          fixedDecimalScale
-                          spellCheck="false"
-                          value={field.value || ""}
-                          thousandSeparator="'"
-                        />
-                      </Form.Field>
-                    )}
+        <FormSegmentBox>
+          <Card>
+            <CardHeader
+              title={t("coordinates")}
+              sx={{ p: 4, pb: 3 }}
+              titleTypographyProps={{ variant: "h5" }}
+              action={
+                showLabeling && editingEnabled && <LabelingButton disabled={panelOpen} onClick={() => togglePanel()} />
+              }
+            />
+            <CardContent sx={{ pl: 4, pr: 4 }}>
+              <StackFullWidth>
+                <FormSelect
+                  fieldName={`spatial_reference_system`}
+                  label="spatial_reference_system"
+                  selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
+                  required={true}
+                  canReset={false}
+                  variant="outlined"
+                  sx={{ width: "100%", pointerEvents: editingEnabled ? "auto" : "none" }}
+                  onUpdate={e => onReferenceSystemChange(e)}
+                  values={Object.entries(referenceSystems).map(([, value]) => ({
+                    key: value.code,
+                    name: value.name,
+                  }))}
+                />
+              </StackFullWidth>
+              <Stack direction="row" spacing={2} justifyContent="space-around" mb={2} mt={2}>
+                <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
+                  <CoordinatesTextfield
+                    direction={Direction.X}
+                    fieldName={FieldNameDirectionKeys.location_x}
+                    editingEnabled={editingEnabled}
+                    inBounds={inLV95XBounds}
+                    isFieldForSelectedReferenceSystem={currentReferenceSystem === referenceSystems.LV95.code}
+                    onCoordinateChange={onCoordinateChange}
+                    referenceSystem={ReferenceSystemKey.LV95}
                   />
-                  <Controller
-                    name="location_y"
-                    control={formMethods.control}
-                    rules={{
-                      required: true,
-                      validate: inLV95YBounds,
-                    }}
-                    render={({ field, fieldState: { error } }) => (
-                      <Form.Field
-                        {...field}
-                        style={{
-                          opacity: !isLV95 ? 0.6 : 1,
-                          pointerEvents: !isLV95 ? "none" : "auto",
-                        }}
-                        error={error !== undefined}>
-                        <label>{t("location_y_LV95")}</label>
-                        <NumericFormat
-                          data-cy="LV95Y"
-                          type="text"
-                          autoCapitalize="off"
-                          autoComplete="off"
-                          autoCorrect="off"
-                          readOnly={!isLV95 || !isEditable}
-                          onChange={e => {
-                            onCoordinateChange(ReferenceSystemKey.LV95, Direction.Y, String(e.target.value));
-                          }}
-                          fixedDecimalScale
-                          spellCheck="false"
-                          value={field.value || ""}
-                          thousandSeparator="'"
-                        />
-                      </Form.Field>
-                    )}
+                  <CoordinatesTextfield
+                    direction={Direction.Y}
+                    fieldName={FieldNameDirectionKeys.location_y}
+                    editingEnabled={editingEnabled}
+                    inBounds={inLV95YBounds}
+                    isFieldForSelectedReferenceSystem={currentReferenceSystem === referenceSystems.LV95.code}
+                    onCoordinateChange={onCoordinateChange}
+                    referenceSystem={ReferenceSystemKey.LV95}
                   />
                 </Stack>
                 <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
-                  <Controller
-                    name="location_x_lv03"
-                    control={formMethods.control}
-                    rules={{
-                      required: true,
-                      validate: inLV03XBounds,
-                    }}
-                    render={({ field, fieldState: { error } }) => (
-                      <Form.Field
-                        {...field}
-                        style={{
-                          opacity: isLV95 ? 0.6 : 1,
-                          pointerEvents: isLV95 ? "none" : "auto",
-                        }}
-                        error={error !== undefined}>
-                        <label>{t("location_x_LV03")}</label>
-                        <NumericFormat
-                          type="text"
-                          data-cy="LV03X"
-                          autoCapitalize="off"
-                          autoComplete="off"
-                          autoCorrect="off"
-                          readOnly={isLV95 || !isEditable}
-                          onChange={e => {
-                            onCoordinateChange(ReferenceSystemKey.LV03, Direction.X, String(e.target.value));
-                          }}
-                          valueIsNumericString
-                          spellCheck="false"
-                          value={field.value || ""}
-                          thousandSeparator="'"
-                        />
-                      </Form.Field>
-                    )}
+                  <CoordinatesTextfield
+                    direction={Direction.X}
+                    fieldName={FieldNameDirectionKeys.location_x_lv03}
+                    editingEnabled={editingEnabled}
+                    inBounds={inLV03XBounds}
+                    isFieldForSelectedReferenceSystem={currentReferenceSystem === referenceSystems.LV03.code}
+                    onCoordinateChange={onCoordinateChange}
+                    referenceSystem={ReferenceSystemKey.LV03}
                   />
-                  <Controller
-                    name="location_y_lv03"
-                    control={formMethods.control}
-                    rules={{
-                      required: true,
-                      validate: inLV03YBounds,
-                    }}
-                    render={({ field, fieldState: { error } }) => (
-                      <Form.Field
-                        {...field}
-                        style={{
-                          opacity: isLV95 ? 0.6 : 1,
-                          pointerEvents: isLV95 ? "none" : "auto",
-                        }}
-                        error={error !== undefined}>
-                        <label>{t("location_y_LV03")}</label>
-                        <NumericFormat
-                          data-cy="LV03Y"
-                          type="text"
-                          autoCapitalize="off"
-                          autoComplete="off"
-                          autoCorrect="off"
-                          readOnly={isLV95 || !isEditable}
-                          onChange={e => {
-                            onCoordinateChange(ReferenceSystemKey.LV03, Direction.Y, String(e.target.value));
-                          }}
-                          fixedDecimalScale
-                          spellCheck="false"
-                          value={field.value || ""}
-                          thousandSeparator="'"
-                        />
-                      </Form.Field>
-                    )}
+                  <CoordinatesTextfield
+                    direction={Direction.Y}
+                    fieldName={FieldNameDirectionKeys.location_y_lv03}
+                    editingEnabled={editingEnabled}
+                    inBounds={inLV03YBounds}
+                    isFieldForSelectedReferenceSystem={currentReferenceSystem === referenceSystems.LV03.code}
+                    onCoordinateChange={onCoordinateChange}
+                    referenceSystem={ReferenceSystemKey.LV03}
                   />
                 </Stack>
               </Stack>
-            </Box>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </FormSegmentBox>
+      </FormProvider>
+      <Form size={size}>
         <FormSegmentBox>
           <Form.Group widths="equal">
             <Form.Field required>
@@ -561,13 +466,13 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                 }}
                 schema="location_precision"
                 selected={borehole.data.location_precision}
-                readOnly={!isEditable}
+                readOnly={!editingEnabled}
               />
             </Form.Field>
           </Form.Group>
         </FormSegmentBox>
-      </FormProvider>
-    </Form>
+      </Form>
+    </>
   );
 };
 

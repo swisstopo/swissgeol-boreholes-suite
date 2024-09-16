@@ -1,54 +1,67 @@
-import { Direction, FormValues, ReferenceSystemKey } from "./coordinateSegmentInterfaces";
+import { Direction, ReferenceSystemKey } from "./coordinateSegmentInterfaces";
 import { useTranslation } from "react-i18next";
-import { FieldError } from "react-hook-form/dist/types/errors";
-import Input from "@mui/material/Input";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
+import { TextField } from "@mui/material";
 import { NumericFormatForCoordinates } from "./NumericFormatForCoordinates.tsx";
-import { ControllerRenderProps } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
+import { FC } from "react";
+import { getFormFieldError } from "../../../../components/form/form.ts";
 
 interface CoordinatesTextfieldProps {
-  field: ControllerRenderProps<FormValues, keyof FormValues>;
-  error: FieldError | undefined;
+  fieldName: string;
+  inBounds: (value: string) => boolean;
   referenceSystem: ReferenceSystemKey;
   direction: Direction;
   onCoordinateChange: (referenceSystem: ReferenceSystemKey, direction: Direction, value: string) => void;
   isFieldForSelectedReferenceSystem: boolean;
-  isEditable: boolean;
+  editingEnabled: boolean;
 }
 
-export const CoordinatesTextfield = ({
-  field,
-  error,
+export const CoordinatesTextfield: FC<CoordinatesTextfieldProps> = ({
+  fieldName,
+  inBounds,
   onCoordinateChange,
   referenceSystem,
   direction,
   isFieldForSelectedReferenceSystem,
-  isEditable,
+  editingEnabled,
 }: CoordinatesTextfieldProps) => {
   const { t } = useTranslation();
-
+  const { control } = useFormContext();
   return (
-    <FormControl variant="standard" error={!!error} disabled={!isFieldForSelectedReferenceSystem}>
-      <InputLabel htmlFor="formatted-text-mask-input">
-        {t(`location_${direction.toLowerCase()}_${referenceSystem}`)}
-      </InputLabel>
-      <Input
-        data-cy={`${referenceSystem}${direction}`}
-        value={field.value}
-        onChange={e => {
+    <Controller
+      name={fieldName}
+      control={control}
+      rules={{
+        onChange: e => {
           onCoordinateChange(referenceSystem, direction, e.target.value);
-          field.onChange(e);
-        }}
-        name={field.name}
-        readOnly={!isFieldForSelectedReferenceSystem || !isEditable}
-        style={{
-          opacity: !isFieldForSelectedReferenceSystem ? 0.6 : 1,
-          pointerEvents: !isFieldForSelectedReferenceSystem ? "none" : "auto",
-        }}
-        /* eslint-disable  @typescript-eslint/no-explicit-any */
-        inputComponent={NumericFormatForCoordinates as any}
-      />
-    </FormControl>
+        },
+        required: true,
+        validate: inBounds,
+      }}
+      render={({ field, formState }) => (
+        <TextField
+          sx={{ pointerEvents: editingEnabled ? "auto" : "none" }}
+          size="small"
+          label={t(`location_${direction.toLowerCase()}_${referenceSystem}`)}
+          InputLabelProps={{ shrink: true }}
+          error={getFormFieldError(fieldName, formState.errors)}
+          disabled={!isFieldForSelectedReferenceSystem}
+          data-cy={`${referenceSystem}${direction}`}
+          value={field.value}
+          onChange={field.onChange}
+          name={field.name}
+          id={`component-outlined-${fieldName}`}
+          inputProps={{
+            input: {
+              readOnly: !editingEnabled,
+            },
+          }}
+          InputProps={{
+            /* eslint-disable  @typescript-eslint/no-explicit-any */
+            inputComponent: NumericFormatForCoordinates as any,
+          }}
+        />
+      )}
+    />
   );
 };

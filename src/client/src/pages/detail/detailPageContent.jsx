@@ -306,6 +306,7 @@ class DetailPageContent extends React.Component {
                         showLabeling={this.props.showLabeling}
                         borehole={borehole}
                         user={user}
+                        editingEnabled={editingEnabled}
                         updateChange={this.updateChange}
                         updateNumber={this.updateNumber}
                         checkLock={this.checkLock}

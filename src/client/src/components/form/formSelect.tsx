@@ -9,7 +9,7 @@ export interface FormSelectProps {
   fieldName: string;
   label: string;
   required?: boolean;
-  variant: string;
+  variant?: string;
   disabled?: boolean;
   canReset?: boolean;
   selected?: number[];

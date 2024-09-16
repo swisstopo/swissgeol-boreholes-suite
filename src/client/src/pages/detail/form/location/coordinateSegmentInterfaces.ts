@@ -79,7 +79,7 @@ export interface CoordinatesSegmentProps {
   mapPointChange: boolean;
   setMapPointChange: React.Dispatch<React.SetStateAction<boolean>>;
   showLabeling: boolean;
-  isEditable: boolean;
+  editingEnabled: boolean;
 }
 
 export interface Location {
