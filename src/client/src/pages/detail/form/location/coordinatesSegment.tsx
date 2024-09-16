@@ -395,6 +395,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                 label="spatial_reference_system"
                 selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
                 required={true}
+                canReset={false}
                 variant="outlined"
                 onUpdate={e => onReferenceSystemChange(e)}
                 values={Object.entries(referenceSystems).map(([, value]) => ({

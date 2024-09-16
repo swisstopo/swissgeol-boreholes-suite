@@ -1,4 +1,5 @@
-import { newEditableBorehole, delayedType } from "../helpers/testHelpers";
+import { delayedType, newEditableBorehole } from "../helpers/testHelpers";
+import { evaluateSelect, setSelect } from "../helpers/formHelpers";
 
 function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
   cy.get(inputAlias)
@@ -44,7 +45,8 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "Oberentfelden");
 
     //switch reference system
-    cy.get("input[value=20104002]").click();
+    setSelect("spatial_reference_system", 1);
+
     //await all patch requests
     cy.wait(["@edit_patch", "@edit_patch", "@edit_patch"]);
     // verify all inputs are empty
@@ -95,8 +97,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("edits borehole and changes coordinates from map", () => {
     //start with references system LV03
-    cy.get("input[value=20104002]").click();
-    cy.get("input[value=20104002]").should("be.checked");
+    setSelect("spatial_reference_system", 1);
 
     // verify automatically filled inputs
     cy.get("@LV95X-input").should("have.value", "");
@@ -128,8 +129,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("not.have.value", "");
 
     // verify original reference system has switched to LV95
-    cy.get("input[value=20104002]").should("not.be.checked");
-    cy.get("input[value=20104001]").should("be.checked");
+    evaluateSelect("spatial_reference_system", 20104001);
 
     waitForCoordinatePatches();
 

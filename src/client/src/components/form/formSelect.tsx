@@ -35,7 +35,7 @@ export const FormSelect: FC<FormSelectProps> = ({
   label,
   required,
   variant,
-  canReset,
+  canReset = true,
   disabled,
   selected,
   values,
