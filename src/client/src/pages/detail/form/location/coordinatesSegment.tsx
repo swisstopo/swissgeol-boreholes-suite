@@ -40,7 +40,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   isEditable,
 }) => {
   const { t } = useTranslation();
-  const { panelOpen, togglePanel } = useLabelingContext();
+  const { extractionObject, setExtractionObject } = useLabelingContext();
 
   // --- State variables ---
   const [currentReferenceSystem, setCurrentReferenceSystem] = useState<number>(borehole.data.spatial_reference_system);
@@ -389,7 +389,12 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
           titleTypographyProps={{ variant: "h5" }}
           action={
             showLabeling &&
-            isEditable && <LabelingButton className={panelOpen ? "Mui-active" : ""} onClick={() => togglePanel()} />
+            isEditable && (
+              <LabelingButton
+                className={extractionObject?.type === "coordinate" ? "Mui-active" : ""}
+                onClick={() => setExtractionObject({ type: "coordinate" })}
+              />
+            )
           }
         />
         <CardContent sx={{ pl: 4, pr: 4 }}>

@@ -17,6 +17,10 @@ import ZoomControls from "../../../components/buttons/zoomControls";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
 import { defaults as defaultControls } from "ol/control/defaults";
 import { View } from "ol";
+import { Fill, Stroke, Style } from "ol/style";
+import VectorSource from "ol/source/Vector";
+import VectorLayer from "ol/layer/Vector";
+import Draw, { createBox } from "ol/interaction/Draw";
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -24,7 +28,7 @@ interface LabelingPanelProps {
 
 const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const { panelPosition, setPanelPosition } = useLabelingContext();
+  const { panelPosition, setPanelPosition, extractionObject } = useLabelingContext();
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [files, setFiles] = useState<FileInterface[]>();
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
@@ -103,6 +107,51 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
       loadFiles();
     }
   }, [files, loadFiles]);
+
+  useEffect(() => {
+    if (map && selectedFile && extractionObject) {
+      const drawingStyle = () =>
+        new Style({
+          stroke: new Stroke({
+            color: theme.palette.ai.main,
+            width: 2,
+          }),
+          fill: new Fill({
+            color: "rgba(91, 33, 182, 0.2)",
+          }),
+        });
+      const drawingSource = new VectorSource();
+      drawingSource.on("addfeature", e => {
+        // TODO: Send coordinates to labeling api to extract data
+        console.log("Feature added", e.feature?.getGeometry());
+
+        // TODO: Maybe trigger reload?
+        // drawingLayer.changed();
+        // map.render();
+      });
+
+      const drawingLayer = new VectorLayer({
+        source: drawingSource,
+        style: drawingStyle,
+      });
+      // FIXME Map doesn't get updated like that, layer is not added
+      map.addLayer(drawingLayer);
+
+      const drawInteraction = new Draw({
+        source: drawingSource,
+        type: "Circle",
+        geometryFunction: createBox(),
+        style: drawingStyle,
+      });
+      drawInteraction.on("drawend", () => {
+        map.removeInteraction(drawInteraction);
+        map.getTargetElement().style.cursor = "";
+      });
+
+      map.addInteraction(drawInteraction);
+      map.getTargetElement().style.cursor = "crosshair";
+    }
+  }, [extractionObject, map, selectedFile]);
 
   useEffect(() => {
     if (map === undefined && mapRef.current) {
