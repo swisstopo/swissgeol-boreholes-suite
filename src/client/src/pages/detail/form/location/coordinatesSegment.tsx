@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, FormControl, FormControlLabel, RadioGroup, Stack } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { Form, Segment } from "semantic-ui-react";
+import { Form } from "semantic-ui-react";
 import { NumericFormat } from "react-number-format";
 import { useTranslation } from "react-i18next";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
@@ -23,6 +23,7 @@ import {
   ReferenceSystemKey,
 } from "./coordinateSegmentInterfaces.js";
 import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
+import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -378,7 +379,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   };
 
   return (
-    <Segment>
+    <FormSegmentBox>
       <Form size={size}>
         <Form.Group widths="equal">
           <Form.Field required>
@@ -568,103 +569,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
             />
           </Form.Field>
         </Form.Group>
-        <Form.Group widths="equal">
-          <Form.Field error={borehole.data.elevation_z == null} required>
-            <label>{t("elevation_z")}</label>
-            <NumericFormat
-              type="text"
-              autoCapitalize="off"
-              autoComplete="off"
-              autoCorrect="off"
-              onChange={e => {
-                updateNumber(
-                  "elevation_z",
-                  e.target.value === "" ? null : parseFloatWithThousandsSeparator(e.target.value),
-                );
-              }}
-              fixedDecimalScale
-              spellCheck="false"
-              value={borehole.data.elevation_z ?? ""}
-              thousandSeparator="'"
-              readOnly={!isEditable}
-            />
-          </Form.Field>
-
-          <Form.Field required>
-            <label>{t("elevation_precision")}</label>
-            <DomainDropdown
-              onSelected={(selected: { id: string }) => {
-                updateChange("elevation_precision", selected.id, false);
-              }}
-              schema="elevation_precision"
-              selected={borehole.data.elevation_precision}
-              readOnly={!isEditable}
-            />
-          </Form.Field>
-        </Form.Group>
-        <Form.Group widths="equal">
-          <Form.Field error={borehole.data.reference_elevation == null} required>
-            <label>{t("reference_elevation")}</label>
-            <NumericFormat
-              autoCapitalize="off"
-              type="text"
-              autoComplete="off"
-              autoCorrect="off"
-              onChange={e => {
-                updateNumber(
-                  "reference_elevation",
-                  e.target.value === "" ? null : parseFloatWithThousandsSeparator(e.target.value),
-                );
-                if (/^-?\d*[.,]?\d*$/.test(e.target.value)) {
-                  updateChange("reference_elevation", e.target.value === "" ? null : parseFloat(e.target.value));
-                }
-              }}
-              spellCheck="false"
-              value={borehole.data.reference_elevation ?? ""}
-              thousandSeparator="'"
-              readOnly={!isEditable}
-            />
-          </Form.Field>
-          <Form.Field required>
-            <label>{t("reference_elevation_qt")}</label>
-            <DomainDropdown
-              onSelected={(selected: { id: string | number }) => {
-                updateChange("qt_reference_elevation", selected.id, false);
-              }}
-              schema="elevation_precision"
-              selected={borehole.data.qt_reference_elevation}
-              readOnly={!isEditable}
-            />
-          </Form.Field>
-        </Form.Group>
-        <Form.Group widths="equal">
-          <Form.Field error={borehole.data.reference_elevation_type === null} required>
-            <label>{t("reference_elevation_type")}</label>
-            <DomainDropdown
-              onSelected={(selected: { id: string }) => {
-                updateChange("reference_elevation_type", selected.id, false);
-              }}
-              schema="reference_elevation_type"
-              selected={borehole.data.reference_elevation_type}
-              readOnly={!isEditable}
-            />
-          </Form.Field>
-          <Form.Field required>
-            <label>{t("height_reference_system")}</label>
-            <div
-              style={{
-                height: "36px",
-                display: "flex",
-                alignItems: "center",
-              }}>
-              <div>
-                <DomainText id={borehole.data.height_reference_system} schema="height_reference_system" />
-              </div>
-            </div>
-          </Form.Field>
-        </Form.Group>
       </Form>
-    </Segment>
+    </FormSegmentBox>
   );
 };
 

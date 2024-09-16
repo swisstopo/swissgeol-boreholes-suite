@@ -9,6 +9,7 @@
 - Language dropdown in the header.
 - Added health check endpoint for the .NET API.
 - Added possibility to run the boreholes web application in read-only mode.
+- New view-sync Docker image for syncing free/published boreholes from a source to a target database.
 
 ### Changed
 
@@ -50,6 +51,7 @@
 - Boreholes table reset scroll position when hovering over a row.
 - When returning to the boreholes table from another page, the last scroll position was lost.
 - Status filter labels were not displayed correctly.
+- Order of groundwater level measurement attributes was incorrect.
 
 ## v2.1.772 - 2024-06-27
 

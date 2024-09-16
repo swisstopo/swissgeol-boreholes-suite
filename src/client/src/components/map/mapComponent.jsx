@@ -449,7 +449,7 @@ class MapComponent extends React.Component {
     });
     const intersectingFeatures = intersectingVectorSource.getFeatures();
     const intersectingFeatureIds = intersectingFeatures.map(f => f.getId());
-    if (!_.isEqual(intersectingFeatureIds, this.props.featureIds)) {
+    if (!_.isEqual(_.sortBy(intersectingFeatureIds), _.sortBy(this.props.featureIds))) {
       this.props.setFeatureIds(intersectingFeatureIds);
     }
     return intersectingFeatures;
