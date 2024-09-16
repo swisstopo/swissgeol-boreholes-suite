@@ -125,8 +125,8 @@ public class BoreholeFileController : ControllerBase
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while downloading the file.");
-            return Problem("An error occurred while downloading the file.");
+            logger.LogError(ex, "An error occurred while retrieving the file info.");
+            return Problem(ex.Message);
         }
     }
 
@@ -147,9 +147,8 @@ public class BoreholeFileController : ControllerBase
         }
         catch (Exception ex)
         {
-            var message = $"An error occurred while downloading the image.";
-            logger.LogError(ex, message);
-            return Problem(message);
+            logger.LogError(ex, "An error occurred while loading the image");
+            return Problem(ex.Message);
         }
     }
 
