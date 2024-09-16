@@ -1,15 +1,13 @@
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
-import { Form, Segment } from "semantic-ui-react";
+import { Form } from "semantic-ui-react";
 import { FormControl, FormControlLabel, RadioGroup } from "@mui/material";
 import { DisabledRadio } from "../styledComponents.jsx";
 import { useTranslation } from "react-i18next";
-
 import _ from "lodash";
 import moment from "moment";
-
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
-
 import DateField from "../../../../components/legacyComponents/dateField.jsx";
+import { FormSegmentBox } from "../../../../components/styledComponents";
 
 const RestrictionSegment = props => {
   const { size, borehole, updateChange, user } = props;
@@ -18,7 +16,7 @@ const RestrictionSegment = props => {
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   return (
-    <Segment>
+    <FormSegmentBox>
       <Form size={size}>
         <Form.Group widths="equal">
           <Form.Field error={borehole.data.restriction === null} required>
@@ -88,7 +86,7 @@ const RestrictionSegment = props => {
           </Form.Field>
         </Form.Group>
       </Form>
-    </Segment>
+    </FormSegmentBox>
   );
 };
 

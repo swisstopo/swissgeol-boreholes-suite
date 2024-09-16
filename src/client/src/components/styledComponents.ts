@@ -42,6 +42,13 @@ export const MainContentBox = styled(Box)({
   position: "relative",
 });
 
+export const FormSegmentBox = styled(Box)({
+  border: "1px solid " + theme.palette.border,
+  borderRadius: theme.spacing(0.5),
+  padding: theme.spacing(2),
+  boxShadow: theme.palette.boxShadow + " 0px 1px 2px 0px",
+});
+
 export const DialogHeaderContainer = styled(Box)({
   borderBottom: "1px solid " + theme.palette.border,
   paddingTop: theme.spacing(3),

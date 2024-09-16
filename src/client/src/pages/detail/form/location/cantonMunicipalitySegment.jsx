@@ -1,12 +1,13 @@
-import { Form, Icon, Input, Segment } from "semantic-ui-react";
+import { Form, Icon, Input } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
+import { FormSegmentBox } from "../../../../components/styledComponents";
 
 const CantonMunicipalitySegment = props => {
   const { size, country, canton, municipality, isEditable } = props;
   const { t } = useTranslation();
 
   return (
-    <Segment>
+    <FormSegmentBox>
       <Form autoCapitalize="off" autoComplete="off" autoCorrect="off" size={size} spellCheck="false">
         <Form.Group widths="equal">
           <Form.Field>
@@ -35,7 +36,7 @@ const CantonMunicipalitySegment = props => {
           </Form.Field>
         </Form.Group>
       </Form>
-    </Segment>
+    </FormSegmentBox>
   );
 };
 
