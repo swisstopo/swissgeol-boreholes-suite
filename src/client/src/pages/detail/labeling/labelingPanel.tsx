@@ -119,9 +119,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
       getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
         if (pageCount !== response.count) {
           setPageCount(response.count);
-          if (activePage > response.count) {
-            setActivePage(1);
-          }
+          setActivePage(1);
         }
 
         const extent = [0, 0, response.width, response.height];
