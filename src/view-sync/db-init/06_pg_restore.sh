@@ -20,6 +20,7 @@ psql \
     CREATE EXTENSION IF NOT EXISTS ltree;
     CREATE EXTENSION IF NOT EXISTS pgcrypto;
     CREATE EXTENSION IF NOT EXISTS postgis;
+    DROP SCHEMA IF EXISTS $SOURCE_DB_SCHEMA CASCADE;
   "
 
 pg_restore \
@@ -30,8 +31,7 @@ pg_restore \
   --no-password \
   --no-owner \
   --no-privileges \
-  --clean \
-  --if-exists $DB_BACKUP_PATH
+  --no-comments $DB_BACKUP_PATH
 
 echo "Successfully restored the $TARGET_DB_NAME database."
 
