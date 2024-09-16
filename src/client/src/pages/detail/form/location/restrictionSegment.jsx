@@ -16,10 +16,8 @@ const RestrictionSegment = props => {
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   return (
-    <Segment>
-      <Form>
     <FormSegmentBox>
-      <Form size={size}>
+      <Form>
         <Form.Group widths="equal">
           <Form.Field error={borehole.data.restriction === null} required>
             <label>{t("restriction")}</label>

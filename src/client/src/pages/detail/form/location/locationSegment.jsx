@@ -49,7 +49,6 @@ const LocationSegment = props => {
         </Box>
       </Stack>
       <CantonMunicipalitySegment
-        size={size}
         country={borehole.data.custom.country}
         canton={borehole.data.custom.canton}
         municipality={borehole.data.custom.municipality}

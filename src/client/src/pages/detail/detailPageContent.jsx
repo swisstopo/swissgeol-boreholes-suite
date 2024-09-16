@@ -283,19 +283,19 @@ class DetailPageContent extends React.Component {
                 render={() => (
                   <Box sx={{ overflowY: "auto" }}>
                     <Stack gap={2} mr={2}>
-                    <IdentifierSegment
-                      borehole={borehole}
-                      identifier={this.state.identifier}
-                      identifierValue={this.state.identifierValue}
-                      setState={this.setStateBound}
-                      updateBorehole={this.props.updateBorehole}
-                      user={user}></IdentifierSegment>
-                    <NameSegment borehole={borehole} updateChange={this.updateChange} user={user}></NameSegment>
-                    <RestrictionSegment
-                      borehole={borehole}
-                      updateChange={this.updateChange}
-                      user={user}></RestrictionSegment>
-                    <LocationSegment
+                      <IdentifierSegment
+                        borehole={borehole}
+                        identifier={this.state.identifier}
+                        identifierValue={this.state.identifierValue}
+                        setState={this.setStateBound}
+                        updateBorehole={this.props.updateBorehole}
+                        user={user}></IdentifierSegment>
+                      <NameSegment borehole={borehole} updateChange={this.updateChange} user={user}></NameSegment>
+                      <RestrictionSegment
+                        borehole={borehole}
+                        updateChange={this.updateChange}
+                        user={user}></RestrictionSegment>
+                      <LocationSegment
                         borehole={borehole}
                         user={user}
                         updateChange={this.updateChange}
