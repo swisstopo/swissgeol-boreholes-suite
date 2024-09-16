@@ -113,7 +113,7 @@ class WorkflowForm extends React.Component {
             height: "100%",
             maxWidth: "800px",
           }}>
-          <Typography variant="h5">
+          <Typography variant="h4">
             <TranslationText id={"flowPublication"} />
           </Typography>
           {filtered.length > 1 ? (
