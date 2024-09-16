@@ -188,7 +188,6 @@ export const newEditableBorehole = () => {
 };
 
 export const newUneditableBorehole = () => {
-  loginAsAdmin();
   cy.get('[data-cy="new-borehole-button"]').click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();
@@ -204,7 +203,6 @@ const waitForCreation = () => {
 };
 
 export const createBorehole = values => {
-  loginAsAdmin();
   return cy.get("@id_token").then(token =>
     cy
       .request({
@@ -253,7 +251,6 @@ export const returnToOverview = () => {
 };
 
 export const deleteBorehole = id => {
-  loginAsAdmin();
   cy.get("@id_token").then(token => {
     cy.request({
       method: "POST",
