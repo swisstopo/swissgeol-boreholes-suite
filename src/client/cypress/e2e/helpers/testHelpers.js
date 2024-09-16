@@ -191,7 +191,7 @@ export const newUneditableBorehole = () => {
   cy.get('[data-cy="new-borehole-button"]').click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();
-  cy.wait(["@borehole", "@edit_list"]);
+  cy.wait(["@borehole"]);
   return id;
 };
 
