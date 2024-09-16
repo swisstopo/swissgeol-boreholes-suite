@@ -12,7 +12,7 @@ import IdentifierSegment from "./form/location/indentifierSegment.jsx";
 import NameSegment from "./form/location/nameSegment.jsx";
 import RestrictionSegment from "./form/location/restrictionSegment.jsx";
 import BoreholePanel from "./form/borehole/boreholePanel.jsx";
-import LocationSegment from "./form/location/locationSegment.jsx";
+import LocationSegment from "./form/location/locationSegment.tsx";
 import WaterIngress from "./form/hydrogeology/waterIngress.jsx";
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement.jsx";
 import Hydrotest from "./form/hydrogeology/hydrotest.jsx";
