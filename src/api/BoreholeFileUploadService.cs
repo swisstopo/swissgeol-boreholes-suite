@@ -221,7 +221,7 @@ public class BoreholeFileUploadService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error generating retrieving image information from data extraction folder in cloud storage.");
+            logger.LogError(ex, $"Error retrieving image information from data extraction folder in cloud storage.");
             throw;
         }
     }
