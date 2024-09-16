@@ -43,10 +43,7 @@ export const MainContentBox = styled(Box)({
 });
 
 export const FormSegmentBox = styled(Box)({
-  border: "1px solid " + theme.palette.border,
-  borderRadius: theme.spacing(0.5),
   padding: theme.spacing(2),
-  boxShadow: theme.palette.boxShadow + " 0px 1px 2px 0px",
 });
 
 export const DialogHeaderContainer = styled(Box)({

@@ -13,7 +13,7 @@ export function SideDrawerHeader({ title, toggleDrawer }: { title: string; toggl
         borderBottom: "1px solid " + theme.palette.border,
         marginBottom: "24px",
       }}>
-      <Typography variant="h5" sx={{ flexGrow: 1 }}>
+      <Typography variant="h4" sx={{ flexGrow: 1 }}>
         {title}
       </Typography>
       <IconButton onClick={() => toggleDrawer(false)} sx={{ marginRight: "6px" }}>
