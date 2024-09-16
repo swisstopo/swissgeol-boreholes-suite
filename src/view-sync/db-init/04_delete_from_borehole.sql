@@ -56,6 +56,6 @@ WHERE id_rol_fk NOT IN (
 -- Purge specific borehole fields
 UPDATE bdms.borehole
 SET original_name_bho = NULL
-WHERE original_name_bho <> NULL;
+WHERE original_name_bho IS NOT NULL;
 
 SELECT COUNT(*) AS "Free/Published Boreholes" FROM bdms.borehole;
