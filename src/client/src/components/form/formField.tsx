@@ -14,7 +14,7 @@ export const FormField = forwardRef((props: FormFieldProps, ref: ForwardedRef<HT
       ref={ref}
       {...props}
       size="small"
-      variant="filled"
+      variant={props.variant ?? "filled"}
       sx={{
         borderRadius: "4px",
         flex: "1",

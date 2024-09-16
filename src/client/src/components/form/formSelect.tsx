@@ -9,7 +9,9 @@ export interface FormSelectProps {
   fieldName: string;
   label: string;
   required?: boolean;
+  variant: string;
   disabled?: boolean;
+  canReset?: boolean;
   selected?: number[];
   values?: FormSelectValue[];
   sx?: SxProps;
@@ -32,6 +34,8 @@ export const FormSelect: FC<FormSelectProps> = ({
   fieldName,
   label,
   required,
+  variant,
+  canReset,
   disabled,
   selected,
   values,
@@ -42,7 +46,9 @@ export const FormSelect: FC<FormSelectProps> = ({
   const { control } = useFormContext();
 
   const menuItems: FormSelectMenuItem[] = [];
-  menuItems.push({ key: 0, value: undefined, label: t("reset"), italic: true });
+  if (canReset) {
+    menuItems.push({ key: 0, value: undefined, label: t("reset"), italic: true });
+  }
 
   if (values) {
     values.forEach(value => {
@@ -71,6 +77,7 @@ export const FormSelect: FC<FormSelectProps> = ({
         <FormField
           select
           required={required ?? false}
+          variant={variant}
           error={getFormFieldError(fieldName, formState.errors)}
           sx={{ ...sx }}
           label={t(label)}
