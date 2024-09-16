@@ -1,4 +1,4 @@
-import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
 
 export enum ReferenceSystemCode {
   LV95 = 20104001,
@@ -69,7 +69,6 @@ export interface FormValues {
 export interface CoordinatesSegmentProps {
   size: string;
   borehole: Borehole;
-  user: User;
   updateChange: (
     fieldName: keyof Borehole["data"] | "location",
     value: string | number | null | (number | string | null)[],
@@ -79,6 +78,8 @@ export interface CoordinatesSegmentProps {
   checkLock: () => boolean;
   mapPointChange: boolean;
   setMapPointChange: React.Dispatch<React.SetStateAction<boolean>>;
+  showLabeling: boolean;
+  isEditable: boolean;
 }
 
 export interface Location {
