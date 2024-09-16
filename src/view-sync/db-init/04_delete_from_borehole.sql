@@ -18,6 +18,11 @@ DELETE FROM bdms.workgroups WHERE id_wgp <> 1;
 INSERT INTO bdms.users(admin_usr, username, firstname, lastname, subject_id)
 VALUES (false, 'Anonymous', 'Anonymous', 'Anonymous', 'sub_anonymous');
 
+INSERT INTO bdms.users_roles(id_usr_fk, id_rol_fk, id_wgp_fk)
+VALUES ((SELECT id_usr FROM bdms.users WHERE subject_id = 'sub_anonymous'),
+        (SELECT id_rol FROM bdms.roles WHERE name_rol = 'VIEW'),
+        (SELECT id_wgp FROM bdms.workgroups WHERE name_wgp = 'Default'));
+
 -- Update and disable existing users
 UPDATE bdms.users
 SET admin_usr = false,
