@@ -144,6 +144,7 @@ public class BoreholeFileUploadService
     /// Gets the number of data extraction images for a pdf.
     /// </summary>
     /// <param name="objectName">The uuid of the pdf.</param>
+    /// <returns>The number of images.</returns>
     public async Task<int> CountDataExtractionObjects(string objectName)
     {
         try
@@ -179,6 +180,7 @@ public class BoreholeFileUploadService
     /// </summary>
     /// <param name="objectName">The uuid of the parent pdf.</param>
     /// <param name="index">The page number in the pdf.</param>
+    /// <returns>The name, width and height of the file.</returns>
     public async Task<(string FileName, int Width, int Height)> GetDataExtractionImageInfo(string objectName, int index)
     {
         try
