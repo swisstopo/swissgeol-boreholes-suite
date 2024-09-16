@@ -77,3 +77,18 @@ jobs:
           # Pass the GitHub token lets this action correctly
           # determine the unique run id necessary to re-run the checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  view-sync:
+    runs-on: ubuntu-latest
+    name: Run view-sync
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup environment
+        working-directory: src/view-sync
+        run: docker compose -f docker-compose.services.yml up --build --wait
+
+      - name: Run view-sync
+        working-directory: src/view-sync
+        run: docker compose -f docker-compose.yml up --build --exit-code-from view-sync
