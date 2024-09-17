@@ -25,6 +25,7 @@ import { useLabelingContext } from "../../labeling/labelingInterfaces.js";
 import { FormSegmentBox, StackFullWidth } from "../../../../components/styledComponents.ts";
 import { FormSelect } from "../../../../components/form/formSelect.tsx";
 import { CoordinatesTextfield } from "./CoordinatesTextfield.tsx";
+import { theme } from "../../../../AppTheme.ts";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -401,7 +402,15 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                   required={true}
                   canReset={false}
                   variant="outlined"
-                  sx={{ width: "100%", pointerEvents: editingEnabled ? "auto" : "none" }}
+                  sx={{
+                    width: "100%",
+                    pointerEvents: editingEnabled ? "auto" : "none",
+                    boxShadow: panelOpen ? `0px 0px 0px 3px ${theme.palette.ai.main}` : "none",
+                  }}
+                  inputLabelStyles={{
+                    backgroundColor: panelOpen ? "#ffffff" : "none",
+                    px: panelOpen ? 1 : 0,
+                  }}
                   onUpdate={e => onReferenceSystemChange(e)}
                   values={Object.entries(referenceSystems).map(([, value]) => ({
                     key: value.code,
@@ -412,6 +421,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
               <Stack direction="row" spacing={2} justifyContent="space-around" mb={2} mt={2}>
                 <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
                   <CoordinatesTextfield
+                    panelOpen={panelOpen}
                     direction={Direction.X}
                     fieldName={FieldNameDirectionKeys.location_x}
                     editingEnabled={editingEnabled}
@@ -421,6 +431,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                     referenceSystem={ReferenceSystemKey.LV95}
                   />
                   <CoordinatesTextfield
+                    panelOpen={panelOpen}
                     direction={Direction.Y}
                     fieldName={FieldNameDirectionKeys.location_y}
                     editingEnabled={editingEnabled}
@@ -432,6 +443,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                 </Stack>
                 <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
                   <CoordinatesTextfield
+                    panelOpen={panelOpen}
                     direction={Direction.X}
                     fieldName={FieldNameDirectionKeys.location_x_lv03}
                     editingEnabled={editingEnabled}
@@ -441,6 +453,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                     referenceSystem={ReferenceSystemKey.LV03}
                   />
                   <CoordinatesTextfield
+                    panelOpen={panelOpen}
                     direction={Direction.Y}
                     fieldName={FieldNameDirectionKeys.location_y_lv03}
                     editingEnabled={editingEnabled}

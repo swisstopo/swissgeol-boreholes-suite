@@ -15,6 +15,7 @@ export interface FormSelectProps {
   selected?: number[];
   values?: FormSelectValue[];
   sx?: SxProps;
+  inputLabelStyles?: SxProps;
   onUpdate?: (value: number) => void;
 }
 
@@ -39,6 +40,7 @@ export const FormSelect: FC<FormSelectProps> = ({
   disabled,
   selected,
   values,
+  inputLabelStyles,
   sx,
   onUpdate,
 }) => {
@@ -88,7 +90,10 @@ export const FormSelect: FC<FormSelectProps> = ({
           value={field.value ?? ""}
           disabled={disabled ?? false}
           data-cy={fieldName + "-formSelect"}
-          InputLabelProps={{ shrink: true }}>
+          InputLabelProps={{
+            sx: inputLabelStyles,
+            shrink: true,
+          }}>
           {menuItems.map(item => (
             <MenuItem key={item.key} value={item.value}>
               {item.italic ? <em>{item.label}</em> : item.label}

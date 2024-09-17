@@ -5,9 +5,11 @@ import { NumericFormatForCoordinates } from "./NumericFormatForCoordinates.tsx";
 import { Controller, useFormContext } from "react-hook-form";
 import { FC } from "react";
 import { getFormFieldError } from "../../../../components/form/form.ts";
+import { theme } from "../../../../AppTheme.ts";
 
 interface CoordinatesTextfieldProps {
   fieldName: string;
+  panelOpen: boolean;
   inBounds: (value: string) => boolean;
   referenceSystem: ReferenceSystemKey;
   direction: Direction;
@@ -18,6 +20,7 @@ interface CoordinatesTextfieldProps {
 
 export const CoordinatesTextfield: FC<CoordinatesTextfieldProps> = ({
   fieldName,
+  panelOpen,
   inBounds,
   onCoordinateChange,
   referenceSystem,
@@ -40,11 +43,21 @@ export const CoordinatesTextfield: FC<CoordinatesTextfieldProps> = ({
       }}
       render={({ field, formState }) => (
         <TextField
-          sx={{ pointerEvents: editingEnabled ? "auto" : "none" }}
+          sx={{
+            pointerEvents: editingEnabled ? "auto" : "none",
+            boxShadow: panelOpen ? `0px 0px 0px 3px ${theme.palette.ai.main}` : "none",
+            borderRadius: "4px",
+          }}
           size="small"
           label={t(`location_${direction.toLowerCase()}_${referenceSystem}`)}
-          InputLabelProps={{ shrink: true }}
-          error={getFormFieldError(fieldName, formState.errors)}
+          InputLabelProps={{
+            shrink: true,
+            sx: {
+              backgroundColor: panelOpen ? "#ffffff" : "none",
+              px: panelOpen ? 1 : 0,
+            },
+          }}
+          error={!panelOpen && getFormFieldError(fieldName, formState.errors)}
           disabled={!isFieldForSelectedReferenceSystem}
           data-cy={`${referenceSystem}${direction}`}
           value={field.value}

@@ -20,7 +20,7 @@ interface DetailPageContentProps {
 export const DetailPage: FC = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
-  const [showLabeling, setShowLabeling] = useState(false);
+  const [showLabeling, setShowLabeling] = useState(true);
   const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const location = useLocation();
@@ -31,7 +31,7 @@ export const DetailPage: FC = () => {
     const checkLabelingVisibility = async () => {
       try {
         const response = await fetch("api/show-labeling-in-cypress-test");
-        setShowLabeling(response.status === 200);
+        // setShowLabeling(response.status === 200);
       } catch {
         /* fetch will fail outside of test environment so state should not be updated */
       }
