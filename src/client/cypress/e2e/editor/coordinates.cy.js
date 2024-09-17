@@ -45,7 +45,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "Oberentfelden");
 
     //switch reference system
-    cy.get("input[value=20104002]").click();
+    setSelect("spatial_reference_system", 1);
     //await all patch requests
     cy.wait(["@edit_patch", "@edit_patch", "@edit_patch"]);
     // verify all inputs are empty
@@ -60,10 +60,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("validates inputs", () => {
     // divs have errors as long as inputs are empty
-    cy.get("[name=location_x_lv03]").should("have.class", "error");
-    cy.get("[name=location_y_lv03]").should("have.class", "error");
-    cy.get("[name=location_x]").should("have.class", "error");
-    cy.get("[name=location_y]").should("have.class", "error");
+    cy.get('[data-cy="LV03X"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="LV03Y"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="LV95X"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="LV95Y"] > div').should("not.have.class", "Mui-error");
 
     // type valid coordinates
     cy.get("@LV95X-input").scrollIntoView();
