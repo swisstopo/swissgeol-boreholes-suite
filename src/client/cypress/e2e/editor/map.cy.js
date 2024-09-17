@@ -7,8 +7,8 @@ describe("Map tests", () => {
     cy.get(".ol-viewport");
 
     // zoom in twice
-    cy.get('[data-cy="map-zoom-in"]').click();
-    cy.get('[data-cy="map-zoom-in"]').click();
+    cy.get('[data-cy="zoom-in-button"]').click();
+    cy.get('[data-cy="zoom-in-button"]').click();
 
     // drag map
     const canvas = cy.get("canvas");

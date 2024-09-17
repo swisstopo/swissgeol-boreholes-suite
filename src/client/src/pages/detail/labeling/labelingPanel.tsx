@@ -1,14 +1,22 @@
-import { Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
-import { File as FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
 import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
-import { getFiles, uploadFile } from "../../../api/file/file.ts";
+import { getDataExtractionFileInfo, getFiles, loadImage, uploadFile } from "../../../api/file/file.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { useTranslation } from "react-i18next";
+import ImageLayer from "ol/layer/Image.js";
+import Map from "ol/Map.js";
+import Projection from "ol/proj/Projection.js";
+import Static from "ol/source/ImageStatic.js";
+import { getCenter } from "ol/extent.js";
+import ZoomControls from "../../../components/buttons/zoomControls";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
+import { defaults as defaultControls } from "ol/control/defaults";
+import { View } from "ol";
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -20,7 +28,12 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [files, setFiles] = useState<FileInterface[]>();
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
+  const [pageCount, setPageCount] = useState<number>(1);
+  const [activePage, setActivePage] = useState<number>(1);
+  const [map, setMap] = useState<Map>();
+  const [extent, setExtent] = useState<number[]>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mapRef = useRef();
   const { showAlert } = useContext(AlertContext);
 
   const loadFiles = useCallback(async () => {
@@ -58,16 +71,102 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     fileInputRef.current?.click();
   };
 
+  const zoomIn = () => {
+    if (map) {
+      const view = map.getView();
+      const zoom = view.getZoom();
+      if (zoom) {
+        view.setZoom(zoom + 1);
+      }
+    }
+  };
+
+  const zoomOut = () => {
+    if (map) {
+      const view = map.getView();
+      const zoom = view.getZoom();
+      if (zoom) {
+        view.setZoom(zoom - 1);
+      }
+    }
+  };
+
+  const fitToExtent = () => {
+    if (map && extent) {
+      const view = map.getView();
+      view.fit(extent, { size: map.getSize() });
+    }
+  };
+
   useEffect(() => {
     if (files === undefined) {
       loadFiles();
     }
   }, [files, loadFiles]);
 
+  useEffect(() => {
+    if (map === undefined && mapRef.current) {
+      const map = new Map({
+        layers: [],
+        target: mapRef.current,
+        controls: defaultControls({
+          attribution: false,
+          zoom: false,
+        }),
+      });
+      setMap(map);
+    } else if (map && selectedFile) {
+      getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
+        if (pageCount !== response.count) {
+          setPageCount(response.count);
+          setActivePage(1);
+        }
+
+        const extent = [0, 0, response.width, response.height];
+        setExtent(extent);
+
+        const projection = new Projection({
+          code: "xkcd-image",
+          units: "pixels",
+          extent: extent,
+        });
+
+        const fileLayer = new ImageLayer({
+          source: new Static({
+            url: response.fileName,
+            projection: projection,
+            imageExtent: extent,
+            imageLoadFunction: (image, src) => {
+              loadImage(src).then(blob => {
+                (image.getImage() as HTMLImageElement).src = URL.createObjectURL(blob);
+              });
+            },
+          }),
+        });
+
+        map.getLayers().clear();
+        map.addLayer(fileLayer);
+        map.setView(
+          new View({
+            minResolution: 0.1,
+            zoom: 0,
+            projection: projection,
+            center: getCenter(extent),
+            extent: extent,
+            showFullExtent: true,
+          }),
+        );
+      });
+    }
+  }, [selectedFile, activePage, pageCount, map, mapRef]);
+
   return (
     <Box
       sx={{
         backgroundColor: theme.palette.ai.background,
+        border: `1px solid ${theme.palette.ai.background}`,
+        borderRight: 0,
+        borderBottom: 0,
         height: panelPosition === "bottom" ? "50%" : "100%",
         width: panelPosition === "right" ? "50%" : "100%",
       }}
@@ -98,8 +197,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         exclusive
         sx={{
           position: "absolute",
-          bottom: "10px",
-          right: "10px",
+          bottom: "16px",
+          right: "16px",
           zIndex: "500",
         }}>
         <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
@@ -115,8 +214,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             direction="row"
             sx={{
               position: "absolute",
-              top: "10px",
-              left: "10px",
+              top: "16px",
+              left: "16px",
               zIndex: "500",
               gap: 1,
             }}>
@@ -129,14 +228,55 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               ]}
               selectedItem={{ key: selectedFile?.id, value: selectedFile?.name }}
               onItemSelected={item => {
+                setActivePage(1);
                 if (item.key === -1) {
                   handleFileInputClick();
                 } else {
                   setSelectedFile(files?.find(file => file.id === item.key));
                 }
               }}
+              sx={{ height: "44px" }}
             />
           </Stack>
+          <ZoomControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} />
+          <ButtonGroup
+            variant="contained"
+            sx={{
+              position: "absolute",
+              bottom: "16px",
+              left: "16px",
+              zIndex: "500",
+              height: "44px",
+            }}>
+            <Typography
+              variant="h6"
+              sx={{ alignContent: "center", padding: 1, paddingRight: pageCount > 1 ? 0 : 1, margin: 0.5 }}>
+              {activePage} / {pageCount}
+            </Typography>
+            {pageCount > 1 && (
+              <>
+                <Button
+                  variant="text"
+                  color="secondary"
+                  onClick={() => {
+                    setActivePage(activePage - 1);
+                  }}
+                  disabled={activePage === 1}>
+                  <ChevronLeft />
+                </Button>
+                <Button
+                  variant="text"
+                  color="secondary"
+                  onClick={() => {
+                    setActivePage(activePage + 1);
+                  }}
+                  disabled={activePage === pageCount}>
+                  <ChevronRight />
+                </Button>
+              </>
+            )}
+          </ButtonGroup>
+          <Box ref={mapRef} id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
         </Box>
       ) : (
         <LabelingFileSelector
