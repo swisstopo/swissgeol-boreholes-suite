@@ -65,9 +65,7 @@ export const CoordinatesTextfield: FC<CoordinatesTextfieldProps> = ({
           name={field.name}
           id={`component-outlined-${fieldName}`}
           inputProps={{
-            input: {
-              readOnly: !editingEnabled,
-            },
+            readOnly: !editingEnabled,
           }}
           InputProps={{
             /* eslint-disable  @typescript-eslint/no-explicit-any */
