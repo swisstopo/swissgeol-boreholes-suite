@@ -1,5 +1,5 @@
 import { delayedType, newEditableBorehole } from "../helpers/testHelpers";
-import { evaluateSelect, setSelect } from "../helpers/formHelpers";
+import { setSelect } from "../helpers/formHelpers";
 
 function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
   cy.get(inputAlias)
@@ -18,10 +18,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
   beforeEach(() => {
     newEditableBorehole().as("borehole_id");
 
-    cy.get('[data-cy="LV95X"]').as("LV95X-input");
-    cy.get('[data-cy="LV95Y"]').as("LV95Y-input");
-    cy.get('[data-cy="LV03X"]').as("LV03X-input");
-    cy.get('[data-cy="LV03Y"]').as("LV03Y-input");
+    cy.get('[data-cy="LV95X"] input').as("LV95X-input");
+    cy.get('[data-cy="LV95Y"] input').as("LV95Y-input");
+    cy.get('[data-cy="LV03X"] input').as("LV03X-input");
+    cy.get('[data-cy="LV03Y"] input').as("LV03Y-input");
     cy.get('[data-cy="country"] > input').as("country");
     cy.get('[data-cy="canton"] > input').as("canton");
     cy.get('[data-cy="municipality"] > input').as("municipality");
@@ -61,10 +61,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("validates inputs", () => {
     // divs have errors as long as inputs are empty
-    cy.get("[name=location_x_lv03]").should("have.class", "error");
-    cy.get("[name=location_y_lv03]").should("have.class", "error");
-    cy.get("[name=location_x]").should("have.class", "error");
-    cy.get("[name=location_y]").should("have.class", "error");
+    cy.get('[data-cy="LV03X"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="LV03X"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="LV95X"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="LV95Y"] > div').should("have.class", "Mui-error");
 
     // type valid coordinates
     cy.get("@LV95X-input").scrollIntoView();
@@ -73,10 +73,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     delayedType(cy.get("@LV95Y-input"), "1245794.92348");
 
     // divs have errors as long as inputs are empty
-    cy.get("[name=location_x_lv03]").should("not.have.class", "error");
-    cy.get("[name=location_y_lv03]").should("not.have.class", "error");
-    cy.get("[name=location_x]").should("not.have.class", "error");
-    cy.get("[name=location_y]").should("not.have.class", "error");
+    cy.get('[data-cy="LV03X"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="LV03Y"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="LV95X"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="LV95Y"] > div').should("not.have.class", "Mui-error");
 
     // wait edits of all 4 inputs to complete
     cy.wait(["@location", "@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch"]);
@@ -89,10 +89,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     delayedType(cy.get("@LV95Y-input"), "124579");
 
     // divs that changed have errors
-    cy.get("[name=location_x_lv03]").should("not.have.class", "error");
-    cy.get("[name=location_y_lv03]").should("not.have.class", "error");
-    cy.get("[name=location_x]").should("have.class", "error");
-    cy.get("[name=location_y]").should("have.class", "error");
+    cy.get('[data-cy="LV03X"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="LV03Y"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="LV95X"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="LV95Y"] > div').should("have.class", "Mui-error");
   });
 
   it("edits borehole and changes coordinates from map", () => {
@@ -129,7 +129,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("not.have.value", "");
 
     // verify original reference system has switched to LV95
-    evaluateSelect("spatial_reference_system", 20104001);
+    cy.get("[name=spatial_reference_system]").should("have.value", 20104001);
 
     waitForCoordinatePatches();
 

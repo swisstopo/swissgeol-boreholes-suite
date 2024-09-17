@@ -325,7 +325,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
         const X_precision = direction === Direction.X ? changedCoordinatePrecision : otherCoordinatePrecision;
         const Y_precision = direction === Direction.Y ? changedCoordinatePrecision : otherCoordinatePrecision;
 
-        if (X !== null && Y !== null) {
+        if (X !== null && Y !== null && !mapPointChange) {
           handleCoordinateTransformation(sourceSystem, targetSystem, X, Y, X_precision, Y_precision);
         }
       }
