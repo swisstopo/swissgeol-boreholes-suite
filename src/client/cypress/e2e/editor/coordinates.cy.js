@@ -60,10 +60,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("validates inputs", () => {
     // divs have errors as long as inputs are empty
-    cy.get('[data-cy="LV03X"] > div').should("not.have.class", "Mui-error");
-    cy.get('[data-cy="LV03Y"] > div').should("not.have.class", "Mui-error");
-    cy.get('[data-cy="LV95X"] > div').should("not.have.class", "Mui-error");
-    cy.get('[data-cy="LV95Y"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="LV95X"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="LV95Y"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="LV03X"] > div').should("have.class", "Mui-disabled");
+    cy.get('[data-cy="LV03Y"] > div').should("have.class", "Mui-disabled");
 
     // type valid coordinates
     cy.get("@LV95X-input").scrollIntoView();
@@ -71,7 +71,6 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").scrollIntoView();
     delayedType(cy.get("@LV95Y-input"), "1245794.92348");
 
-    // divs have errors as long as inputs are empty
     cy.get('[data-cy="LV03X"] > div').should("not.have.class", "Mui-error");
     cy.get('[data-cy="LV03Y"] > div').should("not.have.class", "Mui-error");
     cy.get('[data-cy="LV95X"] > div').should("not.have.class", "Mui-error");
@@ -141,12 +140,14 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("displays correct decimal precision", () => {
     // Type valid coordinates with zeros after decimal
-    delayedType(cy.get("@LV95X-input"), "2645123.0000");
-    delayedType(cy.get("@LV95Y-input"), "1245794.000");
+    cy.get("@LV95X-input").type("2645123.0000");
+    cy.get("@LV95Y-input").type("1245794.000");
 
     waitForCoordinatePatches();
     cy.wait("@edit_patch");
     cy.wait("@location");
+    checkDecimalPlaces("@LV95X-input", 4);
+    checkDecimalPlaces("@LV95Y-input", 3);
     checkDecimalPlaces("@LV03X-input", 4);
     checkDecimalPlaces("@LV03Y-input", 4);
 
@@ -159,11 +160,13 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").should("have.value", `1'245'794.000`);
 
     // Add more zeros to LV95Y input
-    delayedType(cy.get("@LV95Y-input"), "00");
+    cy.get("@LV95Y-input").type("00");
 
     waitForCoordinatePatches();
     cy.wait("@edit_patch");
     cy.wait("@location");
+    checkDecimalPlaces("@LV95X-input", 4);
+    checkDecimalPlaces("@LV95Y-input", 5);
     checkDecimalPlaces("@LV03X-input", 5);
     checkDecimalPlaces("@LV03Y-input", 5);
   });

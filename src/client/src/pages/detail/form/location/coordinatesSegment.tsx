@@ -288,6 +288,13 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     if (value.endsWith(".")) {
       return;
     }
+    const sourceSystem = referenceSystem;
+    const targetSystem = sourceSystem === ReferenceSystemKey.LV95 ? ReferenceSystemKey.LV03 : ReferenceSystemKey.LV95;
+
+    if (value === "") {
+      setValuesForReferenceSystem(targetSystem, "", "");
+      return;
+    }
 
     const floatValue = parseFloatWithThousandsSeparator(value);
     // verify coordinates are in bounding box
@@ -313,9 +320,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
         (referenceSystem === ReferenceSystemKey.LV95 && completeLV95) ||
         (referenceSystem === ReferenceSystemKey.LV03 && completeLV03)
       ) {
-        const sourceSystem = referenceSystem;
-        const targetSystem =
-          sourceSystem === ReferenceSystemKey.LV95 ? ReferenceSystemKey.LV03 : ReferenceSystemKey.LV95;
         const X = sourceSystem === ReferenceSystemKey.LV95 ? coordinates?.LV95.x : coordinates?.LV03.x;
         const Y = sourceSystem === ReferenceSystemKey.LV95 ? coordinates?.LV95.y : coordinates?.LV03.y;
         const changedCoordinatePrecision = getPrecisionFromString(value);
@@ -401,7 +405,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                   fieldName={`spatial_reference_system`}
                   label="spatial_reference_system"
                   selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
-                  required={true}
                   canReset={false}
                   variant="outlined"
                   sx={{

@@ -60,7 +60,7 @@ export const CoordinatesTextfield: FC<CoordinatesTextfieldProps> = ({
               px: panelOpen ? 1 : 0,
             },
           }}
-          error={!panelOpen && getFormFieldError(fieldName, formState.errors)}
+          error={!panelOpen && isFieldForSelectedReferenceSystem && getFormFieldError(fieldName, formState.errors)}
           disabled={!isFieldForSelectedReferenceSystem}
           data-cy={`${referenceSystem}${direction}`}
           value={field.value}
