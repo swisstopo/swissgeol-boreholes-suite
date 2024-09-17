@@ -50,9 +50,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     mode: "all",
   });
 
-  // --- Derived states ---
-  const isLV95 = currentReferenceSystem === referenceSystems.LV95.code || currentReferenceSystem === null; // LV95 should be selected by default.
-
   // --- UseCallback hooks ---
 
   // transforms coordinates from one reference system to the other.
