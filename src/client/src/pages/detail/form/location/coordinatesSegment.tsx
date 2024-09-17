@@ -47,7 +47,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // --- Form handling ---
   const formMethods = useForm({
-    mode: "all",
+    mode: "onChange",
   });
 
   // --- UseCallback hooks ---
@@ -180,6 +180,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       XPrecision: number,
       YPrecision: number,
     ) => {
+      console.log(XPrecision, YPrecision);
       const response = await transformCoordinates(sourceSystem, X, Y);
       if (!response) return; // Ensure response is valid
 

@@ -36,7 +36,10 @@ export const CoordinatesTextfield: FC<CoordinatesTextfieldProps> = ({
       control={control}
       rules={{
         onChange: e => {
-          onCoordinateChange(referenceSystem, direction, e.target.value);
+          //prevent triggering the change event when the disabled inputs are programmatically changed
+          if (isFieldForSelectedReferenceSystem) {
+            onCoordinateChange(referenceSystem, direction, e.target.value);
+          }
         },
         required: true,
         validate: inBounds,
@@ -63,7 +66,6 @@ export const CoordinatesTextfield: FC<CoordinatesTextfieldProps> = ({
           value={field.value}
           onChange={field.onChange}
           name={field.name}
-          id={`component-outlined-${fieldName}`}
           inputProps={{
             readOnly: !editingEnabled,
           }}
