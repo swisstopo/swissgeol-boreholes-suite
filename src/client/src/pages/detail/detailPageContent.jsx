@@ -9,7 +9,7 @@ import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTab
 import { Dimmer, Loader } from "semantic-ui-react";
 import Lithology from "./form/stratigraphy/lithology";
 import IdentifierSegment from "./form/location/indentifierSegment.jsx";
-import NameSegment from "./form/location/nameSegment.jsx";
+import NameSegment from "./form/location/nameSegment.tsx";
 import RestrictionSegment from "./form/location/restrictionSegment.jsx";
 import BoreholePanel from "./form/borehole/boreholePanel.jsx";
 import LocationSegment from "./form/location/locationSegment.tsx";
@@ -233,7 +233,6 @@ class DetailPageContent extends React.Component {
 
   render() {
     const { t, borehole, user, editingEnabled } = this.props;
-    const size = null; // 'small'
     if (borehole.error !== null) {
       return <div>{t(borehole.error, borehole.data)}</div>;
     }
@@ -291,18 +290,12 @@ class DetailPageContent extends React.Component {
                         setState={this.setStateBound}
                         updateBorehole={this.props.updateBorehole}
                         user={user}></IdentifierSegment>
-                      <NameSegment
-                        size={size}
-                        borehole={borehole}
-                        updateChange={this.updateChange}
-                        user={user}></NameSegment>
+                      <NameSegment borehole={borehole} updateChange={this.updateChange} user={user}></NameSegment>
                       <RestrictionSegment
-                        size={size}
                         borehole={borehole}
                         updateChange={this.updateChange}
                         user={user}></RestrictionSegment>
                       <LocationSegment
-                        size={size}
                         showLabeling={this.props.showLabeling}
                         borehole={borehole}
                         user={user}
@@ -319,7 +312,6 @@ class DetailPageContent extends React.Component {
                 path={"/:id/borehole"}
                 render={() => (
                   <BoreholePanel
-                    size={size}
                     boreholeId={id}
                     borehole={borehole}
                     updateChange={this.updateChange}

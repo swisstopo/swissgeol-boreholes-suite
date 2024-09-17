@@ -29,7 +29,6 @@ import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
-  size,
   borehole,
   updateChange,
   updateNumber,
@@ -381,7 +380,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   };
 
   return (
-    <Form size={size}>
+    <Form>
       <Card>
         <CardHeader
           title={t("coordinates")}

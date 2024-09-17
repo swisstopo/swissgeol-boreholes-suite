@@ -12,7 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const BoreholeDetailSegment = props => {
-  const { size, borehole, updateChange, updateNumber, isEditable } = props;
+  const { borehole, updateChange, updateNumber, isEditable } = props;
   const { t } = useTranslation();
 
   const [depthTVD, setDepthTVD] = useState(null);
@@ -59,7 +59,7 @@ const BoreholeDetailSegment = props => {
 
   return (
     <Segment>
-      <Form autoComplete="off" error size={size}>
+      <Form autoComplete="off" error>
         <Form.Group widths="equal">
           <Form.Field required>
             <label>{t("totaldepth")}</label>
