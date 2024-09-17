@@ -78,6 +78,13 @@ interface BoreholeAttributes {
   precision_location_y: number;
   precision_location_x_lv03: number;
   precision_location_y_lv03: number;
+  custom: {
+    country: string;
+    canton: string;
+    municipality: string;
+    project_name: string;
+    alternate_name: string;
+  };
   extended: {
     original_name: string;
   };

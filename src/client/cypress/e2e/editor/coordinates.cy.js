@@ -45,8 +45,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "Oberentfelden");
 
     //switch reference system
-    setSelect("spatial_reference_system", 1);
-
+    cy.get("input[value=20104002]").click();
     //await all patch requests
     cy.wait(["@edit_patch", "@edit_patch", "@edit_patch"]);
     // verify all inputs are empty
@@ -61,10 +60,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("validates inputs", () => {
     // divs have errors as long as inputs are empty
-    cy.get('[data-cy="LV03X"] > div').should("have.class", "Mui-error");
-    cy.get('[data-cy="LV03X"] > div').should("have.class", "Mui-error");
-    cy.get('[data-cy="LV95X"] > div').should("have.class", "Mui-error");
-    cy.get('[data-cy="LV95Y"] > div').should("have.class", "Mui-error");
+    cy.get("[name=location_x_lv03]").should("have.class", "error");
+    cy.get("[name=location_y_lv03]").should("have.class", "error");
+    cy.get("[name=location_x]").should("have.class", "error");
+    cy.get("[name=location_y]").should("have.class", "error");
 
     // type valid coordinates
     cy.get("@LV95X-input").scrollIntoView();
@@ -109,8 +108,8 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "");
 
     // zoom into map
-    cy.get('[data-cy="map-zoom-in"]').click({ force: true });
-    cy.get('[data-cy="map-zoom-in"]').click({ force: true });
+    cy.get('[data-cy="zoom-in-button"]').click({ force: true });
+    cy.get('[data-cy="zoom-in-button"]').click({ force: true });
 
     cy.wait(2000);
     // click on map

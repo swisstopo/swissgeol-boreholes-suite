@@ -9,7 +9,6 @@ import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 
 interface ElevationSegmentProps {
-  size: string;
   borehole: Borehole;
   user: User;
   updateChange: (
@@ -20,7 +19,7 @@ interface ElevationSegmentProps {
   updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
 }
 
-const ElevationSegment: FC<ElevationSegmentProps> = ({ size, borehole, user, updateChange, updateNumber }) => {
+const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, user, updateChange, updateNumber }) => {
   const { t } = useTranslation();
 
   // --- Derived states ---
@@ -29,7 +28,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ size, borehole, user, upd
 
   return (
     <FormSegmentBox>
-      <Form size={size}>
+      <Form>
         <Form.Group widths="equal">
           <Form.Field error={borehole.data.elevation_z == null} required>
             <label>{t("elevation_z")}</label>

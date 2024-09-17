@@ -308,7 +308,7 @@ export const theme = createTheme({
             background: "linear-gradient(#4338CA, #BF1F25)",
             boxShadow: "0px 0px 0px 3px #8655F6",
           },
-          "&:active": {
+          "&:active, &.Mui-active": {
             background: "linear-gradient(#4F46E5, #E53940)",
           },
           "&:disabled": {
@@ -317,10 +317,48 @@ export const theme = createTheme({
         },
       },
     },
+    MuiButtonGroup: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#ffffff",
+          height: "44px",
+
+          "& .MuiButtonGroup-grouped": {
+            minWidth: "36px",
+            minHeight: "36px",
+            border: "none",
+            borderRadius: "4px",
+            padding: "8px",
+            margin: "4px 0 4px 4px",
+
+            "&.Mui-disabled": {
+              border: "none",
+            },
+          },
+          "& .MuiButtonGroup-lastButton": {
+            marginRight: "4px",
+          },
+
+          "&.MuiButtonGroup-vertical": {
+            height: "auto",
+            width: "44px",
+            "& .MuiButtonGroup-grouped": {
+              padding: "8px",
+              margin: "4px 4px 0 4px",
+            },
+            "& .MuiButtonGroup-lastButton": {
+              marginBottom: "4px",
+            },
+          },
+        },
+      },
+    },
     MuiToggleButtonGroup: {
       styleOverrides: {
         root: {
           backgroundColor: "#ffffff",
+          boxShadow:
+            "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
         },
       },
     },

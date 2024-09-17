@@ -1,5 +1,5 @@
-import { maxFileSizeKB } from "./fileInterfaces.ts";
-import { download, fetchApiV2, upload } from "../fetchApiV2";
+import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
+import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2";
 import { ApiError } from "../apiInterfaces.ts";
 
 export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
@@ -50,3 +50,24 @@ export const updateFile = async (
     public: isPublic,
   });
 };
+
+export const getDataExtractionFileInfo = async (boreholeFileId: number, index: number) => {
+  const response = await fetchApiV2(
+    `boreholefile/getDataExtractionFileInfo?boreholeFileId=${boreholeFileId}&index=${index}`,
+    "GET",
+  );
+  if (response) {
+    return response as DataExtractionResponse;
+  } else {
+    throw new ApiError("errorDataExtractionFileLoading", 500);
+  }
+};
+
+export async function loadImage(fileName: string) {
+  const response = await fetchApiV2Base("boreholefile/dataextraction/" + fileName, "GET");
+  if (response.ok) {
+    return response.blob();
+  } else {
+    throw new ApiError(response.statusText, response.status);
+  }
+}

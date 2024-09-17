@@ -11,6 +11,7 @@ services:
     command: -c 'mkdir -p /data/cannonflea && minio server /data -console-address ":9002"'
     ports:
       - 9000:9000
+      - 9002:9002
   db:
     image: postgis/postgis:15-3.4-alpine
     restart: unless-stopped

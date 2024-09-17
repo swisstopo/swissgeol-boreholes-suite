@@ -29,7 +29,6 @@ import { theme } from "../../../../AppTheme.ts";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
-  size,
   borehole,
   updateChange,
   updateNumber,
@@ -285,7 +284,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     if (!editingEnabled) {
       return;
     }
-
     // prevent decimal point being removed when typing
     if (value.endsWith(".")) {
       return;
@@ -356,7 +354,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     );
     updateNumber("spatial_reference_system", value);
     setCurrentReferenceSystem(value);
-    formMethods.setValue("spatial_reference_system", value);
     setValuesForReferenceSystem(ReferenceSystemKey.LV03, "", "");
     setValuesForReferenceSystem(ReferenceSystemKey.LV95, "", "");
   };
@@ -392,7 +389,10 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
               sx={{ p: 4, pb: 3 }}
               titleTypographyProps={{ variant: "h5" }}
               action={
-                showLabeling && editingEnabled && <LabelingButton disabled={panelOpen} onClick={() => togglePanel()} />
+                showLabeling &&
+                editingEnabled && (
+                  <LabelingButton className={panelOpen ? "Mui-active" : ""} onClick={() => togglePanel()} />
+                )
               }
             />
             <CardContent sx={{ pl: 4, pr: 4 }}>
@@ -470,7 +470,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
           </Card>
         </FormSegmentBox>
       </FormProvider>
-      <Form size={size}>
+      <Form>
         <FormSegmentBox>
           <Form.Group widths="equal">
             <Form.Field required>

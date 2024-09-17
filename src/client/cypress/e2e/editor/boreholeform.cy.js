@@ -1,4 +1,4 @@
-import { createBorehole, loginAsAdmin, newEditableBorehole } from "../helpers/testHelpers";
+import { createBorehole, goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {
@@ -49,7 +49,7 @@ describe("Test for the borehole form.", () => {
     createBorehole({ "extended.original_name": "LSENALZE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
-      loginAsAdmin(`/${id}/borehole`);
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
     });
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);

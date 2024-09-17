@@ -35,6 +35,7 @@
 - Fixed typo in `consistency` codelist.
 - Updated the style of various buttons.
 - Map zoom level and center are now preserved when returning to the main map.
+- Deactivated the possibility to select page size in borehole table pagination.
 
 ### Fixed
 
@@ -52,6 +53,7 @@
 - When returning to the boreholes table from another page, the last scroll position was lost.
 - Status filter labels were not displayed correctly.
 - Order of groundwater level measurement attributes was incorrect.
+- The `Name` attribute in the borehole form was not correctly updated when first navigating to the page.
 
 ## v2.1.772 - 2024-06-27
 

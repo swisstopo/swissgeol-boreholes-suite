@@ -90,6 +90,7 @@ declare module "@mui/material/styles" {
     MuiCard: object;
     MuiCardHeader: object;
     MuiIconButton: object;
+    MuiButtonGroup: object;
     MuiToggleButtonGroup: object;
     MuiToggleButton: object;
     MuiSelect: object;
@@ -107,6 +108,7 @@ declare module "@mui/material/styles" {
     MuiCard: object;
     MuiCardHeader: object;
     MuiIconButton: object;
+    MuiButtonGroup: object;
     MuiToggleButtonGroup: object;
     MuiToggleButton: object;
     MuiSelect: object;

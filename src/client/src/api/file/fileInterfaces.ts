@@ -20,3 +20,10 @@ export interface FileResponse {
   fileId: number;
   file: File;
 }
+
+export interface DataExtractionResponse {
+  fileName: string;
+  width: number;
+  height: number;
+  count: number;
+}

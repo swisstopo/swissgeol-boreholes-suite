@@ -2,6 +2,7 @@
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -86,6 +87,68 @@ public class BoreholeFileController : ControllerBase
         {
             logger.LogError(ex, "An error occurred while downloading the file.");
             return Problem("An error occurred while downloading the file.");
+        }
+    }
+
+    /// <summary>
+    /// Get the borehole file information for the data extraction file with the provided boreholeFileId and page index.
+    /// </summary>
+    /// <param name="boreholeFileId">The id of the borehole file.</param>
+    /// <param name="index">The index of the page in the borehole file, with 1 as index for the first page.</param>
+    /// <returns>The name and size of the selected image as well as the total image count for the borehole file.</returns>
+    [HttpGet("getDataExtractionFileInfo")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> GetDataExtractionFileInfo([Required, Range(1, int.MaxValue)] int boreholeFileId, int index)
+    {
+        if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
+
+        try
+        {
+            var boreholeFile = await context.BoreholeFiles
+                .Include(f => f.File)
+                .FirstOrDefaultAsync(f => f.FileId == boreholeFileId)
+                .ConfigureAwait(false);
+
+            if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
+
+            var fileUuid = boreholeFile.File.NameUuid.Replace(".pdf", "", StringComparison.OrdinalIgnoreCase);
+            var fileCount = await boreholeFileUploadService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
+            var result = await boreholeFileUploadService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
+
+            return Ok(new
+            {
+                fileName = result.FileName,
+                width = result.Width,
+                height = result.Height,
+                count = fileCount,
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while retrieving the file info.");
+            return Problem(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Downloads an image from the data extraction folder in the cloud storage.
+    /// </summary>
+    /// <param name="imageName">The image name.</param>
+    /// <returns>The stream of the image.</returns>
+    [HttpGet("dataextraction/{*imageName}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> GetDataExtractionImage(string imageName)
+    {
+        try
+        {
+            var decodedImageName = Uri.UnescapeDataString($"dataextraction/{imageName}");
+            var fileBytes = await boreholeFileUploadService.GetObject(decodedImageName).ConfigureAwait(false);
+            return File(fileBytes, "image/png", decodedImageName);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while loading the image");
+            return Problem(ex.Message);
         }
     }
 

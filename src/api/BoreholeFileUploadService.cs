@@ -135,7 +135,95 @@ public class BoreholeFileUploadService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error downloading file <{objectName}> from cloud storage.");
+            logger.LogError(ex, $"Error downloading file from cloud storage.");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Gets the number of data extraction images for a pdf.
+    /// </summary>
+    /// <param name="objectName">The uuid of the pdf.</param>
+    /// <returns>The number of images.</returns>
+    public async Task<int> CountDataExtractionObjects(string objectName)
+    {
+        try
+        {
+            var baseObjectName = $"dataextraction/{objectName}";
+            int totalObjects = 0;
+
+            var listObjectsRequest = new ListObjectsV2Request
+            {
+                BucketName = bucketName,
+                Prefix = baseObjectName + "-",
+            };
+
+            do
+            {
+                var listObjectsResponse = await s3Client.ListObjectsV2Async(listObjectsRequest).ConfigureAwait(false);
+                totalObjects += listObjectsResponse.S3Objects.Count;
+                listObjectsRequest.ContinuationToken = listObjectsResponse.NextContinuationToken;
+            }
+            while (listObjectsRequest.ContinuationToken != null);
+
+            return totalObjects;
+        }
+        catch (AmazonS3Exception ex)
+        {
+            logger.LogError(ex, $"Error counting files in data extraction folder in cloud storage.");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Gets the info of a data extraction image .
+    /// </summary>
+    /// <param name="objectName">The uuid of the parent pdf.</param>
+    /// <param name="index">The page number in the pdf.</param>
+    /// <returns>The name, width and height of the file.</returns>
+    public async Task<(string FileName, int Width, int Height)> GetDataExtractionImageInfo(string objectName, int index)
+    {
+        try
+        {
+            var fileName = $"{objectName}-{index}.png";
+            var key = $"dataextraction/{fileName}";
+
+            var tempFile = Path.GetRandomFileName();
+            try
+            {
+                using (var s3Stream = await s3Client.GetObjectStreamAsync(bucketName, key, null).ConfigureAwait(false))
+                using (var fileStream = new FileStream(tempFile, FileMode.Create))
+                {
+                    await s3Stream.CopyToAsync(fileStream).ConfigureAwait(false);
+                }
+
+                int width = 0;
+                int height = 0;
+
+                using (var stream = new FileStream(tempFile, FileMode.Open))
+                using (var reader = new BinaryReader(stream))
+                {
+                    reader.BaseStream.Position = 16;
+
+                    var widthBytes = reader.ReadBytes(4);
+                    Array.Reverse(widthBytes);
+                    width = BitConverter.ToInt32(widthBytes, 0);
+
+                    var heightBytes = reader.ReadBytes(4);
+                    Array.Reverse(heightBytes);
+                    height = BitConverter.ToInt32(heightBytes, 0);
+                }
+
+                return (fileName, width, height);
+            }
+            finally
+            {
+                System.IO.File.Delete(tempFile);
+            }
+        }
+        catch (AmazonS3Exception ex)
+        {
+            logger.LogError(ex, $"Error retrieving image information from data extraction folder in cloud storage.");
             throw;
         }
     }
