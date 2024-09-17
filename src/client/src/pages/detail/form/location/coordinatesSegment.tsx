@@ -1,14 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, Stack } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
-import { Form } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
-import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import {
   getPrecisionFromString,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/legacyComponents/formUtils.js";
-import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
+import { fetchApiV2, useDomains } from "../../../../api/fetchApiV2.js";
 import {
   CoordinatePrecisions,
   Coordinates,
@@ -26,6 +24,7 @@ import { FormSegmentBox, StackFullWidth } from "../../../../components/styledCom
 import { FormSelect } from "../../../../components/form/formSelect.tsx";
 import { CoordinatesTextfield } from "./CoordinatesTextfield.tsx";
 import { theme } from "../../../../AppTheme.ts";
+import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -37,7 +36,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   showLabeling,
   editingEnabled,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { panelOpen, togglePanel } = useLabelingContext();
 
   // --- State variables ---
@@ -48,6 +47,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   const formMethods = useForm({
     mode: "onChange",
   });
+
+  const { data: domains } = useDomains();
 
   // --- UseCallback hooks ---
 
@@ -469,27 +470,30 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                   />
                 </Stack>
               </Stack>
+              <FormSelect
+                fieldName={`location_precision`}
+                label="location_precision"
+                // selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
+                variant="outlined"
+                sx={{
+                  width: "100%",
+                  pointerEvents: editingEnabled ? "auto" : "none",
+                }}
+                onUpdate={e => updateChange("location_precision", e, false)}
+                selected={[borehole.data.location_precision]}
+                values={domains
+                  ?.filter((d: Codelist) => d.schema === "location_precision")
+                  .sort((a: Codelist, b: Codelist) => a.order - b.order)
+                  .map((d: Codelist) => ({
+                    key: d.id,
+                    // @ts-expect-error - i18n language selection not typed
+                    name: d[i18n.language],
+                  }))}
+              />
             </CardContent>
           </Card>
         </FormSegmentBox>
       </FormProvider>
-      <Form>
-        <FormSegmentBox>
-          <Form.Group widths="equal">
-            <Form.Field required>
-              <label>{t("location_precision")}</label>
-              <DomainDropdown
-                onSelected={(selected: { id: string }) => {
-                  updateChange("location_precision", selected.id, false);
-                }}
-                schema="location_precision"
-                selected={borehole.data.location_precision}
-                readOnly={!editingEnabled}
-              />
-            </Form.Field>
-          </Form.Group>
-        </FormSegmentBox>
-      </Form>
     </>
   );
 };
