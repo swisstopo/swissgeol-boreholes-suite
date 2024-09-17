@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
+import { ExtractionRequest, labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
 import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
@@ -32,6 +32,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [files, setFiles] = useState<FileInterface[]>();
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
+  const [fileName, setFileName] = useState<string>();
   const [pageCount, setPageCount] = useState<number>(1);
   const [activePage, setActivePage] = useState<number>(1);
   const [map, setMap] = useState<Map>();
@@ -102,6 +103,15 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     }
   };
 
+  const convert2bbox = (coordinates: number[]) => {
+    return {
+      x0: coordinates[0],
+      y0: Math.abs(coordinates[1]),
+      x1: coordinates[2],
+      y1: Math.abs(coordinates[3]),
+    };
+  };
+
   useEffect(() => {
     if (files === undefined) {
       loadFiles();
@@ -109,7 +119,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   }, [files, loadFiles]);
 
   useEffect(() => {
-    if (map && selectedFile && extractionObject) {
+    if (map && selectedFile && extractionObject && fileName) {
       const drawingStyle = () =>
         new Style({
           stroke: new Stroke({
@@ -123,9 +133,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
       const drawingSource = new VectorSource();
       drawingSource.on("addfeature", e => {
         // TODO: Send coordinates to labeling api to extract data
-        console.log("Feature added", e.feature?.getGeometry());
+        const extent = e.feature?.getGeometry()?.getExtent();
+        if (extent) {
+          const request: ExtractionRequest = {
+            filename: fileName,
+            page_number: activePage,
+            bounding_box: convert2bbox(extent),
+          };
+          console.log("Request", request);
+        }
 
-        // TODO: Maybe trigger reload?
+        // TODO: Maybe trigger reload to display feature?
         // drawingLayer.changed();
         // map.render();
       });
@@ -151,7 +169,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
       map.addInteraction(drawInteraction);
       map.getTargetElement().style.cursor = "crosshair";
     }
-  }, [extractionObject, map, selectedFile]);
+  }, [extractionObject, map, selectedFile, fileName, activePage]);
 
   useEffect(() => {
     if (map === undefined && mapRef.current) {
@@ -166,16 +184,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
       setMap(map);
     } else if (map && selectedFile) {
       getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
-        if (pageCount !== response.count) {
+        if (!fileName || !response.fileName.includes(fileName)) {
+          setFileName(response.fileName.substring(0, response.fileName.lastIndexOf("-")));
           setPageCount(response.count);
           setActivePage(1);
         }
 
-        const extent = [0, 0, response.width, response.height];
+        const extent = [0, -response.height, response.width, 0];
         setExtent(extent);
 
         const projection = new Projection({
-          code: "xkcd-image",
+          code: "image",
           units: "pixels",
           extent: extent,
         });
@@ -207,7 +226,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         );
       });
     }
-  }, [selectedFile, activePage, pageCount, map, mapRef]);
+  }, [selectedFile, activePage, pageCount, map, mapRef, fileName]);
 
   return (
     <Box

@@ -8,6 +8,19 @@ export interface ExtractionObject {
   type: ExtractionType;
 }
 
+export interface ExtractionBoundingBox {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+export interface ExtractionRequest {
+  filename: string;
+  page_number: number;
+  bounding_box: ExtractionBoundingBox;
+}
+
 export type PanelPosition = "right" | "bottom";
 
 export interface LabelingContextInterface {
