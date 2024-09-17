@@ -1,18 +1,18 @@
 import { Button, ButtonGroup } from "@mui/material";
 import { Minus, Plus } from "lucide-react";
 import Circle from "../../assets/icons/circle.svg?react";
+import { theme } from "../../AppTheme";
 
-const ZoomControls = ({ onZoomIn, onZoomOut, onFitToExtent }) => {
+const ZoomControls = ({ onZoomIn, onZoomOut, onFitToExtent, applyBaseStyling = true }) => {
+  const baseSx = {
+    position: "absolute",
+    top: theme.spacing(2),
+    right: theme.spacing(2),
+    zIndex: "500",
+  };
+
   return (
-    <ButtonGroup
-      variant="contained"
-      orientation="vertical"
-      sx={{
-        position: "absolute",
-        top: "16px",
-        right: "16px",
-        zIndex: "500",
-      }}>
+    <ButtonGroup variant="contained" orientation="vertical" sx={applyBaseStyling ? { ...baseSx } : {}}>
       <Button data-cy="zoom-in-button" variant="text" color="secondary" onClick={onZoomIn}>
         <Plus />
       </Button>

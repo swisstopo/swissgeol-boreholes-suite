@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
-import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, RotateCwSquare } from "lucide-react";
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
 import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
@@ -95,6 +95,14 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     if (map && extent) {
       const view = map.getView();
       view.fit(extent, { size: map.getSize() });
+    }
+  };
+
+  const rotateImage = () => {
+    if (map) {
+      const view = map.getView();
+      const rotation = view.getRotation();
+      view.setRotation(rotation + Math.PI / 2);
     }
   };
 
@@ -197,8 +205,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         exclusive
         sx={{
           position: "absolute",
-          bottom: "16px",
-          right: "16px",
+          bottom: theme.spacing(2),
+          right: theme.spacing(2),
           zIndex: "500",
         }}>
         <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
@@ -214,8 +222,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             direction="row"
             sx={{
               position: "absolute",
-              top: "16px",
-              left: "16px",
+              top: theme.spacing(2),
+              left: theme.spacing(2),
               zIndex: "500",
               gap: 1,
             }}>
@@ -238,13 +246,25 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               sx={{ height: "44px" }}
             />
           </Stack>
-          <ZoomControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} />
+          <Stack
+            sx={{
+              position: "absolute",
+              top: theme.spacing(2),
+              right: theme.spacing(2),
+              zIndex: "500",
+              gap: 1,
+            }}>
+            <ZoomControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} applyBaseStyling={false} />
+            <Button variant="text" onClick={rotateImage} sx={{ height: "44px" }}>
+              <RotateCwSquare />
+            </Button>
+          </Stack>
           <ButtonGroup
             variant="contained"
             sx={{
               position: "absolute",
-              bottom: "16px",
-              left: "16px",
+              bottom: theme.spacing(2),
+              left: theme.spacing(2),
               zIndex: "500",
               height: "44px",
             }}>
