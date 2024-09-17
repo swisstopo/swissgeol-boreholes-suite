@@ -180,7 +180,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       XPrecision: number,
       YPrecision: number,
     ) => {
-      console.log(XPrecision, YPrecision);
       const response = await transformCoordinates(sourceSystem, X, Y);
       if (!response) return; // Ensure response is valid
 
@@ -223,6 +222,11 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   useEffect(() => {
     formMethods.trigger();
   }, [formMethods.trigger, currentReferenceSystem, formMethods]);
+
+  // Sync currentReferenceSystem with react-hook-form
+  useEffect(() => {
+    formMethods.setValue("spatial_reference_system", currentReferenceSystem);
+  }, [currentReferenceSystem, formMethods]);
 
   // reset form values when the borehole or map point changes.
   useEffect(() => {
