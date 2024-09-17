@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { capitalizeFirstLetter } from "../../../../utils";
 
 const BoreholeGeneralSegment = props => {
-  const { size, borehole, updateChange, isEditable } = props;
+  const { borehole, updateChange, isEditable } = props;
   const { t } = useTranslation();
 
   return (
@@ -18,7 +18,7 @@ const BoreholeGeneralSegment = props => {
           style={{
             flex: "1 1 0",
           }}>
-          <Form autoComplete="off" error size={size}>
+          <Form autoComplete="off" error>
             <Form.Group widths="equal">
               {/* drilling type in Borehole */}
               <Form.Field error={borehole.data.borehole_type === null} required>
@@ -66,7 +66,7 @@ const BoreholeGeneralSegment = props => {
             flex: "1 1 0",
             paddingLeft: "1em",
           }}>
-          <Form autoComplete="off" error size={size}>
+          <Form autoComplete="off" error>
             <Form.Field>
               {t("remarks")}
               <TextArea

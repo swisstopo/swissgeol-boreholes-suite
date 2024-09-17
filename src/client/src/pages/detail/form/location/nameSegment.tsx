@@ -1,25 +1,34 @@
 import { Form, Input } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 
-const NameSegment = props => {
-  const { size, borehole, updateChange, user } = props;
-  const [alternateName, setAlternateName] = useState(
-    borehole.data.custom.alternate_name || borehole.data.extended.original_name,
-  );
+interface NameSegmentProps {
+  borehole: Borehole;
+  updateChange: (key: string, value: string) => void;
+  user: User;
+}
+
+const NameSegment = ({ borehole, updateChange, user }: NameSegmentProps) => {
+  const [alternateName, setAlternateName] = useState("");
   const { t } = useTranslation();
 
   const isEditable =
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
+  useEffect(() => {
+    setAlternateName(borehole.data.custom.alternate_name || borehole.data.extended.original_name);
+  }, [borehole.data]);
+
   return (
     <FormSegmentBox>
-      <Form autoComplete="off" error size={size}>
+      <Form autoComplete="off" error>
         <Form.Group widths="equal">
           <Form.Field error={borehole.data.extended.original_name === ""} required>
             <label>{t("original_name")}</label>
             <Input
+              data-cy="original-name"
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
@@ -52,6 +61,7 @@ const NameSegment = props => {
           <Form.Field>
             <label>{t("alternate_name")}</label>
             <Input
+              data-cy="alternate-name"
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"

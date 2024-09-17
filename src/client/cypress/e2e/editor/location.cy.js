@@ -1,4 +1,11 @@
-import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  goToRouteAndAcceptTerms,
+  newEditableBorehole,
+  returnToOverview,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 import { checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
@@ -6,30 +13,10 @@ describe("Tests for 'Location' edit page.", () => {
     newEditableBorehole();
 
     const originalNameInput = cy.contains("label", "Original name").next().children("input");
-    const alternateNameInput = cy.contains("label", "Name").next().children("input");
 
     // enter original name
-    originalNameInput.type("Original Name");
+    originalNameInput.type("AAA_SCATORPS");
     cy.wait("@edit_patch");
-
-    // ensure alternate name contains original name
-    alternateNameInput.should("have.value", "Original Name");
-
-    // change alternate name
-    alternateNameInput.clear().type("Alternate name changed");
-    cy.wait("@edit_patch");
-
-    // ensure alternate name and original name contain correct values
-    originalNameInput.should("have.value", "Original Name");
-    alternateNameInput.should("have.value", "Alternate name changed");
-
-    // change original name
-    originalNameInput.clear().type("AAA_SCATORPS");
-    cy.wait("@edit_patch");
-
-    // ensure alternate name and original name contain correct values
-    originalNameInput.should("have.value", "AAA_SCATORPS");
-    alternateNameInput.should("have.value", "AAA_SCATORPS");
 
     // stop editing
     stopBoreholeEditing();
@@ -45,6 +32,41 @@ describe("Tests for 'Location' edit page.", () => {
     cy.get('.MuiButton-containedPrimary[data-cy="delete-button"]').click();
     cy.wait(["@edit_deletelist", "@edit_list"]);
     cy.get('[data-cy="borehole-table"]').contains("AAA_SCATORPS").should("not.exist");
+  });
+
+  it("completes alternate name", () => {
+    createBorehole({ "extended.original_name": "PHOTOSQUIRREL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}`);
+      cy.get('[data-cy="original-name"]').within(() => {
+        cy.get("input").as("originalNameInput");
+      });
+      cy.get('[data-cy="alternate-name"]').within(() => {
+        cy.get("input").as("alternateNameInput");
+      });
+
+      cy.get("@originalNameInput").should("have.value", "PHOTOSQUIRREL");
+      cy.get("@alternateNameInput").should("have.value", "PHOTOSQUIRREL");
+
+      startBoreholeEditing();
+      // changing original name should also change alternate name
+      cy.get("@originalNameInput").clear().type("PHOTOCAT");
+      cy.wait("@edit_patch");
+      cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
+      cy.get("@alternateNameInput").should("have.value", "PHOTOCAT");
+
+      cy.get("@alternateNameInput").clear().type("PHOTOMOUSE");
+      cy.wait("@edit_patch");
+      cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
+      cy.get("@alternateNameInput").should("have.value", "PHOTOMOUSE");
+
+      cy.get("@alternateNameInput").clear();
+      cy.wait("@edit_patch");
+      stopBoreholeEditing();
+      // should be reset to original name if alternate name is empty
+      cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
+      cy.get("@alternateNameInput").should("have.value", "PHOTOCAT");
+    });
   });
 
   it("removes error highlight of identifier fields if at least one identifier is present.", () => {

@@ -22,7 +22,6 @@ interface LocationSegmentProps {
 }
 
 const LocationSegment = ({
-  size,
   borehole,
   user,
   updateChange,
@@ -40,7 +39,6 @@ const LocationSegment = ({
       <Stack direction="row" gap={2} sx={{ flexWrap: "wrap" }}>
         <Stack gap={2} sx={{ flexGrow: 1, minWidth: 600 }}>
           <CoordinatesSegment
-            size={size}
             borehole={borehole}
             updateChange={updateChange}
             updateNumber={updateNumber}
@@ -50,13 +48,7 @@ const LocationSegment = ({
             showLabeling={showLabeling}
             isEditable={isEditable}
           />
-          <ElevationSegment
-            size={size}
-            borehole={borehole}
-            user={user}
-            updateChange={updateChange}
-            updateNumber={updateNumber}
-          />
+          <ElevationSegment borehole={borehole} user={user} updateChange={updateChange} updateNumber={updateNumber} />
         </Stack>
         <Box sx={{ flexGrow: 1, minWidth: 600 }}>
           <PointComponent
@@ -73,7 +65,6 @@ const LocationSegment = ({
         </Box>
       </Stack>
       <CantonMunicipalitySegment
-        size={size}
         country={borehole.data.custom.country}
         canton={borehole.data.custom.canton}
         municipality={borehole.data.custom.municipality}

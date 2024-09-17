@@ -67,7 +67,6 @@ export interface FormValues {
 }
 
 export interface CoordinatesSegmentProps {
-  size: string;
   borehole: Borehole;
   updateChange: (
     fieldName: keyof Borehole["data"] | "location",

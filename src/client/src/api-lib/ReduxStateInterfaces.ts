@@ -82,6 +82,8 @@ interface BoreholeAttributes {
     country: string;
     canton: string;
     municipality: string;
+    project_name: string;
+    alternate_name: string;
   };
   extended: {
     original_name: string;

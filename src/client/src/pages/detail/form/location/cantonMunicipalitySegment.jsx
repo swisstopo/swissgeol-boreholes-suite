@@ -3,12 +3,12 @@ import { useTranslation } from "react-i18next";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 
 const CantonMunicipalitySegment = props => {
-  const { size, country, canton, municipality, isEditable } = props;
+  const { country, canton, municipality, isEditable } = props;
   const { t } = useTranslation();
 
   return (
     <FormSegmentBox>
-      <Form autoCapitalize="off" autoComplete="off" autoCorrect="off" size={size} spellCheck="false">
+      <Form autoCapitalize="off" autoComplete="off" autoCorrect="off" spellCheck="false">
         <Form.Group widths="equal">
           <Form.Field>
             <label>
