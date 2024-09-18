@@ -34,8 +34,6 @@ export interface FormCoordinateProps {
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
-  multiline?: boolean;
-  rows?: number;
   value?: string | number;
   referenceSystem: ReferenceSystemKey;
   direction: Direction;
@@ -49,8 +47,6 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
   required,
   disabled,
   readonly,
-  multiline,
-  rows,
   value,
   referenceSystem,
   direction,
@@ -67,8 +63,6 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
       error={!className?.includes("ai") && getFormFieldError(fieldName, formState.errors)}
       sx={{ ...sx }}
       className={`${readonly ? "readonly" : ""} ${className || ""}`}
-      multiline={multiline || false}
-      rows={rows}
       label={t(`location_${direction.toLowerCase()}_${referenceSystem}`)}
       {...register(fieldName, {
         required: required || false,
