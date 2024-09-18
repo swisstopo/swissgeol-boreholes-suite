@@ -59,7 +59,12 @@ const BottomBar = ({
             action: onCopyBorehole,
           },
         ],
-        <WorkgroupSelect workgroup={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroup={setWorkgroup} />,
+        <WorkgroupSelect
+          workgroupId={workgroup}
+          enabledWorkgroups={enabledWorkgroups}
+          setWorkgroupId={setWorkgroup}
+          sx={{ p: 1 }}
+        />,
       );
     }
   }, [copyPromptOpen, currentWorkgroup, enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, t, workgroup]);

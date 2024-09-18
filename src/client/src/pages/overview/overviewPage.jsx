@@ -13,7 +13,7 @@ import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledCo
 const OverviewPage = () => {
   const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
   const location = useLocation();
-  const [workgroup, setWorkgroup] = useState(0);
+  const [workgroupId, setWorkgroupId] = useState(0);
   const [enabledWorkgroups, setEnabledWorkgroups] = useState([]);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
   const { showAlert } = useContext(AlertContext);
@@ -27,8 +27,8 @@ const OverviewPage = () => {
     newBorehole: (
       <NewBoreholePanel
         toggleDrawer={toggleSideDrawer}
-        workgroup={workgroup}
-        setWorkgroup={setWorkgroup}
+        workgroupId={workgroupId}
+        setWorkgroupId={setWorkgroupId}
         enabledWorkgroups={enabledWorkgroups}
       />
     ),
@@ -44,8 +44,8 @@ const OverviewPage = () => {
     <LayoutBox>
       <SidebarBox>
         <MainSideNav
-          workgroup={workgroup}
-          setWorkgroup={setWorkgroup}
+          workgroupId={workgroupId}
+          setWorkgroupId={setWorkgroupId}
           enabledWorkgroups={enabledWorkgroups}
           setEnabledWorkgroups={setEnabledWorkgroups}
           toggleDrawer={toggleSideDrawer}

@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import { Modal } from "semantic-ui-react";
 import { loadEditingBoreholes } from "../../../api-lib";
 import MapComponent from "../../../components/map/mapComponent.jsx";
-import { BulkEditForm } from "../../../components/legacyComponents/multiple/bulkEditForm.jsx";
+import { BulkEditForm } from "../../../components/legacyComponents/bulkedit/bulkEditForm.js";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";

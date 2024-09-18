@@ -2,14 +2,11 @@ import { Box, FormControl, MenuItem, Select } from "@mui/material/";
 import { WorkgroupSelectProps } from "./actionsInterfaces.ts";
 import { useTranslation } from "react-i18next";
 
-const WorkgroupSelect = ({ workgroup, enabledWorkgroups, setWorkgroup }: WorkgroupSelectProps) => {
+const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx }: WorkgroupSelectProps) => {
   const { t } = useTranslation();
   return (
     <>
-      <Box
-        style={{
-          padding: "1em",
-        }}>
+      <Box sx={{ ...sx }}>
         {(() => {
           const wg = enabledWorkgroups;
           if (wg === undefined) {
@@ -30,14 +27,15 @@ const WorkgroupSelect = ({ workgroup, enabledWorkgroups, setWorkgroup }: Workgro
           return (
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
               <Select
+                data-cy="workgroup-select"
                 type="number"
                 renderValue={selected => {
                   return options.find(o => o.value === selected)?.text;
                 }}
                 onChange={e => {
-                  setWorkgroup(e.target.value as number);
+                  setWorkgroupId(e.target.value as number);
                 }}
-                value={workgroup}>
+                value={workgroupId}>
                 {options.map(o => (
                   <MenuItem key={o.key} value={o.value}>
                     {o.text}

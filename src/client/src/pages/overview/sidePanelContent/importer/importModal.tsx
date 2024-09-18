@@ -111,7 +111,7 @@ const ImportModal = ({
           selectedFile={selectedFile}
         />
         <h3>{capitalizeFirstLetter(t("workgroup"))}</h3>
-        <WorkgroupSelect workgroup={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroup={setWorkgroup} />
+        <WorkgroupSelect workgroupId={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroupId={setWorkgroup} />
       </Modal.Content>
       <Modal.Actions>
         <Button
