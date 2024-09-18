@@ -21,6 +21,8 @@ import VectorLayer from "ol/layer/Vector";
 import { View } from "ol";
 import { getCenter } from "ol/extent";
 import Draw, { createBox } from "ol/interaction/Draw";
+import { Geometry } from "ol/geom";
+import Feature from "ol/Feature";
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -130,40 +132,34 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   useEffect(() => {
     if (mapRef.current && extractionObject) {
       const layers = mapRef.current.getLayers().getArray();
-      layers.forEach(layer => {
-        if (layer instanceof VectorLayer) {
-          const drawingSource = layer.getSource();
-          if (drawingSource) {
-            drawingSource.clear();
-            const drawInteraction = new Draw({
-              source: drawingSource,
-              type: "Circle",
-              geometryFunction: createBox(),
-              style: drawingStyle,
-            });
-            drawInteraction.on("drawend", () => {
-              const tmpMap = mapRef.current;
-              if (tmpMap) {
-                tmpMap
-                  .getInteractions()
-                  .getArray()
-                  .forEach(interaction => {
-                    if (interaction instanceof Draw) {
-                      tmpMap.removeInteraction(interaction);
-                    }
-                  });
-                tmpMap.getTargetElement().style.cursor = "";
-                mapRef.current = tmpMap;
-              }
-            });
-
-            if (mapRef.current) {
-              mapRef.current.addInteraction(drawInteraction);
-              mapRef.current.getTargetElement().style.cursor = "crosshair";
-            }
+      const drawingSource = (layers[1] as VectorLayer<Feature<Geometry>>).getSource();
+      if (drawingSource) {
+        drawingSource.clear();
+        const drawInteraction = new Draw({
+          source: drawingSource,
+          type: "Circle",
+          geometryFunction: createBox(),
+          style: drawingStyle,
+        });
+        drawInteraction.on("drawend", () => {
+          const tmpMap = mapRef.current;
+          if (tmpMap) {
+            tmpMap
+              .getInteractions()
+              .getArray()
+              .forEach(interaction => {
+                if (interaction instanceof Draw) {
+                  tmpMap.removeInteraction(interaction);
+                }
+              });
+            tmpMap.getTargetElement().style.cursor = "";
+            mapRef.current = tmpMap;
           }
-        }
-      });
+        });
+
+        mapRef.current.addInteraction(drawInteraction);
+        mapRef.current.getTargetElement().style.cursor = "crosshair";
+      }
     }
     // We need the dependencies to contain mapRef.current because the map might not be initialized yet
     // eslint-disable-next-line react-hooks/exhaustive-deps
