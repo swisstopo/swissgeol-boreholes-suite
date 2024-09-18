@@ -3,8 +3,8 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 import { Controller, useFormContext } from "react-hook-form";
 import { getFormFieldError } from "./form";
-import { FormField } from "./formField";
 import { FC, useState } from "react";
+import { TextField } from "@mui/material/";
 
 export interface FormMultiSelectProps {
   fieldName: string;
@@ -12,9 +12,11 @@ export interface FormMultiSelectProps {
   tooltipLabel?: string;
   required?: boolean;
   disabled?: boolean;
+  readonly?: boolean;
   selected?: number[];
   values?: FormMultiSelectValue[];
   sx?: SxProps;
+  className?: string;
 }
 
 export interface FormMultiSelectValue {
@@ -28,9 +30,11 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
   tooltipLabel,
   required,
   disabled,
+  readonly,
   selected,
   values,
   sx,
+  className,
 }) => {
   const { t } = useTranslation();
   const { formState, register, setValue, getValues, control } = useFormContext();
@@ -85,7 +89,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
       render={({ field }) => (
         <>
           {Array.isArray(values) && values.length > 0 ? (
-            <FormField
+            <TextField
               {...field}
               select
               SelectProps={{
@@ -93,10 +97,12 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                 open: open,
                 onClose: handleClose,
                 onOpen: handleOpen,
+                // @ts-expect-error renderValue is used to render the selected values as chips
                 renderValue: (selection: number[]) => ChipBox(selection),
               }}
               required={required || false}
               sx={{ ...sx }}
+              className={`${readonly ? "readonly" : ""} ${className || ""}`}
               label={t(label)}
               {...register(fieldName, {
                 required: required || false,
@@ -112,8 +118,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
               value={field.value || []}
               error={getFormFieldError(fieldName, formState.errors)}
               disabled={disabled || false}
-              data-cy={fieldName + "-formMultiSelect"}
-              InputLabelProps={{ shrink: true }}>
+              data-cy={fieldName + "-formMultiSelect"}>
               <MenuItem key="reset" value="reset">
                 <em>{t("reset")}</em>
               </MenuItem>
@@ -122,13 +127,14 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                   {item.name}
                 </MenuItem>
               ))}
-            </FormField>
+            </TextField>
           ) : (
-            <FormField
+            <TextField
               {...field}
               required={required || false}
               error={getFormFieldError(fieldName, formState.errors)}
               sx={{ ...sx }}
+              className={`${readonly ? "readonly" : ""} ${className || ""}`}
               label={t(label)}
               {...register(fieldName, {
                 required: required || false,

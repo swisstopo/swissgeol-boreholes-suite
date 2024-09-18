@@ -2,20 +2,20 @@ import { MenuItem, SxProps } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Controller, useFormContext } from "react-hook-form";
 import { getFormFieldError } from "./form";
-import { FormField } from "./formField";
 import { FC } from "react";
+import { TextField } from "@mui/material/";
 
 export interface FormSelectProps {
   fieldName: string;
   label: string;
   required?: boolean;
-  variant?: string;
   disabled?: boolean;
+  readonly?: boolean;
   canReset?: boolean;
   selected?: number[];
   values?: FormSelectValue[];
   sx?: SxProps;
-  inputLabelStyles?: SxProps;
+  className?: string;
   onUpdate?: (value: number) => void;
 }
 
@@ -35,13 +35,14 @@ export const FormSelect: FC<FormSelectProps> = ({
   fieldName,
   label,
   required,
-  variant,
   canReset = true,
   disabled,
+  readonly,
+
   selected,
   values,
-  inputLabelStyles,
   sx,
+  className,
   onUpdate,
 }) => {
   const { t } = useTranslation();
@@ -76,12 +77,12 @@ export const FormSelect: FC<FormSelectProps> = ({
         },
       }}
       render={({ field, formState }) => (
-        <FormField
+        <TextField
           select
           required={required ?? false}
-          variant={variant}
           error={getFormFieldError(fieldName, formState.errors)}
           sx={{ ...sx }}
+          className={`${readonly ? "readonly" : ""} ${className || ""}`}
           label={t(label)}
           name={field.name}
           onChange={field.onChange}
@@ -89,17 +90,13 @@ export const FormSelect: FC<FormSelectProps> = ({
           inputRef={field.ref}
           value={field.value ?? ""}
           disabled={disabled ?? false}
-          data-cy={fieldName + "-formSelect"}
-          InputLabelProps={{
-            sx: inputLabelStyles,
-            shrink: true,
-          }}>
+          data-cy={fieldName + "-formSelect"}>
           {menuItems.map(item => (
             <MenuItem key={item.key} value={item.value}>
               {item.italic ? <em>{item.label}</em> : item.label}
             </MenuItem>
           ))}
-        </FormField>
+        </TextField>
       )}
     />
   );
