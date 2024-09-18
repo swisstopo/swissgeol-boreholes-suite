@@ -96,6 +96,7 @@ declare module "@mui/material/styles" {
     MuiSelect: object;
     MuiTextField: object;
     MuiInputLabel: object;
+    MuiOutlinedInput: object;
     MuiTab: object;
     MuiBadge: object;
     MuiDialogContentText: object;
@@ -115,6 +116,7 @@ declare module "@mui/material/styles" {
     MuiSelect: object;
     MuiTextField: object;
     MuiInputLabel: object;
+    MuiOutlinedInput: object;
     MuiTab: object;
     MuiBadge: object;
     MuiDialogContentText: object;

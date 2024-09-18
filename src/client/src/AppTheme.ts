@@ -398,7 +398,6 @@ export const theme = createTheme({
 
           "&.ai": {
             boxShadow: "0px 0px 0px 3px #5B21B6",
-
             "& .MuiInputLabel-shrink": {
               backgroundColor: "#ffffff",
               padding: "0 8px",
@@ -410,6 +409,11 @@ export const theme = createTheme({
     MuiInputLabel: {
       defaultProps: {
         shrink: true,
+      },
+    },
+    MuiOutlinedInput: {
+      defaultProps: {
+        notched: true,
       },
     },
     MuiTab: {
