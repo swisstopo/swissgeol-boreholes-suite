@@ -22,7 +22,6 @@ describe("Test for the borehole form.", () => {
           "not specified",
           "not specified",
           "not specified",
-          "not specified",
           "kelly bushing",
         ]);
       });
