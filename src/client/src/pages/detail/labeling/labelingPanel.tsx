@@ -1,5 +1,11 @@
 import { Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { ExtractionRequest, labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
+import {
+  ExtractionRequest,
+  ExtractionResponse,
+  labelingFileFormat,
+  PanelPosition,
+  useLabelingContext,
+} from "./labelingInterfaces.tsx";
 import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
@@ -42,15 +48,15 @@ const drawingStyle = () =>
 
 const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const { panelPosition, setPanelPosition, extractionObject } = useLabelingContext();
+  const { panelPosition, setPanelPosition, extractionObject, setExtractionObject } = useLabelingContext();
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [files, setFiles] = useState<FileInterface[]>();
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
   const [pageCount, setPageCount] = useState<number>(1);
   const [activePage, setActivePage] = useState<number>(1);
+  const [map, setMap] = useState<Map>();
   const [extent, setExtent] = useState<number[]>();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const mapRef = useRef<Map>();
   const { showAlert } = useContext(AlertContext);
 
   const loadFiles = useCallback(async () => {
@@ -89,8 +95,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   };
 
   const zoomIn = () => {
-    if (mapRef.current) {
-      const view = mapRef.current.getView();
+    if (map) {
+      const view = map.getView();
       const zoom = view.getZoom();
       if (zoom) {
         view.setZoom(zoom + 1);
@@ -99,8 +105,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   };
 
   const zoomOut = () => {
-    if (mapRef.current) {
-      const view = mapRef.current.getView();
+    if (map) {
+      const view = map.getView();
       const zoom = view.getZoom();
       if (zoom) {
         view.setZoom(zoom - 1);
@@ -109,15 +115,15 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   };
 
   const fitToExtent = () => {
-    if (mapRef.current && extent) {
-      const view = mapRef.current.getView();
-      view.fit(extent, { size: mapRef.current.getSize() });
+    if (map && extent) {
+      const view = map.getView();
+      view.fit(extent, { size: map.getSize() });
     }
   };
 
   const rotateImage = () => {
-    if (mapRef.current) {
-      const view = mapRef.current.getView();
+    if (map) {
+      const view = map.getView();
       const rotation = view.getRotation();
       view.setRotation(rotation + Math.PI / 2);
     }
@@ -132,6 +138,29 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     };
   };
 
+  const extractData = useCallback(
+    (fileName: string, extent: number[]) => {
+      setExtractionObject({ type: "coordinate", state: "loading" });
+
+      const bbox = convert2bbox(extent);
+      const request: ExtractionRequest = {
+        filename: fileName.substring(0, fileName.lastIndexOf("-")),
+        page_number: activePage,
+        bounding_box: bbox,
+      };
+      // TODO: Send coordinates to labeling api to extract data
+      console.log("Request", request);
+      setTimeout(() => {
+        const response: ExtractionResponse = {
+          value: { east: 2600000, north: 1200000, projection: "lv95" },
+          bbox: bbox,
+        };
+        setExtractionObject({ type: "coordinate", state: "success", result: response });
+      }, 400);
+    },
+    [activePage, setExtractionObject],
+  );
+
   useEffect(() => {
     if (files === undefined) {
       loadFiles();
@@ -139,8 +168,9 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   }, [files, loadFiles]);
 
   useEffect(() => {
-    if (mapRef.current && extractionObject) {
-      const layers = mapRef.current.getLayers().getArray();
+    if (map && extractionObject?.state === "start") {
+      setExtractionObject({ type: "coordinate", state: "drawing" });
+      const layers = map.getLayers().getArray();
       const drawingSource = (layers[1] as VectorLayer<Feature<Geometry>>).getSource();
       if (drawingSource) {
         drawingSource.clear();
@@ -151,7 +181,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           style: drawingStyle,
         });
         drawInteraction.on("drawend", () => {
-          const tmpMap = mapRef.current;
+          const tmpMap = map;
           if (tmpMap) {
             tmpMap
               .getInteractions()
@@ -162,17 +192,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                 }
               });
             tmpMap.getTargetElement().style.cursor = "";
-            mapRef.current = tmpMap;
+            setMap(tmpMap);
           }
         });
 
-        mapRef.current.addInteraction(drawInteraction);
-        mapRef.current.getTargetElement().style.cursor = "crosshair";
+        const tmpMap = map;
+        tmpMap.addInteraction(drawInteraction);
+        tmpMap.getTargetElement().style.cursor = "crosshair";
+        setMap(tmpMap);
       }
     }
-    // We need the dependencies to contain mapRef.current because the map might not be initialized yet
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapRef.current, extractionObject]);
+  }, [map, extractionObject, setExtractionObject]);
 
   useEffect(() => {
     if (selectedFile) {
@@ -207,13 +237,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         drawingSource.on("addfeature", e => {
           const extent = e.feature?.getGeometry()?.getExtent();
           if (extent) {
-            const request: ExtractionRequest = {
-              filename: response.fileName.substring(0, response.fileName.lastIndexOf("-")),
-              page_number: activePage,
-              bounding_box: convert2bbox(extent),
-            };
-            // TODO: Send coordinates to labeling api to extract data
-            console.log("Request", request);
+            extractData(response.fileName, extent);
           }
         });
         const drawingLayer = new VectorLayer({
@@ -246,10 +270,10 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               map.removeInteraction(interaction);
             }
           });
-        mapRef.current = map;
+        setMap(map);
       });
     }
-  }, [activePage, pageCount, selectedFile]);
+  }, [activePage, extractData, pageCount, selectedFile]);
 
   return (
     <Box

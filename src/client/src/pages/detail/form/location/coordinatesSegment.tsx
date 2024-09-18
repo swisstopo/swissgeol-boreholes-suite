@@ -391,7 +391,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
             isEditable && (
               <LabelingButton
                 className={extractionObject?.type === "coordinate" ? "Mui-active" : ""}
-                onClick={() => setExtractionObject({ type: "coordinate" })}
+                onClick={() => setExtractionObject({ type: "coordinate", state: "start" })}
               />
             )
           }
