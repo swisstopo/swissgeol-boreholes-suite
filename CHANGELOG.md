@@ -54,6 +54,7 @@
 - Status filter labels were not displayed correctly.
 - Order of groundwater level measurement attributes was incorrect.
 - The `Name` attribute in the borehole form was not correctly updated when first navigating to the page.
+- Fixed german translation for `clay pellets` and french translation for `openBorehole`.
 
 ## v2.1.772 - 2024-06-27
 
