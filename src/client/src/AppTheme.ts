@@ -386,11 +386,12 @@ export const theme = createTheme({
       defaultProps: {
         size: "small",
         variant: "outlined",
-        borderRadius: "4px",
-        flex: "1",
       },
       styleOverrides: {
         root: {
+          borderRadius: "4px",
+          flex: "1",
+
           "&.readonly": {
             pointerEvents: "none",
           },

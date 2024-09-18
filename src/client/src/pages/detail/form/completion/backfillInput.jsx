@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { addBackfill, getCasings, updateBackfill, useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
-import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
-import { StackFullWidth, StackHalfWidth } from "../../../../components/styledComponents";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
 
 const BackfillInput = ({ item, parentId }) => {
@@ -34,7 +33,7 @@ const BackfillInput = ({ item, parentId }) => {
       updateData={updateBackfill}
       promptLabel="backfill"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
-      <StackFullWidth direction="row">
+      <FormContainer direction="row">
         <FormInput
           fieldName="fromDepth"
           label="fromdepth"
@@ -49,8 +48,8 @@ const BackfillInput = ({ item, parentId }) => {
           type={FormValueType.Number}
           required={true}
         />
-      </StackFullWidth>
-      <StackFullWidth direction="row">
+      </FormContainer>
+      <FormContainer direction="row">
         <FormSelect
           fieldName="kindId"
           label="kindBackfill"
@@ -77,18 +76,18 @@ const BackfillInput = ({ item, parentId }) => {
               name: d[i18n.language],
             }))}
         />
-      </StackFullWidth>
-      <StackHalfWidth>
+      </FormContainer>
+      <FormContainer width={"50%"}>
         <FormSelect
           fieldName="casingId"
           label="casingName"
           selected={item.isOpenBorehole ? -1 : item.casingId}
           values={getCasingOptions(casings)}
         />
-      </StackHalfWidth>
-      <StackFullWidth>
+      </FormContainer>
+      <FormContainer>
         <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
-      </StackFullWidth>
+      </FormContainer>
     </DataInputCard>
   );
 };

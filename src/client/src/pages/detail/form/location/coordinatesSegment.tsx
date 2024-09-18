@@ -20,10 +20,9 @@ import {
 import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
 import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
 import { useLabelingContext } from "../../labeling/labelingInterfaces.js";
-import { FormSegmentBox, StackFullWidth, StackHalfWidth } from "../../../../components/styledComponents.ts";
-import { FormSelect } from "../../../../components/form/formSelect.tsx";
+import { FormSegmentBox } from "../../../../components/styledComponents.ts";
+import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
-import { FormCoordinate } from "../../../../components/form/formCoordinate.tsx";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -384,7 +383,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
               }
             />
             <CardContent sx={{ pl: 4, pr: 4 }}>
-              <StackFullWidth>
+              <FormContainer>
                 <FormSelect
                   fieldName={`spatial_reference_system`}
                   label="spatial_reference_system"
@@ -398,8 +397,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                     name: value.name,
                   }))}
                 />
-                <StackFullWidth direction="row">
-                  <StackHalfWidth>
+                <FormContainer direction="row">
+                  <FormContainer width={"50%"}>
                     <FormCoordinate
                       required={true}
                       fieldName={FieldNameDirectionKeys.location_x}
@@ -420,8 +419,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       readonly={!editingEnabled}
                       className={panelOpen ? "ai" : ""}
                     />
-                  </StackHalfWidth>
-                  <StackHalfWidth>
+                  </FormContainer>
+                  <FormContainer width={"50%"}>
                     <FormCoordinate
                       required={true}
                       fieldName={FieldNameDirectionKeys.location_x_lv03}
@@ -442,8 +441,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       readonly={!editingEnabled}
                       className={panelOpen ? "ai" : ""}
                     />
-                  </StackHalfWidth>
-                </StackFullWidth>
+                  </FormContainer>
+                </FormContainer>
                 <FormSelect
                   fieldName={`location_precision`}
                   label="location_precision"
@@ -459,7 +458,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       name: d[i18n.language],
                     }))}
                 />
-              </StackFullWidth>
+              </FormContainer>
             </CardContent>
           </Card>
         </FormSegmentBox>
