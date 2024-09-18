@@ -18,10 +18,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
   beforeEach(() => {
     newEditableBorehole().as("borehole_id");
 
-    cy.get('[data-cy="LV95X"] input').as("LV95X-input");
-    cy.get('[data-cy="LV95Y"] input').as("LV95Y-input");
-    cy.get('[data-cy="LV03X"] input').as("LV03X-input");
-    cy.get('[data-cy="LV03Y"] input').as("LV03Y-input");
+    cy.get('[data-cy="location_x-formCoordinate"] input').as("LV95X-input");
+    cy.get('[data-cy="location_y-formCoordinate"] input').as("LV95Y-input");
+    cy.get('[data-cy="location_x_lv03-formCoordinate"] input').as("LV03X-input");
+    cy.get('[data-cy="location_y_lv03-formCoordinate"] input').as("LV03Y-input");
     cy.get('[data-cy="country"] > input').as("country");
     cy.get('[data-cy="canton"] > input').as("canton");
     cy.get('[data-cy="municipality"] > input').as("municipality");
@@ -60,10 +60,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("validates inputs", () => {
     // divs have errors as long as inputs are empty
-    cy.get('[data-cy="LV95X"] > div').should("have.class", "Mui-error");
-    cy.get('[data-cy="LV95Y"] > div').should("have.class", "Mui-error");
-    cy.get('[data-cy="LV03X"] > div').should("have.class", "Mui-disabled");
-    cy.get('[data-cy="LV03Y"] > div').should("have.class", "Mui-disabled");
+    cy.get('[data-cy="location_x-formCoordinate"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="location_y-formCoordinate"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="location_x_lv03-formCoordinate"] > div').should("have.class", "Mui-disabled");
+    cy.get('[data-cy="location_y_lv03-formCoordinate"] > div').should("have.class", "Mui-disabled");
 
     // type valid coordinates
     cy.get("@LV95X-input").scrollIntoView();
@@ -71,10 +71,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").scrollIntoView();
     delayedType(cy.get("@LV95Y-input"), "1245794.92348");
 
-    cy.get('[data-cy="LV03X"] > div').should("not.have.class", "Mui-error");
-    cy.get('[data-cy="LV03Y"] > div').should("not.have.class", "Mui-error");
-    cy.get('[data-cy="LV95X"] > div').should("not.have.class", "Mui-error");
-    cy.get('[data-cy="LV95Y"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_x_lv03-formCoordinate"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_y_lv03-formCoordinate"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_x-formCoordinate"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_y-formCoordinate"] > div').should("not.have.class", "Mui-error");
 
     // wait edits of all 4 inputs to complete
     cy.wait(["@location", "@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch"]);
@@ -87,10 +87,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     delayedType(cy.get("@LV95Y-input"), "124579");
 
     // divs that changed have errors
-    cy.get('[data-cy="LV03X"] > div').should("not.have.class", "Mui-error");
-    cy.get('[data-cy="LV03Y"] > div').should("not.have.class", "Mui-error");
-    cy.get('[data-cy="LV95X"] > div').should("have.class", "Mui-error");
-    cy.get('[data-cy="LV95Y"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="location_x_lv03-formCoordinate"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_y_lv03-formCoordinate"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_x-formCoordinate"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="location_y-formCoordinate"] > div').should("have.class", "Mui-error");
   });
 
   it("edits borehole and changes coordinates from map", () => {
