@@ -7,7 +7,7 @@ describe("Test for the borehole form.", () => {
 
     // fill all dropdowns on location tab
     cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 6)
+      .should("have.length", 5)
       .each(el => cy.wrap(el).click().find('[role="option"]').last().click());
 
     const locationDropdownValues = [];

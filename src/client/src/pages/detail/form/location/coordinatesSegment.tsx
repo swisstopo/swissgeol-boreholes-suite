@@ -188,7 +188,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       const transformedY = parseFloat(response.northing).toFixed(maxPrecision);
 
       setValuesForReferenceSystem(targetSystem, transformedX, transformedY);
-      setValuesForReferenceSystem(sourceSystem, X.toFixed(XPrecision), Y.toFixed(YPrecision));
 
       updateCoordinatesWithPrecision(
         {
@@ -254,6 +253,12 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     if (mapPointChange && editingEnabled) {
       // set coordinate system to LV95 and transform LV95 coordinates to LV03 with fixed precision of 2.
       setCurrentReferenceSystem(ReferenceSystemCode.LV95);
+      setValuesForReferenceSystem(
+        ReferenceSystemKey.LV95,
+        borehole.data.location_x.toFixed(2),
+        borehole.data.location_y.toFixed(2),
+      );
+
       handleCoordinateTransformation(
         ReferenceSystemKey.LV95,
         ReferenceSystemKey.LV03,
