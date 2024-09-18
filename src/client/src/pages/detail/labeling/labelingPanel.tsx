@@ -17,6 +17,7 @@ import ZoomControls from "../../../components/buttons/zoomControls";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
 import { defaults as defaultControls } from "ol/control/defaults";
 import { View } from "ol";
+import { DragRotate, PinchRotate } from "ol/interaction";
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -120,8 +121,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         controls: defaultControls({
           attribution: false,
           zoom: false,
+          rotate: false,
         }),
       });
+      map
+        .getInteractions()
+        .getArray()
+        .forEach(interaction => {
+          if (interaction instanceof DragRotate || interaction instanceof PinchRotate) {
+            map.removeInteraction(interaction);
+          }
+        });
       setMap(map);
     } else if (map && selectedFile) {
       getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
