@@ -253,7 +253,11 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                   setSelectedFile(files?.find(file => file.id === item.key));
                 }
               }}
-              sx={{ height: "44px" }}
+              sx={{
+                height: "44px",
+                boxShadow:
+                  "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
+              }}
             />
           </Stack>
           <Stack
@@ -265,7 +269,14 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               gap: 1,
             }}>
             <ZoomControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} applyBaseStyling={false} />
-            <Button variant="text" onClick={rotateImage} sx={{ height: "44px" }}>
+            <Button
+              variant="text"
+              onClick={rotateImage}
+              sx={{
+                height: "44px",
+                boxShadow:
+                  "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
+              }}>
               <RotateCwSquare />
             </Button>
           </Stack>
