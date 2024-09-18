@@ -20,7 +20,7 @@ import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
 import { getGeojson } from "../../api-lib";
 import { Box } from "@mui/material";
-import ZoomControls from "../buttons/zoomControls.jsx";
+import MapControls from "../buttons/mapControls.jsx";
 import NamePopup from "./namePopup.jsx";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import { swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
@@ -28,7 +28,7 @@ import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions.js";
 import { projections } from "./mapProjections.js";
 import { theme } from "../../AppTheme.ts";
-import Draw from "ol/interaction/Draw.js";
+import Draw from "ol/interaction/Draw";
 import { withTranslation } from "react-i18next";
 
 class MapComponent extends React.Component {
@@ -653,7 +653,7 @@ class MapComponent extends React.Component {
         />
         <NamePopup state={this.state}></NamePopup>
         <BasemapSelector marginBottom={"30px"} />
-        <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
+        <MapControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
       </Box>
     );
   }
