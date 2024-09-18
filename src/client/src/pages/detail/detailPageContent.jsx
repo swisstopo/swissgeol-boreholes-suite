@@ -302,7 +302,6 @@ class DetailPageContent extends React.Component {
                         editingEnabled={editingEnabled}
                         updateChange={this.updateChange}
                         updateNumber={this.updateNumber}
-                        checkLock={this.checkLock}
                         domains={this.props.domains}></LocationSegment>
                     </Stack>
                   </Box>

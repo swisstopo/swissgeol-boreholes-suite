@@ -8,7 +8,6 @@ import { Box, Stack } from "@mui/material";
 import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 
 interface LocationSegmentProps {
-  size: string;
   borehole: Borehole;
   user: User;
   updateChange: (
@@ -17,7 +16,6 @@ interface LocationSegmentProps {
     to?: boolean,
   ) => void;
   updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
-  checkLock: () => boolean;
   showLabeling: boolean;
   editingEnabled: boolean;
 }
@@ -26,7 +24,6 @@ const LocationSegment = ({
   borehole,
   user,
   updateChange,
-  checkLock,
   updateNumber,
   showLabeling,
   editingEnabled,
@@ -41,7 +38,6 @@ const LocationSegment = ({
             borehole={borehole}
             updateChange={updateChange}
             updateNumber={updateNumber}
-            checkLock={checkLock}
             mapPointChange={mapPointChange}
             setMapPointChange={setMapPointChange}
             showLabeling={showLabeling}
