@@ -28,7 +28,7 @@ import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions.js";
 import { projections } from "./mapProjections.js";
 import { theme } from "../../AppTheme.ts";
-import Draw from "ol/interaction/Draw.js";
+import Draw from "ol/interaction/Draw";
 import { withTranslation } from "react-i18next";
 
 class MapComponent extends React.Component {

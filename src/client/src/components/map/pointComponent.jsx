@@ -22,8 +22,8 @@ import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basema
 import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { projections } from "./mapProjections.js";
 import { detailMapStyleFunction } from "./mapStyleFunctions.js";
-import TileLayer from "ol/layer/Tile.js";
-import XYZ from "ol/source/XYZ.js";
+import TileLayer from "ol/layer/Tile";
+import XYZ from "ol/source/XYZ";
 
 class PointComponent extends React.Component {
   static contextType = BasemapContext;
