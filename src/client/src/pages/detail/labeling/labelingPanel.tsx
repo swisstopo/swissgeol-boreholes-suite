@@ -13,10 +13,11 @@ import Map from "ol/Map.js";
 import Projection from "ol/proj/Projection.js";
 import Static from "ol/source/ImageStatic.js";
 import { getCenter } from "ol/extent.js";
-import ZoomControls from "../../../components/buttons/zoomControls";
+import MapControls from "../../../components/buttons/mapControls";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
 import { defaults as defaultControls } from "ol/control/defaults";
 import { View } from "ol";
+import { DragRotate, PinchRotate } from "ol/interaction";
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -98,6 +99,14 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     }
   };
 
+  const rotateImage = () => {
+    if (map) {
+      const view = map.getView();
+      const rotation = view.getRotation();
+      view.setRotation(rotation + Math.PI / 2);
+    }
+  };
+
   useEffect(() => {
     if (files === undefined) {
       loadFiles();
@@ -112,8 +121,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         controls: defaultControls({
           attribution: false,
           zoom: false,
+          rotate: false,
         }),
       });
+      map
+        .getInteractions()
+        .getArray()
+        .forEach(interaction => {
+          if (interaction instanceof DragRotate || interaction instanceof PinchRotate) {
+            map.removeInteraction(interaction);
+          }
+        });
       setMap(map);
     } else if (map && selectedFile) {
       getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
@@ -197,8 +215,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         exclusive
         sx={{
           position: "absolute",
-          bottom: "16px",
-          right: "16px",
+          bottom: theme.spacing(2),
+          right: theme.spacing(2),
           zIndex: "500",
         }}>
         <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
@@ -214,8 +232,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             direction="row"
             sx={{
               position: "absolute",
-              top: "16px",
-              left: "16px",
+              top: theme.spacing(2),
+              left: theme.spacing(2),
               zIndex: "500",
               gap: 1,
             }}>
@@ -235,16 +253,20 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                   setSelectedFile(files?.find(file => file.id === item.key));
                 }
               }}
-              sx={{ height: "44px" }}
+              sx={{
+                height: "44px",
+                boxShadow:
+                  "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
+              }}
             />
           </Stack>
-          <ZoomControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} />
+          <MapControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} onRotate={rotateImage} />
           <ButtonGroup
             variant="contained"
             sx={{
               position: "absolute",
-              bottom: "16px",
-              left: "16px",
+              bottom: theme.spacing(2),
+              left: theme.spacing(2),
               zIndex: "500",
               height: "44px",
             }}>
