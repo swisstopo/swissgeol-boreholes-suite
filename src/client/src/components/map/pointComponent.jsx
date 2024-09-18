@@ -16,7 +16,7 @@ import { Button, Icon, Label } from "semantic-ui-react";
 import { Box, Card } from "@mui/material";
 import { getHeight } from "../../api-lib";
 import { fetchApiV2 } from "../../api/fetchApiV2.js";
-import ZoomControls from "../buttons/zoomControls.jsx";
+import MapControls from "../buttons/mapControls.jsx";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
@@ -312,7 +312,7 @@ class PointComponent extends React.Component {
             height: 670,
           }}
         />
-        <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
+        <MapControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
         <Box sx={{ position: "absolute", right: 0, top: 645 }}>
           <BasemapSelector marginBottom="0px" />
         </Box>

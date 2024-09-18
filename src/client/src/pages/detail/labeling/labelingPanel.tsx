@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
-import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, RotateCwSquare } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
 import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
@@ -13,7 +13,7 @@ import Map from "ol/Map.js";
 import Projection from "ol/proj/Projection.js";
 import Static from "ol/source/ImageStatic.js";
 import { getCenter } from "ol/extent.js";
-import ZoomControls from "../../../components/buttons/zoomControls";
+import MapControls from "../../../components/buttons/mapControls";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
 import { defaults as defaultControls } from "ol/control/defaults";
 import { View } from "ol";
@@ -260,26 +260,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               }}
             />
           </Stack>
-          <Stack
-            sx={{
-              position: "absolute",
-              top: theme.spacing(2),
-              right: theme.spacing(2),
-              zIndex: "500",
-              gap: 1,
-            }}>
-            <ZoomControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} applyBaseStyling={false} />
-            <Button
-              variant="text"
-              onClick={rotateImage}
-              sx={{
-                height: "44px",
-                boxShadow:
-                  "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
-              }}>
-              <RotateCwSquare />
-            </Button>
-          </Stack>
+          <MapControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} onRotate={rotateImage} />
           <ButtonGroup
             variant="contained"
             sx={{
