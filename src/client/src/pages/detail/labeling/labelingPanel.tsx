@@ -161,6 +161,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         mapRef.current.getTargetElement().style.cursor = "crosshair";
       }
     }
+    // We need the dependencies to contain mapRef.current because the map might not be initialized yet
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef.current, extractionObject]);
 
   useEffect(() => {
