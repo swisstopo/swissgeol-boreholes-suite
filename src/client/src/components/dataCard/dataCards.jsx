@@ -105,7 +105,7 @@ export const DataCards = props => {
 
   return (
     <FullPage data-cy={`${cyLabel}-content`}>
-      <DataCardButtonContainer>
+      <DataCardButtonContainer mr={1}>
         {isEditable && (
           <AddButton
             label={addLabel}

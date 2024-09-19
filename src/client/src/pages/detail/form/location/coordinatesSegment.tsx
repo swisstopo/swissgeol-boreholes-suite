@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, Stack } from "@mui/material";
+import { Card, CardContent, CardHeader } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
@@ -20,10 +20,8 @@ import {
 import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
 import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
 import { useLabelingContext } from "../../labeling/labelingInterfaces.js";
-import { FormSegmentBox, StackFullWidth } from "../../../../components/styledComponents.ts";
-import { FormSelect } from "../../../../components/form/formSelect.tsx";
-import { CoordinatesTextfield } from "./CoordinatesTextfield.tsx";
-import { theme } from "../../../../AppTheme.ts";
+import { FormSegmentBox } from "../../../../components/styledComponents.ts";
+import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 
 // --- Function component ---
@@ -45,7 +43,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // --- Form handling ---
   const formMethods = useForm({
-    mode: "onChange",
+    mode: "all",
   });
 
   const { data: domains } = useDomains();
@@ -368,27 +366,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     setValuesForReferenceSystem(ReferenceSystemKey.LV95, "", "");
   };
 
-  // --- Custom form validation ---
-  const inLV95XBounds = (value: string): boolean => {
-    const coordinate = parseFloatWithThousandsSeparator(value);
-    return boundingBox.LV95.X.Min < coordinate && coordinate < boundingBox.LV95.X.Max;
-  };
-
-  const inLV95YBounds = (value: string): boolean => {
-    const coordinate = parseFloatWithThousandsSeparator(value);
-    return boundingBox.LV95.Y.Min < coordinate && coordinate < boundingBox.LV95.Y.Max;
-  };
-
-  const inLV03XBounds = (value: string): boolean => {
-    const coordinate = parseFloatWithThousandsSeparator(value);
-    return boundingBox.LV03.X.Min < coordinate && coordinate < boundingBox.LV03.X.Max;
-  };
-
-  const inLV03YBounds = (value: string): boolean => {
-    const coordinate = parseFloatWithThousandsSeparator(value);
-    return boundingBox.LV03.Y.Min < coordinate && coordinate < boundingBox.LV03.Y.Max;
-  };
-
   return (
     <>
       <FormProvider {...formMethods}>
@@ -406,95 +383,87 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
               }
             />
             <CardContent sx={{ pl: 4, pr: 4 }}>
-              <StackFullWidth>
+              <FormContainer>
                 <FormSelect
+                  required={true}
                   fieldName={`spatial_reference_system`}
                   label="spatial_reference_system"
                   selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
                   canReset={false}
-                  variant="outlined"
-                  sx={{
-                    width: "100%",
-                    pointerEvents: editingEnabled ? "auto" : "none",
-                    boxShadow: panelOpen ? `0px 0px 0px 3px ${theme.palette.ai.main}` : "none",
-                  }}
-                  inputLabelStyles={{
-                    backgroundColor: panelOpen ? "#ffffff" : "none",
-                    px: panelOpen ? 1 : 0,
-                  }}
+                  readonly={!editingEnabled}
+                  className={panelOpen ? "ai" : ""}
                   onUpdate={e => onReferenceSystemChange(e)}
                   values={Object.entries(referenceSystems).map(([, value]) => ({
                     key: value.code,
                     name: value.name,
                   }))}
                 />
-              </StackFullWidth>
-              <Stack direction="row" spacing={2} justifyContent="space-around" mb={2} mt={2}>
-                <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
-                  <CoordinatesTextfield
-                    panelOpen={panelOpen}
-                    direction={Direction.X}
-                    fieldName={FieldNameDirectionKeys.location_x}
-                    editingEnabled={editingEnabled}
-                    inBounds={inLV95XBounds}
-                    isFieldForSelectedReferenceSystem={currentReferenceSystem === referenceSystems.LV95.code}
-                    onCoordinateChange={onCoordinateChange}
-                    referenceSystem={ReferenceSystemKey.LV95}
-                  />
-                  <CoordinatesTextfield
-                    panelOpen={panelOpen}
-                    direction={Direction.Y}
-                    fieldName={FieldNameDirectionKeys.location_y}
-                    editingEnabled={editingEnabled}
-                    inBounds={inLV95YBounds}
-                    isFieldForSelectedReferenceSystem={currentReferenceSystem === referenceSystems.LV95.code}
-                    onCoordinateChange={onCoordinateChange}
-                    referenceSystem={ReferenceSystemKey.LV95}
-                  />
-                </Stack>
-                <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
-                  <CoordinatesTextfield
-                    panelOpen={panelOpen}
-                    direction={Direction.X}
-                    fieldName={FieldNameDirectionKeys.location_x_lv03}
-                    editingEnabled={editingEnabled}
-                    inBounds={inLV03XBounds}
-                    isFieldForSelectedReferenceSystem={currentReferenceSystem === referenceSystems.LV03.code}
-                    onCoordinateChange={onCoordinateChange}
-                    referenceSystem={ReferenceSystemKey.LV03}
-                  />
-                  <CoordinatesTextfield
-                    panelOpen={panelOpen}
-                    direction={Direction.Y}
-                    fieldName={FieldNameDirectionKeys.location_y_lv03}
-                    editingEnabled={editingEnabled}
-                    inBounds={inLV03YBounds}
-                    isFieldForSelectedReferenceSystem={currentReferenceSystem === referenceSystems.LV03.code}
-                    onCoordinateChange={onCoordinateChange}
-                    referenceSystem={ReferenceSystemKey.LV03}
-                  />
-                </Stack>
-              </Stack>
-              <FormSelect
-                fieldName={`location_precision`}
-                label="location_precision"
-                // selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
-                variant="outlined"
-                sx={{
-                  width: "100%",
-                  pointerEvents: editingEnabled ? "auto" : "none",
-                }}
-                onUpdate={e => updateChange("location_precision", e, false)}
-                selected={[borehole.data.location_precision]}
-                values={domains
-                  ?.filter((d: Codelist) => d.schema === "location_precision")
-                  .sort((a: Codelist, b: Codelist) => a.order - b.order)
-                  .map((d: Codelist) => ({
-                    key: d.id,
-                    // @ts-expect-error - i18n language selection not typed
-                    name: d[i18n.language],
-                  }))}
-              />
+                <FormContainer direction="row">
+                  <FormContainer width={"50%"}>
+                    <FormCoordinate
+                      required={true}
+                      fieldName={FieldNameDirectionKeys.location_x}
+                      referenceSystem={ReferenceSystemKey.LV95}
+                      direction={Direction.X}
+                      onUpdate={onCoordinateChange}
+                      disabled={currentReferenceSystem !== referenceSystems.LV95.code}
+                      readonly={!editingEnabled}
+                      className={panelOpen ? "ai" : ""}
+                      value={formMethods.getValues(referenceSystems.LV95.fieldName.X)}
+                    />
+                    <FormCoordinate
+                      required={true}
+                      fieldName={FieldNameDirectionKeys.location_y}
+                      referenceSystem={ReferenceSystemKey.LV95}
+                      direction={Direction.Y}
+                      onUpdate={onCoordinateChange}
+                      disabled={currentReferenceSystem !== referenceSystems.LV95.code}
+                      readonly={!editingEnabled}
+                      className={panelOpen ? "ai" : ""}
+                      value={formMethods.getValues(referenceSystems.LV95.fieldName.Y)}
+                    />
+                  </FormContainer>
+                  <FormContainer width={"50%"}>
+                    <FormCoordinate
+                      required={true}
+                      fieldName={FieldNameDirectionKeys.location_x_lv03}
+                      referenceSystem={ReferenceSystemKey.LV03}
+                      direction={Direction.X}
+                      onUpdate={onCoordinateChange}
+                      disabled={currentReferenceSystem !== referenceSystems.LV03.code}
+                      readonly={!editingEnabled}
+                      className={panelOpen ? "ai" : ""}
+                      value={formMethods.getValues(referenceSystems.LV03.fieldName.X)}
+                    />
+                    <FormCoordinate
+                      required={true}
+                      fieldName={FieldNameDirectionKeys.location_y_lv03}
+                      referenceSystem={ReferenceSystemKey.LV03}
+                      direction={Direction.Y}
+                      onUpdate={onCoordinateChange}
+                      disabled={currentReferenceSystem !== referenceSystems.LV03.code}
+                      readonly={!editingEnabled}
+                      className={panelOpen ? "ai" : ""}
+                      value={formMethods.getValues(referenceSystems.LV03.fieldName.Y)}
+                    />
+                  </FormContainer>
+                </FormContainer>
+                <FormSelect
+                  fieldName={`location_precision`}
+                  label="location_precision"
+                  readonly={!editingEnabled}
+                  onUpdate={e => updateChange("location_precision", e, false)}
+                  selected={[borehole.data.location_precision]}
+                  values={domains
+                    ?.filter((d: Codelist) => d.schema === "location_precision")
+                    .sort((a: Codelist, b: Codelist) => a.order - b.order)
+                    .map((d: Codelist) => ({
+                      key: d.id,
+                      // @ts-expect-error - i18n language selection not typed
+                      name: d[i18n.language],
+                    }))}
+                />
+              </FormContainer>
             </CardContent>
           </Card>
         </FormSegmentBox>

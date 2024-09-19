@@ -1,5 +1,4 @@
-import { Stack } from "@mui/material";
-import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 
 import {
   addGroundwaterLevelMeasurement,
@@ -44,7 +43,7 @@ const GroundwaterLevelMeasurementInput = props => {
       promptLabel="groundwaterLevelMeasurement"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <ObservationInput observation={item} boreholeId={parentId} />
-      <Stack direction="row" sx={{ paddingTop: "10px" }}>
+      <FormContainer direction="row" sx={{ paddingTop: "10px" }}>
         <FormSelect
           fieldName="kindId"
           label="gwlm_kind"
@@ -58,11 +57,11 @@ const GroundwaterLevelMeasurementInput = props => {
               name: d[i18n.language],
             }))}
         />
-      </Stack>
-      <Stack direction="row">
+      </FormContainer>
+      <FormContainer direction="row">
         <FormInput fieldName="levelMasl" label="gwlm_levelmasl" value={item.levelMasl} type={FormValueType.Number} />
         <FormInput fieldName="levelM" label="gwlm_levelm" value={item.levelM} type={FormValueType.Number} />
-      </Stack>
+      </FormContainer>
     </DataInputCard>
   );
 };

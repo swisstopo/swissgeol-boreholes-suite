@@ -37,7 +37,7 @@ const StratigraphySelection = ({ id: selectedBoreholeId, noStratigraphiesMessage
   }
 
   return (
-    <Stack direction="column" sx={{ flex: "1" }}>
+    <Stack direction="column" sx={{ flex: "1", py: 1 }}>
       <TextField
         value={stratigraphyId}
         label={t("stratigraphy")}
@@ -45,7 +45,7 @@ const StratigraphySelection = ({ id: selectedBoreholeId, noStratigraphiesMessage
         onChange={event => {
           setStratigraphyId(event.target.value);
         }}
-        sx={{ margin: "1em 0" }}>
+        sx={{ flex: "0 1 auto" }}>
         {stratigraphyData.map(s => (
           <MenuItem key={s.id} value={s.id}>
             {s.name || t("np")}

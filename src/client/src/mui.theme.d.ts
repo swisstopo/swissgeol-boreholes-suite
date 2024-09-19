@@ -94,7 +94,9 @@ declare module "@mui/material/styles" {
     MuiToggleButtonGroup: object;
     MuiToggleButton: object;
     MuiSelect: object;
-    MuiFormControl: object;
+    MuiTextField: object;
+    MuiInputLabel: object;
+    MuiOutlinedInput: object;
     MuiTab: object;
     MuiBadge: object;
     MuiDialogContentText: object;
@@ -112,7 +114,9 @@ declare module "@mui/material/styles" {
     MuiToggleButtonGroup: object;
     MuiToggleButton: object;
     MuiSelect: object;
-    MuiFormControl: object;
+    MuiTextField: object;
+    MuiInputLabel: object;
+    MuiOutlinedInput: object;
     MuiTab: object;
     MuiBadge: object;
     MuiDialogContentText: object;

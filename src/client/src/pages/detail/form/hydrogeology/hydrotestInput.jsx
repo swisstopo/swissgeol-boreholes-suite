@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { Box, IconButton, InputAdornment, Stack, Typography } from "@mui/material";
-import { FormInput, FormMultiSelect, FormSelect, FormValueType } from "../../../../components/form/form";
-import { StackHalfWidth } from "../../../../components/styledComponents.ts";
+import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
+import { FormContainer, FormInput, FormMultiSelect, FormSelect, FormValueType } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import ObservationInput from "./observationInput";
@@ -211,9 +210,9 @@ const HydrotestInput = props => {
     <>
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+          <FormContainer>
             <ObservationInput observation={item} boreholeId={parentId} />
-            <Stack direction="row">
+            <FormContainer direction="row">
               <FormMultiSelect
                 fieldName="testKindId"
                 label="hydrotestKind"
@@ -246,8 +245,8 @@ const HydrotestInput = props => {
                     name: d[i18n.language],
                   }))}
               />
-            </Stack>
-            <StackHalfWidth>
+            </FormContainer>
+            <FormContainer width={"50%"}>
               <FormMultiSelect
                 fieldName="evaluationMethodId"
                 label="evaluationMethod"
@@ -266,7 +265,7 @@ const HydrotestInput = props => {
                     name: d[i18n.language],
                   }))}
               />
-            </StackHalfWidth>
+            </FormContainer>
             {formMethods.getValues().testKindId?.length > 0 && (
               <Box
                 sx={{
@@ -274,7 +273,7 @@ const HydrotestInput = props => {
                   marginRight: "8px !important",
                   marginTop: "18px !important",
                 }}>
-                <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
+                <FormContainer direction={"row"} justifyContent={"space-between"}>
                   <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("hydrotestResult")}</Typography>
                   <AddButton
                     label="addHydrotestResult"
@@ -282,9 +281,9 @@ const HydrotestInput = props => {
                       append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
                     }}
                   />
-                </Stack>
+                </FormContainer>
                 {fields.map((field, index) => (
-                  <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`hydrotestResult-${index}`}>
+                  <FormContainer direction={"row"} key={field.id} marginTop="8px" data-cy={`hydrotestResult-${index}`}>
                     <FormSelect
                       fieldName={`hydrotestResults.${index}.parameterId`}
                       label="parameter"
@@ -334,19 +333,14 @@ const HydrotestInput = props => {
                         ),
                       }}
                     />
-                    <IconButton
-                      onClick={() => remove(index)}
-                      color="error"
-                      sx={{
-                        marginTop: "10px !important",
-                      }}>
+                    <IconButton onClick={() => remove(index)} color="error">
                       <Delete />
                     </IconButton>
-                  </Stack>
+                  </FormContainer>
                 ))}
               </Box>
             )}
-          </Stack>
+          </FormContainer>
           <DataCardButtonContainer>
             <CancelButton
               onClick={() => {
