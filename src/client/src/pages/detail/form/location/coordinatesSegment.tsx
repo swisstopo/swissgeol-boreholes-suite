@@ -43,7 +43,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // --- Form handling ---
   const formMethods = useForm({
-    mode: "onChange",
+    mode: "all",
   });
 
   const { data: domains } = useDomains();
