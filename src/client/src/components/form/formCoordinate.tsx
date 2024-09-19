@@ -60,7 +60,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
   return (
     <TextField
       required={required || false}
-      error={!className?.includes("ai") && getFormFieldError(fieldName, formState.errors)}
+      error={!className?.includes("ai") && !disabled && getFormFieldError(fieldName, formState.errors)}
       sx={{ ...sx }}
       className={`${readonly ? "readonly" : ""} ${className || ""}`}
       label={t(`location_${direction.toLowerCase()}_${referenceSystem}`)}
