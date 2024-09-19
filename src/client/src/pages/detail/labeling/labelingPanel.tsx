@@ -1,4 +1,13 @@
-import { Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  CircularProgress,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 import {
   ExtractionRequest,
   ExtractionResponse,
@@ -6,7 +15,7 @@ import {
   PanelPosition,
   useLabelingContext,
 } from "./labelingInterfaces.tsx";
-import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
 import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
@@ -56,6 +65,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const [activePage, setActivePage] = useState<number>(1);
   const [map, setMap] = useState<Map>();
   const [extent, setExtent] = useState<number[]>();
+  const [requestTimeout, setRequestTimeout] = useState<NodeJS.Timeout>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showAlert } = useContext(AlertContext);
 
@@ -150,16 +160,23 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
       };
       // TODO: Send coordinates to labeling api to extract data
       console.log("Request", request);
-      setTimeout(() => {
-        const response: ExtractionResponse = {
-          value: { east: 2600000, north: 1200000, projection: "lv95" },
-          bbox: bbox,
-        };
-        setExtractionObject({ type: "coordinate", state: "success", result: response });
-      }, 400);
+      setRequestTimeout(
+        setTimeout(() => {
+          const response: ExtractionResponse = {
+            value: { east: 2600000, north: 1200000, projection: "lv95" },
+            bbox: bbox,
+          };
+          setExtractionObject({ type: "coordinate", state: "success", result: response });
+        }, 4000),
+      );
     },
     [activePage, setExtractionObject],
   );
+
+  const cancelRequest = () => {
+    clearTimeout(requestTimeout);
+    setExtractionObject({ type: "coordinate", state: "start" });
+  };
 
   const updateTooltipPosition = (event: MapBrowserEvent<PointerEvent>) => {
     const tooltip = document.getElementById("tooltip");
@@ -312,6 +329,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         borderBottom: 0,
         height: panelPosition === "bottom" ? "50%" : "100%",
         width: panelPosition === "right" ? "50%" : "100%",
+        position: "relative",
       }}
       data-cy="labeling-panel">
       <input
@@ -332,25 +350,78 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           }
         }}
       />
-      <ToggleButtonGroup
-        value={panelPosition}
-        onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
-          setPanelPosition(nextPosition);
-        }}
-        exclusive
+      <Stack
+        m={2}
+        direction="row"
+        justifyContent="space-between"
         sx={{
           position: "absolute",
-          bottom: theme.spacing(2),
-          right: theme.spacing(2),
+          left: 0,
+          right: 0,
+          bottom: 0,
           zIndex: "500",
         }}>
-        <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
-          <PanelBottom />
-        </ToggleButton>
-        <ToggleButton value="right" data-cy="labeling-panel-position-right">
-          <PanelRight />
-        </ToggleButton>
-      </ToggleButtonGroup>
+        <ButtonGroup
+          variant="contained"
+          sx={{
+            height: "44px",
+            visibility: selectedFile ? "visible" : "hidden",
+          }}>
+          <Typography
+            variant="h6"
+            sx={{ alignContent: "center", padding: 1, paddingRight: pageCount > 1 ? 0 : 1, margin: 0.5 }}>
+            {activePage} / {pageCount}
+          </Typography>
+          {pageCount > 1 && (
+            <>
+              <Button
+                variant="text"
+                color="secondary"
+                onClick={() => {
+                  setActivePage(activePage - 1);
+                }}
+                disabled={activePage === 1}>
+                <ChevronLeft />
+              </Button>
+              <Button
+                variant="text"
+                color="secondary"
+                onClick={() => {
+                  setActivePage(activePage + 1);
+                }}
+                disabled={activePage === pageCount}>
+                <ChevronRight />
+              </Button>
+            </>
+          )}
+        </ButtonGroup>
+        <Button
+          onClick={() => cancelRequest()}
+          variant="text"
+          endIcon={<X />}
+          sx={{
+            height: "44px",
+            visibility: extractionObject?.state === "loading" ? "visible" : "hidden",
+            boxShadow:
+              "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
+          }}>
+          <CircularProgress sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }} />
+          {t("analyze")}
+        </Button>
+        <ToggleButtonGroup
+          value={panelPosition}
+          onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
+            setPanelPosition(nextPosition);
+          }}
+          exclusive>
+          <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
+            <PanelBottom />
+          </ToggleButton>
+          <ToggleButton value="right" data-cy="labeling-panel-position-right">
+            <PanelRight />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Stack>
       {selectedFile ? (
         <Box sx={{ height: "100%", width: "100%", position: "relative" }}>
           <Stack
@@ -386,43 +457,6 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             />
           </Stack>
           <MapControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} onRotate={rotateImage} />
-          <ButtonGroup
-            variant="contained"
-            sx={{
-              position: "absolute",
-              bottom: theme.spacing(2),
-              left: theme.spacing(2),
-              zIndex: "500",
-              height: "44px",
-            }}>
-            <Typography
-              variant="h6"
-              sx={{ alignContent: "center", padding: 1, paddingRight: pageCount > 1 ? 0 : 1, margin: 0.5 }}>
-              {activePage} / {pageCount}
-            </Typography>
-            {pageCount > 1 && (
-              <>
-                <Button
-                  variant="text"
-                  color="secondary"
-                  onClick={() => {
-                    setActivePage(activePage - 1);
-                  }}
-                  disabled={activePage === 1}>
-                  <ChevronLeft />
-                </Button>
-                <Button
-                  variant="text"
-                  color="secondary"
-                  onClick={() => {
-                    setActivePage(activePage + 1);
-                  }}
-                  disabled={activePage === pageCount}>
-                  <ChevronRight />
-                </Button>
-              </>
-            )}
-          </ButtonGroup>
           <Box id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
           <Box
             id="tooltip"
