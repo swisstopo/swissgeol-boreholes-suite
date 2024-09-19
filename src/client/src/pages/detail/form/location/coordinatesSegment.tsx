@@ -385,10 +385,10 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
             <CardContent sx={{ pl: 4, pr: 4 }}>
               <FormContainer>
                 <FormSelect
+                  required={true}
                   fieldName={`spatial_reference_system`}
                   label="spatial_reference_system"
                   selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
-                  canReset={false}
                   readonly={!editingEnabled}
                   className={panelOpen ? "ai" : ""}
                   onUpdate={e => onReferenceSystemChange(e)}
