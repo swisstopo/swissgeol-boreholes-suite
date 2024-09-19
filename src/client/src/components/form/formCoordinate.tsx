@@ -85,6 +85,8 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
       InputProps={{
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         inputComponent: NumericFormatForCoordinates as any,
+        readOnly: readonly,
+        disabled: disabled,
       }}
     />
   );

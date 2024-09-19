@@ -84,7 +84,7 @@ export const FormInput: FC<FormInputProps> = ({
       defaultValue={getDefaultValue(value)}
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
-      InputProps={{ ...inputProps }}
+      InputProps={{ ...inputProps, readOnly: readonly, disabled: disabled }}
     />
   );
 };

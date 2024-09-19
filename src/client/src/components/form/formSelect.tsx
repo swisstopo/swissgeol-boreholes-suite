@@ -90,7 +90,8 @@ export const FormSelect: FC<FormSelectProps> = ({
           inputRef={field.ref}
           value={field.value ?? ""}
           disabled={disabled ?? false}
-          data-cy={fieldName + "-formSelect"}>
+          data-cy={fieldName + "-formSelect"}
+          InputProps={{ readOnly: readonly, disabled: disabled }}>
           {menuItems.map(item => (
             <MenuItem key={item.key} value={item.value}>
               {item.italic ? <em>{item.label}</em> : item.label}

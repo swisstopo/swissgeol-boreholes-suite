@@ -100,6 +100,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                 // @ts-expect-error renderValue is used to render the selected values as chips
                 renderValue: (selection: number[]) => ChipBox(selection),
               }}
+              InputProps={{ readOnly: readonly, disabled: disabled }}
               required={required || false}
               sx={{ ...sx }}
               className={`${readonly ? "readonly" : ""} ${className || ""}`}
@@ -143,6 +144,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
               disabled
               data-cy={fieldName + "-formMultiSelect"}
               InputLabelProps={{ shrink: true }}
+              InputProps={{ readOnly: readonly, disabled: disabled }}
             />
           )}
         </>
