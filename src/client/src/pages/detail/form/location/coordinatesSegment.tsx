@@ -408,6 +408,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
                       readonly={!editingEnabled}
                       className={panelOpen ? "ai" : ""}
+                      value={formMethods.getValues(referenceSystems.LV95.fieldName.X)}
                     />
                     <FormCoordinate
                       required={true}
@@ -418,6 +419,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
                       readonly={!editingEnabled}
                       className={panelOpen ? "ai" : ""}
+                      value={formMethods.getValues(referenceSystems.LV95.fieldName.Y)}
                     />
                   </FormContainer>
                   <FormContainer width={"50%"}>
@@ -430,6 +432,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
                       readonly={!editingEnabled}
                       className={panelOpen ? "ai" : ""}
+                      value={formMethods.getValues(referenceSystems.LV03.fieldName.X)}
                     />
                     <FormCoordinate
                       required={true}
@@ -440,6 +443,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
                       readonly={!editingEnabled}
                       className={panelOpen ? "ai" : ""}
+                      value={formMethods.getValues(referenceSystems.LV03.fieldName.Y)}
                     />
                   </FormContainer>
                 </FormContainer>

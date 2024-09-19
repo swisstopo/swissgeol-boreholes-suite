@@ -79,7 +79,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
           }
         },
       })}
-      defaultValue={value}
+      value={value}
       disabled={disabled || false}
       data-cy={fieldName + "-formCoordinate"}
       InputProps={{
