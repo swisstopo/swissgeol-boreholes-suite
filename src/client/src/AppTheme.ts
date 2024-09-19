@@ -396,12 +396,9 @@ export const theme = createTheme({
             pointerEvents: "none",
           },
 
-          "&.ai": {
-            boxShadow: "0px 0px 0px 3px #5B21B6",
-            "& .MuiInputLabel-shrink": {
-              backgroundColor: "#ffffff",
-              padding: "0 8px",
-            },
+          "&.ai .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#5B21B6 !important",
+            borderWidth: "3px",
           },
         },
       },
