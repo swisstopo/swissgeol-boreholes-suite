@@ -116,6 +116,7 @@
   "disclaimer_publish_title": "Publish disclaimer",
   "done": "Done",
   "draft": "Draft",
+  "drawCoordinateBox": "Draw box around north & east coordinates",
   "drill_core_diameter": "Core diameter [mm]",
   "drill_diameter": "Borehole diameter [mm]",
   "drilling_end_date": "Drilling date: end",

@@ -24,7 +24,7 @@ import Static from "ol/source/ImageStatic";
 import { Fill, Stroke, Style } from "ol/style";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
-import { View } from "ol";
+import { MapBrowserEvent, View } from "ol";
 import { getCenter } from "ol/extent";
 import Draw, { createBox } from "ol/interaction/Draw";
 import { Geometry } from "ol/geom";
@@ -161,6 +161,15 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     [activePage, setExtractionObject],
   );
 
+  const updateTooltipPosition = (event: MapBrowserEvent<PointerEvent>) => {
+    const tooltip = document.getElementById("tooltip");
+    if (tooltip) {
+      const [x, y] = event.pixel;
+      tooltip.style.left = x + "px";
+      tooltip.style.top = y + "px";
+    }
+  };
+
   useEffect(() => {
     if (files === undefined) {
       loadFiles();
@@ -192,6 +201,12 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                 }
               });
             tmpMap.getTargetElement().style.cursor = "";
+
+            const tooltip = document.getElementById("tooltip");
+            if (tooltip) {
+              tooltip.style.visibility = "hidden";
+              tmpMap.un("pointermove", updateTooltipPosition);
+            }
             setMap(tmpMap);
           }
         });
@@ -199,10 +214,23 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         const tmpMap = map;
         tmpMap.addInteraction(drawInteraction);
         tmpMap.getTargetElement().style.cursor = "crosshair";
+        const tooltip = document.getElementById("tooltip");
+
+        if (tooltip) {
+          tooltip.innerHTML = t("drawCoordinateBox");
+          tooltip.style.visibility = "visible";
+          tmpMap.getTargetElement().addEventListener("mouseleave", () => {
+            tooltip.style.visibility = "hidden";
+          });
+          tmpMap.getTargetElement().addEventListener("mouseenter", () => {
+            tooltip.style.visibility = "visible";
+          });
+          tmpMap.on("pointermove", updateTooltipPosition);
+        }
         setMap(tmpMap);
       }
     }
-  }, [map, extractionObject, setExtractionObject]);
+  }, [map, extractionObject, setExtractionObject, t]);
 
   useEffect(() => {
     if (selectedFile) {
@@ -396,6 +424,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             )}
           </ButtonGroup>
           <Box id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
+          <Box
+            id="tooltip"
+            sx={{
+              position: "absolute",
+              borderRadius: "4px",
+              backgroundColor: "#1C2834",
+              color: "white",
+              padding: "4px 8px",
+              margin: "14px 2px",
+            }}
+          />
         </Box>
       ) : (
         <LabelingFileSelector
