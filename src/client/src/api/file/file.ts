@@ -52,12 +52,24 @@ export const updateFile = async (
 };
 
 export const getDataExtractionFileInfo = async (boreholeFileId: number, index: number) => {
-  const response = await fetchApiV2(
+  let response = await fetchApiV2(
     `boreholefile/getDataExtractionFileInfo?boreholeFileId=${boreholeFileId}&index=${index}`,
     "GET",
   );
   if (response) {
-    return response as DataExtractionResponse;
+    response = response as DataExtractionResponse;
+    if (response.count === 0) {
+      const createResponse = await fetch("http://localhost:8000/api/V1/create_png", {
+        method: "POST",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: response.fileName + ".pdf" }),
+      });
+      console.log("createResponse", createResponse);
+      // TODO: Handle createResponse
+    }
+    return response;
   } else {
     throw new ApiError("errorDataExtractionFileLoading", 500);
   }

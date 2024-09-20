@@ -113,15 +113,36 @@ public class BoreholeFileController : ControllerBase
 
             var fileUuid = boreholeFile.File.NameUuid.Replace(".pdf", "", StringComparison.OrdinalIgnoreCase);
             var fileCount = await boreholeFileUploadService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
-            var result = await boreholeFileUploadService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
 
-            return Ok(new
+            try
             {
-                fileName = result.FileName,
-                width = result.Width,
-                height = result.Height,
-                count = fileCount,
-            });
+                var result = await boreholeFileUploadService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
+
+                return Ok(new
+                {
+                    fileName = result.FileName,
+                    width = result.Width,
+                    height = result.Height,
+                    count = fileCount,
+                });
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("The specified key does not exist."))
+                {
+                    return Ok(new
+                    {
+                        fileName = fileUuid,
+                        width = 0,
+                        height = 0,
+                        count = 0,
+                    });
+                } else
+                {
+                    return Problem(ex.Message);
+
+                }
+            }
         }
         catch (Exception ex)
         {
