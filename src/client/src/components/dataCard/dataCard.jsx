@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { Box, Card, Grid, Stack } from "@mui/material";
 import { styled } from "@mui/system";
+import { theme } from "../../AppTheme";
 
 export const DataCardContainer = forwardRef((props, ref) => {
   const StyledTextField = styled(Grid)(() => ({
@@ -25,7 +26,7 @@ export const DataCardContainer = forwardRef((props, ref) => {
 
 export const DataCardItem = forwardRef((props, ref) => {
   const StyledCard = styled(Grid)(() => ({
-    padding: "0 8px 8px 8px !important",
+    padding: `0 ${theme.spacing(1)} ${theme.spacing(1)} ${theme.spacing(1)} !important`,
   }));
 
   return (
@@ -40,8 +41,9 @@ export const DataCard = forwardRef((props, ref) => {
     width: "100%",
     border: "1px solid lightgrey",
     borderRadius: "3px",
-    padding: "16px 12px 16px 22px",
-    marginBottom: "8px",
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(3),
+    marginBottom: theme.spacing(1),
   }));
 
   return (
@@ -55,14 +57,12 @@ export const DataCardButtonContainer = forwardRef((props, ref) => {
   return (
     <Box
       ref={ref}
+      {...props}
       sx={{
-        mb: 2,
-        marginBottom: 0,
         flex: "0 1 auto",
-        marginTop: "15px",
-        marginRight: "10px",
+        mt: 2,
       }}>
-      <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
+      <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={1}>
         {props.children}
       </Stack>
     </Box>

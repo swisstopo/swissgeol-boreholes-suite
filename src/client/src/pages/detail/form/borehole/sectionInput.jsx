@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Divider, IconButton } from "@mui/material";
-import { StackFullWidth } from "../../../../components/styledComponents.ts";
-import { FormCheckbox, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
@@ -102,14 +101,14 @@ const SectionInput = ({ item, parentId }) => {
       <DevTool control={formMethods.control} placement="top-left" />
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <StackFullWidth direction="column" spacing={1}>
+          <FormContainer>
             <FormInput fieldName="name" label="section_name" value={item?.name} required={true} />
             {fields
               .sort((a, b) => a.order - b.order)
               .map((field, index) => (
-                <StackFullWidth key={field.sectionElementId || field.id} direction="row" spacing={1}>
-                  <StackFullWidth direction="column" spacing={1} sx={{ flex: "1 0 0", width: 0 }}>
-                    <StackFullWidth direction="row" spacing={1}>
+                <FormContainer key={field.sectionElementId || field.id} direction="row">
+                  <FormContainer sx={{ flex: "1 0 0", width: 0 }}>
+                    <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.fromDepth`}
                         label="fromdepth"
@@ -124,8 +123,8 @@ const SectionInput = ({ item, parentId }) => {
                         type={FormValueType.Number}
                         required={true}
                       />
-                    </StackFullWidth>
-                    <StackFullWidth direction="row" spacing={1}>
+                    </FormContainer>
+                    <FormContainer direction="row">
                       <FormSelect
                         fieldName={`sectionElements.${index}.drillingMethodId`}
                         label="drilling_method"
@@ -144,8 +143,8 @@ const SectionInput = ({ item, parentId }) => {
                           .sort((a, b) => a.order - b.order)
                           .map(d => ({ key: d.id, name: d[i18n.language] }))}
                       />
-                    </StackFullWidth>
-                    <StackFullWidth direction="row" spacing={1}>
+                    </FormContainer>
+                    <FormContainer direction="row">
                       <FormSelect
                         fieldName={`sectionElements.${index}.drillingMudTypeId`}
                         label="drilling_mud_type"
@@ -174,8 +173,8 @@ const SectionInput = ({ item, parentId }) => {
                               d.path[0] === formMethods.getValues(`sectionElements.${index}.drillingMudTypeId`)),
                         )}
                       />
-                    </StackFullWidth>
-                    <StackFullWidth direction="row" spacing={1}>
+                    </FormContainer>
+                    <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingStartDate`}
                         label="drilling_start_date"
@@ -188,8 +187,8 @@ const SectionInput = ({ item, parentId }) => {
                         value={field.drillingEndDate}
                         type={FormValueType.Date}
                       />
-                    </StackFullWidth>
-                    <StackFullWidth direction="row" spacing={1}>
+                    </FormContainer>
+                    <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingDiameter`}
                         label="drill_diameter"
@@ -202,12 +201,8 @@ const SectionInput = ({ item, parentId }) => {
                         value={field.drillingCoreDiameter}
                         type={FormValueType.Number}
                       />
-                    </StackFullWidth>
-                    <StackFullWidth
-                      direction={"row"}
-                      spacing={1}
-                      justifyContent={"space-between"}
-                      alignItems={"center"}>
+                    </FormContainer>
+                    <FormContainer direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                       <FormCheckbox
                         fieldName="overcoring"
                         label="overcoring"
@@ -230,9 +225,9 @@ const SectionInput = ({ item, parentId }) => {
                           }}
                         />
                       )}
-                    </StackFullWidth>
+                    </FormContainer>
                     {index < fields.length - 1 && <Divider />}
-                  </StackFullWidth>
+                  </FormContainer>
                   <IconButton
                     onClick={() => remove(index)}
                     data-cy={`sectionElements.${index}.delete`}
@@ -240,9 +235,9 @@ const SectionInput = ({ item, parentId }) => {
                     color="error">
                     <Delete />
                   </IconButton>
-                </StackFullWidth>
+                </FormContainer>
               ))}
-          </StackFullWidth>
+          </FormContainer>
 
           <DataCardButtonContainer>
             <CancelButton

@@ -382,22 +382,35 @@ export const theme = createTheme({
         IconComponent: ChevronDown,
       },
     },
-    MuiFormControl: {
+    MuiTextField: {
+      defaultProps: {
+        size: "small",
+        variant: "outlined",
+      },
       styleOverrides: {
         root: {
-          "& .MuiFilledInput-root": {
-            backgroundColor: "#F8F9FA",
+          borderRadius: "4px",
+          flex: "1",
+
+          "&.readonly": {
+            pointerEvents: "none",
           },
-          "& .MuiFilledInput-root:hover:not(.Mui-disabled, .Mui-error):before": {
-            borderColor: "#4FA7BC",
-          },
-          "& .MuiFilledInput-root:not(.Mui-error):before": {
-            borderColor: "#4FA7BC",
-          },
-          "& .MuiFilledInput-root:not(.Mui-error):after": {
-            borderColor: "#4FA7BC",
+
+          "&.ai .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#5B21B6 !important",
+            borderWidth: "3px",
           },
         },
+      },
+    },
+    MuiInputLabel: {
+      defaultProps: {
+        shrink: true,
+      },
+    },
+    MuiOutlinedInput: {
+      defaultProps: {
+        notched: true,
       },
     },
     MuiTab: {

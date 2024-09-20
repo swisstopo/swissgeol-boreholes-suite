@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { FormDisplay, FormValueType } from "../../../../components/form/form";
-import { StackFullWidth } from "../../../../components/styledComponents.ts";
+import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { useGetCasingName } from "../completion/casingUtils.jsx";
 
 const ObservationDisplay = props => {
@@ -29,18 +28,18 @@ const ObservationDisplay = props => {
     <>
       {observation != null && (
         <>
-          <StackFullWidth direction="row" spacing={1}>
+          <FormContainer direction="row">
             <FormDisplay label="fromdepth" value={observation?.fromDepthM} />
             <FormDisplay label="todepth" value={observation?.toDepthM} />
-          </StackFullWidth>
-          <StackFullWidth direction="row" spacing={1}>
+          </FormContainer>
+          <FormContainer direction="row">
             <FormDisplay label="fromDepthMasl" value={observation?.fromDepthMasl} />
             <FormDisplay label="toDepthMasl" value={observation?.toDepthMasl} />
-          </StackFullWidth>
-          <StackFullWidth direction="row" spacing={1}>
+          </FormContainer>
+          <FormContainer direction="row">
             <FormDisplay label="startTime" value={observation?.startTime} type={FormValueType.DateTime} />
             <FormDisplay label="endTime" value={observation?.endTime} type={FormValueType.DateTime} />
-          </StackFullWidth>
+          </FormContainer>
           <FormDisplay
             label="duration"
             value={
@@ -49,10 +48,10 @@ const ObservationDisplay = props => {
                 : null
             }
           />
-          <StackFullWidth direction="row" spacing={1}>
+          <FormContainer direction="row">
             <FormDisplay label="reliability" value={observation?.reliability} type={FormValueType.Domain} />
             <FormDisplay label="casingName" value={getCasingNameWithCompletion(observation)} />
-          </StackFullWidth>
+          </FormContainer>
           <FormDisplay label="comment" value={observation?.comment} />
         </>
       )}
