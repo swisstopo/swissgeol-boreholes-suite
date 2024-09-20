@@ -2,8 +2,7 @@ import { LabelingContext } from "./labelingContext.tsx";
 import { useContext } from "react";
 import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 
-// TODO: Extend with other types
-export type ExtractionType = "coordinate";
+export type ExtractionType = "text" | "number" | "coordinates";
 export type ExtractionState = "start" | "drawing" | "loading" | "success" | "error";
 
 export interface ExtractionObject {
@@ -23,7 +22,8 @@ export interface ExtractionBoundingBox {
 export interface ExtractionRequest {
   filename: string;
   page_number: number;
-  bounding_box: ExtractionBoundingBox;
+  bbox: ExtractionBoundingBox;
+  format: ExtractionType;
 }
 
 export interface Coordinate {
@@ -34,6 +34,7 @@ export interface Coordinate {
 
 export interface ExtractionResponse {
   value: string | number | Coordinate | null;
+  detail?: string;
   bbox: ExtractionBoundingBox;
 }
 

@@ -282,7 +282,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   ]);
 
   useEffect(() => {
-    if (extractionObject?.type === "coordinate" && extractionObject?.state === "success") {
+    if (extractionObject?.type === "coordinates" && extractionObject?.state === "success") {
       const coordinate = extractionObject?.result?.value as Coordinate;
       if (coordinate) {
         setCurrentReferenceSystem(referenceSystems[coordinate.projection].code);
@@ -380,7 +380,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     const referenceSystemKey =
       currentReferenceSystem === referenceSystems.LV95.code ? ReferenceSystemKey.LV95 : ReferenceSystemKey.LV03;
     setExtractionObject({
-      type: "coordinate",
+      type: "coordinates",
       state: "start",
       previousValue: {
         east: formMethods.getValues(referenceSystems[referenceSystemKey].fieldName.X),
@@ -403,7 +403,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                 showLabeling &&
                 editingEnabled && (
                   <LabelingButton
-                    className={extractionObject?.type === "coordinate" ? "Mui-active" : ""}
+                    className={extractionObject?.type === "coordinates" ? "Mui-active" : ""}
                     onClick={() => startLabeling()}
                   />
                 )
@@ -418,7 +418,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                   selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
                   canReset={false}
                   readonly={!editingEnabled}
-                  className={extractionObject?.type === "coordinate" ? "ai" : ""}
+                  className={extractionObject?.type === "coordinates" ? "ai" : ""}
                   onUpdate={e => onReferenceSystemChange(e)}
                   values={Object.entries(referenceSystems).map(([, value]) => ({
                     key: value.code,
@@ -435,7 +435,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
                       readonly={!editingEnabled}
-                      className={extractionObject?.type === "coordinate" ? "ai" : ""}
+                      className={extractionObject?.type === "coordinates" ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV95.fieldName.X)}
                     />
                     <FormCoordinate
@@ -446,7 +446,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
                       readonly={!editingEnabled}
-                      className={extractionObject?.type === "coordinate" ? "ai" : ""}
+                      className={extractionObject?.type === "coordinates" ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV95.fieldName.Y)}
                     />
                   </FormContainer>
@@ -459,7 +459,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
                       readonly={!editingEnabled}
-                      className={extractionObject?.type === "coordinate" ? "ai" : ""}
+                      className={extractionObject?.type === "coordinates" ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV03.fieldName.X)}
                     />
                     <FormCoordinate
@@ -470,7 +470,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
                       readonly={!editingEnabled}
-                      className={extractionObject?.type === "coordinate" ? "ai" : ""}
+                      className={extractionObject?.type === "coordinates" ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV03.fieldName.Y)}
                     />
                   </FormContainer>

@@ -1,17 +1,11 @@
 import { Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import {
-  ExtractionRequest,
-  ExtractionResponse,
-  labelingFileFormat,
-  PanelPosition,
-  useLabelingContext,
-} from "./labelingInterfaces.tsx";
+import { ExtractionRequest, labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
 import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
 import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
-import { getDataExtractionFileInfo, getFiles, loadImage, uploadFile } from "../../../api/file/file.ts";
+import { extractData, getDataExtractionFileInfo, getFiles, loadImage, uploadFile } from "../../../api/file/file.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { useTranslation } from "react-i18next";
 import Map from "ol/Map.js";
@@ -30,7 +24,6 @@ import Draw, { createBox } from "ol/interaction/Draw";
 import { Geometry } from "ol/geom";
 import Feature from "ol/Feature";
 import { DragRotate, PinchRotate } from "ol/interaction";
-import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -139,32 +132,38 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     };
   };
 
-  const extractData = useCallback(
+  const triggerDataExtraction = useCallback(
     (fileName: string, extent: number[]) => {
-      setExtractionObject({
-        ...extractionObject,
-        state: "loading",
-      });
-
-      const bbox = convert2bbox(extent);
-      const request: ExtractionRequest = {
-        filename: fileName.substring(0, fileName.lastIndexOf("-")),
-        page_number: activePage,
-        bounding_box: bbox,
-      };
-      // TODO: Send coordinates to labeling api to extract data
-      console.log("Request", request);
-      setTimeout(() => {
-        const response: ExtractionResponse = {
-          value: { east: 2600000 + extent[0], north: 1200000 + extent[1], projection: ReferenceSystemKey.LV95 },
-          bbox: bbox,
-        };
+      if (extractionObject && extractionObject.type) {
         setExtractionObject({
           ...extractionObject,
-          state: "success",
-          result: response,
+          state: "loading",
         });
-      }, 400);
+
+        const bbox = convert2bbox(extent);
+        const request: ExtractionRequest = {
+          filename: fileName.substring(0, fileName.lastIndexOf("-")) + ".pdf",
+          page_number: activePage,
+          bbox: bbox,
+          format: extractionObject.type,
+        };
+
+        extractData(request)
+          .then(response => {
+            setExtractionObject({
+              ...extractionObject,
+              state: "success",
+              result: response,
+            });
+          })
+          .catch(error => {
+            console.log("error", error);
+            setExtractionObject({
+              ...extractionObject,
+              state: "error",
+            });
+          });
+      }
     },
     [activePage, extractionObject, setExtractionObject],
   );
@@ -276,7 +275,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         drawingSource.on("addfeature", e => {
           const extent = e.feature?.getGeometry()?.getExtent();
           if (extent) {
-            extractData(response.fileName, extent);
+            triggerDataExtraction(response.fileName, extent);
           }
         });
         const drawingLayer = new VectorLayer({
@@ -312,7 +311,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         setMap(map);
       });
     }
-  }, [activePage, extractData, pageCount, selectedFile]);
+  }, [activePage, triggerDataExtraction, pageCount, selectedFile]);
 
   return (
     <Box

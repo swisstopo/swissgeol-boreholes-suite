@@ -1,6 +1,7 @@
 import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2";
 import { ApiError } from "../apiInterfaces.ts";
+import { ExtractionRequest, ExtractionResponse } from "../../pages/detail/labeling/labelingInterfaces.tsx";
 
 export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
   if (file && file.size <= maxFileSizeKB) {
@@ -51,7 +52,10 @@ export const updateFile = async (
   });
 };
 
-export const getDataExtractionFileInfo = async (boreholeFileId: number, index: number) => {
+export async function getDataExtractionFileInfo(
+  boreholeFileId: number,
+  index: number,
+): Promise<DataExtractionResponse> {
   let response = await fetchApiV2(
     `boreholefile/getDataExtractionFileInfo?boreholeFileId=${boreholeFileId}&index=${index}`,
     "GET",
@@ -59,21 +63,14 @@ export const getDataExtractionFileInfo = async (boreholeFileId: number, index: n
   if (response) {
     response = response as DataExtractionResponse;
     if (response.count === 0) {
-      const createResponse = await fetch("http://localhost:8000/api/V1/create_png", {
-        method: "POST",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: response.fileName + ".pdf" }),
-      });
-      console.log("createResponse", createResponse);
-      // TODO: Handle createResponse
+      await createExtractionPngs(response.fileName);
+      return await getDataExtractionFileInfo(boreholeFileId, index);
     }
     return response;
   } else {
     throw new ApiError("errorDataExtractionFileLoading", 500);
   }
-};
+}
 
 export async function loadImage(fileName: string) {
   const response = await fetchApiV2Base("boreholefile/dataextraction/" + fileName, "GET");
@@ -81,5 +78,39 @@ export async function loadImage(fileName: string) {
     return response.blob();
   } else {
     throw new ApiError(response.statusText, response.status);
+  }
+}
+
+export async function createExtractionPngs(fileName: string) {
+  // TODO: Maybe update URL after proper integration
+  const response = await fetch("http://localhost:8000/api/V1/create_pngs", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filename: fileName + ".pdf" }),
+  });
+  if (!response.ok) {
+    throw new ApiError("errorDataExtractionFileLoading", 500);
+  }
+}
+
+export async function extractData(request: ExtractionRequest): Promise<ExtractionResponse> {
+  // TODO: Maybe update URL after proper integration
+  const response = await fetch("http://localhost:8000/api/V1/extract_data", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(request),
+  });
+
+  if (response.ok) {
+    const extractionResponse = (await response.json()) as ExtractionResponse;
+    console.log("extractionResponse", extractionResponse);
+    if (extractionResponse.detail) {
+      throw new ApiError(extractionResponse.detail, 500);
+    }
+    return extractionResponse;
+  } else {
+    const text = await response.text();
+    console.log(text);
+    throw new ApiError("errorDataExtraction", response.status);
   }
 }
