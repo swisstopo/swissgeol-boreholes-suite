@@ -174,7 +174,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             state: "success",
             result: response,
           });
-        }, 4000);
+        }, 4000),
       );
     },
     [activePage, extractionObject, setExtractionObject],
