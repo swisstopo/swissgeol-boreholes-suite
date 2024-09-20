@@ -314,7 +314,7 @@ const Completion = props => {
     <>
       <FullPage>
         <Stack flex="0 1 auto">
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginRight: "5px" }}>
             <BdmsTabs value={state.index} onChange={handleCompletionChanged}>
               {state.displayed?.length > 0 &&
                 state.displayed.map((item, index) => {

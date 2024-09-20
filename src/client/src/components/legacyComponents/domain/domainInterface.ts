@@ -4,6 +4,7 @@ export interface Domains {
 }
 
 export interface Codelist {
+  order: number;
   id: number;
   geolcode: number;
   schema: string;

@@ -1,5 +1,4 @@
-import { StackFullWidth } from "../../../../components/styledComponents.ts";
-import { FormDisplay, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { deleteSection, useDomains } from "../../../../api/fetchApiV2.js";
 import { Divider } from "@mui/material";
@@ -14,8 +13,8 @@ const SectionDisplay = ({ item, isEditable }) => {
       {item?.sectionElements
         ?.sort((a, b) => a.order - b.order)
         .map((element, index) => (
-          <StackFullWidth key={element.id} direction="column" spacing={1}>
-            <StackFullWidth direction="row" spacing={1}>
+          <FormContainer key={element.id}>
+            <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
                 label="fromdepth"
@@ -23,8 +22,8 @@ const SectionDisplay = ({ item, isEditable }) => {
                 type={FormValueType.Number}
               />
               <FormDisplay prefix={`${index}.`} label="todepth" value={element.toDepth} type={FormValueType.Number} />
-            </StackFullWidth>
-            <StackFullWidth direction="row" spacing={1}>
+            </FormContainer>
+            <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
                 label="drilling_method"
@@ -37,8 +36,8 @@ const SectionDisplay = ({ item, isEditable }) => {
                 value={domains?.data?.find(d => d.id === element.cuttingsId)}
                 type={FormValueType.Domain}
               />
-            </StackFullWidth>
-            <StackFullWidth direction="row" spacing={1}>
+            </FormContainer>
+            <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
                 label="drilling_mud_type"
@@ -51,8 +50,8 @@ const SectionDisplay = ({ item, isEditable }) => {
                 value={domains?.data?.find(d => d.id === element.drillingMudSubtypeId)}
                 type={FormValueType.Domain}
               />
-            </StackFullWidth>
-            <StackFullWidth direction="row" spacing={1}>
+            </FormContainer>
+            <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
                 label="drilling_start_date"
@@ -65,8 +64,8 @@ const SectionDisplay = ({ item, isEditable }) => {
                 value={element.drillingEndDate}
                 type={FormValueType.Date}
               />
-            </StackFullWidth>
-            <StackFullWidth direction="row" spacing={1}>
+            </FormContainer>
+            <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
                 label="drill_diameter"
@@ -79,7 +78,7 @@ const SectionDisplay = ({ item, isEditable }) => {
                 value={element.drillingCoreDiameter}
                 type={FormValueType.Number}
               />
-            </StackFullWidth>
+            </FormContainer>
             <FormDisplay
               prefix={`${index}.`}
               label="overcoring"
@@ -87,7 +86,7 @@ const SectionDisplay = ({ item, isEditable }) => {
               type={FormValueType.Boolean}
             />
             {index < item.sectionElements.length - 1 && <Divider />}
-          </StackFullWidth>
+          </FormContainer>
         ))}
     </DataDisplayCard>
   );

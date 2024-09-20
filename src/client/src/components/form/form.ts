@@ -36,3 +36,5 @@ export { FormSelect } from "./formSelect";
 export { FormMultiSelect } from "./formMultiSelect";
 export { FormCheckbox } from "./formCheckbox";
 export { FormDisplay } from "./formDisplay";
+export { FormCoordinate } from "./formCoordinate";
+export { FormContainer } from "./formContainer";

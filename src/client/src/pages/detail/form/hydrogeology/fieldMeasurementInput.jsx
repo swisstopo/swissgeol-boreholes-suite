@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { Box, IconButton, InputAdornment, Stack, Typography } from "@mui/material";
+import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { addFieldMeasurement, updateFieldMeasurement, useDomains } from "../../../../api/fetchApiV2";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
@@ -135,7 +135,7 @@ const FieldMeasurementInput = props => {
     <>
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+          <FormContainer>
             <ObservationInput observation={item} boreholeId={parentId} />
             <Box
               sx={{
@@ -143,7 +143,7 @@ const FieldMeasurementInput = props => {
                 marginRight: "8px !important",
                 marginTop: "18px !important",
               }}>
-              <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
+              <FormContainer direction={"row"} justifyContent={"space-between"}>
                 <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("fieldMeasurementResult")}</Typography>
                 <AddButton
                   label="addFieldMeasurementResult"
@@ -151,9 +151,13 @@ const FieldMeasurementInput = props => {
                     append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
                   }}
                 />
-              </Stack>
+              </FormContainer>
               {fields.map((field, index) => (
-                <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`fieldMeasurementResult-${index}`}>
+                <FormContainer
+                  direction={"row"}
+                  key={field.id}
+                  marginTop="8px"
+                  data-cy={`fieldMeasurementResult-${index}`}>
                   <FormSelect
                     fieldName={`fieldMeasurementResults.${index}.sampleTypeId`}
                     label="fieldMeasurementSampleType"
@@ -202,10 +206,10 @@ const FieldMeasurementInput = props => {
                     }}>
                     <Delete />
                   </IconButton>
-                </Stack>
+                </FormContainer>
               ))}
             </Box>
-          </Stack>
+          </FormContainer>
           <DataCardButtonContainer>
             <CancelButton
               onClick={() => {

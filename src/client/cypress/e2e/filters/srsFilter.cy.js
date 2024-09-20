@@ -1,5 +1,6 @@
 import { loginAsAdmin, newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
 import { verifyPaginationText } from "../helpers/dataGridHelpers";
+import { setSelect } from "../helpers/formHelpers";
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
@@ -33,10 +34,10 @@ describe("Tests for filtering data by reference system.", () => {
 
   it("can filter by reference system", () => {
     newEditableBorehole().as("borehole_id");
-    cy.get('[data-cy="LV03X"]').as("LV03X-input");
-    cy.get('[data-cy="LV03Y"]').as("LV03Y-input");
+    cy.get('[data-cy="location_x_lv03-formCoordinate"]').as("LV03X-input");
+    cy.get('[data-cy="location_y_lv03-formCoordinate"]').as("LV03Y-input");
 
-    cy.get("input[value=20104002]").click();
+    setSelect("spatial_reference_system", 1);
 
     cy.get("@LV03X-input").type("645778", { delay: 10 });
     cy.get("@LV03Y-input").type("245794", { delay: 10 });
