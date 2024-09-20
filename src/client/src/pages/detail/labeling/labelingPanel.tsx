@@ -141,17 +141,16 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
   const extractData = useCallback(
     (fileName: string, extent: number[]) => {
-      setExtractionObject({
-        ...extractionObject,
-        state: "loading",
-      });
-
       const bbox = convert2bbox(extent);
       const request: ExtractionRequest = {
         filename: fileName.substring(0, fileName.lastIndexOf("-")),
         page_number: activePage,
         bounding_box: bbox,
       };
+      setExtractionObject({
+        ...extractionObject,
+        state: "loading",
+      });
       // TODO: Send coordinates to labeling api to extract data
       console.log("Request", request);
       setTimeout(() => {
@@ -244,7 +243,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   }, [map, extractionObject, setExtractionObject, t]);
 
   useEffect(() => {
-    if (selectedFile) {
+    if (selectedFile && !map && (!extractionObject || extractionObject?.state === "start")) {
       getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
         if (pageCount !== response.count) {
           setPageCount(response.count);
@@ -312,7 +311,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         setMap(map);
       });
     }
-  }, [activePage, extractData, pageCount, selectedFile]);
+  }, [activePage, extractData, extractionObject, map, pageCount, selectedFile]);
 
   return (
     <Box
