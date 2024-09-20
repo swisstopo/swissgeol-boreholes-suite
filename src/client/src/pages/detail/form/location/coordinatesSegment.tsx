@@ -19,7 +19,7 @@ import {
 } from "./coordinateSegmentInterfaces.js";
 import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
 import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
-import { useLabelingContext } from "../../labeling/labelingInterfaces.js";
+import { Coordinate, useLabelingContext } from "../../labeling/labelingInterfaces.js";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
@@ -281,6 +281,16 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     handleCoordinateTransformation,
   ]);
 
+  useEffect(() => {
+    if (extractionObject?.type === "coordinate" && extractionObject?.state === "success") {
+      const coordinate = extractionObject?.result?.value as Coordinate;
+      if (coordinate) {
+        setCurrentReferenceSystem(referenceSystems[coordinate.projection].code);
+        setValuesForReferenceSystem(coordinate.projection, coordinate.east.toString(), coordinate.north.toString());
+      }
+    }
+  }, [extractionObject, setValuesForReferenceSystem]);
+
   // --- Event handlers --- /
 
   // passed to the onChange handler of the location values. Checks bounding box before updating.
@@ -366,6 +376,20 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     setValuesForReferenceSystem(ReferenceSystemKey.LV95, "", "");
   };
 
+  const startLabeling = () => {
+    const referenceSystemKey =
+      currentReferenceSystem === referenceSystems.LV95.code ? ReferenceSystemKey.LV95 : ReferenceSystemKey.LV03;
+    setExtractionObject({
+      type: "coordinate",
+      state: "start",
+      previousValue: {
+        east: formMethods.getValues(referenceSystems[referenceSystemKey].fieldName.X),
+        north: formMethods.getValues(referenceSystems[referenceSystemKey].fieldName.Y),
+        projection: referenceSystemKey,
+      },
+    });
+  };
+
   return (
     <>
       <FormProvider {...formMethods}>
@@ -380,7 +404,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                 editingEnabled && (
                   <LabelingButton
                     className={extractionObject?.type === "coordinate" ? "Mui-active" : ""}
-                    onClick={() => setExtractionObject({ type: "coordinate", state: "start" })}
+                    onClick={() => startLabeling()}
                   />
                 )
               }

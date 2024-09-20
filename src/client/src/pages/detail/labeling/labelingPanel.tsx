@@ -30,6 +30,7 @@ import Draw, { createBox } from "ol/interaction/Draw";
 import { Geometry } from "ol/geom";
 import Feature from "ol/Feature";
 import { DragRotate, PinchRotate } from "ol/interaction";
+import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -140,7 +141,10 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
   const extractData = useCallback(
     (fileName: string, extent: number[]) => {
-      setExtractionObject({ type: "coordinate", state: "loading" });
+      setExtractionObject({
+        ...extractionObject,
+        state: "loading",
+      });
 
       const bbox = convert2bbox(extent);
       const request: ExtractionRequest = {
@@ -152,13 +156,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
       console.log("Request", request);
       setTimeout(() => {
         const response: ExtractionResponse = {
-          value: { east: 2600000, north: 1200000, projection: "lv95" },
+          value: { east: 2600000 + extent[0], north: 1200000 + extent[1], projection: ReferenceSystemKey.LV95 },
           bbox: bbox,
         };
-        setExtractionObject({ type: "coordinate", state: "success", result: response });
+        setExtractionObject({
+          ...extractionObject,
+          state: "success",
+          result: response,
+        });
       }, 400);
     },
-    [activePage, setExtractionObject],
+    [activePage, extractionObject, setExtractionObject],
   );
 
   const updateTooltipPosition = (event: MapBrowserEvent<PointerEvent>) => {
@@ -178,7 +186,10 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
   useEffect(() => {
     if (map && extractionObject?.state === "start") {
-      setExtractionObject({ type: "coordinate", state: "drawing" });
+      setExtractionObject({
+        ...extractionObject,
+        state: "drawing",
+      });
       const layers = map.getLayers().getArray();
       const drawingSource = (layers[1] as VectorLayer<Feature<Geometry>>).getSource();
       if (drawingSource) {
