@@ -39,6 +39,7 @@ import Draw, { createBox } from "ol/interaction/Draw";
 import { Geometry } from "ol/geom";
 import Feature from "ol/Feature";
 import { DragRotate, PinchRotate } from "ol/interaction";
+import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -150,27 +151,33 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
   const extractData = useCallback(
     (fileName: string, extent: number[]) => {
-      setExtractionObject({ type: "coordinate", state: "loading" });
-
       const bbox = convert2bbox(extent);
       const request: ExtractionRequest = {
         filename: fileName.substring(0, fileName.lastIndexOf("-")),
         page_number: activePage,
         bounding_box: bbox,
       };
+      setExtractionObject({
+        ...extractionObject,
+        state: "loading",
+      });
       // TODO: Send coordinates to labeling api to extract data
       console.log("Request", request);
       setRequestTimeout(
         setTimeout(() => {
           const response: ExtractionResponse = {
-            value: { east: 2600000, north: 1200000, projection: "lv95" },
+            value: { east: 2600000 + extent[0], north: 1200000 + extent[1], projection: ReferenceSystemKey.LV95 },
             bbox: bbox,
           };
-          setExtractionObject({ type: "coordinate", state: "success", result: response });
-        }, 4000),
+          setExtractionObject({
+            ...extractionObject,
+            state: "success",
+            result: response,
+          });
+        }, 4000);
       );
     },
-    [activePage, setExtractionObject],
+    [activePage, extractionObject, setExtractionObject],
   );
 
   const cancelRequest = () => {
@@ -195,7 +202,10 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
   useEffect(() => {
     if (map && extractionObject?.state === "start") {
-      setExtractionObject({ type: "coordinate", state: "drawing" });
+      setExtractionObject({
+        ...extractionObject,
+        state: "drawing",
+      });
       const layers = map.getLayers().getArray();
       const drawingSource = (layers[1] as VectorLayer<Feature<Geometry>>).getSource();
       if (drawingSource) {
@@ -250,7 +260,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   }, [map, extractionObject, setExtractionObject, t]);
 
   useEffect(() => {
-    if (selectedFile) {
+    if (selectedFile && !map && (!extractionObject || extractionObject?.state === "start")) {
       getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
         if (pageCount !== response.count) {
           setPageCount(response.count);
@@ -318,7 +328,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         setMap(map);
       });
     }
-  }, [activePage, extractData, pageCount, selectedFile]);
+  }, [activePage, extractData, extractionObject, map, pageCount, selectedFile]);
 
   return (
     <Box

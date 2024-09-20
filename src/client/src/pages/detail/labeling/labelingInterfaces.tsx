@@ -1,14 +1,16 @@
 import { LabelingContext } from "./labelingContext.tsx";
 import { useContext } from "react";
+import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 
 // TODO: Extend with other types
 export type ExtractionType = "coordinate";
 export type ExtractionState = "start" | "drawing" | "loading" | "success" | "error";
 
 export interface ExtractionObject {
-  type: ExtractionType;
+  type?: ExtractionType;
   state: ExtractionState;
   result?: ExtractionResponse;
+  previousValue?: string | number | Coordinate | null;
 }
 
 export interface ExtractionBoundingBox {
@@ -25,9 +27,9 @@ export interface ExtractionRequest {
 }
 
 export interface Coordinate {
-  east: number;
-  north: number;
-  projection: "lv03" | "lv95";
+  east: number | string;
+  north: number | string;
+  projection: ReferenceSystemKey;
 }
 
 export interface ExtractionResponse {
