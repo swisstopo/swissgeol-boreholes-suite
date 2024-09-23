@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 
 // TODO: Extend with other types
-export type ExtractionType = "coordinate";
+export type ExtractionType = "coordinates";
 export type ExtractionState = "start" | "drawing" | "loading" | "success" | "error";
 
 export interface ExtractionObject {
