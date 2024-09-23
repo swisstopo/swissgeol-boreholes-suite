@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   ButtonGroup,
@@ -16,7 +17,7 @@ import {
   useLabelingContext,
 } from "./labelingInterfaces.tsx";
 import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
-import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { FC, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
 import {
   DataExtractionResponse,
@@ -30,7 +31,29 @@ import { useTranslation } from "react-i18next";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
 import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
-import { AlertContext } from "../../../components/alert/alertContext.tsx";
+import { useAlertManager } from "../../../components/alert/alertManager.tsx";
+import { styled } from "@mui/system";
+
+export const LabelingAlert = styled(Alert)({
+  height: "44px",
+  boxShadow:
+    "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
+  " & .MuiAlert-icon": {
+    padding: "0",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  " & .MuiAlert-message": {
+    padding: "0",
+    display: "flex",
+    alignItems: "center",
+  },
+  " & .MuiAlert-action": {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0 0 0 16px",
+  },
+});
 
 interface LabelingPanelProps {
   boreholeId: number;
@@ -47,7 +70,15 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
   const [requestTimeout, setRequestTimeout] = useState<NodeJS.Timeout>();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { showAlert } = useContext(AlertContext);
+  const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
+
+  useEffect(() => {
+    if (alertIsOpen && autoHideDuration !== null) {
+      setTimeout(() => {
+        closeAlert();
+      }, autoHideDuration);
+    }
+  }, [alertIsOpen, autoHideDuration, closeAlert]);
 
   const loadFiles = useCallback(async () => {
     if (boreholeId) {
@@ -238,19 +269,28 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             )}
           </ButtonGroup>
         )}
-        <Button
-          onClick={() => cancelRequest()}
-          variant="text"
-          endIcon={<X />}
-          sx={{
-            height: "44px",
-            visibility: extractionObject?.state === "loading" ? "visible" : "hidden",
-            boxShadow:
-              "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
-          }}>
-          <CircularProgress sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }} />
-          {t("analyze")}
-        </Button>
+        <Box>
+          {alertIsOpen ? (
+            <LabelingAlert variant="filled" severity={severity} onClose={closeAlert}>
+              {text}
+            </LabelingAlert>
+          ) : (
+            extractionObject?.state === "loading" && (
+              <Button
+                onClick={() => cancelRequest()}
+                variant="text"
+                endIcon={<X />}
+                sx={{
+                  height: "44px",
+                  boxShadow:
+                    "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
+                }}>
+                <CircularProgress sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }} />
+                {t("analyze")}
+              </Button>
+            )
+          )}
+        </Box>
         <ToggleButtonGroup
           value={panelPosition}
           onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
@@ -307,6 +347,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           files={files}
           setSelectedFile={setSelectedFile}
           addFile={addFile}
+          showAlert={showAlert}
         />
       )}
     </Box>
