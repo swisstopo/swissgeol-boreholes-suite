@@ -2,7 +2,6 @@
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,14 +13,14 @@ public class BoreholeFileController : ControllerBase
 {
     private const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
     private readonly BdmsContext context;
-    private readonly BoreholeFileUploadService boreholeFileUploadService;
+    private readonly BoreholeFileCloudService boreholeFileCloudService;
     private readonly ILogger logger;
 
-    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, BoreholeFileUploadService boreholeFileUploadService)
+    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, BoreholeFileCloudService boreholeFileCloudService)
         : base()
     {
         this.logger = logger;
-        this.boreholeFileUploadService = boreholeFileUploadService;
+        this.boreholeFileCloudService = boreholeFileCloudService;
         this.context = context;
     }
 
@@ -44,7 +43,7 @@ public class BoreholeFileController : ControllerBase
 
         try
         {
-            var boreholeFile = await boreholeFileUploadService.UploadFileAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
+            var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
             return Ok(boreholeFile);
         }
         catch (InvalidOperationException ex)
@@ -79,7 +78,7 @@ public class BoreholeFileController : ControllerBase
 
             if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
 
-            var fileBytes = await boreholeFileUploadService.GetObject(boreholeFile.File.NameUuid).ConfigureAwait(false);
+            var fileBytes = await boreholeFileCloudService.GetObject(boreholeFile.File.NameUuid).ConfigureAwait(false);
 
             return File(fileBytes, "application/octet-stream", boreholeFile.File.Name);
         }
@@ -112,11 +111,11 @@ public class BoreholeFileController : ControllerBase
             if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
 
             var fileUuid = boreholeFile.File.NameUuid.Replace(".pdf", "", StringComparison.OrdinalIgnoreCase);
-            var fileCount = await boreholeFileUploadService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
+            var fileCount = await boreholeFileCloudService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
 
             try
             {
-                var result = await boreholeFileUploadService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
+                var result = await boreholeFileCloudService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
 
                 return Ok(new
                 {
@@ -163,7 +162,7 @@ public class BoreholeFileController : ControllerBase
         try
         {
             var decodedImageName = Uri.UnescapeDataString($"dataextraction/{imageName}");
-            var fileBytes = await boreholeFileUploadService.GetObject(decodedImageName).ConfigureAwait(false);
+            var fileBytes = await boreholeFileCloudService.GetObject(decodedImageName).ConfigureAwait(false);
             return File(fileBytes, "image/png", decodedImageName);
         }
         catch (Exception ex)
@@ -225,7 +224,7 @@ public class BoreholeFileController : ControllerBase
             // If the file is not linked to any boreholes, delete it from the cloud storage and the database.
             if (file?.NameUuid != null && file.BoreholeFiles.Count == 0)
             {
-                await boreholeFileUploadService.DeleteObject(file.NameUuid).ConfigureAwait(false);
+                await boreholeFileCloudService.DeleteObject(file.NameUuid).ConfigureAwait(false);
                 context.Files.Remove(file);
                 await context.SaveChangesAsync().ConfigureAwait(false);
             }

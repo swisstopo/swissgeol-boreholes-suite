@@ -11,7 +11,6 @@ export interface FormSelectProps {
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
-  canReset?: boolean;
   selected?: number[];
   values?: FormSelectValue[];
   sx?: SxProps;
@@ -37,7 +36,6 @@ export const FormSelect: FC<FormSelectProps> = ({
   required,
   disabled,
   readonly,
-  canReset = true,
   selected,
   values,
   sx,
@@ -48,7 +46,7 @@ export const FormSelect: FC<FormSelectProps> = ({
   const { control } = useFormContext();
 
   const menuItems: FormSelectMenuItem[] = [];
-  if (canReset) {
+  if (!required) {
     menuItems.push({ key: 0, value: undefined, label: t("reset"), italic: true });
   }
 

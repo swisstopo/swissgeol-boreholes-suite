@@ -48,8 +48,8 @@ describe("Backfill crud tests", () => {
     setInput("notes", "Lorem.");
     setInput("fromDepth", "123456");
     setInput("toDepth", "987654");
-    setSelect("kindId", 3);
-    setSelect("materialId", 2);
+    setSelect("kindId", 2);
+    setSelect("materialId", 1);
 
     // save backfill
     saveForm();

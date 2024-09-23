@@ -1,6 +1,6 @@
 import MapControls from "../../../components/buttons/mapControls";
 import { Box } from "@mui/material";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import Projection from "ol/proj/Projection";
 import ImageLayer from "ol/layer/Image";
 import Static from "ol/source/ImageStatic";
@@ -10,7 +10,7 @@ import VectorLayer from "ol/layer/Vector";
 import Map from "ol/Map";
 import { defaults as defaultControls } from "ol/control/defaults";
 import { MapBrowserEvent, View } from "ol";
-import { getCenter } from "ol/extent";
+import { Extent, getCenter } from "ol/extent";
 import { DragRotate, PinchRotate } from "ol/interaction";
 import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import { Fill, Stroke, Style } from "ol/style";
@@ -27,7 +27,7 @@ const drawingStyle = () =>
       width: 2,
     }),
     fill: new Fill({
-      color: "rgba(91, 33, 182, 0.2)",
+      color: theme.palette.ai.mainTransparent,
     }),
   });
 
@@ -40,7 +40,8 @@ interface LabelingDrawContainerProps {
 export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo, onDrawEnd, drawTooltipLabel }) => {
   const { t } = useTranslation();
   const [map, setMap] = useState<Map>();
-  const [extent, setExtent] = useState<number[]>();
+  const [extent, setExtent] = useState<Extent>();
+  const tooltipRef = useRef<HTMLDivElement>();
 
   const zoomIn = () => {
     if (map) {
@@ -78,24 +79,21 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
   };
 
   const updateTooltipPosition = (event: MapBrowserEvent<PointerEvent>) => {
-    const tooltip = document.getElementById("tooltip");
-    if (tooltip) {
+    if (tooltipRef.current) {
       const [x, y] = event.pixel;
-      tooltip.style.left = x + "px";
-      tooltip.style.top = y + "px";
+      tooltipRef.current.style.left = x + "px";
+      tooltipRef.current.style.top = y + "px";
     }
   };
 
   const handleMouseLeave = () => {
-    const tooltip = document.getElementById("tooltip");
-    if (tooltip) {
-      tooltip.style.visibility = "hidden";
+    if (tooltipRef.current) {
+      tooltipRef.current.style.visibility = "hidden";
     }
   };
   const handleMouseEnter = () => {
-    const tooltip = document.getElementById("tooltip");
-    if (tooltip) {
-      tooltip.style.visibility = "visible";
+    if (tooltipRef.current) {
+      tooltipRef.current.style.visibility = "visible";
     }
   };
 
@@ -124,9 +122,8 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
               });
             tmpMap.getTargetElement().style.cursor = "";
 
-            const tooltip = document.getElementById("tooltip");
-            if (tooltip) {
-              tooltip.style.visibility = "hidden";
+            if (tooltipRef.current) {
+              tooltipRef.current.style.visibility = "hidden";
               tmpMap.un("pointermove", updateTooltipPosition);
               tmpMap.getTargetElement().removeEventListener("mouseleave", handleMouseLeave);
               tmpMap.getTargetElement().removeEventListener("mouseenter", handleMouseEnter);
@@ -138,11 +135,10 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
         const tmpMap = map;
         tmpMap.addInteraction(drawInteraction);
         tmpMap.getTargetElement().style.cursor = "crosshair";
-        const tooltip = document.getElementById("tooltip");
 
-        if (tooltip) {
-          tooltip.innerHTML = t(drawTooltipLabel);
-          tooltip.style.visibility = "visible";
+        if (tooltipRef.current) {
+          tooltipRef.current.innerHTML = t(drawTooltipLabel);
+          tooltipRef.current.style.visibility = "visible";
           tmpMap.getTargetElement().addEventListener("mouseleave", handleMouseLeave);
           tmpMap.getTargetElement().addEventListener("mouseenter", handleMouseEnter);
           tmpMap.on("pointermove", updateTooltipPosition);
@@ -241,7 +237,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
       <MapControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} onRotate={rotateImage} />
       <Box id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
       <Box
-        id="tooltip"
+        ref={tooltipRef}
         sx={{
           position: "absolute",
           borderRadius: "4px",

@@ -42,7 +42,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     addItem("addGroundwaterLevelMeasurement");
     cy.wait("@casing_GET");
 
-    setSelect("kindId", 3);
+    setSelect("kindId", 2);
     setSelect("casingId", 2);
     setInput("levelM", "789.12");
     setInput("levelMasl", "5.4567");
@@ -56,7 +56,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // edit groundwater level measurement
     startEditing();
-    setSelect("kindId", 2);
+    setSelect("kindId", 1);
     saveForm();
     evaluateDisplayValue("gwlm_kind", "Drucksonde");
     evaluateDisplayValue("casingName", "test groundwaterlevel measurement - casing-1");

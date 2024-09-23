@@ -49,7 +49,7 @@ describe("Casing crud tests", () => {
     evaluateInput("fromDepth", "0");
     setInput("casingElements.0.toDepth", "10");
     evaluateInput("toDepth", "10");
-    setSelect("casingElements.0.kindId", 4);
+    setSelect("casingElements.0.kindId", 3);
     setSelect("casingElements.0.materialId", 4);
     setInput("casingElements.0.innerDiameter", "3");
     setInput("casingElements.0.outerDiameter", "4");
@@ -100,8 +100,8 @@ describe("Casing crud tests", () => {
     setInput("name", "Inst-1");
     setInput("fromDepth", "123456");
     setInput("toDepth", "987654");
-    setSelect("kindId", 4);
-    setSelect("statusId", 2);
+    setSelect("kindId", 3);
+    setSelect("statusId", 1);
     setSelect("casingId", 2);
     saveForm();
     cy.wait("@instrumentation_GET");
@@ -172,7 +172,7 @@ describe("Casing crud tests", () => {
     setInput("name", "casing 1");
     setInput("casingElements.0.fromDepth", "5");
     setInput("casingElements.0.toDepth", "10");
-    setSelect("casingElements.0.kindId", 4);
+    setSelect("casingElements.0.kindId", 3);
     saveForm();
     cy.get('[data-cy="addcasing-button"]').should("be.enabled");
 
@@ -201,7 +201,7 @@ describe("Casing crud tests", () => {
     setInput("name", "casing 2");
     setInput("casingElements.0.fromDepth", "0");
     setInput("casingElements.0.toDepth", "5");
-    setSelect("casingElements.0.kindId", 4);
+    setSelect("casingElements.0.kindId", 3);
     startEditing();
     handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Reset");
     cy.get('[data-cy="casing-card.0.edit"]').should("be.visible");
@@ -212,7 +212,7 @@ describe("Casing crud tests", () => {
     setInput("name", "casing 2");
     setInput("casingElements.0.fromDepth", "0");
     setInput("casingElements.0.toDepth", "5");
-    setSelect("casingElements.0.kindId", 4);
+    setSelect("casingElements.0.kindId", 3);
     startEditing();
     handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Save");
     cy.get('[data-cy="casing-card.0.edit"]').should("exist");

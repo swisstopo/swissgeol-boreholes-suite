@@ -7,9 +7,9 @@ using System.Security.Cryptography;
 namespace BDMS;
 
 /// <summary>
-/// Represents a service to upload borehole files to the cloud storage.
+/// Represents a service to manage borehole files in the cloud storage.
 /// </summary>
-public class BoreholeFileUploadService
+public class BoreholeFileCloudService
 {
     private readonly BdmsContext context;
     private readonly ILogger logger;
@@ -17,7 +17,7 @@ public class BoreholeFileUploadService
     private readonly IAmazonS3 s3Client;
     private readonly string bucketName;
 
-    public BoreholeFileUploadService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileUploadService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client)
+    public BoreholeFileCloudService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileCloudService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client)
     {
         this.logger = logger;
         this.httpContextAccessor = httpContextAccessor;

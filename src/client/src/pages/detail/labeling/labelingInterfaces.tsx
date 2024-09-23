@@ -3,11 +3,17 @@ import { useContext } from "react";
 import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 
 export type ExtractionType = "text" | "number" | "coordinates";
-export type ExtractionState = "start" | "drawing" | "loading" | "success" | "error";
+export enum ExtractionState {
+  start,
+  drawing,
+  loading,
+  success,
+  error,
+}
 
 export interface ExtractionObject {
-  type?: ExtractionType;
   state: ExtractionState;
+  type?: ExtractionType;
   value?: string | number | Coordinate;
   previousValue?: string | number | Coordinate | null;
 }
