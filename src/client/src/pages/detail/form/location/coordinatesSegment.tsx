@@ -291,6 +291,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     }
   }, [extractionObject, setValuesForReferenceSystem]);
 
+  const isCoordinateExtraction = extractionObject?.type === "coordinates";
+
   // --- Event handlers --- /
 
   // passed to the onChange handler of the location values. Checks bounding box before updating.
@@ -417,7 +419,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                   label="spatial_reference_system"
                   selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
                   readonly={!editingEnabled}
-                  className={extractionObject?.type === "coordinates" ? "ai" : ""}
+                  className={isCoordinateExtraction ? "ai" : ""}
                   onUpdate={e => onReferenceSystemChange(e)}
                   values={Object.entries(referenceSystems).map(([, value]) => ({
                     key: value.code,
@@ -434,7 +436,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
                       readonly={!editingEnabled}
-                      className={extractionObject?.type === "coordinates" ? "ai" : ""}
+                      className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV95.fieldName.X)}
                     />
                     <FormCoordinate
@@ -445,7 +447,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
                       readonly={!editingEnabled}
-                      className={extractionObject?.type === "coordinates" ? "ai" : ""}
+                      className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV95.fieldName.Y)}
                     />
                   </FormContainer>
@@ -458,7 +460,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
                       readonly={!editingEnabled}
-                      className={extractionObject?.type === "coordinates" ? "ai" : ""}
+                      className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV03.fieldName.X)}
                     />
                     <FormCoordinate
@@ -469,7 +471,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
                       readonly={!editingEnabled}
-                      className={extractionObject?.type === "coordinates" ? "ai" : ""}
+                      className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV03.fieldName.Y)}
                     />
                   </FormContainer>
