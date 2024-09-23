@@ -112,10 +112,10 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     (extent: number[]) => {
       if (fileInfo && extractionObject && extractionObject.type) {
         const bbox = {
-          x0: extent[0],
-          y0: extent[1],
-          x1: extent[2],
-          y1: extent[3],
+          x0: Math.min(...[extent[0], extent[2]]),
+          y0: Math.min(...[extent[1], extent[3]]),
+          x1: Math.max(...[extent[0], extent[2]]),
+          y1: Math.max(...[extent[1], extent[3]]),
         };
         const request: ExtractionRequest = {
           filename: fileInfo.fileName.substring(0, fileInfo.fileName.lastIndexOf("-")) + ".pdf",
@@ -144,7 +144,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                 ...extractionObject,
                 state: "error",
               });
-              showAlert(t(error.message), "error");
+              showAlert(error.message, "error");
             }
           })
           .finally(() => {
@@ -152,7 +152,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           });
       }
     },
-    [activePage, extractionObject, fileInfo, setExtractionObject],
+    [activePage, extractionObject, fileInfo, setExtractionObject, showAlert],
   );
 
   const cancelRequest = () => {
