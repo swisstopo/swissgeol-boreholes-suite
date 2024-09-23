@@ -144,7 +144,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                 ...extractionObject,
                 state: "error",
               });
-              showAlert(error.message, "error");
+              showAlert(t(error.message), "error");
             }
           })
           .finally(() => {

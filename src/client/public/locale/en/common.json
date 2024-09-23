@@ -156,6 +156,8 @@
   "era": "Era",
   "errorAttention": "Attention",
   "errorBoreholeFileLoading": "An error occurred while loading the borehole files.",
+  "errorDataExtraction": "The data extraction has failed: {{message}}",
+  "errorDataExtractionFileLoading": "An error occurred while loading the data extraction file.",
   "errorDuplicatedUploadPerBorehole": "This file has already been uploaded for this borehole and cannot be uploaded a second time.",
   "errorDuringBoreholeFileUpload": "An error occurred during the upload.",
   "errorEndPoint": "You should add an end point",
