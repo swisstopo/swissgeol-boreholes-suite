@@ -10,7 +10,7 @@ import VectorLayer from "ol/layer/Vector";
 import Map from "ol/Map";
 import { defaults as defaultControls } from "ol/control/defaults";
 import { MapBrowserEvent, View } from "ol";
-import { getCenter } from "ol/extent";
+import { Extent, getCenter } from "ol/extent";
 import { DragRotate, PinchRotate } from "ol/interaction";
 import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import { Fill, Stroke, Style } from "ol/style";
@@ -40,7 +40,7 @@ interface LabelingDrawContainerProps {
 export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo, onDrawEnd, drawTooltipLabel }) => {
   const { t } = useTranslation();
   const [map, setMap] = useState<Map>();
-  const [extent, setExtent] = useState<number[]>();
+  const [extent, setExtent] = useState<Extent>();
 
   const zoomIn = () => {
     if (map) {
