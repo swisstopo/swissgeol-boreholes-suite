@@ -222,7 +222,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // Sync currentReferenceSystem with react-hook-form
   useEffect(() => {
-    formMethods.setValue("spatial_reference_system", currentReferenceSystem);
+    formMethods.setValue("spatial_reference_system", currentReferenceSystem, { shouldValidate: true });
   }, [currentReferenceSystem, formMethods]);
 
   // reset form values when the borehole or map point changes.
