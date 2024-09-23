@@ -249,6 +249,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
           color: "white",
           padding: "4px 8px",
           margin: "14px 2px",
+          visibility: "hidden",
         }}
       />
     </>
