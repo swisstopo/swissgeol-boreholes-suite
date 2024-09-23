@@ -93,12 +93,13 @@ export async function createExtractionPngs(fileName: string) {
   }
 }
 
-export async function extractData(request: ExtractionRequest): Promise<ExtractionResponse> {
+export async function extractData(request: ExtractionRequest, abortSignal: AbortSignal): Promise<ExtractionResponse> {
   // TODO: Maybe update URL after proper integration
   const response = await fetch("http://localhost:8000/api/V1/extract_data", {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify(request),
+    signal: abortSignal,
   });
 
   if (response.ok) {

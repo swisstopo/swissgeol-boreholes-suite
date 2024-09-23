@@ -9,13 +9,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import {
-  ExtractionRequest,
-  ExtractionResponse,
-  labelingFileFormat,
-  PanelPosition,
-  useLabelingContext,
-} from "./labelingInterfaces.tsx";
+import { ExtractionRequest, labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
 import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
 import { FC, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
@@ -26,10 +20,9 @@ import {
   maxFileSizeKB,
 } from "../../../api/file/fileInterfaces.ts";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
-import { getDataExtractionFileInfo, getFiles, uploadFile } from "../../../api/file/file.ts";
+import { extractData, getDataExtractionFileInfo, getFiles, uploadFile } from "../../../api/file/file.ts";
 import { useTranslation } from "react-i18next";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
-import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { styled } from "@mui/system";
@@ -68,7 +61,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const [fileInfo, setFileInfo] = useState<DataExtractionResponse>();
   const [activePage, setActivePage] = useState<number>(1);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
-  const [requestTimeout, setRequestTimeout] = useState<NodeJS.Timeout>();
+  const [abortController, setAbortController] = useState<AbortController>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
 
@@ -115,9 +108,9 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     fileInputRef.current?.click();
   };
 
-  const extractData = useCallback(
+  const triggerDataExtraction = useCallback(
     (extent: number[]) => {
-      if (fileInfo && extractionObject) {
+      if (fileInfo && extractionObject && extractionObject.type) {
         const bbox = {
           x0: extent[0],
           y0: extent[1],
@@ -135,8 +128,9 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           state: "loading",
         });
         setDrawTooltipLabel(undefined);
-        // TODO: Add cancel option
-        extractData(request)
+        const abortController = new AbortController();
+        setAbortController(abortController);
+        extractData(request, abortController.signal)
           .then(response => {
             setExtractionObject({
               ...extractionObject,
@@ -145,11 +139,16 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             });
           })
           .catch(error => {
-            console.log("error", error);
-            setExtractionObject({
-              ...extractionObject,
-              state: "error",
-            });
+            if (!error?.message?.includes("AbortError")) {
+              setExtractionObject({
+                ...extractionObject,
+                state: "error",
+              });
+              showAlert(t(error.message), "error");
+            }
+          })
+          .finally(() => {
+            setAbortController(undefined);
           });
       }
     },
@@ -157,7 +156,10 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   );
 
   const cancelRequest = () => {
-    clearTimeout(requestTimeout);
+    if (abortController) {
+      abortController.abort();
+      setAbortController(undefined);
+    }
     setExtractionObject({ type: "coordinates", state: "start" });
   };
 
@@ -341,7 +343,11 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               }}
             />
           </Stack>
-          <LabelingDrawContainer fileInfo={fileInfo} onDrawEnd={extractData} drawTooltipLabel={drawTooltipLabel} />
+          <LabelingDrawContainer
+            fileInfo={fileInfo}
+            onDrawEnd={triggerDataExtraction}
+            drawTooltipLabel={drawTooltipLabel}
+          />
         </Box>
       ) : (
         <LabelingFileSelector
