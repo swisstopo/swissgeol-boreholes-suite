@@ -35,14 +35,14 @@ describe("Geometry crud tests", () => {
     cy.get('[data-cy="boreholegeometryimport-button"]').should("be.enabled");
 
     // the selected format is wrong expect an alert
-    setSelect("geometryFormat", 1);
+    setSelect("geometryFormat", 0);
     cy.get('[data-cy="boreholegeometryimport-button"]').click();
     cy.wait("@boreholegeometry_POST");
     cy.get(".MuiAlert-message").contains("Header with name 'X_m'[0] was not found.");
     cy.get(".MuiAlert-action > .MuiButtonBase-root").click();
 
     // correct format for selected CSV
-    setSelect("geometryFormat", 2);
+    setSelect("geometryFormat", 1);
     cy.get('[data-cy="boreholegeometryimport-button"]').click();
     cy.wait("@boreholegeometry_POST");
     cy.wait("@boreholegeometry_GET");

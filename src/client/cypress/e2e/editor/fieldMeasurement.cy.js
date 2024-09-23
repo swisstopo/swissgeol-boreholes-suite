@@ -38,11 +38,11 @@ describe("Tests for the field measurement editor.", () => {
       addItem("addFieldMeasurement");
       cy.wait("@casing_GET");
 
-      setSelect("reliabilityId", 2);
+      setSelect("reliabilityId", 1);
       setInput("startTime", "2012-11-14T12:06");
       setSelect("casingId", 2);
-      setSelect("fieldMeasurementResults.0.sampleTypeId", 1);
-      setSelect("fieldMeasurementResults.0.parameterId", 1, 10);
+      setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
+      setSelect("fieldMeasurementResults.0.parameterId", 0, 9);
       setInput("fieldMeasurementResults.0.value", "10");
       // close editing mask
       saveForm();
@@ -73,7 +73,7 @@ describe("Tests for the field measurement editor.", () => {
 
       // edit field measurement reliability
       startEditing();
-      setSelect("reliabilityId", 3);
+      setSelect("reliabilityId", 2);
       saveForm();
       cy.wait("@fieldmeasurement_GET");
       evaluateDisplayValue("reliability", "andere");
