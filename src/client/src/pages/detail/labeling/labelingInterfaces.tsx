@@ -13,8 +13,8 @@ export enum ExtractionState {
 }
 
 export interface ExtractionObject {
-  type?: ExtractionType;
   state: ExtractionState;
+  type?: ExtractionType;
   result?: ExtractionResponse;
   previousValue?: string | number | Coordinate | null;
 }
