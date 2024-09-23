@@ -33,9 +33,9 @@ export interface Coordinate {
 }
 
 export interface ExtractionResponse {
-  value: string | number | Coordinate | null;
-  detail?: string;
   bbox: ExtractionBoundingBox;
+  detail?: string;
+  [key in ExtractionType]?: string | number | Coordinate;
 }
 
 export type PanelPosition = "right" | "bottom";
