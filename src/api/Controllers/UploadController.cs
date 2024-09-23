@@ -21,7 +21,7 @@ public class UploadController : ControllerBase
     private readonly ILogger logger;
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
-    private readonly BoreholeFileUploadService boreholeFileUploadService;
+    private readonly BoreholeFileCloudService boreholeFileCloudService;
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
@@ -33,13 +33,13 @@ public class UploadController : ControllerBase
         MissingFieldFound = null,
     };
 
-    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileUploadService boreholeFileUploadService)
+    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService)
     {
         this.context = context;
         this.logger = logger;
         this.locationService = locationService;
         this.coordinateService = coordinateService;
-        this.boreholeFileUploadService = boreholeFileUploadService;
+        this.boreholeFileCloudService = boreholeFileCloudService;
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ public class UploadController : ControllerBase
                     var attachmentFiles = attachments.Where(x => attachmentFileNames != null && attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
                     foreach (var attachmentFile in attachmentFiles)
                     {
-                        await boreholeFileUploadService.UploadFileAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
+                        await boreholeFileCloudService.UploadFileAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
                     }
                 }
             }
