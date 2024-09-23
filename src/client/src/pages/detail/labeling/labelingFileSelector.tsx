@@ -106,7 +106,12 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
             )}
           </Stack>
           <Divider />
-          <AddButton variant="contained" label="addFile" onClick={() => fileInputRef.current?.click()} />
+          <AddButton
+            variant="contained"
+            color="primary"
+            label="addFile"
+            onClick={() => fileInputRef.current?.click()}
+          />
         </Stack>
       </Stack>
     </Box>
