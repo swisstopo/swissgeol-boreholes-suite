@@ -128,7 +128,7 @@ public class BoreholeFileController : ControllerBase
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("The specified key does not exist."))
+                if (ex.Message.Contains("The specified key does not exist.", StringComparison.CurrentCulture))
                 {
                     return Ok(new
                     {
@@ -137,10 +137,10 @@ public class BoreholeFileController : ControllerBase
                         height = 0,
                         count = 0,
                     });
-                } else
+                }
+                else
                 {
                     return Problem(ex.Message);
-
                 }
             }
         }
