@@ -34,11 +34,9 @@ import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { styled } from "@mui/system";
+import "./labelingPanel.css";
 
 export const LabelingAlert = styled(Alert)({
-  height: "44px",
-  boxShadow:
-    "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
   " & .MuiAlert-icon": {
     padding: "0",
     alignItems: "center",
@@ -238,9 +236,9 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           <ButtonGroup
             variant="contained"
             sx={{
-              height: "44px",
               visibility: selectedFile ? "visible" : "hidden",
-            }}>
+            }}
+            className="labelingButton">
             <Typography variant="h6" p={1} pr={fileInfo.count > 1 ? 0 : 1} m={0.5} sx={{ alignContent: "center" }}>
               {activePage} / {fileInfo.count}
             </Typography>
@@ -270,20 +268,12 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         )}
         <Box>
           {alertIsOpen ? (
-            <LabelingAlert variant="filled" severity={severity} onClose={closeAlert}>
+            <LabelingAlert variant="filled" severity={severity} onClose={closeAlert} className="labelingButton">
               {text}
             </LabelingAlert>
           ) : (
             extractionObject?.state === ExtractionState.loading && (
-              <Button
-                onClick={() => cancelRequest()}
-                variant="text"
-                endIcon={<X />}
-                sx={{
-                  height: "44px",
-                  boxShadow:
-                    "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
-                }}>
+              <Button onClick={() => cancelRequest()} variant="text" endIcon={<X />} className="labelingButton">
                 <CircularProgress sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }} />
                 {t("analyze")}
               </Button>
@@ -295,7 +285,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
             setPanelPosition(nextPosition);
           }}
-          exclusive>
+          exclusive
+          className="labelingButton">
           <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
             <PanelBottom />
           </ToggleButton>
@@ -331,11 +322,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                   setSelectedFile(files?.find(file => file.id === item.key));
                 }
               }}
-              sx={{
-                height: "44px",
-                boxShadow:
-                  "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
-              }}
+              className="labelingButton"
             />
           </Stack>
           <LabelingDrawContainer fileInfo={fileInfo} onDrawEnd={extractData} drawTooltipLabel={drawTooltipLabel} />
