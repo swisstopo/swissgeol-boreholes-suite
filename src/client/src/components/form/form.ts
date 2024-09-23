@@ -29,6 +29,7 @@ export enum FormValueType {
   DateTime = "datetime-local",
   Boolean = "boolean",
   Domain = "domain",
+  Workgroup = "workgroup",
 }
 
 export { FormInput } from "./formInput";

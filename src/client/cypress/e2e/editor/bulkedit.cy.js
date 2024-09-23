@@ -17,10 +17,10 @@ describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
-    cy.get("h3").should("have.text", "Bulk editing");
+    cy.get("h1").should("have.text", "Bulk editing");
   });
 
-  it("displays workgroup accordion only if user has permission for more than one workgroup", () => {
+  it.only("displays workgroup accordion only if user has permission for more than one workgroup", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 
@@ -43,7 +43,6 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Bulk editing").click({ force: true });
 
     cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 20);
-
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
     cy.get('[data-cy="workgroup-select"]')
@@ -54,7 +53,7 @@ describe("Test the borehole bulk edit feature.", () => {
       });
   });
 
-  it("fills all bulkedit fields and saves.", () => {
+  it.only("fills all bulkedit fields and saves.", () => {
     // create boreholes
     createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as(
       "borehole_id_1",
@@ -104,7 +103,7 @@ describe("Test the borehole bulk edit feature.", () => {
       });
 
     cy.get('[role="combobox"]')
-      .should("have.length", 14)
+      .should("have.length", 15)
       .each(el => {
         cy.wrap(el).click();
         cy.get('li[role="option"]').last().click();

@@ -9,7 +9,7 @@ export type BulkEditFormValue = string | number | boolean | (string | number | b
 
 export interface BulkEditFormField {
   fieldName: string;
-  type?: FormValueType;
-  api: string;
+  type: FormValueType;
+  api?: string;
   domain?: string;
 }

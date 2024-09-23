@@ -48,25 +48,25 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
     });
   };
 
-  const onBooleanValueChange = useCallback(
-    (fieldName: string, selectValue: BulkEditFormValue) => {
-      const updatedValue = selectValue === 1 ? true : selectValue === 0 ? false : undefined;
-      onFieldValueChange(fieldName, updatedValue);
-    },
-    [onFieldValueChange],
-  );
-
   const onFieldValueChange = useCallback(
-    (fieldName: string, newValue: BulkEditFormValue) => {
+    (fieldName: string, newValue: BulkEditFormValue, fieldType: FormValueType) => {
+      let updatedValue: BulkEditFormValue = newValue;
+      if (fieldType === FormValueType.Boolean) {
+        updatedValue = newValue === 1 ? true : newValue === 0 ? false : undefined;
+      }
+      if (fieldType === FormValueType.Number) {
+        updatedValue = parseFloat(newValue as string);
+      }
+
       const entryIndex = fieldsToUpdate.findIndex(([key]) => key === fieldName);
 
       if (entryIndex === -1) {
         // Add field if it's not yet contained in array
-        setFieldsToUpdate([...fieldsToUpdate, [fieldName, newValue]]);
+        setFieldsToUpdate([...fieldsToUpdate, [fieldName, updatedValue]]);
       } else {
         // Update field if it's already contained in array
         const newData = [...fieldsToUpdate];
-        newData[entryIndex] = [fieldName, newValue];
+        newData[entryIndex] = [fieldName, updatedValue];
         setFieldsToUpdate(newData);
       }
     },
@@ -75,7 +75,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
 
   useEffect(() => {
     if (workgroupId) {
-      onFieldValueChange("workgroup", workgroupId);
+      onFieldValueChange("workgroup", workgroupId, FormValueType.Workgroup);
     }
   }, [onFieldValueChange, workgroupId]);
 
@@ -101,26 +101,26 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
     }
   };
 
+  // This data structure is needed because of discrepancies between translation keys (fieldName), field names in legacy Api (api) and codelist names (domain).
   const bulkEditFormFields: BulkEditFormField[] = [
     { fieldName: "project_name", type: FormValueType.Text, api: "custom.project_name" },
-    { fieldName: "restriction", type: FormValueType.Domain, api: "restriction" },
-    { fieldName: "workgroup", api: "workgroup" },
+    { fieldName: "restriction", type: FormValueType.Domain },
+    { fieldName: "workgroup", type: FormValueType.Workgroup },
     {
       fieldName: "restriction_until",
       type: FormValueType.Date,
-      api: "restriction_until",
     },
-    { fieldName: "national_interest", type: FormValueType.Boolean, api: "national_interest" },
-    { fieldName: "location_precision", type: FormValueType.Domain, api: "location_precision" },
-    { fieldName: "elevation_precision", type: FormValueType.Domain, api: "elevation_precision" },
+    { fieldName: "national_interest", type: FormValueType.Boolean },
+    { fieldName: "location_precision", type: FormValueType.Domain },
+    { fieldName: "elevation_precision", type: FormValueType.Domain },
     {
       fieldName: "reference_elevation_qt",
       type: FormValueType.Domain,
       api: "qt_reference_elevation",
       domain: "elevation_precision",
     },
-    { fieldName: "reference_elevation_type", type: FormValueType.Domain, api: "reference_elevation_type" },
-    { fieldName: "borehole_type", type: FormValueType.Domain, api: "borehole_type" },
+    { fieldName: "reference_elevation_type", type: FormValueType.Domain },
+    { fieldName: "borehole_type", type: FormValueType.Domain },
     { fieldName: "purpose", type: FormValueType.Domain, api: "extended.purpose" },
     { fieldName: "boreholestatus", type: FormValueType.Domain, api: "extended.status" },
     { fieldName: "totaldepth", type: FormValueType.Number, api: "total_depth" },
@@ -147,16 +147,16 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
 
   const renderInput = useCallback(
     (field: BulkEditFormField) => {
-      if (field.fieldName === "workgroup") return;
+      if (field.type === FormValueType.Workgroup) return;
       if (field.type === FormValueType.Domain) {
         return (
           <FormDomainSelect
             fieldName={field.fieldName}
             label={field.fieldName}
             canReset={false}
-            schemaName={field?.domain || field.api}
+            schemaName={field?.domain || field.api || field.fieldName}
             onUpdate={e => {
-              onFieldValueChange(field.fieldName, e);
+              onFieldValueChange(field.api || field.fieldName, e, field.type);
             }}
           />
         );
@@ -174,7 +174,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
               { key: 2, name: t("np") },
             ]}
             onUpdate={e => {
-              onBooleanValueChange(field.fieldName, e);
+              onFieldValueChange(field.api || field.fieldName, e, field.type);
             }}
           />
         );
@@ -185,7 +185,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
           label={field.fieldName}
           type={field.type}
           onUpdate={e => {
-            onFieldValueChange(field.fieldName, e);
+            onFieldValueChange(field.api || field.fieldName, e, field.type);
           }}
         />
       );
@@ -205,7 +205,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
         }}>
         <FormProvider {...formMethods}>
           {bulkEditFormFields.map(field => {
-            if (field.fieldName != "workgroup" || enabledWorkgroups.length > 1) {
+            if (field.type != FormValueType.Workgroup || enabledWorkgroups.length > 1) {
               return (
                 <Accordion key={field.fieldName} data-cy={"bulk-edit-accordion"}>
                   <AccordionSummary expandIcon={<ChevronDownIcon />} sx={{ pl: 1 }}>
@@ -229,7 +229,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
                     <StackFullWidth>
                       <>
                         {renderInput(field)}
-                        {field.fieldName === "workgroup" && (
+                        {field.fieldName === FormValueType.Workgroup && (
                           <WorkgroupSelect
                             workgroupId={workgroupId}
                             enabledWorkgroups={enabledWorkgroups}
