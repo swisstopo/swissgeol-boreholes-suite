@@ -48,10 +48,13 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
     });
   };
 
-  const onBooleanValueChange = useCallback((fieldName: string, selectValue: BulkEditFormValue) => {
-    const updatedValue = selectValue === 1 ? true : selectValue === 0 ? false : undefined;
-    onFieldValueChange(fieldName, updatedValue);
-  }, []);
+  const onBooleanValueChange = useCallback(
+    (fieldName: string, selectValue: BulkEditFormValue) => {
+      const updatedValue = selectValue === 1 ? true : selectValue === 0 ? false : undefined;
+      onFieldValueChange(fieldName, updatedValue);
+    },
+    [onFieldValueChange],
+  );
 
   const onFieldValueChange = useCallback(
     (fieldName: string, newValue: BulkEditFormValue) => {
