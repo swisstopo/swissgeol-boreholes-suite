@@ -241,9 +241,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               height: "44px",
               visibility: selectedFile ? "visible" : "hidden",
             }}>
-            <Typography
-              variant="h6"
-              sx={{ alignContent: "center", padding: 1, paddingRight: fileInfo.count > 1 ? 0 : 1, margin: 0.5 }}>
+            <Typography variant="h6" p={1} pr={fileInfo.count > 1 ? 0 : 1} m={0.5} sx={{ alignContent: "center" }}>
               {activePage} / {fileInfo.count}
             </Typography>
             {fileInfo?.count > 1 && (
