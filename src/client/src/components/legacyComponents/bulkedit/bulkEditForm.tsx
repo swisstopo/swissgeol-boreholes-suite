@@ -48,6 +48,11 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
     });
   };
 
+  const onBooleanValueChange = useCallback((fieldName: string, selectValue: BulkEditFormValue) => {
+    const updatedValue = selectValue === 1 ? true : selectValue === 0 ? false : undefined;
+    onFieldValueChange(fieldName, updatedValue);
+  }, []);
+
   const onFieldValueChange = useCallback(
     (fieldName: string, newValue: BulkEditFormValue) => {
       const entryIndex = fieldsToUpdate.findIndex(([key]) => key === fieldName);
@@ -161,12 +166,12 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
             fieldName={field.fieldName}
             label={field.fieldName}
             values={[
-              { key: 0, value: true, name: t("yes") },
-              { key: 1, value: false, name: t("no") },
-              { key: 2, value: undefined, name: t("np") },
+              { key: 1, name: t("yes") },
+              { key: 0, name: t("no") },
+              { key: 2, name: t("np") },
             ]}
             onUpdate={e => {
-              onFieldValueChange(field.fieldName, e);
+              onBooleanValueChange(field.fieldName, e);
             }}
           />
         );
