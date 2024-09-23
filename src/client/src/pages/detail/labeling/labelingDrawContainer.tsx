@@ -27,7 +27,7 @@ const drawingStyle = () =>
       width: 2,
     }),
     fill: new Fill({
-      color: "rgba(91, 33, 182, 0.2)",
+      color: theme.palette.ai.mainTransparent,
     }),
   });
 

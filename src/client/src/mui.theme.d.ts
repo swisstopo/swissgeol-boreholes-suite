@@ -50,6 +50,7 @@ declare module "@mui/material/styles" {
     ai: {
       background: string;
       main: string;
+      mainTransparent: string;
       mainEnd: string;
       active: string;
       activeEnd: string;

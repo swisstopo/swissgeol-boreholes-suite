@@ -41,6 +41,7 @@ export const theme = createTheme({
     ai: {
       background: "#46596B",
       main: "#5B21B6",
+      mainTransparent: "rgba(91, 33, 182, 0.2)",
       mainEnd: "#8B5CF6",
       active: "#4F46E5",
       activeEnd: "#E53940",
