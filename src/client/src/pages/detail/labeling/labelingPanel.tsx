@@ -11,15 +11,14 @@ import {
 } from "@mui/material";
 import {
   ExtractionRequest,
-  ExtractionResponse,
   ExtractionState,
   labelingFileFormat,
   PanelPosition,
   useLabelingContext,
 } from "./labelingInterfaces.tsx";
-import { ExtractionRequest, labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
 import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
 import { FC, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
+
 import { theme } from "../../../AppTheme.ts";
 import {
   DataExtractionResponse,
