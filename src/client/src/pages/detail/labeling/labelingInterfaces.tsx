@@ -8,7 +8,7 @@ export type ExtractionState = "start" | "drawing" | "loading" | "success" | "err
 export interface ExtractionObject {
   type?: ExtractionType;
   state: ExtractionState;
-  result?: ExtractionResponse;
+  value?: string | number | Coordinate;
   previousValue?: string | number | Coordinate | null;
 }
 
@@ -32,11 +32,9 @@ export interface Coordinate {
   projection: ReferenceSystemKey;
 }
 
-export interface ExtractionResponse {
-  bbox: ExtractionBoundingBox;
-  detail?: string;
-  [key in ExtractionType]?: string | number | Coordinate;
-}
+export type ExtractionResponse = {
+  [key in ExtractionType]: string | number | Coordinate;
+};
 
 export type PanelPosition = "right" | "bottom";
 

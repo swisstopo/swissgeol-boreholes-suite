@@ -19,7 +19,7 @@ import {
 } from "./coordinateSegmentInterfaces.js";
 import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
 import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
-import { useLabelingContext } from "../../labeling/labelingInterfaces.js";
+import { Coordinate, useLabelingContext } from "../../labeling/labelingInterfaces.js";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
@@ -283,7 +283,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   useEffect(() => {
     if (extractionObject?.type === "coordinates" && extractionObject.state === "success") {
-      const coordinate = extractionObject.result["coordinates"];
+      const coordinate = extractionObject.value as Coordinate;
       if (coordinate) {
         setCurrentReferenceSystem(referenceSystems[coordinate.projection].code);
         setValuesForReferenceSystem(coordinate.projection, coordinate.east.toString(), coordinate.north.toString());

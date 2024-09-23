@@ -132,11 +132,13 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         setAbortController(abortController);
         extractData(request, abortController.signal)
           .then(response => {
-            setExtractionObject({
-              ...extractionObject,
-              state: "success",
-              result: response,
-            });
+            if (extractionObject.type) {
+              setExtractionObject({
+                ...extractionObject,
+                state: "success",
+                value: response[extractionObject.type],
+              });
+            }
           })
           .catch(error => {
             if (!error?.message?.includes("AbortError")) {
@@ -152,7 +154,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           });
       }
     },
-    [activePage, extractionObject, fileInfo, setExtractionObject, showAlert],
+    [activePage, extractionObject, fileInfo, setExtractionObject, showAlert, t],
   );
 
   const cancelRequest = () => {
