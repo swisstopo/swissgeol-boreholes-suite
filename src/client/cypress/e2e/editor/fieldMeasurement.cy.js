@@ -56,8 +56,8 @@ describe("Tests for the field measurement editor.", () => {
       cy.wait(500);
       addItem("addFieldMeasurementResult");
 
-      setSelect("fieldMeasurementResults.1.sampleTypeId", 2);
-      setSelect("fieldMeasurementResults.1.parameterId", 3, 9);
+      setSelect("fieldMeasurementResults.1.sampleTypeId", 1);
+      setSelect("fieldMeasurementResults.1.parameterId", 2, 9);
       setInput("fieldMeasurementResults.1.value", "8.9");
       saveForm();
       cy.wait("@fieldmeasurement_GET");

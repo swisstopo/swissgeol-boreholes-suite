@@ -59,7 +59,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // edit wateringress
     startEditing();
-    setSelect("quantityId", 2);
+    setSelect("quantityId", 1);
     setSelect("conditionsId", 3);
     saveForm();
     evaluateDisplayValue("quantity", "mittel (30 - 120 l/min)");
