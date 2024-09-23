@@ -416,7 +416,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                   fieldName={`spatial_reference_system`}
                   label="spatial_reference_system"
                   selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
-                  canReset={false}
                   readonly={!editingEnabled}
                   className={extractionObject?.type === "coordinates" ? "ai" : ""}
                   onUpdate={e => onReferenceSystemChange(e)}

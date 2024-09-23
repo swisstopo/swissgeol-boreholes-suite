@@ -49,8 +49,8 @@ describe("Instrumentation crud tests", () => {
     setInput("name", "Inst-1");
     setInput("fromDepth", "123456");
     setInput("toDepth", "987654");
-    setSelect("kindId", 3);
-    setSelect("statusId", 2);
+    setSelect("kindId", 2);
+    setSelect("statusId", 1);
 
     // save instrumentation
     saveForm();
