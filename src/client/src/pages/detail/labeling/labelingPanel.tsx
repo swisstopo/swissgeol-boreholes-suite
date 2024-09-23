@@ -1,44 +1,63 @@
-import { Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { ExtractionRequest, labelingFileFormat, PanelPosition, useLabelingContext } from "./labelingInterfaces.tsx";
-import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus } from "lucide-react";
-import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  ButtonGroup,
+  CircularProgress,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
+import {
+  ExtractionRequest,
+  ExtractionResponse,
+  labelingFileFormat,
+  PanelPosition,
+  useLabelingContext,
+} from "./labelingInterfaces.tsx";
+import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
+import { FC, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { theme } from "../../../AppTheme.ts";
-import { File as FileInterface, FileResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
+import {
+  DataExtractionResponse,
+  File as FileInterface,
+  FileResponse,
+  maxFileSizeKB,
+} from "../../../api/file/fileInterfaces.ts";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
-import { extractData, getDataExtractionFileInfo, getFiles, loadImage, uploadFile } from "../../../api/file/file.ts";
-import { AlertContext } from "../../../components/alert/alertContext.tsx";
+import { getDataExtractionFileInfo, getFiles, uploadFile } from "../../../api/file/file.ts";
 import { useTranslation } from "react-i18next";
-import Map from "ol/Map.js";
-import MapControls from "../../../components/buttons/mapControls";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
-import { defaults as defaultControls } from "ol/control/defaults";
-import Projection from "ol/proj/Projection.js";
-import ImageLayer from "ol/layer/Image";
-import Static from "ol/source/ImageStatic";
-import { Fill, Stroke, Style } from "ol/style";
-import VectorSource from "ol/source/Vector";
-import VectorLayer from "ol/layer/Vector";
-import { MapBrowserEvent, View } from "ol";
-import { getCenter } from "ol/extent";
-import Draw, { createBox } from "ol/interaction/Draw";
-import { Geometry } from "ol/geom";
-import Feature from "ol/Feature";
-import { DragRotate, PinchRotate } from "ol/interaction";
+import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
+import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
+import { useAlertManager } from "../../../components/alert/alertManager.tsx";
+import { styled } from "@mui/system";
+
+export const LabelingAlert = styled(Alert)({
+  height: "44px",
+  boxShadow:
+    "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
+  " & .MuiAlert-icon": {
+    padding: "0",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  " & .MuiAlert-message": {
+    padding: "0",
+    display: "flex",
+    alignItems: "center",
+  },
+  " & .MuiAlert-action": {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0 0 0 16px",
+  },
+});
 
 interface LabelingPanelProps {
   boreholeId: number;
 }
-
-const drawingStyle = () =>
-  new Style({
-    stroke: new Stroke({
-      color: theme.palette.ai.main,
-      width: 2,
-    }),
-    fill: new Fill({
-      color: "rgba(91, 33, 182, 0.2)",
-    }),
-  });
 
 const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
@@ -46,12 +65,20 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [files, setFiles] = useState<FileInterface[]>();
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
-  const [pageCount, setPageCount] = useState<number>(1);
+  const [fileInfo, setFileInfo] = useState<DataExtractionResponse>();
   const [activePage, setActivePage] = useState<number>(1);
-  const [map, setMap] = useState<Map>();
-  const [extent, setExtent] = useState<number[]>();
+  const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
+  const [requestTimeout, setRequestTimeout] = useState<NodeJS.Timeout>();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { showAlert } = useContext(AlertContext);
+  const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
+
+  useEffect(() => {
+    if (alertIsOpen && autoHideDuration !== null) {
+      setTimeout(() => {
+        closeAlert();
+      }, autoHideDuration);
+    }
+  }, [alertIsOpen, autoHideDuration, closeAlert]);
 
   const loadFiles = useCallback(async () => {
     if (boreholeId) {
@@ -88,66 +115,27 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     fileInputRef.current?.click();
   };
 
-  const zoomIn = () => {
-    if (map) {
-      const view = map.getView();
-      const zoom = view.getZoom();
-      if (zoom) {
-        view.setZoom(zoom + 1);
-      }
-    }
-  };
-
-  const zoomOut = () => {
-    if (map) {
-      const view = map.getView();
-      const zoom = view.getZoom();
-      if (zoom) {
-        view.setZoom(zoom - 1);
-      }
-    }
-  };
-
-  const fitToExtent = () => {
-    if (map && extent) {
-      const view = map.getView();
-      view.fit(extent, { size: map.getSize() });
-    }
-  };
-
-  const rotateImage = () => {
-    if (map) {
-      const view = map.getView();
-      const rotation = view.getRotation();
-      view.setRotation(rotation + Math.PI / 2);
-    }
-  };
-
-  const convert2bbox = (coordinates: number[]) => {
-    return {
-      x0: coordinates[0],
-      y0: Math.abs(coordinates[1]),
-      x1: coordinates[2],
-      y1: Math.abs(coordinates[3]),
-    };
-  };
-
-  const triggerDataExtraction = useCallback(
-    (fileName: string, extent: number[]) => {
-      if (extractionObject && extractionObject.type) {
-        setExtractionObject({
-          ...extractionObject,
-          state: "loading",
-        });
-
-        const bbox = convert2bbox(extent);
+  const extractData = useCallback(
+    (extent: number[]) => {
+      if (fileInfo && extractionObject) {
+        const bbox = {
+          x0: extent[0],
+          y0: extent[1],
+          x1: extent[2],
+          y1: extent[3],
+        };
         const request: ExtractionRequest = {
-          filename: fileName.substring(0, fileName.lastIndexOf("-")) + ".pdf",
+          filename: fileInfo.fileName.substring(0, fileInfo.fileName.lastIndexOf("-")) + ".pdf",
           page_number: activePage,
           bbox: bbox,
           format: extractionObject.type,
         };
-
+        setExtractionObject({
+          ...extractionObject,
+          state: "loading",
+        });
+        setDrawTooltipLabel(undefined);
+        // TODO: Add cancel option
         extractData(request)
           .then(response => {
             setExtractionObject({
@@ -165,16 +153,12 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           });
       }
     },
-    [activePage, extractionObject, setExtractionObject],
+    [activePage, extractionObject, fileInfo, setExtractionObject],
   );
 
-  const updateTooltipPosition = (event: MapBrowserEvent<PointerEvent>) => {
-    const tooltip = document.getElementById("tooltip");
-    if (tooltip) {
-      const [x, y] = event.pixel;
-      tooltip.style.left = x + "px";
-      tooltip.style.top = y + "px";
-    }
+  const cancelRequest = () => {
+    clearTimeout(requestTimeout);
+    setExtractionObject({ type: "coordinates", state: "start" });
   };
 
   useEffect(() => {
@@ -184,134 +168,31 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   }, [files, loadFiles]);
 
   useEffect(() => {
-    if (map && extractionObject?.state === "start") {
+    if (extractionObject?.state === "start") {
       setExtractionObject({
         ...extractionObject,
         state: "drawing",
       });
-      const layers = map.getLayers().getArray();
-      const drawingSource = (layers[1] as VectorLayer<Feature<Geometry>>).getSource();
-      if (drawingSource) {
-        drawingSource.clear();
-        const drawInteraction = new Draw({
-          source: drawingSource,
-          type: "Circle",
-          geometryFunction: createBox(),
-          style: drawingStyle,
-        });
-        drawInteraction.on("drawend", () => {
-          const tmpMap = map;
-          if (tmpMap) {
-            tmpMap
-              .getInteractions()
-              .getArray()
-              .forEach(interaction => {
-                if (interaction instanceof Draw) {
-                  tmpMap.removeInteraction(interaction);
-                }
-              });
-            tmpMap.getTargetElement().style.cursor = "";
-
-            const tooltip = document.getElementById("tooltip");
-            if (tooltip) {
-              tooltip.style.visibility = "hidden";
-              tmpMap.un("pointermove", updateTooltipPosition);
-            }
-            setMap(tmpMap);
-          }
-        });
-
-        const tmpMap = map;
-        tmpMap.addInteraction(drawInteraction);
-        tmpMap.getTargetElement().style.cursor = "crosshair";
-        const tooltip = document.getElementById("tooltip");
-
-        if (tooltip) {
-          tooltip.innerHTML = t("drawCoordinateBox");
-          tooltip.style.visibility = "visible";
-          tmpMap.getTargetElement().addEventListener("mouseleave", () => {
-            tooltip.style.visibility = "hidden";
-          });
-          tmpMap.getTargetElement().addEventListener("mouseenter", () => {
-            tooltip.style.visibility = "visible";
-          });
-          tmpMap.on("pointermove", updateTooltipPosition);
-        }
-        setMap(tmpMap);
+      if (extractionObject.type === "coordinates") {
+        setDrawTooltipLabel("drawCoordinateBox");
       }
     }
-  }, [map, extractionObject, setExtractionObject, t]);
+  }, [extractionObject, setExtractionObject]);
 
   useEffect(() => {
     if (selectedFile) {
       getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
-        if (pageCount !== response.count) {
-          setPageCount(response.count);
+        if (fileInfo?.count !== response.count) {
           setActivePage(1);
         }
-
-        const extent = [0, -response.height, response.width, 0];
-        setExtent(extent);
-        const projection = new Projection({
-          code: "image",
-          units: "pixels",
-          extent: extent,
-        });
-
-        const imageLayer = new ImageLayer({
-          source: new Static({
-            url: response.fileName,
-            projection: projection,
-            imageExtent: extent,
-            imageLoadFunction: (image, src) => {
-              loadImage(src).then(blob => {
-                (image.getImage() as HTMLImageElement).src = URL.createObjectURL(blob);
-              });
-            },
-          }),
-        });
-
-        const drawingSource = new VectorSource();
-        drawingSource.on("addfeature", e => {
-          const extent = e.feature?.getGeometry()?.getExtent();
-          if (extent) {
-            triggerDataExtraction(response.fileName, extent);
-          }
-        });
-        const drawingLayer = new VectorLayer({
-          source: drawingSource,
-          style: drawingStyle,
-        });
-
-        const map = new Map({
-          layers: [imageLayer, drawingLayer],
-          target: "map",
-          controls: defaultControls({
-            attribution: false,
-            zoom: false,
-            rotate: false,
-          }),
-          view: new View({
-            minResolution: 0.1,
-            zoom: 0,
-            projection: projection,
-            center: getCenter(extent),
-            extent: extent,
-            showFullExtent: true,
-          }),
-        });
-        map
-          .getInteractions()
-          .getArray()
-          .forEach(interaction => {
-            if (interaction instanceof DragRotate || interaction instanceof PinchRotate) {
-              map.removeInteraction(interaction);
-            }
-          });
-        setMap(map);
+        if (fileInfo !== response) {
+          setFileInfo(response);
+        }
       });
     }
-  }, [activePage, triggerDataExtraction, pageCount, selectedFile]);
+    // Adding fileInfo to dependencies would cause an infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePage, selectedFile]);
 
   return (
     <Box
@@ -322,6 +203,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         borderBottom: 0,
         height: panelPosition === "bottom" ? "50%" : "100%",
         width: panelPosition === "right" ? "50%" : "100%",
+        position: "relative",
       }}
       data-cy="labeling-panel">
       <input
@@ -342,25 +224,89 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           }
         }}
       />
-      <ToggleButtonGroup
-        value={panelPosition}
-        onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
-          setPanelPosition(nextPosition);
-        }}
-        exclusive
+      <Stack
+        m={2}
+        direction="row"
+        justifyContent="space-between"
         sx={{
           position: "absolute",
-          bottom: theme.spacing(2),
-          right: theme.spacing(2),
+          left: 0,
+          right: 0,
+          bottom: 0,
           zIndex: "500",
         }}>
-        <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
-          <PanelBottom />
-        </ToggleButton>
-        <ToggleButton value="right" data-cy="labeling-panel-position-right">
-          <PanelRight />
-        </ToggleButton>
-      </ToggleButtonGroup>
+        {fileInfo?.count && (
+          <ButtonGroup
+            variant="contained"
+            sx={{
+              height: "44px",
+              visibility: selectedFile ? "visible" : "hidden",
+            }}>
+            <Typography
+              variant="h6"
+              sx={{ alignContent: "center", padding: 1, paddingRight: fileInfo.count > 1 ? 0 : 1, margin: 0.5 }}>
+              {activePage} / {fileInfo.count}
+            </Typography>
+            {fileInfo?.count > 1 && (
+              <>
+                <Button
+                  variant="text"
+                  color="secondary"
+                  onClick={() => {
+                    setActivePage(activePage - 1);
+                  }}
+                  disabled={activePage === 1}>
+                  <ChevronLeft />
+                </Button>
+                <Button
+                  variant="text"
+                  color="secondary"
+                  onClick={() => {
+                    setActivePage(activePage + 1);
+                  }}
+                  disabled={activePage === fileInfo.count}>
+                  <ChevronRight />
+                </Button>
+              </>
+            )}
+          </ButtonGroup>
+        )}
+        <Box>
+          {alertIsOpen ? (
+            <LabelingAlert variant="filled" severity={severity} onClose={closeAlert}>
+              {text}
+            </LabelingAlert>
+          ) : (
+            extractionObject?.state === "loading" && (
+              <Button
+                onClick={() => cancelRequest()}
+                variant="text"
+                endIcon={<X />}
+                sx={{
+                  height: "44px",
+                  boxShadow:
+                    "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
+                }}>
+                <CircularProgress sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }} />
+                {t("analyze")}
+              </Button>
+            )
+          )}
+        </Box>
+        <ToggleButtonGroup
+          value={panelPosition}
+          onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
+            setPanelPosition(nextPosition);
+          }}
+          exclusive>
+          <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
+            <PanelBottom />
+          </ToggleButton>
+          <ToggleButton value="right" data-cy="labeling-panel-position-right">
+            <PanelRight />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Stack>
       {selectedFile ? (
         <Box sx={{ height: "100%", width: "100%", position: "relative" }}>
           <Stack
@@ -395,56 +341,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               }}
             />
           </Stack>
-          <MapControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} onRotate={rotateImage} />
-          <ButtonGroup
-            variant="contained"
-            sx={{
-              position: "absolute",
-              bottom: theme.spacing(2),
-              left: theme.spacing(2),
-              zIndex: "500",
-              height: "44px",
-            }}>
-            <Typography
-              variant="h6"
-              sx={{ alignContent: "center", padding: 1, paddingRight: pageCount > 1 ? 0 : 1, margin: 0.5 }}>
-              {activePage} / {pageCount}
-            </Typography>
-            {pageCount > 1 && (
-              <>
-                <Button
-                  variant="text"
-                  color="secondary"
-                  onClick={() => {
-                    setActivePage(activePage - 1);
-                  }}
-                  disabled={activePage === 1}>
-                  <ChevronLeft />
-                </Button>
-                <Button
-                  variant="text"
-                  color="secondary"
-                  onClick={() => {
-                    setActivePage(activePage + 1);
-                  }}
-                  disabled={activePage === pageCount}>
-                  <ChevronRight />
-                </Button>
-              </>
-            )}
-          </ButtonGroup>
-          <Box id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
-          <Box
-            id="tooltip"
-            sx={{
-              position: "absolute",
-              borderRadius: "4px",
-              backgroundColor: "#1C2834",
-              color: "white",
-              padding: "4px 8px",
-              margin: "14px 2px",
-            }}
-          />
+          <LabelingDrawContainer fileInfo={fileInfo} onDrawEnd={extractData} drawTooltipLabel={drawTooltipLabel} />
         </Box>
       ) : (
         <LabelingFileSelector
@@ -452,6 +349,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           files={files}
           setSelectedFile={setSelectedFile}
           addFile={addFile}
+          showAlert={showAlert}
         />
       )}
     </Box>
