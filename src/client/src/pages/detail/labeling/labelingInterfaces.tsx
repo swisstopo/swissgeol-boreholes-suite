@@ -4,7 +4,13 @@ import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces
 
 // TODO: Extend with other types
 export type ExtractionType = "coordinates";
-export type ExtractionState = "start" | "drawing" | "loading" | "success" | "error";
+export enum ExtractionState {
+  start,
+  drawing,
+  loading,
+  success,
+  error,
+}
 
 export interface ExtractionObject {
   type?: ExtractionType;

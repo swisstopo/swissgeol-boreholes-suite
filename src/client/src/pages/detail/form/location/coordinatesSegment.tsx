@@ -19,7 +19,7 @@ import {
 } from "./coordinateSegmentInterfaces.js";
 import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
 import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
-import { Coordinate, useLabelingContext } from "../../labeling/labelingInterfaces.js";
+import { Coordinate, ExtractionState, useLabelingContext } from "../../labeling/labelingInterfaces.js";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
@@ -282,7 +282,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   ]);
 
   useEffect(() => {
-    if (extractionObject?.type === "coordinates" && extractionObject?.state === "success") {
+    if (extractionObject?.type === "coordinates" && extractionObject?.state === ExtractionState.success) {
       const coordinate = extractionObject?.result?.value as Coordinate;
       if (coordinate) {
         setCurrentReferenceSystem(referenceSystems[coordinate.projection].code);
@@ -381,7 +381,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       currentReferenceSystem === referenceSystems.LV95.code ? ReferenceSystemKey.LV95 : ReferenceSystemKey.LV03;
     setExtractionObject({
       type: "coordinates",
-      state: "start",
+      state: ExtractionState.start,
       previousValue: {
         east: formMethods.getValues(referenceSystems[referenceSystemKey].fieldName.X),
         north: formMethods.getValues(referenceSystems[referenceSystemKey].fieldName.Y),

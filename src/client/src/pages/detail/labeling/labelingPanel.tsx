@@ -12,6 +12,7 @@ import {
 import {
   ExtractionRequest,
   ExtractionResponse,
+  ExtractionState,
   labelingFileFormat,
   PanelPosition,
   useLabelingContext,
@@ -131,7 +132,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         };
         setExtractionObject({
           ...extractionObject,
-          state: "loading",
+          state: ExtractionState.loading,
         });
         setDrawTooltipLabel(undefined);
         // TODO: Send coordinates to labeling api to extract data
@@ -144,7 +145,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             };
             setExtractionObject({
               ...extractionObject,
-              state: "success",
+              state: ExtractionState.success,
               result: response,
             });
           }, 4000),
@@ -156,7 +157,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
   const cancelRequest = () => {
     clearTimeout(requestTimeout);
-    setExtractionObject({ type: "coordinates", state: "start" });
+    setExtractionObject({ type: "coordinates", state: ExtractionState.start });
   };
 
   useEffect(() => {
@@ -166,10 +167,10 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   }, [files, loadFiles]);
 
   useEffect(() => {
-    if (extractionObject?.state === "start") {
+    if (extractionObject?.state === ExtractionState.start) {
       setExtractionObject({
         ...extractionObject,
-        state: "drawing",
+        state: ExtractionState.drawing,
       });
       if (extractionObject.type === "coordinates") {
         setDrawTooltipLabel("drawCoordinateBox");
@@ -275,7 +276,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               {text}
             </LabelingAlert>
           ) : (
-            extractionObject?.state === "loading" && (
+            extractionObject?.state === ExtractionState.loading && (
               <Button
                 onClick={() => cancelRequest()}
                 variant="text"
