@@ -43,7 +43,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.wait("@casing_GET");
 
     setSelect("kindId", 2);
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
     setInput("levelM", "789.12");
     setInput("levelMasl", "5.4567");
 

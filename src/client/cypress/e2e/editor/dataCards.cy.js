@@ -35,7 +35,7 @@ describe("Tests for the data cards in the editor.", () => {
     addItem("addwateringress");
     cy.wait("@casing_GET");
     setInput("startTime", "2012-11-14T12:06");
-    setSelect("reliabilityId", 1);
+    setSelect("reliabilityId", 2);
     setSelect("quantityId", 2);
     saveForm();
     cy.wait("@wateringress_GET");
@@ -56,7 +56,7 @@ describe("Tests for the data cards in the editor.", () => {
     cy.get('[data-cy="addwateringress-button"]').should("be.disabled");
     cy.wait("@casing_GET");
     setInput("startTime", "2012-11-14T12:06");
-    setSelect("reliabilityId", 2);
+    setSelect("reliabilityId", 3);
     setSelect("quantityId", 3);
     saveForm();
     cy.get('[data-cy="addwateringress-button"]').should("be.enabled");
@@ -83,7 +83,7 @@ describe("Tests for the data cards in the editor.", () => {
 
     // can reset creating and switch to existing card
     setInput("startTime", "2012-11-14T12:06");
-    setSelect("reliabilityId", 1);
+    setSelect("reliabilityId", 2);
     startEditing();
     handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Reset");
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
@@ -92,7 +92,7 @@ describe("Tests for the data cards in the editor.", () => {
     // can save new card and switch to existing card
     addItem("addwateringress");
     setInput("startTime", "2013-10-02T14:06");
-    setSelect("reliabilityId", 2);
+    setSelect("reliabilityId", 3);
     setSelect("quantityId", 3);
     startEditing();
     handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Save");

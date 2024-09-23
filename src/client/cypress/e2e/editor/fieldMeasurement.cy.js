@@ -38,7 +38,7 @@ describe("Tests for the field measurement editor.", () => {
       addItem("addFieldMeasurement");
       cy.wait("@casing_GET");
 
-      setSelect("reliabilityId", 1);
+      setSelect("reliabilityId", 2);
       setInput("startTime", "2012-11-14T12:06");
       setSelect("casingId", 2);
       setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
@@ -57,7 +57,7 @@ describe("Tests for the field measurement editor.", () => {
       addItem("addFieldMeasurementResult");
 
       setSelect("fieldMeasurementResults.1.sampleTypeId", 2);
-      setSelect("fieldMeasurementResults.1.parameterId", 3, 10);
+      setSelect("fieldMeasurementResults.1.parameterId", 3, 9);
       setInput("fieldMeasurementResults.1.value", "8.9");
       saveForm();
       cy.wait("@fieldmeasurement_GET");
@@ -73,7 +73,7 @@ describe("Tests for the field measurement editor.", () => {
 
       // edit field measurement reliability
       startEditing();
-      setSelect("reliabilityId", 2);
+      setSelect("reliabilityId", 3);
       saveForm();
       cy.wait("@fieldmeasurement_GET");
       evaluateDisplayValue("reliability", "andere");

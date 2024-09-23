@@ -46,7 +46,7 @@ describe("Tests for the wateringress editor.", () => {
     cy.wait("@casing_GET");
 
     setSelect("quantityId", 2);
-    setSelect("reliabilityId", 1);
+    setSelect("reliabilityId", 2);
     setSelect("casingId", 2);
     setInput("startTime", "2012-11-14T12:06");
 
