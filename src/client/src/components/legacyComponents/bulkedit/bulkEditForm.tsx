@@ -1,6 +1,16 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { ChevronDownIcon, X } from "lucide-react";
 import { patchBoreholes } from "../../../api-lib";
 import { CancelButton, SaveButton } from "../../buttons/buttons";
@@ -172,22 +182,19 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
         />
       );
     },
-    [enabledWorkgroups, onFieldValueChange, t, workgroupId],
+    [onFieldValueChange, t],
   );
 
   return (
-    <>
-      <Stack>
-        <Box
-          sx={{
-            height: "60px",
-            borderBottom: "1px solid " + theme.palette.border,
-            marginBottom: theme.spacing(3),
-          }}>
-          <Typography variant="h3" sx={{ flexGrow: 1 }}>
-            {t("bulkEditing")}
-          </Typography>
-        </Box>
+    <Stack sx={{ height: "100%" }}>
+      <DialogTitle>
+        <Typography variant="h1">{t("bulkEditing")}</Typography>
+      </DialogTitle>
+      <DialogContent
+        sx={{
+          overflowY: "auto",
+          flexGrow: 1,
+        }}>
         <FormProvider {...formMethods}>
           {bulkEditFormFields.map(field => {
             if (field.fieldName != "workgroup" || enabledWorkgroups.length > 1) {
@@ -229,11 +236,13 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
             }
           })}
         </FormProvider>
-      </Stack>
-      <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 3 }}>
-        <CancelButton onClick={unselectBoreholes} />
-        <SaveButton variant="contained" onClick={save} />
-      </Stack>
-    </>
+      </DialogContent>
+      <DialogActions>
+        <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ p: 2 }}>
+          <CancelButton onClick={unselectBoreholes} />
+          <SaveButton variant="contained" disabled={fieldsToUpdate.length === 0} onClick={save} />
+        </Stack>
+      </DialogActions>
+    </Stack>
   );
 };

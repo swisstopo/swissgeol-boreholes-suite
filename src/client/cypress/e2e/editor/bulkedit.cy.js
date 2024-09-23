@@ -14,23 +14,10 @@ beforeEach(() => {
 });
 
 describe("Test the borehole bulk edit feature.", () => {
-  it.skip("opens the bulk edit dialog with all boreholes selected", () => {
+  it("opens the bulk edit dialog with all boreholes selected", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get("h3").should("have.text", "Bulk editing");
-  });
-
-  it("checks if all toggle buttons do something", () => {
-    checkAllVisibleRows();
-    cy.contains("button", "Bulk editing").click({ force: true });
-    cy.get(".modal .toggle")
-      .should("have.length", 18)
-      .each(el => {
-        cy.wrap(el).click({ force: true });
-        cy.get(".modal form .field").should("exist");
-        cy.wrap(el).click({ force: true });
-        cy.get(".modal form").children().should("not.exist");
-      });
   });
 
   it("displays workgroup accordion only if user has permission for more than one workgroup", () => {
