@@ -232,7 +232,6 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
             initMap.removeInteraction(interaction);
           }
         });
-      initMap.render();
       setMap(initMap);
     }
   }, [fileInfo, onDrawEnd, map]);
