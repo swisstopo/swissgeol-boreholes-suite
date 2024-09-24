@@ -4,6 +4,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -206,54 +207,56 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
           overflowY: "auto",
           flexGrow: 1,
         }}>
-        <FormProvider {...formMethods}>
-          {bulkEditFormFields.map(field => {
-            if (field.type != FormValueType.Workgroup || enabledWorkgroups.length > 1) {
-              return (
-                <Accordion key={field.fieldName} data-cy={"bulk-edit-accordion"}>
-                  <AccordionSummary expandIcon={<ChevronDownIcon />} sx={{ pl: 1 }}>
-                    <Stack direction="row">
-                      <IconButton
-                        size="small"
-                        sx={{
-                          visibility: fieldsToUpdate.map(f => f[0]).includes(field.api ?? field.fieldName)
-                            ? "visible"
-                            : "hidden",
-                          mr: 1,
-                        }}
-                        onClick={e => {
-                          e.stopPropagation();
-                          undoChange(field);
-                        }}>
-                        <X fontSize="small" color={theme.palette.primary.main} />
-                      </IconButton>
-                      <Typography variant="h6" sx={{ color: "black" }}>
-                        {t(field.fieldName)}
-                      </Typography>
-                    </Stack>
-                  </AccordionSummary>
-                  <AccordionDetails sx={{ pl: 5, pr: 3 }}>
-                    <StackFullWidth>
-                      <>
-                        {renderInput(field)}
-                        {field.fieldName === FormValueType.Workgroup && (
-                          <WorkgroupSelect
-                            workgroupId={workgroupId}
-                            enabledWorkgroups={enabledWorkgroups}
-                            setWorkgroupId={setWorkgroupId}
-                          />
-                        )}
-                      </>
-                    </StackFullWidth>
-                  </AccordionDetails>
-                </Accordion>
-              );
-            }
-          })}
-        </FormProvider>
+        <Box sx={{ mt: 3 }}>
+          <FormProvider {...formMethods}>
+            {bulkEditFormFields.map(field => {
+              if (field.type != FormValueType.Workgroup || enabledWorkgroups.length > 1) {
+                return (
+                  <Accordion key={field.fieldName} data-cy={"bulk-edit-accordion"}>
+                    <AccordionSummary expandIcon={<ChevronDownIcon />} sx={{ pl: 1 }}>
+                      <Stack direction="row">
+                        <IconButton
+                          size="small"
+                          sx={{
+                            visibility: fieldsToUpdate.map(f => f[0]).includes(field.api ?? field.fieldName)
+                              ? "visible"
+                              : "hidden",
+                            mr: 1,
+                          }}
+                          onClick={e => {
+                            e.stopPropagation();
+                            undoChange(field);
+                          }}>
+                          <X fontSize="small" color={theme.palette.primary.main} />
+                        </IconButton>
+                        <Typography variant="h6" sx={{ color: "black" }}>
+                          {t(field.fieldName)}
+                        </Typography>
+                      </Stack>
+                    </AccordionSummary>
+                    <AccordionDetails sx={{ pl: 5, pr: 3 }}>
+                      <StackFullWidth>
+                        <>
+                          {renderInput(field)}
+                          {field.fieldName === FormValueType.Workgroup && (
+                            <WorkgroupSelect
+                              workgroupId={workgroupId}
+                              enabledWorkgroups={enabledWorkgroups}
+                              setWorkgroupId={setWorkgroupId}
+                            />
+                          )}
+                        </>
+                      </StackFullWidth>
+                    </AccordionDetails>
+                  </Accordion>
+                );
+              }
+            })}
+          </FormProvider>
+        </Box>
       </DialogContent>
       <DialogActions>
-        <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ p: 2 }}>
+        <Stack direction="row" justifyContent="flex-end" spacing={2}>
           <CancelButton onClick={unselectBoreholes} />
           <SaveButton variant="contained" disabled={fieldsToUpdate.length === 0} onClick={save} />
         </Stack>

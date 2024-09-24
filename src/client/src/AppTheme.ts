@@ -446,7 +446,14 @@ export const theme = createTheme({
           paddingTop: "24px",
           paddingBottom: "16px",
           borderBottom: "1px solid " + themePalette.border,
-          marginBottom: "24px",
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          borderTop: "1px solid " + themePalette.border,
+          padding: "24px",
         },
       },
     },
