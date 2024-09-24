@@ -1,20 +1,19 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Badge, Stack } from "@mui/material";
-import { Filter, Layers, Plus, Settings } from "lucide-react";
-import HelpIcon from "../../../assets/icons/help.svg?react";
-import UploadIcon from "../../../assets/icons/upload.svg?react";
-import { ReduxRootState, User, Workgroup } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { theme } from "../../../AppTheme.ts";
-import { useAuth } from "../../../auth/useBdmsAuth.tsx";
-import { NavButton } from "../../../components/buttons/navButton.tsx";
-import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
-import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
-import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.tsx";
+import UploadIcon from "../../../assets/icons/upload.svg?react";
+import HelpIcon from "../../../assets/icons/help.svg?react";
 import ImportModal from "../sidePanelContent/importer/importModal.tsx";
+import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
+import { ReduxRootState, User, Workgroup } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
+import { useTranslation } from "react-i18next";
+import { NavButton } from "../../../components/buttons/navButton.tsx";
+import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
+import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { Filter, Layers, Plus, Settings } from "lucide-react";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
@@ -97,7 +96,7 @@ const MainSideNav = ({
     <Stack
       direction="column"
       sx={{
-        boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
+        boxShadow: 4,
         width: "80px",
         height: "100%",
         position: "relative",

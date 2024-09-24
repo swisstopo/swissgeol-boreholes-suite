@@ -11,7 +11,7 @@ declare module "@mui/material/IconButton" {
 }
 
 declare module "@mui/material/styles" {
-  interface AppThemePalette {
+  export interface AppThemePalette {
     action: {
       disabled: string;
     };
