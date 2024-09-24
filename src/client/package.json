@@ -72,6 +72,7 @@
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.24.7",
     "@hookform/devtools": "^4.3.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
     "@react-buddy/ide-toolbox": "^2.4.0",
     "@react-buddy/palette-mui": "^5.0.1",
     "@types/react-router-dom": "^5.3.3",

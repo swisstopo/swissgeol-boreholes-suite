@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { IconButton, Stack } from "@mui/material";
-import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
+import { ChevronDown, ChevronUp } from "lucide-react";
+
 import { CopyButton, DeleteButton, EditButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 
 const CompletionHeaderDisplay = props => {
   const { completion, isEditable, setEditing, copyCompletion, deleteCompletion } = props;

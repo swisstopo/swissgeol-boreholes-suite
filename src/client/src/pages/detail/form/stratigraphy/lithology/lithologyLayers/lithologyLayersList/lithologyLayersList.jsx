@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Icon, Popup } from "semantic-ui-react";
+import { withTranslation } from "react-i18next";
+import { NumericFormat } from "react-number-format";
+import ClearIcon from "@mui/icons-material/Clear";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import ClearIcon from "@mui/icons-material/Clear";
 import { Stack, Tooltip, Typography } from "@mui/material";
-import { NumericFormat } from "react-number-format";
-import { withTranslation } from "react-i18next";
-import * as Styled from "./styles.js";
+import { Icon, Popup } from "semantic-ui-react";
+
 import { useLithostratigraphies } from "../../../../../../../api/fetchApiV2.js";
+import * as Styled from "./styles.js";
 
 const LithologyLayersList = props => {
   const { isEditable, selectedLayer, showDelete, setShowDelete, setSelectedLayer, itemWithValidation, item } =

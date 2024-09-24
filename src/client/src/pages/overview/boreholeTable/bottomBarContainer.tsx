@@ -1,15 +1,16 @@
 import React, { useCallback, useContext, useLayoutEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
+
+import { deleteBoreholes } from "../../../api-lib";
+import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { copyBorehole } from "../../../api/fetchApiV2";
+import { OverViewContext } from "../overViewContext.tsx";
+import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
-import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
-import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
-import { deleteBoreholes } from "../../../api-lib";
-import { copyBorehole } from "../../../api/fetchApiV2";
-import { useSelector } from "react-redux";
-import { OverViewContext } from "../overViewContext.tsx";
 
 interface BottomBarContainerProps {
   boreholes: Boreholes;

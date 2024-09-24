@@ -1,13 +1,14 @@
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
-import { Form } from "semantic-ui-react";
-import { FormControl, FormControlLabel, RadioGroup } from "@mui/material";
-import { DisabledRadio } from "../styledComponents.jsx";
 import { useTranslation } from "react-i18next";
+import { FormControl, FormControlLabel, RadioGroup } from "@mui/material";
+import { Form } from "semantic-ui-react";
 import _ from "lodash";
 import moment from "moment";
-import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
+
 import DateField from "../../../../components/legacyComponents/dateField.jsx";
+import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
+import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
+import { DisabledRadio } from "../styledComponents.jsx";
 
 const RestrictionSegment = props => {
   const { borehole, updateChange, user } = props;

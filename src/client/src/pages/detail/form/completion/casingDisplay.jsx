@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
-import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
+
 import { deleteCasing, useDomains } from "../../../../api/fetchApiV2";
+import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
+import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { extractCasingDepth } from "./casingUtils";
 
 const CasingDisplay = props => {

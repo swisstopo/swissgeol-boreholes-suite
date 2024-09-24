@@ -1,11 +1,12 @@
 import React from "react";
-import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
 import moment from "moment";
+import PropTypes from "prop-types";
+
 import "moment/locale/en-gb";
 import "moment/locale/it";
 import "moment/locale/fr";
 import "moment/locale/de-ch";
-import { withTranslation } from "react-i18next";
 
 const getFromNow = props => {
   const { date, i18n } = props;

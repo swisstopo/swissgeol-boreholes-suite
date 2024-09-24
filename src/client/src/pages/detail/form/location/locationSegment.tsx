@@ -1,11 +1,12 @@
 import { useState } from "react";
-import CantonMunicipalitySegment from "./cantonMunicipalitySegment.jsx";
-import PointComponent from "../../../../components/map/pointComponent.jsx";
+import { Box, Stack } from "@mui/material";
 import _ from "lodash";
+
+import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import PointComponent from "../../../../components/map/pointComponent.jsx";
+import CantonMunicipalitySegment from "./cantonMunicipalitySegment.jsx";
 import CoordinatesSegment from "./coordinatesSegment.tsx";
 import ElevationSegment from "./elevationSegment";
-import { Box, Stack } from "@mui/material";
-import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 
 interface LocationSegmentProps {
   borehole: Borehole;

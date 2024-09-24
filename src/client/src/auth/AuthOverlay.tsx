@@ -1,10 +1,11 @@
 import { FC, PropsWithChildren, useEffect } from "react";
-import { useAuth } from "./useBdmsAuth";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Alert, Button, CircularProgress } from "@mui/material";
+
 import { loadUser } from "../api-lib";
 import { SplashScreen } from "./SplashScreen.tsx";
+import { useAuth } from "./useBdmsAuth";
 
 interface User {
   data: object;

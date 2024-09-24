@@ -1,13 +1,14 @@
-import { useTranslation } from "react-i18next";
-import { useFormContext } from "react-hook-form";
-import { getFormFieldError } from "./form";
 import { FC } from "react";
+import { useFormContext } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
-import { NumericFormatForCoordinates } from "../../pages/detail/form/location/NumericFormatForCoordinates.tsx";
-import { Direction, ReferenceSystemKey } from "../../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { parseFloatWithThousandsSeparator } from "../legacyComponents/formUtils.ts";
+
 import { boundingBox } from "../../pages/detail/form/location/coordinateSegmentConstants.ts";
+import { Direction, ReferenceSystemKey } from "../../pages/detail/form/location/coordinateSegmentInterfaces.ts";
+import { NumericFormatForCoordinates } from "../../pages/detail/form/location/NumericFormatForCoordinates.tsx";
+import { parseFloatWithThousandsSeparator } from "../legacyComponents/formUtils.ts";
+import { getFormFieldError } from "./form";
 
 const inLV95XBounds = (value: string): boolean => {
   const coordinate = parseFloatWithThousandsSeparator(value);

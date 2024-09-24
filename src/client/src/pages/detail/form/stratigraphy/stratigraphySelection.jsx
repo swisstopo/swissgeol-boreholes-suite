@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { CircularProgress, MenuItem, Stack, TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { CircularProgress, MenuItem, Stack, TextField } from "@mui/material";
+
 import { useLithologyStratigraphies } from "../../../../api/fetchApiV2.js";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import * as Styled from "./lithology/styles.js";

@@ -1,10 +1,11 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
-import _ from "lodash";
-import { loadDomains } from "../../../../api-lib";
+import { connect } from "react-redux";
 import { Form, Header } from "semantic-ui-react";
+import _ from "lodash";
+import PropTypes from "prop-types";
+
+import { loadDomains } from "../../../../api-lib";
 
 class DomainDropdown extends React.Component {
   constructor(props) {

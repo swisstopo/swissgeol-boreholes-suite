@@ -1,12 +1,13 @@
 import { withTranslation } from "react-i18next";
 import { Route, Switch, withRouter } from "react-router-dom";
-import MenuSettings from "./menuSettings";
-import EditorSettings from "./editorSettings";
-import AdminSettings from "./admin/adminSettings";
-import AboutSettings from "./aboutSettings";
-import TermSettings from "./termSettings";
+
 import { theme } from "../../AppTheme";
 import { useAuth } from "../../auth/useBdmsAuth";
+import AboutSettings from "./aboutSettings";
+import AdminSettings from "./admin/adminSettings";
+import EditorSettings from "./editorSettings";
+import MenuSettings from "./menuSettings";
+import TermSettings from "./termSettings";
 
 const SettingsPage = () => {
   const auth = useAuth();

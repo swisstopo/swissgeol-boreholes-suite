@@ -1,6 +1,7 @@
 import axios from "axios";
-import store from "../reducers";
+
 import { getAuthorizationHeader } from "../../api/authentication";
+import store from "../reducers";
 
 function getAuthorizationHeaders(headers = {}) {
   if (

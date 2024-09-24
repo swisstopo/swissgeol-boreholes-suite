@@ -1,12 +1,13 @@
-import * as Styled from "./styles.js";
-import { Checkbox } from "semantic-ui-react";
-import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2.js";
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { Stack } from "@mui/material";
+import { Checkbox } from "semantic-ui-react";
+import { Trash2 } from "lucide-react";
+
+import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2.js";
 import { CopyButton, DeleteButton } from "../../../../../../../components/buttons/buttons";
 import { PromptContext } from "../../../../../../../components/prompt/promptContext";
-import { useContext } from "react";
-import { Trash2 } from "lucide-react";
-import { Stack } from "@mui/material";
+import * as Styled from "./styles.js";
 
 const InfoCheckBox = props => {
   const { profileInfo, updateChange, isEditable, onUpdated } = props.data;

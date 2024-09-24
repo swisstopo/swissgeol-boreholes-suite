@@ -1,10 +1,11 @@
-import { Box, Chip, Tooltip } from "@mui/material";
-import { Filter } from "./FilterInterface.ts";
-import { useTranslation } from "react-i18next";
-import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
 import { useContext } from "react";
-import { FilterContext } from "./filterContext.tsx";
+import { useTranslation } from "react-i18next";
+import { Box, Chip, Tooltip } from "@mui/material";
 import { CircleX } from "lucide-react";
+import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
+
+import { FilterContext } from "./filterContext.tsx";
+import { Filter } from "./FilterInterface.ts";
 
 interface FilterChipsProps {
   activeFilters: Filter[];

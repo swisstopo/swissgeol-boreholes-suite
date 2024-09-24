@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import * as Styled from "./styles.js";
+import { useEffect, useState } from "react";
 import { withTranslation } from "react-i18next";
+
+import * as Styled from "./styles.js";
 
 const TranslationKeys = prop => {
   const [selectedLanguage, setSelectedLanguage] = useState();

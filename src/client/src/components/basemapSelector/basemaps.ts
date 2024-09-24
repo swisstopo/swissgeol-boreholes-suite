@@ -1,7 +1,8 @@
-import TileLayer from "ol/layer/Tile";
-import { Basemap } from "./Basemap";
-import XYZ from "ol/source/XYZ";
 import { Map } from "ol";
+import TileLayer from "ol/layer/Tile";
+import XYZ from "ol/source/XYZ";
+
+import { Basemap } from "./Basemap";
 
 export const swissExtent: number[] = [2420000, 1030000, 2900000, 1350000];
 

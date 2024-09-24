@@ -1,7 +1,8 @@
-import store from "../reducers";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { getAuthorizationHeader } from "./authentication";
+
+import store from "../reducers";
 import { ApiError } from "./apiInterfaces";
+import { getAuthorizationHeader } from "./authentication";
 
 export async function fetchApiV2Base(url, method, body, contentType = null) {
   const baseUrl = "/api/v2/";

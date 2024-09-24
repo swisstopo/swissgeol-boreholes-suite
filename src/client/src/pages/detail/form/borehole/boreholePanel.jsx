@@ -1,11 +1,12 @@
-import BoreholeGeneralSegment from "./boreholeGeneralSegment.jsx";
-import BoreholeDetailSegment from "./boreholeDetailSegment.jsx";
-import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import Sections from "./sections.jsx";
-import Geometry from "./geometry.jsx";
-import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
+import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
+
+import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
+import BoreholeDetailSegment from "./boreholeDetailSegment.jsx";
+import BoreholeGeneralSegment from "./boreholeGeneralSegment.jsx";
+import Geometry from "./geometry.jsx";
+import Sections from "./sections.jsx";
 
 const BoreholePanel = ({ boreholeId, borehole, updateChange, updateNumber, isEditable }) => {
   const { t } = useTranslation();

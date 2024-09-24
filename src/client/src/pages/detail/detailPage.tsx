@@ -1,15 +1,16 @@
-import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import DetailSideNav from "./detailSideNav";
-import DetailPageContent from "./detailPageContent";
-import DetailHeader from "./detailHeader.tsx";
 import { Box } from "@mui/material";
+
+import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
+import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
+import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import DetailHeader from "./detailHeader.tsx";
+import DetailPageContent from "./detailPageContent";
+import DetailSideNav from "./detailSideNav";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
-import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 
 interface DetailPageContentProps {
   editingEnabled: boolean;

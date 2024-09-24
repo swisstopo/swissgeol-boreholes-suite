@@ -1,6 +1,7 @@
-import { Card, CardActionArea, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { AddCircle, ArrowDownward, ArrowUpward, Warning } from "@mui/icons-material";
+import { Card, CardActionArea, Stack, Typography } from "@mui/material";
+
 import { theme } from "../../../../AppTheme.ts";
 
 const IconTypography = ({ icon, text }) => {

@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
-import ObservationDisplay from "./observationDisplay";
-import { getHydrotestParameterUnits } from "./parameterUnits";
+
 import { deleteHydrotest, useDomains } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
+import ObservationDisplay from "./observationDisplay";
+import { getHydrotestParameterUnits } from "./parameterUnits";
 
 const HydrotestDisplay = props => {
   const { item, isEditable } = props;

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { useTranslation } from "react-i18next";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { useGetCasingOptions } from "../completion/casingUtils.jsx";
+
 import { getCasingsByBoreholeId, useDomains } from "../../../../api/fetchApiV2.js";
+import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
+import { useGetCasingOptions } from "../completion/casingUtils.jsx";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const ObservationInput = props => {
   const { observation, boreholeId } = props;

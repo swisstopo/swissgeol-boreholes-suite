@@ -1,16 +1,16 @@
-import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { useTranslation } from "react-i18next";
 
 import {
   addGroundwaterLevelMeasurement,
   updateGroundwaterLevelMeasurement,
   useDomains,
 } from "../../../../api/fetchApiV2";
-import { useTranslation } from "react-i18next";
+import DataInputCard from "../../../../components/dataCard/dataInputCard.jsx";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
-import DataInputCard from "../../../../components/dataCard/dataInputCard.jsx";
 
 const GroundwaterLevelMeasurementInput = props => {
   const { item, parentId } = props;

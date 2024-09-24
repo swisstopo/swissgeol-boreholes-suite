@@ -1,14 +1,15 @@
 import { useContext } from "react";
-import { Chip, IconButton, Stack, Typography } from "@mui/material";
-import { theme } from "../../AppTheme.ts";
-import { useHistory } from "react-router-dom";
-import { DeleteButton, EditButton, EndEditButton } from "../../components/buttons/buttons.tsx";
-import { useDispatch, useSelector } from "react-redux";
-import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
 import { useTranslation } from "react-i18next";
-import { PromptContext } from "../../components/prompt/promptContext.tsx";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { Check, ChevronLeft, Trash2 } from "lucide-react";
+
+import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
+import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
+import { theme } from "../../AppTheme.ts";
+import { DeleteButton, EditButton, EndEditButton } from "../../components/buttons/buttons.tsx";
+import { PromptContext } from "../../components/prompt/promptContext.tsx";
 
 interface DetailHeaderProps {
   editingEnabled: boolean;

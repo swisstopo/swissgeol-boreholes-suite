@@ -1,5 +1,5 @@
-import styled from "styled-components";
 import { Button } from "semantic-ui-react";
+import styled from "styled-components";
 
 export const ErrorCard = styled.div`
   display: flex;

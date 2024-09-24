@@ -1,8 +1,9 @@
 import { createRef, useEffect, useMemo, useState } from "react";
+import { Box } from "@mui/material";
+
 import LithologyLayersError from "../../lithologyLayersError";
 import LithologyLayersList from "../lithologyLayersList";
 import * as Styled from "./styles.js";
-import { Box } from "@mui/material";
 
 export const LithologyLayersValidation = props => {
   const {

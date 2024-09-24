@@ -1,8 +1,9 @@
-import { NumericFormat } from "react-number-format";
 import { FC } from "react";
-import { CircularProgress, Typography } from "@mui/material";
-import { capitalizeFirstLetter } from "../../../utils.ts";
 import { useTranslation } from "react-i18next";
+import { NumericFormat } from "react-number-format";
+import { CircularProgress, Typography } from "@mui/material";
+
+import { capitalizeFirstLetter } from "../../../utils.ts";
 
 interface BoreholeNumbersPreviewProps {
   isFetching: boolean;

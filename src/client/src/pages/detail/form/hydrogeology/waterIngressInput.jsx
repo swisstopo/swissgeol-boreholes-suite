@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
-import ObservationInput from "./observationInput";
-import { ObservationType } from "./observationType";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
+
+import { addWaterIngress, updateWaterIngress, useDomains } from "../../../../api/fetchApiV2.js";
 import DataInputCard from "../../../../components/dataCard/dataInputCard.jsx";
 import { FormContainer, FormSelect } from "../../../../components/form/form";
-import { addWaterIngress, updateWaterIngress, useDomains } from "../../../../api/fetchApiV2.js";
+import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import ObservationInput from "./observationInput";
+import { ObservationType } from "./observationType";
 
 const WaterIngressInput = props => {
   const { item, parentId } = props;

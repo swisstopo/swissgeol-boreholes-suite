@@ -1,17 +1,18 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Box, Button, Stack, Typography } from "@mui/material";
-import CopyIcon from "../../../assets/icons/copy.svg?react";
-import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 import { useTranslation } from "react-i18next";
-import { theme } from "../../../AppTheme.ts";
-import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { BulkEditButton, CopyButton, DeleteButton } from "../../../components/buttons/buttons.tsx";
-import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { PromptContext } from "../../../components/prompt/promptContext.tsx";
-import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
 import { useSelector } from "react-redux";
+import { Box, Button, Stack, Typography } from "@mui/material";
+import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import CopyIcon from "../../../assets/icons/copy.svg?react";
+
+import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { theme } from "../../../AppTheme.ts";
+import { BulkEditButton, CopyButton, DeleteButton } from "../../../components/buttons/buttons.tsx";
+import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
+import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
+import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 
 interface BottomBarProps {
   boreholes: Boreholes;

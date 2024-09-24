@@ -1,11 +1,12 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { Trash2 } from "lucide-react";
+
+import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
+import { FormContainer } from "../form/form";
+import { PromptContext } from "../prompt/promptContext.tsx";
 import { DataCardButtonContainer } from "./dataCard.jsx";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
-import { PromptContext } from "../prompt/promptContext.tsx";
-import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
-import { Trash2 } from "lucide-react";
-import { FormContainer } from "../form/form";
 
 export const DataDisplayCard = props => {
   const { item, deleteData, isEditable } = props;

@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { Stack } from "@mui/material";
 import useResizeObserver from "@react-hook/resize-observer";
+
 import { clamp } from "./clamp.js";
 
 const getMax = obj => {

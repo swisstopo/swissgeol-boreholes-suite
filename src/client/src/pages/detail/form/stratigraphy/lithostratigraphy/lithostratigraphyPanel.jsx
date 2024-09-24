@@ -1,13 +1,14 @@
-import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { Typography } from "@mui/material";
+
+import LithologyViewProfile from "../lithologyViewProfile.jsx";
+import NavigationChild from "../navigationChild.jsx";
 import NavigationContainer from "../navigationContainer.jsx";
 import NavigationLens from "../navigationLens.jsx";
-import LithologyViewProfile from "../lithologyViewProfile.jsx";
-import LithostratigraphyViewProfile from "./lithostratigraphyViewProfile.jsx";
-import LithostratigraphyEditProfile from "./lithostratigraphyEditProfile.jsx";
-import NavigationChild from "../navigationChild.jsx";
 import Scale from "../scale.jsx";
 import StratigraphySelection from "../stratigraphySelection.jsx";
+import LithostratigraphyEditProfile from "./lithostratigraphyEditProfile.jsx";
+import LithostratigraphyViewProfile from "./lithostratigraphyViewProfile.jsx";
 
 const LithostratigraphyPanel = ({ id: selectedBoreholeId, isEditable }) => {
   const { t } = useTranslation();

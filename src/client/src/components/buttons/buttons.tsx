@@ -1,12 +1,13 @@
 import { forwardRef } from "react";
-import { Button } from "@mui/material";
-import CopyIcon from "../../assets/icons/copy.svg?react";
+import { useTranslation } from "react-i18next";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
-import { ButtonProps } from "./buttonsInterface";
-import { capitalizeFirstLetter } from "../../utils.ts";
-import { useTranslation } from "react-i18next";
+import { Button } from "@mui/material";
 import { Check, Pencil, Plus, Trash2 } from "lucide-react";
+import CopyIcon from "../../assets/icons/copy.svg?react";
+
+import { capitalizeFirstLetter } from "../../utils.ts";
+import { ButtonProps } from "./buttonsInterface";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();

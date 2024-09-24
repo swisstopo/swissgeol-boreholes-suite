@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { createNewStratigraphy } from "./api";
-import { fetchStratigraphyByBoreholeId } from "../../../../../../api/fetchApiV2.js";
-import ProfileHeaderList from "./profileHeaderList";
-import { AddButton } from "../../../../../../components/buttons/buttons";
 import { Box, Stack } from "@mui/material";
+
+import { fetchStratigraphyByBoreholeId } from "../../../../../../api/fetchApiV2.js";
+import { AddButton } from "../../../../../../components/buttons/buttons";
+import { createNewStratigraphy } from "./api";
+import ProfileHeaderList from "./profileHeaderList";
 
 const ProfileHeader = props => {
   const { boreholeID, isEditable, reloadHeader, selectedStratigraphy, setSelectedStratigraphy, setIsLoadingData } =

@@ -1,5 +1,6 @@
 import { Box, Stack } from "@mui/material";
 import { styled } from "@mui/system";
+
 import { theme } from "../AppTheme";
 
 export const FullPage = styled(Stack)({

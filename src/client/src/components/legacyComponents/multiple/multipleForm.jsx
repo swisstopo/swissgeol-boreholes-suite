@@ -1,17 +1,18 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
-import _ from "lodash";
-import { produce } from "immer";
+import { connect } from "react-redux";
 import { FormControl, FormControlLabel, Radio, RadioGroup, Stack } from "@mui/material";
-import DomainDropdown from "../domain/dropdown/domainDropdown.jsx";
-import DomainTree from "../domain/tree/domainTree.jsx";
-import DateField from "../dateField.jsx";
-import TranslationText from "../translationText.jsx";
 import { Button, Form, Header, Input } from "semantic-ui-react";
+import { produce } from "immer";
+import _ from "lodash";
+import PropTypes from "prop-types";
+
 import { patchBoreholes } from "../../../api-lib/index.js";
 import { CancelButton, SaveButton } from "../../buttons/buttons";
+import DateField from "../dateField.jsx";
+import DomainDropdown from "../domain/dropdown/domainDropdown.jsx";
+import DomainTree from "../domain/tree/domainTree.jsx";
+import TranslationText from "../translationText.jsx";
 
 class MultipleForm extends React.Component {
   constructor(props) {

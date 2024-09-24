@@ -9,6 +9,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material/";
+
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 
 const GeometryTable = ({ data }) => {

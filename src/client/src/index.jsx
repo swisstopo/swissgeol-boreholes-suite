@@ -1,10 +1,12 @@
 import { createRoot } from "react-dom/client";
+import { I18nextProvider } from "react-i18next";
 import { Provider } from "react-redux";
 
-import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
+
 import "./index.css";
 import "ol/ol.css";
+
 import App from "./App";
 import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.jsx";
 

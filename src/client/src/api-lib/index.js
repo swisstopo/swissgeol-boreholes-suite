@@ -1,11 +1,4 @@
 import { getHeight } from "./actions";
-
-import { loadSettings, patchSettings } from "./actions/settings";
-
-import { acceptTerms, draftTerms, getTerms, getTermsDraft, publishTerms } from "./actions/terms";
-
-import { loadUser, setAuthentication, unsetAuthentication } from "./actions/user";
-
 import {
   createBorehole,
   deleteBorehole,
@@ -20,9 +13,14 @@ import {
   unlockBorehole,
   updateBorehole,
 } from "./actions/borehole";
-
+import { loadDomains, patchCodeConfig } from "./actions/domains";
+import { getWms } from "./actions/geoapi";
 import { addIdentifier, removeIdentifier } from "./actions/identifier";
-
+import { getProfileLayers } from "./actions/profile";
+import { loadSettings, patchSettings } from "./actions/settings";
+import { createLayer, deleteLayer, gapLayer } from "./actions/stratigraphy";
+import { acceptTerms, draftTerms, getTerms, getTermsDraft, publishTerms } from "./actions/terms";
+import { loadUser, setAuthentication, unsetAuthentication } from "./actions/user";
 import {
   loadWorkflows,
   patchWorkflow,
@@ -31,15 +29,6 @@ import {
   submitWorkflow,
   updateWorkflow,
 } from "./actions/workflow";
-
-import { createLayer, deleteLayer, gapLayer } from "./actions/stratigraphy";
-
-import { getProfileLayers } from "./actions/profile";
-
-import { loadDomains, patchCodeConfig } from "./actions/domains";
-
-import { getWms } from "./actions/geoapi";
-
 import store, { configureStore, createReducer, injectReducer } from "./reducers";
 
 export {

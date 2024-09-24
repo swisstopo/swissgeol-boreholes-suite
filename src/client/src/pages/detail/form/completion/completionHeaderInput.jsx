@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+
 import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
-import { completionSchemaConstants } from "./completionSchemaConstants.js";
+import { CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
-import { CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import { completionSchemaConstants } from "./completionSchemaConstants.js";
 
 const CompletionHeaderInput = props => {
   const { completion, cancelChanges, saveCompletion, trySwitchTab, switchTabs } = props;

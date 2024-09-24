@@ -1,12 +1,13 @@
 import { useTranslation } from "react-i18next";
-import GeometryImport from "./geometryImport.jsx";
-import GeometryTable from "./geometryTable.jsx";
-import GeometryChartNE from "./geometryChartNE.jsx";
-import { GeometryChartZE, GeometryChartZInteractive, GeometryChartZN } from "./geometryChartZ.jsx";
 import { Card, CardActions, CardContent, CircularProgress, Grid, Typography } from "@mui/material/";
-import { FullPageCentered } from "../../../../components/styledComponents.ts";
+
 import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2.js";
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
+import { FullPageCentered } from "../../../../components/styledComponents.ts";
+import GeometryChartNE from "./geometryChartNE.jsx";
+import { GeometryChartZE, GeometryChartZInteractive, GeometryChartZN } from "./geometryChartZ.jsx";
+import GeometryImport from "./geometryImport.jsx";
+import GeometryTable from "./geometryTable.jsx";
 
 /**
  * Renders the Geometry panel.

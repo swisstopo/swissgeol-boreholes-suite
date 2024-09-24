@@ -1,11 +1,12 @@
-import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
+import { IconButton } from "@mui/material";
 import { Checkbox, Icon, Table, TextArea } from "semantic-ui-react";
+import { Trash2 } from "lucide-react";
+import PropTypes from "prop-types";
+
+import { downloadFile } from "../../../../api/file/file";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import DownloadLink from "../downloadlink.jsx";
-import { IconButton } from "@mui/material";
-import { Trash2 } from "lucide-react";
-import { downloadFile } from "../../../../api/file/file";
 
 const FilesTableComponent = props => {
   const { t } = props;

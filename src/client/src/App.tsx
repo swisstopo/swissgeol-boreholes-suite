@@ -1,26 +1,27 @@
 import React from "react";
-import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { ThemeProvider } from "@mui/material/styles";
+import { Redirect, Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { GlobalStyles } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+
 import { theme } from "./AppTheme";
-import OverviewPage from "./pages/overview/overviewPage";
-import SettingsPage from "./pages/settings/settingsPage";
-import { DataLoader } from "./pages/settings/dataLoader";
-import { AcceptTerms } from "./term/accept";
-import { AlertProvider } from "./components/alert/alertContext";
 import { AlertBanner } from "./components/alert/alertBanner";
-import { DataCardProvider } from "./components/dataCard/dataCardContext.jsx";
-import { PromptProvider } from "./components/prompt/promptContext.tsx";
-import { Prompt } from "./components/prompt/prompt.tsx";
+import { AlertProvider } from "./components/alert/alertContext";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx";
-import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext.tsx";
+import { DataCardProvider } from "./components/dataCard/dataCardContext.jsx";
 import HeaderComponent from "./components/header/headerComponent.tsx";
+import { Prompt } from "./components/prompt/prompt.tsx";
+import { PromptProvider } from "./components/prompt/promptContext.tsx";
 import { AppBox } from "./components/styledComponents.ts";
 import { DetailPage } from "./pages/detail/detailPage.tsx";
 import { LabelingProvider } from "./pages/detail/labeling/labelingContext.tsx";
 import { OverviewProvider } from "./pages/overview/overViewContext.tsx";
+import OverviewPage from "./pages/overview/overviewPage";
+import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext.tsx";
+import { DataLoader } from "./pages/settings/dataLoader";
+import SettingsPage from "./pages/settings/settingsPage";
+import { AcceptTerms } from "./term/accept";
 
 const queryClient = new QueryClient();
 

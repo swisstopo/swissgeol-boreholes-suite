@@ -1,7 +1,7 @@
-import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
-import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
-import { useGetCasingName } from "./casingUtils.jsx";
 import { deleteInstrumentation } from "../../../../api/fetchApiV2.js";
+import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
+import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
+import { useGetCasingName } from "./casingUtils.jsx";
 
 const InstrumentationDisplay = props => {
   const { item, isEditable } = props;

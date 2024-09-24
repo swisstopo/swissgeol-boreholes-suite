@@ -1,10 +1,11 @@
-import * as Styled from "./styles.js";
-import { Form, Input } from "semantic-ui-react";
-import TranslationText from "../../../../../../../components/legacyComponents/translationText.jsx";
-import DomainDropdown from "../../../../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
-import DateField from "../../../../../../../components/legacyComponents/dateField.jsx";
-import _ from "lodash";
 import { useCallback, useMemo, useState } from "react";
+import { Form, Input } from "semantic-ui-react";
+import _ from "lodash";
+
+import DateField from "../../../../../../../components/legacyComponents/dateField.jsx";
+import DomainDropdown from "../../../../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
+import TranslationText from "../../../../../../../components/legacyComponents/translationText.jsx";
+import * as Styled from "./styles.js";
 
 const InfoList = props => {
   const { attribute, profileInfo, updateChange, isEditable } = props.data;

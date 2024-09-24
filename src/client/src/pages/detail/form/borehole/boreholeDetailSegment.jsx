@@ -1,15 +1,16 @@
-import _ from "lodash";
-import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
-import DomainTree from "../../../../components/legacyComponents/domain/tree/domainTree.jsx";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
-import { NumericFormat } from "react-number-format";
-import { Form, Segment } from "semantic-ui-react";
-import { FormControl, FormControlLabel, RadioGroup } from "@mui/material";
-import { parseIfString } from "../../../../components/legacyComponents/formUtils.ts";
-import { DisabledRadio } from "../styledComponents.jsx";
-import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.js";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { NumericFormat } from "react-number-format";
+import { FormControl, FormControlLabel, RadioGroup } from "@mui/material";
+import { Form, Segment } from "semantic-ui-react";
+import _ from "lodash";
+
+import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.js";
+import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
+import DomainTree from "../../../../components/legacyComponents/domain/tree/domainTree.jsx";
+import { parseIfString } from "../../../../components/legacyComponents/formUtils.ts";
+import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
+import { DisabledRadio } from "../styledComponents.jsx";
 
 const BoreholeDetailSegment = props => {
   const { borehole, updateChange, updateNumber, isEditable } = props;

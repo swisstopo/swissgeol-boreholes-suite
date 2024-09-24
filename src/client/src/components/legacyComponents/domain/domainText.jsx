@@ -1,7 +1,7 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
 import { loadDomains } from "../../../api-lib/index.js";
 

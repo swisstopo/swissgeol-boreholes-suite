@@ -1,12 +1,13 @@
 import { useCallback } from "react";
-import { Box, Stack } from "@mui/material/";
-import { FileDropzone } from "../../../detail/attachments/fileDropzone.jsx";
-import { StackHalfWidth } from "../../../../components/styledComponents.ts";
-import { downloadCodelistCsv } from "../../../../api/fetchApiV2.js";
-import { ImportContentProps } from "../commons/actionsInterfaces.js";
-import Downloadlink from "../../../detail/attachments/downloadlink.jsx";
 import { useTranslation } from "react-i18next";
+import { Box, Stack } from "@mui/material/";
+
+import { downloadCodelistCsv } from "../../../../api/fetchApiV2.js";
+import { StackHalfWidth } from "../../../../components/styledComponents.ts";
 import { capitalizeFirstLetter } from "../../../../utils.ts";
+import Downloadlink from "../../../detail/attachments/downloadlink.jsx";
+import { FileDropzone } from "../../../detail/attachments/fileDropzone.jsx";
+import { ImportContentProps } from "../commons/actionsInterfaces.js";
 
 const SeparatorLine = () => {
   return (

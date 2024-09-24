@@ -1,12 +1,13 @@
 import React from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
-import Markdown from "markdown-to-jsx";
+import { connect } from "react-redux";
 import { Button } from "@mui/material";
 import { Form, Modal, TextArea } from "semantic-ui-react";
-import TranslationKeys from "../../auth/translationKeys";
+import Markdown from "markdown-to-jsx";
+import PropTypes from "prop-types";
+
 import { draftTerms, getTermsDraft, publishTerms } from "../../api-lib/index";
+import TranslationKeys from "../../auth/translationKeys";
 import { CancelButton } from "../../components/buttons/buttons";
 
 class TermSettings extends React.Component {

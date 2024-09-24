@@ -1,7 +1,7 @@
-import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
-import * as d3 from "d3";
+import { useTranslation } from "react-i18next";
 import { Box, Slider, Stack, Typography } from "@mui/material";
+import * as d3 from "d3";
 
 /**
  * A {@link GeometryChartZAzimuth} component with a slider to change the azimuth.

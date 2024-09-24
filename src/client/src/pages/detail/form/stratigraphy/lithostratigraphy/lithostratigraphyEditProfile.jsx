@@ -1,6 +1,7 @@
+import { useTranslation } from "react-i18next";
+
 import { useLithostratigraphies, useLithostratigraphyMutations } from "../../../../../api/fetchApiV2.js";
 import HierarchicalDataEditProfile from "../hierarchicalDataEditProfile.jsx";
-import { useTranslation } from "react-i18next";
 
 /**
  * Manages the lithostratigraphy data and mutations.

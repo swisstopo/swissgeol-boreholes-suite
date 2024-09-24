@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from "react";
-import * as Styled from "./styles.js";
+import { useTranslation } from "react-i18next";
 import { Icon, Radio } from "semantic-ui-react";
-import TranslationText from "../../../../../../components/legacyComponents/translationText.jsx";
+
 import { deleteLayer, gapLayer } from "../../../../../../api-lib";
 import { addBedrock, fetchLayerById } from "../../../../../../api/fetchApiV2.js";
-import ErrorTypes from "./errorTypes";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
-import { useTranslation } from "react-i18next";
+import TranslationText from "../../../../../../components/legacyComponents/translationText.jsx";
+import ErrorTypes from "./errorTypes";
+import * as Styled from "./styles.js";
 
 const LithologyLayersError = props => {
   const { title, isEditable, id, isInside, onUpdated, layerIndex, layerLength, closeDelete } = props.data;

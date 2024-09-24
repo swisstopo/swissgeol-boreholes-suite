@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
-import * as Styled from "./listFilterStyles";
-import { Checkbox, Form, Input, TextArea } from "semantic-ui-react";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
-import _ from "lodash";
 import { useTranslation } from "react-i18next";
-import HierarchicalDataSearch from "../../../detail/form/stratigraphy/hierarchicalDataSearch";
+import { Checkbox, Form, Input, TextArea } from "semantic-ui-react";
+import _ from "lodash";
+
+import DateField from "../../../../components/legacyComponents/dateField.jsx";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown";
 import DomainTree from "../../../../components/legacyComponents/domain/tree/domainTree";
-import DateField from "../../../../components/legacyComponents/dateField.jsx";
+import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
+import HierarchicalDataSearch from "../../../detail/form/stratigraphy/hierarchicalDataSearch";
 import CantonDropdown from "./cantonDropdown.jsx";
+import * as Styled from "./listFilterStyles";
 
 const ListFilter = props => {
   const { attribute, search, setFilter, settings } = props;

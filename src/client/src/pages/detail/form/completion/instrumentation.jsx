@@ -1,8 +1,8 @@
 import { getInstrumentation } from "../../../../api/fetchApiV2.js";
 import DataCards from "../../../../components/dataCard/dataCards.jsx";
-import InstrumentationInput from "./instrumentationInput.jsx";
-import InstrumentationDisplay from "./instrumentationDisplay.jsx";
 import { sortByDepth } from "../sorter.jsx";
+import InstrumentationDisplay from "./instrumentationDisplay.jsx";
+import InstrumentationInput from "./instrumentationInput.jsx";
 
 const Instrumentation = ({ isEditable, completionId }) => {
   return (

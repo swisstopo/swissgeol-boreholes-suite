@@ -1,29 +1,30 @@
 import React from "react";
-import PropTypes from "prop-types";
+import { Box, Card } from "@mui/material";
+import { Button, Icon, Label } from "semantic-ui-react";
 import _ from "lodash";
 import { Map, View } from "ol";
-import VectorLayer from "ol/layer/Vector";
-import VectorSource from "ol/source/Vector";
+import { defaults as defaultControls } from "ol/control";
+import Feature from "ol/Feature";
+import Point from "ol/geom/Point";
 import Draw from "ol/interaction/Draw";
 import Modify from "ol/interaction/Modify";
-import Point from "ol/geom/Point";
-import Feature from "ol/Feature";
-import { defaults as defaultControls } from "ol/control";
+import TileLayer from "ol/layer/Tile";
+import VectorLayer from "ol/layer/Vector";
 import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
+import VectorSource from "ol/source/Vector";
+import XYZ from "ol/source/XYZ";
 import proj4 from "proj4";
-import { Button, Icon, Label } from "semantic-ui-react";
-import { Box, Card } from "@mui/material";
+import PropTypes from "prop-types";
+
 import { getHeight } from "../../api-lib";
 import { fetchApiV2 } from "../../api/fetchApiV2.js";
-import MapControls from "../buttons/mapControls.jsx";
-import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
-import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
+import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
+import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
+import MapControls from "../buttons/mapControls.jsx";
 import { projections } from "./mapProjections.js";
 import { detailMapStyleFunction } from "./mapStyleFunctions.js";
-import TileLayer from "ol/layer/Tile";
-import XYZ from "ol/source/XYZ";
 
 class PointComponent extends React.Component {
   static contextType = BasemapContext;

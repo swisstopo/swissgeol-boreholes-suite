@@ -1,5 +1,6 @@
-import * as Styled from "./styles";
 import { List } from "semantic-ui-react";
+
+import * as Styled from "./styles";
 
 const ListItem = props => {
   const { path, name, location, history, icon, t, hasTranslation } = props;

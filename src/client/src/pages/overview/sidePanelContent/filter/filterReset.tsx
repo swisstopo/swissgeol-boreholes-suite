@@ -1,6 +1,7 @@
-import { Button, Stack } from "@mui/material";
-import { capitalizeFirstLetter } from "../../../../utils.ts";
 import { useTranslation } from "react-i18next";
+import { Button, Stack } from "@mui/material";
+
+import { capitalizeFirstLetter } from "../../../../utils.ts";
 
 interface FilterResetProps {
   reset: () => void;

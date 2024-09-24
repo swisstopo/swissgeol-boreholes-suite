@@ -1,6 +1,7 @@
-import { LabelingContext } from "./labelingContext.tsx";
 import { useContext } from "react";
+
 import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
+import { LabelingContext } from "./labelingContext.tsx";
 
 // TODO: Extend with other types
 export type ExtractionType = "coordinates";

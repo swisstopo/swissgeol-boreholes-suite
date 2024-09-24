@@ -1,9 +1,10 @@
-import { Stack, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import ClearIcon from "@mui/icons-material/Clear";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ClearIcon from "@mui/icons-material/Clear";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import { Stack, Tooltip } from "@mui/material";
+
 import { theme } from "../../../../../../../AppTheme.ts";
 
 const ActionButtons = props => {
