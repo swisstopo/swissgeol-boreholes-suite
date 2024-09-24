@@ -125,7 +125,8 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
     }
   }, [bulkEditFormFields, onFieldValueChange, workgroupId]);
 
-  const undoChange = (fieldName: string) => {
+  const undoChange = (field: BulkEditFormField) => {
+    const fieldName = field.api || field.fieldName;
     const entryIndex = fieldsToUpdate.findIndex(([key]) => key === fieldName);
     if (entryIndex !== -1) {
       setFieldsToUpdate([...fieldsToUpdate.filter(f => f[0] !== fieldName)]);
@@ -153,7 +154,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
       if (field.type === FormValueType.Domain) {
         return (
           <FormDomainSelect
-            fieldName={field.fieldName}
+            fieldName={field.api || field.fieldName}
             label={field.fieldName}
             required
             schemaName={field?.domain || field.api || field.fieldName}
@@ -168,7 +169,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
         return (
           <FormSelect
             required
-            fieldName={field.fieldName}
+            fieldName={field.api || field.fieldName}
             label={field.fieldName}
             values={[
               { key: 1, name: t("yes") },
@@ -183,7 +184,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
       }
       return (
         <FormInput
-          fieldName={field.fieldName}
+          fieldName={field.api || field.fieldName}
           label={field.fieldName}
           type={field.type}
           onUpdate={e => {
@@ -215,12 +216,14 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
                       <IconButton
                         size="small"
                         sx={{
-                          visibility: fieldsToUpdate.map(f => f[0]).includes(field.fieldName) ? "visible" : "hidden",
+                          visibility: fieldsToUpdate.map(f => f[0]).includes(field.api || field.fieldName)
+                            ? "visible"
+                            : "hidden",
                           mr: 1,
                         }}
                         onClick={e => {
                           e.stopPropagation();
-                          undoChange(field.fieldName);
+                          undoChange(field);
                         }}>
                         <X fontSize="small" color={theme.palette.primary.main} />
                       </IconButton>
