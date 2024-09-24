@@ -19,7 +19,7 @@ import {
 } from "./coordinateSegmentInterfaces.js";
 import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
 import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
-import { useLabelingContext } from "../../labeling/labelingInterfaces.js";
+import { Coordinate, ExtractionState, useLabelingContext } from "../../labeling/labelingInterfaces.js";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
@@ -35,7 +35,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   editingEnabled,
 }) => {
   const { t, i18n } = useTranslation();
-  const { panelOpen, togglePanel } = useLabelingContext();
+  const { extractionObject, setExtractionObject } = useLabelingContext();
 
   // --- State variables ---
   const [currentReferenceSystem, setCurrentReferenceSystem] = useState<number>(borehole.data.spatial_reference_system);
@@ -222,7 +222,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // Sync currentReferenceSystem with react-hook-form
   useEffect(() => {
-    formMethods.setValue("spatial_reference_system", currentReferenceSystem);
+    formMethods.setValue("spatial_reference_system", currentReferenceSystem, { shouldValidate: true });
   }, [currentReferenceSystem, formMethods]);
 
   // reset form values when the borehole or map point changes.
@@ -280,6 +280,18 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     updateFormValues,
     handleCoordinateTransformation,
   ]);
+
+  useEffect(() => {
+    if (extractionObject?.type === "coordinates" && extractionObject?.state === ExtractionState.success) {
+      const coordinate = extractionObject?.result?.value as Coordinate;
+      if (coordinate) {
+        setCurrentReferenceSystem(referenceSystems[coordinate.projection].code);
+        setValuesForReferenceSystem(coordinate.projection, coordinate.east.toString(), coordinate.north.toString());
+      }
+    }
+  }, [extractionObject, setValuesForReferenceSystem]);
+
+  const isCoordinateExtraction = extractionObject?.type === "coordinates";
 
   // --- Event handlers --- /
 
@@ -366,6 +378,20 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     setValuesForReferenceSystem(ReferenceSystemKey.LV95, "", "");
   };
 
+  const startLabeling = () => {
+    const referenceSystemKey =
+      currentReferenceSystem === referenceSystems.LV95.code ? ReferenceSystemKey.LV95 : ReferenceSystemKey.LV03;
+    setExtractionObject({
+      type: "coordinates",
+      state: ExtractionState.start,
+      previousValue: {
+        east: formMethods.getValues(referenceSystems[referenceSystemKey].fieldName.X),
+        north: formMethods.getValues(referenceSystems[referenceSystemKey].fieldName.Y),
+        projection: referenceSystemKey,
+      },
+    });
+  };
+
   return (
     <>
       <FormProvider {...formMethods}>
@@ -378,7 +404,10 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
               action={
                 showLabeling &&
                 editingEnabled && (
-                  <LabelingButton className={panelOpen ? "Mui-active" : ""} onClick={() => togglePanel()} />
+                  <LabelingButton
+                    className={extractionObject?.type === "coordinates" ? "Mui-active" : ""}
+                    onClick={() => startLabeling()}
+                  />
                 )
               }
             />
@@ -390,7 +419,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                   label="spatial_reference_system"
                   selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
                   readonly={!editingEnabled}
-                  className={panelOpen ? "ai" : ""}
+                  className={isCoordinateExtraction ? "ai" : ""}
                   onUpdate={e => onReferenceSystemChange(e)}
                   values={Object.entries(referenceSystems).map(([, value]) => ({
                     key: value.code,
@@ -407,7 +436,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
                       readonly={!editingEnabled}
-                      className={panelOpen ? "ai" : ""}
+                      className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV95.fieldName.X)}
                     />
                     <FormCoordinate
@@ -418,7 +447,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
                       readonly={!editingEnabled}
-                      className={panelOpen ? "ai" : ""}
+                      className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV95.fieldName.Y)}
                     />
                   </FormContainer>
@@ -431,7 +460,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
                       readonly={!editingEnabled}
-                      className={panelOpen ? "ai" : ""}
+                      className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV03.fieldName.X)}
                     />
                     <FormCoordinate
@@ -442,7 +471,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
                       readonly={!editingEnabled}
-                      className={panelOpen ? "ai" : ""}
+                      className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.getValues(referenceSystems.LV03.fieldName.Y)}
                     />
                   </FormContainer>
