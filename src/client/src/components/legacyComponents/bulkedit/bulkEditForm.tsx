@@ -227,7 +227,9 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
                         }}>
                         <X fontSize="small" color={theme.palette.primary.main} />
                       </IconButton>
-                      <Typography>{t(field.fieldName)}</Typography>
+                      <Typography variant="h6" sx={{ color: "black" }}>
+                        {t(field.fieldName)}
+                      </Typography>
                     </Stack>
                   </AccordionSummary>
                   <AccordionDetails sx={{ pl: 5, pr: 3 }}>
