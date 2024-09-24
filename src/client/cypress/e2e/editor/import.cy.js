@@ -1,4 +1,4 @@
-import { getImportFileFromFixtures, loginAsAdmin } from "../../e2e/helpers/testHelpers";
+import { getImportFileFromFixtures, loginAsAdmin } from "../helpers/testHelpers";
 
 describe("Test for importing boreholes.", () => {
   it("Successfully imports multiple boreholes.", () => {

@@ -1,3 +1,5 @@
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { evaluateDisplayValue, evaluateInput, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   createCasing,
@@ -6,8 +8,6 @@ import {
   loginAsAdmin,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
-import { evaluateDisplayValue, evaluateInput, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Casing crud tests", () => {
   beforeEach(() => {

@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import _ from "lodash";
-import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
-import DomainText from "../../../../components/legacyComponents/domain/domainText.jsx";
-import { Form, Icon, Input } from "semantic-ui-react";
-import { addIdentifier, removeIdentifier } from "../../../../api-lib";
 import { useTranslation } from "react-i18next";
+import { Form, Icon, Input } from "semantic-ui-react";
+import _ from "lodash";
+import { addIdentifier, removeIdentifier } from "../../../../api-lib";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import DomainText from "../../../../components/legacyComponents/domain/domainText.jsx";
+import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 
 const IdentifierSegment = props => {

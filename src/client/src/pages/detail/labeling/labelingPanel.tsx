@@ -1,3 +1,5 @@
+import { FC, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Box,
@@ -9,6 +11,21 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
+import { styled } from "@mui/system";
+import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
+import { getDataExtractionFileInfo, getFiles, uploadFile } from "../../../api/file/file.ts";
+import {
+  DataExtractionResponse,
+  File as FileInterface,
+  FileResponse,
+  maxFileSizeKB,
+} from "../../../api/file/fileInterfaces.ts";
+import { theme } from "../../../AppTheme.ts";
+import { useAlertManager } from "../../../components/alert/alertManager.tsx";
+import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
+import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
+import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
+import LabelingFileSelector from "./labelingFileSelector.tsx";
 import {
   ExtractionRequest,
   ExtractionResponse,
@@ -17,23 +34,6 @@ import {
   PanelPosition,
   useLabelingContext,
 } from "./labelingInterfaces.tsx";
-import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
-import { FC, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
-import { theme } from "../../../AppTheme.ts";
-import {
-  DataExtractionResponse,
-  File as FileInterface,
-  FileResponse,
-  maxFileSizeKB,
-} from "../../../api/file/fileInterfaces.ts";
-import LabelingFileSelector from "./labelingFileSelector.tsx";
-import { getDataExtractionFileInfo, getFiles, uploadFile } from "../../../api/file/file.ts";
-import { useTranslation } from "react-i18next";
-import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
-import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
-import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
-import { useAlertManager } from "../../../components/alert/alertManager.tsx";
-import { styled } from "@mui/system";
 import "./labelingPanel.css";
 
 export const LabelingAlert = styled(Alert)({

@@ -1,8 +1,8 @@
-import { useState, useRef, useMemo } from "react";
-import { Box } from "@mui/material";
-import useResizeObserver from "@react-hook/resize-observer";
+import { useMemo, useRef, useState } from "react";
 import { NumericFormat } from "react-number-format";
+import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import useResizeObserver from "@react-hook/resize-observer";
 
 const isMajorNumber = (number, metersPerPattern) => {
   const majorNumberInterval = metersPerPattern * 10;

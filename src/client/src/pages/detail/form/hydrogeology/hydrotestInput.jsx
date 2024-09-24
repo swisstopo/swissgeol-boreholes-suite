@@ -1,19 +1,19 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-import { FormContainer, FormInput, FormMultiSelect, FormSelect, FormValueType } from "../../../../components/form/form";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import ObservationInput from "./observationInput";
 import { useTranslation } from "react-i18next";
-import { addHydrotest, updateHydrotest, useDomains, useHydrotestDomains } from "../../../../api/fetchApiV2";
-import { ObservationType } from "./observationType";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { getHydrotestParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
+import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
+import { addHydrotest, updateHydrotest, useDomains, useHydrotestDomains } from "../../../../api/fetchApiV2";
+import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
+import { FormContainer, FormInput, FormMultiSelect, FormSelect, FormValueType } from "../../../../components/form/form";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import ObservationInput from "./observationInput";
+import { ObservationType } from "./observationType";
+import { getHydrotestParameterUnits } from "./parameterUnits";
 
 const HydrotestInput = props => {
   const { item, parentId } = props;

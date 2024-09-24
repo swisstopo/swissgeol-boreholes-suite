@@ -1,11 +1,11 @@
-import { Box, Stack } from "@mui/material";
-import { theme } from "../../AppTheme.ts";
-import { VersionTag } from "./versionTag.tsx";
-import { ProfilePopup } from "./profilePopup.tsx";
-import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { useSelector } from "react-redux";
-import { LanguagePopup } from "./languagePopup.tsx";
+import { Box, Stack } from "@mui/material";
+import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
+import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
+import { LanguagePopup } from "./languagePopup.tsx";
+import { ProfilePopup } from "./profilePopup.tsx";
+import { VersionTag } from "./versionTag.tsx";
 
 const HeaderComponent = () => {
   const user: User = useSelector((state: ReduxRootState) => state.core_user);

@@ -1,8 +1,8 @@
-import { Box, Stack, Typography } from "@mui/material";
-import WarningIcon from "@mui/icons-material/Warning";
 import { useTranslation } from "react-i18next";
-import { CancelButton, DeleteButton } from "../../../../../../../components/buttons/buttons.tsx";
+import WarningIcon from "@mui/icons-material/Warning";
+import { Box, Stack, Typography } from "@mui/material";
 import { theme } from "../../../../../../../AppTheme.ts";
+import { CancelButton, DeleteButton } from "../../../../../../../components/buttons/buttons.tsx";
 
 const DescriptionDeleteDialog = props => {
   const { item, setDescriptionIdSelectedForDelete, deleteMutation } = props;

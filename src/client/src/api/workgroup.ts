@@ -1,5 +1,5 @@
-import { fetchApiV2 } from "./fetchApiV2";
 import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
+import { fetchApiV2 } from "./fetchApiV2";
 
 export const fetchWorkgroups = async () => await fetchApiV2("workgroup", "GET");
 

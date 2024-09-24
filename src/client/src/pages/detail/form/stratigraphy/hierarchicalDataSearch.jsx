@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDomainSchema } from "../../../../api/fetchApiV2.js";
 import { Form, Header } from "semantic-ui-react";
-import * as Styled from "../../../overview/sidePanelContent/filter/listFilterStyles.js";
+import { useDomainSchema } from "../../../../api/fetchApiV2.js";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
+import * as Styled from "../../../overview/sidePanelContent/filter/listFilterStyles.js";
 
 const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
   const { i18n, t } = useTranslation();

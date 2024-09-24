@@ -1,7 +1,7 @@
+import { deleteGroundwaterLevelMeasurement } from "../../../../api/fetchApiV2.js";
+import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import ObservationDisplay from "./observationDisplay";
-import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
-import { deleteGroundwaterLevelMeasurement } from "../../../../api/fetchApiV2.js";
 
 const GroundwaterLevelMeasurementDisplay = props => {
   const { item, isEditable } = props;

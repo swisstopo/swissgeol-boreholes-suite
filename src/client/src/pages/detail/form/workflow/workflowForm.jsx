@@ -1,10 +1,11 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
-import _ from "lodash";
+import { connect } from "react-redux";
 import { Button, CircularProgress, Stack, Typography } from "@mui/material";
 import { Header, Icon, Label, Modal } from "semantic-ui-react";
+import { RotateCcw, X } from "lucide-react";
+import _ from "lodash";
+import PropTypes from "prop-types";
 import {
   loadBorehole,
   loadWorkflows,
@@ -15,13 +16,12 @@ import {
   updateBorehole,
   updateWorkflow,
 } from "../../../../api-lib";
+import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import CommentArea from "./commentArea.jsx";
+import { CancelButton } from "../../../../components/buttons/buttons";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
-import { theme } from "../../../../AppTheme.ts";
-import { CancelButton } from "../../../../components/buttons/buttons";
-import { RotateCcw, X } from "lucide-react";
+import CommentArea from "./commentArea.jsx";
 
 class WorkflowForm extends React.Component {
   static contextType = AlertContext;

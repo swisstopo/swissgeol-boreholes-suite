@@ -1,3 +1,5 @@
+import adminUser from "../../fixtures/adminUser.json";
+import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
@@ -5,8 +7,6 @@ import {
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
-import adminUser from "../../fixtures/adminUser.json";
-import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 beforeEach(() => {
   loginAsAdmin();

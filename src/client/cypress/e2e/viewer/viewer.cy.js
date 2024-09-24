@@ -1,5 +1,5 @@
-import { loginAsAdmin, loginAsViewer } from "../helpers/testHelpers";
 import { clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
+import { loginAsAdmin, loginAsViewer } from "../helpers/testHelpers";
 
 describe("Viewer tests", () => {
   it("Assures viewer cannot add, edit or delete boreholes", () => {

@@ -1,7 +1,7 @@
-import { ButtonProps, IconButton, Tooltip } from "@mui/material";
 import { forwardRef } from "react";
-import { ChevronDown, ChevronRight, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { ButtonProps, IconButton, Tooltip } from "@mui/material";
+import { ChevronDown, ChevronRight, Sparkles } from "lucide-react";
 
 export const LabelingButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
