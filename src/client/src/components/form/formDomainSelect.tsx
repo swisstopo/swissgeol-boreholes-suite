@@ -1,21 +1,12 @@
-import { SxProps } from "@mui/material";
 import { FormSelect } from "./form";
 import { FC } from "react";
 import { useDomains } from "../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
+import { FormSelectProps } from "./formSelect.tsx";
 
-export interface FormDomainSelectProps {
-  fieldName: string;
-  label: string;
+export interface FormDomainSelectProps extends FormSelectProps {
   schemaName: string;
-  required?: boolean;
-  readonly?: boolean;
-  disabled?: boolean;
-  selected?: number[];
-  sx?: SxProps;
-  inputLabelStyles?: SxProps;
-  onUpdate?: (value: number) => void;
 }
 
 export const FormDomainSelect: FC<FormDomainSelectProps> = props => {

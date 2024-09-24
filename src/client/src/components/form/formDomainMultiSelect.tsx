@@ -1,26 +1,15 @@
-import { SxProps } from "@mui/material";
 import { FC } from "react";
 import { useDomains } from "../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
 import { FormMultiSelect } from "./form.ts";
-import { FormMultiSelectValue } from "./formMultiSelect.tsx";
+import { FormMultiSelectProps } from "./formMultiSelect.tsx";
 
-export interface FormDomainSelectProps {
-  fieldName: string;
-  label: string;
+export interface FormDomainMultiSelectProps extends FormMultiSelectProps {
   schemaName: string;
-  tooltipLabel?: string;
-  required?: boolean;
-  disabled?: boolean;
-  readonly?: boolean;
-  selected?: number[];
-  values?: FormMultiSelectValue[];
-  sx?: SxProps;
-  className?: string;
 }
 
-export const FormDomainMultiSelect: FC<FormDomainSelectProps> = props => {
+export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
   const { label, selected, schemaName } = props;
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
