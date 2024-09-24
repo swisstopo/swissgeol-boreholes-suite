@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Accordion,
@@ -48,18 +48,64 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
     });
   };
 
+  // This data structure is needed because of discrepancies between translation keys (fieldName), field names in legacy Api (api) and codelist names (domain).
+  const bulkEditFormFields: BulkEditFormField[] = useMemo(
+    () => [
+      { fieldName: "project_name", type: FormValueType.Text, api: "custom.project_name" },
+      { fieldName: "restriction", type: FormValueType.Domain },
+      { fieldName: "workgroup", type: FormValueType.Workgroup },
+      {
+        fieldName: "restriction_until",
+        type: FormValueType.Date,
+      },
+      { fieldName: "national_interest", type: FormValueType.Boolean },
+      { fieldName: "location_precision", type: FormValueType.Domain },
+      { fieldName: "elevation_precision", type: FormValueType.Domain },
+      {
+        fieldName: "reference_elevation_qt",
+        type: FormValueType.Domain,
+        api: "qt_reference_elevation",
+        domain: "elevation_precision",
+      },
+      { fieldName: "reference_elevation_type", type: FormValueType.Domain },
+      { fieldName: "borehole_type", type: FormValueType.Domain },
+      { fieldName: "purpose", type: FormValueType.Domain, api: "extended.purpose" },
+      { fieldName: "boreholestatus", type: FormValueType.Domain, api: "extended.status" },
+      { fieldName: "totaldepth", type: FormValueType.Number, api: "total_depth" },
+      { fieldName: "qt_depth", type: FormValueType.Domain, api: "depth_precision" },
+      { fieldName: "top_bedrock_fresh_md", type: FormValueType.Number, api: "extended.top_bedrock_fresh_md" },
+      {
+        fieldName: "top_bedrock_weathered_md",
+        type: FormValueType.Number,
+        api: "custom.top_bedrock_weathered_md",
+      },
+      { fieldName: "groundwater", type: FormValueType.Boolean, api: "extended.groundwater" },
+      { fieldName: "lithology_top_bedrock", type: FormValueType.Domain, api: "custom.lithology_top_bedrock" }, /// ?
+      {
+        fieldName: "lithostratigraphy_top_bedrock",
+        type: FormValueType.Domain,
+        api: "custom.lithostratigraphy_top_bedrock",
+      },
+      {
+        fieldName: "chronostratigraphy_top_bedrock",
+        type: FormValueType.Domain,
+        api: "custom.chronostratigraphy_top_bedrock",
+      },
+    ],
+    [],
+  );
+
   const onFieldValueChange = useCallback(
-    (fieldName: string, newValue: BulkEditFormValue, fieldType: FormValueType) => {
+    (field: BulkEditFormField, newValue: BulkEditFormValue) => {
+      const fieldName = field.api || field.fieldName;
       let updatedValue: BulkEditFormValue = newValue;
-      if (fieldType === FormValueType.Boolean) {
+      if (field.type === FormValueType.Boolean) {
         updatedValue = newValue === 1 ? true : newValue === 0 ? false : undefined;
       }
-      if (fieldType === FormValueType.Number) {
+      if (field.type === FormValueType.Number) {
         updatedValue = parseFloat(newValue as string);
       }
-
       const entryIndex = fieldsToUpdate.findIndex(([key]) => key === fieldName);
-
       if (entryIndex === -1) {
         // Add field if it's not yet contained in array
         setFieldsToUpdate([...fieldsToUpdate, [fieldName, updatedValue]]);
@@ -75,9 +121,9 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
 
   useEffect(() => {
     if (workgroupId) {
-      onFieldValueChange("workgroup", workgroupId, FormValueType.Workgroup);
+      onFieldValueChange(bulkEditFormFields.find(f => f.type === FormValueType.Workgroup)!, workgroupId);
     }
-  }, [onFieldValueChange, workgroupId]);
+  }, [bulkEditFormFields, onFieldValueChange, workgroupId]);
 
   const undoChange = (fieldName: string) => {
     const entryIndex = fieldsToUpdate.findIndex(([key]) => key === fieldName);
@@ -101,50 +147,6 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
     }
   };
 
-  // This data structure is needed because of discrepancies between translation keys (fieldName), field names in legacy Api (api) and codelist names (domain).
-  const bulkEditFormFields: BulkEditFormField[] = [
-    { fieldName: "project_name", type: FormValueType.Text, api: "custom.project_name" },
-    { fieldName: "restriction", type: FormValueType.Domain },
-    { fieldName: "workgroup", type: FormValueType.Workgroup },
-    {
-      fieldName: "restriction_until",
-      type: FormValueType.Date,
-    },
-    { fieldName: "national_interest", type: FormValueType.Boolean },
-    { fieldName: "location_precision", type: FormValueType.Domain },
-    { fieldName: "elevation_precision", type: FormValueType.Domain },
-    {
-      fieldName: "reference_elevation_qt",
-      type: FormValueType.Domain,
-      api: "qt_reference_elevation",
-      domain: "elevation_precision",
-    },
-    { fieldName: "reference_elevation_type", type: FormValueType.Domain },
-    { fieldName: "borehole_type", type: FormValueType.Domain },
-    { fieldName: "purpose", type: FormValueType.Domain, api: "extended.purpose" },
-    { fieldName: "boreholestatus", type: FormValueType.Domain, api: "extended.status" },
-    { fieldName: "totaldepth", type: FormValueType.Number, api: "total_depth" },
-    { fieldName: "qt_depth", type: FormValueType.Domain, api: "depth_precision" },
-    { fieldName: "top_bedrock_fresh_md", type: FormValueType.Number, api: "extended.top_bedrock_fresh_md" },
-    {
-      fieldName: "top_bedrock_weathered_md",
-      type: FormValueType.Number,
-      api: "custom.top_bedrock_weathered_md",
-    },
-    { fieldName: "groundwater", type: FormValueType.Boolean, api: "extended.groundwater" },
-    { fieldName: "lithology_top_bedrock", type: FormValueType.Domain, api: "custom.lithology_top_bedrock" }, /// ?
-    {
-      fieldName: "lithostratigraphy_top_bedrock",
-      type: FormValueType.Domain,
-      api: "custom.lithostratigraphy_top_bedrock",
-    },
-    {
-      fieldName: "chronostratigraphy_top_bedrock",
-      type: FormValueType.Domain,
-      api: "custom.chronostratigraphy_top_bedrock",
-    },
-  ];
-
   const renderInput = useCallback(
     (field: BulkEditFormField) => {
       if (field.type === FormValueType.Workgroup) return;
@@ -156,7 +158,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
             canReset={false}
             schemaName={field?.domain || field.api || field.fieldName}
             onUpdate={e => {
-              onFieldValueChange(field.api || field.fieldName, e, field.type);
+              onFieldValueChange(field, e);
             }}
           />
         );
@@ -174,7 +176,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
               { key: 2, name: t("np") },
             ]}
             onUpdate={e => {
-              onFieldValueChange(field.api || field.fieldName, e, field.type);
+              onFieldValueChange(field, e);
             }}
           />
         );
@@ -185,7 +187,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
           label={field.fieldName}
           type={field.type}
           onUpdate={e => {
-            onFieldValueChange(field.api || field.fieldName, e, field.type);
+            onFieldValueChange(field, e);
           }}
         />
       );
