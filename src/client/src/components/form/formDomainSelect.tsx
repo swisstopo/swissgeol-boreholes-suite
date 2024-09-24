@@ -3,6 +3,7 @@ import { FormSelect } from "./form";
 import { FC } from "react";
 import { useDomains } from "../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
+import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
 
 export interface FormDomainSelectProps {
   fieldName: string;
@@ -28,12 +29,9 @@ export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
       label={label}
       selected={selected}
       values={domains
-        // @ts-expect-error test
-        ?.filter(d => d.schema === schemaName)
-        // @ts-expect-error test
-        .sort((a, b) => a.order - b.order)
-        // @ts-expect-error test
-        .map(d => ({ key: d.id, name: d[i18n.language] }))}
+        ?.filter((d: Codelist) => d.schema === schemaName)
+        .sort((a: Codelist, b: Codelist) => a.order - b.order)
+        .map((d: Codelist) => ({ key: d.id, name: d[i18n.language] }))}
     />
   );
 };

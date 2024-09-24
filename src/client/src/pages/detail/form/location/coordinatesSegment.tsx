@@ -459,7 +459,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                     .sort((a: Codelist, b: Codelist) => a.order - b.order)
                     .map((d: Codelist) => ({
                       key: d.id,
-                      // @ts-expect-error - i18n language selection not typed
                       name: d[i18n.language],
                     }))}
                 />

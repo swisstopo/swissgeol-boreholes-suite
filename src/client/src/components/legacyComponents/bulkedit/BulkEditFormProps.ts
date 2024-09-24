@@ -5,7 +5,7 @@ export interface BulkEditFormProps {
   loadBoreholes: () => void;
 }
 
-export type BulkEditFormValue = string | number | boolean | (string | number | boolean)[] | undefined | null;
+export type BulkEditFormValue = string | number | boolean | undefined | null;
 
 export interface BulkEditFormField {
   fieldName: string;
