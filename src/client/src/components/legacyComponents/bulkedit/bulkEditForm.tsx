@@ -212,9 +212,16 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
             {bulkEditFormFields.map(field => {
               if (field.type != FormValueType.Workgroup || enabledWorkgroups.length > 1) {
                 return (
-                  <Accordion key={field.fieldName} data-cy={"bulk-edit-accordion"}>
-                    <AccordionSummary expandIcon={<ChevronDownIcon />} sx={{ pl: 1 }}>
-                      <Stack direction="row">
+                  <Accordion key={field.fieldName} data-cy={"bulk-edit-accordion"} sx={{ minHeight: theme.spacing(6) }}>
+                    <AccordionSummary
+                      expandIcon={<ChevronDownIcon />}
+                      sx={{
+                        pl: 1,
+                        "& .MuiAccordionSummary-content": {
+                          m: 0,
+                        },
+                      }}>
+                      <Stack direction="row" alignItems="center">
                         <IconButton
                           size="small"
                           sx={{
