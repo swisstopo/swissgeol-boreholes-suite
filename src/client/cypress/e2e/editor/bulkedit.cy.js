@@ -79,14 +79,12 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get("input[type=text]")
       .should("have.length", 1)
       .each(($input, index) => {
-        // Fill each input with a test value, here using "Test Value X" where X is the index
         cy.wrap($input).scrollIntoView().clear().type(`A${index}`);
       });
 
     cy.get('input[type="date"]')
       .should("have.length", 1)
       .each($input => {
-        // Set a specific date in the format YYYY-MM-DD (e.g., "2024-09-25")
         cy.wrap($input).clear().type("2024-09-25");
       });
 
