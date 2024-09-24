@@ -1,22 +1,8 @@
 import { AppThemePalette, createTheme, Shadows } from "@mui/material/styles";
-import { ChevronDown } from "lucide-react";
 import { Spacing } from "@mui/system";
+import { ChevronDown } from "lucide-react";
 
 const defaultTheme = createTheme();
-
-const themeBoxShadows: Shadows = [...defaultTheme.shadows];
-const themeSpacing: Spacing = defaultTheme.spacing;
-
-themeBoxShadows[1] =
-  "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)";
-themeBoxShadows[2] = "0 1px 3px #DFE4E9, 0 1px 2px #DFE4E9";
-themeBoxShadows[3] = "4px 4px 2px #DFE4E9"; // basemapSelector
-themeBoxShadows[4] = "2px 6px 6px 0px #DFE4E9";
-themeBoxShadows[5] = "0px 2px 1px -1px #DFE4E9, 0px 1px 1px 0px #DFE4E9, 0px 1px 3px 0px #DFE4E9"; // tabContentBox
-themeBoxShadows[6] = "-1px 0 0 #DFE4E9"; // border for description layers
-themeBoxShadows[7] = "inset -1px 0 0 #DFE4E9, inset 0 -1px 0 #DFE4E9"; // border for description layers
-
-const focusShadow = "0px 0px 0px 3px #8655F6";
 
 const themePalette: AppThemePalette = {
   action: {
@@ -73,9 +59,51 @@ const themePalette: AppThemePalette = {
     filterItemActive: "#1C2834",
     listItemActive: "#DFE4E9",
   },
+  transparent: "rgba(0,0,0,0)",
+  buttonStates: {
+    contained: {
+      hoverOrFocus: {
+        backgroundColor: "#295969",
+      },
+      active: {
+        backgroundColor: "#1F444F",
+      },
+      disabled: {
+        backgroundColor: "#C1D3D9",
+      },
+    },
+    outlined: {
+      hoverOrFocus: {
+        color: "#2F4356",
+        backgroundColor: "#D6E2E6",
+      },
+      active: {
+        color: "#2F4356",
+        backgroundColor: "#ADC6CD",
+      },
+      disabled: {
+        color: "#828E9A",
+        backgroundColor: "#ffffff",
+      },
+    },
+  },
 
   border: "#E0E2E6",
 };
+
+const themeBoxShadows: Shadows = [...defaultTheme.shadows];
+const themeSpacing: Spacing = defaultTheme.spacing;
+
+themeBoxShadows[1] =
+  "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)";
+themeBoxShadows[2] = "0 1px 3px #DFE4E9, 0 1px 2px #DFE4E9";
+themeBoxShadows[3] = "4px 4px 2px #DFE4E9"; // basemapSelector
+themeBoxShadows[4] = "2px 6px 6px 0px #DFE4E9";
+themeBoxShadows[5] = "0px 2px 1px -1px #DFE4E9, 0px 1px 1px 0px #DFE4E9, 0px 1px 3px 0px #DFE4E9"; // tabContentBox
+themeBoxShadows[6] = "-1px 0 0 #DFE4E9"; // border for description layers
+themeBoxShadows[7] = "inset -1px 0 0 #DFE4E9, inset 0 -1px 0 #DFE4E9"; // border for description layers
+
+const focusShadow = "0px 0px 0px 3px #8655F6";
 
 export const theme = createTheme({
   palette: themePalette,
@@ -156,127 +184,128 @@ export const theme = createTheme({
           minWidth: "auto",
           padding: `${themeSpacing(1)} ${themeSpacing(1.5)}`,
           borderRadius: themeSpacing(0.5),
-        },
-        boxShadow: themeBoxShadows[0],
-        "&:hover": {
           boxShadow: themeBoxShadows[0],
-        },
-        "&:focus-visible": {
-          boxShadow: focusShadow,
-        },
-        variants: [
-          {
-            props: { variant: "contained", color: "primary" },
-            style: {
-              backgroundColor: themePalette.primary.main,
-              "&:hover": {
-                backgroundColor: "#295969",
-              },
-              "&:focus-visible": {
-                backgroundColor: "#295969",
-              },
-              "&:active, &.Mui-active": {
-                backgroundColor: "#1F444F",
-              },
-              "&:disabled": {
-                backgroundColor: "#C1D3D9",
+          "&:hover": {
+            boxShadow: themeBoxShadows[0],
+          },
+          "&:focus-visible": {
+            boxShadow: focusShadow,
+          },
+          variants: [
+            {
+              props: { variant: "contained", color: "primary" },
+              style: {
+                backgroundColor: themePalette.primary.main,
+                "&:hover": {
+                  backgroundColor: themePalette.buttonStates.contained.hoverOrFocus.backgroundColor,
+                },
+                "&:focus-visible": {
+                  backgroundColor: themePalette.buttonStates.contained.hoverOrFocus.backgroundColor,
+                },
+                "&:active, &.Mui-active": {
+                  backgroundColor: themePalette.buttonStates.contained.active.backgroundColor,
+                },
+                "&:disabled": {
+                  backgroundColor: themePalette.buttonStates.contained.disabled.backgroundColor,
+                },
               },
             },
-          },
-          {
-            props: { variant: "outlined", color: "primary" },
-            style: {
-              color: themePalette.primary.main,
-              backgroundColor: themePalette.background.default,
-              "&:hover": {
-                color: "#295969",
-                backgroundColor: "#D6E2E6",
-              },
-              "&:focus-visible": {
-                color: "#295969",
-                backgroundColor: "#D6E2E6",
-              },
-              "&:active, &.Mui-active": {
-                color: "#1F444F",
-                backgroundColor: "#ADC6CD",
-              },
-              "&:disabled": {
+            {
+              props: { variant: "outlined", color: "primary" },
+              style: {
+                color: themePalette.primary.main,
                 backgroundColor: themePalette.background.default,
+                "&:hover": {
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+                },
+                "&:focus-visible": {
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+                },
+                "&:active, &.Mui-active": {
+                  color: themePalette.buttonStates.outlined.active.color,
+                  backgroundColor: themePalette.buttonStates.outlined.active.backgroundColor,
+                },
+                "&:disabled": {
+                  color: themePalette.buttonStates.outlined.disabled.color,
+                  backgroundColor: themePalette.buttonStates.outlined.disabled.backgroundColor,
+                },
               },
             },
-          },
-          {
-            props: { variant: "outlined", color: "secondary" },
-            style: {
-              backgroundColor: "rgba(0,0,0,0)",
-              color: themePalette.primary.main,
-              borderColor: themePalette.primary.main,
-              "&:hover": {
-                color: "#2F4356",
-                backgroundColor: "#D6E2E6",
-                borderColor: "#2F4356",
-              },
-              "&:focus-visible": {
-                color: "#295969",
-                backgroundColor: "#D6E2E6",
-                borderColor: "#295969",
-              },
-              "&:active, &.Mui-active": {
-                color: "#1F444F",
-                backgroundColor: "#ADC6CD",
-                borderColor: "#1F444F",
-              },
-              "&:disabled": {
-                backgroundColor: "rgba(0,0,0,0)",
-                borderColor: "#828E94",
+            {
+              props: { variant: "outlined", color: "secondary" },
+              style: {
+                backgroundColor: themePalette.transparent,
+                color: themePalette.primary.main,
+                borderColor: themePalette.primary.main,
+                "&:hover": {
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+                  borderColor: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                },
+                "&:focus-visible": {
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+                  borderColor: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                },
+                "&:active, &.Mui-active": {
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.active.backgroundColor,
+                  borderColor: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                },
+                "&:disabled": {
+                  backgroundColor: themePalette.transparent,
+                  borderColor: themePalette.buttonStates.outlined.disabled.color,
+                },
               },
             },
-          },
-          {
-            props: { variant: "text", color: "primary" },
-            style: {
-              backgroundColor: themePalette.background.default,
-              color: themePalette.primary.main,
-              "&:hover": {
-                color: "#2F4356",
-                backgroundColor: "#D6E2E6",
-              },
-              "&:focus-visible": {
-                color: "#295969",
-                backgroundColor: "#D6E2E6",
-              },
-              "&:active, &.Mui-active": {
-                color: "#1F444F",
-                backgroundColor: "#ADC6CD",
-              },
-              "&:disabled": {
+            {
+              props: { variant: "text", color: "primary" },
+              style: {
                 backgroundColor: themePalette.background.default,
+                color: themePalette.primary.main,
+                "&:hover": {
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+                },
+                "&:focus-visible": {
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+                },
+                "&:active, &.Mui-active": {
+                  color: themePalette.buttonStates.outlined.active.color,
+                  backgroundColor: themePalette.buttonStates.outlined.active.backgroundColor,
+                },
+                "&:disabled": {
+                  backgroundColor: themePalette.background.default,
+                },
               },
             },
-          },
-          {
-            props: { variant: "text", color: "secondary" },
-            style: {
-              backgroundColor: "rgba(0,0,0,0)",
-              color: themePalette.primary.main,
-              "&:hover": {
-                color: "#2F4356",
-                backgroundColor: "#D6E2E6",
-              },
-              "&:focus-visible": {
-                color: "#295969",
-                backgroundColor: "#D6E2E6",
-              },
-              "&:active, &.Mui-active": {
-                color: "#1F444F",
-                backgroundColor: "#ADC6CD",
-              },
-              "&:disabled": {
-                backgroundColor: "rgba(0,0,0,0)",
+            {
+              props: { variant: "text", color: "secondary" },
+              style: {
+                backgroundColor: themePalette.transparent,
+                color: themePalette.primary.main,
+                "&:hover": {
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+                },
+                "&:focus-visible": {
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+                },
+                "&:active, &.Mui-active": {
+                  color: themePalette.buttonStates.outlined.active.color,
+                  backgroundColor: themePalette.buttonStates.outlined.active.backgroundColor,
+                },
+                "&:disabled": {
+                  backgroundColor: themePalette.transparent,
+                },
               },
             },
-          },
-        ],
+          ],
+        },
       },
     },
     MuiCardHeader: {
@@ -307,40 +336,40 @@ export const theme = createTheme({
           backgroundColor: themePalette.primary.main,
           color: themePalette.primary.contrastText,
           "&:hover": {
-            backgroundColor: "#295969",
+            backgroundColor: themePalette.buttonStates.contained.hoverOrFocus.backgroundColor,
           },
           "&:focus-visible": {
-            backgroundColor: "#295969",
+            backgroundColor: themePalette.buttonStates.contained.hoverOrFocus.backgroundColor,
             boxShadow: focusShadow,
           },
           "&:active": {
-            backgroundColor: "#1F444F",
+            backgroundColor: themePalette.buttonStates.contained.active.backgroundColor,
           },
           "&:disabled": {
-            backgroundColor: "#C1D3D9",
+            backgroundColor: themePalette.buttonStates.contained.disabled.backgroundColor,
           },
         },
         colorError: {
           "&:hover": {
             color: themePalette.error.dark,
-            backgroundColor: "rgba(0, 0, 0, 0)",
+            backgroundColor: themePalette.transparent,
           },
         },
         colorAi: {
           color: themePalette.primary.contrastText,
-          background: "linear-gradient(#5B21B6, #8B5CF6)",
+          background: `linear-gradient(${themePalette.ai.main}, ${themePalette.ai.mainEnd})`,
           "&:hover": {
-            background: "linear-gradient(#4F46E5, #E53940)",
+            background: `linear-gradient(${themePalette.ai.active}, ${themePalette.ai.activeEnd})`,
           },
           "&:focus-visible": {
             background: "linear-gradient(#4338CA, #BF1F25)",
-            boxShadow: "0px 0px 0px 3px #8655F6",
+            boxShadow: focusShadow,
           },
           "&:active, &.Mui-active": {
-            background: "linear-gradient(#4F46E5, #E53940)",
+            background: `linear-gradient(${themePalette.ai.active}, ${themePalette.ai.activeEnd})`,
           },
           "&:disabled": {
-            background: "#C1D3D9",
+            background: themePalette.action.disabled,
           },
         },
       },
@@ -399,8 +428,8 @@ export const theme = createTheme({
           padding: "7px",
           color: themePalette.primary.main,
           "&.Mui-selected": {
-            color: "#2F4356",
-            backgroundColor: "#D6E2E6",
+            color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+            backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
           },
         },
       },
@@ -425,7 +454,7 @@ export const theme = createTheme({
           },
 
           "&.ai .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#5B21B6 !important",
+            borderColor: `${themePalette.ai.main} !important`,
             borderWidth: "3px",
           },
         },
@@ -462,8 +491,8 @@ export const theme = createTheme({
     MuiDialogTitle: {
       styleOverrides: {
         root: {
-          paddingTop: "24px",
-          paddingBottom: "16px",
+          paddingTop: themeSpacing(3),
+          paddingBottom: themeSpacing(2),
           borderBottom: "1px solid " + themePalette.border,
         },
       },
@@ -472,7 +501,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderTop: "1px solid " + themePalette.border,
-          padding: "24px",
+          padding: themeSpacing(3),
         },
       },
     },
