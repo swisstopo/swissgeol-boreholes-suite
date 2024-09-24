@@ -6,7 +6,6 @@ import { Button, Form, Header, Input } from "semantic-ui-react";
 import { produce } from "immer";
 import _ from "lodash";
 import PropTypes from "prop-types";
-
 import { patchBoreholes } from "../../../api-lib/index.js";
 import { CancelButton, SaveButton } from "../../buttons/buttons";
 import DateField from "../dateField.jsx";

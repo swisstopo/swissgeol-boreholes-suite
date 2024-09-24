@@ -1,6 +1,5 @@
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-
 import { patchSettings } from "../../../../api-lib";
 import { CustomLayersComponent } from "./customLayersComponent.jsx";
 

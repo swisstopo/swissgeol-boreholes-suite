@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { Checkbox, Form } from "semantic-ui-react";
-
 import { Role, User, Workgroup, WorkgroupRole } from "../../../api/apiInterfaces.js";
 
 export interface WorkgroupRoleSettingsProps {

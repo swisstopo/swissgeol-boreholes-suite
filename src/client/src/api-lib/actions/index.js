@@ -1,5 +1,4 @@
 import axios from "axios";
-
 import { getAuthorizationHeader } from "../../api/authentication";
 import store from "../reducers";
 

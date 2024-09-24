@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Box, Chip, Tooltip } from "@mui/material";
 import { CircleX } from "lucide-react";
 import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
-
 import { FilterContext } from "./filterContext.tsx";
 import { Filter } from "./FilterInterface.ts";
 

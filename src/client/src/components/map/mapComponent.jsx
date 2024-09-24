@@ -21,7 +21,6 @@ import WMTS from "ol/source/WMTS";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
 import proj4 from "proj4";
 import PropTypes from "prop-types";
-
 import { getGeojson } from "../../api-lib";
 import { theme } from "../../AppTheme.ts";
 import { BasemapContext } from "../basemapSelector/basemapContext.tsx";

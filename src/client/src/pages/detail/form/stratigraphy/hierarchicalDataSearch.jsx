@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, Header } from "semantic-ui-react";
-
 import { useDomainSchema } from "../../../../api/fetchApiV2.js";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import * as Styled from "../../../overview/sidePanelContent/filter/listFilterStyles.js";

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import { Language } from "../../appInterfaces";
 import i18n from "../../i18n";
 import { ButtonSelect } from "../buttons/buttonSelect.tsx";

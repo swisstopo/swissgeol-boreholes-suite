@@ -1,6 +1,5 @@
 import { withTranslation } from "react-i18next";
 import { Route, Switch, withRouter } from "react-router-dom";
-
 import { theme } from "../../AppTheme";
 import { useAuth } from "../../auth/useBdmsAuth";
 import AboutSettings from "./aboutSettings";

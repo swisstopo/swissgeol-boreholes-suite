@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { AlertColor } from "@mui/material";
-
 import { AlertOptions } from "./alertInterfaces";
 
 export const useAlertManager = () => {

@@ -1,7 +1,6 @@
 import React from "react";
 import { Form, Header } from "semantic-ui-react";
 import PropTypes from "prop-types";
-
 import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
 
 class CantonDropdown extends React.Component {

@@ -2,7 +2,6 @@ import { withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
-
 import { useAuth } from "../../auth/useBdmsAuth";
 import ListItem from "../../components/legacyComponents/listItem";
 

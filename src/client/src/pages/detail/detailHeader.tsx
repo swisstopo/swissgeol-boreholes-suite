@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { Check, ChevronLeft, Trash2 } from "lucide-react";
-
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme.ts";

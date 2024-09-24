@@ -3,7 +3,6 @@ import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
-
 import { boundingBox } from "../../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { Direction, ReferenceSystemKey } from "../../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { NumericFormatForCoordinates } from "../../pages/detail/form/location/NumericFormatForCoordinates.tsx";

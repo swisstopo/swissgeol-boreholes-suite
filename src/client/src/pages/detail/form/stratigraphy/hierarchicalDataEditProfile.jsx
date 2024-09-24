@@ -14,7 +14,6 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-
 import { useDomainSchema } from "../../../../api/fetchApiV2.js";
 import LayerCard from "./layerCard.jsx";
 import LayerGap from "./layerGap.jsx";

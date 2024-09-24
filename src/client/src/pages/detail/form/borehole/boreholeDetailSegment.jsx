@@ -4,7 +4,6 @@ import { NumericFormat } from "react-number-format";
 import { FormControl, FormControlLabel, RadioGroup } from "@mui/material";
 import { Form, Segment } from "semantic-ui-react";
 import _ from "lodash";
-
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.js";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import DomainTree from "../../../../components/legacyComponents/domain/tree/domainTree.jsx";

@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
 
 export interface ErrorResponse {

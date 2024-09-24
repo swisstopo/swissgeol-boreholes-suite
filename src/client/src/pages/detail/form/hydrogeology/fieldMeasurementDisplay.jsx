@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
-
 import { deleteFieldMeasurement, useDomains } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";

@@ -7,7 +7,6 @@ import { Plus, Trash2 } from "lucide-react";
 import _ from "lodash";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
-
 import { getWms } from "../../../../api-lib/index";
 import { theme } from "../../../../AppTheme";
 import { AlertContext } from "../../../../components/alert/alertContext";

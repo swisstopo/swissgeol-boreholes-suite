@@ -15,7 +15,6 @@ import {
   useGridApiRef,
 } from "@mui/x-data-grid";
 import { LockKeyhole } from "lucide-react";
-
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../../api/fetchApiV2";
 import { theme } from "../../../AppTheme.ts";

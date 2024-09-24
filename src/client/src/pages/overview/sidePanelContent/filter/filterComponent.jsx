@@ -7,7 +7,6 @@ import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
 import _ from "lodash";
 import PropTypes from "prop-types";
-
 import { theme } from "../../../../AppTheme.ts";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import FilterChips from "./FilterChips.tsx";

@@ -1,5 +1,4 @@
 import { useContext } from "react";
-
 import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 import { LabelingContext } from "./labelingContext.tsx";
 

@@ -3,7 +3,6 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Divider, IconButton } from "@mui/material";
-
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";

@@ -3,7 +3,6 @@ import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { AlertColor, Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { File as FileIcon } from "lucide-react";
-
 import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { labelingFileFormat } from "./labelingInterfaces.tsx";

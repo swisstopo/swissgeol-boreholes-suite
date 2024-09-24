@@ -4,7 +4,6 @@ import { useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
 import { Checkbox } from "semantic-ui-react";
 import _ from "lodash";
-
 import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.js";
 import LithologyAttributeList from "./lithologyAttributeList/lithologyAttributeList.jsx";
 import * as Styled from "./styles.js";

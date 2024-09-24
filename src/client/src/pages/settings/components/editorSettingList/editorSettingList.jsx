@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 import { Segment } from "semantic-ui-react";
 import _ from "lodash";
-
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import * as Styled from "./styles";
 

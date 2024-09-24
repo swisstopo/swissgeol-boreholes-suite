@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Box, LinearProgress } from "@mui/material";
-
 import { useLithostratigraphies } from "../../../../../api/fetchApiV2.js";
 
 const handleColor = layer =>

@@ -2,7 +2,6 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { NumericFormat } from "react-number-format";
 import { Form } from "semantic-ui-react";
-
 import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import DomainText from "../../../../components/legacyComponents/domain/domainText.jsx";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";

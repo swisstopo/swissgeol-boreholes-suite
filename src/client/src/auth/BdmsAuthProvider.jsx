@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { AuthProvider as OidcAuthProvider } from "react-oidc-context";
 import { CircularProgress } from "@mui/material";
 import { WebStorageStateStore } from "oidc-client-ts";
-
 import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
 import { AuthOverlay } from "./AuthOverlay";
 import { BdmsAuthContext } from "./BdmsAuthContext";

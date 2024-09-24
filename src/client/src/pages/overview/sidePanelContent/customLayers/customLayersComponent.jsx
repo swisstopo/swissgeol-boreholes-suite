@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Box, Stack } from "@mui/material";
 import { Button, Checkbox, Icon } from "semantic-ui-react";
-
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 
 export const CustomLayersComponent = ({

@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { Form, Radio } from "semantic-ui-react";
 import _ from "lodash";
 import PropTypes from "prop-types";
-
 import { capitalizeFirstLetter } from "../../../../utils";
 
 class StatusFilter extends Component {

@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { Box, Chip, MenuItem, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
-
 import { getFormFieldError } from "./form";
 
 export interface FormMultiSelectProps {

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader } from "@mui/material";
-
 import { fetchApiV2, useDomains } from "../../../../api/fetchApiV2.js";
 import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
 import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";

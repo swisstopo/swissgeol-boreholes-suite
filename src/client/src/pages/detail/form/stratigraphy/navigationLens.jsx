@@ -5,7 +5,6 @@ import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { Box, Button, ButtonGroup } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import useResizeObserver from "@react-hook/resize-observer";
-
 import { theme } from "../../../../AppTheme.ts";
 import { clamp } from "./clamp.js";
 import { NavState } from "./navigationContainer.jsx";

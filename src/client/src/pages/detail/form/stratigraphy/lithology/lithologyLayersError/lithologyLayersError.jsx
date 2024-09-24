@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Icon, Radio } from "semantic-ui-react";
-
 import { deleteLayer, gapLayer } from "../../../../../../api-lib";
 import { addBedrock, fetchLayerById } from "../../../../../../api/fetchApiV2.js";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";

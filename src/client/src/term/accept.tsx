@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { getTerms } from "../api-lib";
 import { DisclaimerDialog } from "./disclaimerDialog";
 import { de, en, fr, it } from "./disclaimerFallback";

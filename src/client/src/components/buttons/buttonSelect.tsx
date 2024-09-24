@@ -1,7 +1,6 @@
 import { FC, MouseEvent, ReactNode, useState } from "react";
 import { Button, ButtonProps, List, ListItem, ListItemIcon, ListItemText, Popover, SxProps } from "@mui/material";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
-
 import { theme } from "../../AppTheme.ts";
 
 export interface ButtonSelectItem {

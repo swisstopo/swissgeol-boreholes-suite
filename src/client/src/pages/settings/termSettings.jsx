@@ -5,7 +5,6 @@ import { Button } from "@mui/material";
 import { Form, Modal, TextArea } from "semantic-ui-react";
 import Markdown from "markdown-to-jsx";
 import PropTypes from "prop-types";
-
 import { draftTerms, getTermsDraft, publishTerms } from "../../api-lib/index";
 import TranslationKeys from "../../auth/translationKeys";
 import { CancelButton } from "../../components/buttons/buttons";

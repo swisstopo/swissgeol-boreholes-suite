@@ -1,5 +1,4 @@
 import { createContext, FC, PropsWithChildren, useCallback, useEffect, useLayoutEffect, useState } from "react";
-
 import { ExtractionObject, LabelingContextInterface, PanelPosition } from "./labelingInterfaces.tsx";
 
 export const LabelingContext = createContext<LabelingContextInterface>({

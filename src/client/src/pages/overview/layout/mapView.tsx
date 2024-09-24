@@ -4,7 +4,6 @@ import { useHistory } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Modal } from "semantic-ui-react";
-
 import { loadEditingBoreholes } from "../../../api-lib";
 import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
 import MultipleForm from "../../../components/legacyComponents/multiple/multipleForm.jsx";

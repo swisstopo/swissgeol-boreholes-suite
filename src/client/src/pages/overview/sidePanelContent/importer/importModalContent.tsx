@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack } from "@mui/material/";
-
 import { downloadCodelistCsv } from "../../../../api/fetchApiV2.js";
 import { StackHalfWidth } from "../../../../components/styledComponents.ts";
 import { capitalizeFirstLetter } from "../../../../utils.ts";

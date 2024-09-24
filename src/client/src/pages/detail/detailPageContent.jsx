@@ -6,7 +6,6 @@ import { Box, Stack } from "@mui/material";
 import { Dimmer, Loader } from "semantic-ui-react";
 import _ from "lodash";
 import PropTypes from "prop-types";
-
 import { loadBorehole, patchBorehole, updateBorehole } from "../../api-lib";
 import { AlertContext } from "../../components/alert/alertContext";
 import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";

@@ -15,7 +15,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-
 import {
   addFaciesDescription,
   addLithologicalDescription,

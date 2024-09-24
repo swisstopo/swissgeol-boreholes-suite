@@ -3,7 +3,6 @@ import { FormControl, FormControlLabel, RadioGroup } from "@mui/material";
 import { Form } from "semantic-ui-react";
 import _ from "lodash";
 import moment from "moment";
-
 import DateField from "../../../../components/legacyComponents/dateField.jsx";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";

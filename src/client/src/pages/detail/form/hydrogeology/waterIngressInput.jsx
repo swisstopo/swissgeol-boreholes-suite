@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-
 import { addWaterIngress, updateWaterIngress, useDomains } from "../../../../api/fetchApiV2.js";
 import DataInputCard from "../../../../components/dataCard/dataInputCard.jsx";
 import { FormContainer, FormSelect } from "../../../../components/form/form";

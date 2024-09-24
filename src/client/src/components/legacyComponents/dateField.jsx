@@ -5,7 +5,6 @@ import { Input } from "semantic-ui-react";
 import { de, enGB, fr, it } from "date-fns/esm/locale";
 import moment from "moment";
 import PropTypes from "prop-types";
-
 import "react-datepicker/dist/react-datepicker.css";
 import "./dateField.css";
 

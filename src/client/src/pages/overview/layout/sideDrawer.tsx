@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Collapse, Paper } from "@mui/material";
-
 import { theme } from "../../../AppTheme.ts";
 
 interface SideDrawerProps {

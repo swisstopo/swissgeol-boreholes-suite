@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { Alert, Snackbar } from "@mui/material";
-
 import { AlertContext } from "./alertContext";
 
 export const AlertBanner = () => {

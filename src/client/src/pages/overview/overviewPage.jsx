@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { useLocation, withRouter } from "react-router-dom";
-
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import MainSideNav from "./layout/mainSideNav.tsx";

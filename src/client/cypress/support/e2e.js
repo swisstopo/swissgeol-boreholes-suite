@@ -1,5 +1,4 @@
 import { interceptApiCalls, loginAndResetState } from "../e2e/helpers/testHelpers";
-
 import "cypress-file-upload";
 
 Cypress.on("uncaught:exception", () => {

@@ -6,7 +6,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { Stack, Tooltip, Typography } from "@mui/material";
 import { Icon, Popup } from "semantic-ui-react";
-
 import { useLithostratigraphies } from "../../../../../../../api/fetchApiV2.js";
 import * as Styled from "./styles.js";
 

@@ -13,7 +13,6 @@
     "^lucide-react$",
     "^.*assets/icons.*$",
     "<THIRD_PARTY_MODULES>",
-    "",
     "^[./]"
   ]
 }

@@ -8,7 +8,6 @@ import { register } from "ol/proj/proj4";
 import { optionsFromCapabilities } from "ol/source/WMTS";
 import proj4 from "proj4";
 import PropTypes from "prop-types";
-
 import { patchCodeConfig, patchSettings } from "../../api-lib/index";
 import { theme } from "../../AppTheme";
 import TranslationText from "../../components/legacyComponents/translationText.jsx";

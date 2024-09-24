@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import WarningIcon from "@mui/icons-material/Warning";
 import { Box, Stack, Typography } from "@mui/material";
-
 import { theme } from "../../../../../../../AppTheme.ts";
 import { CancelButton, DeleteButton } from "../../../../../../../components/buttons/buttons.tsx";
 

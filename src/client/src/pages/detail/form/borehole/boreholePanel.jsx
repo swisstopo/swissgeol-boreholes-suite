@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
-
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
 import BoreholeDetailSegment from "./boreholeDetailSegment.jsx";
 import BoreholeGeneralSegment from "./boreholeGeneralSegment.jsx";

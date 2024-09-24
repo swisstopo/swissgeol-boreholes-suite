@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
-
 import LithologyViewProfile from "../lithologyViewProfile.jsx";
 import NavigationChild from "../navigationChild.jsx";
 import NavigationContainer from "../navigationContainer.jsx";

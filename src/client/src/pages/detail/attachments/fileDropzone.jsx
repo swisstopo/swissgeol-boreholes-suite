@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Chip } from "@mui/material";
-
 import { theme } from "../../../AppTheme.ts";
 
 /**

@@ -1,5 +1,4 @@
 import { List } from "semantic-ui-react";
-
 import * as Styled from "./styles";
 
 const ListItem = props => {

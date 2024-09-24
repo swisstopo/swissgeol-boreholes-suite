@@ -2,7 +2,6 @@ import React, { useCallback, useContext, useLayoutEffect, useState } from "react
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
-
 import { deleteBoreholes } from "../../../api-lib";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { copyBorehole } from "../../../api/fetchApiV2";

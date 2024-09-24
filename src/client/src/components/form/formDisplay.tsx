@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, SxProps, Typography } from "@mui/material";
-
 import { Language } from "../../appInterfaces.ts";
 import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
 import { FormValueType } from "./form";

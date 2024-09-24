@@ -5,7 +5,6 @@ import SaveIcon from "@mui/icons-material/Save";
 import { Button } from "@mui/material";
 import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
-
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { ButtonProps } from "./buttonsInterface";
 

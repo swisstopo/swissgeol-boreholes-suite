@@ -6,7 +6,6 @@ import { Header, Icon, Label, Modal } from "semantic-ui-react";
 import { RotateCcw, X } from "lucide-react";
 import _ from "lodash";
 import PropTypes from "prop-types";
-
 import {
   loadBorehole,
   loadWorkflows,

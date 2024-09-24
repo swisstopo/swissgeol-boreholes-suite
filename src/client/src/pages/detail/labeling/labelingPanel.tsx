@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
-
 import { getDataExtractionFileInfo, getFiles, uploadFile } from "../../../api/file/file.ts";
 import {
   DataExtractionResponse,
@@ -35,7 +34,6 @@ import {
   PanelPosition,
   useLabelingContext,
 } from "./labelingInterfaces.tsx";
-
 import "./labelingPanel.css";
 
 export const LabelingAlert = styled(Alert)({

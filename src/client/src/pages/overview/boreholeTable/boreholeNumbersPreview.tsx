@@ -2,7 +2,6 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { NumericFormat } from "react-number-format";
 import { CircularProgress, Typography } from "@mui/material";
-
 import { capitalizeFirstLetter } from "../../../utils.ts";
 
 interface BoreholeNumbersPreviewProps {

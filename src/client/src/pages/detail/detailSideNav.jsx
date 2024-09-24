@@ -7,7 +7,6 @@ import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
 import { styled } from "@mui/material/styles";
 import { List } from "semantic-ui-react";
-
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { capitalizeFirstLetter } from "../../utils";

@@ -1,7 +1,6 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
-
 import { AddButton } from "../buttons/buttons.tsx";
 import { FullPage, FullPageCentered } from "../styledComponents.ts";
 import { DataCard, DataCardButtonContainer, DataCardContainer, DataCardItem } from "./dataCard";

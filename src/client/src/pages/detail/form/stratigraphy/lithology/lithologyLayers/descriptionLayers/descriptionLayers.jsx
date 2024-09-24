@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import WarningIcon from "@mui/icons-material/Warning";
 import { Box, Stack, Typography } from "@mui/material";
 import { produce } from "immer";
-
 import { theme } from "../../../../../../../AppTheme.ts";
 import ActionButtons from "./actionButtons.jsx";
 import DescriptionDeleteDialog from "./descriptionDeleteDialog.jsx";

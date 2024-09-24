@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, Icon, Input } from "semantic-ui-react";
 import _ from "lodash";
-
 import { addIdentifier, removeIdentifier } from "../../../../api-lib";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import DomainText from "../../../../components/legacyComponents/domain/domainText.jsx";

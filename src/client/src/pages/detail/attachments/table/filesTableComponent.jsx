@@ -3,7 +3,6 @@ import { IconButton } from "@mui/material";
 import { Checkbox, Icon, Table, TextArea } from "semantic-ui-react";
 import { Trash2 } from "lucide-react";
 import PropTypes from "prop-types";
-
 import { downloadFile } from "../../../../api/file/file";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import DownloadLink from "../downloadlink.jsx";

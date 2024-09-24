@@ -1,6 +1,5 @@
 import { forwardRef, useState } from "react";
 import { IconButton, Stack, Typography } from "@mui/material";
-
 import { theme } from "../../AppTheme";
 import { ButtonProps } from "./buttonsInterface";
 

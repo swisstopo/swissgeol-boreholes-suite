@@ -2,7 +2,6 @@ import { FC, PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import styled from "@mui/material/styles/styled";
-
 import { theme } from "../AppTheme.ts";
 import { LanguagePopup } from "../components/header/languagePopup.tsx";
 

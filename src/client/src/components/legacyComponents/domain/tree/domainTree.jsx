@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { Dropdown, Form, Header, Icon, Input, List, Modal } from "semantic-ui-react";
 import _ from "lodash";
 import PropTypes from "prop-types";
-
 import { loadDomains } from "../../../../api-lib/index.js";
 import DomainText from "../domainText.jsx";
 

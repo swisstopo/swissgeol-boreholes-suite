@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { Form, Segment, TextArea } from "semantic-ui-react";
-
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import { capitalizeFirstLetter } from "../../../../utils";
 

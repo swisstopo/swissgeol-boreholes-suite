@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox, Form, Input, TextArea } from "semantic-ui-react";
 import _ from "lodash";
-
 import DateField from "../../../../components/legacyComponents/dateField.jsx";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown";
 import DomainTree from "../../../../components/legacyComponents/domain/tree/domainTree";

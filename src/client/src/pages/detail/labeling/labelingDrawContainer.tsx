@@ -15,7 +15,6 @@ import Projection from "ol/proj/Projection";
 import Static from "ol/source/ImageStatic";
 import VectorSource from "ol/source/Vector";
 import { Fill, Stroke, Style } from "ol/style";
-
 import { loadImage } from "../../../api/file/file.ts";
 import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";

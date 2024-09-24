@@ -2,7 +2,6 @@ import React from "react";
 import { withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-
 import { loadDomains } from "../../../api-lib/index.js";
 
 class DomainText extends React.Component {

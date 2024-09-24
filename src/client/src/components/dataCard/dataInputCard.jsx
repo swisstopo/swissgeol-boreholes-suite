@@ -1,7 +1,6 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-
 import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
 import { FormContainer } from "../form/form";
 import { PromptContext } from "../prompt/promptContext.tsx";

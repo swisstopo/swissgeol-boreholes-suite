@@ -2,7 +2,6 @@ import { memo, useContext, useMemo, useState } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Box, Button, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
-
 import { theme } from "../../AppTheme";
 import { Basemap } from "./Basemap";
 import { BasemapContext } from "./basemapContext";

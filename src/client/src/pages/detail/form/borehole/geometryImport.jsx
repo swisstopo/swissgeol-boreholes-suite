@@ -14,7 +14,6 @@ import {
   Typography,
 } from "@mui/material/";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
-
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import {
   getBoreholeGeometryFormats,

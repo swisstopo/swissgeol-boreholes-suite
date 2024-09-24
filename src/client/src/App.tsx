@@ -4,7 +4,6 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import { Redirect, Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
-
 import { theme } from "./AppTheme";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { AlertProvider } from "./components/alert/alertContext";

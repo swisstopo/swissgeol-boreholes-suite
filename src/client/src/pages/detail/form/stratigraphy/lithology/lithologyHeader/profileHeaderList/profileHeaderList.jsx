@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { Icon } from "semantic-ui-react";
-
 import DateText from "../../../../../../../components/legacyComponents/dateText.js";
 import * as Styled from "./styles.js";
 

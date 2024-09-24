@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Box, Stack } from "@mui/material";
 import _ from "lodash";
-
 import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import PointComponent from "../../../../components/map/pointComponent.jsx";
 import CantonMunicipalitySegment from "./cantonMunicipalitySegment.jsx";

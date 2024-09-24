@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
-
 import store from "../reducers";
 import { ApiError } from "./apiInterfaces";
 import { getAuthorizationHeader } from "./authentication";

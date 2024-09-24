@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Button, Stack, Typography } from "@mui/material";
-
 import { createBorehole } from "../../../api-lib";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { SideDrawerHeader } from "../layout/sideDrawerHeader.tsx";
