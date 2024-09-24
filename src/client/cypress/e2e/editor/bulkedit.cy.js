@@ -20,7 +20,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get("h1").should("have.text", "Bulk editing");
   });
 
-  it.only("displays workgroup accordion only if user has permission for more than one workgroup", () => {
+  it("displays workgroup accordion only if user has permission for more than one workgroup", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 
