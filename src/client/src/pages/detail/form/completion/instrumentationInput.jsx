@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { addInstrumentation, getCasings, updateInstrumentation, useDomains } from "../../../../api/fetchApiV2.js";
+import { addInstrumentation, getCasings, updateInstrumentation } from "../../../../api/fetchApiV2.js";
 import { completionSchemaConstants } from "./completionSchemaConstants.js";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.jsx";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.jsx";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 
 const InstrumentationInput = ({ item, parentId }) => {
-  const domains = useDomains();
-  const { i18n } = useTranslation();
   const [casings, setCasings] = useState([]);
   const getCasingOptions = useGetCasingOptions();
 
@@ -59,31 +57,19 @@ const InstrumentationInput = ({ item, parentId }) => {
         />
       </FormContainer>
       <FormContainer direction="row">
-        <FormSelect
+        <FormDomainSelect
           fieldName="kindId"
           label="kindInstrument"
           selected={item.kindId}
           required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === completionSchemaConstants.instrumentationType)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
+          schemaName={completionSchemaConstants.instrumentationType}
         />
-        <FormSelect
+        <FormDomainSelect
           fieldName="statusId"
           label="statusInstrument"
           selected={item.statusId}
           required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === completionSchemaConstants.instrumentationStatus)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
+          schemaName={completionSchemaConstants.instrumentationStatus}
         />
       </FormContainer>
       <FormContainer direction="row">

@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { addFieldMeasurement, updateFieldMeasurement, useDomains } from "../../../../api/fetchApiV2";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
@@ -14,6 +14,7 @@ import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 
 const FieldMeasurementInput = props => {
   const { item, parentId } = props;
@@ -21,7 +22,7 @@ const FieldMeasurementInput = props => {
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
   const domains = useDomains();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const formMethods = useForm({
     mode: "all",
     defaultValues: {
@@ -158,36 +159,23 @@ const FieldMeasurementInput = props => {
                   key={field.id}
                   marginTop="8px"
                   data-cy={`fieldMeasurementResult-${index}`}>
-                  <FormSelect
+                  <FormDomainSelect
                     fieldName={`fieldMeasurementResults.${index}.sampleTypeId`}
                     label="fieldMeasurementSampleType"
                     selected={field.sampleTypeId}
                     required={true}
-                    values={domains?.data
-                      ?.filter(d => d.schema === hydrogeologySchemaConstants.fieldMeasurementSampleType)
-                      .sort((a, b) => a.order - b.order)
-                      .map(d => ({
-                        key: d.id,
-                        name: d[i18n.language],
-                      }))}
+                    schemaName={hydrogeologySchemaConstants.fieldMeasurementSampleType}
                   />
-                  <FormSelect
+                  <FormDomainSelect
                     fieldName={`fieldMeasurementResults.${index}.parameterId`}
                     label="parameter"
                     selected={field.parameterId}
                     required={true}
-                    values={domains?.data
-                      ?.filter(d => d.schema === hydrogeologySchemaConstants.fieldMeasurementParameter)
-                      .sort((a, b) => a.order - b.order)
-                      .map(d => ({
-                        key: d.id,
-                        name: d[i18n.language],
-                      }))}
+                    schemaName={hydrogeologySchemaConstants.fieldMeasurementParameter}
                     onUpdate={value => {
                       setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value, domains.data) });
                     }}
                   />
-
                   <FormInput
                     fieldName={`fieldMeasurementResults.${index}.value`}
                     label="value"

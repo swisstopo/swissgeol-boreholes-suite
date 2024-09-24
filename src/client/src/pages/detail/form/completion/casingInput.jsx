@@ -3,22 +3,22 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
 import Delete from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
-import { addCasing, updateCasing, useDomains } from "../../../../api/fetchApiV2";
+import { addCasing, updateCasing } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
-import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { extractCasingDepth } from "./casingUtils.jsx";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 
 const CasingInput = props => {
   const { item, parentId } = props;
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
-  const domains = useDomains();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const formMethods = useForm({
     mode: "all",
     defaultValues: {
@@ -218,32 +218,20 @@ const CasingInput = props => {
                             required={true}
                             onUpdate={updateDepth}
                           />
-                          <FormSelect
+                          <FormDomainSelect
                             fieldName={`casingElements.${index}.kindId`}
                             label="kindCasingLayer"
                             selected={field.kindId}
                             required={true}
-                            values={domains?.data
-                              ?.filter(d => d.schema === completionSchemaConstants.casingType)
-                              .sort((a, b) => a.order - b.order)
-                              .map(d => ({
-                                key: d.id,
-                                name: d[i18n.language],
-                              }))}
+                            schemaName={completionSchemaConstants.casingType}
                           />
                         </FormContainer>
                         <FormContainer direction="row">
-                          <FormSelect
+                          <FormDomainSelect
                             fieldName={`casingElements.${index}.materialId`}
                             label="materialCasingLayer"
                             selected={field.materialId}
-                            values={domains?.data
-                              ?.filter(d => d.schema === completionSchemaConstants.casingMaterial)
-                              .sort((a, b) => a.order - b.order)
-                              .map(d => ({
-                                key: d.id,
-                                name: d[i18n.language],
-                              }))}
+                            schemaName={completionSchemaConstants.casingMaterial}
                           />
                           <FormInput
                             fieldName={`casingElements.${index}.innerDiameter`}

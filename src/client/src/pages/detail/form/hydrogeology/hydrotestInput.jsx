@@ -14,6 +14,7 @@ import Delete from "@mui/icons-material/Delete";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 
 const HydrotestInput = props => {
   const { item, parentId } = props;
@@ -213,19 +214,13 @@ const HydrotestInput = props => {
           <FormContainer>
             <ObservationInput observation={item} boreholeId={parentId} />
             <FormContainer direction="row">
-              <FormMultiSelect
+              <FormDomainSelect
                 fieldName="testKindId"
                 label="hydrotestKind"
                 tooltipLabel="hydrotestResultsWillBeDeleted"
                 required={true}
                 selected={item?.kindCodelists?.map(c => c.id) || []}
-                values={domains?.data
-                  ?.filter(d => d.schema === hydrogeologySchemaConstants.hydrotestKind)
-                  .sort((a, b) => a.order - b.order)
-                  .map(d => ({
-                    key: d.id,
-                    name: d[i18n.language],
-                  }))}
+                schemaName={hydrogeologySchemaConstants.hydrotestKind}
               />
               <FormMultiSelect
                 fieldName="flowDirectionId"

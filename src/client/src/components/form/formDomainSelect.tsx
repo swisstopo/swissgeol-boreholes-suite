@@ -10,6 +10,7 @@ export interface FormDomainSelectProps {
   label: string;
   schemaName: string;
   required?: boolean;
+  readonly?: boolean;
   disabled?: boolean;
   selected?: number[];
   sx?: SxProps;

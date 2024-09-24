@@ -6,7 +6,7 @@ import {
   getPrecisionFromString,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/legacyComponents/formUtils.js";
-import { fetchApiV2, useDomains } from "../../../../api/fetchApiV2.js";
+import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
 import {
   CoordinatePrecisions,
   Coordinates,
@@ -22,7 +22,7 @@ import { LabelingButton } from "../../../../components/buttons/labelingButton.ts
 import { Coordinate, ExtractionState, useLabelingContext } from "../../labeling/labelingInterfaces.js";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
-import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect.tsx";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -34,7 +34,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   showLabeling,
   editingEnabled,
 }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { extractionObject, setExtractionObject } = useLabelingContext();
 
   // --- State variables ---
@@ -45,8 +45,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   const formMethods = useForm({
     mode: "all",
   });
-
-  const { data: domains } = useDomains();
 
   // --- UseCallback hooks ---
 
@@ -476,19 +474,13 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                     />
                   </FormContainer>
                 </FormContainer>
-                <FormSelect
+                <FormDomainSelect
                   fieldName={`location_precision`}
                   label="location_precision"
                   readonly={!editingEnabled}
                   onUpdate={e => updateChange("location_precision", e, false)}
                   selected={[borehole.data.location_precision]}
-                  values={domains
-                    ?.filter((d: Codelist) => d.schema === "location_precision")
-                    .sort((a: Codelist, b: Codelist) => a.order - b.order)
-                    .map((d: Codelist) => ({
-                      key: d.id,
-                      name: d[i18n.language],
-                    }))}
+                  schemaName={"location_precision"}
                 />
               </FormContainer>
             </CardContent>
