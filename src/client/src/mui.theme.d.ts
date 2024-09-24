@@ -1,8 +1,8 @@
+import { Typography } from "@mui/material";
 import { Theme, ThemeOptions } from "@mui/material/styles";
+import { TypographyOptions } from "@mui/material/styles/createTypography";
 import { Breakpoints } from "@mui/system";
 import { BreakpointsOptions } from "@mui/system/createTheme/createBreakpoints";
-import { Typography } from "@mui/material";
-import { TypographyOptions } from "@mui/material/styles/createTypography";
 
 declare module "@mui/material/IconButton" {
   interface IconButtonPropsColorOverrides {

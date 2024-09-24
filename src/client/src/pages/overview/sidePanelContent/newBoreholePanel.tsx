@@ -1,12 +1,12 @@
 import { useContext } from "react";
-import WorkgroupSelect from "./commons/workgroupSelect.tsx";
+import { useTranslation } from "react-i18next";
+import { useHistory } from "react-router-dom";
 import { Button, Stack, Typography } from "@mui/material";
 import { createBorehole } from "../../../api-lib";
-import { useHistory } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { SideDrawerHeader } from "../layout/sideDrawerHeader.tsx";
 import { NewBoreholeProps } from "./commons/actionsInterfaces.ts";
+import WorkgroupSelect from "./commons/workgroupSelect.tsx";
 
 const NewBoreholePanel = ({ workgroup, enabledWorkgroups, setWorkgroup, toggleDrawer }: NewBoreholeProps) => {
   const history = useHistory();

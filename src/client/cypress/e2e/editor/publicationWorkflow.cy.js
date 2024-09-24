@@ -1,5 +1,5 @@
-import { createBorehole, handlePrompt, loginAsAdmin } from "../helpers/testHelpers";
 import { startEditing } from "../helpers/buttonHelpers.js";
+import { createBorehole, handlePrompt, loginAsAdmin } from "../helpers/testHelpers";
 
 const verifyColorForStatus = (status, color) => {
   cy.get(`[data-cy="workflow_status_color_${status}"]`).should("have.have.class", `ui ${color} circular label`);

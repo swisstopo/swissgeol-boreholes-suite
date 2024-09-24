@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { AddCircle, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -12,12 +14,10 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useDomainSchema } from "../../../../api/fetchApiV2.js";
 import LayerCard from "./layerCard.jsx";
 import LayerGap from "./layerGap.jsx";
-import { AddCircle, Visibility, VisibilityOff } from "@mui/icons-material";
-import { useTranslation } from "react-i18next";
 import NavigationChild from "./navigationChild.jsx";
-import { useDomainSchema } from "../../../../api/fetchApiV2.js";
 
 /**
  * Component for editing hierarchical layer data.

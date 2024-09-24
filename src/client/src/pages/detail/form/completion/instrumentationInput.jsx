@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { addInstrumentation, getCasings, updateInstrumentation, useDomains } from "../../../../api/fetchApiV2.js";
-import { completionSchemaConstants } from "./completionSchemaConstants.js";
-import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.jsx";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.jsx";
+import { completionSchemaConstants } from "./completionSchemaConstants.js";
 
 const InstrumentationInput = ({ item, parentId }) => {
   const domains = useDomains();

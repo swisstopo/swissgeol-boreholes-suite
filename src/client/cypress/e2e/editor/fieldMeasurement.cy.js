@@ -1,3 +1,5 @@
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   createCasing,
@@ -9,8 +11,6 @@ import {
   selectLanguage,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
-import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 beforeEach(() => {
   createBorehole({ "extended.original_name": "INTEADAL" })

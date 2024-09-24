@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { CircularProgress, Stack, Typography } from "@mui/material";
-import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
+import { Trash2 } from "lucide-react";
 import {
   addCompletion,
   copyCompletion,
@@ -10,14 +10,14 @@ import {
   getCompletions,
   updateCompletion,
 } from "../../../../api/fetchApiV2.js";
-import CompletionContent from "./completionContent.jsx";
-import CompletionHeaderInput from "./completionHeaderInput.jsx";
-import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
-import { FullPage } from "../../../../components/styledComponents.ts";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import { Trash2 } from "lucide-react";
+import { FullPage } from "../../../../components/styledComponents.ts";
+import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
+import CompletionContent from "./completionContent.jsx";
+import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";
+import CompletionHeaderInput from "./completionHeaderInput.jsx";
 
 const Completion = props => {
   const { isEditable } = props;

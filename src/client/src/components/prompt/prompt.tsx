@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Dialog, DialogActions, DialogContent, DialogContentText, Stack } from "@mui/material";
-import { PromptContext } from "./promptContext.js";
 import { BdmsButton } from "../buttons/buttons.tsx";
+import { PromptContext } from "./promptContext.js";
 
 export const Prompt = () => {
   const { promptIsOpen, message, actions, dialogContent, closePrompt } = useContext(PromptContext);

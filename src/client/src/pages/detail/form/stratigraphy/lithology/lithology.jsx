@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import * as Styled from "./styles.js";
 import { useSelector } from "react-redux";
+import { Loader } from "semantic-ui-react";
+import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
+import { stratigraphyData } from "./data/stratigraphydata.js";
+import LithologyAttributes from "./lithologyAttributes";
 import ProfileHeader from "./lithologyHeader";
 import LithologyInfo from "./lithologyInfo";
 import ProfileLayers from "./lithologyLayers";
-import LithologyAttributes from "./lithologyAttributes";
-import { stratigraphyData } from "./data/stratigraphydata.js";
-import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
-import { Loader } from "semantic-ui-react";
+import * as Styled from "./styles.js";
 
 const Lithology = ({ checkLock }) => {
   const { user, borehole } = useSelector(state => ({

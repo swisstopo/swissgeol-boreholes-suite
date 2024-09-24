@@ -1,5 +1,5 @@
-import { delayedType, newEditableBorehole } from "../helpers/testHelpers";
 import { setSelect } from "../helpers/formHelpers";
+import { delayedType, newEditableBorehole } from "../helpers/testHelpers";
 
 function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
   cy.get(inputAlias)

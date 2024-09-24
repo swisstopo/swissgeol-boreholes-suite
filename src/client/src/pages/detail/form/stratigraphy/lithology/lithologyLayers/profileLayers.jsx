@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import * as Styled from "./styles.js";
-import ProfileLayersValidation from "./lithologyLayersValidation";
-import { createLayerApi, getData } from "./api";
+import { withTranslation } from "react-i18next";
+import { useMutation, useQueryClient } from "react-query";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {
   Box,
   CircularProgress,
@@ -28,12 +28,11 @@ import {
   useLayers,
   useLithoDescription,
 } from "../../../../../../api/fetchApiV2.js";
-
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { withTranslation } from "react-i18next";
-import { useMutation, useQueryClient } from "react-query";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
+import { createLayerApi, getData } from "./api";
 import DescriptionLayers from "./descriptionLayers/descriptionLayers.jsx";
+import ProfileLayersValidation from "./lithologyLayersValidation";
+import * as Styled from "./styles.js";
 
 const ProfileLayers = props => {
   const { isEditable, selectedStratigraphyID, selectedLayer, setSelectedLayer, reloadLayer, onUpdated } = props.data;

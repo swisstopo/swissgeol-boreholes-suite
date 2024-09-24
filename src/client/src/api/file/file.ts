@@ -1,7 +1,7 @@
-import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
-import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2";
 import { ApiError } from "../apiInterfaces.ts";
 import { ExtractionRequest, ExtractionResponse } from "../../pages/detail/labeling/labelingInterfaces.tsx";
+import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2";
+import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
 export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
   if (file && file.size <= maxFileSizeKB) {

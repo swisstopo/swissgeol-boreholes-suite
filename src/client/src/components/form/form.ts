@@ -1,5 +1,5 @@
-import { FieldError, FieldErrorsImpl } from "react-hook-form/dist/types/errors";
 import { Merge } from "react-hook-form";
+import { FieldError, FieldErrorsImpl } from "react-hook-form/dist/types/errors";
 
 export const getFormFieldError = (
   fieldName: string | undefined,

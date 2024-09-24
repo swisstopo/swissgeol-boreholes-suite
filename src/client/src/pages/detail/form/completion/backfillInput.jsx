@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { addBackfill, getCasings, updateBackfill, useDomains } from "../../../../api/fetchApiV2";
-import { completionSchemaConstants } from "./completionSchemaConstants";
-import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
+import { completionSchemaConstants } from "./completionSchemaConstants";
 
 const BackfillInput = ({ item, parentId }) => {
   const domains = useDomains();

@@ -1,11 +1,3 @@
-import {
-  createBorehole,
-  createCompletion,
-  goToRouteAndAcceptTerms,
-  handlePrompt,
-  loginAsAdmin,
-  startBoreholeEditing,
-} from "../helpers/testHelpers";
 import { addItem, cancelEditing, copyItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 import {
   evaluateCheckbox,
@@ -17,6 +9,14 @@ import {
   setSelect,
   toggleCheckbox,
 } from "../helpers/formHelpers";
+import {
+  createBorehole,
+  createCompletion,
+  goToRouteAndAcceptTerms,
+  handlePrompt,
+  loginAsAdmin,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
 
 const toggleHeaderOpen = () => {
   cy.get('[data-cy="completion-header-display"]')

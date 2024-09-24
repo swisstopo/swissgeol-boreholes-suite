@@ -1,10 +1,10 @@
-import ObservationDisplay from "./observationDisplay";
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
-import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 import { deleteFieldMeasurement, useDomains } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
+import ObservationDisplay from "./observationDisplay";
+import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 
 const FieldMeasurementDisplay = props => {
   const { item, isEditable } = props;

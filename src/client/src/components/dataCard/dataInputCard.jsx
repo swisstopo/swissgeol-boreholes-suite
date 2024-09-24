@@ -1,11 +1,11 @@
 import { useContext, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { FormProvider, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
+import { FormContainer } from "../form/form";
+import { PromptContext } from "../prompt/promptContext.tsx";
 import { DataCardButtonContainer } from "./dataCard.jsx";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext.jsx";
-import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
-import { PromptContext } from "../prompt/promptContext.tsx";
-import { FormContainer } from "../form/form";
 
 export const DataInputCard = props => {
   const { item, addData, updateData, promptLabel, prepareFormDataForSubmit } = props;

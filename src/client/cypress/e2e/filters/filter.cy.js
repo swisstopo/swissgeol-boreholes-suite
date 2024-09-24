@@ -1,5 +1,5 @@
-import { loginAsAdmin } from "../helpers/testHelpers.js";
 import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
+import { loginAsAdmin } from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Button, ButtonGroup } from "@mui/material";
-import { NavState } from "./navigationContainer.jsx";
-import { clamp } from "./clamp.js";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import DraggableCore from "react-draggable";
 import { NumericFormat } from "react-number-format";
-import useResizeObserver from "@react-hook/resize-observer";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import { Box, Button, ButtonGroup } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import useResizeObserver from "@react-hook/resize-observer";
 import { theme } from "../../../../AppTheme.ts";
+import { clamp } from "./clamp.js";
+import { NavState } from "./navigationContainer.jsx";
 
 const BackgroundShade = styled(Box)(() => ({
   position: "absolute",

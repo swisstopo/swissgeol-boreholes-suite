@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch, useStore } from "react-redux";
-
+import { CircularProgress } from "@mui/material";
 import { loadBoreholes, loadDomains, loadSettings } from "../../api-lib/index";
 import { SplashScreen } from "../../auth/SplashScreen";
-import { CircularProgress } from "@mui/material";
 
 export const DataLoader = ({ children }) => {
   const dispatch = useDispatch();

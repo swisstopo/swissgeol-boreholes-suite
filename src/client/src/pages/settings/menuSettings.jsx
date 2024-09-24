@@ -1,9 +1,9 @@
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
+import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import ListItem from "../../components/legacyComponents/listItem";
+import PropTypes from "prop-types";
 import { useAuth } from "../../auth/useBdmsAuth";
+import ListItem from "../../components/legacyComponents/listItem";
 
 const MenuSettings = props => {
   const { history, t, location } = props;

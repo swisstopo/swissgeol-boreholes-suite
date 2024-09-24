@@ -1,16 +1,16 @@
 import React, { useCallback, useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { Stack } from "@mui/material";
+import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Modal } from "semantic-ui-react";
 import { loadEditingBoreholes } from "../../../api-lib";
-import MapComponent from "../../../components/map/mapComponent.jsx";
-import MultipleForm from "../../../components/legacyComponents/multiple/multipleForm.jsx";
-import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
-import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { Stack } from "@mui/material";
+import MultipleForm from "../../../components/legacyComponents/multiple/multipleForm.jsx";
+import MapComponent from "../../../components/map/mapComponent.jsx";
+import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { OverViewContext } from "../overViewContext.tsx";
+import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 
 interface MapViewProps {
   displayErrorMessage: string;
