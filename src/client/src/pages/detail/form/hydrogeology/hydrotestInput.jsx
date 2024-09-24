@@ -1,7 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-import { FormContainer, FormInput, FormMultiSelect, FormSelect, FormValueType } from "../../../../components/form/form";
+import {
+  FormContainer,
+  FormDomainMultiSelect,
+  FormDomainSelect,
+  FormInput,
+  FormValueType,
+} from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import ObservationInput from "./observationInput";
@@ -21,7 +27,7 @@ const HydrotestInput = props => {
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
   const domains = useDomains();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const formMethods = useForm({
     mode: "all",
     defaultValues: {
@@ -213,21 +219,15 @@ const HydrotestInput = props => {
           <FormContainer>
             <ObservationInput observation={item} boreholeId={parentId} />
             <FormContainer direction="row">
-              <FormMultiSelect
+              <FormDomainMultiSelect
                 fieldName="testKindId"
                 label="hydrotestKind"
                 tooltipLabel="hydrotestResultsWillBeDeleted"
                 required={true}
                 selected={item?.kindCodelists?.map(c => c.id) || []}
-                values={domains?.data
-                  ?.filter(d => d.schema === hydrogeologySchemaConstants.hydrotestKind)
-                  .sort((a, b) => a.order - b.order)
-                  .map(d => ({
-                    key: d.id,
-                    name: d[i18n.language],
-                  }))}
+                schemaName={hydrogeologySchemaConstants.hydrotestKind}
               />
-              <FormMultiSelect
+              <FormDomainMultiSelect
                 fieldName="flowDirectionId"
                 label="flowDirection"
                 selected={item?.flowDirectionCodelists?.map(c => c.id) || []}
@@ -237,17 +237,11 @@ const HydrotestInput = props => {
                     d => d.schema === hydrogeologySchemaConstants.hydrotestFlowDirection,
                   ).length > 0
                 }
-                values={filteredTestKindDomains?.data
-                  ?.filter(d => d.schema === hydrogeologySchemaConstants.hydrotestFlowDirection)
-                  .sort((a, b) => a.order - b.order)
-                  .map(d => ({
-                    key: d.id,
-                    name: d[i18n.language],
-                  }))}
+                schemaName={hydrogeologySchemaConstants.hydrotestFlowDirection}
               />
             </FormContainer>
             <FormContainer width={"50%"}>
-              <FormMultiSelect
+              <FormDomainMultiSelect
                 fieldName="evaluationMethodId"
                 label="evaluationMethod"
                 selected={item?.evaluationMethodCodelists?.map(c => c.id) || []}
@@ -257,13 +251,7 @@ const HydrotestInput = props => {
                     d => d.schema === hydrogeologySchemaConstants.hydrotestEvaluationMethod,
                   ).length > 0
                 }
-                values={filteredTestKindDomains?.data
-                  ?.filter(d => d.schema === hydrogeologySchemaConstants.hydrotestEvaluationMethod)
-                  .sort((a, b) => a.order - b.order)
-                  .map(d => ({
-                    key: d.id,
-                    name: d[i18n.language],
-                  }))}
+                schemaName={hydrogeologySchemaConstants.hydrotestEvaluationMethod}
               />
             </FormContainer>
             {formMethods.getValues().testKindId?.length > 0 && (
@@ -284,18 +272,12 @@ const HydrotestInput = props => {
                 </FormContainer>
                 {fields.map((field, index) => (
                   <FormContainer direction={"row"} key={field.id} marginTop="8px" data-cy={`hydrotestResult-${index}`}>
-                    <FormSelect
+                    <FormDomainSelect
                       fieldName={`hydrotestResults.${index}.parameterId`}
                       label="parameter"
                       selected={field.parameterId}
                       required={true}
-                      values={filteredTestKindDomains?.data
-                        ?.filter(d => d.schema === hydrogeologySchemaConstants.hydrotestResultParameter)
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => ({
-                          key: d.id,
-                          name: d[i18n.language],
-                        }))}
+                      schemaName={hydrogeologySchemaConstants.hydrotestResultParameter}
                       onUpdate={value => {
                         setUnits({ ...units, [index]: getHydrotestParameterUnits(value, domains.data) });
                       }}

@@ -35,6 +35,8 @@ export enum FormValueType {
 export { FormInput } from "./formInput";
 export { FormSelect } from "./formSelect";
 export { FormMultiSelect } from "./formMultiSelect";
+export { FormDomainSelect } from "./formDomainSelect";
+export { FormDomainMultiSelect } from "./formDomainMultiSelect";
 export { FormCheckbox } from "./formCheckbox";
 export { FormDisplay } from "./formDisplay";
 export { FormCoordinate } from "./formCoordinate";
