@@ -53,7 +53,7 @@ describe("Test the borehole bulk edit feature.", () => {
       });
   });
 
-  it.only("fills all bulkedit fields and saves.", () => {
+  it("fills all bulkedit fields and saves.", () => {
     // create boreholes
     createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as(
       "borehole_id_1",
