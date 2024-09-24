@@ -97,7 +97,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
 
   const onFieldValueChange = useCallback(
     (field: BulkEditFormField, newValue: BulkEditFormValue) => {
-      const fieldName = field.api || field.fieldName;
+      const fieldName = field.api ?? field.fieldName;
       let updatedValue: BulkEditFormValue = newValue;
       if (field.type === FormValueType.Boolean) {
         updatedValue = newValue === 1 ? true : newValue === 0 ? false : undefined;
@@ -126,7 +126,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
   }, [bulkEditFormFields, onFieldValueChange, workgroupId]);
 
   const undoChange = (field: BulkEditFormField) => {
-    const fieldName = field.api || field.fieldName;
+    const fieldName = field.api ?? field.fieldName;
     const entryIndex = fieldsToUpdate.findIndex(([key]) => key === fieldName);
     if (entryIndex !== -1) {
       setFieldsToUpdate([...fieldsToUpdate.filter(f => f[0] !== fieldName)]);
@@ -144,7 +144,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
       loadBoreholes();
     } catch (error) {
       //@ts-expect-error unknown error type
-      showAlert(`${t("errorBulkEditing")} ${error?.message || error}`, "error");
+      showAlert(`${t("errorBulkEditing")} ${error?.message ?? error}`, "error");
     }
   };
 
@@ -154,10 +154,10 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
       if (field.type === FormValueType.Domain) {
         return (
           <FormDomainSelect
-            fieldName={field.api || field.fieldName}
+            fieldName={field.api ?? field.fieldName}
             label={field.fieldName}
             required
-            schemaName={field?.domain || field.api || field.fieldName}
+            schemaName={field?.domain ?? field.api ?? field.fieldName}
             onUpdate={e => {
               onFieldValueChange(field, e);
             }}
@@ -169,7 +169,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
         return (
           <FormSelect
             required
-            fieldName={field.api || field.fieldName}
+            fieldName={field.api ?? field.fieldName}
             label={field.fieldName}
             values={[
               { key: 1, name: t("yes") },
@@ -184,7 +184,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
       }
       return (
         <FormInput
-          fieldName={field.api || field.fieldName}
+          fieldName={field.api ?? field.fieldName}
           label={field.fieldName}
           type={field.type}
           onUpdate={e => {
@@ -216,7 +216,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
                       <IconButton
                         size="small"
                         sx={{
-                          visibility: fieldsToUpdate.map(f => f[0]).includes(field.api || field.fieldName)
+                          visibility: fieldsToUpdate.map(f => f[0]).includes(field.api ?? field.fieldName)
                             ? "visible"
                             : "hidden",
                           mr: 1,
