@@ -1,3 +1,4 @@
+import { checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
@@ -6,7 +7,6 @@ import {
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
-import { checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
   it("creates and deletes a borehole.", () => {

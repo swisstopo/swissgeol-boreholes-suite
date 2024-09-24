@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "./useBdmsAuth";
 import { useDispatch } from "react-redux";
 import { setAuthentication, unsetAuthentication } from "../api-lib";
+import { useAuth } from "./useBdmsAuth";
 
 export const AuthenticationStoreSync = () => {
   const auth = useAuth();

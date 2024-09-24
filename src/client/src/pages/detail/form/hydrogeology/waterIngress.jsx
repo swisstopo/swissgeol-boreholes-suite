@@ -1,8 +1,8 @@
-import WaterIngressInput from "./waterIngressInput";
-import DataCards from "../../../../components/dataCard/dataCards.jsx";
-import WaterIngressDisplay from "./waterIngressDisplay.jsx";
 import { getWaterIngress } from "../../../../api/fetchApiV2.js";
+import DataCards from "../../../../components/dataCard/dataCards.jsx";
 import { sortByDepth } from "../sorter.jsx";
+import WaterIngressDisplay from "./waterIngressDisplay.jsx";
+import WaterIngressInput from "./waterIngressInput";
 
 const WaterIngress = ({ isEditable, boreholeId }) => {
   return (

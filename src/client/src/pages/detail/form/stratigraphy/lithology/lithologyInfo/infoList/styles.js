@@ -1,5 +1,5 @@
-import styled from "styled-components";
 import { Form } from "semantic-ui-react";
+import styled from "styled-components";
 
 export const FormContainer = styled.div`
   display: grid;

@@ -1,15 +1,15 @@
 import { useContext } from "react";
-import _ from "lodash";
 import Highlighter from "react-highlight-words";
-import { Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
-import { Button, CircularProgress, IconButton } from "@mui/material";
-import { getWms } from "../../../../api-lib/index";
-import { AlertContext } from "../../../../components/alert/alertContext";
-import WMTSCapabilities from "ol/format/WMTSCapabilities";
-import WMSCapabilities from "ol/format/WMSCapabilities";
-import { theme } from "../../../../AppTheme";
 import { useTranslation } from "react-i18next";
+import { Button, CircularProgress, IconButton } from "@mui/material";
+import { Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
 import { Plus, Trash2 } from "lucide-react";
+import _ from "lodash";
+import WMSCapabilities from "ol/format/WMSCapabilities";
+import WMTSCapabilities from "ol/format/WMTSCapabilities";
+import { getWms } from "../../../../api-lib/index";
+import { theme } from "../../../../AppTheme";
+import { AlertContext } from "../../../../components/alert/alertContext";
 
 const MapSettings = props => {
   const { showAlert } = useContext(AlertContext);

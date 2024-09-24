@@ -1,15 +1,15 @@
 import React, { useCallback, useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { loadEditingBoreholes } from "../../../api-lib";
-import MapComponent from "../../../components/map/mapComponent.jsx";
-import { BulkEditForm } from "../../../components/legacyComponents/bulkedit/bulkEditForm.js";
-import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
-import BottomBarContainer from "../boreholeTable/bottomBarContainer";
-import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Dialog, Stack } from "@mui/material";
+import { GridRowSelectionModel } from "@mui/x-data-grid";
+import { loadEditingBoreholes } from "../../../api-lib";
+import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { BulkEditForm } from "../../../components/legacyComponents/bulkedit/bulkEditForm.js";
+import MapComponent from "../../../components/map/mapComponent.jsx";
+import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { OverViewContext } from "../overViewContext.tsx";
+import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 
 interface MapViewProps {
   displayErrorMessage: string;

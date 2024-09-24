@@ -1,24 +1,24 @@
-import MapControls from "../../../components/buttons/mapControls";
-import { Box } from "@mui/material";
 import { FC, useEffect, useRef, useState } from "react";
-import Projection from "ol/proj/Projection";
-import ImageLayer from "ol/layer/Image";
-import Static from "ol/source/ImageStatic";
-import { loadImage } from "../../../api/file/file.ts";
-import VectorSource from "ol/source/Vector";
-import VectorLayer from "ol/layer/Vector";
-import Map from "ol/Map";
-import { defaults as defaultControls } from "ol/control/defaults";
+import { useTranslation } from "react-i18next";
+import { Box } from "@mui/material";
 import { MapBrowserEvent, View } from "ol";
+import { defaults as defaultControls } from "ol/control/defaults";
 import { Extent, getCenter } from "ol/extent";
-import { DragRotate, PinchRotate } from "ol/interaction";
-import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
-import { Fill, Stroke, Style } from "ol/style";
-import { theme } from "../../../AppTheme.ts";
 import Feature from "ol/Feature";
 import { Geometry } from "ol/geom";
+import { DragRotate, PinchRotate } from "ol/interaction";
 import Draw, { createBox } from "ol/interaction/Draw";
-import { useTranslation } from "react-i18next";
+import ImageLayer from "ol/layer/Image";
+import VectorLayer from "ol/layer/Vector";
+import Map from "ol/Map";
+import Projection from "ol/proj/Projection";
+import Static from "ol/source/ImageStatic";
+import VectorSource from "ol/source/Vector";
+import { Fill, Stroke, Style } from "ol/style";
+import { loadImage } from "../../../api/file/file.ts";
+import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
+import { theme } from "../../../AppTheme.ts";
+import MapControls from "../../../components/buttons/mapControls";
 
 const drawingStyle = () =>
   new Style({

@@ -1,5 +1,5 @@
-import { fetchApiV2 } from "./fetchApiV2";
 import { User } from "./apiInterfaces.ts";
+import { fetchApiV2 } from "./fetchApiV2";
 
 export const fetchCurrentUser = async () => await fetchApiV2("user/self", "GET");
 

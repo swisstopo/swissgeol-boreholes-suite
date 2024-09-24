@@ -1,7 +1,6 @@
-import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
-import { FileDropzone } from "../../attachments/fileDropzone.jsx";
-import { AddButton } from "../../../../components/buttons/buttons.tsx";
+import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
   Card,
   CardActions,
@@ -14,17 +13,18 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material/";
+import CopyIcon from "../../../../assets/icons/copy.svg?react";
+import { DevTool } from "../../../../../hookformDevtools.ts";
 import {
   getBoreholeGeometryFormats,
   useBoreholeGeometry,
   useBoreholeGeometryMutations,
 } from "../../../../api/fetchApiV2.js";
-import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
-import { FormSelect } from "../../../../components/form/form";
-import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import { AddButton } from "../../../../components/buttons/buttons.tsx";
+import { FormSelect } from "../../../../components/form/form";
 import { StackHalfWidth } from "../../../../components/styledComponents.ts";
-import { DevTool } from "../../../../../hookformDevtools.ts";
+import { FileDropzone } from "../../attachments/fileDropzone.jsx";
 
 const GeometryImport = ({ boreholeId }) => {
   const { t } = useTranslation();

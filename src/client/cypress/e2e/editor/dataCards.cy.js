@@ -1,3 +1,5 @@
+import { addItem, cancelEditing, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { evaluateDisplayValue, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   handlePrompt,
@@ -5,8 +7,6 @@ import {
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
-import { evaluateDisplayValue, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, cancelEditing, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Tests for the data cards in the editor.", () => {
   it("resets datacards when stop editing or cancel", () => {

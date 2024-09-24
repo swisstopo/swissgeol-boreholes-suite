@@ -1,5 +1,5 @@
-import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
 import { checkAllVisibleRows, verifyPaginationText } from "../helpers/dataGridHelpers";
+import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by identifier.", () => {
   it("can filter by identifier", () => {

@@ -1,4 +1,8 @@
 import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { Box } from "@mui/system";
 import {
   DataGrid,
   GridColDef,
@@ -10,17 +14,13 @@ import {
   GridSortModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import { Box } from "@mui/system";
-import { theme } from "../../../AppTheme.ts";
-import { useHistory } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { useDomains } from "../../../api/fetchApiV2";
-import { TablePaginationActions } from "./TablePaginationActions.tsx";
+import { LockKeyhole } from "lucide-react";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { useSelector } from "react-redux";
+import { useDomains } from "../../../api/fetchApiV2";
+import { theme } from "../../../AppTheme.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { OverViewContext } from "../overViewContext.tsx";
-import { LockKeyhole } from "lucide-react";
+import { TablePaginationActions } from "./TablePaginationActions.tsx";
 
 export interface BoreholeTableProps {
   boreholes: Boreholes;

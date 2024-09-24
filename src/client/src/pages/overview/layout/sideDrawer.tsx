@@ -1,6 +1,6 @@
+import React from "react";
 import { Box, Collapse, Paper } from "@mui/material";
 import { theme } from "../../../AppTheme.ts";
-import React from "react";
 
 interface SideDrawerProps {
   drawerContent: React.JSX.Element;

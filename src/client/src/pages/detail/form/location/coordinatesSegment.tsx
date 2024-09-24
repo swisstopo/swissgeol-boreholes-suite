@@ -1,12 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Card, CardContent, CardHeader } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { Card, CardContent, CardHeader } from "@mui/material";
+import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
+import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
+import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect.tsx";
 import {
   getPrecisionFromString,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/legacyComponents/formUtils.js";
-import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
+import { FormSegmentBox } from "../../../../components/styledComponents.ts";
+import { Coordinate, ExtractionState, useLabelingContext } from "../../labeling/labelingInterfaces.js";
+import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
 import {
   CoordinatePrecisions,
   Coordinates,
@@ -17,12 +23,6 @@ import {
   ReferenceSystemCode,
   ReferenceSystemKey,
 } from "./coordinateSegmentInterfaces.js";
-import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
-import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
-import { Coordinate, ExtractionState, useLabelingContext } from "../../labeling/labelingInterfaces.js";
-import { FormSegmentBox } from "../../../../components/styledComponents.ts";
-import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
-import { FormDomainSelect } from "../../../../components/form/formDomainSelect.tsx";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({

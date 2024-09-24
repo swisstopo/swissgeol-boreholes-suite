@@ -1,6 +1,6 @@
-import { Header, Modal } from "semantic-ui-react";
-import { useTranslation } from "react-i18next";
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { Header, Modal } from "semantic-ui-react";
 import { ErrorResponse } from "../commons/actionsInterfaces.ts";
 
 interface ImportErrorModalProps {

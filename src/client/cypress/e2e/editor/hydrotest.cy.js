@@ -1,3 +1,12 @@
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import {
+  evaluateDisplayValue,
+  evaluateMultiSelect,
+  evaluateTextarea,
+  setInput,
+  setSelect,
+  toggleMultiSelect,
+} from "../helpers/formHelpers";
 import {
   createBorehole,
   createCasing,
@@ -8,15 +17,6 @@ import {
   selectLanguage,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
-import {
-  evaluateDisplayValue,
-  evaluateMultiSelect,
-  evaluateTextarea,
-  setInput,
-  setSelect,
-  toggleMultiSelect,
-} from "../helpers/formHelpers";
-import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Tests for the hydrotest editor.", () => {
   it("Creates, updates and deletes hydrotests", () => {

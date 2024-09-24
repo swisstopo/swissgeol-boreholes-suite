@@ -1,14 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import { useLocation, withRouter } from "react-router-dom";
+import { AlertContext } from "../../components/alert/alertContext.tsx";
+import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import MainSideNav from "./layout/mainSideNav.tsx";
 import { MapView } from "./layout/mapView.tsx";
 import { SideDrawer } from "./layout/sideDrawer.tsx";
+import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
+import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
 import FilterComponent from "./sidePanelContent/filter/filterComponent.jsx";
 import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
-import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
-import { AlertContext } from "../../components/alert/alertContext.tsx";
-import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
-import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 
 const OverviewPage = () => {
   const [sideDrawerOpen, setSideDrawerOpen] = useState(false);

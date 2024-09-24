@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+
 export const DataCardContext = createContext({
   cards: [],
   displayedCards: [],

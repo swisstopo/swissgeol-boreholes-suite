@@ -1,17 +1,17 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
-import Delete from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
+import Delete from "@mui/icons-material/Delete";
+import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
 import { addCasing, updateCasing } from "../../../../api/fetchApiV2";
-import { completionSchemaConstants } from "./completionSchemaConstants";
-import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { extractCasingDepth } from "./casingUtils.jsx";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext.jsx";
-import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import { extractCasingDepth } from "./casingUtils.jsx";
+import { completionSchemaConstants } from "./completionSchemaConstants";
 
 const CasingInput = props => {
   const { item, parentId } = props;

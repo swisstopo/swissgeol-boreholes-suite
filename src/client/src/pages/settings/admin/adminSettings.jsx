@@ -1,16 +1,14 @@
 import React from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
-import { AlertContext } from "../../../components/alert/alertContext";
-import { deleteUser, fetchUser, fetchUsers, updateUser } from "../../../api/user";
-
+import { connect } from "react-redux";
 import { Button, Checkbox, Form, Icon, Input, Label, Loader, Modal, Table } from "semantic-ui-react";
-
+import PropTypes from "prop-types";
+import { deleteUser, fetchUser, fetchUsers, updateUser } from "../../../api/user";
+import { createWorkgroup, deleteWorkgroup, fetchWorkgroups, setRole, updateWorkgroup } from "../../../api/workgroup";
+import { AlertContext } from "../../../components/alert/alertContext";
 import DateText from "../../../components/legacyComponents/dateText.js";
 import TranslationText from "../../../components/legacyComponents/translationText.jsx";
 import { WorkgroupRoleSettings } from "./workgroupRoleSettings";
-import { createWorkgroup, deleteWorkgroup, fetchWorkgroups, setRole, updateWorkgroup } from "../../../api/workgroup";
 
 class AdminSettings extends React.Component {
   static contextType = AlertContext;
