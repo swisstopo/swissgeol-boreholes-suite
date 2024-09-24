@@ -11,7 +11,6 @@ export interface FormDomainSelectProps {
   schemaName: string;
   required?: boolean;
   disabled?: boolean;
-  canReset?: boolean;
   selected?: number[];
   sx?: SxProps;
   inputLabelStyles?: SxProps;

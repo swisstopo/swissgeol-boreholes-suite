@@ -155,7 +155,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
           <FormDomainSelect
             fieldName={field.fieldName}
             label={field.fieldName}
-            canReset={false}
+            required
             schemaName={field?.domain || field.api || field.fieldName}
             onUpdate={e => {
               onFieldValueChange(field, e);
@@ -167,7 +167,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
       if (field.type === FormValueType.Boolean) {
         return (
           <FormSelect
-            canReset={false}
+            required
             fieldName={field.fieldName}
             label={field.fieldName}
             values={[
