@@ -10,8 +10,10 @@ import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
+  // As of now there is no variant "contained" with color "secondary" in the design system, fallback to "primary".
+  const color = props.variant === "contained" ? "primary" : (props.color ?? "primary");
   return (
-    <Button ref={ref} {...props} data-cy={props.label?.toLowerCase() + "-button"} startIcon={props.icon}>
+    <Button ref={ref} {...props} data-cy={props.label?.toLowerCase() + "-button"} color={color} startIcon={props.icon}>
       {props.label && capitalizeFirstLetter(t(props.label))}
     </Button>
   );
