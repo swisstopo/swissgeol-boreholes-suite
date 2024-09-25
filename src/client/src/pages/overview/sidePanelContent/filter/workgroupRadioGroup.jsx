@@ -1,6 +1,6 @@
-import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { Form, Radio } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 const WorkgroupRadioGroup = props => {
   return (

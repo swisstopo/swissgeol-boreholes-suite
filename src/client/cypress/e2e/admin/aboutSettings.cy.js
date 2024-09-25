@@ -1,5 +1,5 @@
-import { loginAsAdmin } from "../helpers/testHelpers";
 import license from "../../fixtures/license.json";
+import { loginAsAdmin } from "../helpers/testHelpers";
 
 describe("Admin about page tests", () => {
   it("shows version information linking the corresponding release on GitHub.", () => {

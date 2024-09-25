@@ -1,5 +1,5 @@
-import { createBorehole, getImportFileFromFixtures, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 import { setSelect } from "../helpers/formHelpers";
+import { createBorehole, getImportFileFromFixtures, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Geometry crud tests", () => {
   beforeEach(() => {

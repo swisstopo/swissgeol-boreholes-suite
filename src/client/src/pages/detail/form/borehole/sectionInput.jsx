@@ -1,14 +1,14 @@
-import { useTranslation } from "react-i18next";
-import { Divider, IconButton } from "@mui/material";
-import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
-import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardContext } from "../../../../components/dataCard/dataCardContext.jsx";
+import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
+import { Divider, IconButton } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
+import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
+import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
+import { DataCardContext } from "../../../../components/dataCard/dataCardContext.jsx";
+import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 
 const SectionInput = ({ item, parentId }) => {

@@ -1,4 +1,3 @@
-import { loginAsAdmin, loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
 import {
   clickOnRowWithText,
   showTableAndWaitForData,
@@ -7,6 +6,7 @@ import {
   verifyRowContains,
   waitForTableData,
 } from "../helpers/dataGridHelpers";
+import { loginAsAdmin, loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
 
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {

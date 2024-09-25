@@ -1,7 +1,7 @@
-import * as Styled from "./styles.js";
-import DateText from "../../../../../../../components/legacyComponents/dateText.js";
-import { Icon } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
+import { Icon } from "semantic-ui-react";
+import DateText from "../../../../../../../components/legacyComponents/dateText.js";
+import * as Styled from "./styles.js";
 
 const ProfileHeaderList = props => {
   const { profiles, selectedStratigraphy, setSelectedStratigraphy } = props;

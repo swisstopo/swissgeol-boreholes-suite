@@ -1,6 +1,6 @@
 import React from "react";
-import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
 import { SxProps } from "@mui/material";
+import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
 
 export interface ErrorResponse {
   detail: string;

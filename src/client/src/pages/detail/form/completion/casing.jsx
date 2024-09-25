@@ -1,9 +1,9 @@
 import { getCasings } from "../../../../api/fetchApiV2.js";
 import DataCards from "../../../../components/dataCard/dataCards.jsx";
-import CasingInput from "./casingInput.jsx";
-import CasingDisplay from "./casingDisplay.jsx";
-import { extractCasingDepth } from "./casingUtils.jsx";
 import { sortByDepth } from "../sorter.jsx";
+import CasingDisplay from "./casingDisplay.jsx";
+import CasingInput from "./casingInput.jsx";
+import { extractCasingDepth } from "./casingUtils.jsx";
 
 const Casing = ({ isEditable, completionId }) => {
   return (

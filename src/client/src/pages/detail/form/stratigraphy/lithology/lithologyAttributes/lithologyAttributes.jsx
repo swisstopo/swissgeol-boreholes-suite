@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import * as Styled from "./styles.js";
+import { useTranslation } from "react-i18next";
+import { useQueryClient } from "react-query";
+import { useSelector } from "react-redux";
 import { Checkbox } from "semantic-ui-react";
 import _ from "lodash";
-import { useTranslation } from "react-i18next";
-import LithologyAttributeList from "./lithologyAttributeList/lithologyAttributeList.jsx";
-import { useSelector } from "react-redux";
-import { useQueryClient } from "react-query";
 import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.js";
+import LithologyAttributeList from "./lithologyAttributeList/lithologyAttributeList.jsx";
+import * as Styled from "./styles.js";
 
 const LithologyAttributes = props => {
   const { id, isEditable, checkLock, onUpdated, attribute, reloadAttribute, selectedStratigraphyID } = props.data;

@@ -1,8 +1,8 @@
-import HydrotestInput from "./hydrotestInput";
-import HydrotestDisplay from "./hydrotestDisplay";
 import { getHydrotests } from "../../../../api/fetchApiV2.js";
-import { sortByDepth } from "../sorter.jsx";
 import DataCards from "../../../../components/dataCard/dataCards.jsx";
+import { sortByDepth } from "../sorter.jsx";
+import HydrotestDisplay from "./hydrotestDisplay";
+import HydrotestInput from "./hydrotestInput";
 
 const Hydrotest = ({ isEditable, boreholeId }) => {
   return (

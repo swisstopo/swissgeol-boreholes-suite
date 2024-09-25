@@ -1,8 +1,9 @@
-import { FormSelect } from "./form";
 import { FC } from "react";
-import { useDomains } from "../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
+import { SxProps } from "@mui/material";
+import { useDomains } from "../../api/fetchApiV2";
 import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
+import { FormSelect } from "./form";
 import { FormSelectProps } from "./formSelect.tsx";
 
 export interface FormDomainSelectProps extends FormSelectProps {

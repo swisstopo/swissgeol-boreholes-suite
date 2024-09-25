@@ -1,18 +1,18 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ClickAwayListener } from "@mui/base";
+import { Close, Delete, Edit } from "@mui/icons-material";
 import {
-  CardActionArea,
-  Typography,
+  Autocomplete,
   Box,
   Card,
-  IconButton,
-  TextField,
-  Skeleton,
+  CardActionArea,
   CircularProgress,
-  Autocomplete,
+  IconButton,
+  Skeleton,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { Close, Delete, Edit } from "@mui/icons-material";
-import { ClickAwayListener } from "@mui/base";
-import { useTranslation } from "react-i18next";
 
 const State = Object.freeze({
   EDITING: Symbol("Editing"),

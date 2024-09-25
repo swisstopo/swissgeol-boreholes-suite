@@ -1,6 +1,6 @@
+import { useTranslation } from "react-i18next";
 import { Box, FormControl, MenuItem, Select } from "@mui/material/";
 import { WorkgroupSelectProps } from "./actionsInterfaces.ts";
-import { useTranslation } from "react-i18next";
 
 const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx }: WorkgroupSelectProps) => {
   const { t } = useTranslation();

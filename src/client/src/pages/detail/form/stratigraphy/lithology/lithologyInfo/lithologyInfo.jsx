@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import * as Styled from "./styles.js";
-import InfoList from "./infoList";
-import InfoCheckBox from "./infoCheckBox";
-import { sendProfile } from "./api";
-import { fetchStratigraphy } from "../../../../../../api/fetchApiV2.js";
 import _ from "lodash";
+import { fetchStratigraphy } from "../../../../../../api/fetchApiV2.js";
+import { sendProfile } from "./api";
+import InfoCheckBox from "./infoCheckBox";
+import InfoList from "./infoList";
+import * as Styled from "./styles.js";
 
 const LithologyInfo = props => {
   const { selectedStratigraphyID: id, isEditable, onUpdated, attribute, checkLock } = props.data;

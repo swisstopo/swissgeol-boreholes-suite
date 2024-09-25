@@ -1,8 +1,8 @@
-import FieldMeasurementInput from "./fieldMeasurementInput";
-import FieldMeasurementDisplay from "./fieldMeasurementDisplay";
 import { getFieldMeasurements } from "../../../../api/fetchApiV2.js";
 import DataCards from "../../../../components/dataCard/dataCards.jsx";
 import { sortByDepth } from "../sorter.jsx";
+import FieldMeasurementDisplay from "./fieldMeasurementDisplay";
+import FieldMeasurementInput from "./fieldMeasurementInput";
 
 const FieldMeasurement = ({ isEditable, boreholeId }) => {
   return (

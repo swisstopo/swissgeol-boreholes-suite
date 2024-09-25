@@ -1,4 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Accordion,
@@ -14,19 +16,17 @@ import {
 } from "@mui/material";
 import { ChevronDownIcon, X } from "lucide-react";
 import { patchBoreholes } from "../../../api-lib";
-import { CancelButton, SaveButton } from "../../buttons/buttons";
-import { useTranslation } from "react-i18next";
 import { ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { BulkEditFormField, BulkEditFormProps, BulkEditFormValue } from "./BulkEditFormProps.ts";
 import { theme } from "../../../AppTheme.ts";
-import { FormInput } from "../../form/formInput.tsx";
-import { FormSelect } from "../../form/formSelect.tsx";
-import { FormProvider, useForm } from "react-hook-form";
-import { FormValueType } from "../../form/form.ts";
-import { FormDomainSelect } from "../../form/formDomainSelect.tsx";
-import { StackFullWidth } from "../../styledComponents.ts";
 import WorkgroupSelect from "../../../pages/overview/sidePanelContent/commons/workgroupSelect.tsx";
 import { AlertContext } from "../../alert/alertContext.tsx";
+import { CancelButton, SaveButton } from "../../buttons/buttons";
+import { FormValueType } from "../../form/form.ts";
+import { FormDomainSelect } from "../../form/formDomainSelect.tsx";
+import { FormInput } from "../../form/formInput.tsx";
+import { FormSelect } from "../../form/formSelect.tsx";
+import { StackFullWidth } from "../../styledComponents.ts";
+import { BulkEditFormField, BulkEditFormProps, BulkEditFormValue } from "./BulkEditFormProps.ts";
 
 export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => {
   const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[string, BulkEditFormValue]>>([]);

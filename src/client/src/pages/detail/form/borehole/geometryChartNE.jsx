@@ -1,7 +1,7 @@
-import { useTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
-import * as d3 from "d3";
+import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
+import * as d3 from "d3";
 
 const GeometryChartNE = ({ data }) => {
   const size = 500;
