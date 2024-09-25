@@ -5,9 +5,9 @@ import { SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { boundingBox } from "../../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { Direction, ReferenceSystemKey } from "../../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { NumericFormatForCoordinates } from "../../pages/detail/form/location/NumericFormatForCoordinates.tsx";
 import { parseFloatWithThousandsSeparator } from "../legacyComponents/formUtils.ts";
 import { getFormFieldError } from "./form";
+import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
 
 const inLV95XBounds = (value: string): boolean => {
   const coordinate = parseFloatWithThousandsSeparator(value);
@@ -84,7 +84,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
       data-cy={fieldName + "-formCoordinate"}
       InputProps={{
         /* eslint-disable  @typescript-eslint/no-explicit-any */
-        inputComponent: NumericFormatForCoordinates as any,
+        inputComponent: NumericFormatWithThousandSeparator as any,
         readOnly: readonly,
         disabled: disabled,
       }}

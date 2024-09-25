@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Box, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import _ from "lodash";
 import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import PointComponent from "../../../../components/map/pointComponent.jsx";
+import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import CantonMunicipalitySegment from "./cantonMunicipalitySegment.jsx";
 import CoordinatesSegment from "./coordinatesSegment.tsx";
 import ElevationSegment from "./elevationSegment";
@@ -45,7 +46,7 @@ const LocationSegment = ({
           />
           <ElevationSegment borehole={borehole} user={user} updateChange={updateChange} updateNumber={updateNumber} />
         </Stack>
-        <Box sx={{ flexGrow: 1, minWidth: 600 }}>
+        <FormSegmentBox sx={{ flexGrow: 1 }}>
           <PointComponent
             setMapPointChange={setMapPointChange}
             //@ts-expect-error legacy component method not typed
@@ -57,7 +58,7 @@ const LocationSegment = ({
             x={_.isNil(borehole.data.location_x) ? null : _.toNumber(borehole.data.location_x)}
             y={_.isNil(borehole.data.location_y) ? null : _.toNumber(borehole.data.location_y)}
           />
-        </Box>
+        </FormSegmentBox>
       </Stack>
       <CantonMunicipalitySegment
         country={borehole.data.custom.country}
