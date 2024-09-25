@@ -387,25 +387,17 @@ export const theme = createTheme({
             border: "none",
             borderRadius: themeSpacing(0.5),
             padding: themeSpacing(1),
-            margin: `${themeSpacing(0.5)} 0 ${themeSpacing(0.5)} ${themeSpacing(0.5)}`,
 
             "&.Mui-disabled": {
               border: "none",
             },
           },
-          "& .MuiButtonGroup-lastButton": {
-            marginRight: themeSpacing(0.5),
-          },
-
           "&.MuiButtonGroup-vertical": {
             height: "auto",
             width: "44px",
             "& .MuiButtonGroup-grouped": {
               padding: themeSpacing(1),
-              margin: `${themeSpacing(0.5)} 0 ${themeSpacing(0.5)} ${themeSpacing(0.5)}`,
-            },
-            "& .MuiButtonGroup-lastButton": {
-              marginBottom: themeSpacing(0.5),
+              margin: themeSpacing(0.5),
             },
           },
         },
