@@ -1,9 +1,54 @@
 import { createBaseSelector } from "./testHelpers";
 
 /**
+ * Checks if a form element has an error.
+ * @param {string} fieldName The name of the form element.
+ * @param {boolean} hasError The expected error state.
+ * @param {string} parent  (optional) The parent of the form element.
+ */
+export const hasError = (fieldName, hasError = true, parent) => {
+  const selector = createBaseSelector(parent) + `[data-cy^="${fieldName}-form"] .Mui-error`;
+  if (hasError) {
+    cy.get(selector).should("exist");
+  } else {
+    cy.get(selector).should("not.exist");
+  }
+};
+
+/**
+ * Checks if a form element is disabled.
+ * @param {string} fieldName The name of the form element.
+ * @param {boolean} isDisabled The expected disabled state.
+ * @param {string} parent  (optional) The parent of the form element.
+ */
+export const isDisabled = (fieldName, isDisabled = true, parent) => {
+  const selector = createBaseSelector(parent) + `[data-cy^="${fieldName}-form"] .Mui-disabled`;
+  if (isDisabled) {
+    cy.get(selector).should("exist");
+  } else {
+    cy.get(selector).should("not.exist");
+  }
+};
+
+/**
+ * Checks if a form element has the AI styling.
+ * @param {string} fieldName The name of the form element.
+ * @param {boolean} hasAiStyle The expected ai state.
+ * @param {string} parent  (optional) The parent of the form element.
+ */
+export const hasAiStyle = (fieldName, hasAiStyle = true, parent) => {
+  const selector = createBaseSelector(parent) + `[data-cy^="${fieldName}-form"].ai`;
+  if (hasAiStyle) {
+    cy.get(selector).should("exist");
+  } else {
+    cy.get(selector).should("not.exist");
+  }
+};
+
+/**
  * Sets the value for an input form element.
  * @param {string} fieldName The name of the input field.
- * @param {string} text The text to type into the input field.
+ * @param {string} value The text to type into the input field.
  * @param {string} parent (optional) The parent of the form element.
  */
 export const setInput = (fieldName, value, parent) => {
@@ -20,8 +65,8 @@ export const setInput = (fieldName, value, parent) => {
 
 /**
  * Evaluates the state of an input form element
- * @param {string} fieldName The name of the select field.
- * @param {number} expectedValue The expected number of options in the dropdown.
+ * @param {string} fieldName The name of the input field.
+ * @param {number} expectedValue The expected value.
  * @param {string} parent (optional) The parent of the form element.
  */
 export const evaluateInput = (fieldName, expectedValue, parent) => {
@@ -35,8 +80,8 @@ export const evaluateInput = (fieldName, expectedValue, parent) => {
 
 /**
  * Evaluates the state of a textarea form element
- * @param {string} fieldName The name of the select field.
- * @param {number} expectedValue The expected number of options in the dropdown.
+ * @param {string} fieldName The name of the input field.
+ * @param {number} expectedValue The expected value.
  * @param {string} parent (optional) The parent of the form element.
  */
 export const evaluateTextarea = (fieldName, expectedValue, parent) => {
@@ -187,4 +232,37 @@ export const evaluateDisplayValue = (fieldName, expectedValue, parent) => {
   } else {
     cy.get(selector).contains(expectedValue);
   }
+};
+
+/**
+ * Sets the value for an coordinate form element.
+ * @param {string} fieldName The name of the coordinate field.
+ * @param {string} value The text to type into the coordinate field.
+ * @param {string} parent (optional) The parent of the form element.
+ */
+export const setCoordinate = (fieldName, value, parent) => {
+  var selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formCoordinate"]`;
+  cy.get(selector)
+    .click()
+    .then(() => {
+      cy.focused().clear();
+      cy.get(selector).type(value, {
+        delay: 10,
+      });
+    });
+};
+
+/**
+ * Evaluates the state of an coordinate form element
+ * @param {string} fieldName The name of the coordinate field.
+ * @param {number} expectedValue The expected value.
+ * @param {string} parent (optional) The parent of the form element.
+ */
+export const evaluateCoordinate = (fieldName, expectedValue, parent) => {
+  var selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formCoordinate"] input`;
+  cy.get(selector)
+    .filter((k, input) => {
+      return input.value === expectedValue;
+    })
+    .should("have.length", 1);
 };

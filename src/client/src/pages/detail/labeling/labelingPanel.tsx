@@ -250,7 +250,13 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               visibility: selectedFile ? "visible" : "hidden",
             }}
             className="labelingButton">
-            <Typography variant="h6" p={1} pr={fileInfo.count > 1 ? 0 : 1} m={0.5} sx={{ alignContent: "center" }}>
+            <Typography
+              variant="h6"
+              p={1}
+              pr={fileInfo.count > 1 ? 0 : 1}
+              m={0.5}
+              sx={{ alignContent: "center" }}
+              data-cy="labeling-page-count">
               {activePage} / {fileInfo.count}
             </Typography>
             {fileInfo?.count > 1 && (
@@ -261,7 +267,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                   onClick={() => {
                     setActivePage(activePage - 1);
                   }}
-                  disabled={activePage === 1}>
+                  disabled={activePage === 1}
+                  data-cy="labeling-page-previous">
                   <ChevronLeft />
                 </Button>
                 <Button
@@ -270,7 +277,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                   onClick={() => {
                     setActivePage(activePage + 1);
                   }}
-                  disabled={activePage === fileInfo.count}>
+                  disabled={activePage === fileInfo.count}
+                  data-cy="labeling-page-next">
                   <ChevronRight />
                 </Button>
               </>
@@ -279,7 +287,12 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         )}
         <Box>
           {alertIsOpen ? (
-            <LabelingAlert variant="filled" severity={severity} onClose={closeAlert} className="labelingButton">
+            <LabelingAlert
+              data-cy="labeling-alert"
+              variant="filled"
+              severity={severity}
+              onClose={closeAlert}
+              className="labelingButton">
               {text}
             </LabelingAlert>
           ) : (
