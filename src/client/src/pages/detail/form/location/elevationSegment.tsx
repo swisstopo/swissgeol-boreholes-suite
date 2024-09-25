@@ -1,6 +1,5 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 import { Card } from "@mui/material";
 import { CardContent } from "@mui/material/";
 import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
@@ -23,7 +22,6 @@ interface ElevationSegmentProps {
 }
 
 const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, user, updateChange, updateNumber }) => {
-  const { t } = useTranslation();
   const { data: domains } = useDomains();
 
   const formMethods = useForm({
