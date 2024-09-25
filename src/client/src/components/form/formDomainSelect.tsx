@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { SxProps } from "@mui/material";
 import { useDomains } from "../../api/fetchApiV2";
 import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
 import { FormSelect } from "./form";

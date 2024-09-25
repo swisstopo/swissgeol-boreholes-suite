@@ -7,7 +7,13 @@ import { addHydrotest, updateHydrotest, useDomains, useHydrotestDomains } from "
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput, FormMultiSelect, FormSelect, FormValueType } from "../../../../components/form/form";
+import {
+  FormContainer,
+  FormDomainMultiSelect,
+  FormDomainSelect,
+  FormInput,
+  FormValueType,
+} from "../../../../components/form/form";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
