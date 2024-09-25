@@ -17,26 +17,14 @@ describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
-    cy.get(".ui .header").should("have.text", "Bulk modification");
+    cy.get("h1").should("have.text", "Bulk editing");
   });
 
-  it("checks if all toggle buttons do something", () => {
+  it("displays workgroup accordion only if user has permission for more than one workgroup", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
-    cy.get(".modal .toggle")
-      .should("have.length", 18)
-      .each(el => {
-        cy.wrap(el).click({ force: true });
-        cy.get(".modal form .field").should("exist");
-        cy.wrap(el).click({ force: true });
-        cy.get(".modal form").children().should("not.exist");
-      });
-  });
 
-  it("displays workgroup toggle only if user has permission for more than one workgroup", () => {
-    checkAllVisibleRows();
-    cy.contains("button", "Bulk editing").click({ force: true });
-    cy.get(".modal .toggle").should("have.length", 18);
+    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 19);
 
     const adminUser2Workgroups = Object.assign({}, adminUser);
     adminUser2Workgroups.data.workgroups.push({
@@ -54,14 +42,14 @@ describe("Test the borehole bulk edit feature.", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 
-    cy.get(".modal .toggle").should("have.length", 19);
-    // select all bulk edit fields and insert values
-    cy.contains("button", "Workgroup").click({ force: true });
+    cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 20);
+    cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
+
     cy.get('[data-cy="workgroup-select"]')
       .should("have.length", 1)
       .each(el => {
         cy.wrap(el).scrollIntoView().click();
-        cy.get('.modal [role="option"]').eq(0).click({ force: true });
+        cy.get('[role="option"]').eq(0).click({ force: true });
       });
   });
 
@@ -86,35 +74,37 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Bulk editing").click();
 
     // select all bulk edit fields and insert values
-    cy.get(".modal .toggle").click({ multiple: true });
+    cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
-    cy.get('[data-cy="text-input"]')
-      .should("have.length", 4)
-      .each((el, index) => cy.wrap(el).scrollIntoView().type(`A${index}`));
-
-    cy.get("form .field > .react-datepicker-wrapper .datepicker-input")
+    cy.get("input[type=text]")
       .should("have.length", 1)
-      .each(el => {
-        cy.wrap(el).click();
-        cy.get(`.react-datepicker__day--013`).click();
+      .each(($input, index) => {
+        cy.wrap($input).scrollIntoView().clear().type(`A${index}`);
       });
 
-    cy.get('[data-cy="radio-yes"]')
-      .should("have.length", 2)
-      .each(el => {
-        cy.wrap(el).click();
-        el.click();
+    cy.get('input[type="date"]')
+      .should("have.length", 1)
+      .each($input => {
+        cy.wrap($input).clear().type("2024-09-25");
       });
 
-    cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 9)
-      .each(el => cy.wrap(el).click().find('[role="option"]').last().click());
+    cy.get('input[type="date"]')
+      .should("have.length", 1)
+      .each($input => {
+        cy.wrap($input).should("have.value", "2024-09-25");
+      });
 
-    cy.get('[data-cy="domain-tree"] > input')
+    cy.get("input[type=number]")
       .should("have.length", 3)
+      .each(($input, index) => {
+        cy.wrap($input).scrollIntoView().clear().type(`${index}`);
+      });
+
+    cy.get('[role="combobox"]')
+      .should("have.length", 15)
       .each(el => {
-        cy.wrap(el).scrollIntoView().click();
-        cy.get('.modal [role="listitem"]').eq(5).click();
+        cy.wrap(el).click();
+        cy.get('li[role="option"]').last().click();
       });
 
     // save

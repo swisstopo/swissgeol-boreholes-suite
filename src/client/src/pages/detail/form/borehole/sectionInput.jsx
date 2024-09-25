@@ -9,6 +9,7 @@ import { AddButton, CancelButton, SaveButton } from "../../../../components/butt
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
@@ -125,23 +126,17 @@ const SectionInput = ({ item, parentId }) => {
                       />
                     </FormContainer>
                     <FormContainer direction="row">
-                      <FormSelect
+                      <FormDomainSelect
                         fieldName={`sectionElements.${index}.drillingMethodId`}
                         label="drilling_method"
                         selected={field.drillingMethodId}
-                        values={domains
-                          ?.filter(d => d.schema === "extended.drilling_method")
-                          .sort((a, b) => a.order - b.order)
-                          .map(d => ({ key: d.id, name: d[i18n.language] }))}
+                        schemaName="extended.drilling_method"
                       />
-                      <FormSelect
+                      <FormDomainSelect
                         fieldName={`sectionElements.${index}.cuttingsId`}
                         label="cuttings"
                         selected={field.cuttingsId}
-                        values={domains
-                          ?.filter(d => d.schema === "custom.cuttings")
-                          .sort((a, b) => a.order - b.order)
-                          .map(d => ({ key: d.id, name: d[i18n.language] }))}
+                        schemaName="custom.cuttings"
                       />
                     </FormContainer>
                     <FormContainer direction="row">

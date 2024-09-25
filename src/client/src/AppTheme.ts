@@ -1,65 +1,67 @@
-import { createTheme } from "@mui/material/styles";
+import { AppThemePalette, createTheme } from "@mui/material/styles";
 import { ChevronDown } from "lucide-react";
 
-export const theme = createTheme({
-  palette: {
-    action: {
-      disabled: "#828E9A",
-    },
-    primary: {
-      main: "#337083",
-      contrastText: "#ffffff",
-    },
-    secondary: {
-      main: "#1c2834",
-      contrastText: "#ffffff",
-      background: "#eeeeee",
-    },
-    success: {
-      main: "#059669",
-    },
-    warning: {
-      main: "#EA580C",
-    },
-    error: {
-      main: "#99191E",
-      dark: "#801519",
-      contrastText: "#ffffff",
-      background: "#ffebee",
-    },
-    neutral: {
-      main: "#d8d8d8",
-      contrastText: "#000000",
-    },
-    hover: {
-      main: "#f5f5f5",
-    },
-    mapIcon: {
-      main: "#337083",
-      secondary: "#a65462",
-    },
-    ai: {
-      background: "#46596B",
-      main: "#5B21B6",
-      mainTransparent: "rgba(91, 33, 182, 0.2)",
-      mainEnd: "#8B5CF6",
-      active: "#4F46E5",
-      activeEnd: "#E53940",
-      contrastText: "#ffffff",
-    },
-    boxShadow: "#DFE4E9",
-    background: {
-      default: "#ffffff",
-      lightgrey: "#f1f3f5",
-      darkgrey: "#787878",
-      dark: "rgba(0, 0, 0, 0.5)",
-      menuItemActive: "#A65462",
-      filterItemActive: "#1C2834",
-      listItemActive: "#DFE4E9",
-    },
-
-    border: "#E0E2E6",
+export const themePalette: AppThemePalette = {
+  action: {
+    disabled: "#828E9A",
   },
+  primary: {
+    main: "#337083",
+    contrastText: "#ffffff",
+  },
+  secondary: {
+    main: "#1c2834",
+    contrastText: "#ffffff",
+    background: "#eeeeee",
+  },
+  success: {
+    main: "#059669",
+  },
+  warning: {
+    main: "#EA580C",
+  },
+  error: {
+    main: "#99191E",
+    dark: "#801519",
+    contrastText: "#ffffff",
+    background: "#ffebee",
+  },
+  neutral: {
+    main: "#d8d8d8",
+    contrastText: "#000000",
+  },
+  hover: {
+    main: "#f5f5f5",
+  },
+  mapIcon: {
+    main: "#337083",
+    secondary: "#a65462",
+  },
+  ai: {
+    background: "#46596B",
+    main: "#5B21B6",
+    mainTransparent: "rgba(91, 33, 182, 0.2)",
+    mainEnd: "#8B5CF6",
+    active: "#4F46E5",
+    activeEnd: "#E53940",
+    contrastText: "#ffffff",
+  },
+  boxShadow: "#DFE4E9",
+  background: {
+    default: "#ffffff",
+    lightgrey: "#f1f3f5",
+    darkgrey: "#787878",
+    dark: "rgba(0, 0, 0, 0.5)",
+    menuItemActive: "#A65462",
+    filterItemActive: "#1C2834",
+    listItemActive: "#DFE4E9",
+  },
+
+  border: "#E0E2E6",
+};
+
+export const theme = createTheme({
+  palette: themePalette,
   typography: {
     fontFamily: "Inter",
     h6: {
@@ -85,6 +87,12 @@ export const theme = createTheme({
       lineHeight: "28px",
       fontWeight: 700,
       color: "#1C2834",
+    },
+    h1: {
+      fontSize: "32px",
+      lineHeight: "44px",
+      fontWeight: 400,
+      color: "#000000",
     },
     subtitle1: {
       fontSize: "13px",
@@ -429,6 +437,23 @@ export const theme = createTheme({
         badge: {
           backgroundColor: "#FF0000",
           color: "#FFFFFF",
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          paddingTop: "24px",
+          paddingBottom: "16px",
+          borderBottom: "1px solid " + themePalette.border,
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          borderTop: "1px solid " + themePalette.border,
+          padding: "24px",
         },
       },
     },

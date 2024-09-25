@@ -19,8 +19,8 @@ import ImportModal from "../sidePanelContent/importer/importModal.tsx";
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
   drawerOpen: boolean;
-  workgroup: number | null;
-  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
+  workgroupId: number | null;
+  setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
   enabledWorkgroups: Workgroup[];
   setEnabledWorkgroups: React.Dispatch<React.SetStateAction<Workgroup[]>>;
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
@@ -30,8 +30,8 @@ export interface MainSideNavProps {
 const MainSideNav = ({
   toggleDrawer,
   drawerOpen,
-  workgroup,
-  setWorkgroup,
+  workgroupId,
+  setWorkgroupId,
   enabledWorkgroups,
   setEnabledWorkgroups,
   setSideDrawerContent,
@@ -62,8 +62,8 @@ const MainSideNav = ({
   useEffect(() => {
     const wgs = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
     setEnabledWorkgroups(wgs);
-    setWorkgroup(wgs.length > 0 ? wgs[0].id : null);
-  }, [setEnabledWorkgroups, setWorkgroup, user.data.workgroups]);
+    setWorkgroupId(wgs.length > 0 ? wgs[0].id : null);
+  }, [setEnabledWorkgroups, setWorkgroupId, user.data.workgroups]);
 
   const handleToggleFilter = () => {
     handleDrawer(DrawerContentTypes.Filters);
@@ -176,10 +176,10 @@ const MainSideNav = ({
         refresh={refresh}
         setSelectedFile={setSelectedFile}
         setSelectedLithologyFile={setSelectedLithologyFile}
-        setWorkgroup={setWorkgroup}
+        setWorkgroup={setWorkgroupId}
         enabledWorkgroups={enabledWorkgroups}
         setSelectedBoreholeAttachments={setSelectedBoreholeAttachments}
-        workgroup={workgroup}
+        workgroup={workgroupId}
         selectedFile={selectedFile}
         selectedBoreholeAttachments={selectedBoreholeAttachments}
         modal={modal}

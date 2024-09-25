@@ -1,4 +1,5 @@
 import React from "react";
+import { SxProps } from "@mui/material";
 import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
 
 export interface ErrorResponse {
@@ -8,9 +9,10 @@ export interface ErrorResponse {
 }
 
 export interface WorkgroupSelectProps {
-  workgroup: number | null;
+  workgroupId: number | null;
   enabledWorkgroups: Workgroup[];
-  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
+  setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
+  sx?: SxProps;
 }
 
 export interface NewBoreholeProps extends WorkgroupSelectProps {

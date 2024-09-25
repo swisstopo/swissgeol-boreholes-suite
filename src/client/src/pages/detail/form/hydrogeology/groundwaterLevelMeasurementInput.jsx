@@ -1,11 +1,7 @@
-import { useTranslation } from "react-i18next";
-import {
-  addGroundwaterLevelMeasurement,
-  updateGroundwaterLevelMeasurement,
-  useDomains,
-} from "../../../../api/fetchApiV2";
+import { addGroundwaterLevelMeasurement, updateGroundwaterLevelMeasurement } from "../../../../api/fetchApiV2";
 import DataInputCard from "../../../../components/dataCard/dataInputCard.jsx";
-import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import ObservationInput from "./observationInput";
@@ -13,8 +9,6 @@ import { ObservationType } from "./observationType";
 
 const GroundwaterLevelMeasurementInput = props => {
   const { item, parentId } = props;
-  const domains = useDomains();
-  const { i18n } = useTranslation();
 
   const prepareFormDataForSubmit = data => {
     data = prepareCasingDataForSubmit(data);
@@ -43,18 +37,12 @@ const GroundwaterLevelMeasurementInput = props => {
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <ObservationInput observation={item} boreholeId={parentId} />
       <FormContainer direction="row" sx={{ paddingTop: "10px" }}>
-        <FormSelect
+        <FormDomainSelect
           fieldName="kindId"
           label="gwlm_kind"
           selected={item.kindId}
           required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === hydrogeologySchemaConstants.groundwaterLevelMeasurementKind)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
+          schemaName={hydrogeologySchemaConstants.groundwaterLevelMeasurementKind}
         />
       </FormContainer>
       <FormContainer direction="row">

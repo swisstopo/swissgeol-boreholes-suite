@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { getCasingsByBoreholeId, useDomains } from "../../../../api/fetchApiV2.js";
+import { getCasingsByBoreholeId } from "../../../../api/fetchApiV2.js";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const ObservationInput = props => {
   const { observation, boreholeId } = props;
-  const { i18n } = useTranslation();
-  const domains = useDomains();
   const [casings, setCasings] = useState([]);
   const getCasingOptions = useGetCasingOptions();
 
@@ -57,17 +55,11 @@ const ObservationInput = props => {
       </FormContainer>
       <FormContainer direction="row">
         <FormContainer width={"50%"} direction="row">
-          <FormSelect
+          <FormDomainSelect
             fieldName="reliabilityId"
             label="reliability"
             selected={observation.reliabilityId}
-            values={domains?.data
-              ?.filter(d => d.schema === hydrogeologySchemaConstants.observationReliability)
-              .sort((a, b) => a.order - b.order)
-              .map(d => ({
-                key: d.id,
-                name: d[i18n.language],
-              }))}
+            schemaName={hydrogeologySchemaConstants.observationReliability}
           />
         </FormContainer>
         <FormContainer width={"50%"} direction="row">
