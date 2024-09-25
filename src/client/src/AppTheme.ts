@@ -95,7 +95,7 @@ const themeBoxShadows: Shadows = [...defaultTheme.shadows];
 const themeSpacing: Spacing = defaultTheme.spacing;
 
 themeBoxShadows[1] =
-  "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)";
+  "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important";
 themeBoxShadows[2] = "0 1px 3px #DFE4E9, 0 1px 2px #DFE4E9";
 themeBoxShadows[3] = "4px 4px 2px #DFE4E9"; // basemapSelector
 themeBoxShadows[4] = "2px 6px 6px 0px #DFE4E9";

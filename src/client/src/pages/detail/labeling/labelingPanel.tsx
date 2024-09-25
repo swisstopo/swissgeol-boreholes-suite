@@ -34,9 +34,14 @@ import {
   PanelPosition,
   useLabelingContext,
 } from "./labelingInterfaces.tsx";
-import "./labelingPanel.css";
+
+const labelingButtonStyles = {
+  boxShadow: theme.shadows[1],
+  height: "44px",
+};
 
 export const LabelingAlert = styled(Alert)({
+  ...labelingButtonStyles,
   " & .MuiAlert-icon": {
     padding: "0",
     alignItems: "center",
@@ -236,9 +241,9 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           <ButtonGroup
             variant="contained"
             sx={{
+              ...labelingButtonStyles,
               visibility: selectedFile ? "visible" : "hidden",
-            }}
-            className="labelingButton">
+            }}>
             <Typography variant="h6" p={1} pr={fileInfo.count > 1 ? 0 : 1} m={0.5} sx={{ alignContent: "center" }}>
               {activePage} / {fileInfo.count}
             </Typography>
@@ -268,12 +273,12 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         )}
         <Box>
           {alertIsOpen ? (
-            <LabelingAlert variant="filled" severity={severity} onClose={closeAlert} className="labelingButton">
+            <LabelingAlert variant="filled" severity={severity} onClose={closeAlert}>
               {text}
             </LabelingAlert>
           ) : (
             extractionObject?.state === ExtractionState.loading && (
-              <Button onClick={() => cancelRequest()} variant="text" endIcon={<X />} className="labelingButton">
+              <Button onClick={() => cancelRequest()} variant="text" endIcon={<X />} sx={labelingButtonStyles}>
                 <CircularProgress sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }} />
                 {t("analyze")}
               </Button>
@@ -286,7 +291,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             setPanelPosition(nextPosition);
           }}
           exclusive
-          className="labelingButton">
+          sx={labelingButtonStyles}>
           <ToggleButton value="bottom" data-cy="labeling-panel-position-bottom">
             <PanelBottom />
           </ToggleButton>
@@ -322,7 +327,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                   setSelectedFile(files?.find(file => file.id === item.key));
                 }
               }}
-              className="labelingButton"
+              sx={labelingButtonStyles}
             />
           </Stack>
           <LabelingDrawContainer fileInfo={fileInfo} onDrawEnd={extractData} drawTooltipLabel={drawTooltipLabel} />
