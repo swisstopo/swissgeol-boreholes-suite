@@ -106,8 +106,8 @@ export const interceptApiCalls = () => {
   cy.intercept({
     method: "GET",
     url: "/api/v2/boreholefile/dataextraction/*",
-  }).as("dataextraction");
-  cy.intercept("http://localhost:8000/api/V1/extract_data").as("extract_data");
+  }).as("load-extraction-file");
+  cy.intercept("http://localhost:8000/api/V1/extract_data").as("extract-data");
 };
 
 /**
@@ -210,22 +210,6 @@ const waitForCreation = () => {
     cy.task("log", "Created new borehole with id:" + interception.response.body.id);
     return cy.wrap(interception.response.body.id);
   });
-};
-
-const waitForFileUpload = () => {
-  return cy.wait(["@get-borehole-files"]).then(interception => {
-    cy.task("log", "Uploaded new labeling file: " + interception.response.body);
-    const body = interception.response.body;
-    return cy.wrap(body[0].fileId);
-  });
-};
-
-export const newLabelingAttachment = filePath => {
-  cy.get('[data-cy="labeling-file-dropzone"]').attachFile(filePath, {
-    subjectType: "drag-n-drop",
-  });
-  const fileId = waitForFileUpload();
-  return fileId;
 };
 
 export const createBorehole = values => {

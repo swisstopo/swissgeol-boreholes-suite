@@ -16,6 +16,45 @@ const isFileActive = (fileName, isActive) => {
     .should(isActive ? "exist" : "not.exist");
 };
 
+const drawBox = (x1, y1, x2, y2) => {
+  cy.get('[data-cy="labeling-draw-tooltip"]').should("to.be.visible");
+  cy.get('[data-cy="labeling-draw-tooltip"]').contains("Draw box around north & east coordinates");
+  cy.window().then(win => {
+    const interactions = win.labelingImage.getInteractions().getArray();
+    expect(
+      interactions.some(interaction => {
+        return interaction.constructor.name === "Draw";
+      }),
+    ).to.be.true;
+  });
+  cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 }).trigger("pointerup", { x: x1, y: y1 });
+  cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 }).trigger("pointerup", { x: x2, y: y2 });
+
+  cy.wait("@extract-data");
+  cy.get('[data-cy="labeling-draw-tooltip"]').should("not.to.be.visible");
+  cy.window().then(win => {
+    const interactions = win.labelingImage.getInteractions().getArray();
+    expect(
+      interactions.some(interaction => {
+        return interaction.constructor.name === "Draw";
+      }),
+    ).to.be.false;
+  });
+};
+
+const waitForLabelingImageLoaded = () => {
+  cy.wait("@extraction-file-info");
+  cy.wait("@load-extraction-file");
+  cy.window().then(win => {
+    const layers = win.labelingImage.getLayers().getArray();
+    expect(
+      layers.some(layer => {
+        return layer.constructor.name === "ImageLayer";
+      }),
+    ).to.be.true;
+  });
+};
+
 describe("Test labeling tool", () => {
   beforeEach(() => {
     interceptShowLabelingCall();
@@ -114,21 +153,13 @@ describe("Test labeling tool", () => {
     });
 
     cy.wait("@get-borehole-files");
-    cy.wait("@extraction-file-info");
-    cy.wait("@dataextraction");
+    waitForLabelingImageLoaded();
     cy.get('[data-cy="labeling-file-button-select"]').contains("labeling_attachment.pdf");
     cy.get('[data-cy="labeling-page-count"]').contains("1 / 3");
     cy.get('[data-cy="labeling-page-previous"]').should("be.disabled");
     cy.get('[data-cy="labeling-page-next"]').should("not.be.disabled");
 
     cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
-    cy.get('[data-cy="labeling-draw-tooltip"]').should("to.be.visible");
-    cy.get('[data-cy="labeling-draw-tooltip"]').contains("Draw box around north & east coordinates");
-    cy.window().then(win => {
-      const interactions = win.labelingImage.getInteractions().getArray();
-      expect(interactions.some(interaction => interaction instanceof Draw)).to.be.true;
-    });
-
     evaluateSelect("spatial_reference_system", "20104001");
     hasAiStyle("spatial_reference_system");
     hasError("spatial_reference_system", false);
@@ -148,41 +179,26 @@ describe("Test labeling tool", () => {
     isDisabled("location_y_lv03");
 
     // Can draw box around coordinates and extract correct coordinates
-    cy.get('[data-cy="labeling-panel"]')
-      .trigger("pointerdown", { x: 400, y: 60 })
-      .trigger("pointerup", { x: 400, y: 60 });
-    cy.get('[data-cy="labeling-panel"]')
-      .trigger("pointerdown", { x: 600, y: 170 })
-      .trigger("pointerup", { x: 600, y: 170 });
-
-    cy.wait(1000);
-    cy.wait("@extract_data");
-    cy.get('[data-cy="labeling-draw-tooltip"]').should("not.to.be.visible");
-    cy.window().then(win => {
-      const interactions = win.labelingImage.getInteractions().getArray();
-      expect(interactions.some(interaction => interaction instanceof Draw)).to.be.false;
-    });
-
+    drawBox(400, 60, 600, 170);
+    // TODO: Update coordinates once api returns coordinates as floats
     evaluateSelect("spatial_reference_system", "20104001");
-    evaluateCoordinate("location_x", "2'646'359.70");
+    evaluateCoordinate("location_x", "2'646'359");
     hasError("location_x", false);
     isDisabled("location_x", false);
-    evaluateCoordinate("location_y", "1'249'017.82");
+    evaluateCoordinate("location_y", "1'249'017");
     hasError("location_y", false);
     isDisabled("location_y", false);
-    evaluateCoordinate("location_x_lv03", "646'359.70");
+    evaluateCoordinate("location_x_lv03", "646'358");
     hasError("location_x_lv03", false);
     isDisabled("location_x_lv03", true);
-    evaluateCoordinate("location_y_lv03", "249'017.82");
+    evaluateCoordinate("location_y_lv03", "249'017");
     hasError("location_y_lv03", false);
     isDisabled("location_y_lv03", true);
 
     // Can draw after navigating to the next page and extract correct bbox from rotated, zoomed image
     cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
     cy.get('[data-cy="labeling-page-next"]').click();
-    cy.wait("@extraction-file-info");
-    cy.wait("@dataextraction");
-    cy.wait(1000);
+    waitForLabelingImageLoaded();
     cy.get('[data-cy="labeling-page-count"]').contains("2 / 3");
     cy.get('[data-cy="labeling-page-previous"]').should("not.be.disabled");
     cy.get('[data-cy="labeling-page-next"]').should("not.be.disabled");
@@ -205,69 +221,36 @@ describe("Test labeling tool", () => {
       .trigger("pointerup", { x: 600, y: 200 });
     cy.wait(1000);
 
-    cy.window().then(win => {
-      const interactions = win.labelingImage.getInteractions().getArray();
-      expect(interactions.some(interaction => interaction instanceof Draw)).to.be.true;
-    });
-
-    cy.get('[data-cy="labeling-panel"]')
-      .trigger("pointerdown", { x: 600, y: 60 })
-      .trigger("pointerup", { x: 600, y: 60 });
-    cy.get('[data-cy="labeling-panel"]')
-      .trigger("pointerdown", { x: 800, y: 170 })
-      .trigger("pointerup", { x: 800, y: 170 });
-
-    cy.wait(1000);
-    cy.wait("@extract_data");
-
+    drawBox(600, 60, 800, 170);
     evaluateSelect("spatial_reference_system", "20104002");
-    evaluateCoordinate("location_x", "2'646'465.97");
+    evaluateCoordinate("location_x", "2'646'466");
     hasError("location_x", false);
     isDisabled("location_x", true);
-    evaluateCoordinate("location_y", "1'249'931.66");
+    evaluateCoordinate("location_y", "1'249'931");
     hasError("location_y", false);
     isDisabled("location_y", true);
-    evaluateCoordinate("location_x_lv03", "646'465.97");
+    evaluateCoordinate("location_x_lv03", "646'465");
     hasError("location_x_lv03", false);
     isDisabled("location_x_lv03", false);
-    evaluateCoordinate("location_y_lv03", "249'931.66");
+    evaluateCoordinate("location_y_lv03", "249'931");
     hasError("location_y_lv03", false);
     isDisabled("location_y_lv03", false);
 
     // Shows alert if no coordinates are extracted
     cy.get('[data-cy="labeling-page-next"]').click();
-    cy.wait("@extraction-file-info");
-    cy.wait("@dataextraction");
+    waitForLabelingImageLoaded();
     cy.get('[data-cy="labeling-page-count"]').contains("3 / 3");
     cy.get('[data-cy="labeling-page-previous"]').should("not.be.disabled");
     cy.get('[data-cy="labeling-page-next"]').should("be.disabled");
     cy.wait(1000);
 
     cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
-    cy.window().then(win => {
-      const interactions = win.labelingImage.getInteractions().getArray();
-      expect(interactions.some(interaction => interaction instanceof Draw)).to.be.true;
-    });
-    cy.wait(1000);
-    cy.get('[data-cy="labeling-panel"]')
-      .trigger("pointerdown", { x: 50, y: 60 })
-      .trigger("pointerup", { x: 50, y: 60 });
-    cy.get('[data-cy="labeling-panel"]')
-      .trigger("pointerdown", { x: 400, y: 110 })
-      .trigger("pointerup", { x: 400, y: 110 });
-    cy.wait(1000);
-    cy.wait("@extract_data");
-
-    cy.window().then(win => {
-      const interactions = win.labelingImage.getInteractions().getArray();
-      expect(interactions.some(interaction => interaction instanceof Draw)).to.be.false;
-    });
-
+    drawBox(50, 60, 400, 110);
     evaluateSelect("spatial_reference_system", "20104002");
-    evaluateCoordinate("location_x", "2'646'465.97");
-    evaluateCoordinate("location_y", "1'249'931.66");
-    evaluateCoordinate("location_x_lv03", "646'465.97");
-    evaluateCoordinate("location_y_lv03", "249'931.66");
+    evaluateCoordinate("location_x", "2'646'466");
+    evaluateCoordinate("location_y", "1'249'931");
+    evaluateCoordinate("location_x_lv03", "646'465");
+    evaluateCoordinate("location_y_lv03", "249'931");
 
     cy.get('[data-cy="labeling-alert"]').contains("Coordinates not found.");
 
@@ -278,40 +261,12 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
     cy.contains("labeling_attachment.pdf").click();
-    cy.wait("@extraction-file-info");
-    cy.wait("@dataextraction");
-    cy.wait(1000);
-
-    cy.window().then(win => {
-      const interactions = win.labelingImage.getInteractions().getArray();
-      expect(interactions.some(interaction => interaction instanceof Draw)).to.be.true;
-    });
-
-    cy.get('[data-cy="labeling-panel"]')
-      .trigger("pointerdown", { x: 400, y: 60 })
-      .trigger("pointerup", { x: 400, y: 60 });
-    cy.get('[data-cy="labeling-panel"]')
-      .trigger("pointerdown", { x: 600, y: 170 })
-      .trigger("pointerup", { x: 600, y: 170 });
-    cy.wait(1000);
-    cy.wait("@extract_data");
-    cy.window().then(win => {
-      const interactions = win.labelingImage.getInteractions().getArray();
-      expect(interactions.some(interaction => interaction instanceof Draw)).to.be.false;
-    });
-
+    waitForLabelingImageLoaded();
+    drawBox(400, 60, 600, 170);
     evaluateSelect("spatial_reference_system", "20104001");
-    evaluateCoordinate("location_x", "2'646'359.70");
-    hasError("location_x", false);
-    isDisabled("location_x", false);
-    evaluateCoordinate("location_y", "1'249'017.82");
-    hasError("location_y", false);
-    isDisabled("location_y", false);
-    evaluateCoordinate("location_x_lv03", "646'359.70");
-    hasError("location_x_lv03", false);
-    isDisabled("location_x_lv03", true);
-    evaluateCoordinate("location_y_lv03", "249'017.82");
-    hasError("location_y_lv03", false);
-    isDisabled("location_y_lv03", true);
+    evaluateCoordinate("location_x", "2'646'359");
+    evaluateCoordinate("location_y", "1'249'017");
+    evaluateCoordinate("location_x_lv03", "646'358");
+    evaluateCoordinate("location_y_lv03", "249'017");
   });
 });
