@@ -116,7 +116,7 @@ const CompletionHeaderInput = props => {
                   selected={selectedCompletion?.kindId}
                   required={true}
                   schemaName={completionSchemaConstants.completionKind}
-                  codes={kindOptions}
+                  prefilteredDomains={kindOptions}
                 />
                 <FormCheckbox
                   fieldName="isPrimary"

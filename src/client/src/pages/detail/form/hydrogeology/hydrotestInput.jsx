@@ -238,7 +238,7 @@ const HydrotestInput = props => {
                   ).length > 0
                 }
                 schemaName={hydrogeologySchemaConstants.hydrotestFlowDirection}
-                codes={filteredTestKindDomains?.data}
+                prefilteredDomains={filteredTestKindDomains?.data}
               />
             </FormContainer>
             <FormContainer width={"50%"}>
@@ -253,7 +253,7 @@ const HydrotestInput = props => {
                   ).length > 0
                 }
                 schemaName={hydrogeologySchemaConstants.hydrotestEvaluationMethod}
-                codes={filteredTestKindDomains?.data}
+                prefilteredDomains={filteredTestKindDomains?.data}
               />
             </FormContainer>
             {formMethods.getValues().testKindId?.length > 0 && (
