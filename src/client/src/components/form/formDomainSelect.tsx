@@ -7,10 +7,11 @@ import { FormSelectProps } from "./formSelect.tsx";
 
 export interface FormDomainSelectProps extends FormSelectProps {
   schemaName: string;
+  codes?: Codelist[];
 }
 
 export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
-  const { label, selected, schemaName } = props;
+  const { label, selected, schemaName, codes } = props;
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
 
@@ -19,7 +20,7 @@ export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
       {...props}
       label={label}
       selected={selected}
-      values={domains
+      values={(codes ?? domains)
         ?.filter((d: Codelist) => d.schema === schemaName)
         .sort((a: Codelist, b: Codelist) => a.order - b.order)
         .map((d: Codelist) => ({ key: d.id, name: d[i18n.language] }))}
