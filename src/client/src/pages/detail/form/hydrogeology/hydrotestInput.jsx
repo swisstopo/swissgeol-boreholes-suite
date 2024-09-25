@@ -280,6 +280,7 @@ const HydrotestInput = props => {
                       selected={field.parameterId}
                       required={true}
                       schemaName={hydrogeologySchemaConstants.hydrotestResultParameter}
+                      prefilteredDomains={filteredTestKindDomains?.data}
                       onUpdate={value => {
                         setUnits({ ...units, [index]: getHydrotestParameterUnits(value, domains.data) });
                       }}
