@@ -117,7 +117,7 @@ public class BoreholeFileController : ControllerBase
             {
                 var result = await boreholeFileCloudService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
 
-                return Ok(new
+                return Ok(new DataExtractionInfo
                 {
                     fileName = result.FileName,
                     width = result.Width,
@@ -129,7 +129,7 @@ public class BoreholeFileController : ControllerBase
             {
                 if (ex.Message.Contains("The specified key does not exist.", StringComparison.CurrentCulture))
                 {
-                    return Ok(new
+                    return Ok(new DataExtractionInfo
                     {
                         fileName = fileUuid,
                         width = 0,

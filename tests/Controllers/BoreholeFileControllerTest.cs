@@ -1,6 +1,9 @@
 ﻿using Amazon.S3;
+using Amazon.S3.Model;
+using Azure;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -12,6 +15,7 @@ using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
+[DeploymentItem("TestData")]
 [TestClass]
 public class BoreholeFileControllerTest
 {
@@ -326,6 +330,102 @@ public class BoreholeFileControllerTest
     {
         var result = await controller.Update(new BoreholeFileUpdate(), 1, 1);
         ActionResultAssert.IsNotFound(result);
+    }
+
+    [TestMethod]
+    public async Task GetDataExtractionInfo()
+    {
+        // Test setup
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
+        var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
+        ActionResultAssert.IsOk(uploadResult);
+        var file = (uploadResult as OkObjectResult)?.Value as BoreholeFile;
+        var fileUuid = file.File.NameUuid.Replace(".pdf","");
+
+        var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
+        await boreholeFileCloudService.UploadObject(image1, $"dataextraction/{fileUuid}-1.png");
+        var image2 = GetFormFileByExistingFile("labeling_attachment-2.png");
+        await boreholeFileCloudService.UploadObject(image2, $"dataextraction/{fileUuid}-2.png");
+        var image3 = GetFormFileByExistingFile("labeling_attachment-3.png");
+        await boreholeFileCloudService.UploadObject(image3, $"dataextraction/{fileUuid}-3.png");
+
+        // Test
+        var result = await controller.GetDataExtractionFileInfo(file.FileId, 1);
+        ActionResultAssert.IsOk(result);
+        var dataExtractionInfo = (result as OkObjectResult)?.Value as DataExtractionInfo;
+        Assert.IsNotNull(dataExtractionInfo);
+        Assert.AreEqual($"{fileUuid}-1.png", dataExtractionInfo.fileName);
+        Assert.AreEqual(1786, dataExtractionInfo.width);
+        Assert.AreEqual(2526, dataExtractionInfo.height);
+        Assert.AreEqual(3, dataExtractionInfo.count);
+
+        // Reset data
+        await boreholeFileCloudService.DeleteObject($"dataextraction/{fileUuid}-1.png");
+        await boreholeFileCloudService.DeleteObject($"dataextraction/{fileUuid}-2.png");
+        await boreholeFileCloudService.DeleteObject($"dataextraction/{fileUuid}-3.png");
+    }
+
+    [TestMethod]
+    public async Task GetDataExtractionInfoFileNoPngFound()
+    {
+        // Test setup
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
+        var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
+        ActionResultAssert.IsOk(uploadResult);
+        var file = (uploadResult as OkObjectResult)?.Value as BoreholeFile;
+        var fileUuid = file.File.NameUuid.Replace(".pdf", "");
+
+        // Test
+        var result = await controller.GetDataExtractionFileInfo(file.FileId, 1);
+        ActionResultAssert.IsOk(result);
+        var dataExtractionInfo = (result as OkObjectResult)?.Value as DataExtractionInfo;
+        Assert.IsNotNull(dataExtractionInfo);
+        Assert.AreEqual(fileUuid, dataExtractionInfo.fileName);
+        Assert.AreEqual(0, dataExtractionInfo.width);
+        Assert.AreEqual(0, dataExtractionInfo.height);
+        Assert.AreEqual(0, dataExtractionInfo.count);
+    }
+
+    [TestMethod]
+    public async Task GetDataExtractionInfoFileNotFound()
+    {
+        var result = await controller.Update(new BoreholeFileUpdate(), 1, 1);
+        ActionResultAssert.IsNotFound(result);
+    }
+
+    [TestMethod]
+    public async Task GetDataExtractionImage()
+    {
+        // Test setup
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
+        var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
+        ActionResultAssert.IsOk(uploadResult);
+        var file = (uploadResult as OkObjectResult)?.Value as BoreholeFile;
+        var fileUuid = file.File.NameUuid.Replace(".pdf", "");
+
+        var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
+        await boreholeFileCloudService.UploadObject(image1, $"dataextraction/{fileUuid}-1.png");
+
+        // Test
+        var response = await controller.GetDataExtractionImage($"{fileUuid}-1.png");
+        Assert.IsNotNull(response);
+        var fileContentResult = (FileContentResult)response;
+        Assert.AreEqual("image/png", fileContentResult.ContentType);
+
+        byte[] originalBytes = new byte[image1.Length];
+        using (var ms = new MemoryStream())
+        {
+            image1.CopyTo(ms);
+            originalBytes = ms.ToArray();
+        }
+
+        CollectionAssert.AreEqual(originalBytes, fileContentResult.FileContents);
+
+        // Reset data
+        await boreholeFileCloudService.DeleteObject($"dataextraction/{fileUuid}-1.png");
     }
 
     private async Task AssertIsBadRequestResponse(Func<Task<IActionResult>> action)
