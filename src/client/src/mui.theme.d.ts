@@ -11,7 +11,7 @@ declare module "@mui/material/IconButton" {
 }
 
 declare module "@mui/material/styles" {
-  interface AppThemePalette {
+  export interface AppThemePalette {
     action: {
       disabled: string;
     };
@@ -67,6 +67,34 @@ declare module "@mui/material/styles" {
       listItemActive: string;
     };
     border: string;
+    transparent: string;
+    buttonStates: {
+      contained: {
+        hoverOrFocus: {
+          backgroundColor: string;
+        };
+        active: {
+          backgroundColor: string;
+        };
+        disabled: {
+          backgroundColor: string;
+        };
+      };
+      outlined: {
+        hoverOrFocus: {
+          color: string;
+          backgroundColor: string;
+        };
+        active: {
+          color: string;
+          backgroundColor: string;
+        };
+        disabled: {
+          color: string;
+          backgroundColor: string;
+        };
+      };
+    };
   }
 
   interface AppThemeTypography extends Typography {

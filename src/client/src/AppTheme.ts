@@ -1,7 +1,10 @@
-import { AppThemePalette, createTheme } from "@mui/material/styles";
+import { AppThemePalette, createTheme, Shadows } from "@mui/material/styles";
+import { Spacing } from "@mui/system";
 import { ChevronDown } from "lucide-react";
 
-export const themePalette: AppThemePalette = {
+const defaultTheme = createTheme();
+
+const themePalette: AppThemePalette = {
   action: {
     disabled: "#828E9A",
   },
@@ -56,37 +59,81 @@ export const themePalette: AppThemePalette = {
     filterItemActive: "#1C2834",
     listItemActive: "#DFE4E9",
   },
+  transparent: "rgba(0,0,0,0)",
+  buttonStates: {
+    contained: {
+      hoverOrFocus: {
+        backgroundColor: "#295969",
+      },
+      active: {
+        backgroundColor: "#1F444F",
+      },
+      disabled: {
+        backgroundColor: "#C1D3D9",
+      },
+    },
+    outlined: {
+      hoverOrFocus: {
+        color: "#2F4356",
+        backgroundColor: "#D6E2E6",
+      },
+      active: {
+        color: "#2F4356",
+        backgroundColor: "#ADC6CD",
+      },
+      disabled: {
+        color: "#828E9A",
+        backgroundColor: "#ffffff",
+      },
+    },
+  },
 
   border: "#E0E2E6",
 };
 
+const themeBoxShadows: Shadows = [...defaultTheme.shadows];
+const themeSpacing: Spacing = defaultTheme.spacing;
+
+themeBoxShadows[1] =
+  "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important";
+themeBoxShadows[2] = "0 1px 3px #DFE4E9, 0 1px 2px #DFE4E9";
+themeBoxShadows[3] = "4px 4px 2px #DFE4E9"; // basemapSelector
+themeBoxShadows[4] = "2px 6px 6px 0px #DFE4E9";
+themeBoxShadows[5] = "0px 2px 1px -1px #DFE4E9, 0px 1px 1px 0px #DFE4E9, 0px 1px 3px 0px #DFE4E9"; // tabContentBox
+themeBoxShadows[6] = "-1px 0 0 #DFE4E9"; // border for description layers
+themeBoxShadows[7] = "inset -1px 0 0 #DFE4E9, inset 0 -1px 0 #DFE4E9"; // border for description layers
+
+const focusShadow = "0px 0px 0px 3px #8655F6";
+
 export const theme = createTheme({
   palette: themePalette,
+  shadows: themeBoxShadows,
+  spacing: themeSpacing,
   typography: {
     fontFamily: "Inter",
     h6: {
       fontSize: "14px",
       lineHeight: "20px",
       fontWeight: 500,
-      color: "#337083",
+      color: themePalette.primary.main,
     },
     h5: {
       fontSize: "16px",
       lineHeight: "24px",
       fontWeight: 700,
-      color: "#000000",
+      color: themePalette.neutral.contrastText,
     },
     h4: {
       fontSize: "20px",
       lineHeight: "28px",
       fontWeight: 700,
-      color: "#000000",
+      color: themePalette.neutral.contrastText,
     },
     h2: {
       fontSize: "26px",
       lineHeight: "28px",
       fontWeight: 700,
-      color: "#1C2834",
+      color: themePalette.secondary.main,
     },
     h1: {
       fontSize: "32px",
@@ -96,7 +143,7 @@ export const theme = createTheme({
     },
     subtitle1: {
       fontSize: "13px",
-      color: "#000000",
+      color: themePalette.neutral.contrastText,
       lineHeight: "1.4em",
     },
     subtitle2: {
@@ -109,7 +156,7 @@ export const theme = createTheme({
     },
     fullPageMessage: {
       fontSize: "23px",
-      color: "#000000",
+      color: themePalette.neutral.contrastText,
     },
   },
   breakpoints: {
@@ -135,124 +182,125 @@ export const theme = createTheme({
           textTransform: "none",
           whiteSpace: "nowrap",
           minWidth: "auto",
-          padding: "8px 12px",
-          borderRadius: "4px",
-          boxShadow: "none",
+          padding: `${themeSpacing(1)} ${themeSpacing(1.5)}`,
+          borderRadius: themeSpacing(0.5),
+          boxShadow: themeBoxShadows[0],
           "&:hover": {
-            boxShadow: "none",
+            boxShadow: themeBoxShadows[0],
           },
           "&:focus-visible": {
-            boxShadow: "0px 0px 0px 3px #8655F6",
+            boxShadow: focusShadow,
           },
           variants: [
             {
               props: { variant: "contained", color: "primary" },
               style: {
-                backgroundColor: "#337083",
+                backgroundColor: themePalette.primary.main,
                 "&:hover": {
-                  backgroundColor: "#295969",
+                  backgroundColor: themePalette.buttonStates.contained.hoverOrFocus.backgroundColor,
                 },
                 "&:focus-visible": {
-                  backgroundColor: "#295969",
+                  backgroundColor: themePalette.buttonStates.contained.hoverOrFocus.backgroundColor,
                 },
                 "&:active, &.Mui-active": {
-                  backgroundColor: "#1F444F",
+                  backgroundColor: themePalette.buttonStates.contained.active.backgroundColor,
                 },
                 "&:disabled": {
-                  backgroundColor: "#C1D3D9",
+                  backgroundColor: themePalette.buttonStates.contained.disabled.backgroundColor,
                 },
               },
             },
             {
               props: { variant: "outlined", color: "primary" },
               style: {
-                color: "#337083",
-                backgroundColor: "#FFFFFF",
+                color: themePalette.primary.main,
+                backgroundColor: themePalette.background.default,
                 "&:hover": {
-                  color: "#295969",
-                  backgroundColor: "#D6E2E6",
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
                 },
                 "&:focus-visible": {
-                  color: "#295969",
-                  backgroundColor: "#D6E2E6",
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
                 },
                 "&:active, &.Mui-active": {
-                  color: "#1F444F",
-                  backgroundColor: "#ADC6CD",
+                  color: themePalette.buttonStates.outlined.active.color,
+                  backgroundColor: themePalette.buttonStates.outlined.active.backgroundColor,
                 },
                 "&:disabled": {
-                  backgroundColor: "#FFFFFF",
+                  color: themePalette.buttonStates.outlined.disabled.color,
+                  backgroundColor: themePalette.buttonStates.outlined.disabled.backgroundColor,
                 },
               },
             },
             {
               props: { variant: "outlined", color: "secondary" },
               style: {
-                backgroundColor: "rgba(0,0,0,0)",
-                color: "#337083",
-                borderColor: "#337083",
+                backgroundColor: themePalette.transparent,
+                color: themePalette.primary.main,
+                borderColor: themePalette.primary.main,
                 "&:hover": {
-                  color: "#2F4356",
-                  backgroundColor: "#D6E2E6",
-                  borderColor: "#2F4356",
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+                  borderColor: themePalette.buttonStates.outlined.hoverOrFocus.color,
                 },
                 "&:focus-visible": {
-                  color: "#295969",
-                  backgroundColor: "#D6E2E6",
-                  borderColor: "#295969",
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+                  borderColor: themePalette.buttonStates.outlined.hoverOrFocus.color,
                 },
                 "&:active, &.Mui-active": {
-                  color: "#1F444F",
-                  backgroundColor: "#ADC6CD",
-                  borderColor: "#1F444F",
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.active.backgroundColor,
+                  borderColor: themePalette.buttonStates.outlined.hoverOrFocus.color,
                 },
                 "&:disabled": {
-                  backgroundColor: "rgba(0,0,0,0)",
-                  borderColor: "#828E94",
+                  backgroundColor: themePalette.transparent,
+                  borderColor: themePalette.buttonStates.outlined.disabled.color,
                 },
               },
             },
             {
               props: { variant: "text", color: "primary" },
               style: {
-                backgroundColor: "#FFFFFF",
-                color: "#337083",
+                backgroundColor: themePalette.background.default,
+                color: themePalette.primary.main,
                 "&:hover": {
-                  color: "#2F4356",
-                  backgroundColor: "#D6E2E6",
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
                 },
                 "&:focus-visible": {
-                  color: "#295969",
-                  backgroundColor: "#D6E2E6",
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
                 },
                 "&:active, &.Mui-active": {
-                  color: "#1F444F",
-                  backgroundColor: "#ADC6CD",
+                  color: themePalette.buttonStates.outlined.active.color,
+                  backgroundColor: themePalette.buttonStates.outlined.active.backgroundColor,
                 },
                 "&:disabled": {
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: themePalette.background.default,
                 },
               },
             },
             {
               props: { variant: "text", color: "secondary" },
               style: {
-                backgroundColor: "rgba(0,0,0,0)",
-                color: "#337083",
+                backgroundColor: themePalette.transparent,
+                color: themePalette.primary.main,
                 "&:hover": {
-                  color: "#2F4356",
-                  backgroundColor: "#D6E2E6",
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
                 },
                 "&:focus-visible": {
-                  color: "#295969",
-                  backgroundColor: "#D6E2E6",
+                  color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+                  backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
                 },
                 "&:active, &.Mui-active": {
-                  color: "#1F444F",
-                  backgroundColor: "#ADC6CD",
+                  color: themePalette.buttonStates.outlined.active.color,
+                  backgroundColor: themePalette.buttonStates.outlined.active.backgroundColor,
                 },
                 "&:disabled": {
-                  backgroundColor: "rgba(0,0,0,0)",
+                  backgroundColor: themePalette.transparent,
                 },
               },
             },
@@ -260,23 +308,6 @@ export const theme = createTheme({
         },
       },
     },
-    MuiCardHeader: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#F1F3F5",
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          border: "1px solid #ACB4BD",
-          boxShadow: "none",
-          borderRadius: "8px !important",
-        },
-      },
-    },
-
     MuiIconButton: {
       styleOverrides: {
         root: {
@@ -285,43 +316,43 @@ export const theme = createTheme({
           },
         },
         colorPrimary: {
-          backgroundColor: "#337083",
-          color: "#FFFFFF",
+          backgroundColor: themePalette.primary.main,
+          color: themePalette.primary.contrastText,
           "&:hover": {
-            backgroundColor: "#295969",
+            backgroundColor: themePalette.buttonStates.contained.hoverOrFocus.backgroundColor,
           },
           "&:focus-visible": {
-            backgroundColor: "#295969",
-            boxShadow: "0px 0px 0px 3px #8655F6",
+            backgroundColor: themePalette.buttonStates.contained.hoverOrFocus.backgroundColor,
+            boxShadow: focusShadow,
           },
           "&:active": {
-            backgroundColor: "#1F444F",
+            backgroundColor: themePalette.buttonStates.contained.active.backgroundColor,
           },
           "&:disabled": {
-            backgroundColor: "#C1D3D9",
+            backgroundColor: themePalette.buttonStates.contained.disabled.backgroundColor,
           },
         },
         colorError: {
           "&:hover": {
-            color: "#801519",
-            backgroundColor: "rgba(0, 0, 0, 0)",
+            color: themePalette.error.dark,
+            backgroundColor: themePalette.transparent,
           },
         },
         colorAi: {
-          color: "#ffffff",
-          background: "linear-gradient(#5B21B6, #8B5CF6)",
+          color: themePalette.primary.contrastText,
+          background: `linear-gradient(${themePalette.ai.main}, ${themePalette.ai.mainEnd})`,
           "&:hover": {
-            background: "linear-gradient(#4F46E5, #E53940)",
+            background: `linear-gradient(${themePalette.ai.active}, ${themePalette.ai.activeEnd})`,
           },
           "&:focus-visible": {
             background: "linear-gradient(#4338CA, #BF1F25)",
-            boxShadow: "0px 0px 0px 3px #8655F6",
+            boxShadow: focusShadow,
           },
           "&:active, &.Mui-active": {
-            background: "linear-gradient(#4F46E5, #E53940)",
+            background: `linear-gradient(${themePalette.ai.active}, ${themePalette.ai.activeEnd})`,
           },
           "&:disabled": {
-            background: "#C1D3D9",
+            background: themePalette.action.disabled,
           },
         },
       },
@@ -329,35 +360,26 @@ export const theme = createTheme({
     MuiButtonGroup: {
       styleOverrides: {
         root: {
-          backgroundColor: "#ffffff",
+          boxShadow: themeBoxShadows[1],
+          backgroundColor: themePalette.background.default,
           height: "44px",
 
           "& .MuiButtonGroup-grouped": {
             minWidth: "36px",
             minHeight: "36px",
             border: "none",
-            borderRadius: "4px",
-            padding: "8px",
-            margin: "4px 0 4px 4px",
+            borderRadius: themeSpacing(0.5),
+            padding: themeSpacing(1),
+            margin: themeSpacing(0.5),
 
             "&.Mui-disabled": {
               border: "none",
             },
           },
-          "& .MuiButtonGroup-lastButton": {
-            marginRight: "4px",
-          },
 
           "&.MuiButtonGroup-vertical": {
             height: "auto",
             width: "44px",
-            "& .MuiButtonGroup-grouped": {
-              padding: "8px",
-              margin: "4px 4px 0 4px",
-            },
-            "& .MuiButtonGroup-lastButton": {
-              marginBottom: "4px",
-            },
           },
         },
       },
@@ -365,9 +387,8 @@ export const theme = createTheme({
     MuiToggleButtonGroup: {
       styleOverrides: {
         root: {
-          backgroundColor: "#ffffff",
-          boxShadow:
-            "0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
+          backgroundColor: themePalette.background.default,
+          boxShadow: themeBoxShadows[1],
         },
       },
     },
@@ -375,13 +396,13 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           border: "0",
-          borderRadius: "4px !important",
-          margin: "4px",
+          borderRadius: `${themeSpacing(0.5)} !important`,
+          margin: themeSpacing(0.5),
           padding: "7px",
-          color: "#337083",
+          color: themePalette.primary.main,
           "&.Mui-selected": {
-            color: "#2F4356",
-            backgroundColor: "#D6E2E6",
+            color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+            backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
           },
         },
       },
@@ -398,7 +419,7 @@ export const theme = createTheme({
       },
       styleOverrides: {
         root: {
-          borderRadius: "4px",
+          borderRadius: themeSpacing(0.5),
           flex: "1",
 
           "&.readonly": {
@@ -406,7 +427,7 @@ export const theme = createTheme({
           },
 
           "&.ai .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#5B21B6 !important",
+            borderColor: `${themePalette.ai.main} !important`,
             borderWidth: "3px",
           },
         },
@@ -420,6 +441,22 @@ export const theme = createTheme({
     MuiOutlinedInput: {
       defaultProps: {
         notched: true,
+      },
+    },
+    MuiCardHeader: {
+      styleOverrides: {
+        root: {
+          backgroundColor: themePalette.background.lightgrey,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          border: "1px solid #ACB4BD",
+          boxShadow: "none !important",
+          borderRadius: `${themeSpacing(1)} !important`,
+        },
       },
     },
     MuiTab: {
@@ -436,15 +473,15 @@ export const theme = createTheme({
       styleOverrides: {
         badge: {
           backgroundColor: "#FF0000",
-          color: "#FFFFFF",
+          color: themePalette.primary.contrastText,
         },
       },
     },
     MuiDialogTitle: {
       styleOverrides: {
         root: {
-          paddingTop: "24px",
-          paddingBottom: "16px",
+          paddingTop: themeSpacing(3),
+          paddingBottom: themeSpacing(2),
           borderBottom: "1px solid " + themePalette.border,
         },
       },
@@ -453,7 +490,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderTop: "1px solid " + themePalette.border,
-          padding: "24px",
+          padding: themeSpacing(3),
         },
       },
     },
@@ -461,7 +498,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           fontSize: "16px",
-          color: "#1c2834",
+          color: themePalette.secondary.main,
         },
       },
     },
@@ -486,8 +523,8 @@ export const theme = createTheme({
       styleOverrides: {
         tooltip: {
           fontSize: "12px",
-          backgroundColor: "#1C2834",
-          color: "#ffffff",
+          backgroundColor: themePalette.secondary.main,
+          color: themePalette.primary.contrastText,
         },
       },
     },

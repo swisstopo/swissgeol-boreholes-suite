@@ -148,7 +148,7 @@ class FilterComponent extends React.Component {
   StyledAccordion = styled(Accordion)(() => ({
     marginBottom: "6px",
     borderRadius: "4px",
-    boxShadow: "none",
+    boxShadow: theme.shadows[0],
     border: "none",
     padding: "12px, 16px, 12px, 16px",
     "&.MuiAccordion-root:before": {

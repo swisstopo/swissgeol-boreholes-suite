@@ -7,7 +7,6 @@ import { Filter, Layers, Plus, Settings } from "lucide-react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
 import UploadIcon from "../../../assets/icons/upload.svg?react";
 import { ReduxRootState, User, Workgroup } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
@@ -97,7 +96,7 @@ const MainSideNav = ({
     <Stack
       direction="column"
       sx={{
-        boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
+        boxShadow: 4,
         width: "80px",
         height: "100%",
         position: "relative",
