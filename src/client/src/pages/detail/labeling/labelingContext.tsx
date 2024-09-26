@@ -43,6 +43,7 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     if (!panelOpen) {
       setExtractionObject(undefined);
+      setExtractionState(undefined);
     }
   }, [panelOpen]);
 
