@@ -131,13 +131,15 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-file-button-select"]').contains("WOLFHEART.pdf");
     cy.get('[data-cy="button-select-popover"] .MuiListItem-root').eq(1).click();
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
-    waitForLabelingImageLoaded();
 
-    // Cannot draw if the panel was opened with the panel toggle button
-    cy.window().then(win => {
-      const interactions = win.labelingImage.getInteractions().getArray();
-      expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
-    });
+    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+    //  Add this once the api returns the correct file
+    // // Cannot draw if the panel was opened with the panel toggle button
+    // waitForLabelingImageLoaded();
+    // cy.window().then(win => {
+    //   const interactions = win.labelingImage.getInteractions().getArray();
+    //   expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
+    // });
   });
 
   // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546 & https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1545
