@@ -1,5 +1,5 @@
 import { createContext, FC, PropsWithChildren, useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { ExtractionObject, LabelingContextInterface, PanelPosition } from "./labelingInterfaces.tsx";
+import { ExtractionObject, ExtractionState, LabelingContextInterface, PanelPosition } from "./labelingInterfaces.tsx";
 
 export const LabelingContext = createContext<LabelingContextInterface>({
   panelPosition: "right",
@@ -8,12 +8,15 @@ export const LabelingContext = createContext<LabelingContextInterface>({
   togglePanel: () => {},
   extractionObject: undefined,
   setExtractionObject: () => {},
+  extractionState: undefined,
+  setExtractionState: () => {},
 });
 
 export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
   const [panelPosition, setPanelPosition] = useState<PanelPosition>("right");
   const [panelOpen, setPanelOpen] = useState(false);
   const [extractionObject, setExtractionObject] = useState<ExtractionObject>();
+  const [extractionState, setExtractionState] = useState<ExtractionState>();
 
   const togglePanel = useCallback((isOpen?: boolean) => {
     setPanelOpen(prevState => (isOpen !== undefined ? isOpen : !prevState));
@@ -52,6 +55,8 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
         togglePanel,
         extractionObject,
         setExtractionObject,
+        extractionState,
+        setExtractionState,
       }}>
       {children}
     </LabelingContext.Provider>

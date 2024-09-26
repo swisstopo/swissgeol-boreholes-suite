@@ -63,13 +63,21 @@ interface LabelingPanelProps {
 
 const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const { panelPosition, setPanelPosition, extractionObject, setExtractionObject } = useLabelingContext();
+  const {
+    panelPosition,
+    setPanelPosition,
+    extractionObject,
+    setExtractionObject,
+    setExtractionState,
+    extractionState,
+  } = useLabelingContext();
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [files, setFiles] = useState<FileInterface[]>();
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
   const [fileInfo, setFileInfo] = useState<DataExtractionResponse>();
   const [activePage, setActivePage] = useState<number>(1);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
+  const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
   const [abortController, setAbortController] = useState<AbortController>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
@@ -126,35 +134,30 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           x1: Math.max(...[extent[0], extent[2]]),
           y1: Math.max(...[extent[1], extent[3]]),
         };
+        setExtractionExtent([]);
         const request: ExtractionRequest = {
           filename: fileInfo.fileName.substring(0, fileInfo.fileName.lastIndexOf("-")) + ".pdf",
           page_number: activePage,
           bbox: bbox,
           format: extractionObject.type,
         };
-        setExtractionObject({
-          ...extractionObject,
-          state: ExtractionState.loading,
-        });
+        setExtractionState(ExtractionState.loading);
         setDrawTooltipLabel(undefined);
         const abortController = new AbortController();
         setAbortController(abortController);
         extractData(request, abortController.signal)
           .then(response => {
             if (extractionObject.type) {
+              setExtractionState(ExtractionState.success);
               setExtractionObject({
                 ...extractionObject,
-                state: ExtractionState.success,
                 value: response[extractionObject.type],
               });
             }
           })
           .catch(error => {
             if (!error?.message?.includes("AbortError")) {
-              setExtractionObject({
-                ...extractionObject,
-                state: ExtractionState.error,
-              });
+              setExtractionState(ExtractionState.error);
               // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
               //  Check if error message is correct, resp. handle all error cases with different messages
               showAlert(t(error.message), "error");
@@ -165,15 +168,23 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           });
       }
     },
-    [activePage, extractionObject, fileInfo, setExtractionObject, showAlert, t],
+    [activePage, extractionObject, fileInfo, setExtractionObject, setExtractionState, showAlert, t],
   );
+
+  useEffect(() => {
+    if (extractionExtent?.length > 0) {
+      triggerDataExtraction(extractionExtent);
+    }
+  }, [extractionExtent, triggerDataExtraction]);
 
   const cancelRequest = () => {
     if (abortController) {
       abortController.abort();
       setAbortController(undefined);
     }
-    setExtractionObject({ type: "coordinates", state: ExtractionState.start });
+    setExtractionObject({ type: "coordinates" });
+    setExtractionState(ExtractionState.start);
+    setExtractionExtent([]);
   };
 
   useEffect(() => {
@@ -183,16 +194,13 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   }, [files, loadFiles]);
 
   useEffect(() => {
-    if (extractionObject?.state === ExtractionState.start) {
-      setExtractionObject({
-        ...extractionObject,
-        state: ExtractionState.drawing,
-      });
-      if (extractionObject.type === "coordinates") {
+    if (extractionState === ExtractionState.start) {
+      setExtractionState(ExtractionState.drawing);
+      if (extractionObject?.type === "coordinates") {
         setDrawTooltipLabel("drawCoordinateBox");
       }
     }
-  }, [extractionObject, setExtractionObject]);
+  }, [extractionObject, extractionState, setExtractionObject, setExtractionState]);
 
   useEffect(() => {
     if (selectedFile) {
@@ -298,7 +306,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               {text}
             </LabelingAlert>
           ) : (
-            extractionObject?.state === ExtractionState.loading && (
+            extractionState === ExtractionState.loading && (
               <Button onClick={() => cancelRequest()} variant="text" endIcon={<X />} sx={labelingButtonStyles}>
                 <CircularProgress sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }} />
                 {t("analyze")}
@@ -353,7 +361,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           </Stack>
           <LabelingDrawContainer
             fileInfo={fileInfo}
-            onDrawEnd={triggerDataExtraction}
+            onDrawEnd={setExtractionExtent}
             drawTooltipLabel={drawTooltipLabel}
           />
         </Box>
