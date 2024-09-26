@@ -131,6 +131,7 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-file-button-select"]').contains("WOLFHEART.pdf");
     cy.get('[data-cy="button-select-popover"] .MuiListItem-root').eq(1).click();
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
+    waitForLabelingImageLoaded();
 
     // Cannot draw if the panel was opened with the panel toggle button
     cy.window().then(win => {
