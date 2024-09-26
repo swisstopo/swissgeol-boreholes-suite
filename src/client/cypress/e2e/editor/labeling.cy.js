@@ -142,7 +142,7 @@ describe("Test labeling tool", () => {
     // });
   });
 
-  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546 & https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1545
+  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
   //  We have to wait for the docker integration before this test can be enabled
   it.skip("can extract data from image", () => {
     newEditableBorehole().as("borehole_id");

@@ -12,7 +12,6 @@ export enum ExtractionState {
 }
 
 export interface ExtractionObject {
-  state: ExtractionState;
   type?: ExtractionType;
   value?: string | number | Coordinate;
   previousValue?: string | number | Coordinate | null;
@@ -51,6 +50,8 @@ export interface LabelingContextInterface {
   togglePanel: (isOpen?: boolean) => void;
   extractionObject?: ExtractionObject;
   setExtractionObject: (extractionObject: ExtractionObject | undefined) => void;
+  extractionState?: ExtractionState;
+  setExtractionState: (extractionState: ExtractionState) => void;
 }
 
 export const labelingFileFormat = "application/pdf";
