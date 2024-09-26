@@ -140,6 +140,7 @@ describe("Test labeling tool", () => {
     });
   });
 
+  // We have to wait for the docker integration before this test can be enabled
   it.skip("can extract data from image", () => {
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();

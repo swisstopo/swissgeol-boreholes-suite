@@ -104,9 +104,9 @@ export async function extractData(request: ExtractionRequest, abortSignal: Abort
 
   if (response.ok) {
     const responseObject = await response.json();
-    if (responseObject.detail) {
-      throw new ApiError(responseObject.detail, 500);
-    }
+    // if (responseObject.detail) {
+    //   throw new ApiError(responseObject.detail, 500);
+    // }
     return responseObject as ExtractionResponse;
   } else {
     throw new ApiError("errorDataExtraction", response.status);
