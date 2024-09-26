@@ -256,7 +256,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             sx={{
               ...labelingButtonStyles,
               visibility: selectedFile ? "visible" : "hidden",
-            }}
+            }}>
             <Typography
               variant="h6"
               p={1}
