@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Card } from "@mui/material";
 import { CardContent } from "@mui/material/";
@@ -26,10 +26,15 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, user, updateCha
 
   const formMethods = useForm({
     mode: "all",
+    defaultValues: borehole.data,
   });
   // --- Derived states ---
   const isEditable: boolean =
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
+
+  useEffect(() => {
+    formMethods.reset(borehole.data);
+  }, [borehole, formMethods]);
 
   return (
     <FormSegmentBox>
