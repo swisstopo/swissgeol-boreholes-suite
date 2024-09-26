@@ -150,7 +150,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                 ...extractionObject,
                 state: ExtractionState.error,
               });
-              // TODO: Check if error message is correct, resp. handle all error cases with different messages
+              // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+              //  Check if error message is correct, resp. handle all error cases with different messages
               showAlert(t(error.message), "error");
             }
           })

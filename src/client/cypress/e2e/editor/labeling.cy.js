@@ -140,7 +140,8 @@ describe("Test labeling tool", () => {
     });
   });
 
-  // We have to wait for the docker integration before this test can be enabled
+  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546 & https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1545
+  //  We have to wait for the docker integration before this test can be enabled
   it.skip("can extract data from image", () => {
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
@@ -181,7 +182,8 @@ describe("Test labeling tool", () => {
 
     // Can draw box around coordinates and extract correct coordinates
     drawBox(400, 60, 600, 170);
-    // TODO: Update coordinates once api returns coordinates as floats
+    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+    //  Update all coordinates once api returns coordinates as floats
     evaluateSelect("spatial_reference_system", "20104001");
     evaluateCoordinate("location_x", "2'646'359");
     hasError("location_x", false);

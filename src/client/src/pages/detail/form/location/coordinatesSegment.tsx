@@ -283,7 +283,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   useEffect(() => {
     if (extractionObject?.type === "coordinates" && extractionObject.state === ExtractionState.success) {
-      console.log("updateCoordinates: ", extractionObject);
       const coordinate = extractionObject.value as Coordinate;
       if (coordinate) {
         setCurrentReferenceSystem(referenceSystems[coordinate.projection].code);

@@ -107,6 +107,8 @@ export const interceptApiCalls = () => {
     method: "GET",
     url: "/api/v2/boreholefile/dataextraction/*",
   }).as("load-extraction-file");
+  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+  //  Check if path is correct
   cy.intercept("http://localhost:8000/api/V1/extract_data").as("extract-data");
 };
 

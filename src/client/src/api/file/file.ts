@@ -82,7 +82,8 @@ export async function loadImage(fileName: string) {
 }
 
 export async function createExtractionPngs(fileName: string) {
-  // TODO: Maybe update URL after proper integration
+  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+  //  Maybe update URL after proper integration
   const response = await fetch("http://localhost:8000/api/V1/create_pngs", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -94,7 +95,8 @@ export async function createExtractionPngs(fileName: string) {
 }
 
 export async function extractData(request: ExtractionRequest, abortSignal: AbortSignal): Promise<ExtractionResponse> {
-  // TODO: Maybe update URL after proper integration
+  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+  //  Maybe update URL after proper integration
   const response = await fetch("http://localhost:8000/api/V1/extract_data", {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -104,9 +106,11 @@ export async function extractData(request: ExtractionRequest, abortSignal: Abort
 
   if (response.ok) {
     const responseObject = await response.json();
-    // if (responseObject.detail) {
-    //   throw new ApiError(responseObject.detail, 500);
-    // }
+    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+    //  "Coordinate not found" Errors should be returned as 404 and handled in the frontend
+    if (responseObject.detail) {
+      throw new ApiError(responseObject.detail, 500);
+    }
     return responseObject as ExtractionResponse;
   } else {
     throw new ApiError("errorDataExtraction", response.status);
