@@ -308,23 +308,6 @@ export const theme = createTheme({
         },
       },
     },
-    MuiCardHeader: {
-      styleOverrides: {
-        root: {
-          backgroundColor: themePalette.background.lightgrey,
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          border: "1px solid #ACB4BD",
-          boxShadow: themeBoxShadows[0],
-          borderRadius: `${themeSpacing(1)} !important`,
-        },
-      },
-    },
-
     MuiIconButton: {
       styleOverrides: {
         root: {
@@ -387,18 +370,16 @@ export const theme = createTheme({
             border: "none",
             borderRadius: themeSpacing(0.5),
             padding: themeSpacing(1),
+            margin: themeSpacing(0.5),
 
             "&.Mui-disabled": {
               border: "none",
             },
           },
+
           "&.MuiButtonGroup-vertical": {
             height: "auto",
             width: "44px",
-            "& .MuiButtonGroup-grouped": {
-              padding: themeSpacing(1),
-              margin: themeSpacing(0.5),
-            },
           },
         },
       },
@@ -460,6 +441,22 @@ export const theme = createTheme({
     MuiOutlinedInput: {
       defaultProps: {
         notched: true,
+      },
+    },
+    MuiCardHeader: {
+      styleOverrides: {
+        root: {
+          backgroundColor: themePalette.background.lightgrey,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          border: "1px solid #ACB4BD",
+          boxShadow: "none !important",
+          borderRadius: `${themeSpacing(1)} !important`,
+        },
       },
     },
     MuiTab: {
