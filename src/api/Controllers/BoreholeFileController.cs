@@ -119,10 +119,10 @@ public class BoreholeFileController : ControllerBase
 
                 return Ok(new DataExtractionInfo
                 {
-                    fileName = result.FileName,
-                    width = result.Width,
-                    height = result.Height,
-                    count = fileCount,
+                    FileName = result.FileName,
+                    Width = result.Width,
+                    Height = result.Height,
+                    Count = fileCount,
                 });
             }
             catch (Exception ex)
@@ -131,10 +131,10 @@ public class BoreholeFileController : ControllerBase
                 {
                     return Ok(new DataExtractionInfo
                     {
-                        fileName = fileUuid,
-                        width = 0,
-                        height = 0,
-                        count = 0,
+                        FileName = fileUuid,
+                        Width = 0,
+                        Height = 0,
+                        Count = 0,
                     });
                 }
                 else

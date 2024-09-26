@@ -341,7 +341,7 @@ public class BoreholeFileControllerTest
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
         var file = (uploadResult as OkObjectResult)?.Value as BoreholeFile;
-        var fileUuid = file.File.NameUuid.Replace(".pdf","");
+        var fileUuid = file.File.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
         await boreholeFileCloudService.UploadObject(image1, $"dataextraction/{fileUuid}-1.png");
@@ -355,10 +355,10 @@ public class BoreholeFileControllerTest
         ActionResultAssert.IsOk(result);
         var dataExtractionInfo = (result as OkObjectResult)?.Value as DataExtractionInfo;
         Assert.IsNotNull(dataExtractionInfo);
-        Assert.AreEqual($"{fileUuid}-1.png", dataExtractionInfo.fileName);
-        Assert.AreEqual(1786, dataExtractionInfo.width);
-        Assert.AreEqual(2526, dataExtractionInfo.height);
-        Assert.AreEqual(3, dataExtractionInfo.count);
+        Assert.AreEqual($"{fileUuid}-1.png", dataExtractionInfo.FileName);
+        Assert.AreEqual(1786, dataExtractionInfo.Width);
+        Assert.AreEqual(2526, dataExtractionInfo.Height);
+        Assert.AreEqual(3, dataExtractionInfo.Count);
 
         // Reset data
         await boreholeFileCloudService.DeleteObject($"dataextraction/{fileUuid}-1.png");
@@ -382,10 +382,10 @@ public class BoreholeFileControllerTest
         ActionResultAssert.IsOk(result);
         var dataExtractionInfo = (result as OkObjectResult)?.Value as DataExtractionInfo;
         Assert.IsNotNull(dataExtractionInfo);
-        Assert.AreEqual(fileUuid, dataExtractionInfo.fileName);
-        Assert.AreEqual(0, dataExtractionInfo.width);
-        Assert.AreEqual(0, dataExtractionInfo.height);
-        Assert.AreEqual(0, dataExtractionInfo.count);
+        Assert.AreEqual(fileUuid, dataExtractionInfo.FileName);
+        Assert.AreEqual(0, dataExtractionInfo.Width);
+        Assert.AreEqual(0, dataExtractionInfo.Height);
+        Assert.AreEqual(0, dataExtractionInfo.Count);
     }
 
     [TestMethod]

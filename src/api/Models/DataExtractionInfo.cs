@@ -1,11 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace BDMS.Models;
 
-namespace BDMS.Models;
-
+/// <summary>
+/// Represents the information about a data extraction file.
+/// </summary>
 public class DataExtractionInfo
 {
-    public string fileName { get; set; }
-    public int width { get; set; }
-    public int height { get; set; }
-    public int count { get; set; }
+    public string FileName { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public int Count { get; set; }
 }
