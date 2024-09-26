@@ -12,16 +12,6 @@ services:
     ports:
       - 9000:9000
       - 9002:9002
-  dataextraction:
-    image: borehole-api
-    restart: unless-stopped
-    ports:
-      - 8000:8000
-    environment:
-      AWS_ENDPOINT: http://minio:9000
-      AWS_ACCESS_KEY_ID: REDSQUIRREL
-      AWS_SECRET_ACCESS_KEY: YELLOWMONKEY
-      AWS_S3_BUCKET: "cannonflea"
   db:
     image: postgis/postgis:15-3.4-alpine
     restart: unless-stopped
