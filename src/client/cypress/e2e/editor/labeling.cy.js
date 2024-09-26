@@ -1,4 +1,3 @@
-import Draw from "ol/interaction/Draw";
 import { evaluateCoordinate, evaluateSelect, hasAiStyle, hasError, isDisabled } from "../helpers/formHelpers.js";
 import {
   interceptShowLabelingCall,
@@ -136,7 +135,7 @@ describe("Test labeling tool", () => {
     // Cannot draw if the panel was opened with the panel toggle button
     cy.window().then(win => {
       const interactions = win.labelingImage.getInteractions().getArray();
-      expect(interactions.some(interaction => interaction instanceof Draw)).to.be.false;
+      expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
     });
   });
 
