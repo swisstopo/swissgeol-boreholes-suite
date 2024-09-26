@@ -2,21 +2,21 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useDomains } from "../../api/fetchApiV2";
 import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
-import { FormSelect } from "./form";
-import { FormSelectProps } from "./formSelect.tsx";
+import { FormMultiSelect } from "./form.ts";
+import { FormMultiSelectProps } from "./formMultiSelect.tsx";
 
-export interface FormDomainSelectProps extends FormSelectProps {
+export interface FormDomainMultiSelectProps extends FormMultiSelectProps {
   schemaName: string;
   prefilteredDomains?: Codelist[];
 }
 
-export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
+export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
   const { label, selected, schemaName, prefilteredDomains } = props;
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
 
   return (
-    <FormSelect
+    <FormMultiSelect
       {...props}
       label={label}
       selected={selected}
