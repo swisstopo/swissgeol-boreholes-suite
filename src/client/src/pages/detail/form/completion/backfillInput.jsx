@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { addBackfill, getCasings, updateBackfill, useDomains } from "../../../../api/fetchApiV2";
+import { addBackfill, getCasings, updateBackfill } from "../../../../api/fetchApiV2";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 
 const BackfillInput = ({ item, parentId }) => {
-  const domains = useDomains();
-  const { i18n } = useTranslation();
   const [casings, setCasings] = useState([]);
   const getCasingOptions = useGetCasingOptions();
 
@@ -50,31 +48,19 @@ const BackfillInput = ({ item, parentId }) => {
         />
       </FormContainer>
       <FormContainer direction="row">
-        <FormSelect
+        <FormDomainSelect
           fieldName="kindId"
           label="kindBackfill"
           selected={item.kindId}
           required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === completionSchemaConstants.backfillType)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
+          schemaName={completionSchemaConstants.backfillType}
         />
-        <FormSelect
+        <FormDomainSelect
           fieldName="materialId"
           label="materialBackfill"
           selected={item.materialId}
           required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === completionSchemaConstants.backfillMaterial)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
+          schemaName={completionSchemaConstants.backfillMaterial}
         />
       </FormContainer>
       <FormContainer width={"50%"}>

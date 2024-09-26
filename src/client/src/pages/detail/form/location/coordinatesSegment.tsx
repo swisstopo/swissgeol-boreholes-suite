@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader } from "@mui/material";
-import { fetchApiV2, useDomains } from "../../../../api/fetchApiV2.js";
+import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
 import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
 import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
-import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect.tsx";
 import {
   getPrecisionFromString,
   parseFloatWithThousandsSeparator,
@@ -34,7 +34,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   showLabeling,
   editingEnabled,
 }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { extractionObject, setExtractionObject } = useLabelingContext();
 
   // --- State variables ---
@@ -45,8 +45,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   const formMethods = useForm({
     mode: "all",
   });
-
-  const { data: domains } = useDomains();
 
   // --- UseCallback hooks ---
 
@@ -476,20 +474,13 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                     />
                   </FormContainer>
                 </FormContainer>
-                <FormSelect
+                <FormDomainSelect
                   fieldName={`location_precision`}
                   label="location_precision"
                   readonly={!editingEnabled}
                   onUpdate={e => updateChange("location_precision", e, false)}
                   selected={[borehole.data.location_precision]}
-                  values={domains
-                    ?.filter((d: Codelist) => d.schema === "location_precision")
-                    .sort((a: Codelist, b: Codelist) => a.order - b.order)
-                    .map((d: Codelist) => ({
-                      key: d.id,
-                      // @ts-expect-error - i18n language selection not typed
-                      name: d[i18n.language],
-                    }))}
+                  schemaName={"location_precision"}
                 />
               </FormContainer>
             </CardContent>

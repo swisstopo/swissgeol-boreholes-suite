@@ -156,6 +156,7 @@
   "era": "Era",
   "errorAttention": "Attenzione",
   "errorBoreholeFileLoading": "Si è verificato un errore durante il caricamento dei file di perforazione.",
+  "errorBulkEditing": "Errore durante la modifica in blocco:",
   "errorDataExtraction": "L'estrazione dei dati è fallita: {{message}}",
   "errorDataExtractionFileLoading": "Si è verificato un errore durante il caricamento del file di estrazione dei dati.",
   "errorDuplicatedUploadPerBorehole": "Questo file è già stato caricato, per questa perforazione, e quindi non può essere caricato una seconda volta.",

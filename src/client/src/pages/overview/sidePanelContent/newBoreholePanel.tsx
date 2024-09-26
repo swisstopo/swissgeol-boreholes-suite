@@ -8,13 +8,13 @@ import { SideDrawerHeader } from "../layout/sideDrawerHeader.tsx";
 import { NewBoreholeProps } from "./commons/actionsInterfaces.ts";
 import WorkgroupSelect from "./commons/workgroupSelect.tsx";
 
-const NewBoreholePanel = ({ workgroup, enabledWorkgroups, setWorkgroup, toggleDrawer }: NewBoreholeProps) => {
+const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, toggleDrawer }: NewBoreholeProps) => {
   const history = useHistory();
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
   const handleBoreholeCreate = () => {
     // @ts-expect-error : The createBorehole function is not typed
-    createBorehole(workgroup)
+    createBorehole(workgroupId)
       // @ts-expect-error : The return of the createBorehole function is not typed
       .then((response: { data: { success: boolean; id: string; message: string } }) => {
         if (response.data.success) {
@@ -33,7 +33,12 @@ const NewBoreholePanel = ({ workgroup, enabledWorkgroups, setWorkgroup, toggleDr
     <>
       <SideDrawerHeader title={t("newBorehole")} toggleDrawer={toggleDrawer} />
       <Typography> {t("workgroup")}</Typography>
-      <WorkgroupSelect workgroup={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroup={setWorkgroup} />
+      <WorkgroupSelect
+        workgroupId={workgroupId}
+        enabledWorkgroups={enabledWorkgroups}
+        setWorkgroupId={setWorkgroupId}
+        sx={{ py: 2 }}
+      />
       <Stack direction="column" justifyContent="flex-end">
         <Button
           variant="outlined"

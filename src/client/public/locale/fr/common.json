@@ -156,6 +156,7 @@
   "era": "Ere",
   "errorAttention": "Attention",
   "errorBoreholeFileLoading": "Une erreur s'est produite lors du chargement des fichiers de forage.",
+  "errorBulkEditing": "Une erreur s'est produite lors de l'édition en bloc:",
   "errorDataExtraction": "L'extraction des données a échoué: {{message}}",
   "errorDataExtractionFileLoading": "Une erreur s'est produite lors du chargement du fichier d'extraction des données.",
   "errorDuplicatedUploadPerBorehole": "Ce fichier a déjà été téléchargé pour ce forage et ne peut pas être téléchargé une deuxième fois.",

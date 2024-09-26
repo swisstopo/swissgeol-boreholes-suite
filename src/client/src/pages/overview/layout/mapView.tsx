@@ -1,12 +1,11 @@
 import React, { useCallback, useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Stack } from "@mui/material";
+import { Dialog, Stack } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { Modal } from "semantic-ui-react";
 import { loadEditingBoreholes } from "../../../api-lib";
 import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
-import MultipleForm from "../../../components/legacyComponents/multiple/multipleForm.jsx";
+import { BulkEditForm } from "../../../components/legacyComponents/bulkedit/bulkEditForm.js";
 import MapComponent from "../../../components/map/mapComponent.jsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { OverViewContext } from "../overViewContext.tsx";
@@ -73,23 +72,30 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       sx={{
         flex: "1 1.5 100%",
       }}>
-      <Modal open={Array.isArray(editorStore.mselected)}>
-        <Modal.Content>
-          <MultipleForm
-            loadBoreholes={() => {
-              loadBoreholes(
-                boreholes.page,
-                boreholes.limit,
-                search.filter,
-                boreholes.orderby,
-                boreholes.direction,
-                featureIds,
-              );
-            }}
-            selected={editorStore.mselected}
-          />
-        </Modal.Content>
-      </Modal>
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        open={Array.isArray(editorStore.mselected)}
+        PaperProps={{
+          sx: {
+            overflow: "hidden",
+            height: "90vh",
+          },
+        }}>
+        <BulkEditForm
+          loadBoreholes={() => {
+            loadBoreholes(
+              boreholes.page,
+              boreholes.limit,
+              search.filter,
+              boreholes.orderby,
+              boreholes.direction,
+              featureIds,
+            );
+          }}
+          selected={editorStore.mselected}
+        />
+      </Dialog>
       <MapComponent
         searchState={{
           ...search,
