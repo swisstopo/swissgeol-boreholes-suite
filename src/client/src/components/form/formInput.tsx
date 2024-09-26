@@ -89,7 +89,7 @@ export const FormInput: FC<FormInputProps> = ({
       data-cy={fieldName + "-formInput"}
       InputProps={{
         ...inputProps /* eslint-disable  @typescript-eslint/no-explicit-any */,
-        inputComponent: withThousandSeparator ? (NumericFormatWithThousandSeparator as any) : null,
+        ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),
         readOnly: readonly,
         disabled: disabled,
       }}
