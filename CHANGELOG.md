@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.870 - 2024-09-27
+
 ### Added
 
 - Tooltips to main side navigation.
