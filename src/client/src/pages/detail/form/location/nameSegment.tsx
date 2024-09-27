@@ -1,6 +1,6 @@
-import { Form, Input } from "semantic-ui-react";
-import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Form, Input } from "semantic-ui-react";
 import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 

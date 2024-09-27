@@ -1,9 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import { StackFullWidth } from "../../../../components/styledComponents";
-import { FormDisplay, FormValueType } from "../../../../components/form/form";
-import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import { deleteCasing, useDomains } from "../../../../api/fetchApiV2";
+import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
+import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { extractCasingDepth } from "./casingUtils";
 
 const CasingDisplay = props => {
@@ -16,14 +15,14 @@ const CasingDisplay = props => {
   return (
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteCasing}>
       <FormDisplay label="name" value={item?.name} />
-      <StackFullWidth direction="row" spacing={1}>
+      <FormContainer direction="row">
         <FormDisplay label="fromdepth" value={depth.min} type={FormValueType.Number} />
         <FormDisplay label="todepth" value={depth.max} type={FormValueType.Number} />
-      </StackFullWidth>
-      <StackFullWidth direction="row" spacing={1}>
+      </FormContainer>
+      <FormContainer direction="row">
         <FormDisplay label="dateStartCasing" value={item?.dateStart} type={FormValueType.Date} />
         <FormDisplay label="dateFinishCasing" value={item?.dateFinish} type={FormValueType.Date} />
-      </StackFullWidth>
+      </FormContainer>
       <FormDisplay label="notes" value={item?.notes} />
       <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("casingElements")}</Typography>
       <TableContainer>

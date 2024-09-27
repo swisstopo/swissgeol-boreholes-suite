@@ -1,17 +1,19 @@
 import { forwardRef } from "react";
-import { Button } from "@mui/material";
-import CopyIcon from "../../assets/icons/copy.svg?react";
+import { useTranslation } from "react-i18next";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
-import { ButtonProps } from "./buttonsInterface";
-import { capitalizeFirstLetter } from "../../utils.ts";
-import { useTranslation } from "react-i18next";
+import { Button } from "@mui/material";
 import { Check, Pencil, Plus, Trash2 } from "lucide-react";
+import CopyIcon from "../../assets/icons/copy.svg?react";
+import { capitalizeFirstLetter } from "../../utils.ts";
+import { ButtonProps } from "./buttonsInterface";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
+  // As of now there is no variant "contained" with color "secondary" in the design system, fallback to "primary".
+  const color = props.variant === "contained" ? "primary" : (props.color ?? "primary");
   return (
-    <Button ref={ref} {...props} data-cy={props.label?.toLowerCase() + "-button"} startIcon={props.icon}>
+    <Button ref={ref} {...props} data-cy={props.label?.toLowerCase() + "-button"} color={color} startIcon={props.icon}>
       {props.label && capitalizeFirstLetter(t(props.label))}
     </Button>
   );
@@ -23,7 +25,14 @@ export const BdmsButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
 
 export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton ref={ref} {...props} label={props.label} variant={props.variant ?? "outlined"} icon={<Plus />} />
+    <BdmsBaseButton
+      ref={ref}
+      {...props}
+      label={props.label}
+      variant={props.variant ?? "outlined"}
+      color={props.color ?? "secondary"}
+      icon={<Plus />}
+    />
   );
 });
 
@@ -51,17 +60,42 @@ export const EndEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, 
 });
 
 export const CopyButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="copy" variant={props.variant ?? "outlined"} icon={<CopyIcon />} />;
+  return (
+    <BdmsBaseButton
+      ref={ref}
+      {...props}
+      label="copy"
+      variant={props.variant ?? "outlined"}
+      color={props.color ?? "secondary"}
+      icon={<CopyIcon />}
+    />
+  );
 });
 
 export const CancelButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton ref={ref} {...props} label="cancel" variant={props.variant ?? "outlined"} icon={<CloseIcon />} />
+    <BdmsBaseButton
+      ref={ref}
+      {...props}
+      label="cancel"
+      variant={props.variant ?? "outlined"}
+      color={props.color ?? "secondary"}
+      icon={<CloseIcon />}
+    />
   );
 });
 
 export const SaveButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="save" variant={props.variant ?? "outlined"} icon={<SaveIcon />} />;
+  return (
+    <BdmsBaseButton
+      ref={ref}
+      {...props}
+      label="save"
+      variant={props.variant ?? "outlined"}
+      color={props.color ?? "secondary"}
+      icon={<SaveIcon />}
+    />
+  );
 });
 
 export const AcceptButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
@@ -69,5 +103,13 @@ export const AcceptButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
 });
 
 export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} variant={props.variant ?? "outlined"} icon={<Trash2 />} />;
+  return (
+    <BdmsBaseButton
+      ref={ref}
+      {...props}
+      variant={props.variant ?? "outlined"}
+      color={props.color ?? "secondary"}
+      icon={<Trash2 />}
+    />
+  );
 });

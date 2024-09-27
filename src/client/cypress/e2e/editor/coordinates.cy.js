@@ -1,3 +1,4 @@
+import { setSelect } from "../helpers/formHelpers";
 import { delayedType, newEditableBorehole } from "../helpers/testHelpers";
 
 function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
@@ -17,10 +18,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
   beforeEach(() => {
     newEditableBorehole().as("borehole_id");
 
-    cy.get('[data-cy="LV95X"]').as("LV95X-input");
-    cy.get('[data-cy="LV95Y"]').as("LV95Y-input");
-    cy.get('[data-cy="LV03X"]').as("LV03X-input");
-    cy.get('[data-cy="LV03Y"]').as("LV03Y-input");
+    cy.get('[data-cy="location_x-formCoordinate"] input').as("LV95X-input");
+    cy.get('[data-cy="location_y-formCoordinate"] input').as("LV95Y-input");
+    cy.get('[data-cy="location_x_lv03-formCoordinate"] input').as("LV03X-input");
+    cy.get('[data-cy="location_y_lv03-formCoordinate"] input').as("LV03Y-input");
     cy.get('[data-cy="country"] > input').as("country");
     cy.get('[data-cy="canton"] > input').as("canton");
     cy.get('[data-cy="municipality"] > input').as("municipality");
@@ -44,7 +45,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "Oberentfelden");
 
     //switch reference system
-    cy.get("input[value=20104002]").click();
+    setSelect("spatial_reference_system", 1);
     //await all patch requests
     cy.wait(["@edit_patch", "@edit_patch", "@edit_patch"]);
     // verify all inputs are empty
@@ -59,10 +60,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("validates inputs", () => {
     // divs have errors as long as inputs are empty
-    cy.get("[name=location_x_lv03]").should("have.class", "error");
-    cy.get("[name=location_y_lv03]").should("have.class", "error");
-    cy.get("[name=location_x]").should("have.class", "error");
-    cy.get("[name=location_y]").should("have.class", "error");
+    cy.get('[data-cy="location_x-formCoordinate"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="location_y-formCoordinate"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="location_x_lv03-formCoordinate"] > div').should("have.class", "Mui-disabled");
+    cy.get('[data-cy="location_y_lv03-formCoordinate"] > div').should("have.class", "Mui-disabled");
 
     // type valid coordinates
     cy.get("@LV95X-input").scrollIntoView();
@@ -70,11 +71,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").scrollIntoView();
     delayedType(cy.get("@LV95Y-input"), "1245794.92348");
 
-    // divs have errors as long as inputs are empty
-    cy.get("[name=location_x_lv03]").should("not.have.class", "error");
-    cy.get("[name=location_y_lv03]").should("not.have.class", "error");
-    cy.get("[name=location_x]").should("not.have.class", "error");
-    cy.get("[name=location_y]").should("not.have.class", "error");
+    cy.get('[data-cy="location_x_lv03-formCoordinate"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_y_lv03-formCoordinate"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_x-formCoordinate"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_y-formCoordinate"] > div').should("not.have.class", "Mui-error");
 
     // wait edits of all 4 inputs to complete
     cy.wait(["@location", "@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch"]);
@@ -87,16 +87,15 @@ describe("Tests for editing coordinates of a borehole.", () => {
     delayedType(cy.get("@LV95Y-input"), "124579");
 
     // divs that changed have errors
-    cy.get("[name=location_x_lv03]").should("not.have.class", "error");
-    cy.get("[name=location_y_lv03]").should("not.have.class", "error");
-    cy.get("[name=location_x]").should("have.class", "error");
-    cy.get("[name=location_y]").should("have.class", "error");
+    cy.get('[data-cy="location_x_lv03-formCoordinate"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_y_lv03-formCoordinate"] > div').should("not.have.class", "Mui-error");
+    cy.get('[data-cy="location_x-formCoordinate"] > div').should("have.class", "Mui-error");
+    cy.get('[data-cy="location_y-formCoordinate"] > div').should("have.class", "Mui-error");
   });
 
   it("edits borehole and changes coordinates from map", () => {
     //start with references system LV03
-    cy.get("input[value=20104002]").click();
-    cy.get("input[value=20104002]").should("be.checked");
+    setSelect("spatial_reference_system", 1);
 
     // verify automatically filled inputs
     cy.get("@LV95X-input").should("have.value", "");
@@ -128,8 +127,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("not.have.value", "");
 
     // verify original reference system has switched to LV95
-    cy.get("input[value=20104002]").should("not.be.checked");
-    cy.get("input[value=20104001]").should("be.checked");
+    cy.get("[name=spatial_reference_system]").should("have.value", 20104001);
 
     waitForCoordinatePatches();
 
@@ -142,12 +140,14 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("displays correct decimal precision", () => {
     // Type valid coordinates with zeros after decimal
-    delayedType(cy.get("@LV95X-input"), "2645123.0000");
-    delayedType(cy.get("@LV95Y-input"), "1245794.000");
+    cy.get("@LV95X-input").type("2645123.0000");
+    cy.get("@LV95Y-input").type("1245794.000");
 
     waitForCoordinatePatches();
     cy.wait("@edit_patch");
     cy.wait("@location");
+    checkDecimalPlaces("@LV95X-input", 4);
+    checkDecimalPlaces("@LV95Y-input", 3);
     checkDecimalPlaces("@LV03X-input", 4);
     checkDecimalPlaces("@LV03Y-input", 4);
 
@@ -160,11 +160,13 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").should("have.value", `1'245'794.000`);
 
     // Add more zeros to LV95Y input
-    delayedType(cy.get("@LV95Y-input"), "00");
+    cy.get("@LV95Y-input").type("00");
 
     waitForCoordinatePatches();
     cy.wait("@edit_patch");
     cy.wait("@location");
+    checkDecimalPlaces("@LV95X-input", 4);
+    checkDecimalPlaces("@LV95Y-input", 5);
     checkDecimalPlaces("@LV03X-input", 5);
     checkDecimalPlaces("@LV03Y-input", 5);
   });

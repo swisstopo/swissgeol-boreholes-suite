@@ -1,5 +1,5 @@
-import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
 import { checkAllVisibleRows, verifyPaginationText } from "../helpers/dataGridHelpers";
+import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by identifier.", () => {
   it("can filter by identifier", () => {
@@ -79,7 +79,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.contains("button", "Bulk editing").click({ force: true });
 
     // Bulk edit dialog should open.
-    cy.get(".modal .toggle").should("have.length", 18);
+    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 19);
     cy.contains("button", "Cancel").click();
 
     // click reset label

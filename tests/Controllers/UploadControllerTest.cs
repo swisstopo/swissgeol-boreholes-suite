@@ -49,13 +49,13 @@ public class UploadControllerTest
             ForcePathStyle = true,
             UseHttp = configuration["S3:SECURE"] == "0",
         });
-        var loggerBoreholeFileUploadService = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
+        var loggerBoreholeFileCloudService = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, context.Users.FirstOrDefault().SubjectId) }));
-        var boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerBoreholeFileUploadService.Object, contextAccessorMock.Object, s3ClientMock);
+        var boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, loggerBoreholeFileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
 
-        controller = new UploadController(context, loggerMock.Object, locationService, coordinateService, boreholeFileUploadService) { ControllerContext = GetControllerContextAdmin() };
+        controller = new UploadController(context, loggerMock.Object, locationService, coordinateService, boreholeFileCloudService) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

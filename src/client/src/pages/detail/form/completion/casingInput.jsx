@@ -1,25 +1,24 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
-import { StackFullWidth } from "../../../../components/styledComponents.ts";
-import Delete from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
-import { addCasing, updateCasing, useDomains } from "../../../../api/fetchApiV2";
-import { completionSchemaConstants } from "./completionSchemaConstants";
-import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
+import Delete from "@mui/icons-material/Delete";
+import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
+import { addCasing, updateCasing } from "../../../../api/fetchApiV2";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { extractCasingDepth } from "./casingUtils.jsx";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext.jsx";
+import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import { extractCasingDepth } from "./casingUtils.jsx";
+import { completionSchemaConstants } from "./completionSchemaConstants";
 
 const CasingInput = props => {
   const { item, parentId } = props;
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
-  const domains = useDomains();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const formMethods = useForm({
     mode: "all",
     defaultValues: {
@@ -146,9 +145,9 @@ const CasingInput = props => {
     <>
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+          <FormContainer>
             <FormInput fieldName="name" label="name" value={item.name} required={true} />
-            <Stack direction="row">
+            <FormContainer direction="row">
               <FormInput
                 fieldName="fromDepth"
                 label="fromdepth"
@@ -163,8 +162,8 @@ const CasingInput = props => {
                 type={FormValueType.Number}
                 disabled={true}
               />
-            </Stack>
-            <Stack direction="row">
+            </FormContainer>
+            <FormContainer direction="row">
               <FormInput
                 fieldName="dateStart"
                 label="dateStartCasing"
@@ -177,17 +176,17 @@ const CasingInput = props => {
                 value={item.dateFinish}
                 type={FormValueType.Date}
               />
-            </Stack>
-            <Stack direction="row">
+            </FormContainer>
+            <FormContainer direction="row">
               <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
-            </Stack>
+            </FormContainer>
             <Box
               sx={{
                 paddingBottom: "8.5px",
                 marginRight: "8px !important",
                 marginTop: "18px !important",
               }}>
-              <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
+              <FormContainer direction={"row"} justifyContent={"space-between"}>
                 <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("casingElements")}</Typography>
                 <AddButton
                   label="addCasingElement"
@@ -195,14 +194,14 @@ const CasingInput = props => {
                     addCasingElement();
                   }}
                 />
-              </Stack>
+              </FormContainer>
               {fields
                 .sort((a, b) => (a.fromDepth || Infinity) - (b.fromDepth || Infinity))
                 .map((field, index) => (
                   <>
                     <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`casingElement-${index}`}>
-                      <StackFullWidth direction={"column"} spacing={1}>
-                        <StackFullWidth direction="row">
+                      <FormContainer>
+                        <FormContainer direction="row">
                           <FormInput
                             fieldName={`casingElements.${index}.fromDepth`}
                             label="fromdepth"
@@ -219,32 +218,20 @@ const CasingInput = props => {
                             required={true}
                             onUpdate={updateDepth}
                           />
-                          <FormSelect
+                          <FormDomainSelect
                             fieldName={`casingElements.${index}.kindId`}
                             label="kindCasingLayer"
                             selected={field.kindId}
                             required={true}
-                            values={domains?.data
-                              ?.filter(d => d.schema === completionSchemaConstants.casingType)
-                              .sort((a, b) => a.order - b.order)
-                              .map(d => ({
-                                key: d.id,
-                                name: d[i18n.language],
-                              }))}
+                            schemaName={completionSchemaConstants.casingType}
                           />
-                        </StackFullWidth>
-                        <StackFullWidth direction="row">
-                          <FormSelect
+                        </FormContainer>
+                        <FormContainer direction="row">
+                          <FormDomainSelect
                             fieldName={`casingElements.${index}.materialId`}
                             label="materialCasingLayer"
                             selected={field.materialId}
-                            values={domains?.data
-                              ?.filter(d => d.schema === completionSchemaConstants.casingMaterial)
-                              .sort((a, b) => a.order - b.order)
-                              .map(d => ({
-                                key: d.id,
-                                name: d[i18n.language],
-                              }))}
+                            schemaName={completionSchemaConstants.casingMaterial}
                           />
                           <FormInput
                             fieldName={`casingElements.${index}.innerDiameter`}
@@ -258,8 +245,8 @@ const CasingInput = props => {
                             value={field.outerDiameter}
                             type={FormValueType.Number}
                           />
-                        </StackFullWidth>
-                      </StackFullWidth>
+                        </FormContainer>
+                      </FormContainer>
                       <IconButton
                         onClick={() => remove(index)}
                         data-cy={`casingElements.${index}.delete`}
@@ -273,7 +260,7 @@ const CasingInput = props => {
                   </>
                 ))}
             </Box>
-          </Stack>
+          </FormContainer>
           <DataCardButtonContainer>
             <CancelButton
               onClick={() => {

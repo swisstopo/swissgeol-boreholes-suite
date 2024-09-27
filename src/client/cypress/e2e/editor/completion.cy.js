@@ -1,11 +1,3 @@
-import {
-  createBorehole,
-  createCompletion,
-  goToRouteAndAcceptTerms,
-  handlePrompt,
-  loginAsAdmin,
-  startBoreholeEditing,
-} from "../helpers/testHelpers";
 import { addItem, cancelEditing, copyItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 import {
   evaluateCheckbox,
@@ -17,6 +9,14 @@ import {
   setSelect,
   toggleCheckbox,
 } from "../helpers/formHelpers";
+import {
+  createBorehole,
+  createCompletion,
+  goToRouteAndAcceptTerms,
+  handlePrompt,
+  loginAsAdmin,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
 
 const toggleHeaderOpen = () => {
   cy.get('[data-cy="completion-header-display"]')
@@ -107,7 +107,7 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
 
     setInput("name", "Compl-1");
-    setSelect("kindId", 2);
+    setSelect("kindId", 1);
     cy.get('[data-cy="save-button"]').should("be.enabled");
 
     setInput("abandonDate", "2012-11-14");
@@ -128,7 +128,7 @@ describe("completion crud tests", () => {
 
     // edit completion
     startEditHeader();
-    setSelect("kindId", 3);
+    setSelect("kindId", 2);
     cancelEditing();
     cy.contains("telescopic");
     startEditHeader();

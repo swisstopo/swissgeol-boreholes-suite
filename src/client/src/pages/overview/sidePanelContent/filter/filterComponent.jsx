@@ -1,26 +1,26 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
-import _ from "lodash";
-import WorkgroupRadioGroup from "./workgroupRadioGroup.jsx";
-import StatusFilter from "./statusFilter.jsx";
-import { LocationSearchData } from "./filterData/LocationSearchData.js";
-import { boreholeSearchData } from "./filterData/boreholeSearchData.js";
-import { lithologySearchData } from "./filterData/lithologySearchData.js";
-import { registrationSearchData } from "./filterData/registrationSearchData.js";
-import { chronostratigraphySearchData } from "./filterData/chronostratigraphySearchData.js";
-import { lithostratigraphySearchData } from "./filterData/lithostratigraphySearchData.js";
-import { FilterReset } from "./filterReset.tsx";
+import { connect } from "react-redux";
 import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import ListFilter from "./listFilter.jsx";
-import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
+import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
+import _ from "lodash";
+import PropTypes from "prop-types";
 import { theme } from "../../../../AppTheme.ts";
+import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import FilterChips from "./FilterChips.tsx";
 import { FilterContext } from "./filterContext.tsx";
-import { ChevronDown } from "lucide-react";
+import { boreholeSearchData } from "./filterData/boreholeSearchData.js";
+import { chronostratigraphySearchData } from "./filterData/chronostratigraphySearchData.js";
+import { lithologySearchData } from "./filterData/lithologySearchData.js";
+import { lithostratigraphySearchData } from "./filterData/lithostratigraphySearchData.js";
+import { LocationSearchData } from "./filterData/LocationSearchData.js";
+import { registrationSearchData } from "./filterData/registrationSearchData.js";
+import { FilterReset } from "./filterReset.tsx";
+import ListFilter from "./listFilter.jsx";
+import StatusFilter from "./statusFilter.jsx";
+import WorkgroupRadioGroup from "./workgroupRadioGroup.jsx";
 
 class FilterComponent extends React.Component {
   static contextType = FilterContext;
@@ -148,7 +148,7 @@ class FilterComponent extends React.Component {
   StyledAccordion = styled(Accordion)(() => ({
     marginBottom: "6px",
     borderRadius: "4px",
-    boxShadow: "none",
+    boxShadow: theme.shadows[0],
     border: "none",
     padding: "12px, 16px, 12px, 16px",
     "&.MuiAccordion-root:before": {

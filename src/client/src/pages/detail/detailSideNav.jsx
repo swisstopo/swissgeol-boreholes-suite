@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { connect } from "react-redux";
 import { useLocation, withRouter } from "react-router-dom";
-import { List } from "semantic-ui-react";
-import ListItem from "@mui/material/ListItem";
-import Box from "@mui/material/Box";
-import { styled } from "@mui/material/styles";
-import { theme } from "../../AppTheme.ts";
 import { Typography } from "@mui/material";
-import { capitalizeFirstLetter } from "../../utils";
+import Box from "@mui/material/Box";
+import ListItem from "@mui/material/ListItem";
+import { styled } from "@mui/material/styles";
+import { List } from "semantic-ui-react";
+import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
+import { capitalizeFirstLetter } from "../../utils";
 
 /**
  * A component that renders the side navigation for a borehole detail. The component is used without explicitly passing props.

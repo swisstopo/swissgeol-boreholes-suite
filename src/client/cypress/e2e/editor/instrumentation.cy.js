@@ -1,3 +1,5 @@
+import { addItem, cancelEditing, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   createCasing,
@@ -7,8 +9,6 @@ import {
   loginAsAdmin,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
-import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, cancelEditing, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Instrumentation crud tests", () => {
   beforeEach(() => {
@@ -49,8 +49,8 @@ describe("Instrumentation crud tests", () => {
     setInput("name", "Inst-1");
     setInput("fromDepth", "123456");
     setInput("toDepth", "987654");
-    setSelect("kindId", 3);
-    setSelect("statusId", 2);
+    setSelect("kindId", 2);
+    setSelect("statusId", 1);
 
     // save instrumentation
     saveForm();

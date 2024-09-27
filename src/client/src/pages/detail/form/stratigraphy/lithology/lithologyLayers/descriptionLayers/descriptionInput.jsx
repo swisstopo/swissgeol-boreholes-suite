@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MenuItem, Stack, TextField } from "@mui/material";
 import { useDomains } from "../../../../../../../api/fetchApiV2.js";
-import { useTranslation } from "react-i18next";
 
 const DescriptionInput = props => {
   const { item, setFromDepth, setDescription, setToDepth, setDescriptionQualityId, selectableDepths, descriptions } =

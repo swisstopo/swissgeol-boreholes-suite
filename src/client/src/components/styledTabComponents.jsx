@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab } from "@mui/material";
+import { Box, Tab, Tabs } from "@mui/material";
 import { styled } from "@mui/system";
 import { theme } from "../AppTheme";
 
@@ -9,13 +9,7 @@ export const BdmsTabContentBox = styled(Box)(() => ({
   margin: "0 5px 10px 5px",
   display: "flex",
   flexDirection: "column",
-  boxShadow:
-    "0px 2px 1px -1px " +
-    theme.palette.boxShadow +
-    ", 0px 1px 1px 0px " +
-    theme.palette.boxShadow +
-    ", 0px 1px 3px 0px" +
-    theme.palette.boxShadow,
+  boxShadow: theme.shadows[5],
 }));
 
 export const BdmsTabs = styled(Tabs)({

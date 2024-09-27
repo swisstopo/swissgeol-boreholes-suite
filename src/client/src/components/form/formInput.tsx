@@ -1,21 +1,23 @@
-import { useTranslation } from "react-i18next";
-import { useFormContext } from "react-hook-form";
-import { FormValueType, getFormFieldError } from "./form";
-import { FormField } from "./formField";
 import { FC } from "react";
+import { useFormContext } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { InputProps, SxProps } from "@mui/material";
+import { TextField } from "@mui/material/";
 import { isValid } from "date-fns";
+import { FormValueType, getFormFieldError } from "./form";
 
 export interface FormInputProps {
   fieldName: string;
   label: string;
   required?: boolean;
   disabled?: boolean;
+  readonly?: boolean;
   type?: FormValueType;
   multiline?: boolean;
   rows?: number;
   value?: string | number;
   sx?: SxProps;
+  className?: string;
   inputProps?: InputProps;
   onUpdate?: (value: string) => void;
 }
@@ -25,11 +27,13 @@ export const FormInput: FC<FormInputProps> = ({
   label,
   required,
   disabled,
+  readonly,
   type,
   multiline,
   rows,
   value,
   sx,
+  className,
   inputProps,
   onUpdate,
 }) => {
@@ -48,10 +52,11 @@ export const FormInput: FC<FormInputProps> = ({
   };
 
   return (
-    <FormField
+    <TextField
       required={required || false}
       error={getFormFieldError(fieldName, formState.errors)}
       sx={{ ...sx }}
+      className={`${readonly ? "readonly" : ""} ${className || ""}`}
       type={type || FormValueType.Text}
       multiline={multiline || false}
       rows={rows}
@@ -79,8 +84,7 @@ export const FormInput: FC<FormInputProps> = ({
       defaultValue={getDefaultValue(value)}
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
-      InputLabelProps={{ shrink: true }}
-      InputProps={{ ...inputProps }}
+      InputProps={{ ...inputProps, readOnly: readonly, disabled: disabled }}
     />
   );
 };

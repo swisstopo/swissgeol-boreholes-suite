@@ -1,11 +1,10 @@
-import { Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/material";
-import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
-import { File as FileIcon } from "lucide-react";
-import { AddButton } from "../../../components/buttons/buttons.tsx";
-import { FC, useCallback, useContext, useRef } from "react";
-import { useTranslation } from "react-i18next";
+import { FC, useCallback, useRef } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
-import { AlertContext } from "../../../components/alert/alertContext.tsx";
+import { useTranslation } from "react-i18next";
+import { AlertColor, Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/material";
+import { File as FileIcon } from "lucide-react";
+import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
+import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { labelingFileFormat } from "./labelingInterfaces.tsx";
 
 interface LabelingFileSelectorProps {
@@ -13,12 +12,18 @@ interface LabelingFileSelectorProps {
   files?: FileInterface[];
   setSelectedFile: (file: FileInterface) => void;
   addFile: (file: File) => void;
+  showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean) => void;
 }
 
-const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, files, setSelectedFile, addFile }) => {
+const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
+  isLoadingFiles,
+  files,
+  setSelectedFile,
+  addFile,
+  showAlert,
+}) => {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { showAlert } = useContext(AlertContext);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -106,7 +111,12 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({ isLoadingFiles, f
             )}
           </Stack>
           <Divider />
-          <AddButton variant="contained" label="addFile" onClick={() => fileInputRef.current?.click()} />
+          <AddButton
+            variant="contained"
+            color="primary"
+            label="addFile"
+            onClick={() => fileInputRef.current?.click()}
+          />
         </Stack>
       </Stack>
     </Box>

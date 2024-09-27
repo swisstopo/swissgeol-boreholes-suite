@@ -1,31 +1,30 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Stack } from "@mui/material";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
-import { completionSchemaConstants } from "./completionSchemaConstants.js";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
-import { FormCheckbox, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
+import {
+  FormCheckbox,
+  FormContainer,
+  FormDomainSelect,
+  FormInput,
+  FormValueType,
+} from "../../../../components/form/form";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import { completionSchemaConstants } from "./completionSchemaConstants.js";
 
 const CompletionHeaderInput = props => {
   const { completion, cancelChanges, saveCompletion, trySwitchTab, switchTabs } = props;
   const { showPrompt } = useContext(PromptContext);
   const formMethods = useForm({ mode: "all" });
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [kindOptions, setKindOptions] = useState();
 
   const loadKindOptions = async () => {
     const response = await fetchApiV2(`codelist?schema=${completionSchemaConstants.completionKind}`, "GET");
     if (response) {
-      const kindOptions = response
-        ?.sort((a, b) => a.order - b.order)
-        .map(d => ({
-          key: d.id,
-          name: d[i18n.language],
-        }));
-      setKindOptions(kindOptions);
+      setKindOptions(response);
     }
   };
 
@@ -96,8 +95,8 @@ const CompletionHeaderInput = props => {
     <>
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <Stack direction="column">
-            <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap">
+          <FormContainer>
+            <FormContainer direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap">
               <FormInput
                 fieldName="name"
                 label="name"
@@ -105,18 +104,19 @@ const CompletionHeaderInput = props => {
                 value={selectedCompletion?.name}
                 sx={{ flex: "1 1 180px" }}
               />
-              <Stack
+              <FormContainer
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
                 flex={"0 0 400px"}
                 marginRight={"10px"}>
-                <FormSelect
+                <FormDomainSelect
                   fieldName="kindId"
                   label="completionKind"
                   selected={selectedCompletion?.kindId}
                   required={true}
-                  values={kindOptions}
+                  schemaName={completionSchemaConstants.completionKind}
+                  prefilteredDomains={kindOptions}
                 />
                 <FormCheckbox
                   fieldName="isPrimary"
@@ -124,9 +124,9 @@ const CompletionHeaderInput = props => {
                   checked={completion.isPrimary}
                   disabled={completion.isPrimary}
                 />
-              </Stack>
-            </Stack>
-            <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
+              </FormContainer>
+            </FormContainer>
+            <FormContainer direction="row" justifyContent="space-between" flexWrap="wrap">
               <FormInput
                 fieldName="notes"
                 label="notes"
@@ -141,7 +141,7 @@ const CompletionHeaderInput = props => {
                 value={selectedCompletion?.abandonDate}
                 sx={{ flex: "0 0 400px" }}
               />
-            </Stack>
+            </FormContainer>
             <DataCardButtonContainer>
               <CancelButton
                 onClick={() => {
@@ -156,7 +156,7 @@ const CompletionHeaderInput = props => {
                 }}
               />
             </DataCardButtonContainer>
-          </Stack>
+          </FormContainer>
         </form>
       </FormProvider>
     </>

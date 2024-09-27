@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogProps, Stack, Typography } from "@mui/material";
-import { DialogFooterContainer, DialogHeaderContainer, DialogMainContent } from "../components/styledComponents.ts";
 import { AcceptButton } from "../components/buttons/buttons.tsx";
-import { MarkdownWrapper } from "./markdownWrapper.tsx";
 import { LanguagePopup } from "../components/header/languagePopup.tsx";
+import { DialogFooterContainer, DialogHeaderContainer, DialogMainContent } from "../components/styledComponents.ts";
+import { MarkdownWrapper } from "./markdownWrapper.tsx";
 
 interface DisclaimerDialogProps {
   onClose?: () => void;

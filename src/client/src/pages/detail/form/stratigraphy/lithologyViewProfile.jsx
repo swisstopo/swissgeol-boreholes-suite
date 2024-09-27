@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { NumericFormat } from "react-number-format";
-import { useLayers } from "../../../../api/fetchApiV2.js";
 import { Box, LinearProgress } from "@mui/material";
+import { useLayers } from "../../../../api/fetchApiV2.js";
 import { theme } from "../../../../AppTheme.ts";
 
 const handlePattern = layer => `url(/img/lit/${JSON.parse(layer?.lithology?.conf ?? null)?.image})`;

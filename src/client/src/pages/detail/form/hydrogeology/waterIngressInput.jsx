@@ -1,17 +1,14 @@
-import { Stack } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import { addWaterIngress, updateWaterIngress } from "../../../../api/fetchApiV2.js";
+import DataInputCard from "../../../../components/dataCard/dataInputCard.jsx";
+import { FormContainer } from "../../../../components/form/form";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
+import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
-import DataInputCard from "../../../../components/dataCard/dataInputCard.jsx";
-import { FormSelect } from "../../../../components/form/form";
-import { addWaterIngress, updateWaterIngress, useDomains } from "../../../../api/fetchApiV2.js";
 
 const WaterIngressInput = props => {
   const { item, parentId } = props;
-  const domains = useDomains();
-  const { i18n } = useTranslation();
 
   const prepareFormDataForSubmit = data => {
     data = prepareCasingDataForSubmit(data);
@@ -37,33 +34,21 @@ const WaterIngressInput = props => {
       promptLabel="waterIngress"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <ObservationInput observation={item} boreholeId={parentId} />
-      <Stack direction="row" sx={{ paddingTop: "10px" }}>
-        <FormSelect
+      <FormContainer direction="row" sx={{ paddingTop: "10px" }}>
+        <FormDomainSelect
           fieldName="quantityId"
           label="quantity"
           selected={item.quantityId}
           required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === hydrogeologySchemaConstants.waterIngressQuantity)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
+          schemaName={hydrogeologySchemaConstants.waterIngressQuantity}
         />
-        <FormSelect
+        <FormDomainSelect
           fieldName="conditionsId"
           label="conditions"
           selected={item.conditionsId}
-          values={domains?.data
-            ?.filter(d => d.schema === hydrogeologySchemaConstants.waterIngressConditions)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
+          schemaName={hydrogeologySchemaConstants.waterIngressConditions}
         />
-      </Stack>
+      </FormContainer>
     </DataInputCard>
   );
 };

@@ -1,7 +1,7 @@
-import { Button, ButtonProps, List, ListItem, ListItemIcon, ListItemText, Popover, SxProps } from "@mui/material";
-import { theme } from "../../AppTheme.ts";
 import { FC, MouseEvent, ReactNode, useState } from "react";
+import { Button, ButtonProps, List, ListItem, ListItemIcon, ListItemText, Popover, SxProps } from "@mui/material";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { theme } from "../../AppTheme.ts";
 
 export interface ButtonSelectItem {
   key: number | string;
@@ -21,6 +21,7 @@ interface ButtonSelectProps {
   transformOrigin?: { vertical: "top" | "center" | "bottom"; horizontal: "left" | "center" | "right" };
   textAlign?: "left" | "right";
   sx?: SxProps;
+  className?: string;
 }
 
 export const ButtonSelect: FC<ButtonSelectProps> = ({
@@ -35,6 +36,7 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
   transformOrigin,
   textAlign,
   sx,
+  className,
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const isOpen = Boolean(anchorEl);
@@ -55,7 +57,7 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
         onClick={handleClick}
         startIcon={startIcon}
         endIcon={anchorEl ? <ChevronUp /> : <ChevronDown />}
-        className={isOpen ? "Mui-active" : ""}
+        className={`${isOpen ? "Mui-active" : ""} ${className || ""}`}
         data-cy={`${fieldName}-button-select`}
         sx={{ ...sx }}>
         {selectedItem?.value}

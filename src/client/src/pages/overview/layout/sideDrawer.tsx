@@ -1,6 +1,6 @@
+import React from "react";
 import { Box, Collapse, Paper } from "@mui/material";
 import { theme } from "../../../AppTheme.ts";
-import React from "react";
 
 interface SideDrawerProps {
   drawerContent: React.JSX.Element;
@@ -23,7 +23,7 @@ export const SideDrawer = ({ drawerOpen, drawerContent }: SideDrawerProps) => {
             height: "calc(100vh - 84px)",
             padding: "16px",
             backgroundColor: theme.palette.background.lightgrey,
-            boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
+            boxShadow: theme.shadows[4],
             borderRight: "1px solid rgba(0, 0, 0, 0.12)",
           }}>
           {drawerContent}

@@ -1,3 +1,5 @@
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   createCasing,
@@ -8,8 +10,6 @@ import {
   selectLanguage,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
-import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Tests for the wateringress editor.", () => {
   it("Creates, updates and deletes wateringresses", () => {
@@ -45,7 +45,7 @@ describe("Tests for the wateringress editor.", () => {
     addItem("addWaterIngress");
     cy.wait("@casing_GET");
 
-    setSelect("quantityId", 3);
+    setSelect("quantityId", 2);
     setSelect("reliabilityId", 2);
     setSelect("casingId", 2);
     setInput("startTime", "2012-11-14T12:06");
@@ -59,7 +59,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // edit wateringress
     startEditing();
-    setSelect("quantityId", 2);
+    setSelect("quantityId", 1);
     setSelect("conditionsId", 3);
     saveForm();
     evaluateDisplayValue("quantity", "mittel (30 - 120 l/min)");

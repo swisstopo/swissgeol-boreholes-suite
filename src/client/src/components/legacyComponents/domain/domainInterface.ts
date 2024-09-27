@@ -4,6 +4,7 @@ export interface Domains {
 }
 
 export interface Codelist {
+  order: number;
   id: number;
   geolcode: number;
   schema: string;
@@ -11,4 +12,5 @@ export interface Codelist {
   en: string;
   fr: string;
   it: string;
+  [key: string]: string | number;
 }

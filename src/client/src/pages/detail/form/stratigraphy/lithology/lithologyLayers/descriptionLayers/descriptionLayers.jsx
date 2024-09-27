@@ -1,13 +1,13 @@
 import { createRef, useEffect, useMemo, useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
-import WarningIcon from "@mui/icons-material/Warning";
-import { produce } from "immer";
 import { useTranslation } from "react-i18next";
-import DescriptionInput from "./descriptionInput.jsx";
-import DescriptionDisplay from "./descriptionDisplay.jsx";
-import DescriptionDeleteDialog from "./descriptionDeleteDialog.jsx";
-import ActionButtons from "./actionButtons.jsx";
+import WarningIcon from "@mui/icons-material/Warning";
+import { Box, Stack, Typography } from "@mui/material";
+import { produce } from "immer";
 import { theme } from "../../../../../../../AppTheme.ts";
+import ActionButtons from "./actionButtons.jsx";
+import DescriptionDeleteDialog from "./descriptionDeleteDialog.jsx";
+import DescriptionDisplay from "./descriptionDisplay.jsx";
+import DescriptionInput from "./descriptionInput.jsx";
 
 const DescriptionLayers = props => {
   const {
@@ -190,7 +190,7 @@ const DescriptionLayers = props => {
   };
 
   return (
-    <Box sx={{ boxShadow: "-1px 0 0 " + theme.palette.boxShadow }}>
+    <Box sx={{ boxShadow: 6 }}>
       {displayDescriptions &&
         displayDescriptions
           ?.sort((a, b) => a.fromDepth - b.fromDepth)
@@ -203,8 +203,7 @@ const DescriptionLayers = props => {
                 direction="row"
                 data-cy={`description-${index}`}
                 sx={{
-                  boxShadow:
-                    "inset -1px 0 0 " + theme.palette.boxShadow + ", inset 0 -1px 0 " + theme.palette.boxShadow,
+                  boxShadow: 7,
                   flex: "1 1 100%",
                   height: isItemSelected ? "auto" : calculatedHeight + "em",
                   overflowY: "auto",

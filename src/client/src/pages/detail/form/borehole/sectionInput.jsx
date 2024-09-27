@@ -1,15 +1,15 @@
-import { useTranslation } from "react-i18next";
-import { Divider, IconButton } from "@mui/material";
-import { StackFullWidth } from "../../../../components/styledComponents.ts";
-import { FormCheckbox, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
-import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardContext } from "../../../../components/dataCard/dataCardContext.jsx";
+import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
+import { Divider, IconButton } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
+import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
+import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
+import { DataCardContext } from "../../../../components/dataCard/dataCardContext.jsx";
+import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
@@ -102,14 +102,14 @@ const SectionInput = ({ item, parentId }) => {
       <DevTool control={formMethods.control} placement="top-left" />
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <StackFullWidth direction="column" spacing={1}>
+          <FormContainer>
             <FormInput fieldName="name" label="section_name" value={item?.name} required={true} />
             {fields
               .sort((a, b) => a.order - b.order)
               .map((field, index) => (
-                <StackFullWidth key={field.sectionElementId || field.id} direction="row" spacing={1}>
-                  <StackFullWidth direction="column" spacing={1} sx={{ flex: "1 0 0", width: 0 }}>
-                    <StackFullWidth direction="row" spacing={1}>
+                <FormContainer key={field.sectionElementId || field.id} direction="row">
+                  <FormContainer sx={{ flex: "1 0 0", width: 0 }}>
+                    <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.fromDepth`}
                         label="fromdepth"
@@ -124,28 +124,22 @@ const SectionInput = ({ item, parentId }) => {
                         type={FormValueType.Number}
                         required={true}
                       />
-                    </StackFullWidth>
-                    <StackFullWidth direction="row" spacing={1}>
-                      <FormSelect
+                    </FormContainer>
+                    <FormContainer direction="row">
+                      <FormDomainSelect
                         fieldName={`sectionElements.${index}.drillingMethodId`}
                         label="drilling_method"
                         selected={field.drillingMethodId}
-                        values={domains
-                          ?.filter(d => d.schema === "extended.drilling_method")
-                          .sort((a, b) => a.order - b.order)
-                          .map(d => ({ key: d.id, name: d[i18n.language] }))}
+                        schemaName="extended.drilling_method"
                       />
-                      <FormSelect
+                      <FormDomainSelect
                         fieldName={`sectionElements.${index}.cuttingsId`}
                         label="cuttings"
                         selected={field.cuttingsId}
-                        values={domains
-                          ?.filter(d => d.schema === "custom.cuttings")
-                          .sort((a, b) => a.order - b.order)
-                          .map(d => ({ key: d.id, name: d[i18n.language] }))}
+                        schemaName="custom.cuttings"
                       />
-                    </StackFullWidth>
-                    <StackFullWidth direction="row" spacing={1}>
+                    </FormContainer>
+                    <FormContainer direction="row">
                       <FormSelect
                         fieldName={`sectionElements.${index}.drillingMudTypeId`}
                         label="drilling_mud_type"
@@ -174,8 +168,8 @@ const SectionInput = ({ item, parentId }) => {
                               d.path[0] === formMethods.getValues(`sectionElements.${index}.drillingMudTypeId`)),
                         )}
                       />
-                    </StackFullWidth>
-                    <StackFullWidth direction="row" spacing={1}>
+                    </FormContainer>
+                    <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingStartDate`}
                         label="drilling_start_date"
@@ -188,8 +182,8 @@ const SectionInput = ({ item, parentId }) => {
                         value={field.drillingEndDate}
                         type={FormValueType.Date}
                       />
-                    </StackFullWidth>
-                    <StackFullWidth direction="row" spacing={1}>
+                    </FormContainer>
+                    <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingDiameter`}
                         label="drill_diameter"
@@ -202,12 +196,8 @@ const SectionInput = ({ item, parentId }) => {
                         value={field.drillingCoreDiameter}
                         type={FormValueType.Number}
                       />
-                    </StackFullWidth>
-                    <StackFullWidth
-                      direction={"row"}
-                      spacing={1}
-                      justifyContent={"space-between"}
-                      alignItems={"center"}>
+                    </FormContainer>
+                    <FormContainer direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                       <FormCheckbox
                         fieldName="overcoring"
                         label="overcoring"
@@ -230,9 +220,9 @@ const SectionInput = ({ item, parentId }) => {
                           }}
                         />
                       )}
-                    </StackFullWidth>
+                    </FormContainer>
                     {index < fields.length - 1 && <Divider />}
-                  </StackFullWidth>
+                  </FormContainer>
                   <IconButton
                     onClick={() => remove(index)}
                     data-cy={`sectionElements.${index}.delete`}
@@ -240,9 +230,9 @@ const SectionInput = ({ item, parentId }) => {
                     color="error">
                     <Delete />
                   </IconButton>
-                </StackFullWidth>
+                </FormContainer>
               ))}
-          </StackFullWidth>
+          </FormContainer>
 
           <DataCardButtonContainer>
             <CancelButton

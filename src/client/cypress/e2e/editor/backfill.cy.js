@@ -1,3 +1,5 @@
+import { addItem, cancelEditing, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBackfill,
   createBorehole,
@@ -7,8 +9,6 @@ import {
   loginAsAdmin,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
-import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, cancelEditing, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Backfill crud tests", () => {
   beforeEach(() => {
@@ -48,8 +48,8 @@ describe("Backfill crud tests", () => {
     setInput("notes", "Lorem.");
     setInput("fromDepth", "123456");
     setInput("toDepth", "987654");
-    setSelect("kindId", 3);
-    setSelect("materialId", 2);
+    setSelect("kindId", 2);
+    setSelect("materialId", 1);
 
     // save backfill
     saveForm();

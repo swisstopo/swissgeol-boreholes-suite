@@ -1,11 +1,11 @@
 import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from "react";
-import FilesTableComponent from "./filesTableComponent";
-import { Box, Button, Input } from "@mui/material";
-import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import { FileResponse } from "../../../../api/file/fileInterfaces.ts";
 import { useTranslation } from "react-i18next";
+import { Box, Button, Input } from "@mui/material";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
 import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
+import { FileResponse } from "../../../../api/file/fileInterfaces.ts";
+import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import FilesTableComponent from "./filesTableComponent";
 
 export interface EditorBoreholeFilesTable2Props {
   id: number;

@@ -1,5 +1,5 @@
-import { FieldError, FieldErrorsImpl } from "react-hook-form/dist/types/errors";
 import { Merge } from "react-hook-form";
+import { FieldError, FieldErrorsImpl } from "react-hook-form/dist/types/errors";
 
 export const getFormFieldError = (
   fieldName: string | undefined,
@@ -29,10 +29,15 @@ export enum FormValueType {
   DateTime = "datetime-local",
   Boolean = "boolean",
   Domain = "domain",
+  Workgroup = "workgroup",
 }
 
 export { FormInput } from "./formInput";
 export { FormSelect } from "./formSelect";
 export { FormMultiSelect } from "./formMultiSelect";
+export { FormDomainSelect } from "./formDomainSelect";
+export { FormDomainMultiSelect } from "./formDomainMultiSelect";
 export { FormCheckbox } from "./formCheckbox";
 export { FormDisplay } from "./formDisplay";
+export { FormCoordinate } from "./formCoordinate";
+export { FormContainer } from "./formContainer";

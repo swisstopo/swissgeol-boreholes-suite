@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { addBackfill, getCasings, updateBackfill, useDomains } from "../../../../api/fetchApiV2";
-import { completionSchemaConstants } from "./completionSchemaConstants";
-import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { addBackfill, getCasings, updateBackfill } from "../../../../api/fetchApiV2";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
-import { StackFullWidth, StackHalfWidth } from "../../../../components/styledComponents";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
+import { completionSchemaConstants } from "./completionSchemaConstants";
 
 const BackfillInput = ({ item, parentId }) => {
-  const domains = useDomains();
-  const { i18n } = useTranslation();
   const [casings, setCasings] = useState([]);
   const getCasingOptions = useGetCasingOptions();
 
@@ -34,7 +31,7 @@ const BackfillInput = ({ item, parentId }) => {
       updateData={updateBackfill}
       promptLabel="backfill"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
-      <StackFullWidth direction="row">
+      <FormContainer direction="row">
         <FormInput
           fieldName="fromDepth"
           label="fromdepth"
@@ -49,46 +46,34 @@ const BackfillInput = ({ item, parentId }) => {
           type={FormValueType.Number}
           required={true}
         />
-      </StackFullWidth>
-      <StackFullWidth direction="row">
-        <FormSelect
+      </FormContainer>
+      <FormContainer direction="row">
+        <FormDomainSelect
           fieldName="kindId"
           label="kindBackfill"
           selected={item.kindId}
           required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === completionSchemaConstants.backfillType)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
+          schemaName={completionSchemaConstants.backfillType}
         />
-        <FormSelect
+        <FormDomainSelect
           fieldName="materialId"
           label="materialBackfill"
           selected={item.materialId}
           required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === completionSchemaConstants.backfillMaterial)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
+          schemaName={completionSchemaConstants.backfillMaterial}
         />
-      </StackFullWidth>
-      <StackHalfWidth>
+      </FormContainer>
+      <FormContainer width={"50%"}>
         <FormSelect
           fieldName="casingId"
           label="casingName"
           selected={item.isOpenBorehole ? -1 : item.casingId}
           values={getCasingOptions(casings)}
         />
-      </StackHalfWidth>
-      <StackFullWidth>
+      </FormContainer>
+      <FormContainer>
         <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
-      </StackFullWidth>
+      </FormContainer>
     </DataInputCard>
   );
 };

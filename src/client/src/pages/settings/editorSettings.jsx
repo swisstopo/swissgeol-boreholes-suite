@@ -1,23 +1,23 @@
 import React from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
-import _ from "lodash";
+import { connect } from "react-redux";
+import { Button } from "@mui/material";
 import { Divider } from "semantic-ui-react";
+import _ from "lodash";
+import { register } from "ol/proj/proj4";
+import { optionsFromCapabilities } from "ol/source/WMTS";
+import proj4 from "proj4";
+import PropTypes from "prop-types";
 import { patchCodeConfig, patchSettings } from "../../api-lib/index";
+import { theme } from "../../AppTheme";
 import TranslationText from "../../components/legacyComponents/translationText.jsx";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
-import { optionsFromCapabilities } from "ol/source/WMTS";
-import { register } from "ol/proj/proj4";
-import proj4 from "proj4";
-import { boreholeEditorData } from "./data/boreholeEditorData";
-import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData";
-import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
 import MapSettings from "./components/editorSettingList/mapSettings";
+import { boreholeEditorData } from "./data/boreholeEditorData";
+import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
+import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData";
 import { locationEditorData } from "./data/locationEditorData";
 import { registrationEditorData } from "./data/registrationEditorData";
-import { theme } from "../../AppTheme";
-import { Button } from "@mui/material";
 
 const projections = {
   "EPSG:21781":

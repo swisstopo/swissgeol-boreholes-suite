@@ -1,26 +1,25 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Badge, Stack } from "@mui/material";
-import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.tsx";
-import UploadIcon from "../../../assets/icons/upload.svg?react";
-import HelpIcon from "../../../assets/icons/help.svg?react";
-import { theme } from "../../../AppTheme.ts";
-import ImportModal from "../sidePanelContent/importer/importModal.tsx";
-import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
-import { ReduxRootState, User, Workgroup } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
-import { useTranslation } from "react-i18next";
-import { NavButton } from "../../../components/buttons/navButton.tsx";
-import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
-import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
+import HelpIcon from "../../../assets/icons/help.svg?react";
+import UploadIcon from "../../../assets/icons/upload.svg?react";
+import { ReduxRootState, User, Workgroup } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { NavButton } from "../../../components/buttons/navButton.tsx";
+import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
+import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
+import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
+import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.tsx";
+import ImportModal from "../sidePanelContent/importer/importModal.tsx";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
   drawerOpen: boolean;
-  workgroup: number | null;
-  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
+  workgroupId: number | null;
+  setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
   enabledWorkgroups: Workgroup[];
   setEnabledWorkgroups: React.Dispatch<React.SetStateAction<Workgroup[]>>;
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
@@ -30,8 +29,8 @@ export interface MainSideNavProps {
 const MainSideNav = ({
   toggleDrawer,
   drawerOpen,
-  workgroup,
-  setWorkgroup,
+  workgroupId,
+  setWorkgroupId,
   enabledWorkgroups,
   setEnabledWorkgroups,
   setSideDrawerContent,
@@ -62,8 +61,8 @@ const MainSideNav = ({
   useEffect(() => {
     const wgs = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
     setEnabledWorkgroups(wgs);
-    setWorkgroup(wgs.length > 0 ? wgs[0].id : null);
-  }, [setEnabledWorkgroups, setWorkgroup, user.data.workgroups]);
+    setWorkgroupId(wgs.length > 0 ? wgs[0].id : null);
+  }, [setEnabledWorkgroups, setWorkgroupId, user.data.workgroups]);
 
   const handleToggleFilter = () => {
     handleDrawer(DrawerContentTypes.Filters);
@@ -97,7 +96,7 @@ const MainSideNav = ({
     <Stack
       direction="column"
       sx={{
-        boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
+        boxShadow: 4,
         width: "80px",
         height: "100%",
         position: "relative",
@@ -176,10 +175,10 @@ const MainSideNav = ({
         refresh={refresh}
         setSelectedFile={setSelectedFile}
         setSelectedLithologyFile={setSelectedLithologyFile}
-        setWorkgroup={setWorkgroup}
+        setWorkgroup={setWorkgroupId}
         enabledWorkgroups={enabledWorkgroups}
         setSelectedBoreholeAttachments={setSelectedBoreholeAttachments}
-        workgroup={workgroup}
+        workgroup={workgroupId}
         selectedFile={selectedFile}
         selectedBoreholeAttachments={selectedBoreholeAttachments}
         modal={modal}

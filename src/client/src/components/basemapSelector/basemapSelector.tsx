@@ -1,17 +1,17 @@
 import { memo, useContext, useMemo, useState } from "react";
-import { Box, Button, Stack } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { Basemap } from "./Basemap";
-import { basemaps } from "./basemaps";
-import { BasemapContext } from "./basemapContext";
+import { Box, Button, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { theme } from "../../AppTheme";
+import { Basemap } from "./Basemap";
+import { BasemapContext } from "./basemapContext";
+import { basemaps } from "./basemaps";
 
 const BasemapSelectorBox = styled(Box)({
   position: "absolute",
   right: "12px",
   backgroundColor: theme.palette.background.lightgrey,
-  boxShadow: "4px 4px 2px " + theme.palette.boxShadow,
+  boxShadow: theme.shadows[3],
   padding: "3px",
   borderRadius: "100px",
 });

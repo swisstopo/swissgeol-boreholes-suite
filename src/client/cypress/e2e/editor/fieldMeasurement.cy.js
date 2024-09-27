@@ -1,3 +1,5 @@
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   createCasing,
@@ -9,8 +11,6 @@ import {
   selectLanguage,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
-import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 beforeEach(() => {
   createBorehole({ "extended.original_name": "INTEADAL" })
@@ -41,8 +41,8 @@ describe("Tests for the field measurement editor.", () => {
       setSelect("reliabilityId", 2);
       setInput("startTime", "2012-11-14T12:06");
       setSelect("casingId", 2);
-      setSelect("fieldMeasurementResults.0.sampleTypeId", 1);
-      setSelect("fieldMeasurementResults.0.parameterId", 1, 10);
+      setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
+      setSelect("fieldMeasurementResults.0.parameterId", 0, 9);
       setInput("fieldMeasurementResults.0.value", "10");
       // close editing mask
       saveForm();
@@ -56,8 +56,8 @@ describe("Tests for the field measurement editor.", () => {
       cy.wait(500);
       addItem("addFieldMeasurementResult");
 
-      setSelect("fieldMeasurementResults.1.sampleTypeId", 2);
-      setSelect("fieldMeasurementResults.1.parameterId", 3, 10);
+      setSelect("fieldMeasurementResults.1.sampleTypeId", 1);
+      setSelect("fieldMeasurementResults.1.parameterId", 2, 9);
       setInput("fieldMeasurementResults.1.value", "8.9");
       saveForm();
       cy.wait("@fieldmeasurement_GET");

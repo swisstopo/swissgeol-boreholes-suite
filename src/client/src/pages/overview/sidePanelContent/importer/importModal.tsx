@@ -1,13 +1,13 @@
 import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Header, Icon, Modal, Segment } from "semantic-ui-react";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { importBoreholes } from "../../../../api/fetchApiV2.js";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
+import { capitalizeFirstLetter } from "../../../../utils.ts";
+import { ImportModalProps } from "../commons/actionsInterfaces.ts";
 import WorkgroupSelect from "../commons/workgroupSelect.js";
 import ImportModalContent from "./importModalContent.js";
-import { ImportModalProps } from "../commons/actionsInterfaces.ts";
-import { capitalizeFirstLetter } from "../../../../utils.ts";
-import { useTranslation } from "react-i18next";
 
 const ImportModal = ({
   setCreating,
@@ -111,7 +111,7 @@ const ImportModal = ({
           selectedFile={selectedFile}
         />
         <h3>{capitalizeFirstLetter(t("workgroup"))}</h3>
-        <WorkgroupSelect workgroup={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroup={setWorkgroup} />
+        <WorkgroupSelect workgroupId={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroupId={setWorkgroup} />
       </Modal.Content>
       <Modal.Actions>
         <Button

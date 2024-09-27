@@ -12,11 +12,11 @@ using static BDMS.Helpers;
 namespace BDMS;
 
 [TestClass]
-public class BoreholeFileUploadServiceTest
+public class BoreholeFileCloudServiceTest
 {
     private AmazonS3Client s3Client;
     private BdmsContext context;
-    private BoreholeFileUploadService boreholeFileUploadService;
+    private BoreholeFileCloudService boreholeFileUploadService;
     private string bucketName;
     private Models.User adminUser;
 
@@ -32,7 +32,7 @@ public class BoreholeFileUploadServiceTest
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
 
-        var loggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
+        var loggerMock = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
         loggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
         var s3ClientMock = new AmazonS3Client(
@@ -45,7 +45,7 @@ public class BoreholeFileUploadServiceTest
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
 
-        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
+        boreholeFileUploadService = new BoreholeFileCloudService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
         bucketName = configuration["S3:BUCKET_NAME"].ToLowerInvariant();
         s3Client = s3ClientMock;

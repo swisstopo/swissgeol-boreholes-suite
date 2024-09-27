@@ -1,15 +1,12 @@
 import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";
-
 import { I18nextProvider } from "react-i18next";
+import { Provider } from "react-redux";
 import i18n from "./i18n";
 import "./index.css";
 import "ol/ol.css";
 import App from "./App";
 import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.jsx";
-
 import "semantic-ui-css/semantic.css";
-
 import store from "./reducers";
 
 const container = document.getElementById("root");

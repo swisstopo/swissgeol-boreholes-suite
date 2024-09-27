@@ -1,5 +1,5 @@
-import { Form, Icon, Input } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
+import { Form, Icon, Input } from "semantic-ui-react";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 
 const CantonMunicipalitySegment = props => {

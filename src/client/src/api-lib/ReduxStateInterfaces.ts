@@ -21,7 +21,7 @@ export interface Filters {
 }
 
 export interface EditorStore {
-  mselected: string;
+  mselected: number[];
 }
 
 export type Role = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";

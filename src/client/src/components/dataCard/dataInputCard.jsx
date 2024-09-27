@@ -1,11 +1,11 @@
 import { useContext, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { FormProvider, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
+import { FormContainer } from "../form/form";
+import { PromptContext } from "../prompt/promptContext.tsx";
 import { DataCardButtonContainer } from "./dataCard.jsx";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext.jsx";
-import { StackFullWidth } from "../styledComponents.ts";
-import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
-import { PromptContext } from "../prompt/promptContext.tsx";
 
 export const DataInputCard = props => {
   const { item, addData, updateData, promptLabel, prepareFormDataForSubmit } = props;
@@ -76,7 +76,7 @@ export const DataInputCard = props => {
     <>
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <StackFullWidth spacing={1}>{props.children}</StackFullWidth>
+          <FormContainer pt={1}>{props.children}</FormContainer>
           <DataCardButtonContainer>
             <CancelButton
               onClick={() => {

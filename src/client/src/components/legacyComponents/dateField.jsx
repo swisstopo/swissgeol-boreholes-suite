@@ -1,13 +1,12 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { withTranslation } from "react-i18next";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
+import { withTranslation } from "react-i18next";
+import { Input } from "semantic-ui-react";
+import { de, enGB, fr, it } from "date-fns/esm/locale";
 import moment from "moment";
+import PropTypes from "prop-types";
 import "react-datepicker/dist/react-datepicker.css";
 import "./dateField.css";
-import { enGB, fr, it, de } from "date-fns/esm/locale";
-
-import { Input } from "semantic-ui-react";
 
 registerLocale("en", enGB);
 registerLocale("fr", fr);

@@ -1,12 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
-import ObservationDisplay from "./observationDisplay";
-import { getHydrotestParameterUnits } from "./parameterUnits";
 import { deleteHydrotest, useDomains } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
-import { StackFullWidth } from "../../../../components/styledComponents.ts";
-import { FormDisplay, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
+import ObservationDisplay from "./observationDisplay";
+import { getHydrotestParameterUnits } from "./parameterUnits";
 
 const HydrotestDisplay = props => {
   const { item, isEditable } = props;
@@ -16,13 +15,13 @@ const HydrotestDisplay = props => {
   return (
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteHydrotest}>
       <ObservationDisplay observation={item} />
-      <StackFullWidth direction="row" spacing={1}>
+      <FormContainer direction="row">
         <FormDisplay label="hydrotestKind" value={item?.kindCodelists} type={FormValueType.Domain} />
         <FormDisplay label="flowDirection" value={item?.flowDirectionCodelists} type={FormValueType.Domain} />
-      </StackFullWidth>
-      <StackFullWidth direction="row" spacing={1}>
+      </FormContainer>
+      <FormContainer direction="row">
         <FormDisplay label="evaluationMethod" value={item?.evaluationMethodCodelists} type={FormValueType.Domain} />
-      </StackFullWidth>
+      </FormContainer>
       {item?.hydrotestResults?.length > 0 && (
         <FormResultTableDisplay
           title={t("hydrotestResult")}

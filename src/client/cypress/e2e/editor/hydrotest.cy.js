@@ -1,3 +1,12 @@
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import {
+  evaluateDisplayValue,
+  evaluateMultiSelect,
+  evaluateTextarea,
+  setInput,
+  setSelect,
+  toggleMultiSelect,
+} from "../helpers/formHelpers";
 import {
   createBorehole,
   createCasing,
@@ -8,15 +17,6 @@ import {
   selectLanguage,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
-import {
-  evaluateDisplayValue,
-  evaluateMultiSelect,
-  evaluateTextarea,
-  setInput,
-  setSelect,
-  toggleMultiSelect,
-} from "../helpers/formHelpers";
-import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Tests for the hydrotest editor.", () => {
   it("Creates, updates and deletes hydrotests", () => {
@@ -76,7 +76,7 @@ describe("Tests for the hydrotest editor.", () => {
     toggleMultiSelect("flowDirectionId", [2, 1], 4);
     toggleMultiSelect("evaluationMethodId", [2, 1], 5);
     addItem("addHydrotestResult");
-    setSelect("hydrotestResults.0.parameterId", 1, 7);
+    setSelect("hydrotestResults.0.parameterId", 0, 6);
     setInput("hydrotestResults.0.value", "10");
     setInput("hydrotestResults.0.minValue", "5");
     setInput("hydrotestResults.0.maxValue", "15");
@@ -175,7 +175,7 @@ describe("Tests for the hydrotest editor.", () => {
 
     // can reset creating and switch to existing card
     setInput("startTime", "2012-11-14T12:06");
-    setSelect("reliabilityId", 2);
+    setSelect("reliabilityId", 3);
     startEditing();
     handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "Reset");
     cy.get('[data-cy="hydrotest-card.0.edit"]').should("be.visible");

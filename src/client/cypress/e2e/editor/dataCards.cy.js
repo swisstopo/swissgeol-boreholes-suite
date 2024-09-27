@@ -1,3 +1,5 @@
+import { addItem, cancelEditing, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { evaluateDisplayValue, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   handlePrompt,
@@ -5,8 +7,6 @@ import {
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
-import { evaluateDisplayValue, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, cancelEditing, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Tests for the data cards in the editor.", () => {
   it("resets datacards when stop editing or cancel", () => {
@@ -36,7 +36,7 @@ describe("Tests for the data cards in the editor.", () => {
     cy.wait("@casing_GET");
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 2);
-    setSelect("quantityId", 3);
+    setSelect("quantityId", 2);
     saveForm();
     cy.wait("@wateringress_GET");
     startEditing();
@@ -56,7 +56,7 @@ describe("Tests for the data cards in the editor.", () => {
     cy.get('[data-cy="addwateringress-button"]').should("be.disabled");
     cy.wait("@casing_GET");
     setInput("startTime", "2012-11-14T12:06");
-    setSelect("reliabilityId", 2);
+    setSelect("reliabilityId", 3);
     setSelect("quantityId", 3);
     saveForm();
     cy.get('[data-cy="addwateringress-button"]').should("be.enabled");

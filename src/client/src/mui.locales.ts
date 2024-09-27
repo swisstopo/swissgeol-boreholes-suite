@@ -1,5 +1,5 @@
-import { deDE, enUS, frFR, itIT } from "@mui/x-data-grid/locales";
 import { GridLocaleText } from "@mui/x-data-grid";
+import { deDE, enUS, frFR, itIT } from "@mui/x-data-grid/locales";
 
 interface Dictionary<T> {
   [key: string]: T;

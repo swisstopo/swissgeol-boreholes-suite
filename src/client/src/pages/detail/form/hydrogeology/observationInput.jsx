@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import { Stack } from "@mui/material";
+import { getCasingsByBoreholeId } from "../../../../api/fetchApiV2.js";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
-import { useTranslation } from "react-i18next";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import { FormContainer } from "../../../../components/form/formContainer";
+import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
-import { getCasingsByBoreholeId, useDomains } from "../../../../api/fetchApiV2.js";
-import { StackHalfWidth } from "../../../../components/styledComponents.ts";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const ObservationInput = props => {
   const { observation, boreholeId } = props;
-  const { i18n } = useTranslation();
-  const domains = useDomains();
   const [casings, setCasings] = useState([]);
   const getCasingOptions = useGetCasingOptions();
 
@@ -24,7 +21,7 @@ const ObservationInput = props => {
 
   return (
     <>
-      <Stack direction="row">
+      <FormContainer direction="row">
         <FormInput
           fieldName="fromDepthM"
           label="fromdepth"
@@ -32,8 +29,8 @@ const ObservationInput = props => {
           type={FormValueType.Number}
         />
         <FormInput fieldName="toDepthM" label="todepth" value={observation.toDepthM} type={FormValueType.Number} />
-      </Stack>
-      <Stack direction="row">
+      </FormContainer>
+      <FormContainer direction="row">
         <FormInput
           fieldName="fromDepthMasl"
           label="fromDepthMasl"
@@ -46,8 +43,8 @@ const ObservationInput = props => {
           value={observation.toDepthMasl}
           type={FormValueType.Number}
         />
-      </Stack>
-      <Stack direction="row">
+      </FormContainer>
+      <FormContainer direction="row">
         <FormInput
           fieldName="startTime"
           label="startTime"
@@ -55,34 +52,28 @@ const ObservationInput = props => {
           type={FormValueType.DateTime}
         />
         <FormInput fieldName="endTime" label="endTime" value={observation.endTime} type={FormValueType.DateTime} />
-      </Stack>
-      <Stack direction="row">
-        <StackHalfWidth direction="row">
-          <FormSelect
+      </FormContainer>
+      <FormContainer direction="row">
+        <FormContainer width={"50%"} direction="row">
+          <FormDomainSelect
             fieldName="reliabilityId"
             label="reliability"
             selected={observation.reliabilityId}
-            values={domains?.data
-              ?.filter(d => d.schema === hydrogeologySchemaConstants.observationReliability)
-              .sort((a, b) => a.order - b.order)
-              .map(d => ({
-                key: d.id,
-                name: d[i18n.language],
-              }))}
+            schemaName={hydrogeologySchemaConstants.observationReliability}
           />
-        </StackHalfWidth>
-        <StackHalfWidth direction="row">
+        </FormContainer>
+        <FormContainer width={"50%"} direction="row">
           <FormSelect
             fieldName="casingId"
             label="casingName"
             selected={observation.isOpenBorehole ? -1 : observation.casingId}
             values={getCasingOptions(casings)}
           />
-        </StackHalfWidth>
-      </Stack>
-      <Stack direction="row">
+        </FormContainer>
+      </FormContainer>
+      <FormContainer direction="row">
         <FormInput fieldName="comment" label="comment" multiline={true} rows={3} value={observation?.comment} />
-      </Stack>
+      </FormContainer>
     </>
   );
 };

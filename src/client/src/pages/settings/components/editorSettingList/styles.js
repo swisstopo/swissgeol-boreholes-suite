@@ -1,5 +1,5 @@
+import { Checkbox, Segment } from "semantic-ui-react";
 import styled from "styled-components";
-import { Segment, Checkbox } from "semantic-ui-react";
 
 export const Container = styled(Segment.Group)`
   margin: 0 !important;

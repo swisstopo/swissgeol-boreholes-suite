@@ -1,40 +1,40 @@
 import { withTranslation } from "react-i18next";
 import { Route, Switch, withRouter } from "react-router-dom";
-import MenuSettings from "./menuSettings";
-import EditorSettings from "./editorSettings";
-import AdminSettings from "./admin/adminSettings";
-import AboutSettings from "./aboutSettings";
-import TermSettings from "./termSettings";
-import { theme } from "../../AppTheme";
+import { Box } from "@mui/material";
 import { useAuth } from "../../auth/useBdmsAuth";
+import AboutSettings from "./aboutSettings";
+import AdminSettings from "./admin/adminSettings";
+import EditorSettings from "./editorSettings";
+import MenuSettings from "./menuSettings";
+import TermSettings from "./termSettings";
 
 const SettingsPage = () => {
   const auth = useAuth();
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
       }}>
-      <div
-        style={{
+      <Box
+        sx={{
           flex: "1 1 100%",
           display: "flex",
           flexDirection: "row",
           overflow: "hidden",
         }}>
-        <div
-          style={{
-            boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
+        <Box
+          sx={{
+            boxShadow: 4,
             display: "flex",
             flexDirection: "column",
             width: "250px",
           }}>
           <MenuSettings />
-        </div>
-        <div
-          style={{
+        </Box>
+        <Box
+          sx={{
             flex: "1 1 0%",
             overflowY: "auto",
           }}>
@@ -44,9 +44,9 @@ const SettingsPage = () => {
             <Route component={AboutSettings} path={"/setting/about"} />
             <Route component={auth.anonymousModeEnabled ? AboutSettings : EditorSettings} path={"/setting"} />
           </Switch>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

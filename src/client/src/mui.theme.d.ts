@@ -1,8 +1,8 @@
+import { Typography } from "@mui/material";
 import { Theme, ThemeOptions } from "@mui/material/styles";
+import { TypographyOptions } from "@mui/material/styles/createTypography";
 import { Breakpoints } from "@mui/system";
 import { BreakpointsOptions } from "@mui/system/createTheme/createBreakpoints";
-import { Typography } from "@mui/material";
-import { TypographyOptions } from "@mui/material/styles/createTypography";
 
 declare module "@mui/material/IconButton" {
   interface IconButtonPropsColorOverrides {
@@ -11,7 +11,7 @@ declare module "@mui/material/IconButton" {
 }
 
 declare module "@mui/material/styles" {
-  interface AppThemePalette {
+  export interface AppThemePalette {
     action: {
       disabled: string;
     };
@@ -50,6 +50,7 @@ declare module "@mui/material/styles" {
     ai: {
       background: string;
       main: string;
+      mainTransparent: string;
       mainEnd: string;
       active: string;
       activeEnd: string;
@@ -66,6 +67,34 @@ declare module "@mui/material/styles" {
       listItemActive: string;
     };
     border: string;
+    transparent: string;
+    buttonStates: {
+      contained: {
+        hoverOrFocus: {
+          backgroundColor: string;
+        };
+        active: {
+          backgroundColor: string;
+        };
+        disabled: {
+          backgroundColor: string;
+        };
+      };
+      outlined: {
+        hoverOrFocus: {
+          color: string;
+          backgroundColor: string;
+        };
+        active: {
+          color: string;
+          backgroundColor: string;
+        };
+        disabled: {
+          color: string;
+          backgroundColor: string;
+        };
+      };
+    };
   }
 
   interface AppThemeTypography extends Typography {
@@ -94,9 +123,13 @@ declare module "@mui/material/styles" {
     MuiToggleButtonGroup: object;
     MuiToggleButton: object;
     MuiSelect: object;
-    MuiFormControl: object;
+    MuiTextField: object;
+    MuiInputLabel: object;
+    MuiOutlinedInput: object;
     MuiTab: object;
     MuiBadge: object;
+    MuiDialogTitle: object;
+    MuiDialogActions: object;
     MuiDialogContentText: object;
     MuiTableCell: object;
     MuiTooltip: object;
@@ -112,9 +145,13 @@ declare module "@mui/material/styles" {
     MuiToggleButtonGroup: object;
     MuiToggleButton: object;
     MuiSelect: object;
-    MuiFormControl: object;
+    MuiTextField: object;
+    MuiInputLabel: object;
+    MuiOutlinedInput: object;
     MuiTab: object;
     MuiBadge: object;
+    MuiDialogTitle: object;
+    MuiDialogActions: object;
     MuiDialogContentText: object;
     MuiTableCell: object;
     MuiTooltip: object;
