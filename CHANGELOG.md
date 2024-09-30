@@ -5,6 +5,8 @@
 ### Changed
 
 - Updated the style of bulk edit form.
+- Hide the `help` button in the navigation bar in read-only mode.
+- Hide the `original_name` field in the borehole detail view in read-only mode.
 
 ## v2.1.870 - 2024-09-27
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, Input } from "semantic-ui-react";
 import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 
 interface NameSegmentProps {
@@ -13,6 +14,7 @@ interface NameSegmentProps {
 const NameSegment = ({ borehole, updateChange, user }: NameSegmentProps) => {
   const [alternateName, setAlternateName] = useState("");
   const { t } = useTranslation();
+  const auth = useAuth();
 
   const isEditable =
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
@@ -25,23 +27,25 @@ const NameSegment = ({ borehole, updateChange, user }: NameSegmentProps) => {
     <FormSegmentBox>
       <Form autoComplete="off" error>
         <Form.Group widths="equal">
-          <Form.Field error={borehole.data.extended.original_name === ""} required>
-            <label>{t("original_name")}</label>
-            <Input
-              data-cy="original-name"
-              autoCapitalize="off"
-              autoComplete="off"
-              autoCorrect="off"
-              onChange={e => {
-                setAlternateName(e.target.value);
-                updateChange("extended.original_name", e.target.value);
-                updateChange("custom.alternate_name", e.target.value);
-              }}
-              spellCheck="false"
-              value={borehole.data.extended.original_name ?? ""}
-              readOnly={!isEditable}
-            />
-          </Form.Field>
+          {!auth.anonymousModeEnabled && (
+            <Form.Field error={borehole.data.extended.original_name === ""} required>
+              <label>{t("original_name")}</label>
+              <Input
+                data-cy="original-name"
+                autoCapitalize="off"
+                autoComplete="off"
+                autoCorrect="off"
+                onChange={e => {
+                  setAlternateName(e.target.value);
+                  updateChange("extended.original_name", e.target.value);
+                  updateChange("custom.alternate_name", e.target.value);
+                }}
+                spellCheck="false"
+                value={borehole.data.extended.original_name ?? ""}
+                readOnly={!isEditable}
+              />
+            </Form.Field>
+          )}
           <Form.Field>
             <label>{t("project_name")}</label>
             <Input
