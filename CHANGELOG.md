@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Updated the style of bulk edit form.
+
+## v2.1.870 - 2024-09-27
+
 ### Added
 
 - Tooltips to main side navigation.
@@ -36,7 +42,6 @@
 - Updated the style of various buttons.
 - Map zoom level and center are now preserved when returning to the main map.
 - Deactivated the possibility to select page size in borehole table pagination.
-- Updated the style of bulk edit form.
 
 ### Fixed
 
