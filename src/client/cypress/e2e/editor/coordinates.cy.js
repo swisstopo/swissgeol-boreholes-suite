@@ -1,5 +1,5 @@
 import { setSelect } from "../helpers/formHelpers";
-import { delayedType, newEditableBorehole, newUneditableBorehole, returnToOverview } from "../helpers/testHelpers";
+import { delayedType, newEditableBorehole, returnToOverview } from "../helpers/testHelpers";
 
 function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
   cy.get(inputAlias)
@@ -138,7 +138,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     checkDecimalPlaces("@LV03Y-input", 2);
 
     returnToOverview();
-    newUneditableBorehole();
+    newEditableBorehole();
     // verify input are cleared for new borehole
     cy.get("@LV95X-input").should("have.value", "");
     cy.get("@LV95Y-input").should("have.value", "");
