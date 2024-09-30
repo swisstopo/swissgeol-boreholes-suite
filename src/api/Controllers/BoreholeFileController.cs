@@ -190,7 +190,7 @@ public class BoreholeFileController : ControllerBase
         // Check if associated borehole is locked or user has permissions
         if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
         {
-            return Problem("The borehole is locked by another user or you are missing permissions.", statusCode: (int)HttpStatusCode.BadRequest);
+            return BadRequest("The borehole is locked by another user or you are missing permissions.");
         }
 
         try
