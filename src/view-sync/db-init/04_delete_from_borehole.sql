@@ -38,13 +38,15 @@ DELETE FROM bdms.files WHERE true;
 
 -- Purge non-free and non-published boreholes
 DELETE FROM bdms.borehole WHERE id_bho NOT IN (
-    SELECT DISTINCT id_bho FROM bdms.borehole
+    SELECT id_bho FROM bdms.borehole
     JOIN bdms.codelist ON codelist.id_cli = borehole.restriction_id_cli
     JOIN bdms.workflow ON workflow.id_bho_fk = borehole.id_bho
     JOIN bdms.roles ON roles.id_rol = workflow.id_rol_fk
-    WHERE codelist.schema_cli = 'restriction'
+    WHERE workflow.id_wkf IN (SELECT MAX(id_wkf) FROM bdms.workflow GROUP BY id_bho_fk)
+	  AND finished_wkf IS NOT NULL -- get latest publication status
+	  AND roles.name_rol = 'PUBLIC' -- publication status: published
+      AND codelist.schema_cli = 'restriction'
       AND codelist.code_cli = 'f' -- restriction: free
-      AND roles.name_rol = 'PUBLIC' -- publication status: published
 );
 
 -- Purge workflow data
