@@ -7,8 +7,8 @@ interface CustomProps {
   value: number | string;
 }
 
-export const NumericFormatForCoordinates = React.forwardRef<NumericFormatProps, CustomProps>(
-  function NumericFormatForCoordinates(props, ref) {
+export const NumericFormatWithThousandSeparator = React.forwardRef<NumericFormatProps, CustomProps>(
+  function NumericFormatWithThousandSeparator(props, ref) {
     const { onChange, value, ...other } = props;
 
     return (

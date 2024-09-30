@@ -9,7 +9,7 @@ interface FormContainerProps extends StackProps {
 export const FormContainer = forwardRef<ReactNode, FormContainerProps>((props, ref) => {
   const width = props.width || "100%";
   return (
-    <Stack component={props.component || "div"} ref={ref} {...props} spacing={1} gap={1} sx={{ width: width }}>
+    <Stack component={props.component || "div"} ref={ref} {...props} rowGap={3} columnGap={2} sx={{ width: width }}>
       {props.children}
     </Stack>
   );
