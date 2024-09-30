@@ -11,7 +11,7 @@ export interface FormSelectProps {
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
-  selected?: number[];
+  selected?: number;
   values?: FormSelectValue[];
   sx?: SxProps;
   className?: string;

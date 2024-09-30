@@ -1,3 +1,4 @@
+import { evaluateSelect, setSelect } from "../helpers/formHelpers";
 import { createBorehole, goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers";
 
 describe("Test for the borehole form.", () => {
@@ -5,9 +6,9 @@ describe("Test for the borehole form.", () => {
     // create boreholes
     newEditableBorehole().as("borehole_id");
 
-    // fill all dropdowns on location tab
+    // fill all legacy dropdowns on location tab
     cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 5)
+      .should("have.length", 2)
       .each(el => cy.wrap(el).click().find('[role="option"]').last().click());
 
     const locationDropdownValues = [];
@@ -17,14 +18,21 @@ describe("Test for the borehole form.", () => {
         locationDropdownValues.push(value);
       })
       .then(() => {
-        expect(locationDropdownValues).to.deep.eq([
-          "ID Kernlager",
-          "not specified",
-          "not specified",
-          "not specified",
-          "kelly bushing",
-        ]);
+        expect(locationDropdownValues).to.deep.eq(["ID Kernlager", "not specified"]);
       });
+
+    // fills and evaluates all mui dropdowns on location tab
+    setSelect("spatial_reference_system", 0);
+    setSelect("location_precision", 2);
+    setSelect("elevation_precision", 2);
+    setSelect("qt_reference_elevation", 2);
+    setSelect("reference_elevation_type", 4);
+
+    evaluateSelect("spatial_reference_system", "20104001");
+    evaluateSelect("location_precision", "20113002");
+    evaluateSelect("elevation_precision", "20114002");
+    evaluateSelect("qt_reference_elevation", "20114002");
+    evaluateSelect("reference_elevation_type", "20117004");
 
     // fill all dropdowns on borehole tab
     cy.get('[data-cy="borehole-menu-item"]').click();
