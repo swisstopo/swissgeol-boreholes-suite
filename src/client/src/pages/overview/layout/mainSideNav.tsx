@@ -158,12 +158,14 @@ const MainSideNav = ({
           label={t("header_settings")}
           onClick={() => history.push(`/setting`)}
         />
-        <NavButton
-          data-cy="help-button"
-          icon={<HelpIcon />}
-          label={t("header_help")}
-          onClick={() => window.open(`/help`)}
-        />
+        {!auth.anonymousModeEnabled && (
+          <NavButton
+            data-cy="help-button"
+            icon={<HelpIcon />}
+            label={t("header_help")}
+            onClick={() => window.open(`/help`)}
+          />
+        )}
       </Stack>
       <ImportModal
         creating={creating}

@@ -5,6 +5,12 @@
 ### Changed
 
 - Updated the style of bulk edit form.
+- Hide the `help` button in the navigation bar in read-only mode.
+- Hide the `original_name` field in the borehole detail view in read-only mode.
+
+### Fixed
+
+- _view-sync_ did not clean up unpublished boreholes.
 
 ## v2.1.870 - 2024-09-27
 
@@ -15,7 +21,7 @@
 - Language dropdown in the header.
 - Added health check endpoint for the .NET API.
 - Added possibility to run the boreholes web application in read-only mode.
-- New view-sync Docker image for syncing free/published boreholes from a source to a target database.
+- New _view-sync_ Docker image for syncing free/published boreholes from a source to a target database.
 
 ### Changed
 
