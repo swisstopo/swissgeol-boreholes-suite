@@ -4,6 +4,7 @@ import { Box, Button, Input } from "@mui/material";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
 import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 import { FileResponse } from "../../../../api/file/fileInterfaces.ts";
+import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import FilesTableComponent from "./filesTableComponent";
 
@@ -80,7 +81,14 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
   };
 
   return id ? (
-    <div className="flex_col flex_fill" style={{ overflowY: "hidden" }}>
+    <Box
+      sx={{
+        overflowY: "hidden",
+        padding: 3,
+        flex: "1 1 100%",
+        backgroundColor: theme.palette.background.default,
+        border: `1px solid ${theme.palette.boxShadow}`,
+      }}>
       {unlocked && (
         <Box sx={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
           <form ref={formRef}>
@@ -134,7 +142,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
         reload={loadFiles}
         unlocked={unlocked}
       />
-    </div>
+    </Box>
   ) : (
     "nothing selected"
   );

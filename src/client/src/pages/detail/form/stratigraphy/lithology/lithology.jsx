@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Stack } from "@mui/material";
 import { Loader } from "semantic-ui-react";
+import { theme } from "../../../../../AppTheme";
 import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
 import { stratigraphyData } from "./data/stratigraphydata.js";
 import LithologyAttributes from "./lithologyAttributes";
@@ -77,7 +79,15 @@ const Lithology = ({ checkLock }) => {
   }, []);
 
   return (
-    <Styled.MainContainer>
+    <Stack
+      direction="column"
+      sx={{
+        flex: " 1 1 100%",
+        overflow: "hidden",
+        p: 3,
+        backgroundColor: theme.palette.background.default,
+        border: `1px solid ${theme.palette.boxShadow}`,
+      }}>
       {borehole.data.id && (
         <ProfileHeader
           boreholeID={borehole.data.id}
@@ -140,7 +150,7 @@ const Lithology = ({ checkLock }) => {
           )}
         </Styled.Container>
       )}
-    </Styled.MainContainer>
+    </Stack>
   );
 };
 

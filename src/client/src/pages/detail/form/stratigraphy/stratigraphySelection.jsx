@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, MenuItem, Stack, TextField } from "@mui/material";
 import { useLithologyStratigraphies } from "../../../../api/fetchApiV2.js";
+import { theme } from "../../../../AppTheme";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import * as Styled from "./lithology/styles.js";
 
@@ -37,7 +38,14 @@ const StratigraphySelection = ({ id: selectedBoreholeId, noStratigraphiesMessage
   }
 
   return (
-    <Stack direction="column" sx={{ flex: "1", py: 1 }}>
+    <Stack
+      direction="column"
+      sx={{
+        flex: "1",
+        p: 3,
+        backgroundColor: theme.palette.background.default,
+        border: `1px solid ${theme.palette.boxShadow}`,
+      }}>
       <TextField
         value={stratigraphyId}
         label={t("stratigraphy")}

@@ -82,7 +82,12 @@ export const DetailPage: FC = () => {
         <SidebarBox>
           <DetailSideNav />
         </SidebarBox>
-        <Box sx={{ display: "flex", flexDirection: panelPosition === "right" ? "row" : "column", width: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: panelPosition === "right" ? "row" : "column",
+            width: "100%",
+          }}>
           <MainContentBox
             sx={{
               width: panelOpen && panelPosition === "right" ? "50%" : "100%",

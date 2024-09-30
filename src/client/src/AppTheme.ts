@@ -52,7 +52,7 @@ const themePalette: AppThemePalette = {
   boxShadow: "#DFE4E9",
   background: {
     default: "#ffffff",
-    lightgrey: "#f1f3f5",
+    lightgrey: "#F8F9FA",
     darkgrey: "#787878",
     dark: "rgba(0, 0, 0, 0.5)",
     menuItemActive: "#A65462",
@@ -453,7 +453,7 @@ export const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          border: "1px solid #ACB4BD",
+          border: "1px solid #DFE4E9",
           boxShadow: "none !important",
           borderRadius: `${themeSpacing(1)} !important`,
         },
