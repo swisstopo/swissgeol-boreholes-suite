@@ -7,6 +7,7 @@
 - Updated the style of bulk edit form.
 - Hide the `help` button in the navigation bar in read-only mode.
 - Hide the `original_name` field in the borehole detail view in read-only mode.
+- Updated the style of the coordinates and elevation segment in the location tab.
 
 ### Fixed
 
