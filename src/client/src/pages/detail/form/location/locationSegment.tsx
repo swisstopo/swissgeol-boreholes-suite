@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Card, Stack } from "@mui/material";
 import _ from "lodash";
-import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces";
 import PointComponent from "../../../../components/map/pointComponent.jsx";
-import { FormSegmentBox } from "../../../../components/styledComponents.ts";
-import CantonMunicipalitySegment from "./cantonMunicipalitySegment.jsx";
-import CoordinatesSegment from "./coordinatesSegment.tsx";
+import { FormSegmentBox } from "../../../../components/styledComponents";
+import CantonMunicipalitySegment from "./cantonMunicipalitySegment";
+import CoordinatesSegment from "./coordinatesSegment";
 import ElevationSegment from "./elevationSegment";
 
 interface LocationSegmentProps {

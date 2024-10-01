@@ -6,9 +6,14 @@ import { MapPin } from "lucide-react";
 import { FormContainer, FormValueType } from "../../../../components/form/form";
 import { FormInput } from "../../../../components/form/formInput";
 
-const CantonMunicipalitySegment = props => {
-  const { country, canton, municipality, isEditable } = props;
+interface CantonMunicipalitySegmentProps {
+  country: string;
+  canton: string;
+  municipality: string;
+  isEditable: boolean;
+}
 
+const CantonMunicipalitySegment = ({ country, canton, municipality, isEditable }: CantonMunicipalitySegmentProps) => {
   const formMethods = useForm({
     mode: "all",
   });
