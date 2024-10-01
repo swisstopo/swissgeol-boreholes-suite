@@ -1,6 +1,21 @@
 import { createBaseSelector } from "./testHelpers";
 
 /**
+ * Checks if a form element is disabled.
+ * @param {string} fieldName The name of the form element.
+ * @param {boolean} isDisabled The expected disabled state.
+ * @param {string} parent (optional) The parent of the form element.
+ */
+export const isDisabled = (fieldName, isDisabled = true, parent) => {
+  const selector = createBaseSelector(parent) + `[data-cy^="${fieldName}-form"] .Mui-disabled`;
+  if (isDisabled) {
+    cy.get(selector).should("exist");
+  } else {
+    cy.get(selector).should("not.exist");
+  }
+};
+
+/**
  * Sets the value for an input form element.
  * @param {string} fieldName The name of the input field.
  * @param {string} text The text to type into the input field.
