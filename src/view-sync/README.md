@@ -11,5 +11,5 @@
 docker compose -f docker-compose.services.yml up --wait
 
 # Start the view-sync container
-docker compose up
+docker compose down && docker compose up --build
 ```
