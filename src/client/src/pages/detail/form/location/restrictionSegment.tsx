@@ -12,6 +12,7 @@ const RestrictionSegment = ({ borehole, updateChange, editingEnabled }: SegmentP
   });
 
   const restriction = formMethods.watch("restriction");
+  const restrictionUntilCode = 20111003;
 
   return (
     <FormProvider {...formMethods}>
@@ -25,25 +26,23 @@ const RestrictionSegment = ({ borehole, updateChange, editingEnabled }: SegmentP
               readonly={!editingEnabled}
               selected={borehole.data.restriction}
               onUpdate={e => {
-                if (e !== 20111003) {
+                if (e !== restrictionUntilCode) {
                   formMethods.setValue("restriction_until", null);
                 }
                 updateChange("restriction", e ?? null, false);
               }}
             />
-
             <FormInput
               fieldName="restriction_until"
               label="restriction_until"
-              disabled={restriction !== 20111003}
-              readonly={!editingEnabled || restriction !== 20111003}
+              disabled={restriction !== restrictionUntilCode}
+              readonly={!editingEnabled || restriction !== restrictionUntilCode}
               value={borehole.data.restriction_until}
               type={FormValueType.Date}
               onUpdate={selected => {
                 updateChange("restriction_until", selected, false);
               }}
             />
-
             <FormBooleanSelect
               required
               readonly={!editingEnabled}
