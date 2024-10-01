@@ -42,7 +42,7 @@ export const MainContentBox = styled(Box)({
 });
 
 export const FormSegmentBox = styled(Box)({
-  padding: theme.spacing(2),
+  padding: theme.spacing(3),
 });
 
 export const DialogHeaderContainer = styled(Box)({
