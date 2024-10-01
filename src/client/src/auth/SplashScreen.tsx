@@ -20,7 +20,7 @@ export const SplashScreen: FC<PropsWithChildren> = ({ children }) => {
   const InnerContainer = styled("div")({
     backgroundColor: theme.palette.background.default,
     borderRadius: "2px",
-    boxShadow: theme.shadows[2],
+    boxShadow: "none !important",
     display: "flex",
     flexDirection: "column",
     minWidth: "100px",

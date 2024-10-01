@@ -96,7 +96,7 @@ const MainSideNav = ({
     <Stack
       direction="column"
       sx={{
-        boxShadow: 4,
+        boxShadow: 3,
         width: "80px",
         height: "100%",
         position: "relative",

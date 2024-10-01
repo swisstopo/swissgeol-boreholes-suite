@@ -12,7 +12,6 @@ export const BdmsTabContentBox = styled(Box)(() => ({
   margin: "0 5px 10px 5px",
   display: "flex",
   flexDirection: "column",
-  boxShadow: theme.shadows[5],
 }));
 
 export const BdmsTabs = styled(Tabs)({

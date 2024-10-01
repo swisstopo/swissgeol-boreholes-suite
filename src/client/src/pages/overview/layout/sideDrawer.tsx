@@ -23,7 +23,7 @@ export const SideDrawer = ({ drawerOpen, drawerContent }: SideDrawerProps) => {
             height: "calc(100vh - 84px)",
             padding: "16px",
             backgroundColor: theme.palette.background.lightgrey,
-            boxShadow: theme.shadows[4],
+            boxShadow: theme.shadows[3],
             borderRight: "1px solid rgba(0, 0, 0, 0.12)",
           }}>
           {drawerContent}
