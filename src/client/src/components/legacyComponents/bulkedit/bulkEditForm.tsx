@@ -189,7 +189,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
         />
       );
     },
-    [onFieldValueChange, t],
+    [onFieldValueChange],
   );
 
   return (
