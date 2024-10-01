@@ -57,6 +57,9 @@ interface Workflow {
 }
 
 interface BoreholeAttributes {
+  national_interest: boolean;
+  restriction_until: dateFns;
+  restriction: number;
   workgroup: Workgroup;
   workflow: Workflow;
   id: number;
