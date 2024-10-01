@@ -284,7 +284,7 @@ class DetailPageContent extends React.Component {
                 path={"/:id"}
                 render={() => (
                   <Box>
-                    <Stack gap={2} mr={2}>
+                    <Stack gap={3} mr={2}>
                       <IdentifierSegment
                         borehole={borehole}
                         identifier={this.state.identifier}

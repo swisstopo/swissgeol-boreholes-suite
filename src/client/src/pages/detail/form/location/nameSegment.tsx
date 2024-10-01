@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Card } from "@mui/material";
 import { Form, Input } from "semantic-ui-react";
 import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
@@ -24,63 +25,65 @@ const NameSegment = ({ borehole, updateChange, user }: NameSegmentProps) => {
   }, [borehole.data]);
 
   return (
-    <FormSegmentBox>
-      <Form autoComplete="off" error>
-        <Form.Group widths="equal">
-          {!auth.anonymousModeEnabled && (
-            <Form.Field error={borehole.data.extended.original_name === ""} required>
-              <label>{t("original_name")}</label>
+    <Card>
+      <FormSegmentBox>
+        <Form autoComplete="off" error>
+          <Form.Group widths="equal">
+            {!auth.anonymousModeEnabled && (
+              <Form.Field error={borehole.data.extended.original_name === ""} required>
+                <label>{t("original_name")}</label>
+                <Input
+                  data-cy="original-name"
+                  autoCapitalize="off"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  onChange={e => {
+                    setAlternateName(e.target.value);
+                    updateChange("extended.original_name", e.target.value);
+                    updateChange("custom.alternate_name", e.target.value);
+                  }}
+                  spellCheck="false"
+                  value={borehole.data.extended.original_name ?? ""}
+                  readOnly={!isEditable}
+                />
+              </Form.Field>
+            )}
+            <Form.Field>
+              <label>{t("project_name")}</label>
               <Input
-                data-cy="original-name"
+                autoCapitalize="off"
+                autoComplete="off"
+                autoCorrect="off"
+                onChange={e => {
+                  updateChange("custom.project_name", e.target.value);
+                }}
+                spellCheck="false"
+                value={borehole.data.custom.project_name ?? ""}
+                readOnly={!isEditable}
+              />
+            </Form.Field>
+          </Form.Group>
+          <Form.Group widths="equal">
+            <Form.Field>
+              <label>{t("alternate_name")}</label>
+              <Input
+                data-cy="alternate-name"
                 autoCapitalize="off"
                 autoComplete="off"
                 autoCorrect="off"
                 onChange={e => {
                   setAlternateName(e.target.value);
-                  updateChange("extended.original_name", e.target.value);
                   updateChange("custom.alternate_name", e.target.value);
                 }}
                 spellCheck="false"
-                value={borehole.data.extended.original_name ?? ""}
+                value={alternateName}
                 readOnly={!isEditable}
               />
             </Form.Field>
-          )}
-          <Form.Field>
-            <label>{t("project_name")}</label>
-            <Input
-              autoCapitalize="off"
-              autoComplete="off"
-              autoCorrect="off"
-              onChange={e => {
-                updateChange("custom.project_name", e.target.value);
-              }}
-              spellCheck="false"
-              value={borehole.data.custom.project_name ?? ""}
-              readOnly={!isEditable}
-            />
-          </Form.Field>
-        </Form.Group>
-        <Form.Group widths="equal">
-          <Form.Field>
-            <label>{t("alternate_name")}</label>
-            <Input
-              data-cy="alternate-name"
-              autoCapitalize="off"
-              autoComplete="off"
-              autoCorrect="off"
-              onChange={e => {
-                setAlternateName(e.target.value);
-                updateChange("custom.alternate_name", e.target.value);
-              }}
-              spellCheck="false"
-              value={alternateName}
-              readOnly={!isEditable}
-            />
-          </Form.Field>
-        </Form.Group>
-      </Form>
-    </FormSegmentBox>
+          </Form.Group>
+        </Form>
+      </FormSegmentBox>
+    </Card>
   );
 };
 
