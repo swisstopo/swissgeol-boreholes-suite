@@ -12,6 +12,7 @@
 ### Fixed
 
 - _view-sync_ did not clean up unpublished boreholes.
+- User permissions were not checked when detaching files from boreholes.
 
 ## v2.1.870 - 2024-09-27
 
