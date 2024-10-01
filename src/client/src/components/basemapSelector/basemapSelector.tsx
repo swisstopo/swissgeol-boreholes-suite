@@ -16,16 +16,23 @@ const BasemapSelectorBox = styled(Box)({
   borderRadius: "100px",
 });
 
-const BasemapButton = styled(Button)({
+const BasemapSelectorButton = styled(Button)({
   borderRadius: "50%",
   padding: 0,
   animationTimingFunction: "ease-in-out",
   animationDuration: "0.4s",
   minWidth: 0,
-  margin: 0,
   "&:hover": {
     opacity: "60%",
   },
+});
+
+const BasemapButton = styled(BasemapSelectorButton)({
+  height: "40px",
+  width: "40px",
+  marginRight: theme.spacing(1.5),
+  marginTop: theme.spacing(0.5),
+  marginBottom: theme.spacing(0.5),
 });
 
 const ImageBox = styled(Box)({
@@ -75,8 +82,6 @@ export const BasemapSelector = memo(({ marginBottom }: { marginBottom: string })
                   <ImageBox
                     sx={{
                       border: `${layer.name === currentBasemapName ? "2px solid #cb5d53" : "none"}`,
-                      marginRight: "1em",
-                      marginLeft: 0,
                     }}>
                     {layer && <img alt={layer.name} src={imageUrlMap[layer.name]} />}
                   </ImageBox>
@@ -96,7 +101,7 @@ export const BasemapSelector = memo(({ marginBottom }: { marginBottom: string })
           </Box>
         </Stack>
       ) : (
-        <BasemapButton onClick={toggleShowSelector}>
+        <BasemapSelectorButton onClick={toggleShowSelector}>
           {currentBasemapName == "nomap" ? (
             <LargerImageBox></LargerImageBox>
           ) : (
@@ -104,7 +109,7 @@ export const BasemapSelector = memo(({ marginBottom }: { marginBottom: string })
               {currentBasemapName && <img alt={currentBasemapName} src={imageUrlMap[currentBasemapName]} />}
             </LargerImageBox>
           )}
-        </BasemapButton>
+        </BasemapSelectorButton>
       )}
     </BasemapSelectorBox>
   );
