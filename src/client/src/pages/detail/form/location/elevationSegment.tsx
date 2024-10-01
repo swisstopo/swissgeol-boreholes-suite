@@ -1,34 +1,24 @@
 import { FC, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form.ts";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect.tsx";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 import { parseFloatWithThousandsSeparator } from "../../../../components/legacyComponents/formUtils.js";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
+import { SegmentProps } from "./segmentInterface.ts";
 
-interface ElevationSegmentProps {
-  borehole: Borehole;
-  user: User;
-  updateChange: (
-    fieldName: keyof Borehole["data"] | "location",
-    value: string | number | null | (number | string | null)[],
-    to?: boolean,
-  ) => void;
+interface ElevationSegmentProps extends SegmentProps {
   updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
 }
-
-const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, user, updateChange, updateNumber }) => {
+const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, updateChange, updateNumber, editingEnabled }) => {
   const { data: domains } = useDomains();
 
   const formMethods = useForm({
     mode: "all",
     defaultValues: borehole.data,
   });
-  // --- Derived states ---
-  const isEditable: boolean =
-    borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   useEffect(() => {
     formMethods.reset(borehole.data);
@@ -44,7 +34,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, user, updateCha
               label="elevation_z"
               value={borehole.data.elevation_z ?? ""}
               type={FormValueType.Text}
-              readonly={!isEditable}
+              readonly={!editingEnabled}
               withThousandSeparator={true}
               onUpdate={e => updateNumber("elevation_z", e === "" ? null : parseFloatWithThousandsSeparator(e))}
             />
@@ -52,7 +42,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, user, updateCha
               fieldName={"elevation_precision"}
               label={"elevation_precision"}
               schemaName={"elevation_precision"}
-              readonly={!isEditable}
+              readonly={!editingEnabled}
               selected={borehole.data.elevation_precision}
               onUpdate={e => {
                 updateChange("elevation_precision", e ?? null, false);
@@ -65,14 +55,14 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, user, updateCha
               label="reference_elevation"
               value={borehole.data.reference_elevation ?? ""}
               type={FormValueType.Text}
-              readonly={!isEditable}
+              readonly={!editingEnabled}
               withThousandSeparator={true}
               onUpdate={e => updateNumber("reference_elevation", e === "" ? null : parseFloatWithThousandsSeparator(e))}
             />
             <FormDomainSelect
               fieldName={"qt_reference_elevation"}
               label={"reference_elevation_qt"}
-              readonly={!isEditable}
+              readonly={!editingEnabled}
               schemaName={"elevation_precision"}
               selected={borehole.data.qt_reference_elevation}
               onUpdate={e => {
@@ -84,7 +74,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, user, updateCha
             <FormDomainSelect
               fieldName={"reference_elevation_type"}
               label={"reference_elevation_type"}
-              readonly={!isEditable}
+              readonly={!editingEnabled}
               schemaName={"reference_elevation_type"}
               selected={borehole.data.reference_elevation_type}
               onUpdate={e => {

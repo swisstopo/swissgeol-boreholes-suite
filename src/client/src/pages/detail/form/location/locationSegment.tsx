@@ -1,29 +1,22 @@
 import { useState } from "react";
 import { Card, Stack } from "@mui/material";
 import _ from "lodash";
-import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces";
+import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import PointComponent from "../../../../components/map/pointComponent.jsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import CantonMunicipalitySegment from "./cantonMunicipalitySegment";
 import CoordinatesSegment from "./coordinatesSegment";
 import ElevationSegment from "./elevationSegment";
+import { SegmentProps } from "./segmentInterface.ts";
 
-interface LocationSegmentProps {
-  borehole: Borehole;
-  user: User;
-  updateChange: (
-    fieldName: keyof Borehole["data"] | "location",
-    value: string | number | null | (number | string | null)[],
-    to?: boolean,
-  ) => void;
-  updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
+interface LocationSegmentProps extends SegmentProps {
   showLabeling: boolean;
   editingEnabled: boolean;
+  updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
 }
 
 const LocationSegment = ({
   borehole,
-  user,
   updateChange,
   updateNumber,
   showLabeling,
@@ -45,7 +38,12 @@ const LocationSegment = ({
               showLabeling={showLabeling}
               editingEnabled={editingEnabled}
             />
-            <ElevationSegment borehole={borehole} user={user} updateChange={updateChange} updateNumber={updateNumber} />
+            <ElevationSegment
+              borehole={borehole}
+              updateChange={updateChange}
+              updateNumber={updateNumber}
+              editingEnabled={editingEnabled}
+            />
           </Stack>
 
           <FormSegmentBox sx={{ flexGrow: 1 }}>
@@ -67,7 +65,7 @@ const LocationSegment = ({
         country={borehole.data.custom.country}
         canton={borehole.data.custom.canton}
         municipality={borehole.data.custom.municipality}
-        isEditable={editingEnabled}
+        editingEnabled={editingEnabled}
       />
     </Stack>
   );

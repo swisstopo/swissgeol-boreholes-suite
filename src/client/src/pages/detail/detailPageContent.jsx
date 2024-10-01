@@ -296,11 +296,10 @@ class DetailPageContent extends React.Component {
                       <RestrictionSegment
                         borehole={borehole}
                         updateChange={this.updateChange}
-                        user={user}></RestrictionSegment>
+                        editingEnabled={editingEnabled}></RestrictionSegment>
                       <LocationSegment
                         showLabeling={this.props.showLabeling}
                         borehole={borehole}
-                        user={user}
                         editingEnabled={editingEnabled}
                         updateChange={this.updateChange}
                         updateNumber={this.updateNumber}
