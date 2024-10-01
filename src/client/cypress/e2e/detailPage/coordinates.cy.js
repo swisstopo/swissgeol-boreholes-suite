@@ -22,9 +22,9 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="location_y-formCoordinate"] input').as("LV95Y-input");
     cy.get('[data-cy="location_x_lv03-formCoordinate"] input').as("LV03X-input");
     cy.get('[data-cy="location_y_lv03-formCoordinate"] input').as("LV03Y-input");
-    cy.get('[data-cy="country"] > input').as("country");
-    cy.get('[data-cy="canton"] > input').as("canton");
-    cy.get('[data-cy="municipality"] > input').as("municipality");
+    cy.get('[data-cy="country-formInput"] input').as("country");
+    cy.get('[data-cy="canton-formInput"] input').as("canton");
+    cy.get('[data-cy="city-formInput"] input').as("municipality");
   });
 
   it("creates new borehole and adds coordinates", () => {

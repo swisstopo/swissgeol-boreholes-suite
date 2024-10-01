@@ -7,6 +7,7 @@ import { Dimmer, Loader } from "semantic-ui-react";
 import _ from "lodash";
 import PropTypes from "prop-types";
 import { loadBorehole, patchBorehole, updateBorehole } from "../../api-lib";
+import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
 import BoreholePanel from "./form/borehole/boreholePanel.jsx";
@@ -242,13 +243,15 @@ class DetailPageContent extends React.Component {
     return (
       <>
         <Box
-          style={{
-            overflow: "hidden",
+          sx={{
             height: "100%",
             display: "flex",
             flex: "1 1 100%",
             flexDirection: "column",
-            padding: "1em",
+            px: 11,
+            py: 5,
+            overflowY: "auto",
+            backgroundColor: theme.palette.background.lightgrey,
           }}>
           <Dimmer.Dimmable
             as={"div"}
@@ -257,7 +260,6 @@ class DetailPageContent extends React.Component {
             }
             style={{
               flex: 1,
-              overflowY: "hidden",
               display: "flex",
               flexDirection: "column",
             }}>
@@ -281,8 +283,8 @@ class DetailPageContent extends React.Component {
                 exact
                 path={"/:id"}
                 render={() => (
-                  <Box sx={{ overflowY: "auto" }}>
-                    <Stack gap={2} mr={2}>
+                  <Box>
+                    <Stack gap={3} mr={2}>
                       <IdentifierSegment
                         borehole={borehole}
                         identifier={this.state.identifier}

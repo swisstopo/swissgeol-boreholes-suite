@@ -104,14 +104,15 @@ class WorkflowForm extends React.Component {
 
     return (
       <Stack direction="row" sx={{ overflow: "auto" }}>
-        <div
-          style={{
-            display: "flex",
-            padding: "50px",
+        <Stack
+          direction="column"
+          sx={{
+            p: 4,
             flex: "1 1 100%",
-            flexDirection: "column",
             height: "100%",
             maxWidth: "800px",
+            backgroundColor: theme.palette.background.default,
+            border: `1px solid ${theme.palette.boxShadow}`,
           }}>
           <Typography variant="h4">
             <TranslationText id={"flowPublication"} />
@@ -545,7 +546,7 @@ class WorkflowForm extends React.Component {
                 }}></CancelButton>
             </Modal.Actions>
           </Modal>
-        </div>
+        </Stack>
       </Stack>
     );
   }
