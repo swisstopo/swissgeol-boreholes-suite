@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -22,12 +23,165 @@ public class BoreholeControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new BoreholeController(context, new Mock<ILogger<BoreholeController>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new BoreholeController(context, new Mock<ILogger<Borehole>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
         boreholeId = GetBoreholeIdToCopy();
     }
 
     [TestCleanup]
     public async Task TestCleanup() => await context.DisposeAsync();
+
+    [TestMethod]
+    public async Task EditBoreholeWithCompleteBorehole()
+    {
+        var id = 1_000_257;
+
+        var newBorehole = new Borehole
+        {
+            Id = id,
+            CreatedById = 4,
+            UpdatedById = 4,
+            Locked = null,
+            LockedById = null,
+            WorkgroupId = 1,
+            IsPublic = true,
+            TypeId = 20101003,
+            LocationX = 2600000.0,
+            PrecisionLocationX = 5,
+            LocationY = 1200000.0,
+            PrecisionLocationY = 5,
+            LocationXLV03 = 600000.0,
+            PrecisionLocationXLV03 = 5,
+            LocationYLV03 = 200000.0,
+            PrecisionLocationYLV03 = 5,
+            OriginalReferenceSystem = ReferenceSystem.LV95,
+            ElevationZ = 450.5,
+            HrsId = 20106001,
+            TotalDepth = 100.0,
+            RestrictionId = 20111003,
+            RestrictionUntil = DateTime.UtcNow.AddYears(1),
+            NationalInterest = false,
+            OriginalName = "BH-257",
+            AlternateName = "Borehole 257",
+            LocationPrecisionId = 20113002,
+            ElevationPrecisionId = null,
+            ProjectName = "Project Alpha",
+            Country = "CH",
+            Canton = "ZH",
+            Municipality = "Zurich",
+            PurposeId = 22103002,
+            StatusId = 22104001,
+            QtDepthId = 22108005,
+            TopBedrockFreshMd = 10.5,
+            TopBedrockWeatheredMd = 8.0,
+            HasGroundwater = true,
+            Geometry = null,
+            Remarks = "Test borehole for project",
+            LithologyTopBedrockId = 15104934,
+            LithostratigraphyId = 15300259,
+            ChronostratigraphyId = 15001141,
+            ReferenceElevation = 500.0,
+            QtReferenceElevationId = 20114002,
+            ReferenceElevationTypeId = 20117003,
+        };
+
+        var boreholeToEdit = context.Boreholes.Single(c => c.Id == id);
+        Assert.AreEqual(1, boreholeToEdit.Stratigraphies.Count);
+        Assert.AreEqual(0, boreholeToEdit.Workflows.Count);
+
+        Assert.AreEqual(2, boreholeToEdit.CreatedById);
+        Assert.AreEqual(5, boreholeToEdit.UpdatedById);
+
+        // Update Borehole
+        var response = await controller.EditAsync(newBorehole);
+        ActionResultAssert.IsOk(response.Result);
+
+        // Assert Updates and unchanged values
+        var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(response.Result);
+
+        Assert.AreEqual(4, updatedBorehole.CreatedById);
+        Assert.AreEqual(1, updatedBorehole.UpdatedById); // updatedById should be overwritten by the test user id.
+        Assert.AreEqual(newBorehole.WorkgroupId, updatedBorehole.WorkgroupId);
+        Assert.AreEqual(newBorehole.IsPublic, updatedBorehole.IsPublic);
+        Assert.AreEqual(newBorehole.TypeId, updatedBorehole.TypeId);
+        Assert.AreEqual(newBorehole.LocationX, updatedBorehole.LocationX);
+        Assert.AreEqual(newBorehole.PrecisionLocationX, updatedBorehole.PrecisionLocationX);
+        Assert.AreEqual(newBorehole.LocationY, updatedBorehole.LocationY);
+        Assert.AreEqual(newBorehole.PrecisionLocationY, updatedBorehole.PrecisionLocationY);
+        Assert.AreEqual(newBorehole.LocationXLV03, updatedBorehole.LocationXLV03);
+        Assert.AreEqual(newBorehole.PrecisionLocationXLV03, updatedBorehole.PrecisionLocationXLV03);
+        Assert.AreEqual(newBorehole.LocationYLV03, updatedBorehole.LocationYLV03);
+        Assert.AreEqual(newBorehole.PrecisionLocationYLV03, updatedBorehole.PrecisionLocationYLV03);
+        Assert.AreEqual(newBorehole.ElevationZ, updatedBorehole.ElevationZ);
+        Assert.AreEqual(newBorehole.HrsId, updatedBorehole.HrsId);
+        Assert.AreEqual(newBorehole.TotalDepth, updatedBorehole.TotalDepth);
+        Assert.AreEqual(newBorehole.RestrictionId, updatedBorehole.RestrictionId);
+        Assert.AreEqual(newBorehole.RestrictionUntil.ToString(), updatedBorehole.RestrictionUntil.ToString());
+        Assert.AreEqual(newBorehole.NationalInterest, updatedBorehole.NationalInterest);
+        Assert.AreEqual(newBorehole.OriginalName, updatedBorehole.OriginalName);
+        Assert.AreEqual(newBorehole.AlternateName, updatedBorehole.AlternateName);
+        Assert.AreEqual(newBorehole.LocationPrecisionId, updatedBorehole.LocationPrecisionId);
+        Assert.AreEqual(newBorehole.ElevationPrecisionId, updatedBorehole.ElevationPrecisionId);
+        Assert.AreEqual(newBorehole.ProjectName, updatedBorehole.ProjectName);
+        Assert.AreEqual(newBorehole.Country, updatedBorehole.Country);
+        Assert.AreEqual(newBorehole.Canton, updatedBorehole.Canton);
+        Assert.AreEqual(newBorehole.Municipality, updatedBorehole.Municipality);
+        Assert.AreEqual(newBorehole.PurposeId, updatedBorehole.PurposeId);
+        Assert.AreEqual(newBorehole.StatusId, updatedBorehole.StatusId);
+        Assert.AreEqual(newBorehole.QtDepthId, updatedBorehole.QtDepthId);
+        Assert.AreEqual(newBorehole.TopBedrockFreshMd, updatedBorehole.TopBedrockFreshMd);
+        Assert.AreEqual(newBorehole.TopBedrockWeatheredMd, updatedBorehole.TopBedrockWeatheredMd);
+        Assert.AreEqual(newBorehole.HasGroundwater, updatedBorehole.HasGroundwater);
+        Assert.AreEqual(newBorehole.Remarks, updatedBorehole.Remarks);
+        Assert.AreEqual(newBorehole.LithologyTopBedrockId, updatedBorehole.LithologyTopBedrockId);
+        Assert.AreEqual(newBorehole.LithostratigraphyId, updatedBorehole.LithostratigraphyId);
+        Assert.AreEqual(newBorehole.ChronostratigraphyId, updatedBorehole.ChronostratigraphyId);
+        Assert.AreEqual(newBorehole.ReferenceElevation, updatedBorehole.ReferenceElevation);
+        Assert.AreEqual(newBorehole.QtReferenceElevationId, updatedBorehole.QtReferenceElevationId);
+        Assert.AreEqual(newBorehole.ReferenceElevationTypeId, updatedBorehole.ReferenceElevationTypeId);
+
+        // Stratigraphies and workflows remain unchanged
+        Assert.AreEqual(1, updatedBorehole.Stratigraphies.Count);
+        Assert.AreEqual(0, updatedBorehole.Workflows.Count);
+    }
+
+    [TestMethod]
+    public async Task EditWithInexistentIdReturnsNotFound()
+    {
+        var id = 9111794;
+        var borehole = new Borehole
+        {
+            Id = id,
+        };
+
+        // Upate Borehole
+        var response = await controller.EditAsync(borehole);
+        ActionResultAssert.IsNotFound(response.Result);
+    }
+
+    [TestMethod]
+    public async Task EditWithoutBoreholeReturnsBadRequest()
+    {
+        var response = await controller.EditAsync(null);
+        ActionResultAssert.IsBadRequest(response.Result);
+    }
+
+    [TestMethod]
+    public async Task EditWithWrongCodelistCodesReturnsBadRequest()
+    {
+        var borehole = new Borehole
+        {
+            Id = 1_000_256,
+            PurposeId = 99999, // Id violating constraint
+        };
+
+        var response = await controller.EditAsync(borehole);
+        ActionResultAssert.IsInternalServerError(response.Result);
+    }
 
     [TestMethod]
     public async Task Copy()
@@ -183,7 +337,7 @@ public class BoreholeControllerTest
             .Where(b =>
                 b.Stratigraphies != null &&
                 b.Stratigraphies.Any() &&
-                b.Stratigraphies.First().Layers != null &&
+b.Stratigraphies.First().Layers != null &&
                 b.Stratigraphies.First().Layers.Any(x => x.LayerColorCodes != null && x.LayerColorCodes.Any()) &&
                 b.Stratigraphies.First().Layers.Any(x => x.LayerGrainShapeCodes != null && x.LayerGrainShapeCodes.Any()) &&
                 b.Stratigraphies.First().Layers.Any(x => x.LayerUscs3Codes != null && x.LayerUscs3Codes.Any()) &&
