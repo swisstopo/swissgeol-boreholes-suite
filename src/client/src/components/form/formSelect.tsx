@@ -11,11 +11,11 @@ export interface FormSelectProps {
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
-  selected?: number;
+  selected?: number | boolean;
   values?: FormSelectValue[];
   sx?: SxProps;
   className?: string;
-  onUpdate?: (value: number) => void;
+  onUpdate?: (value: number | boolean | null) => void;
 }
 
 export interface FormSelectValue {
