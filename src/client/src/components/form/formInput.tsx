@@ -16,7 +16,7 @@ export interface FormInputProps {
   type?: FormValueType;
   multiline?: boolean;
   rows?: number;
-  value?: string | number;
+  value?: string | number | Date;
   sx?: SxProps;
   className?: string;
   inputProps?: InputProps;
@@ -43,7 +43,7 @@ export const FormInput: FC<FormInputProps> = ({
   const { t } = useTranslation();
   const { formState, register, setValue } = useFormContext();
 
-  const getDefaultValue = (value: string | number | undefined) => {
+  const getDefaultValue = (value: string | number | Date | undefined) => {
     if (value == undefined) {
       return "";
     } else if (type === FormValueType.DateTime) {

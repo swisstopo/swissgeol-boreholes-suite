@@ -19,7 +19,7 @@ import WaterIngress from "./form/hydrogeology/waterIngress.jsx";
 import IdentifierSegment from "./form/location/indentifierSegment.jsx";
 import LocationSegment from "./form/location/locationSegment.tsx";
 import NameSegment from "./form/location/nameSegment.tsx";
-import RestrictionSegment from "./form/location/restrictionSegment.jsx";
+import RestrictionSegment from "./form/location/restrictionSegment.tsx";
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
 import Lithology from "./form/stratigraphy/lithology";
 import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
@@ -296,11 +296,10 @@ class DetailPageContent extends React.Component {
                       <RestrictionSegment
                         borehole={borehole}
                         updateChange={this.updateChange}
-                        user={user}></RestrictionSegment>
+                        editingEnabled={editingEnabled}></RestrictionSegment>
                       <LocationSegment
                         showLabeling={this.props.showLabeling}
                         borehole={borehole}
-                        user={user}
                         editingEnabled={editingEnabled}
                         updateChange={this.updateChange}
                         updateNumber={this.updateNumber}

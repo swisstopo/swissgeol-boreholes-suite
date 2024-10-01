@@ -10,10 +10,15 @@ interface CantonMunicipalitySegmentProps {
   country: string;
   canton: string;
   municipality: string;
-  isEditable: boolean;
+  editingEnabled: boolean;
 }
 
-const CantonMunicipalitySegment = ({ country, canton, municipality, isEditable }: CantonMunicipalitySegmentProps) => {
+const CantonMunicipalitySegment = ({
+  country,
+  canton,
+  municipality,
+  editingEnabled,
+}: CantonMunicipalitySegmentProps) => {
   const formMethods = useForm({
     mode: "all",
   });
@@ -47,7 +52,7 @@ const CantonMunicipalitySegment = ({ country, canton, municipality, isEditable }
                   </InputAdornment>
                 ),
               }}
-              readonly={!isEditable}
+              readonly={!editingEnabled}
             />
 
             <FormInput
@@ -62,7 +67,7 @@ const CantonMunicipalitySegment = ({ country, canton, municipality, isEditable }
                   </InputAdornment>
                 ),
               }}
-              readonly={!isEditable}
+              readonly={!editingEnabled}
             />
 
             <FormInput
@@ -77,7 +82,7 @@ const CantonMunicipalitySegment = ({ country, canton, municipality, isEditable }
                   </InputAdornment>
                 ),
               }}
-              readonly={!isEditable}
+              readonly={!editingEnabled}
             />
           </FormContainer>
         </CardContent>

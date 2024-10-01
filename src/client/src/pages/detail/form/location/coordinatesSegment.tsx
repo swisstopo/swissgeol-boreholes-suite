@@ -418,7 +418,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                   selected={currentReferenceSystem ?? referenceSystems.LV95.code}
                   readonly={!editingEnabled}
                   className={isCoordinateExtraction ? "ai" : ""}
-                  onUpdate={e => onReferenceSystemChange(e)}
+                  onUpdate={e => onReferenceSystemChange(e as number)}
                   values={Object.entries(referenceSystems).map(([, value]) => ({
                     key: value.code,
                     name: value.name,

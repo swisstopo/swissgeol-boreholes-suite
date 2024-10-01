@@ -1,4 +1,4 @@
-import { evaluateSelect, setSelect } from "../helpers/formHelpers";
+import { evaluateSelect, isDisabled, setSelect } from "../helpers/formHelpers";
 import { createBorehole, goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers";
 
 describe("Test for the borehole form.", () => {
@@ -8,7 +8,7 @@ describe("Test for the borehole form.", () => {
 
     // fill all legacy dropdowns on location tab
     cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 2)
+      .should("have.length", 1)
       .each(el => cy.wrap(el).click().find('[role="option"]').last().click());
 
     const locationDropdownValues = [];
@@ -18,16 +18,23 @@ describe("Test for the borehole form.", () => {
         locationDropdownValues.push(value);
       })
       .then(() => {
-        expect(locationDropdownValues).to.deep.eq(["ID Kernlager", "not specified"]);
+        expect(locationDropdownValues).to.deep.eq(["ID Kernlager"]);
       });
 
     // fills and evaluates all mui dropdowns on location tab
+    setSelect("restriction", 2);
+    isDisabled("restriction_until", true);
+    setSelect("restriction", 3);
+    isDisabled("restriction_until", false);
+    setSelect("national_interest", 2);
     setSelect("spatial_reference_system", 0);
     setSelect("location_precision", 2);
     setSelect("elevation_precision", 2);
     setSelect("qt_reference_elevation", 2);
     setSelect("reference_elevation_type", 4);
 
+    evaluateSelect("restriction", "20111003");
+    evaluateSelect("national_interest", "2");
     evaluateSelect("spatial_reference_system", "20104001");
     evaluateSelect("location_precision", "20113002");
     evaluateSelect("elevation_precision", "20114002");
