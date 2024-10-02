@@ -85,8 +85,8 @@ describe("Test for the borehole form.", () => {
 
     evaluateInput("elevation_z", "3'062.9991330499756");
     evaluateInput("reference_elevation", "3'478.1368118609007");
-    evaluateSelect("elevation_precision", "20114005"); // 0.1
-    evaluateSelect("qt_reference_elevation", "20114001"); // 10
+    evaluateSelect("elevation_precision", "20114003"); // 1
+    evaluateSelect("qt_reference_elevation", "20114005"); // 0.1
     evaluateSelect("reference_elevation_type", "30000013"); // kelly bushing
   });
 
