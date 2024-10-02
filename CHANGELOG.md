@@ -13,6 +13,7 @@
 
 - _view-sync_ did not clean up unpublished boreholes.
 - User permissions were not checked when detaching files from boreholes.
+- The basemap selector buttons were not displayed correctly on hover
 
 ## v2.1.870 - 2024-09-27
 
