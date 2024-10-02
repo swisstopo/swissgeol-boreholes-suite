@@ -11,7 +11,7 @@ const BasemapSelectorBox = styled(Box)({
   position: "absolute",
   right: "12px",
   backgroundColor: theme.palette.background.lightgrey,
-  boxShadow: theme.shadows[3],
+  boxShadow: theme.shadows[1],
   padding: "3px",
   borderRadius: "100px",
 });

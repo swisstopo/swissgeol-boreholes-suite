@@ -190,7 +190,7 @@ const DescriptionLayers = props => {
   };
 
   return (
-    <Box sx={{ boxShadow: 6 }}>
+    <Box sx={{ boxShadow: 4 }}>
       {displayDescriptions &&
         displayDescriptions
           ?.sort((a, b) => a.fromDepth - b.fromDepth)
@@ -203,7 +203,7 @@ const DescriptionLayers = props => {
                 direction="row"
                 data-cy={`description-${index}`}
                 sx={{
-                  boxShadow: 7,
+                  boxShadow: 5,
                   flex: "1 1 100%",
                   height: isItemSelected ? "auto" : calculatedHeight + "em",
                   overflowY: "auto",

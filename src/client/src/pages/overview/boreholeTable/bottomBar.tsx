@@ -84,6 +84,7 @@ const BottomBar = ({
       direction="row"
       alignItems={"center"}
       sx={{
+        boxShadow: 2,
         height: "68px",
         p: 2,
         backgroundColor: theme.palette.background.lightgrey,
