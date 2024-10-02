@@ -1,5 +1,6 @@
-import { evaluateSelect, isDisabled, setSelect } from "../helpers/formHelpers";
-import { createBorehole, goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers";
+import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
+import { evaluateInput, evaluateSelect, isDisabled, setSelect } from "../helpers/formHelpers";
+import { createBorehole, goToRouteAndAcceptTerms, newEditableBorehole, returnToOverview } from "../helpers/testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {
@@ -56,6 +57,37 @@ describe("Test for the borehole form.", () => {
       .then(() => {
         expect(boreholeDropdownValues).to.deep.eq(["borehole", "geotechnics", "open, no completion", "2"]);
       });
+  });
+
+  it("Checks if form values are updated when borehole changes", () => {
+    showTableAndWaitForData();
+    // sort by Name descending
+    sortBy("Name");
+    clickOnRowWithText("Zena Rath");
+
+    evaluateSelect("restriction", "");
+    evaluateSelect("national_interest", "0"); // No
+    evaluateSelect("spatial_reference_system", "20104002"); // LV03
+    evaluateSelect("location_precision", "20113005");
+
+    evaluateInput("elevation_z", "3'519.948980314633");
+    evaluateInput("reference_elevation", "3'554.9389396584306");
+    evaluateSelect("elevation_precision", "");
+    evaluateSelect("qt_reference_elevation", "20114007"); // not specified
+    evaluateSelect("reference_elevation_type", "30000013"); // kelly bushing
+
+    returnToOverview();
+    clickOnRowWithText("Zena Mraz");
+    evaluateSelect("restriction", "");
+    evaluateSelect("national_interest", "1"); // Yes
+    evaluateSelect("spatial_reference_system", "20104002"); // LV03
+    evaluateSelect("location_precision", "20113007"); // not specified
+
+    evaluateInput("elevation_z", "3'062.9991330499756");
+    evaluateInput("reference_elevation", "3'478.1368118609007");
+    evaluateSelect("elevation_precision", "20114005"); // 0.1
+    evaluateSelect("qt_reference_elevation", "20114001"); // 10
+    evaluateSelect("reference_elevation_type", "30000013"); // kelly bushing
   });
 
   it("switches tabs", () => {
