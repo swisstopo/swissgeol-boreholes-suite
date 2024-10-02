@@ -73,8 +73,8 @@ describe("Test for the borehole form.", () => {
     evaluateInput("elevation_z", "3'519.948980314633");
     evaluateInput("reference_elevation", "3'554.9389396584306");
     evaluateSelect("elevation_precision", "");
-    evaluateSelect("qt_reference_elevation", "20114007"); // not specified
-    evaluateSelect("reference_elevation_type", "30000013"); // kelly bushing
+    evaluateSelect("qt_reference_elevation", "");
+    evaluateSelect("reference_elevation_type", "");
 
     returnToOverview();
     clickOnRowWithText("Zena Mraz");
