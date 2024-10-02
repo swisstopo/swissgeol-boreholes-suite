@@ -4,7 +4,7 @@ import { MenuItem, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { useDomains } from "../../api/fetchApiV2";
 import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
-import { FormSelectMenuItem, FormSelectValue } from "./formSelect.tsx";
+import { FormSelectMenuItem } from "./formSelect.tsx";
 
 // This component is needed as an intermediate step to refactor borehole input.
 // The standard form components are not usable with autosave components as they are now.
@@ -18,7 +18,6 @@ interface SimpleDomainSelectProps {
   disabled?: boolean;
   readonly?: boolean;
   selected?: number | boolean | null;
-  values?: FormSelectValue[];
   sx?: SxProps;
   className?: string;
   onUpdate?: (value: number | boolean | string | null) => void;
