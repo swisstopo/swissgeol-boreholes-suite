@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@mui/material";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
 import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
 import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
-import { FormDomainSelect } from "../../../../components/form/formDomainSelect.tsx";
+import { SimpleDomainSelect } from "../../../../components/form/simpleDomainSelect.tsx";
 import {
   getPrecisionFromString,
   parseFloatWithThousandsSeparator,
@@ -474,7 +474,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                     />
                   </FormContainer>
                 </FormContainer>
-                <FormDomainSelect
+                <SimpleDomainSelect
                   fieldName={`location_precision`}
                   label="location_precision"
                   readonly={!editingEnabled}
