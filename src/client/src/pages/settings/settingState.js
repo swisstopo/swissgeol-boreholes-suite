@@ -14,11 +14,6 @@ const initialState = {
       value: "https://wms.geo.admin.ch?request=getCapabilities&service=WMS",
     },
     {
-      key: "https://wms-inspire.geo.admin.ch/?SERVICE=WMS&request=getCapabilities",
-      text: "https://wms-inspire.geo.admin.ch/?SERVICE=WMS&request=getCapabilities",
-      value: "https://wms-inspire.geo.admin.ch/?SERVICE=WMS&request=getCapabilities",
-    },
-    {
       key: "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
       text: "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
       value: "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",

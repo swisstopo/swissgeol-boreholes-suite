@@ -7,7 +7,6 @@ import { Plus, Trash2 } from "lucide-react";
 import _ from "lodash";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
-import { getWms } from "../../../../api-lib/index";
 import { theme } from "../../../../AppTheme";
 import { AlertContext } from "../../../../components/alert/alertContext";
 
@@ -25,13 +24,162 @@ const MapSettings = props => {
           if (_.has(setting.data.map.explorer, layerType === "WMS" ? layer.Name : layer.identifier)) {
             rmExplorerMap(layer);
           } else {
-            addExplorerMap(layer, layerType, state.wms, _.values(setting.data.map.explorer).length);
+            const service = layerType === "WMS" ? state.wms : state.wmts;
+            addExplorerMap(layer, layerType, service, _.values(setting.data.map.explorer).length);
           }
         }}
         color={_.has(setting.data.map.explorer, layer.Name) ? "error" : "primary"}>
         {_.has(setting.data.map.explorer, layer.Name) ? <Trash2 /> : <Plus />}
       </IconButton>
     );
+  }
+
+  function getWmsList() {
+    return state.wms.Capability.Layer.Layer.map((layer, idx) =>
+      state.searchWms === "" ||
+      (Object.prototype.hasOwnProperty.call(layer, "Title") &&
+        layer.Title.toLowerCase().search(state.searchWms) >= 0) ||
+      (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
+        layer.Abstract.toLowerCase().search(state.searchWms) >= 0) ||
+      (Object.prototype.hasOwnProperty.call(layer, "Name") && layer.Name.toLowerCase().search(state.searchWms) >= 0) ? (
+        <div
+          className="selectable unselectable"
+          key={"wmts-list-" + idx}
+          style={{
+            padding: "0.5em",
+          }}>
+          <div
+            style={{
+              fontWeight: "bold",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}>
+            <div
+              style={{
+                flex: 1,
+              }}>
+              <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Title} />
+            </div>
+            <div>{getIconButton(layer, "WMS")}</div>
+          </div>
+          <div
+            style={{
+              color: "#787878",
+              fontSize: "0.8em",
+            }}>
+            {layer.queryable === true ? (
+              <Popup
+                content="Queryable"
+                on="hover"
+                trigger={
+                  <Label
+                    circular
+                    color="green"
+                    empty
+                    size="tiny"
+                    style={{
+                      marginRight: "0.5em",
+                    }}
+                  />
+                }
+              />
+            ) : null}
+            <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Name} />
+          </div>
+          <div
+            style={{
+              fontSize: "0.8em",
+            }}>
+            <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Abstract} />
+          </div>
+        </div>
+      ) : null,
+    );
+  }
+
+  function getWmtsList() {
+    console.log(state.wmts);
+    return state.wmts.Contents.Layer.map((layer, idx) => {
+      return state.searchWmts === "" ||
+        (Object.prototype.hasOwnProperty.call(layer, "Title") &&
+          layer.Title.toLowerCase().search(state.searchWmts) >= 0) ||
+        (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
+          layer.Abstract.toLowerCase().search(state.searchWmts) >= 0) ||
+        (Object.prototype.hasOwnProperty.call(layer, "Identifier") &&
+          layer.Identifier.toLowerCase().search(state.searchWmts) >= 0) ? (
+        <div
+          className="selectable unselectable"
+          key={"wmts-list-" + idx}
+          style={{
+            padding: "0.5em",
+          }}>
+          <div
+            style={{
+              fontWeight: "bold",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}>
+            <div
+              style={{
+                flex: 1,
+              }}>
+              <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Title} />
+            </div>
+            <div>{getIconButton(layer, "WMTS")}</div>
+          </div>
+          <div
+            style={{
+              color: "#787878",
+              fontSize: "0.8em",
+            }}>
+            <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Identifier} />
+          </div>
+          <div
+            style={{
+              fontSize: "0.8em",
+            }}>
+            <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Abstract} />
+          </div>
+        </div>
+      ) : null;
+    });
+  }
+
+  function fetchCapabilitiesForService() {
+    fetch(setting.selectedWMS).then(response => {
+      response.text().then(data => {
+        // Check if WMS or WMTS
+        if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
+          const wms = new WMSCapabilities().read(data);
+          setState({
+            ...state,
+            wmsFetch: false,
+            wms: wms,
+            wmts: null,
+          });
+        } else if (/<Capabilities/.test(data)) {
+          const wmts = new WMTSCapabilities().read(data);
+          setState({
+            ...state,
+
+            wmsFetch: false,
+            wms: null,
+            wmts: wmts,
+          });
+        } else {
+          setState({
+            ...state,
+
+            wmsFetch: false,
+            wms: null,
+            wmts: null,
+          });
+          showAlert("Sorry, only Web Map Services (WMS) and " + "Web Map Tile Service (WMTS) are supported", "error");
+        }
+      });
+    });
   }
 
   return (
@@ -117,43 +265,7 @@ const MapSettings = props => {
                         wms: null,
                         wmts: null,
                       });
-
-                      //                    fetch(setting.selectedWMS).then(response => {
-                      //                             response.text().then(data => {
-                      getWms(i18n.language, setting.selectedWMS).then(response => {
-                        // Check if WMS or WMTS
-                        let data = response.data;
-                        if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
-                          const wms = new WMSCapabilities().read(data);
-                          setState({
-                            ...state,
-                            wmsFetch: false,
-                            wms: wms,
-                            wmts: null,
-                          });
-                        } else if (/<Capabilities/.test(data)) {
-                          const wmts = new WMTSCapabilities().read(data);
-                          setState({
-                            ...state,
-
-                            wmsFetch: false,
-                            wms: null,
-                            wmts: wmts,
-                          });
-                        } else {
-                          setState({
-                            ...state,
-
-                            wmsFetch: false,
-                            wms: null,
-                            wmts: null,
-                          });
-                          showAlert(
-                            "Sorry, only Web Map Services (WMS) and " + "Web Map Tile Service (WMTS) are supported",
-                            "error",
-                          );
-                        }
-                      });
+                      fetchCapabilitiesForService();
                     }}>
                     {state.wmsFetch ? <CircularProgress size={22} color="inherit" /> : t("load")}
                   </Button>
@@ -193,117 +305,8 @@ const MapSettings = props => {
                     border: state.wms === null && state.wmts === null ? null : "thin solid #cecece",
                     marginTop: state.wms === null && state.wmts === null ? null : "1em",
                   }}>
-                  {state.wms === null
-                    ? null
-                    : state.wms.Capability.Layer.Layer.map((layer, idx) =>
-                        state.searchWms === "" ||
-                        (Object.prototype.hasOwnProperty.call(layer, "Title") &&
-                          layer.Title.toLowerCase().search(state.searchWms) >= 0) ||
-                        (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
-                          layer.Abstract.toLowerCase().search(state.searchWms) >= 0) ||
-                        (Object.prototype.hasOwnProperty.call(layer, "Name") &&
-                          layer.Name.toLowerCase().search(state.searchWms) >= 0) ? (
-                          <div
-                            className="selectable unselectable"
-                            key={"wmts-list-" + idx}
-                            style={{
-                              padding: "0.5em",
-                            }}>
-                            <div
-                              style={{
-                                fontWeight: "bold",
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                              }}>
-                              <div
-                                style={{
-                                  flex: 1,
-                                }}>
-                                <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Title} />
-                              </div>
-                              <div>{getIconButton(layer, "WMS")}</div>
-                            </div>
-                            <div
-                              style={{
-                                color: "#787878",
-                                fontSize: "0.8em",
-                              }}>
-                              {layer.queryable === true ? (
-                                <Popup
-                                  content="Queryable"
-                                  on="hover"
-                                  trigger={
-                                    <Label
-                                      circular
-                                      color="green"
-                                      empty
-                                      size="tiny"
-                                      style={{
-                                        marginRight: "0.5em",
-                                      }}
-                                    />
-                                  }
-                                />
-                              ) : null}
-                              <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Name} />
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "0.8em",
-                              }}>
-                              <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Abstract} />
-                            </div>
-                          </div>
-                        ) : null,
-                      )}
-                  {state.wmts === null
-                    ? null
-                    : state.wmts.Contents.Layer.map((layer, idx) => {
-                        return state.searchWmts === "" ||
-                          (Object.prototype.hasOwnProperty.call(layer, "Title") &&
-                            layer.Title.toLowerCase().search(state.searchWmts) >= 0) ||
-                          (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
-                            layer.Abstract.toLowerCase().search(state.searchWmts) >= 0) ||
-                          (Object.prototype.hasOwnProperty.call(layer, "Identifier") &&
-                            layer.Identifier.toLowerCase().search(state.searchWmts) >= 0) ? (
-                          <div
-                            className="selectable unselectable"
-                            key={"wmts-list-" + idx}
-                            style={{
-                              padding: "0.5em",
-                            }}>
-                            <div
-                              style={{
-                                fontWeight: "bold",
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                              }}>
-                              <div
-                                style={{
-                                  flex: 1,
-                                }}>
-                                <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Title} />
-                              </div>
-                              <div>{getIconButton(layer, "WMTS")}</div>
-                            </div>
-                            <div
-                              style={{
-                                color: "#787878",
-                                fontSize: "0.8em",
-                              }}>
-                              <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Identifier} />
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "0.8em",
-                              }}>
-                              <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Abstract} />
-                            </div>
-                          </div>
-                        ) : null;
-                      })}
+                  {state.wms === null ? null : getWmsList()}
+                  {state.wmts === null ? null : getWmtsList()}
                 </div>
               </div>
               <div
