@@ -5,9 +5,11 @@ import { Button } from "@mui/material";
 import { Divider } from "semantic-ui-react";
 import _ from "lodash";
 import { register } from "ol/proj/proj4";
-import { optionsFromCapabilities } from "ol/source/WMTS";
+import { Options, optionsFromCapabilities } from "ol/source/WMTS";
 import proj4 from "proj4";
-import { patchCodeConfig, patchSettings } from "../../api-lib/index";
+import { patchCodeConfig, patchSettings } from "../../api-lib";
+import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
+import { useDomains } from "../../api/fetchApiV2";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import TranslationText from "../../components/legacyComponents/translationText.jsx";
@@ -18,6 +20,7 @@ import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
 import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData";
 import { locationEditorData } from "./data/locationEditorData";
 import { registrationEditorData } from "./data/registrationEditorData";
+import { Layer } from "./layerInterface.ts";
 
 const projections = {
   "EPSG:21781":
@@ -34,33 +37,34 @@ const EditorSettings = () => {
   const { showAlert } = useContext(AlertContext);
   const { i18n, t } = useTranslation();
 
-  const setting = useSelector(state => state.setting);
-  const codes = useSelector(state => state.core_domain_list);
+  const setting = useSelector((state: ReduxRootState) => state.setting);
+  const { data: domains } = useDomains();
 
   const dispatch = useDispatch();
-  const toggleFieldArray = (filter, enabled) => {
-    const newFilter = [];
+  const toggleFieldArray = (filter: string[], enabled: boolean) => {
+    const newFilter: string[] = [];
     filter.forEach(element => {
       newFilter.push(`fields.${element}`);
     });
     dispatch(patchCodeConfig(newFilter, enabled));
   };
 
-  const toggleFilterArray = (filter, enabled) => {
-    const newFilter = [];
+  const toggleFilterArray = (filter: string[], enabled: boolean) => {
+    const newFilter: string[] = [];
     filter.forEach(element => {
       newFilter.push(`efilter.${element}`);
     });
     dispatch(patchSettings(newFilter, enabled));
   };
 
-  const toggleField = (filter, enabled) => {
+  const toggleField = (filter: string, enabled: boolean) => {
     dispatch(patchCodeConfig(`fields.${filter}`, enabled));
   };
-  const toggleFilter = (filter, enabled) => {
+  const toggleFilter = (filter: string, enabled: boolean) => {
     dispatch(patchSettings(`efilter.${filter}`, enabled));
   };
-  const addExplorerMap = (layer, type, result, position = 0) => {
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  const addExplorerMap = (layer: Layer, type: "WMS" | "WMTS", result: any, position = 0) => {
     if (type === "WMS") {
       if (!layer.CRS.includes("EPSG:2056")) {
         showAlert("Only EPSG:2056 is supported", "error");
@@ -79,70 +83,55 @@ const EditorSettings = () => {
               visibility: true,
               queryable: layer.queryable,
             },
-            layer.Name,
+            // @ts-expect-error typing not complete
+            layer?.Name,
           ),
         );
       }
     } else if (type === "WMTS") {
-      const conf = optionsFromCapabilities(result, {
+      const conf: Options | null = optionsFromCapabilities(result, {
         layer: layer.Identifier,
       });
-      if (Object.prototype.hasOwnProperty.call(conf, "matrixSet") && !conf.matrixSet.includes("2056")) {
-        showAlert("Only EPSG:2056 is supported", "error");
-      } else {
-        dispatch(
-          patchSettings(
-            "map.explorer",
-            {
-              Identifier: layer.Identifier,
-              Abstract: layer.Abstract,
-              position: position,
-              Title: layer.Title,
-              transparency: 0,
-              type: "WMTS",
-              url: conf.urls,
-              visibility: true,
-              queryable: false,
-              conf: {
-                ...conf,
-                projection: {
-                  code: conf.projection.code_,
-                  units: conf.projection.units_,
-                  extent: conf.projection.extent_,
-                  axisOrientation: conf.projection.axisOrientation_,
-                  global: conf.projection.global_,
-                  metersPerUnit: conf.projection.metersPerUnit_,
-                  worldExtent: conf.projection.worldExtent_,
-                },
-                tileGrid: {
-                  extent: conf.tileGrid.extent_,
-                  origin: conf.tileGrid.origin_,
-                  origins: conf.tileGrid.origins_,
-                  resolutions: conf.tileGrid.resolutions_,
-                  matrixIds: conf.tileGrid.matrixIds_,
-                  tileSize: conf.tileGrid.tileSize_,
-                  tileSizes: conf.tileGrid.tileSizes_,
-                },
+      if (conf) {
+        if (Object.prototype.hasOwnProperty.call(conf, "matrixSet") && !conf.matrixSet.includes("2056")) {
+          showAlert("Only EPSG:2056 is supported", "error");
+        } else {
+          dispatch(
+            patchSettings(
+              "map.explorer",
+              {
+                Identifier: layer.Identifier,
+                Abstract: layer.Abstract,
+                position: position,
+                Title: layer.Title,
+                transparency: 0,
+                type: "WMTS",
+                url: conf.urls,
+                visibility: true,
+                queryable: false,
+                conf: conf,
               },
-            },
-            layer.Identifier,
-          ),
-        );
+              // @ts-expect-error typing not complete
+              layer?.Identifier,
+            ),
+          );
+        }
       }
     }
   };
 
-  const rmExplorerMap = config => {
+  const rmExplorerMap = (config: Layer) => {
+    // @ts-expect-error typing not complete
     dispatch(patchSettings("map.explorer", null, config.Identifier));
   };
 
-  const handleAddItem = value => {
+  const handleAddItem = (value: string) => {
     dispatch({
       type: "WMS_ADDED",
       url: value,
     });
   };
-  const handleOnChange = value => {
+  const handleOnChange = (value: string) => {
     dispatch({
       type: "WMS_SELECTED",
       url: value,
@@ -205,7 +194,7 @@ const EditorSettings = () => {
     wms: null,
   });
 
-  const handleButtonSelected = (name, isSelected) => {
+  const handleButtonSelected = (name: string, isSelected: boolean) => {
     let selectedData;
     if (name === "location" && isSelected) {
       selectedData = locationEditorData;
@@ -234,11 +223,11 @@ const EditorSettings = () => {
         i18n={i18n}
         rmExplorerMap={rmExplorerMap}
         addExplorerMap={addExplorerMap}
-        handleAddItem={value => {
+        handleAddItem={(value: string) => {
           setState({ ...state, wmsFetch: false, wms: null, wmts: null });
           handleAddItem(value);
         }}
-        handleOnChange={value => {
+        handleOnChange={(value: string) => {
           setState({ ...state, wmsFetch: false, wms: null, wmts: null });
           handleOnChange(value);
         }}
@@ -276,13 +265,13 @@ const EditorSettings = () => {
                 flex: 1,
                 textAlign: "right",
               }}>
-              <Button variant="outlined">{filter.isSelected === true ? t("collapse") : t("expand")}</Button>
+              <Button variant="outlined">{filter.isSelected ? t("collapse") : t("expand")}</Button>
             </div>
           </div>
-          {filter.isSelected === true && handleButtonSelected(filter.name, filter.isSelected) !== null ? (
+          {filter.isSelected && handleButtonSelected(filter.name, filter.isSelected) !== null ? (
             <EditorSettingList
               attribute={handleButtonSelected(filter.name, filter.isSelected)}
-              codes={codes}
+              codes={domains}
               data={setting.data.efilter}
               geocode={"Geol"}
               listName={filter.name}
