@@ -337,7 +337,7 @@ public class BoreholeControllerTest
             .Where(b =>
                 b.Stratigraphies != null &&
                 b.Stratigraphies.Any() &&
-b.Stratigraphies.First().Layers != null &&
+                b.Stratigraphies.First().Layers != null &&
                 b.Stratigraphies.First().Layers.Any(x => x.LayerColorCodes != null && x.LayerColorCodes.Any()) &&
                 b.Stratigraphies.First().Layers.Any(x => x.LayerGrainShapeCodes != null && x.LayerGrainShapeCodes.Any()) &&
                 b.Stratigraphies.First().Layers.Any(x => x.LayerUscs3Codes != null && x.LayerUscs3Codes.Any()) &&
