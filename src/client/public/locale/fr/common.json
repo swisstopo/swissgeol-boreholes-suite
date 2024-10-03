@@ -174,7 +174,6 @@
   "errorMissingBedrockSolution": "Reprendre automatiquement la profondeur du toit du rocher à partir de la page des données de forage",
   "errorOverlap": "Des couches se recouvrent",
   "errorStartEditing": "Veuillez appuyer sur le bouton 'Commencer l'édition'",
-  "errorStartEditingWrongStatus": "Forage avec le statut {{status}} non modifiable",
   "errorStartWrong": "La première couche ne débute pas au niveau de la référence altitudinale",
   "errorToDepthTooHigh": "de la profondeur est trop élevée",
   "errorWrongDepth": "Profondeur finale erronée",

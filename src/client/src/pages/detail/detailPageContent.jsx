@@ -108,12 +108,6 @@ class DetailPageContent extends React.Component {
   checkLock() {
     const { t, editingEnabled, editableByCurrentUser } = this.props;
     if (this.props.borehole.data.role !== "EDIT") {
-      this.context.showAlert(
-        t("common:errorStartEditingWrongStatus", {
-          status: this.props.borehole.data.role,
-        }),
-        "error",
-      );
       return false;
     }
     if (!editingEnabled) {
