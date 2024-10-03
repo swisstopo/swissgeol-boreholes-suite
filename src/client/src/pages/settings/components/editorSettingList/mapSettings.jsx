@@ -39,6 +39,7 @@ const MapSettings = props => {
       <div
         onClick={() => {
           setState({
+            ...state,
             map: !state.map,
           });
         }}
@@ -110,44 +111,49 @@ const MapSettings = props => {
                     sx={{ height: "37px", width: "80px" }}
                     variant="contained"
                     onClick={() => {
-                      setState(
-                        {
-                          wmsFetch: true,
-                          wms: null,
-                          wmts: null,
-                        },
-                        () => {
-                          getWms(i18n.language, setting.selectedWMS).then(response => {
-                            // Check if WMS or WMTS
-                            let data = response.data;
-                            if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
-                              const wms = new WMSCapabilities().read(data);
-                              setState({
-                                wmsFetch: false,
-                                wms: wms,
-                                wmts: null,
-                              });
-                            } else if (/<Capabilities/.test(data)) {
-                              const wmts = new WMTSCapabilities().read(data);
-                              setState({
-                                wmsFetch: false,
-                                wms: null,
-                                wmts: wmts,
-                              });
-                            } else {
-                              setState({
-                                wmsFetch: false,
-                                wms: null,
-                                wmts: null,
-                              });
-                              showAlert(
-                                "Sorry, only Web Map Services (WMS) and " + "Web Map Tile Service (WMTS) are supported",
-                                "error",
-                              );
-                            }
+                      setState({
+                        ...state,
+                        wmsFetch: true,
+                        wms: null,
+                        wmts: null,
+                      });
+
+                      //                    fetch(setting.selectedWMS).then(response => {
+                      //                             response.text().then(data => {
+                      getWms(i18n.language, setting.selectedWMS).then(response => {
+                        // Check if WMS or WMTS
+                        let data = response.data;
+                        if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
+                          const wms = new WMSCapabilities().read(data);
+                          setState({
+                            ...state,
+                            wmsFetch: false,
+                            wms: wms,
+                            wmts: null,
                           });
-                        },
-                      );
+                        } else if (/<Capabilities/.test(data)) {
+                          const wmts = new WMTSCapabilities().read(data);
+                          setState({
+                            ...state,
+
+                            wmsFetch: false,
+                            wms: null,
+                            wmts: wmts,
+                          });
+                        } else {
+                          setState({
+                            ...state,
+
+                            wmsFetch: false,
+                            wms: null,
+                            wmts: null,
+                          });
+                          showAlert(
+                            "Sorry, only Web Map Services (WMS) and " + "Web Map Tile Service (WMTS) are supported",
+                            "error",
+                          );
+                        }
+                      });
                     }}>
                     {state.wmsFetch ? <CircularProgress size={22} color="inherit" /> : t("load")}
                   </Button>
@@ -158,6 +164,7 @@ const MapSettings = props => {
                       icon="search"
                       onChange={e => {
                         setState({
+                          ...state,
                           searchWmts: e.target.value.toLowerCase(),
                         });
                       }}
@@ -171,6 +178,7 @@ const MapSettings = props => {
                       icon="search"
                       onChange={e => {
                         setState({
+                          ...state,
                           searchWms: e.target.value.toLowerCase(),
                         });
                       }}
@@ -321,6 +329,7 @@ const MapSettings = props => {
                       icon="search"
                       onChange={e => {
                         setState({
+                          ...state,
                           searchWmtsUser: e.target.value.toLowerCase(),
                         });
                       }}
