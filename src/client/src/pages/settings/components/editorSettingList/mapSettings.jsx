@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import Highlighter from "react-highlight-words";
 import { useTranslation } from "react-i18next";
-import { Button, CircularProgress, IconButton } from "@mui/material";
+import { Button, CircularProgress, IconButton, Stack } from "@mui/material";
 import { Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
 import { Plus, Trash2 } from "lucide-react";
 import _ from "lodash";
@@ -19,6 +19,7 @@ const MapSettings = props => {
     return (
       <IconButton
         size="small"
+        data-cy="add-layer-button"
         onClick={e => {
           e.stopPropagation();
           if (_.has(setting.data.map.explorer, layerType === "WMS" ? layer.Name : layer.identifier)) {
@@ -48,12 +49,12 @@ const MapSettings = props => {
           style={{
             padding: "0.5em",
           }}>
-          <div
-            style={{
+          <Stack
+            data-cy="wms-list-box"
+            direction="row"
+            alignItems="center"
+            sx={{
               fontWeight: "bold",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
             }}>
             <div
               style={{
@@ -62,7 +63,7 @@ const MapSettings = props => {
               <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Title} />
             </div>
             <div>{getIconButton(layer, "WMS")}</div>
-          </div>
+          </Stack>
           <div
             style={{
               color: "#787878",
@@ -114,12 +115,12 @@ const MapSettings = props => {
           style={{
             padding: "0.5em",
           }}>
-          <div
-            style={{
+          <Stack
+            data-cy="wmts-list-box"
+            direction="row"
+            alignItems="center"
+            sx={{
               fontWeight: "bold",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
             }}>
             <div
               style={{
@@ -128,7 +129,7 @@ const MapSettings = props => {
               <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Title} />
             </div>
             <div>{getIconButton(layer, "WMTS")}</div>
-          </div>
+          </Stack>
           <div
             style={{
               color: "#787878",
@@ -148,7 +149,9 @@ const MapSettings = props => {
   }
 
   function fetchCapabilitiesForService() {
-    fetch(setting.selectedWMS).then(response => {
+    const isWms = setting.selectedWMS.startsWith("https://wms");
+    const languageParam = `${isWms ? "&lang=" : "?lang="}${i18n.language}`;
+    fetch(setting.selectedWMS + languageParam).then(response => {
       response.text().then(data => {
         // Check if WMS or WMTS
         if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
@@ -163,7 +166,6 @@ const MapSettings = props => {
           const wmts = new WMTSCapabilities().read(data);
           setState({
             ...state,
-
             wmsFetch: false,
             wms: null,
             wmts: wmts,
@@ -171,7 +173,6 @@ const MapSettings = props => {
         } else {
           setState({
             ...state,
-
             wmsFetch: false,
             wms: null,
             wmts: null,
@@ -258,6 +259,7 @@ const MapSettings = props => {
                   <Button
                     sx={{ height: "37px", width: "80px" }}
                     variant="contained"
+                    data-cy="load-layers-button"
                     onClick={() => {
                       setState({
                         ...state,
@@ -370,12 +372,12 @@ const MapSettings = props => {
                           style={{
                             padding: "0.5em",
                           }}>
-                          <div
-                            style={{
+                          <Stack
+                            data-cy="maps-for-user-box"
+                            direction="row"
+                            alignItems="center"
+                            sx={{
                               fontWeight: "bold",
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
                             }}>
                             <div
                               style={{
@@ -385,6 +387,7 @@ const MapSettings = props => {
                             </div>
                             <div>
                               <IconButton
+                                data-cy="delete-user-map-button"
                                 onClick={e => {
                                   e.stopPropagation();
                                   if (_.has(setting.data.map.explorer, layer.Identifier)) {
@@ -395,7 +398,7 @@ const MapSettings = props => {
                                 <Trash2 />
                               </IconButton>
                             </div>
-                          </div>
+                          </Stack>
                           <div
                             style={{
                               color: "#787878",
