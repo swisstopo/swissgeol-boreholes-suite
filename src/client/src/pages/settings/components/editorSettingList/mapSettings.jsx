@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { useTranslation } from "react-i18next";
 import { Button, CircularProgress, IconButton, Stack } from "@mui/material";
@@ -14,6 +14,11 @@ const MapSettings = props => {
   const { showAlert } = useContext(AlertContext);
   const { setting, i18n, rmExplorerMap, addExplorerMap, handleAddItem, handleOnChange, state, setState } = props;
   const { t } = useTranslation();
+  const [mapSettings, setMapSettings] = useState(setting.data.map.explorer);
+
+  useEffect(() => {
+    setMapSettings(setting.data.map.explorer);
+  }, [setting.data.map.explorer]);
 
   function getIconButton(layer, layerType) {
     return (
@@ -22,15 +27,15 @@ const MapSettings = props => {
         data-cy="add-layer-button"
         onClick={e => {
           e.stopPropagation();
-          if (_.has(setting.data.map.explorer, layerType === "WMS" ? layer.Name : layer.identifier)) {
+          if (_.has(mapSettings, layerType === "WMS" ? layer.Name : layer.identifier)) {
             rmExplorerMap(layer);
           } else {
             const service = layerType === "WMS" ? state.wms : state.wmts;
-            addExplorerMap(layer, layerType, service, _.values(setting.data.map.explorer).length);
+            addExplorerMap(layer, layerType, service, _.values(mapSettings).length);
           }
         }}
-        color={_.has(setting.data.map.explorer, layer.Name) ? "error" : "primary"}>
-        {_.has(setting.data.map.explorer, layer.Name) ? <Trash2 /> : <Plus />}
+        color={_.has(mapSettings, layer.Name) ? "error" : "primary"}>
+        {_.has(mapSettings, layer.Name) ? <Trash2 /> : <Plus />}
       </IconButton>
     );
   }
@@ -349,7 +354,7 @@ const MapSettings = props => {
                     flex: "1 1 100%",
                     border: "thin solid #cecece",
                   }}>
-                  {_.values(setting.data.map.explorer)
+                  {_.values(mapSettings)
                     .sort((a, b) => {
                       if (a.position < b.position) {
                         return 1;
@@ -390,7 +395,7 @@ const MapSettings = props => {
                                 data-cy="delete-user-map-button"
                                 onClick={e => {
                                   e.stopPropagation();
-                                  if (_.has(setting.data.map.explorer, layer.Identifier)) {
+                                  if (_.has(mapSettings, layer.Identifier)) {
                                     rmExplorerMap(layer);
                                   }
                                 }}

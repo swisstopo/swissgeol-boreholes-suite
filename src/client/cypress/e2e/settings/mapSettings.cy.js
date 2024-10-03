@@ -11,7 +11,9 @@ describe("map settings", () => {
     // Add WMS
     cy.get('[data-cy="load-layers-button"]').click();
     cy.get('[data-cy="wms-list-box"]').contains(wmsName);
+    cy.get('[data-cy="maps-for-user-box"]').should("not.exist");
     cy.get('[data-cy="add-layer-button"]').eq(1).click();
+    cy.wait("@setting");
     cy.get('[data-cy="maps-for-user-box"]').contains(wmsName);
 
     // Select WMTS from Dropdown
@@ -22,6 +24,7 @@ describe("map settings", () => {
     cy.get('[data-cy="load-layers-button"]').click();
     cy.get('[data-cy="wmts-list-box"]').contains(wmtsName);
     cy.get('[data-cy="add-layer-button"]').first().click();
+    cy.wait("@setting");
     cy.get('[data-cy="maps-for-user-box"]').contains(wmtsName);
 
     // Verify layers are added to overview map
@@ -36,11 +39,13 @@ describe("map settings", () => {
     cy.get('[data-cy="maps-for-user-box"]').contains(wmtsName);
     cy.get('[data-cy="maps-for-user-box"]').contains(wmsName);
     cy.get('[data-cy="delete-user-map-button"]').eq(0).click();
+    cy.wait("@setting");
+    cy.wait("@setting");
+    cy.wait("@setting"); //¯\_(ツ)_/¯
+
     cy.get('[data-cy="maps-for-user-box"]').should("not.contain", wmtsName);
-    cy.wait("@setting");
-    cy.wait("@setting");
 
     cy.get('[data-cy="delete-user-map-button"]').eq(0).click();
-    cy.get('[data-cy="maps-for-user-box"]').should("not.contain", wmsName);
+    cy.get('[data-cy="maps-for-user-box"]').should("not.exist");
   });
 });
