@@ -38,10 +38,10 @@ describe("Tests for 'Location' edit page.", () => {
     createBorehole({ "extended.original_name": "PHOTOSQUIRREL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
-      cy.get('[data-cy="original-name"]').within(() => {
+      cy.get('[data-cy="original_name-formInput"]').within(() => {
         cy.get("input").as("originalNameInput");
       });
-      cy.get('[data-cy="alternate-name"]').within(() => {
+      cy.get('[data-cy="alternate_name-formInput"]').within(() => {
         cy.get("input").as("alternateNameInput");
       });
 

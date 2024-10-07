@@ -1,24 +1,20 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Card } from "@mui/material";
-import { Form, Input } from "semantic-ui-react";
-import { Borehole, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
+import { FormContainer } from "../../../../components/form/form.ts";
+import { SimpleFormInput } from "../../../../components/form/simpleFormInput.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 
 interface NameSegmentProps {
   borehole: Borehole;
   updateChange: (key: string, value: string) => void;
-  user: User;
+  editingEnabled: boolean;
 }
 
-const NameSegment = ({ borehole, updateChange, user }: NameSegmentProps) => {
+const NameSegment = ({ borehole, updateChange, editingEnabled }: NameSegmentProps) => {
   const [alternateName, setAlternateName] = useState("");
-  const { t } = useTranslation();
   const auth = useAuth();
-
-  const isEditable =
-    borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   useEffect(() => {
     setAlternateName(borehole.data.custom.alternate_name || borehole.data.extended.original_name);
@@ -27,61 +23,42 @@ const NameSegment = ({ borehole, updateChange, user }: NameSegmentProps) => {
   return (
     <Card>
       <FormSegmentBox>
-        <Form autoComplete="off" error>
-          <Form.Group widths="equal">
+        <FormContainer>
+          <FormContainer direction="row">
+            <SimpleFormInput
+              label={"alternate_name"}
+              readonly={!editingEnabled}
+              value={alternateName}
+              onUpdate={e => {
+                setAlternateName(e);
+                updateChange("custom.alternate_name", e);
+              }}
+            />
+
+            <SimpleFormInput
+              label={"project_name"}
+              value={borehole?.data?.custom.project_name || ""}
+              readonly={!editingEnabled}
+              onUpdate={e => {
+                updateChange("custom.project_name", e);
+              }}
+            />
+          </FormContainer>
+          <FormContainer direction="row">
             {!auth.anonymousModeEnabled && (
-              <Form.Field error={borehole.data.extended.original_name === ""} required>
-                <label>{t("original_name")}</label>
-                <Input
-                  data-cy="original-name"
-                  autoCapitalize="off"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  onChange={e => {
-                    setAlternateName(e.target.value);
-                    updateChange("extended.original_name", e.target.value);
-                    updateChange("custom.alternate_name", e.target.value);
-                  }}
-                  spellCheck="false"
-                  value={borehole.data.extended.original_name ?? ""}
-                  readOnly={!isEditable}
-                />
-              </Form.Field>
+              <SimpleFormInput
+                label={"original_name"}
+                value={borehole?.data?.extended.original_name || ""}
+                readonly={!editingEnabled}
+                onUpdate={e => {
+                  setAlternateName(e);
+                  updateChange("extended.original_name", e);
+                  updateChange("custom.alternate_name", e);
+                }}
+              />
             )}
-            <Form.Field>
-              <label>{t("project_name")}</label>
-              <Input
-                autoCapitalize="off"
-                autoComplete="off"
-                autoCorrect="off"
-                onChange={e => {
-                  updateChange("custom.project_name", e.target.value);
-                }}
-                spellCheck="false"
-                value={borehole.data.custom.project_name ?? ""}
-                readOnly={!isEditable}
-              />
-            </Form.Field>
-          </Form.Group>
-          <Form.Group widths="equal">
-            <Form.Field>
-              <label>{t("alternate_name")}</label>
-              <Input
-                data-cy="alternate-name"
-                autoCapitalize="off"
-                autoComplete="off"
-                autoCorrect="off"
-                onChange={e => {
-                  setAlternateName(e.target.value);
-                  updateChange("custom.alternate_name", e.target.value);
-                }}
-                spellCheck="false"
-                value={alternateName}
-                readOnly={!isEditable}
-              />
-            </Form.Field>
-          </Form.Group>
-        </Form>
+          </FormContainer>
+        </FormContainer>
       </FormSegmentBox>
     </Card>
   );
