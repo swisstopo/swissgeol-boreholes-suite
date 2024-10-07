@@ -14,7 +14,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { ChevronDownIcon, X } from "lucide-react";
+import { ChevronDownIcon, RotateCcw } from "lucide-react";
 import { patchBoreholes } from "../../../api-lib";
 import { ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -229,7 +229,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
                             e.stopPropagation();
                             undoChange(field);
                           }}>
-                          <X fontSize="small" color={theme.palette.primary.main} />
+                          <RotateCcw fontSize="small" color={theme.palette.primary.main} />
                         </IconButton>
                         <Typography variant="h6" sx={{ color: "black" }}>
                           {t(field.fieldName)}
