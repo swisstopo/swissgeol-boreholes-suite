@@ -65,6 +65,9 @@ describe("Test for the borehole form.", () => {
     sortBy("Name");
     clickOnRowWithText("Zena Rath");
 
+    evaluateInput("original_name", "Zena Rath");
+    evaluateInput("alternate_name", "Zena Rath");
+    evaluateInput("project_name", "Reactive asymmetric alliance");
     evaluateSelect("restriction", "");
     evaluateSelect("national_interest", "0"); // No
     evaluateSelect("spatial_reference_system", "20104002"); // LV03
@@ -78,6 +81,9 @@ describe("Test for the borehole form.", () => {
 
     returnToOverview();
     clickOnRowWithText("Zena Mraz");
+    evaluateInput("original_name", "Zena Mraz");
+    evaluateInput("alternate_name", "Zena Mraz");
+    evaluateInput("project_name", "Ergonomic heuristic installation");
     evaluateSelect("restriction", "");
     evaluateSelect("national_interest", "1"); // Yes
     evaluateSelect("spatial_reference_system", "20104002"); // LV03

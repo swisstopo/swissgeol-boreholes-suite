@@ -30,7 +30,6 @@ class DetailPageContent extends React.Component {
 
   constructor(props) {
     super(props);
-    this.checkattribute = false;
     this.updateAttributeDelay = {};
     this.state = {
       tab: 0,
@@ -286,7 +285,10 @@ class DetailPageContent extends React.Component {
                         setState={this.setStateBound}
                         updateBorehole={this.props.updateBorehole}
                         user={user}></IdentifierSegment>
-                      <NameSegment borehole={borehole} updateChange={this.updateChange} user={user}></NameSegment>
+                      <NameSegment
+                        borehole={borehole}
+                        updateChange={this.updateChange}
+                        editingEnabled={editingEnabled}></NameSegment>
                       <RestrictionSegment
                         borehole={borehole}
                         updateChange={this.updateChange}
