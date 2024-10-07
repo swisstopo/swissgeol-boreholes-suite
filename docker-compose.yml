@@ -115,6 +115,7 @@ services:
       DOTNET_USE_POLLING_FILE_WATCHER: 1
       CONNECTIONSTRINGS__BdmsContext: Host=localhost;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms;CommandTimeout=300
       ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address: "http://localhost:8888/"
+      ReverseProxy__Clusters__dataExtractionApi__Destinations__dataExtractionApi__Address: "http://localhost:8000/"
       Auth__Authority: http://localhost:4011
       Auth__Audience: "bdms-client"
       Auth__GroupClaimType: "local_groups_claim"
@@ -124,6 +125,18 @@ services:
       S3__SECURE: 1
     extra_hosts:
       - "localhost:host-gateway"
+  dataextraction:
+    image: ghcr.io/swisstopo/swissgeol-boreholes-dataextraction-api:edge
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    environment:
+      AWS_ENDPOINT: http://minio:9000
+      AWS_ACCESS_KEY_ID: REDSQUIRREL
+      AWS_SECRET_ACCESS_KEY: YELLOWMONKEY
+      AWS_S3_BUCKET: "cannonflea"
+    healthcheck:
+      test: "curl --fail http://localhost:8000/health || exit 1"
   oidc-server:
     image: soluto/oidc-server-mock
     restart: unless-stopped
