@@ -312,8 +312,8 @@ const MapSettings = props => {
                     border: state.wms === null && state.wmts === null ? null : "thin solid #cecece",
                     marginTop: state.wms === null && state.wmts === null ? null : "1em",
                   }}>
-                  {state.wms === null ? null : getWmsList()}
-                  {state.wmts === null ? null : getWmtsList()}
+                  {state.wms && getWmsList()}
+                  {state.wmts && getWmtsList()}
                 </div>
               </div>
               <div
