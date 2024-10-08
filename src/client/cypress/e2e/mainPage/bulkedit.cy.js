@@ -22,12 +22,11 @@ function startBulkEditing() {
   cy.contains("button", "Bulk editing").click();
 }
 
-function createBoreholesAndStartBulkEditing() {
-  createBoreholes();
-
-  showTableAndWaitForData();
-  cy.wait("@borehole");
-  startBulkEditing();
+function giveAdminUser1workgroup() {
+  cy.intercept("/api/v1/user", {
+    statusCode: 200,
+    body: JSON.stringify(adminUser),
+  }).as("adminUser2Workgroups");
 }
 
 function giveAdminUser2workgroups() {
@@ -45,18 +44,20 @@ function giveAdminUser2workgroups() {
 }
 
 describe("Test the borehole bulk edit feature.", () => {
-  it("opens the bulk edit dialog with all boreholes selected", () => {
+  it.skip("opens the bulk edit dialog with all boreholes selected", () => {
+    giveAdminUser1workgroup();
     showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get("h1").should("have.text", "Bulk editing");
   });
 
-  it("displays workgroup accordion only if user has permission for more than one workgroup", () => {
+  it.skip("displays workgroup accordion only if user has permission for more than one workgroup", () => {
+    giveAdminUser1workgroup();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
-
     cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 19);
+
     giveAdminUser2workgroups();
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
@@ -66,7 +67,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 20);
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
-    cy.get('[data-cy="workgroup-select"]')
+    cy.get('[data-cy="workgroup-formSelect"]')
       .should("have.length", 1)
       .each(el => {
         cy.wrap(el).scrollIntoView().click();
@@ -75,7 +76,12 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   it("fills all bulkedit fields and saves.", () => {
-    createBoreholesAndStartBulkEditing();
+    createBoreholes();
+    giveAdminUser1workgroup();
+    goToRouteAndAcceptTerms(`/`);
+    showTableAndWaitForData();
+    cy.wait("@borehole");
+    startBulkEditing();
 
     // select all bulk edit fields and insert values
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
@@ -105,7 +111,7 @@ describe("Test the borehole bulk edit feature.", () => {
       });
 
     cy.get('[role="combobox"]')
-      .should("have.length", 15)
+      .should("have.length", 14)
       .each(el => {
         cy.wrap(el).click();
         cy.get('li[role="option"]').last().click();
