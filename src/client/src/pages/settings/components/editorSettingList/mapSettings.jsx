@@ -40,22 +40,22 @@ const MapSettings = props => {
     );
   }
 
-  function getWmsList() {
-    return state.wms.Capability.Layer.Layer.map((layer, idx) =>
-      state.searchWms === "" ||
-      (Object.prototype.hasOwnProperty.call(layer, "Title") &&
-        layer.Title.toLowerCase().search(state.searchWms) >= 0) ||
-      (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
-        layer.Abstract.toLowerCase().search(state.searchWms) >= 0) ||
-      (Object.prototype.hasOwnProperty.call(layer, "Name") && layer.Name.toLowerCase().search(state.searchWms) >= 0) ? (
+  function getLayerList(layers, search, layerType) {
+    return layers.map((layer, idx) => {
+      const identifier = layerType === "WMS" ? layer.Name : layer.Identifier;
+
+      return search === "" ||
+        (Object.prototype.hasOwnProperty.call(layer, "Title") && layer.Title.toLowerCase().search(search) >= 0) ||
+        (Object.prototype.hasOwnProperty.call(layer, "Abstract") && layer.Abstract.toLowerCase().search(search) >= 0) ||
+        (Object.prototype.hasOwnProperty.call(layer, "Name") && identifier.toLowerCase().search(search) >= 0) ? (
         <div
           className="selectable unselectable"
-          key={"wmts-list-" + idx}
+          key={`${layerType.toLowerCase()}-list-${idx}`}
           style={{
             padding: "0.5em",
           }}>
           <Stack
-            data-cy="wms-list-box"
+            data-cy={`${layerType.toLowerCase()}-list-box`}
             direction="row"
             alignItems="center"
             sx={{
@@ -65,16 +65,16 @@ const MapSettings = props => {
               style={{
                 flex: 1,
               }}>
-              <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Title} />
+              <Highlighter searchWords={[search]} textToHighlight={layer.Title} />
             </div>
-            <div>{getIconButton(layer, "WMS")}</div>
+            <div>{getIconButton(layer, layerType)}</div>
           </Stack>
           <div
             style={{
               color: "#787878",
               fontSize: "0.8em",
             }}>
-            {layer.queryable === true ? (
+            {layer.queryable === true && layerType === "WMS" ? (
               <Popup
                 content="Queryable"
                 on="hover"
@@ -91,61 +91,13 @@ const MapSettings = props => {
                 }
               />
             ) : null}
-            <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Name} />
+            <Highlighter searchWords={[search]} textToHighlight={identifier} />
           </div>
           <div
             style={{
               fontSize: "0.8em",
             }}>
-            <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Abstract} />
-          </div>
-        </div>
-      ) : null,
-    );
-  }
-
-  function getWmtsList() {
-    return state.wmts.Contents.Layer.map((layer, idx) => {
-      return state.searchWmts === "" ||
-        (Object.prototype.hasOwnProperty.call(layer, "Title") &&
-          layer.Title.toLowerCase().search(state.searchWmts) >= 0) ||
-        (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
-          layer.Abstract.toLowerCase().search(state.searchWmts) >= 0) ||
-        (Object.prototype.hasOwnProperty.call(layer, "Identifier") &&
-          layer.Identifier.toLowerCase().search(state.searchWmts) >= 0) ? (
-        <div
-          className="selectable unselectable"
-          key={"wmts-list-" + idx}
-          style={{
-            padding: "0.5em",
-          }}>
-          <Stack
-            data-cy="wmts-list-box"
-            direction="row"
-            alignItems="center"
-            sx={{
-              fontWeight: "bold",
-            }}>
-            <div
-              style={{
-                flex: 1,
-              }}>
-              <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Title} />
-            </div>
-            <div>{getIconButton(layer, "WMTS")}</div>
-          </Stack>
-          <div
-            style={{
-              color: "#787878",
-              fontSize: "0.8em",
-            }}>
-            <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Identifier} />
-          </div>
-          <div
-            style={{
-              fontSize: "0.8em",
-            }}>
-            <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Abstract} />
+            <Highlighter searchWords={[search]} textToHighlight={layer.Abstract} />
           </div>
         </div>
       ) : null;
@@ -321,8 +273,8 @@ const MapSettings = props => {
                     border: state.wms === null && state.wmts === null ? null : "thin solid #cecece",
                     marginTop: state.wms === null && state.wmts === null ? null : "1em",
                   }}>
-                  {state.wms && getWmsList()}
-                  {state.wmts && getWmtsList()}
+                  {state.wms && getLayerList(state.wms.Capability.Layer.Layer, state.searchWms, "WMS")}
+                  {state.wmts && getLayerList(state.wmts.Contents.Layer, state.searchWmts, "WMTS")}
                 </div>
               </div>
               <div
