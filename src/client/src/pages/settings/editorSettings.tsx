@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@mui/material";
@@ -63,30 +63,43 @@ const EditorSettings = () => {
   const toggleFilter = (filter: string, enabled: boolean) => {
     dispatch(patchSettings(`efilter.${filter}`, enabled));
   };
+
+  const dispatchMapSettings = (
+    layer: Layer,
+    type: "WMS" | "WMTS",
+    url: string | undefined,
+    conf: Options | null,
+    position: number,
+    queryable: boolean,
+  ) => {
+    dispatch(
+      patchSettings(
+        "map.explorer",
+        {
+          Identifier: layer.Identifier,
+          Abstract: layer.Abstract,
+          position: position,
+          Title: layer.Title,
+          transparency: 0,
+          type: type,
+          url: url,
+          visibility: true,
+          queryable: queryable,
+          conf: conf,
+        },
+        // @ts-expect-error typing not complete
+        type === "WMTS" ? layer?.Identifier : layer?.Name,
+      ),
+    );
+  };
+
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   const addExplorerMap = (layer: Layer, type: "WMS" | "WMTS", result: any, position = 0) => {
     if (type === "WMS") {
       if (!layer.CRS.includes("EPSG:2056")) {
-        showAlert("Only EPSG:2056 is supported", "error");
+        showAlert(t("onlyEPSG2056Supported"), "error");
       } else {
-        dispatch(
-          patchSettings(
-            "map.explorer",
-            {
-              Identifier: layer.Name,
-              Abstract: layer.Abstract,
-              position: position,
-              Title: layer.Title,
-              transparency: 0,
-              type: "WMS",
-              url: result.Service.OnlineResource,
-              visibility: true,
-              queryable: layer.queryable,
-            },
-            // @ts-expect-error typing not complete
-            layer?.Name,
-          ),
-        );
+        dispatchMapSettings(layer, type, result.Service.OnlineResource, null, position, layer.queryable);
       }
     } else if (type === "WMTS") {
       const conf: Options | null = optionsFromCapabilities(result, {
@@ -94,27 +107,9 @@ const EditorSettings = () => {
       });
       if (conf) {
         if (Object.prototype.hasOwnProperty.call(conf, "matrixSet") && !conf.matrixSet.includes("2056")) {
-          showAlert("Only EPSG:2056 is supported", "error");
+          showAlert(t("onlyEPSG2056Supported"), "error");
         } else {
-          dispatch(
-            patchSettings(
-              "map.explorer",
-              {
-                Identifier: layer.Identifier,
-                Abstract: layer.Abstract,
-                position: position,
-                Title: layer.Title,
-                transparency: 0,
-                type: "WMTS",
-                url: conf.urls,
-                visibility: true,
-                queryable: false,
-                conf: conf,
-              },
-              // @ts-expect-error typing not complete
-              layer?.Identifier,
-            ),
-          );
+          dispatchMapSettings(layer, type, conf.urls?.[0], conf, position, false);
         }
       }
     }
@@ -142,7 +137,7 @@ const EditorSettings = () => {
     proj4.defs(srs, proj);
   });
   register(proj4);
-  const [searchList, setSearchList] = React.useState([
+  const [searchList, setSearchList] = useState([
     {
       id: 0,
       name: "location",
@@ -175,7 +170,7 @@ const EditorSettings = () => {
       isSelected: false,
     },
   ]);
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     fields: false,
     identifiers: false,
     codeLists: false,
@@ -273,13 +268,11 @@ const EditorSettings = () => {
               attribute={handleButtonSelected(filter.name, filter.isSelected)}
               codes={domains}
               data={setting.data.efilter}
-              geocode={"Geol"}
               listName={filter.name}
               toggleField={toggleField}
               toggleFilter={toggleFilter}
               toggleFieldArray={toggleFieldArray}
               toggleFilterArray={toggleFilterArray}
-              type={"editor"}
             />
           ) : (
             <Divider style={{ margin: 0 }} />

@@ -182,7 +182,7 @@ const MapSettings = props => {
             wms: null,
             wmts: null,
           });
-          showAlert("Sorry, only Web Map Services (WMS) and " + "Web Map Tile Service (WMTS) are supported", "error");
+          showAlert(t("onlyWmsAndWmtsSupported"), "error");
         }
       });
     });
