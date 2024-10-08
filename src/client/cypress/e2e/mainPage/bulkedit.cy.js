@@ -117,7 +117,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.wait("@edit_list");
   });
 
-  it.only("can reset bulkedit fields", () => {
+  it("can reset bulkedit fields", () => {
     createBoreholes();
     giveAdminUser2workgroups();
     goToRouteAndAcceptTerms(`/`);
