@@ -105,7 +105,6 @@ const MapSettings = props => {
   }
 
   function getWmtsList() {
-    console.log(state.wmts);
     return state.wmts.Contents.Layer.map((layer, idx) => {
       return state.searchWmts === "" ||
         (Object.prototype.hasOwnProperty.call(layer, "Title") &&
@@ -187,6 +186,16 @@ const MapSettings = props => {
       });
     });
   }
+
+  const filterBySearchTerm = (layer, search) => {
+    if (!search) return true;
+    const searchLower = search.toLowerCase();
+    return (
+      (layer.Title && layer.Title.toLowerCase().includes(searchLower)) ||
+      (layer.Abstract && layer.Abstract.toLowerCase().includes(searchLower)) ||
+      (layer.Identifier && layer.Identifier.toLowerCase().includes(searchLower))
+    );
+  };
 
   return (
     <>
@@ -354,26 +363,12 @@ const MapSettings = props => {
                     flex: "1 1 100%",
                     border: "thin solid #cecece",
                   }}>
-                  {_.values(mapSettings)
-                    .sort((a, b) => {
-                      if (a.position < b.position) {
-                        return 1;
-                      } else if (a.position > b.position) {
-                        return -1;
-                      }
-                      return 0;
-                    })
-                    .map((layer, idx) =>
-                      state.searchWmtsUser === "" ||
-                      (Object.prototype.hasOwnProperty.call(layer, "Title") &&
-                        layer.Title.toLowerCase().search(state.searchWmtsUser) >= 0) ||
-                      (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
-                        layer.Abstract.toLowerCase().search(state.searchWmtsUser) >= 0) ||
-                      (Object.prototype.hasOwnProperty.call(layer, "Identifier") &&
-                        layer.Identifier.toLowerCase().search(state.searchWmtsUser) >= 0) ? (
+                  {mapSettings &&
+                    Object.entries(mapSettings).map(([key, layer], index) => {
+                      return filterBySearchTerm(layer, state.searchWmtsUser) ? (
                         <div
                           className="selectable unselectable"
-                          key={"wmts-list-" + idx}
+                          key={"wmts-list-" + index}
                           style={{
                             padding: "0.5em",
                           }}>
@@ -395,7 +390,7 @@ const MapSettings = props => {
                                 data-cy="delete-user-map-button"
                                 onClick={e => {
                                   e.stopPropagation();
-                                  if (_.has(mapSettings, layer.Identifier)) {
+                                  if (_.has(mapSettings, key)) {
                                     rmExplorerMap(layer);
                                   }
                                 }}
@@ -418,8 +413,8 @@ const MapSettings = props => {
                             <Highlighter searchWords={[state.searchWmtsUser]} textToHighlight={layer.Abstract} />
                           </div>
                         </div>
-                      ) : null,
-                    )}
+                      ) : null;
+                    })}
                 </div>
               </div>
             </div>
