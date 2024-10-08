@@ -22,7 +22,7 @@ public class InstrumentationControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new InstrumentationController(context, new Mock<ILogger<Instrumentation>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new InstrumentationController(context, new Mock<ILogger<InstrumentationController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

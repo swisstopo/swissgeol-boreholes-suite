@@ -23,7 +23,7 @@ public class SectionControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new SectionController(context, new Mock<ILogger<Section>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new SectionController(context, new Mock<ILogger<SectionController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

@@ -13,7 +13,7 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
     where TEntity : IIdentifyable, IChangeTracking, new()
 {
     private readonly BdmsContext context;
-    private readonly ILogger<TEntity> logger;
+    private readonly ILogger<BoreholeControllerBase<TEntity>> logger;
     private readonly IBoreholeLockService boreholeLockService;
 
     /// <summary>
@@ -24,14 +24,14 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
     /// <summary>
     /// Gets the <see cref="ILogger{TEntity}"/> used by the controller.
     /// </summary>
-    protected ILogger<TEntity> Logger => logger;
+    protected ILogger<BoreholeControllerBase<TEntity>> Logger => logger;
 
     /// <summary>
     /// Gets the <see cref="IBoreholeLockService"/> used by the controller.
     /// </summary>
     protected IBoreholeLockService BoreholeLockService => boreholeLockService;
 
-    protected BoreholeControllerBase(BdmsContext context, ILogger<TEntity> logger, IBoreholeLockService boreholeLockService)
+    protected BoreholeControllerBase(BdmsContext context, ILogger<BoreholeControllerBase<TEntity>> logger, IBoreholeLockService boreholeLockService)
     {
         this.context = context;
         this.logger = logger;

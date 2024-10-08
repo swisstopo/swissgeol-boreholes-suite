@@ -10,7 +10,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class FieldMeasurementController : BoreholeControllerBase<FieldMeasurement>
 {
-    public FieldMeasurementController(BdmsContext context, ILogger<FieldMeasurement> logger, IBoreholeLockService boreholeLockService)
+    public FieldMeasurementController(BdmsContext context, ILogger<FieldMeasurementController> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)
     {
     }

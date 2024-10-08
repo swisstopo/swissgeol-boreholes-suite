@@ -21,7 +21,7 @@ public class LithologicalDescriptionControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new LithologicalDescriptionController(context, new Mock<ILogger<LithologicalDescription>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new LithologicalDescriptionController(context, new Mock<ILogger<LithologicalDescriptionController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
