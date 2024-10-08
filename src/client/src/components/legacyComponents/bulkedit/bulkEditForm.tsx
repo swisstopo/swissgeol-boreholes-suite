@@ -157,7 +157,6 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
           <FormDomainSelect
             fieldName={field.api ?? field.fieldName}
             label={field.fieldName}
-            required
             schemaName={field?.domain ?? field.api ?? field.fieldName}
             onUpdate={e => {
               onFieldValueChange(field, e);
@@ -171,7 +170,6 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
           <FormBooleanSelect
             fieldName={field.api ?? field.fieldName}
             label={field.fieldName}
-            required
             onUpdate={e => {
               onFieldValueChange(field, e);
             }}
@@ -219,6 +217,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
                       <Stack direction="row" alignItems="center">
                         <IconButton
                           size="small"
+                          data-cy="bulk-edit-reset-button"
                           sx={{
                             visibility: fieldsToUpdate.map(f => f[0]).includes(field.api ?? field.fieldName)
                               ? "visible"

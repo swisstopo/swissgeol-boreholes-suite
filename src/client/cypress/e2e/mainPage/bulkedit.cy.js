@@ -1,20 +1,52 @@
 import adminUser from "../../fixtures/adminUser.json";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
+import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
-  loginAsAdmin,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
-beforeEach(() => {
-  loginAsAdmin();
+function createBoreholes() {
+  createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as("borehole_id_1");
+  createBorehole({ "extended.original_name": "AAA_LOMONE", "custom.alternate_name": "AAA_LOMONE" }).as("borehole_id_2");
+}
+
+function startBulkEditing() {
+  // select the boreholes for bulk edit
+  cy.get('[data-cy="borehole-table"]').within(() => {
+    checkRowWithText("AAA_NINTIC");
+    checkRowWithText("AAA_LOMONE");
+  });
+  cy.contains("button", "Bulk editing").click();
+}
+
+function createBoreholesAndStartBulkEditing() {
+  createBoreholes();
+
   showTableAndWaitForData();
-});
+  cy.wait("@borehole");
+  startBulkEditing();
+}
+
+function giveAdminUser2workgroups() {
+  const adminUser2Workgroups = Object.assign({}, adminUser);
+  adminUser2Workgroups.data.workgroups.push({
+    id: 6,
+    workgroup: "Blue",
+    roles: ["EDIT"],
+    disabled: null,
+  });
+  cy.intercept("/api/v1/user", {
+    statusCode: 200,
+    body: JSON.stringify(adminUser2Workgroups),
+  }).as("adminUser2Workgroups");
+}
 
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
+    showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get("h1").should("have.text", "Bulk editing");
@@ -25,18 +57,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Bulk editing").click({ force: true });
 
     cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 19);
-
-    const adminUser2Workgroups = Object.assign({}, adminUser);
-    adminUser2Workgroups.data.workgroups.push({
-      id: 6,
-      workgroup: "Blue",
-      roles: ["EDIT"],
-      disabled: null,
-    });
-    cy.intercept("/api/v1/user", {
-      statusCode: 200,
-      body: JSON.stringify(adminUser2Workgroups),
-    }).as("adminUser2Workgroups");
+    giveAdminUser2workgroups();
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     checkAllVisibleRows();
@@ -54,24 +75,7 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   it("fills all bulkedit fields and saves.", () => {
-    // create boreholes
-    createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as(
-      "borehole_id_1",
-    );
-    createBorehole({ "extended.original_name": "AAA_LOMONE", "custom.alternate_name": "AAA_LOMONE" }).as(
-      "borehole_id_2",
-    );
-
-    loginAsAdmin();
-    showTableAndWaitForData();
-    cy.wait("@borehole");
-
-    // select the boreholes for bulk edit
-    cy.get('[data-cy="borehole-table"]').within(() => {
-      checkRowWithText("AAA_NINTIC");
-      checkRowWithText("AAA_LOMONE");
-    });
-    cy.contains("button", "Bulk editing").click();
+    createBoreholesAndStartBulkEditing();
 
     // select all bulk edit fields and insert values
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
@@ -111,6 +115,51 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Save").click();
     cy.wait("@edit_multipatch").its("response.body.success").should("eq", true);
     cy.wait("@edit_list");
+  });
+
+  it.only("can reset bulkedit fields", () => {
+    createBoreholes();
+    giveAdminUser2workgroups();
+    goToRouteAndAcceptTerms(`/`);
+    showTableAndWaitForData();
+    cy.wait("@borehole");
+    startBulkEditing();
+
+    cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
+    setInput("custom.project_name", "new name");
+    setSelect("workgroup", 1);
+    setSelect("restriction", 3);
+    setSelect("national_interest", 1);
+
+    let visibleCount = 0;
+
+    // expect 4 visible reset buttons
+    cy.get('[data-cy="bulk-edit-reset-button"]')
+      .each(button => {
+        cy.wrap(button)
+          .scrollIntoView()
+          .then($el => {
+            if ($el.css("visibility") !== "hidden") {
+              visibleCount += 1;
+            }
+          });
+      })
+      .then(() => {
+        expect(visibleCount).to.equal(4);
+      });
+
+    cy.get("h6").contains("Project name").scrollIntoView();
+    evaluateInput("custom.project_name", "new name");
+    cy.contains(".MuiDialog-container", "restricted until").should("exist");
+    cy.contains(".MuiDialog-container", "Blue").should("exist");
+    cy.contains(".MuiDialog-container", "Yes").should("exist");
+
+    cy.get('[data-cy="bulk-edit-reset-button"]').click({ multiple: true, force: true });
+    cy.get("h6").contains("Project name").scrollIntoView();
+    evaluateInput("custom.project_name", "");
+    cy.contains(".MuiDialog-container", "restricted until").should("not.exist");
+    cy.contains(".MuiDialog-container", "Blue").should("not.exist");
+    cy.contains(".MuiDialog-container", "Yes").should("not.exist");
   });
 
   it("cannot select locked boreholes for bulk edit", () => {

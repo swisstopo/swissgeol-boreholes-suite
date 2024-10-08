@@ -32,7 +32,7 @@ const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx }:
                 size="small"
                 label={t("workgroup")}
                 labelId="workgroup-label"
-                data-cy="workgroup-select"
+                data-cy="workgroup-formSelect"
                 renderValue={selected => {
                   return options.find(o => o.value === selected)?.text;
                 }}
