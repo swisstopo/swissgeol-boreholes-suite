@@ -33,7 +33,7 @@ public class LithostratigraphyControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new LithostratigraphyController(context, new Mock<ILogger<LithostratigraphyLayer>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new LithostratigraphyController(context, new Mock<ILogger<LithostratigraphyController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

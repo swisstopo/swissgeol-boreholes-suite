@@ -21,7 +21,7 @@ public class ChronostratigraphyControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new ChronostratigraphyController(context, new Mock<ILogger<ChronostratigraphyLayer>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new ChronostratigraphyController(context, new Mock<ILogger<ChronostratigraphyController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

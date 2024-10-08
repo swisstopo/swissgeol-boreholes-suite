@@ -24,7 +24,7 @@ public class WaterIngressControllerTests
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new WaterIngressController(context, new Mock<ILogger<WaterIngress>>().Object, boreholeLockServiceMock.Object)
+        controller = new WaterIngressController(context, new Mock<ILogger<WaterIngressController>>().Object, boreholeLockServiceMock.Object)
         {
             ControllerContext = new ControllerContext
             {

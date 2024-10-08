@@ -7,44 +7,74 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Controllers;
 
+// The api version is temporarily hardcoded as "v2" until the legacy API for borehole is removed.
+// This is necessary to avoid a rerouting issue with the reverse proxy, when matching routes exist for both the .net and the python API.
 [ApiController]
-[Route("api/v{version:apiVersion}/[controller]")]
-public class BoreholeController : ControllerBase
+[Route("api/v2/[controller]")]
+public class BoreholeController : BoreholeControllerBase<Borehole>
 {
-    private readonly BdmsContext context;
-    private readonly ILogger logger;
-
-    public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger)
+    public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger, IBoreholeLockService boreholeLockService)
+    : base(context, logger, boreholeLockService)
     {
-        this.context = context;
-        this.logger = logger;
+    }
+
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async override Task<ActionResult<Borehole>> EditAsync(Borehole entity)
+    {
+        if (entity == null)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var existingBorehole = await Context.Boreholes
+            .SingleOrDefaultAsync(l => l.Id == entity.Id)
+            .ConfigureAwait(false);
+
+        if (existingBorehole == null)
+        {
+            return NotFound();
+        }
+
+        Context.Entry(existingBorehole).CurrentValues.SetValues(entity);
+
+        try
+        {
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return await GetByIdAsync(entity.Id).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while saving the entity changes.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
     }
 
     /// <summary>
-    /// Asynchronously copies a <see cref="Borehole"/>.
+    /// Asynchronously gets the <see cref="Borehole"/> with the specified <paramref name="id"/>.
     /// </summary>
-    /// <param name="id">The <see cref="Borehole.Id"/> of the borehole to copy.</param>
-    /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>.</param>
-    /// <returns>The id of the newly created <see cref="Borehole"/>.</returns>
-    [HttpPost("copy")]
+    /// <param name="id">The id of borehole to get.</param>
+    [HttpGet("{id}")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<int>> CopyAsync([Required] int id, [Required] int workgroupId)
+    public async Task<ActionResult<Borehole>> GetByIdAsync(int id)
     {
-        logger.LogInformation("Copy borehole with id <{BoreholeId}> to workgroup with id <{WorkgroupId}>", id, workgroupId);
-
-        var user = await context.Users
-            .Include(u => u.WorkgroupRoles)
+        var borehole = await GetBoreholesWithIncludes()
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);
 
-        if (user == null || user.WorkgroupRoles == null || !user.WorkgroupRoles.Any(w => w.WorkgroupId == workgroupId && w.Role == Role.Editor))
+        if (borehole == null)
         {
-            return Unauthorized();
+            return NotFound();
         }
 
-        var borehole = await context.Boreholes
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
+        return Ok(borehole);
+    }
+
+    private IQueryable<Borehole> GetBoreholesWithIncludes()
+    {
+        return Context.Boreholes.Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
@@ -62,7 +92,33 @@ public class BoreholeController : ControllerBase
             .Include(b => b.BoreholeCodelists)
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles)
-            .Include(b => b.BoreholeGeometry)
+            .Include(b => b.BoreholeGeometry);
+    }
+
+    /// <summary>
+    /// Asynchronously copies a <see cref="Borehole"/>.
+    /// </summary>
+    /// <param name="id">The <see cref="Borehole.Id"/> of the borehole to copy.</param>
+    /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>.</param>
+    /// <returns>The id of the newly created <see cref="Borehole"/>.</returns>
+    [HttpPost("copy")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<int>> CopyAsync([Required] int id, [Required] int workgroupId)
+    {
+        Logger.LogInformation("Copy borehole with id <{BoreholeId}> to workgroup with id <{WorkgroupId}>", id, workgroupId);
+
+        var user = await Context.Users
+            .Include(u => u.WorkgroupRoles)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
+        if (user == null || user.WorkgroupRoles == null || !user.WorkgroupRoles.Any(w => w.WorkgroupId == workgroupId && w.Role == Role.Editor))
+        {
+            return Unauthorized();
+        }
+
+        var borehole = await GetBoreholesWithIncludes()
             .AsNoTracking()
             .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
@@ -79,7 +135,7 @@ public class BoreholeController : ControllerBase
         // if there are no fieldMeasurementResults of hydrotestResults the LoadAsync method will be called but have no effect
         foreach (var fieldMeasurement in fieldMeasurements)
         {
-            await context.Entry(fieldMeasurement)
+            await Context.Entry(fieldMeasurement)
                 .Collection(f => f.FieldMeasurementResults)
                 .LoadAsync()
                 .ConfigureAwait(false);
@@ -88,7 +144,7 @@ public class BoreholeController : ControllerBase
         var hydrotests = borehole.Observations.OfType<Hydrotest>().ToList();
         foreach (var hydrotest in hydrotests)
         {
-                await context.Entry(hydrotest)
+                await Context.Entry(hydrotest)
                     .Collection(h => h.HydrotestResults)
                     .LoadAsync()
                     .ConfigureAwait(false);
@@ -207,9 +263,16 @@ public class BoreholeController : ControllerBase
 
         borehole.OriginalName += " (Copy)";
 
-        var entityEntry = await context.AddAsync(borehole).ConfigureAwait(false);
-        await context.SaveChangesAsync().ConfigureAwait(false);
+        var entityEntry = await Context.AddAsync(borehole).ConfigureAwait(false);
+        await Context.SaveChangesAsync().ConfigureAwait(false);
 
         return Ok(entityEntry.Entity.Id);
+    }
+
+    /// <inheritdoc />
+    protected override async Task<int?> GetBoreholeId(Borehole entity)
+    {
+        if (entity == null) return default;
+        return await Task.FromResult<int?>(entity.Id).ConfigureAwait(false);
     }
 }

@@ -11,7 +11,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class CasingController : BoreholeControllerBase<Casing>
 {
-    public CasingController(BdmsContext context, ILogger<Casing> logger, IBoreholeLockService boreholeLockService)
+    public CasingController(BdmsContext context, ILogger<CasingController> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)
     {
     }

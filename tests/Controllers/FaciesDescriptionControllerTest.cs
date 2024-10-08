@@ -21,7 +21,7 @@ public class FaciesDescriptionControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new FaciesDescriptionController(context, new Mock<ILogger<FaciesDescription>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new FaciesDescriptionController(context, new Mock<ILogger<FaciesDescriptionController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
