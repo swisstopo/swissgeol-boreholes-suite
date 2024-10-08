@@ -22,8 +22,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async override Task<ActionResult<Borehole>> EditAsync(Borehole entity)
     {
-        Logger.LogInformation("Put borehole");
-
         if (entity == null)
         {
             return BadRequest(ModelState);
