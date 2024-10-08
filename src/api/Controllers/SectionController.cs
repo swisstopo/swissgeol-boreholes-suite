@@ -10,7 +10,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class SectionController : BoreholeControllerBase<Section>
 {
-    public SectionController(BdmsContext context, ILogger<Section> logger, IBoreholeLockService boreholeLockService)
+    public SectionController(BdmsContext context, ILogger<SectionController> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)
     {
     }

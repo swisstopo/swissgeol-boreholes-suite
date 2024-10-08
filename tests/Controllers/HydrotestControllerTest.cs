@@ -24,7 +24,7 @@ public class HydrotestControllerTests
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new HydrotestController(context, new Mock<ILogger<Hydrotest>>().Object, boreholeLockServiceMock.Object)
+        controller = new HydrotestController(context, new Mock<ILogger<HydrotestController>>().Object, boreholeLockServiceMock.Object)
         {
             ControllerContext = new ControllerContext
             {

@@ -10,7 +10,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class HydrotestController : BoreholeControllerBase<Hydrotest>
 {
-    public HydrotestController(BdmsContext context, ILogger<Hydrotest> logger, IBoreholeLockService boreholeLockService)
+    public HydrotestController(BdmsContext context, ILogger<HydrotestController> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)
     {
     }

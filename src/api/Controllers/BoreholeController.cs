@@ -13,7 +13,7 @@ namespace BDMS.Controllers;
 [Route("api/v2/[controller]")]
 public class BoreholeController : BoreholeControllerBase<Borehole>
 {
-    public BoreholeController(BdmsContext context, ILogger<Borehole> logger, IBoreholeLockService boreholeLockService)
+    public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger, IBoreholeLockService boreholeLockService)
     : base(context, logger, boreholeLockService)
     {
     }
@@ -22,6 +22,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async override Task<ActionResult<Borehole>> EditAsync(Borehole entity)
     {
+        Logger.LogInformation("Put borehole");
+
         if (entity == null)
         {
             return BadRequest(ModelState);
