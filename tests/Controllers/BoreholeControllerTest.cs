@@ -92,6 +92,11 @@ public class BoreholeControllerTest
         var boreholeToEdit = context.Boreholes.Single(c => c.Id == id);
         Assert.AreEqual(1, boreholeToEdit.Stratigraphies.Count);
         Assert.AreEqual(0, boreholeToEdit.Workflows.Count);
+        Assert.AreEqual(0, boreholeToEdit.BoreholeFiles.Count);
+        Assert.AreEqual(0, boreholeToEdit.BoreholeGeometry.Count);
+        Assert.AreEqual(0, boreholeToEdit.Completions.Count);
+        Assert.AreEqual(0, boreholeToEdit.Observations.Count); // Hydrogeology observations
+        Assert.AreEqual(0, boreholeToEdit.Sections.Count);
 
         Assert.AreEqual(2, boreholeToEdit.CreatedById);
         Assert.AreEqual(5, boreholeToEdit.UpdatedById);
@@ -150,7 +155,7 @@ public class BoreholeControllerTest
         Assert.AreEqual(0, updatedBorehole.BoreholeFiles.Count);
         Assert.AreEqual(0, updatedBorehole.BoreholeGeometry.Count);
         Assert.AreEqual(0, updatedBorehole.Completions.Count);
-        Assert.AreEqual(0, updatedBorehole.Observations.Count); // Hydrogeology observations
+        Assert.AreEqual(0, updatedBorehole.Observations.Count);
         Assert.AreEqual(0, updatedBorehole.Sections.Count);
     }
 
