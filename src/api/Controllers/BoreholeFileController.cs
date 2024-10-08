@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace BDMS.Controllers;
 
@@ -15,13 +16,15 @@ public class BoreholeFileController : ControllerBase
     private readonly BdmsContext context;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
     private readonly ILogger logger;
+    private readonly IBoreholeLockService boreholeLockService;
 
-    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, BoreholeFileCloudService boreholeFileCloudService)
+    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, BoreholeFileCloudService boreholeFileCloudService, IBoreholeLockService boreholeLockService)
         : base()
     {
         this.logger = logger;
         this.boreholeFileCloudService = boreholeFileCloudService;
         this.context = context;
+        this.boreholeLockService = boreholeLockService;
     }
 
     /// <summary>
@@ -204,6 +207,12 @@ public class BoreholeFileController : ControllerBase
     {
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
         if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
+
+        // Check if associated borehole is locked or user has permissions
+        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            return BadRequest("The borehole is locked by another user or you are missing permissions.");
+        }
 
         try
         {

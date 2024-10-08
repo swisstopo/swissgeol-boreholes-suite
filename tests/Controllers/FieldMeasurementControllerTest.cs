@@ -22,7 +22,7 @@ public class FieldMeasurementControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new FieldMeasurementController(context, new Mock<ILogger<FieldMeasurement>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new FieldMeasurementController(context, new Mock<ILogger<FieldMeasurementController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

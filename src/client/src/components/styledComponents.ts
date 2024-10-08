@@ -38,12 +38,11 @@ export const MainContentBox = styled(Box)({
   flex: "1 1 0%",
   display: "flex",
   flexDirection: "column",
-  overflow: "hidden",
   position: "relative",
 });
 
 export const FormSegmentBox = styled(Box)({
-  padding: theme.spacing(2),
+  padding: theme.spacing(3),
 });
 
 export const DialogHeaderContainer = styled(Box)({

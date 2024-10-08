@@ -26,7 +26,7 @@ const SettingsPage = () => {
         }}>
         <Box
           sx={{
-            boxShadow: 4,
+            boxShadow: 3,
             display: "flex",
             flexDirection: "column",
             width: "250px",

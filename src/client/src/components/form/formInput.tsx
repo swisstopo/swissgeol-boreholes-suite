@@ -5,6 +5,7 @@ import { InputProps, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { isValid } from "date-fns";
 import { FormValueType, getFormFieldError } from "./form";
+import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
 
 export interface FormInputProps {
   fieldName: string;
@@ -15,11 +16,12 @@ export interface FormInputProps {
   type?: FormValueType;
   multiline?: boolean;
   rows?: number;
-  value?: string | number;
+  value?: string | number | Date;
   sx?: SxProps;
   className?: string;
   inputProps?: InputProps;
   onUpdate?: (value: string) => void;
+  withThousandSeparator?: boolean;
 }
 
 export const FormInput: FC<FormInputProps> = ({
@@ -36,11 +38,12 @@ export const FormInput: FC<FormInputProps> = ({
   className,
   inputProps,
   onUpdate,
+  withThousandSeparator,
 }) => {
   const { t } = useTranslation();
   const { formState, register, setValue } = useFormContext();
 
-  const getDefaultValue = (value: string | number | undefined) => {
+  const getDefaultValue = (value: string | number | Date | undefined) => {
     if (value == undefined) {
       return "";
     } else if (type === FormValueType.DateTime) {
@@ -84,7 +87,12 @@ export const FormInput: FC<FormInputProps> = ({
       defaultValue={getDefaultValue(value)}
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
-      InputProps={{ ...inputProps, readOnly: readonly, disabled: disabled }}
+      InputProps={{
+        ...inputProps /* eslint-disable  @typescript-eslint/no-explicit-any */,
+        ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),
+        readOnly: readonly,
+        disabled: disabled,
+      }}
     />
   );
 };

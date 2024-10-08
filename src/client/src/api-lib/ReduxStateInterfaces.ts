@@ -1,3 +1,5 @@
+import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
+
 export interface ReduxRootState {
   filters: Filters;
   editor: EditorStore;
@@ -55,10 +57,13 @@ interface Workflow {
 }
 
 interface BoreholeAttributes {
+  national_interest: boolean;
+  restriction_until: Date;
+  restriction: number;
   workgroup: Workgroup;
   workflow: Workflow;
   id: number;
-  spatial_reference_system: number;
+  spatial_reference_system: ReferenceSystemCode;
   role: Role;
   lock: {
     id: number;

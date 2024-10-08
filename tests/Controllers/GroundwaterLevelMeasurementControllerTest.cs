@@ -23,7 +23,7 @@ public class GroundwaterLevelMeasurementControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new GroundwaterLevelMeasurementController(context, new Mock<ILogger<GroundwaterLevelMeasurement>>().Object, boreholeLockServiceMock.Object)
+        controller = new GroundwaterLevelMeasurementController(context, new Mock<ILogger<GroundwaterLevelMeasurementController>>().Object, boreholeLockServiceMock.Object)
         {
             ControllerContext = new ControllerContext
             {

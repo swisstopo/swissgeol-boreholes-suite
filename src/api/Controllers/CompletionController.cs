@@ -12,7 +12,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class CompletionController : BoreholeControllerBase<Completion>
 {
-    public CompletionController(BdmsContext context, ILogger<Completion> logger, IBoreholeLockService boreholeLockService)
+    public CompletionController(BdmsContext context, ILogger<CompletionController> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)
     {
     }

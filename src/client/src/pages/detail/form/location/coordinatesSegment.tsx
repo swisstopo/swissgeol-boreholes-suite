@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@mui/material";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
 import { LabelingButton } from "../../../../components/buttons/labelingButton.tsx";
 import { FormContainer, FormCoordinate, FormSelect } from "../../../../components/form/form";
-import { FormDomainSelect } from "../../../../components/form/formDomainSelect.tsx";
+import { SimpleDomainSelect } from "../../../../components/form/simpleDomainSelect.tsx";
 import {
   getPrecisionFromString,
   parseFloatWithThousandsSeparator,
@@ -118,9 +118,9 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   // --- Utility functions ---
   const updateFormValues = useCallback(
     (refSystem: string, locationX: number, locationY: number, precisionX: number, precisionY: number) => {
-      if (locationX && locationY) {
-        setValuesForReferenceSystem(refSystem, locationX.toFixed(precisionX), locationY.toFixed(precisionY));
-      }
+      const locationXString = (locationX && locationX?.toFixed(precisionX)) || "";
+      const locationYString = (locationY && locationY?.toFixed(precisionY)) || "";
+      setValuesForReferenceSystem(refSystem, locationXString, locationYString);
     },
     [setValuesForReferenceSystem],
   );
@@ -409,16 +409,16 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                 )
               }
             />
-            <CardContent sx={{ pl: 4, pr: 4 }}>
+            <CardContent sx={{ pt: 4, px: 3 }}>
               <FormContainer>
                 <FormSelect
                   required={true}
                   fieldName={`spatial_reference_system`}
                   label="spatial_reference_system"
-                  selected={[currentReferenceSystem ?? referenceSystems.LV95.code]}
+                  selected={currentReferenceSystem ?? referenceSystems.LV95.code}
                   readonly={!editingEnabled}
                   className={isCoordinateExtraction ? "ai" : ""}
-                  onUpdate={e => onReferenceSystemChange(e)}
+                  onUpdate={e => onReferenceSystemChange(e as number)}
                   values={Object.entries(referenceSystems).map(([, value]) => ({
                     key: value.code,
                     name: value.name,
@@ -474,12 +474,12 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                     />
                   </FormContainer>
                 </FormContainer>
-                <FormDomainSelect
+                <SimpleDomainSelect
                   fieldName={`location_precision`}
                   label="location_precision"
                   readonly={!editingEnabled}
-                  onUpdate={e => updateChange("location_precision", e, false)}
-                  selected={[borehole.data.location_precision]}
+                  onUpdate={e => updateChange("location_precision", e ?? null, false)}
+                  selected={borehole.data.location_precision}
                   schemaName={"location_precision"}
                 />
               </FormContainer>

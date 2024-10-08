@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Updated the style of bulk edit form.
+- Hide the `help` button in the navigation bar in read-only mode.
+- Hide the `original_name` field in the borehole detail view in read-only mode.
+- Updated the style of the location tab.
+
+### Fixed
+
+- _view-sync_ did not clean up unpublished boreholes.
+- User permissions were not checked when detaching files from boreholes.
+- The basemap selector buttons were not displayed correctly on hover
+
+## v2.1.870 - 2024-09-27
+
 ### Added
 
 - Tooltips to main side navigation.
@@ -9,7 +24,7 @@
 - Language dropdown in the header.
 - Added health check endpoint for the .NET API.
 - Added possibility to run the boreholes web application in read-only mode.
-- New view-sync Docker image for syncing free/published boreholes from a source to a target database.
+- New _view-sync_ Docker image for syncing free/published boreholes from a source to a target database.
 
 ### Changed
 
@@ -36,7 +51,6 @@
 - Updated the style of various buttons.
 - Map zoom level and center are now preserved when returning to the main map.
 - Deactivated the possibility to select page size in borehole table pagination.
-- Updated the style of bulk edit form.
 
 ### Fixed
 

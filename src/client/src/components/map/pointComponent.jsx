@@ -309,11 +309,11 @@ class PointComponent extends React.Component {
           style={{
             padding: "0px",
             flex: "1 1 100%",
-            height: 670,
+            height: 525,
           }}
         />
         <MapControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
-        <Box sx={{ position: "absolute", right: 0, top: 645 }}>
+        <Box sx={{ position: "absolute", right: 0, top: 500 }}>
           <BasemapSelector marginBottom="0px" />
         </Box>
         <Box

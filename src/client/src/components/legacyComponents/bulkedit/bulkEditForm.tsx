@@ -22,9 +22,9 @@ import WorkgroupSelect from "../../../pages/overview/sidePanelContent/commons/wo
 import { AlertContext } from "../../alert/alertContext.tsx";
 import { CancelButton, SaveButton } from "../../buttons/buttons";
 import { FormValueType } from "../../form/form.ts";
+import { FormBooleanSelect } from "../../form/formBooleanSelect.tsx";
 import { FormDomainSelect } from "../../form/formDomainSelect.tsx";
 import { FormInput } from "../../form/formInput.tsx";
-import { FormSelect } from "../../form/formSelect.tsx";
 import { StackFullWidth } from "../../styledComponents.ts";
 import { BulkEditFormField, BulkEditFormProps, BulkEditFormValue } from "./BulkEditFormProps.ts";
 
@@ -168,15 +168,10 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
 
       if (field.type === FormValueType.Boolean) {
         return (
-          <FormSelect
-            required
+          <FormBooleanSelect
             fieldName={field.api ?? field.fieldName}
             label={field.fieldName}
-            values={[
-              { key: 1, name: t("yes") },
-              { key: 0, name: t("no") },
-              { key: 2, name: t("np") },
-            ]}
+            required
             onUpdate={e => {
               onFieldValueChange(field, e);
             }}
@@ -194,7 +189,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
         />
       );
     },
-    [onFieldValueChange, t],
+    [onFieldValueChange],
   );
 
   return (

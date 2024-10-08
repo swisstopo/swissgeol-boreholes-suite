@@ -40,6 +40,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
     color: active ? theme.palette.error.main : "",
     borderTop: `1px solid ${theme.palette.boxShadow}`,
     borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : null,
+    backgroundColor: active ? theme.palette.background.lightgrey : "",
     "&:hover": {
       backgroundColor: theme.palette.hover.main,
     },

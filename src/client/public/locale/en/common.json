@@ -176,7 +176,6 @@
   "errorMissingBedrockSolution": "Take the top bedrock depth automatically from the borehole data",
   "errorOverlap": "Overlapping layers",
   "errorStartEditing": "You should press the 'start editing' button",
-  "errorStartEditingWrongStatus": "Borehole with status {{status}} not editable",
   "errorStartWrong": "First layer does not start at the reference level",
   "errorToDepthTooHigh": "to depth is too high",
   "errorWrongDepth": "Incorrect borehole end depth",

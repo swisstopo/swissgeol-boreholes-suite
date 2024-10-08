@@ -11,7 +11,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
 {
-    public StratigraphyController(BdmsContext context, ILogger<Stratigraphy> logger, IBoreholeLockService boreholeLockService)
+    public StratigraphyController(BdmsContext context, ILogger<StratigraphyController> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger, boreholeLockService)
     {
     }

@@ -7,6 +7,7 @@ import { Dimmer, Loader } from "semantic-ui-react";
 import _ from "lodash";
 import PropTypes from "prop-types";
 import { loadBorehole, patchBorehole, updateBorehole } from "../../api-lib";
+import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
 import BoreholePanel from "./form/borehole/boreholePanel.jsx";
@@ -18,7 +19,7 @@ import WaterIngress from "./form/hydrogeology/waterIngress.jsx";
 import IdentifierSegment from "./form/location/indentifierSegment.jsx";
 import LocationSegment from "./form/location/locationSegment.tsx";
 import NameSegment from "./form/location/nameSegment.tsx";
-import RestrictionSegment from "./form/location/restrictionSegment.jsx";
+import RestrictionSegment from "./form/location/restrictionSegment.tsx";
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
 import Lithology from "./form/stratigraphy/lithology";
 import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
@@ -29,7 +30,6 @@ class DetailPageContent extends React.Component {
 
   constructor(props) {
     super(props);
-    this.checkattribute = false;
     this.updateAttributeDelay = {};
     this.state = {
       tab: 0,
@@ -107,12 +107,6 @@ class DetailPageContent extends React.Component {
   checkLock() {
     const { t, editingEnabled, editableByCurrentUser } = this.props;
     if (this.props.borehole.data.role !== "EDIT") {
-      this.context.showAlert(
-        t("common:errorStartEditingWrongStatus", {
-          status: this.props.borehole.data.role,
-        }),
-        "error",
-      );
       return false;
     }
     if (!editingEnabled) {
@@ -242,13 +236,15 @@ class DetailPageContent extends React.Component {
     return (
       <>
         <Box
-          style={{
-            overflow: "hidden",
+          sx={{
             height: "100%",
             display: "flex",
             flex: "1 1 100%",
             flexDirection: "column",
-            padding: "1em",
+            px: 11,
+            py: 5,
+            overflowY: "auto",
+            backgroundColor: theme.palette.background.lightgrey,
           }}>
           <Dimmer.Dimmable
             as={"div"}
@@ -257,7 +253,6 @@ class DetailPageContent extends React.Component {
             }
             style={{
               flex: 1,
-              overflowY: "hidden",
               display: "flex",
               flexDirection: "column",
             }}>
@@ -281,8 +276,8 @@ class DetailPageContent extends React.Component {
                 exact
                 path={"/:id"}
                 render={() => (
-                  <Box sx={{ overflowY: "auto" }}>
-                    <Stack gap={2} mr={2}>
+                  <Box>
+                    <Stack gap={3} mr={2}>
                       <IdentifierSegment
                         borehole={borehole}
                         identifier={this.state.identifier}
@@ -290,15 +285,17 @@ class DetailPageContent extends React.Component {
                         setState={this.setStateBound}
                         updateBorehole={this.props.updateBorehole}
                         user={user}></IdentifierSegment>
-                      <NameSegment borehole={borehole} updateChange={this.updateChange} user={user}></NameSegment>
+                      <NameSegment
+                        borehole={borehole}
+                        updateChange={this.updateChange}
+                        editingEnabled={editingEnabled}></NameSegment>
                       <RestrictionSegment
                         borehole={borehole}
                         updateChange={this.updateChange}
-                        user={user}></RestrictionSegment>
+                        editingEnabled={editingEnabled}></RestrictionSegment>
                       <LocationSegment
                         showLabeling={this.props.showLabeling}
                         borehole={borehole}
-                        user={user}
                         editingEnabled={editingEnabled}
                         updateChange={this.updateChange}
                         updateNumber={this.updateNumber}
