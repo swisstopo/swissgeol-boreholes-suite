@@ -147,6 +147,11 @@ public class BoreholeControllerTest
         // Stratigraphies and workflows remain unchanged
         Assert.AreEqual(1, updatedBorehole.Stratigraphies.Count);
         Assert.AreEqual(0, updatedBorehole.Workflows.Count);
+        Assert.AreEqual(0, updatedBorehole.BoreholeFiles.Count);
+        Assert.AreEqual(0, updatedBorehole.BoreholeGeometry.Count);
+        Assert.AreEqual(0, updatedBorehole.Completions.Count);
+        Assert.AreEqual(0, updatedBorehole.Observations.Count); // Hydrogeology observations
+        Assert.AreEqual(0, updatedBorehole.Sections.Count);
     }
 
     [TestMethod]
@@ -171,7 +176,7 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
-    public async Task EditWithWrongCodelistCodesReturnsBadRequest()
+    public async Task EditWithWrongCodelistCodesReturnsInternalServerError()
     {
         var borehole = new Borehole
         {

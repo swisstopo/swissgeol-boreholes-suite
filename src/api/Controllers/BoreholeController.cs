@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace BDMS.Controllers;
 
 // The api version is temporarily hardcoded as "v2" until the legacy API for borehole is removed.
-// This is necessary to avoid a rerouting issue with the reverse proxy, when matching routes exist for both the .net and the python api.
+// This is necessary to avoid a rerouting issue with the reverse proxy, when matching routes exist for both the .net and the python API.
 [ApiController]
 [Route("api/v2/[controller]")]
 public class BoreholeController : BoreholeControllerBase<Borehole>
