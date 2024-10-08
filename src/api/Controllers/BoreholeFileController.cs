@@ -130,7 +130,8 @@ public class BoreholeFileController : ControllerBase
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("The specified key does not exist.", StringComparison.CurrentCulture))
+                // No image found for the requested index.
+                if (ex.Message.Contains("The specified key does not exist.", StringComparison.OrdinalIgnoreCase))
                 {
                     return Ok(new DataExtractionInfo
                     {
@@ -140,10 +141,9 @@ public class BoreholeFileController : ControllerBase
                         Count = 0,
                     });
                 }
-                else
-                {
-                    return Problem(ex.Message);
-                }
+
+                // Re-throw the exception so it gets handled by the outer exception handler.
+                throw;
             }
         }
         catch (Exception ex)
