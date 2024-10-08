@@ -118,9 +118,8 @@ public class BoreholeFileController : ControllerBase
 
             try
             {
-                var result = await boreholeFileCloudService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
-
-                return Ok(new DataExtractionInfo(result.FileName, result.Width, result.Height, fileCount));
+                var dataExtractionImageInfo = await boreholeFileCloudService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
+                return Ok(new DataExtractionInfo(dataExtractionImageInfo.FileName, dataExtractionImageInfo.Width, dataExtractionImageInfo.Height, fileCount));
             }
             catch (Exception ex)
             {
