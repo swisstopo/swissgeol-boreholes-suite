@@ -120,26 +120,14 @@ public class BoreholeFileController : ControllerBase
             {
                 var result = await boreholeFileCloudService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
 
-                return Ok(new DataExtractionInfo
-                {
-                    FileName = result.FileName,
-                    Width = result.Width,
-                    Height = result.Height,
-                    Count = fileCount,
-                });
+                return Ok(new DataExtractionInfo(result.FileName, result.Width, result.Height, fileCount));
             }
             catch (Exception ex)
             {
-                // No image found for the requested index.
+                // No image found for the requested index, return an empty response with the file info.
                 if (ex.Message.Contains("The specified key does not exist.", StringComparison.OrdinalIgnoreCase))
                 {
-                    return Ok(new DataExtractionInfo
-                    {
-                        FileName = fileUuid,
-                        Width = 0,
-                        Height = 0,
-                        Count = 0,
-                    });
+                    return Ok(new DataExtractionInfo(fileUuid, 0, 0, 0));
                 }
 
                 // Re-throw the exception so it gets handled by the outer exception handler.
