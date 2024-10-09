@@ -127,7 +127,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
   const triggerDataExtraction = useCallback(
     (extent: number[]) => {
-      if (fileInfo && extractionObject && extractionObject.type) {
+      if (fileInfo && extractionObject?.type) {
         const bbox = {
           x0: Math.min(...[extent[0], extent[2]]),
           y0: Math.min(...[extent[1], extent[3]]),
