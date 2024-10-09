@@ -98,6 +98,18 @@ export const interceptApiCalls = () => {
   });
 
   cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("get-borehole-files");
+  cy.intercept("/api/v2/boreholefile/getDataExtractionFileInfo*").as("extraction-file-info");
+  cy.intercept({
+    method: "GET",
+    url: "/api/v2/boreholefile/dataextraction/*",
+  }).as("dataextraction");
+  cy.intercept({
+    method: "GET",
+    url: "/api/v2/boreholefile/dataextraction/*",
+  }).as("load-extraction-file");
+  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+  //  Check if path is correct
+  cy.intercept("http://localhost:8000/api/V1/extract_data").as("extract-data");
 };
 
 /**

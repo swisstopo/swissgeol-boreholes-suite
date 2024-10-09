@@ -63,7 +63,7 @@ const BottomBar = ({
           workgroupId={workgroup}
           enabledWorkgroups={enabledWorkgroups}
           setWorkgroupId={setWorkgroup}
-          sx={{ p: 1 }}
+          sx={{ pt: 4, pb: 3 }}
         />,
       );
     }
