@@ -1,12 +1,13 @@
 import { useTranslation } from "react-i18next";
-import { Box, FormControl, MenuItem, Select } from "@mui/material/";
+import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material/";
+import { theme } from "../../../../AppTheme.ts";
 import { WorkgroupSelectProps } from "./actionsInterfaces.ts";
 
 const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx }: WorkgroupSelectProps) => {
   const { t } = useTranslation();
   return (
     <>
-      <Box sx={{ ...sx }}>
+      <Box sx={{ ...sx, backgroundColor: theme.palette.background.default }}>
         {(() => {
           const wg = enabledWorkgroups;
           if (wg === undefined) {
@@ -25,10 +26,13 @@ const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx }:
               value: wg["id"],
             }));
           return (
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+            <FormControl variant="outlined" sx={{ width: "100%" }}>
+              <InputLabel id="workgroup-label">{t("workgroup")}</InputLabel>
               <Select
-                data-cy="workgroup-select"
-                type="number"
+                size="small"
+                label={t("workgroup")}
+                labelId="workgroup-label"
+                data-cy="workgroup-formSelect"
                 renderValue={selected => {
                   return options.find(o => o.value === selected)?.text;
                 }}
