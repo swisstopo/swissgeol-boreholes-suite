@@ -27,7 +27,9 @@ const MapSettings = props => {
         data-cy="add-layer-button"
         onClick={e => {
           e.stopPropagation();
-          if (_.has(mapSettings, layerType === "WMS" ? layer.Name : layer.identifier)) {
+          const identifier = layerType === "WMS" ? layer.Name : layer.Identifier;
+          if (_.has(mapSettings, identifier)) {
+            layer.Identifier = identifier;
             rmExplorerMap(layer);
           } else {
             const service = layerType === "WMS" ? state.wms : state.wmts;
@@ -343,6 +345,7 @@ const MapSettings = props => {
                                 onClick={e => {
                                   e.stopPropagation();
                                   if (_.has(mapSettings, key)) {
+                                    layer.Identifier = key;
                                     rmExplorerMap(layer);
                                   }
                                 }}
