@@ -180,7 +180,7 @@ public class BoreholeFileCloudService
     /// </summary>
     /// <param name="objectName">The uuid of the parent pdf.</param>
     /// <param name="index">The page number in the pdf.</param>
-    /// <returns>The name, width and height of the file.</returns>
+    /// <returns>The name, width (px) and height (px) of the file.</returns>
     public async Task<(string FileName, int Width, int Height)> GetDataExtractionImageInfo(string objectName, int index)
     {
         try
