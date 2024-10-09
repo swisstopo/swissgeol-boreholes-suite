@@ -43,7 +43,7 @@ describe("map settings", () => {
     cy.wait("@setting");
     cy.wait("@setting"); //¯\_(ツ)_/¯
 
-    cy.get('[data-cy="maps-for-user-box"]').should("not.contain", wmtsName);
+    cy.get('[data-cy="maps-for-user-box"]').should("not.contain", wmsName);
 
     cy.get('[data-cy="delete-user-map-button"]').eq(0).click();
     cy.get('[data-cy="maps-for-user-box"]').should("not.exist");
