@@ -26,7 +26,7 @@ function giveAdminUser1workgroup() {
   cy.intercept("/api/v1/user", {
     statusCode: 200,
     body: JSON.stringify(adminUser),
-  }).as("adminUser2Workgroups");
+  }).as("adminUser1Workgroups");
 }
 
 function giveAdminUser2workgroups() {
