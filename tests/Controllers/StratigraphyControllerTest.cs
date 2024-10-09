@@ -27,7 +27,7 @@ public class StratigraphyControllerTest
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
 
-        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -460,6 +460,6 @@ public class StratigraphyControllerTest
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(true);
 
-        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 }
