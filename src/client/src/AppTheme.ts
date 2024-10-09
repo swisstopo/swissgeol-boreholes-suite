@@ -181,10 +181,6 @@ export const theme = createTheme({
           minWidth: "auto",
           padding: `${themeSpacing(1)} ${themeSpacing(1.5)}`,
           borderRadius: themeSpacing(0.5),
-          boxShadow: "none !important",
-          "&:hover": {
-            boxShadow: "none !important",
-          },
           "&:focus-visible": {
             boxShadow: focusShadow,
           },
