@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
-import { getDataExtractionFileInfo, getFiles, uploadFile } from "../../../api/file/file.ts";
+import { extractData, getDataExtractionFileInfo, getFiles, uploadFile } from "../../../api/file/file.ts";
 import {
   DataExtractionResponse,
   File as FileInterface,
@@ -23,12 +23,10 @@ import {
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
-import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
 import {
   ExtractionRequest,
-  ExtractionResponse,
   ExtractionState,
   labelingFileFormat,
   PanelPosition,
@@ -65,14 +63,22 @@ interface LabelingPanelProps {
 
 const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const { panelPosition, setPanelPosition, extractionObject, setExtractionObject } = useLabelingContext();
+  const {
+    panelPosition,
+    setPanelPosition,
+    extractionObject,
+    setExtractionObject,
+    setExtractionState,
+    extractionState,
+  } = useLabelingContext();
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [files, setFiles] = useState<FileInterface[]>();
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
   const [fileInfo, setFileInfo] = useState<DataExtractionResponse>();
   const [activePage, setActivePage] = useState<number>(1);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
-  const [requestTimeout, setRequestTimeout] = useState<NodeJS.Timeout>();
+  const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
+  const [abortController, setAbortController] = useState<AbortController>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
 
@@ -119,48 +125,67 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
     fileInputRef.current?.click();
   };
 
-  const extractData = useCallback(
+  const triggerDataExtraction = useCallback(
     (extent: number[]) => {
-      if (fileInfo) {
+      if (fileInfo && extractionObject?.type) {
         const bbox = {
-          x0: extent[0],
-          y0: extent[1],
-          x1: extent[2],
-          y1: extent[3],
+          x0: Math.min(...[extent[0], extent[2]]),
+          y0: Math.min(...[extent[1], extent[3]]),
+          x1: Math.max(...[extent[0], extent[2]]),
+          y1: Math.max(...[extent[1], extent[3]]),
         };
+        setExtractionExtent([]);
         const request: ExtractionRequest = {
-          filename: fileInfo.fileName.substring(0, fileInfo.fileName.lastIndexOf("-")),
+          filename: fileInfo.fileName.substring(0, fileInfo.fileName.lastIndexOf("-")) + ".pdf",
           page_number: activePage,
-          bounding_box: bbox,
+          bbox: bbox,
+          format: extractionObject.type,
         };
-        setExtractionObject({
-          ...extractionObject,
-          state: ExtractionState.loading,
-        });
+        setExtractionState(ExtractionState.loading);
         setDrawTooltipLabel(undefined);
-        // TODO: Send coordinates to labeling api to extract data
-        console.log("Request", request);
-        setRequestTimeout(
-          setTimeout(() => {
-            const response: ExtractionResponse = {
-              value: { east: 2600000 + extent[0], north: 1200000 + extent[1], projection: ReferenceSystemKey.LV95 },
-              bbox: bbox,
-            };
-            setExtractionObject({
-              ...extractionObject,
-              state: ExtractionState.success,
-              result: response,
-            });
-          }, 4000),
-        );
+        const abortController = new AbortController();
+        setAbortController(abortController);
+        extractData(request, abortController.signal)
+          .then(response => {
+            if (extractionObject.type) {
+              setExtractionState(ExtractionState.success);
+              setExtractionObject({
+                ...extractionObject,
+                value: response[extractionObject.type],
+              });
+            }
+          })
+          .catch(error => {
+            if (!error?.message?.includes("AbortError")) {
+              setExtractionState(ExtractionState.error);
+              // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+              //  Check if error message is correct, resp. handle all error cases with different messages
+              //   Translate error message
+              showAlert(t(error.message), "error");
+            }
+          })
+          .finally(() => {
+            setAbortController(undefined);
+          });
       }
     },
-    [activePage, extractionObject, fileInfo, setExtractionObject],
+    [activePage, extractionObject, fileInfo, setExtractionObject, setExtractionState, showAlert, t],
   );
 
+  useEffect(() => {
+    if (extractionExtent?.length > 0) {
+      triggerDataExtraction(extractionExtent);
+    }
+  }, [extractionExtent, triggerDataExtraction]);
+
   const cancelRequest = () => {
-    clearTimeout(requestTimeout);
-    setExtractionObject({ type: "coordinates", state: ExtractionState.start });
+    if (abortController) {
+      abortController.abort();
+      setAbortController(undefined);
+    }
+    setExtractionObject({ type: "coordinates" });
+    setExtractionState(ExtractionState.start);
+    setExtractionExtent([]);
   };
 
   useEffect(() => {
@@ -170,16 +195,13 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   }, [files, loadFiles]);
 
   useEffect(() => {
-    if (extractionObject?.state === ExtractionState.start) {
-      setExtractionObject({
-        ...extractionObject,
-        state: ExtractionState.drawing,
-      });
-      if (extractionObject.type === "coordinates") {
+    if (extractionState === ExtractionState.start) {
+      setExtractionState(ExtractionState.drawing);
+      if (extractionObject?.type === "coordinates") {
         setDrawTooltipLabel("drawCoordinateBox");
       }
     }
-  }, [extractionObject, setExtractionObject]);
+  }, [extractionObject, extractionState, setExtractionObject, setExtractionState]);
 
   useEffect(() => {
     if (selectedFile) {
@@ -244,7 +266,13 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               ...labelingButtonStyles,
               visibility: selectedFile ? "visible" : "hidden",
             }}>
-            <Typography variant="h6" p={1} pr={fileInfo.count > 1 ? 0 : 1} m={0.5} sx={{ alignContent: "center" }}>
+            <Typography
+              variant="h6"
+              p={1}
+              pr={fileInfo.count > 1 ? 0 : 1}
+              m={0.5}
+              sx={{ alignContent: "center" }}
+              data-cy="labeling-page-count">
               {activePage} / {fileInfo.count}
             </Typography>
             {fileInfo?.count > 1 && (
@@ -255,7 +283,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                   onClick={() => {
                     setActivePage(activePage - 1);
                   }}
-                  disabled={activePage === 1}>
+                  disabled={activePage === 1}
+                  data-cy="labeling-page-previous">
                   <ChevronLeft />
                 </Button>
                 <Button
@@ -264,7 +293,8 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
                   onClick={() => {
                     setActivePage(activePage + 1);
                   }}
-                  disabled={activePage === fileInfo.count}>
+                  disabled={activePage === fileInfo.count}
+                  data-cy="labeling-page-next">
                   <ChevronRight />
                 </Button>
               </>
@@ -273,11 +303,11 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         )}
         <Box>
           {alertIsOpen ? (
-            <LabelingAlert variant="filled" severity={severity} onClose={closeAlert}>
+            <LabelingAlert data-cy="labeling-alert" variant="filled" severity={severity} onClose={closeAlert}>
               {text}
             </LabelingAlert>
           ) : (
-            extractionObject?.state === ExtractionState.loading && (
+            extractionState === ExtractionState.loading && (
               <Button onClick={() => cancelRequest()} variant="text" endIcon={<X />} sx={labelingButtonStyles}>
                 <CircularProgress sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }} />
                 {t("analyze")}
@@ -330,7 +360,11 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
               sx={labelingButtonStyles}
             />
           </Stack>
-          <LabelingDrawContainer fileInfo={fileInfo} onDrawEnd={extractData} drawTooltipLabel={drawTooltipLabel} />
+          <LabelingDrawContainer
+            fileInfo={fileInfo}
+            onDrawEnd={setExtractionExtent}
+            drawTooltipLabel={drawTooltipLabel}
+          />
         </Box>
       ) : (
         <LabelingFileSelector

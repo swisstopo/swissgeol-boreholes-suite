@@ -13,7 +13,8 @@ export const LabelingButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
         color="ai"
         sx={{
           borderRadius: "4px",
-        }}>
+        }}
+        data-cy="labeling-button">
         <Sparkles />
       </IconButton>
     </Tooltip>

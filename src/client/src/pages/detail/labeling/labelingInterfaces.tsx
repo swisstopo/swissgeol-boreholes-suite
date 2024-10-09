@@ -2,8 +2,7 @@ import { useContext } from "react";
 import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 import { LabelingContext } from "./labelingContext.tsx";
 
-// TODO: Extend with other types
-export type ExtractionType = "coordinates";
+export type ExtractionType = "text" | "number" | "coordinates";
 export enum ExtractionState {
   start,
   drawing,
@@ -13,9 +12,8 @@ export enum ExtractionState {
 }
 
 export interface ExtractionObject {
-  state: ExtractionState;
   type?: ExtractionType;
-  result?: ExtractionResponse;
+  value?: string | number | Coordinate;
   previousValue?: string | number | Coordinate | null;
 }
 
@@ -29,7 +27,8 @@ export interface ExtractionBoundingBox {
 export interface ExtractionRequest {
   filename: string;
   page_number: number;
-  bounding_box: ExtractionBoundingBox;
+  bbox: ExtractionBoundingBox;
+  format: ExtractionType;
 }
 
 export interface Coordinate {
@@ -38,10 +37,9 @@ export interface Coordinate {
   projection: ReferenceSystemKey;
 }
 
-export interface ExtractionResponse {
-  value: string | number | Coordinate | null;
-  bbox: ExtractionBoundingBox;
-}
+export type ExtractionResponse = {
+  [key in ExtractionType]: string | number | Coordinate;
+};
 
 export type PanelPosition = "right" | "bottom";
 
@@ -52,6 +50,8 @@ export interface LabelingContextInterface {
   togglePanel: (isOpen?: boolean) => void;
   extractionObject?: ExtractionObject;
   setExtractionObject: (extractionObject: ExtractionObject | undefined) => void;
+  extractionState?: ExtractionState;
+  setExtractionState: (extractionState: ExtractionState) => void;
 }
 
 export const labelingFileFormat = "application/pdf";

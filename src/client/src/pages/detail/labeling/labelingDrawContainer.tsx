@@ -98,6 +98,11 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
   };
 
   useEffect(() => {
+    // @ts-expect-error - Attach map object to window to make it accessible for E2E testing
+    window.labelingImage = map;
+  }, [map]);
+
+  useEffect(() => {
     if (map && drawTooltipLabel) {
       const layers = map.getLayers().getArray();
       const drawingSource = (layers[1] as VectorLayer<Feature<Geometry>>).getSource();
@@ -237,6 +242,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
       <MapControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} onRotate={rotateImage} />
       <Box id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
       <Box
+        data-cy="labeling-draw-tooltip"
         ref={tooltipRef}
         sx={{
           position: "absolute",

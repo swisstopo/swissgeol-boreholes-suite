@@ -26,6 +26,7 @@ const MapControls = ({ onZoomIn, onZoomOut, onFitToExtent, onRotate }) => {
       </ButtonGroup>
       {!!onRotate && (
         <Button
+          data-cy="rotate-button"
           variant="text"
           onClick={onRotate}
           sx={{

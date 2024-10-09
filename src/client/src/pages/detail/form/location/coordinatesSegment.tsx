@@ -35,7 +35,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   editingEnabled,
 }) => {
   const { t } = useTranslation();
-  const { extractionObject, setExtractionObject } = useLabelingContext();
+  const { extractionObject, setExtractionObject, setExtractionState, extractionState } = useLabelingContext();
 
   // --- State variables ---
   const [currentReferenceSystem, setCurrentReferenceSystem] = useState<number>(borehole.data.spatial_reference_system);
@@ -280,14 +280,14 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   ]);
 
   useEffect(() => {
-    if (extractionObject?.type === "coordinates" && extractionObject?.state === ExtractionState.success) {
-      const coordinate = extractionObject?.result?.value as Coordinate;
+    if (extractionObject?.type === "coordinates" && extractionState === ExtractionState.success) {
+      const coordinate = extractionObject.value as Coordinate;
       if (coordinate) {
         setCurrentReferenceSystem(referenceSystems[coordinate.projection].code);
         setValuesForReferenceSystem(coordinate.projection, coordinate.east.toString(), coordinate.north.toString());
       }
     }
-  }, [extractionObject, setValuesForReferenceSystem]);
+  }, [extractionObject, extractionState, setValuesForReferenceSystem]);
 
   const isCoordinateExtraction = extractionObject?.type === "coordinates";
 
@@ -381,20 +381,20 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       currentReferenceSystem === referenceSystems.LV95.code ? ReferenceSystemKey.LV95 : ReferenceSystemKey.LV03;
     setExtractionObject({
       type: "coordinates",
-      state: ExtractionState.start,
       previousValue: {
         east: formMethods.getValues(referenceSystems[referenceSystemKey].fieldName.X),
         north: formMethods.getValues(referenceSystems[referenceSystemKey].fieldName.Y),
         projection: referenceSystemKey,
       },
     });
+    setExtractionState(ExtractionState.start);
   };
 
   return (
     <>
       <FormProvider {...formMethods}>
         <FormSegmentBox>
-          <Card>
+          <Card data-cy="coordinate-segment">
             <CardHeader
               title={t("coordinates")}
               sx={{ p: 4, pb: 3 }}
