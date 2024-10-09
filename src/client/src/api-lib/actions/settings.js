@@ -12,7 +12,7 @@ export function patchSettings(tree, value, key = null) {
     tree: tree,
     value: value,
   };
-  if (key !== null) {
+  if (key) {
     payload.key = key;
   }
   return fetch("/setting", payload);

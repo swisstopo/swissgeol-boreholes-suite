@@ -337,6 +337,8 @@
   "nothingToShow": "Rien à montrer",
   "np": "Sans indication",
   "oneSelected": "Un forage sélectionné",
+  "onlyEPSG2056Supported": "Seulement le système de coordonnées EPSG:2056 est pris en charge.",
+  "onlyWmsAndWmtsSupported": "Seulement Web Map Services (WMS) et Web Map Tile Services (WMTS) sont pris en charge.",
   "openBorehole": "forage ouvert",
   "order": "Ordre",
   "organic_component": "Composants organiques",

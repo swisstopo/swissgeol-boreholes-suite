@@ -1,13 +1,12 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { useTranslation } from "react-i18next";
-import { Button, CircularProgress, IconButton } from "@mui/material";
+import { Button, CircularProgress, IconButton, Stack } from "@mui/material";
 import { Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
 import { Plus, Trash2 } from "lucide-react";
 import _ from "lodash";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
-import { getWms } from "../../../../api-lib/index";
 import { theme } from "../../../../AppTheme";
 import { AlertContext } from "../../../../components/alert/alertContext";
 
@@ -15,30 +14,149 @@ const MapSettings = props => {
   const { showAlert } = useContext(AlertContext);
   const { setting, i18n, rmExplorerMap, addExplorerMap, handleAddItem, handleOnChange, state, setState } = props;
   const { t } = useTranslation();
+  const [mapSettings, setMapSettings] = useState(setting.data.map.explorer);
+
+  useEffect(() => {
+    setMapSettings(setting.data.map.explorer);
+  }, [setting.data.map.explorer]);
 
   function getIconButton(layer, layerType) {
     return (
       <IconButton
         size="small"
+        data-cy="add-layer-button"
         onClick={e => {
           e.stopPropagation();
-          if (_.has(setting.data.map.explorer, layerType === "WMS" ? layer.Name : layer.identifier)) {
+          const identifier = layerType === "WMS" ? layer.Name : layer.Identifier;
+          if (_.has(mapSettings, identifier)) {
+            layer.Identifier = identifier;
             rmExplorerMap(layer);
           } else {
-            addExplorerMap(layer, layerType, state.wms, _.values(setting.data.map.explorer).length);
+            const service = layerType === "WMS" ? state.wms : state.wmts;
+            addExplorerMap(layer, layerType, service, _.values(mapSettings).length);
           }
         }}
-        color={_.has(setting.data.map.explorer, layer.Name) ? "error" : "primary"}>
-        {_.has(setting.data.map.explorer, layer.Name) ? <Trash2 /> : <Plus />}
+        color={_.has(mapSettings, layer.Name) ? "error" : "primary"}>
+        {_.has(mapSettings, layer.Name) ? <Trash2 /> : <Plus />}
       </IconButton>
     );
   }
+
+  function getLayerList(layers, search, layerType) {
+    return layers.map((layer, idx) => {
+      const identifier = layerType === "WMS" ? layer.Name : layer.Identifier;
+
+      return search === "" ||
+        (Object.prototype.hasOwnProperty.call(layer, "Title") && layer.Title.toLowerCase().search(search) >= 0) ||
+        (Object.prototype.hasOwnProperty.call(layer, "Abstract") && layer.Abstract.toLowerCase().search(search) >= 0) ||
+        (Object.prototype.hasOwnProperty.call(layer, "Name") && identifier.toLowerCase().search(search) >= 0) ? (
+        <div
+          className="selectable unselectable"
+          key={`${layerType.toLowerCase()}-list-${idx}`}
+          style={{
+            padding: "0.5em",
+          }}>
+          <Stack
+            data-cy={`${layerType.toLowerCase()}-list-box`}
+            direction="row"
+            alignItems="center"
+            sx={{
+              fontWeight: "bold",
+            }}>
+            <div
+              style={{
+                flex: 1,
+              }}>
+              <Highlighter searchWords={[search]} textToHighlight={layer.Title} />
+            </div>
+            <div>{getIconButton(layer, layerType)}</div>
+          </Stack>
+          <div
+            style={{
+              color: "#787878",
+              fontSize: "0.8em",
+            }}>
+            {layer.queryable === true && layerType === "WMS" ? (
+              <Popup
+                content="Queryable"
+                on="hover"
+                trigger={
+                  <Label
+                    circular
+                    color="green"
+                    empty
+                    size="tiny"
+                    style={{
+                      marginRight: "0.5em",
+                    }}
+                  />
+                }
+              />
+            ) : null}
+            <Highlighter searchWords={[search]} textToHighlight={identifier} />
+          </div>
+          <div
+            style={{
+              fontSize: "0.8em",
+            }}>
+            <Highlighter searchWords={[search]} textToHighlight={layer.Abstract} />
+          </div>
+        </div>
+      ) : null;
+    });
+  }
+
+  function fetchCapabilitiesForService() {
+    const isWms = setting.selectedWMS.startsWith("https://wms");
+    const languageParam = `${isWms ? "&lang=" : "?lang="}${i18n.language}`;
+    fetch(setting.selectedWMS + languageParam).then(response => {
+      response.text().then(data => {
+        // Check if WMS or WMTS
+        if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
+          const wms = new WMSCapabilities().read(data);
+          setState({
+            ...state,
+            wmsFetch: false,
+            wms: wms,
+            wmts: null,
+          });
+        } else if (/<Capabilities/.test(data)) {
+          const wmts = new WMTSCapabilities().read(data);
+          setState({
+            ...state,
+            wmsFetch: false,
+            wms: null,
+            wmts: wmts,
+          });
+        } else {
+          setState({
+            ...state,
+            wmsFetch: false,
+            wms: null,
+            wmts: null,
+          });
+          showAlert(t("onlyWmsAndWmtsSupported"), "error");
+        }
+      });
+    });
+  }
+
+  const filterBySearchTerm = (layer, search) => {
+    if (!search) return true;
+    const searchLower = search.toLowerCase();
+    return (
+      (layer.Title && layer.Title.toLowerCase().includes(searchLower)) ||
+      (layer.Abstract && layer.Abstract.toLowerCase().includes(searchLower)) ||
+      (layer.Identifier && layer.Identifier.toLowerCase().includes(searchLower))
+    );
+  };
 
   return (
     <>
       <div
         onClick={() => {
           setState({
+            ...state,
             map: !state.map,
           });
         }}
@@ -109,45 +227,15 @@ const MapSettings = props => {
                   <Button
                     sx={{ height: "37px", width: "80px" }}
                     variant="contained"
+                    data-cy="load-layers-button"
                     onClick={() => {
-                      setState(
-                        {
-                          wmsFetch: true,
-                          wms: null,
-                          wmts: null,
-                        },
-                        () => {
-                          getWms(i18n.language, setting.selectedWMS).then(response => {
-                            // Check if WMS or WMTS
-                            let data = response.data;
-                            if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
-                              const wms = new WMSCapabilities().read(data);
-                              setState({
-                                wmsFetch: false,
-                                wms: wms,
-                                wmts: null,
-                              });
-                            } else if (/<Capabilities/.test(data)) {
-                              const wmts = new WMTSCapabilities().read(data);
-                              setState({
-                                wmsFetch: false,
-                                wms: null,
-                                wmts: wmts,
-                              });
-                            } else {
-                              setState({
-                                wmsFetch: false,
-                                wms: null,
-                                wmts: null,
-                              });
-                              showAlert(
-                                "Sorry, only Web Map Services (WMS) and " + "Web Map Tile Service (WMTS) are supported",
-                                "error",
-                              );
-                            }
-                          });
-                        },
-                      );
+                      setState({
+                        ...state,
+                        wmsFetch: true,
+                        wms: null,
+                        wmts: null,
+                      });
+                      fetchCapabilitiesForService();
                     }}>
                     {state.wmsFetch ? <CircularProgress size={22} color="inherit" /> : t("load")}
                   </Button>
@@ -158,6 +246,7 @@ const MapSettings = props => {
                       icon="search"
                       onChange={e => {
                         setState({
+                          ...state,
                           searchWmts: e.target.value.toLowerCase(),
                         });
                       }}
@@ -171,6 +260,7 @@ const MapSettings = props => {
                       icon="search"
                       onChange={e => {
                         setState({
+                          ...state,
                           searchWms: e.target.value.toLowerCase(),
                         });
                       }}
@@ -185,117 +275,8 @@ const MapSettings = props => {
                     border: state.wms === null && state.wmts === null ? null : "thin solid #cecece",
                     marginTop: state.wms === null && state.wmts === null ? null : "1em",
                   }}>
-                  {state.wms === null
-                    ? null
-                    : state.wms.Capability.Layer.Layer.map((layer, idx) =>
-                        state.searchWms === "" ||
-                        (Object.prototype.hasOwnProperty.call(layer, "Title") &&
-                          layer.Title.toLowerCase().search(state.searchWms) >= 0) ||
-                        (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
-                          layer.Abstract.toLowerCase().search(state.searchWms) >= 0) ||
-                        (Object.prototype.hasOwnProperty.call(layer, "Name") &&
-                          layer.Name.toLowerCase().search(state.searchWms) >= 0) ? (
-                          <div
-                            className="selectable unselectable"
-                            key={"wmts-list-" + idx}
-                            style={{
-                              padding: "0.5em",
-                            }}>
-                            <div
-                              style={{
-                                fontWeight: "bold",
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                              }}>
-                              <div
-                                style={{
-                                  flex: 1,
-                                }}>
-                                <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Title} />
-                              </div>
-                              <div>{getIconButton(layer, "WMS")}</div>
-                            </div>
-                            <div
-                              style={{
-                                color: "#787878",
-                                fontSize: "0.8em",
-                              }}>
-                              {layer.queryable === true ? (
-                                <Popup
-                                  content="Queryable"
-                                  on="hover"
-                                  trigger={
-                                    <Label
-                                      circular
-                                      color="green"
-                                      empty
-                                      size="tiny"
-                                      style={{
-                                        marginRight: "0.5em",
-                                      }}
-                                    />
-                                  }
-                                />
-                              ) : null}
-                              <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Name} />
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "0.8em",
-                              }}>
-                              <Highlighter searchWords={[state.searchWms]} textToHighlight={layer.Abstract} />
-                            </div>
-                          </div>
-                        ) : null,
-                      )}
-                  {state.wmts === null
-                    ? null
-                    : state.wmts.Contents.Layer.map((layer, idx) => {
-                        return state.searchWmts === "" ||
-                          (Object.prototype.hasOwnProperty.call(layer, "Title") &&
-                            layer.Title.toLowerCase().search(state.searchWmts) >= 0) ||
-                          (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
-                            layer.Abstract.toLowerCase().search(state.searchWmts) >= 0) ||
-                          (Object.prototype.hasOwnProperty.call(layer, "Identifier") &&
-                            layer.Identifier.toLowerCase().search(state.searchWmts) >= 0) ? (
-                          <div
-                            className="selectable unselectable"
-                            key={"wmts-list-" + idx}
-                            style={{
-                              padding: "0.5em",
-                            }}>
-                            <div
-                              style={{
-                                fontWeight: "bold",
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                              }}>
-                              <div
-                                style={{
-                                  flex: 1,
-                                }}>
-                                <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Title} />
-                              </div>
-                              <div>{getIconButton(layer, "WMTS")}</div>
-                            </div>
-                            <div
-                              style={{
-                                color: "#787878",
-                                fontSize: "0.8em",
-                              }}>
-                              <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Identifier} />
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "0.8em",
-                              }}>
-                              <Highlighter searchWords={[state.searchWmts]} textToHighlight={layer.Abstract} />
-                            </div>
-                          </div>
-                        ) : null;
-                      })}
+                  {state.wms && getLayerList(state.wms.Capability.Layer.Layer, state.searchWms, "WMS")}
+                  {state.wmts && getLayerList(state.wmts.Contents.Layer, state.searchWmts, "WMTS")}
                 </div>
               </div>
               <div
@@ -321,6 +302,7 @@ const MapSettings = props => {
                       icon="search"
                       onChange={e => {
                         setState({
+                          ...state,
                           searchWmtsUser: e.target.value.toLowerCase(),
                         });
                       }}
@@ -335,35 +317,21 @@ const MapSettings = props => {
                     flex: "1 1 100%",
                     border: "thin solid #cecece",
                   }}>
-                  {_.values(setting.data.map.explorer)
-                    .sort((a, b) => {
-                      if (a.position < b.position) {
-                        return 1;
-                      } else if (a.position > b.position) {
-                        return -1;
-                      }
-                      return 0;
-                    })
-                    .map((layer, idx) =>
-                      state.searchWmtsUser === "" ||
-                      (Object.prototype.hasOwnProperty.call(layer, "Title") &&
-                        layer.Title.toLowerCase().search(state.searchWmtsUser) >= 0) ||
-                      (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
-                        layer.Abstract.toLowerCase().search(state.searchWmtsUser) >= 0) ||
-                      (Object.prototype.hasOwnProperty.call(layer, "Identifier") &&
-                        layer.Identifier.toLowerCase().search(state.searchWmtsUser) >= 0) ? (
+                  {mapSettings &&
+                    Object.entries(mapSettings).map(([key, layer], index) => {
+                      return filterBySearchTerm(layer, state.searchWmtsUser) ? (
                         <div
                           className="selectable unselectable"
-                          key={"wmts-list-" + idx}
+                          key={"wmts-list-" + index}
                           style={{
                             padding: "0.5em",
                           }}>
-                          <div
-                            style={{
+                          <Stack
+                            data-cy="maps-for-user-box"
+                            direction="row"
+                            alignItems="center"
+                            sx={{
                               fontWeight: "bold",
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
                             }}>
                             <div
                               style={{
@@ -373,9 +341,11 @@ const MapSettings = props => {
                             </div>
                             <div>
                               <IconButton
+                                data-cy="delete-user-map-button"
                                 onClick={e => {
                                   e.stopPropagation();
-                                  if (_.has(setting.data.map.explorer, layer.Identifier)) {
+                                  if (_.has(mapSettings, key)) {
+                                    layer.Identifier = key;
                                     rmExplorerMap(layer);
                                   }
                                 }}
@@ -383,7 +353,7 @@ const MapSettings = props => {
                                 <Trash2 />
                               </IconButton>
                             </div>
-                          </div>
+                          </Stack>
                           <div
                             style={{
                               color: "#787878",
@@ -398,8 +368,8 @@ const MapSettings = props => {
                             <Highlighter searchWords={[state.searchWmtsUser]} textToHighlight={layer.Abstract} />
                           </div>
                         </div>
-                      ) : null,
-                    )}
+                      ) : null;
+                    })}
                 </div>
               </div>
             </div>
