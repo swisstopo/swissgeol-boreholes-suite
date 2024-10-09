@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { createBorehole } from "../../../api-lib";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { SideDrawerHeader } from "../layout/sideDrawerHeader.tsx";
@@ -32,14 +32,12 @@ const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, togg
   return (
     <>
       <SideDrawerHeader title={t("newBorehole")} toggleDrawer={toggleDrawer} />
-      <Typography> {t("workgroup")}</Typography>
-      <WorkgroupSelect
-        workgroupId={workgroupId}
-        enabledWorkgroups={enabledWorkgroups}
-        setWorkgroupId={setWorkgroupId}
-        sx={{ py: 2 }}
-      />
-      <Stack direction="column" justifyContent="flex-end">
+      <Stack direction="column" spacing={3}>
+        <WorkgroupSelect
+          workgroupId={workgroupId}
+          enabledWorkgroups={enabledWorkgroups}
+          setWorkgroupId={setWorkgroupId}
+        />
         <Button
           variant="outlined"
           data-cy={"create-button"}
