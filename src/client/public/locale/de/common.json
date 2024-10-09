@@ -337,6 +337,8 @@
   "nothingToShow": "Nichts zu zeigen",
   "np": "Keine Angabe",
   "oneSelected": "Ein Bohrung ausgewählt",
+  "onlyEPSG2056Supported": "Nur EPSG:2056 wird unterstützt.",
+  "onlyWmsAndWmtsSupported": "Nur Web Map Services (WMS) und Web Map Tile Services (WMTS) werden unterstützt.",
   "openBorehole": "offenes Bohrloch",
   "order": "Reihenfolge",
   "organic_component": "Organische Komponenten",

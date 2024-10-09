@@ -337,6 +337,8 @@
   "nothingToShow": "Niente da mostrare",
   "np": "Senza indicazioni",
   "oneSelected": "Una perforazione selezionata",
+  "onlyEPSG2056Supported": "È supportato solo EPSG:2056.",
+  "onlyWmsAndWmtsSupported": "Seulement Web Map Services (WMS) et Web Map Tile Services (WMTS) sont pris en charge.",
   "openBorehole": "perforazione aperta",
   "order": "Ordine",
   "organic_component": "Componenti organici",
