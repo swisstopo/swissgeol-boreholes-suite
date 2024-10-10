@@ -2,10 +2,6 @@
 
 ## [Unreleased]
 
-### Added
-
-- WMTS Services are now supported as custom user layers.
-
 ### Changed
 
 - Updated the style of bulk edit form.

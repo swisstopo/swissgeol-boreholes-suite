@@ -14,7 +14,6 @@ export interface Setting {
 }
 
 export interface SettingData {
-  efilter: string;
   map: {
     explorer: string;
   };

@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import { useAuth } from "../../auth/useBdmsAuth";
 import AboutSettings from "./aboutSettings";
 import AdminSettings from "./admin/adminSettings";
-import EditorSettings from "./editorSettings.tsx";
+import EditorSettings from "./editorSettings";
 import MenuSettings from "./menuSettings";
 import TermSettings from "./termSettings";
 

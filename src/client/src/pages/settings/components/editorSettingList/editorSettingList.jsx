@@ -6,7 +6,18 @@ import TranslationText from "../../../../components/legacyComponents/translation
 import * as Styled from "./styles";
 
 const EditorSettingList = props => {
-  const { data, toggleFilter, attribute, toggleField, listName, codes, toggleFieldArray, toggleFilterArray } = props;
+  const {
+    data,
+    toggleFilter,
+    attribute,
+    toggleField,
+    listName,
+    geocode,
+    codes,
+    toggleFieldArray,
+    toggleFilterArray,
+    type,
+  } = props;
 
   const { t } = useTranslation();
 
@@ -22,8 +33,15 @@ const EditorSettingList = props => {
       for (let idx = 0; idx < codes.data.layer_kind.length; idx++) {
         const element = codes.data.layer_kind[idx];
 
-        if (element.code === "Geol") {
-          return element.conf.fields[field];
+        if (element.code === geocode) {
+          if (type === "editor" && _.isObject(element.conf) && _.has(element.conf, `fields.${field}`)) {
+            return element.conf.fields[field];
+          }
+          if (type === "viewer" && _.isObject(element.conf) && _.has(element.conf, `viewerFields.${field}`)) {
+            return element.conf.viewerFields[field];
+          } else {
+            return false;
+          }
         }
       }
     }
