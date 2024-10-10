@@ -26,3 +26,7 @@ services:
     environment:
       # use development environment to enable seeding the database
       - ASPNETCORE_ENVIRONMENT=Development
+  minio:
+    extends:
+      file: ../../docker-compose.yml
+      service: minio
