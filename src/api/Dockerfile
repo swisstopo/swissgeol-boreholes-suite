@@ -51,7 +51,7 @@ ENV LC_ALL=C.UTF-8
 
 COPY --from=build /app/publish .
 
-HEALTHCHECK CMD curl --fail http://localhost:8080/health || exit 1
+HEALTHCHECK CMD ["bash", "-c", "curl --fail http://localhost:8080/health || exit 1"]
 
 # Switch to the non-root user 'app' defined in the base image
 USER $APP_UID
