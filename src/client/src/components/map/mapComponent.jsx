@@ -18,6 +18,7 @@ import { Cluster } from "ol/source";
 import TileWMS from "ol/source/TileWMS";
 import VectorSource from "ol/source/Vector";
 import WMTS from "ol/source/WMTS";
+import WMTSTileGrid from "ol/tilegrid/WMTS";
 import proj4 from "proj4";
 import PropTypes from "prop-types";
 import { getGeojson } from "../../api-lib";
@@ -216,12 +217,22 @@ class MapComponent extends React.Component {
 
   //////  HANDLE CUSTOM USER LAYERS //////
   addWMTSLayer(identifier, layer) {
+    const tileGridConfig = {
+      ...layer.conf.tileGrid,
+      origin: null,
+      origins: layer.conf.tileGrid.origins_,
+      resolutions: layer.conf.tileGrid.resolutions_ || [],
+      matrixIds: layer.conf.tileGrid.matrixIds_ || [],
+    };
+
     const wmtsLayer = new TileLayer({
       visible: layer.visibility,
-      name: identifier,
       opacity: 1,
       source: new WMTS({
         ...layer.conf,
+        extent: swissExtent,
+        tileGrid: new WMTSTileGrid(tileGridConfig),
+        projection: getProjection(this.srs),
       }),
       zIndex: layer.position + 1,
     });
