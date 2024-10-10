@@ -33,6 +33,9 @@ describe("map settings", () => {
     cy.contains(wmsName);
     cy.contains(wmtsName);
 
+    // Reload page to verify layers are correctly added
+    cy.reload(true);
+
     // Remove layers
     cy.get('[data-cy="settings-button"]').click();
     cy.contains("Map").click();
