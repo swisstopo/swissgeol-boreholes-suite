@@ -35,10 +35,12 @@ describe("map settings", () => {
 
     // Reload page to verify layers are correctly added
     cy.reload(true);
+    goToRouteAndAcceptTerms("/");
 
     // Remove layers
     cy.get('[data-cy="settings-button"]').click();
     cy.contains("Map").click();
+    cy.wait(1000);
     cy.get('[data-cy="maps-for-user-box"]').contains(wmtsName);
     cy.get('[data-cy="maps-for-user-box"]').contains(wmsName);
     cy.get('[data-cy="delete-user-map-button"]').eq(0).click();
@@ -47,6 +49,7 @@ describe("map settings", () => {
     cy.wait("@setting"); //¯\_(ツ)_/¯
 
     cy.get('[data-cy="maps-for-user-box"]').should("not.contain", wmsName);
+    cy.wait(1000);
 
     cy.get('[data-cy="delete-user-map-button"]').eq(0).click();
     cy.get('[data-cy="maps-for-user-box"]').should("not.exist");
