@@ -134,7 +134,7 @@ services:
       AWS_ENDPOINT: http://minio:9000
       AWS_ACCESS_KEY_ID: REDSQUIRREL
       AWS_SECRET_ACCESS_KEY: YELLOWMONKEY
-      AWS_S3_BUCKET: "cannonflea"
+      AWS_S3_BUCKET: cannonflea
     healthcheck:
       test: "curl --fail http://localhost:8000/health || exit 1"
   oidc-server:
