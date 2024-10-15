@@ -5,6 +5,7 @@
 ### Added
 
 - WMTS Services are now supported as custom user layers.
+- Added data extraction API.
 
 ### Changed
 

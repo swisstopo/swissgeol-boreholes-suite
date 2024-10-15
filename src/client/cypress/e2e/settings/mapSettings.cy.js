@@ -5,7 +5,7 @@ describe("map settings", () => {
     goToRouteAndAcceptTerms("/setting");
 
     const wmsName = "Army logistics centres (ALC)";
-    const wmtsName = "Wetness potential agricultural land";
+    const wmtsName = "Map swissTLM for 3D (color)";
 
     cy.contains("Map").click();
     // Add WMS
