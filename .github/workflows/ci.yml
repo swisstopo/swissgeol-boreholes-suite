@@ -21,7 +21,7 @@ jobs:
         run: dotnet build BDMS.sln -c Release /warnaserror
 
       - name: Start db and api's
-        run: docker compose up --wait minio db api-legacy api
+        run: docker compose up --wait minio db api-legacy api dataextraction
 
       - name: Run dotnet tests
         run: dotnet test BDMS.sln -c Release --no-build --verbosity normal --filter TestCategory!=LongRunning
@@ -57,7 +57,7 @@ jobs:
         run: dotnet build BDMS.sln -c Release /warnaserror
 
       - name: Start db and api's
-        run: docker compose up --wait minio db api-legacy api oidc-server
+        run: docker compose up --wait minio db api-legacy api oidc-server dataextraction
 
       - working-directory: ./src/client
         run: npm ci
