@@ -31,7 +31,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   updateNumber,
   mapPointChange,
   setMapPointChange,
-  showLabeling,
   editingEnabled,
 }) => {
   const { t } = useTranslation();
@@ -400,7 +399,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
               sx={{ p: 4, pb: 3 }}
               titleTypographyProps={{ variant: "h5" }}
               action={
-                showLabeling &&
                 editingEnabled && (
                   <LabelingButton
                     className={extractionObject?.type === "coordinates" ? "Mui-active" : ""}

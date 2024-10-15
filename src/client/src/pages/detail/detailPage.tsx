@@ -14,30 +14,15 @@ import LabelingPanel from "./labeling/labelingPanel.tsx";
 interface DetailPageContentProps {
   editingEnabled: boolean;
   editableByCurrentUser: boolean;
-  showLabeling: boolean;
 }
 
 export const DetailPage: FC = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
-  const [showLabeling, setShowLabeling] = useState(false);
   const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
-
-  useEffect(() => {
-    // Fetch to be mocked in cypress test to show labeling area.
-    const checkLabelingVisibility = async () => {
-      try {
-        const response = await fetch("api/show-labeling-in-cypress-test");
-        setShowLabeling(response.status === 200);
-      } catch {
-        /* fetch will fail outside of test environment so state should not be updated */
-      }
-    };
-    checkLabelingVisibility().catch();
-  }, []);
 
   useEffect(() => {
     setEditingEnabled(borehole.data.lock !== null);
@@ -68,7 +53,6 @@ export const DetailPage: FC = () => {
   const props: DetailPageContentProps = {
     editingEnabled: editingEnabled,
     editableByCurrentUser: editableByCurrentUser,
-    showLabeling: showLabeling,
   };
 
   return (
@@ -93,7 +77,7 @@ export const DetailPage: FC = () => {
               width: panelOpen && panelPosition === "right" ? "50%" : "100%",
               height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
             }}>
-            {editingEnabled && showLabeling && (
+            {editingEnabled && (
               <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
             )}
             <DetailPageContent {...props} />

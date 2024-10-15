@@ -71,7 +71,6 @@ export interface CoordinatesSegmentProps extends SegmentProps {
   updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
   mapPointChange: boolean;
   setMapPointChange: React.Dispatch<React.SetStateAction<boolean>>;
-  showLabeling: boolean;
 }
 
 export interface Location {

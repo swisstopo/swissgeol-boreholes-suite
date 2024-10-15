@@ -10,18 +10,11 @@ import ElevationSegment from "./elevationSegment";
 import { SegmentProps } from "./segmentInterface.ts";
 
 interface LocationSegmentProps extends SegmentProps {
-  showLabeling: boolean;
   editingEnabled: boolean;
   updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
 }
 
-const LocationSegment = ({
-  borehole,
-  updateChange,
-  updateNumber,
-  showLabeling,
-  editingEnabled,
-}: LocationSegmentProps) => {
+const LocationSegment = ({ borehole, updateChange, updateNumber, editingEnabled }: LocationSegmentProps) => {
   const [mapPointChange, setMapPointChange] = useState(false);
 
   return (
@@ -35,7 +28,6 @@ const LocationSegment = ({
               updateNumber={updateNumber}
               mapPointChange={mapPointChange}
               setMapPointChange={setMapPointChange}
-              showLabeling={showLabeling}
               editingEnabled={editingEnabled}
             />
             <ElevationSegment
