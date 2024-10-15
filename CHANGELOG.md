@@ -6,6 +6,7 @@
 
 - WMTS Services are now supported as custom user layers.
 - Added data extraction API.
+- Added support to extract coordinates from a borehole attachment.
 
 ### Changed
 

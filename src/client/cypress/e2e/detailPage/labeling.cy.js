@@ -1,6 +1,5 @@
 import { evaluateCoordinate, evaluateSelect, hasAiStyle, hasError, isDisabled } from "../helpers/formHelpers.js";
 import {
-  interceptShowLabelingCall,
   newEditableBorehole,
   newUneditableBorehole,
   startBoreholeEditing,
@@ -55,10 +54,6 @@ const waitForLabelingImageLoaded = () => {
 };
 
 describe("Test labeling tool", () => {
-  beforeEach(() => {
-    interceptShowLabelingCall();
-  });
-
   it("can show labeling panel", () => {
     newUneditableBorehole().as("borehole_id");
     // only show in editing mode
@@ -132,19 +127,15 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="button-select-popover"] .MuiListItem-root').eq(1).click();
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
 
-    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
-    //  Add this once the api returns the correct file
-    // // Cannot draw if the panel was opened with the panel toggle button
-    // waitForLabelingImageLoaded();
-    // cy.window().then(win => {
-    //   const interactions = win.labelingImage.getInteractions().getArray();
-    //   expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
-    // });
+    // Cannot draw if the panel was opened with the panel toggle button
+    waitForLabelingImageLoaded();
+    cy.window().then(win => {
+      const interactions = win.labelingImage.getInteractions().getArray();
+      expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
+    });
   });
 
-  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
-  //  We have to wait for the docker integration before this test can be enabled
-  it.skip("can extract data from image", () => {
+  it("can extract data from image", () => {
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
@@ -182,25 +173,43 @@ describe("Test labeling tool", () => {
     hasError("location_y_lv03", false);
     isDisabled("location_y_lv03");
 
-    // Can draw box around coordinates and extract correct coordinates
     drawBox(400, 60, 600, 170);
-    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
-    //  Update all coordinates once api returns coordinates as floats
     evaluateSelect("spatial_reference_system", "20104001");
-    evaluateCoordinate("location_x", "2'646'359");
+    evaluateCoordinate("location_x", "2'646'359.7");
     hasError("location_x", false);
     isDisabled("location_x", false);
-    evaluateCoordinate("location_y", "1'249'017");
+    evaluateCoordinate("location_y", "1'249'017.82");
     hasError("location_y", false);
     isDisabled("location_y", false);
-    evaluateCoordinate("location_x_lv03", "646'358");
+    evaluateCoordinate("location_x_lv03", "646'358.97");
     hasError("location_x_lv03", false);
     isDisabled("location_x_lv03", true);
-    evaluateCoordinate("location_y_lv03", "249'017");
+    evaluateCoordinate("location_y_lv03", "249'017.66");
     hasError("location_y_lv03", false);
     isDisabled("location_y_lv03", true);
+  });
 
-    // Can draw after navigating to the next page and extract correct bbox from rotated, zoomed image
+  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+  // api call extract_data in drawBox times out
+  it.skip("can extract data from rotated and zoomed next page", () => {
+    newEditableBorehole().as("borehole_id");
+    cy.get('[data-cy="labeling-toggle-button"]').click();
+    cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
+    cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.");
+
+    cy.get('[data-cy="labeling-file-dropzone"]').selectFile("cypress/fixtures/labeling_attachment.pdf", {
+      force: true,
+      mimeType: "application/pdf",
+      fileName: "labeling_attachment.pdf",
+    });
+
+    cy.wait("@get-borehole-files");
+    waitForLabelingImageLoaded();
+    cy.get('[data-cy="labeling-file-button-select"]').contains("labeling_attachment.pdf");
+    cy.get('[data-cy="labeling-page-count"]').contains("1 / 3");
+    cy.get('[data-cy="labeling-page-previous"]').should("be.disabled");
+    cy.get('[data-cy="labeling-page-next"]').should("not.be.disabled");
+
     cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
     cy.get('[data-cy="labeling-page-next"]').click();
     waitForLabelingImageLoaded();
@@ -240,8 +249,29 @@ describe("Test labeling tool", () => {
     evaluateCoordinate("location_y_lv03", "249'931");
     hasError("location_y_lv03", false);
     isDisabled("location_y_lv03", false);
+  });
 
-    // Shows alert if no coordinates are extracted
+  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
+  // api call extract_data in drawBox times out
+  it.skip("shows alert if no coordinates are extracted", () => {
+    newEditableBorehole().as("borehole_id");
+    cy.get('[data-cy="labeling-toggle-button"]').click();
+    cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
+    cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.");
+
+    cy.get('[data-cy="labeling-file-dropzone"]').selectFile("cypress/fixtures/labeling_attachment.pdf", {
+      force: true,
+      mimeType: "application/pdf",
+      fileName: "labeling_attachment.pdf",
+    });
+
+    cy.wait("@get-borehole-files");
+    waitForLabelingImageLoaded();
+    cy.get('[data-cy="labeling-file-button-select"]').contains("labeling_attachment.pdf");
+    cy.get('[data-cy="labeling-page-count"]').contains("1 / 3");
+    cy.get('[data-cy="labeling-page-previous"]').should("be.disabled");
+    cy.get('[data-cy="labeling-page-next"]').should("not.be.disabled");
+
     cy.get('[data-cy="labeling-page-next"]').click();
     waitForLabelingImageLoaded();
     cy.get('[data-cy="labeling-page-count"]').contains("3 / 3");
@@ -269,9 +299,9 @@ describe("Test labeling tool", () => {
     waitForLabelingImageLoaded();
     drawBox(400, 60, 600, 170);
     evaluateSelect("spatial_reference_system", "20104001");
-    evaluateCoordinate("location_x", "2'646'359");
-    evaluateCoordinate("location_y", "1'249'017");
-    evaluateCoordinate("location_x_lv03", "646'358");
-    evaluateCoordinate("location_y_lv03", "249'017");
+    evaluateCoordinate("location_x", "2'646'359.7");
+    evaluateCoordinate("location_y", "1'249'017.82");
+    evaluateCoordinate("location_x_lv03", "646'358.97");
+    evaluateCoordinate("location_y_lv03", "249'017.66");
   });
 });

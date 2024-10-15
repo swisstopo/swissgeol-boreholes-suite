@@ -5,11 +5,6 @@ import { startEditing, stopEditing } from "./buttonHelpers.js";
 
 export const bearerAuth = token => ({ bearer: token });
 
-export const interceptShowLabelingCall = () => {
-  cy.intercept("GET", "api/show-labeling-in-cypress-test", {
-    statusCode: 200,
-  }).as("show-labeling");
-};
 export const interceptApiCalls = () => {
   // Api V1
   cy.intercept("/api/v1/borehole").as("borehole");
@@ -107,9 +102,7 @@ export const interceptApiCalls = () => {
     method: "GET",
     url: "/api/v2/boreholefile/dataextraction/*",
   }).as("load-extraction-file");
-  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
-  //  Check if path is correct
-  cy.intercept("http://localhost:8000/api/V1/extract_data").as("extract-data");
+  cy.intercept("dataextraction/api/V1/extract_data").as("extract-data");
 };
 
 /**

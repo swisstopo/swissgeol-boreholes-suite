@@ -1,5 +1,6 @@
 import { ExtractionRequest, ExtractionResponse } from "../../pages/detail/labeling/labelingInterfaces.tsx";
 import { ApiError } from "../apiInterfaces.ts";
+import { fetchCreatePngs, fetchExtractData } from "../dataextraction";
 import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2";
 import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
@@ -82,28 +83,14 @@ export async function loadImage(fileName: string) {
 }
 
 export async function createExtractionPngs(fileName: string) {
-  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
-  //  Maybe update URL after proper integration
-  const response = await fetch("http://localhost:8000/api/V1/create_pngs", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ filename: fileName + ".pdf" }),
-  });
+  const response = await fetchCreatePngs(fileName);
   if (!response.ok) {
     throw new ApiError("errorDataExtractionFileLoading", 500);
   }
 }
 
 export async function extractData(request: ExtractionRequest, abortSignal: AbortSignal): Promise<ExtractionResponse> {
-  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
-  //  Maybe update URL after proper integration
-  const response = await fetch("http://localhost:8000/api/V1/extract_data", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify(request),
-    signal: abortSignal,
-  });
-
+  const response = await fetchExtractData(request, abortSignal);
   if (response.ok) {
     const responseObject = await response.json();
     // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
