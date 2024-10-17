@@ -4,16 +4,17 @@ import { Card, Grid, IconButton, Typography } from "@mui/material";
 import { Save, Trash2 } from "lucide-react";
 import _ from "lodash";
 import { addIdentifier, removeIdentifier } from "../../../../api-lib";
-import { BoreholeAttributes, Identifier } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { Borehole, BoreholeAttributes, Identifier } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { FormValueType } from "../../../../components/form/form.ts";
 import { SimpleDomainSelect } from "../../../../components/form/simpleDomainSelect.tsx";
 import { SimpleFormInput } from "../../../../components/form/simpleFormInput.tsx";
 import DomainText from "../../../../components/legacyComponents/domain/domainText.jsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { SegmentProps } from "./segmentInterface.ts";
 
-interface IdentifierSegmentProps extends SegmentProps {
+interface IdentifierSegmentProps {
+  borehole: Borehole;
+  editingEnabled: boolean;
   updateBorehole: (borehole: BoreholeAttributes) => void;
 }
 const IdentifierSegment = ({ borehole, editingEnabled, updateBorehole }: IdentifierSegmentProps) => {
