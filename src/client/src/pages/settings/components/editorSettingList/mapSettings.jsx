@@ -275,8 +275,18 @@ const MapSettings = props => {
                     border: state.wms === null && state.wmts === null ? null : "thin solid #cecece",
                     marginTop: state.wms === null && state.wmts === null ? null : "1em",
                   }}>
-                  {state.wms && getLayerList(state.wms.Capability.Layer.Layer, state.searchWms, "WMS")}
-                  {state.wmts && getLayerList(state.wmts.Contents.Layer, state.searchWmts, "WMTS")}
+                  {state.wms &&
+                    getLayerList(
+                      state.wms.Capability.Layer.Layer.sort((a, b) => a.Name.localeCompare(b.Name)),
+                      state.searchWms,
+                      "WMS",
+                    )}
+                  {state.wmts &&
+                    getLayerList(
+                      state.wmts.Contents.Layer.sort((a, b) => a.Identifier.localeCompare(b.Identifier)),
+                      state.searchWmts,
+                      "WMTS",
+                    )}
                 </div>
               </div>
               <div
