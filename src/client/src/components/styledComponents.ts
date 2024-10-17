@@ -38,6 +38,7 @@ export const MainContentBox = styled(Box)({
   flex: "1 1 0%",
   display: "flex",
   flexDirection: "column",
+  overflow: "hidden",
   position: "relative",
 });
 
