@@ -5,14 +5,14 @@ describe("map settings", () => {
     goToRouteAndAcceptTerms("/setting");
 
     const wmsName = "Army logistics centres (ALC)";
-    const wmtsName = "Map swissTLM for 3D (color)";
+    const wmtsName = "Wetness potential agricultural land";
 
     cy.contains("Map").click();
     // Add WMS
     cy.get('[data-cy="load-layers-button"]').click();
     cy.get('[data-cy="wms-list-box"]').contains(wmsName);
     cy.get('[data-cy="maps-for-user-box"]').should("not.exist");
-    cy.get('[data-cy="add-layer-button"]').eq(1).click();
+    cy.contains("div.selectable", wmsName).find('[data-cy="add-layer-button"]').click();
     cy.wait("@setting");
     cy.get('[data-cy="maps-for-user-box"]').contains(wmsName);
 
@@ -23,7 +23,7 @@ describe("map settings", () => {
     // Add WMTS
     cy.get('[data-cy="load-layers-button"]').click();
     cy.get('[data-cy="wmts-list-box"]').contains(wmtsName);
-    cy.get('[data-cy="add-layer-button"]').first().click();
+    cy.contains("div.selectable", wmtsName).find('[data-cy="add-layer-button"]').click();
     cy.wait("@setting");
     cy.get('[data-cy="maps-for-user-box"]').contains(wmtsName);
 

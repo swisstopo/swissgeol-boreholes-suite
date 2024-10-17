@@ -1,16 +1,13 @@
 import { checkAllVisibleRows, verifyPaginationText } from "../helpers/dataGridHelpers";
+import { setInput, setSelect } from "../helpers/formHelpers";
 import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by identifier.", () => {
   it("can filter by identifier", () => {
     newEditableBorehole().as("borehole_id");
-    let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 
-    identifierDropdown.each(el =>
-      cy.wrap(el).click({ force: true }).find('[role="option"]').eq(1).click({ force: true }),
-    );
-
-    cy.get('[data-cy="identifier-value"] input').type(819544732);
+    setSelect("borehole_identifier", 1);
+    setInput("borehole_identifier_value", 819544732);
     cy.get('[data-cy="identifier-add"]').click();
 
     stopBoreholeEditing();
@@ -38,26 +35,19 @@ describe("Tests for filtering data by identifier.", () => {
 
   it("can bulk edit boreholes while filter by identifier is set", () => {
     newEditableBorehole().as("borehole_id");
-    let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
+    setSelect("borehole_identifier", 1);
 
-    identifierDropdown.each(el =>
-      cy.wrap(el).click({ force: true }).find('[role="option"]').eq(1).click({ force: true }),
-    );
-
-    cy.get('[data-cy="identifier-value"] input').type(64531274);
+    setInput("borehole_identifier_value", 64531274);
     cy.get('[data-cy="identifier-add"]').click();
 
     stopBoreholeEditing();
     returnToOverview();
 
     newEditableBorehole().as("borehole_id_2");
-    identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 
-    identifierDropdown.each(el =>
-      cy.wrap(el).click({ force: true }).find('[role="option"]').eq(1).click({ force: true }),
-    );
+    setSelect("borehole_identifier", 1);
 
-    cy.get('[data-cy="identifier-value"] input').type(436584127);
+    setInput("borehole_identifier_value", 436584127);
     cy.get('[data-cy="identifier-add"]').click();
 
     stopBoreholeEditing();
