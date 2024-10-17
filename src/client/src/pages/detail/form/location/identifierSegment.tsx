@@ -79,28 +79,27 @@ const IdentifierSegment = ({ borehole, editingEnabled, updateBorehole }: Identif
             {borehole.data.id}
           </Grid>
           <Grid item xs={1} />
-          {borehole.data.custom.identifiers &&
-            borehole.data.custom.identifiers.map(identifier => (
-              <>
-                <Grid item xs={6}>
-                  <DomainText id={identifier.id} schema="borehole_identifier" />
-                </Grid>
-                <Grid item xs={5}>
-                  {identifier.value}
-                </Grid>
-                <Grid item xs={1} sx={{ pt: "0 !important", textAlign: "right" }}>
-                  {editingEnabled && (
-                    <IconButton
-                      onClick={() => {
-                        removeEntry(identifier);
-                      }}
-                      data-cy="identifier-delete">
-                      {<Trash2 size={16} />}
-                    </IconButton>
-                  )}
-                </Grid>
-              </>
-            ))}
+          {borehole.data.custom.identifiers?.map(identifier => (
+            <>
+              <Grid item xs={6}>
+                <DomainText id={identifier.id} schema="borehole_identifier" />
+              </Grid>
+              <Grid item xs={5}>
+                {identifier.value}
+              </Grid>
+              <Grid item xs={1} sx={{ pt: "0 !important", textAlign: "right" }}>
+                {editingEnabled && (
+                  <IconButton
+                    onClick={() => {
+                      removeEntry(identifier);
+                    }}
+                    data-cy="identifier-delete">
+                    {<Trash2 size={16} />}
+                  </IconButton>
+                )}
+              </Grid>
+            </>
+          ))}
         </Grid>
         {editingEnabled && (
           <Grid container spacing={2} sx={{ mt: 1 }}>
