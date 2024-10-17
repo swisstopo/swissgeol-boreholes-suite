@@ -409,9 +409,11 @@ export const theme = createTheme({
       defaultProps: {
         size: "small",
         variant: "outlined",
+        notched: false,
       },
       styleOverrides: {
         root: {
+          marginTop: themeSpacing(2),
           borderRadius: themeSpacing(0.5),
           flex: "1",
 
@@ -430,10 +432,20 @@ export const theme = createTheme({
       defaultProps: {
         shrink: true,
       },
+      styleOverrides: {
+        root: {
+          color: themePalette.neutral.contrastText,
+          fontWeight: 500,
+          fontSize: "17px !important",
+          lineHeight: "20px",
+          top: "-10px",
+          left: "-1px",
+        },
+      },
     },
     MuiOutlinedInput: {
       defaultProps: {
-        notched: true,
+        notched: false,
       },
     },
     MuiCardHeader: {
