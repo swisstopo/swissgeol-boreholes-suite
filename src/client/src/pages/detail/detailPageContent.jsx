@@ -55,7 +55,6 @@ class DetailPageContent extends React.Component {
     this.updateNumber = this.updateNumber.bind(this);
     this.updateChange = this.updateChange.bind(this);
     this.patch = this.patch.bind(this);
-    this.setStateBound = this.setState.bind(this);
   }
 
   componentDidMount() {
