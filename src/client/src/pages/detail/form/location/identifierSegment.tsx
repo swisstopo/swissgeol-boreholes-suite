@@ -88,7 +88,7 @@ const IdentifierSegment = ({ borehole, editingEnabled, updateBorehole }: Identif
                 <Grid item xs={5}>
                   {identifier.value}
                 </Grid>
-                <Grid item xs={1} sx={{ pt: "0 !important" }}>
+                <Grid item xs={1} sx={{ pt: "0 !important", textAlign: "right" }}>
                   {editingEnabled && (
                     <IconButton
                       onClick={() => {
@@ -127,8 +127,12 @@ const IdentifierSegment = ({ borehole, editingEnabled, updateBorehole }: Identif
                 }}
               />
             </Grid>
-            <Grid item xs={1}>
-              <IconButton onClick={addEntry} disabled={!(identifierId && identifierValue)} data-cy="identifier-add">
+            <Grid item xs={1} sx={{ textAlign: "right" }}>
+              <IconButton
+                sx={{ mt: 2 }}
+                onClick={addEntry}
+                disabled={!(identifierId && identifierValue)}
+                data-cy="identifier-add">
                 {<Save />}
               </IconButton>
             </Grid>
