@@ -226,7 +226,7 @@ class DetailPageContent extends React.Component {
   }
 
   render() {
-    const { t, borehole, user, editingEnabled } = this.props;
+    const { t, borehole, editingEnabled } = this.props;
     if (borehole.error !== null) {
       return <div>{t(borehole.error, borehole.data)}</div>;
     }
@@ -420,7 +420,6 @@ const mapStateToProps = state => {
     borehole: state.core_borehole,
     workflow: state.core_workflow,
     domains: state.core_domain_list,
-    user: state.core_user,
   };
 };
 
