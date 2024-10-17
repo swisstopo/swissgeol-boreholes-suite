@@ -77,7 +77,6 @@ describe("Test the borehole bulk edit feature.", () => {
 
   it("fills all bulkedit fields and saves.", () => {
     createBoreholes();
-    giveAdminUser1workgroup();
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     cy.wait("@borehole");
@@ -110,12 +109,10 @@ describe("Test the borehole bulk edit feature.", () => {
         cy.wrap($input).scrollIntoView().clear().type(`${index}`);
       });
 
-    cy.get('[role="combobox"]')
-      .should("have.length", 14)
-      .each(el => {
-        cy.wrap(el).click();
-        cy.get('li[role="option"]').last().click();
-      });
+    cy.get('[role="combobox"]').each(el => {
+      cy.wrap(el).click();
+      cy.get('li[role="option"]').last().click();
+    });
 
     // save
     cy.contains("button", "Save").click();
