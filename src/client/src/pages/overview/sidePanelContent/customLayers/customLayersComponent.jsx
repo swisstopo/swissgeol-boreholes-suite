@@ -18,7 +18,7 @@ export const CustomLayersComponent = ({
   return (
     <>
       <SideDrawerHeader title={t("overlay")} toggleDrawer={toggleDrawer} />
-      <Box>
+      <Box sx={{ overflow: "auto", scrollbarGutter: "stable", height: "85%" }}>
         {Object.values(layers)
           .sort((a, b) => {
             if (a.position < b.position) {
