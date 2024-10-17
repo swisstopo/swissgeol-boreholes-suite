@@ -70,7 +70,7 @@ describe("Tests for 'Location' edit page.", () => {
     });
   });
 
-  it.only("adds and removes identifiers.", () => {
+  it("adds and removes identifiers.", () => {
     newEditableBorehole().as("borehole_id");
 
     // initial state
