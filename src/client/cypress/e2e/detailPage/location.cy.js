@@ -1,4 +1,5 @@
 import { checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
+import { setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
@@ -69,30 +70,28 @@ describe("Tests for 'Location' edit page.", () => {
     });
   });
 
-  it("removes error highlight of identifier fields if at least one identifier is present.", () => {
+  it("adds and removes identifiers.", () => {
     newEditableBorehole().as("borehole_id");
 
     // initial state
-    cy.get('[data-cy="identifier-dropdown"]').should("have.class", "error");
-    cy.get('[data-cy="identifier-value"]').should("have.class", "error");
+    cy.get('[data-cy="identifier-add"]').should("be.disabled");
 
     // add identifier
-    cy.get('[data-cy="identifier-dropdown"]').click();
-    cy.get('[data-cy="identifier-dropdown"]').find("div[role='option']").contains("ID Canton").click();
-    cy.get('[data-cy="identifier-dropdown"]').should("not.have.class", "error");
-    cy.get('[data-cy="identifier-value"]').should("have.class", "error");
+    setSelect("borehole_identifier", 5);
+    cy.get('[data-cy="identifier-add"]').should("be.disabled");
 
-    cy.get('[data-cy="identifier-value"]').type("ECKLERTA");
-    cy.get('[data-cy="identifier-dropdown"]').should("not.have.class", "error");
-    cy.get('[data-cy="identifier-value"]').should("not.have.class", "error");
+    setInput("borehole_identifier_value", "ECKLERTA");
+    cy.get('[data-cy="identifier-add"]').should("not.be.disabled");
 
     cy.get('[data-cy="identifier-add"]').click();
-    cy.get('[data-cy="identifier-dropdown"]').should("not.have.class", "error");
-    cy.get('[data-cy="identifier-value"]').should("not.have.class", "error");
+    cy.contains("ID Canton").should("exist");
+    cy.contains("ECKLERTA").should("exist");
+
+    cy.get('[data-cy="identifier-add"]').should("be.disabled");
 
     // delete identifier
-    cy.get('[data-cy="identifier"]').contains("Delete").click();
-    cy.get('[data-cy="identifier-dropdown"]').should("have.class", "error");
-    cy.get('[data-cy="identifier-value"]').should("have.class", "error");
+    cy.get('[data-cy="identifier-delete"]').click();
+    cy.contains("ID Canton").should("not.exist");
+    cy.get('[data-cy="identifier-add"]').should("be.disabled");
   });
 });

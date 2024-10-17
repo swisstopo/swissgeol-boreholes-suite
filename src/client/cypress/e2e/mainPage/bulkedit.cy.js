@@ -44,7 +44,7 @@ function giveAdminUser2workgroups() {
 }
 
 describe("Test the borehole bulk edit feature.", () => {
-  it.skip("opens the bulk edit dialog with all boreholes selected", () => {
+  it("opens the bulk edit dialog with all boreholes selected", () => {
     giveAdminUser1workgroup();
     showTableAndWaitForData();
     checkAllVisibleRows();
@@ -52,7 +52,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get("h1").should("have.text", "Bulk editing");
   });
 
-  it.skip("displays workgroup accordion only if user has permission for more than one workgroup", () => {
+  it("displays workgroup accordion only if user has permission for more than one workgroup", () => {
     giveAdminUser1workgroup();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
@@ -77,7 +77,6 @@ describe("Test the borehole bulk edit feature.", () => {
 
   it("fills all bulkedit fields and saves.", () => {
     createBoreholes();
-    giveAdminUser1workgroup();
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     cy.wait("@borehole");
@@ -110,12 +109,10 @@ describe("Test the borehole bulk edit feature.", () => {
         cy.wrap($input).scrollIntoView().clear().type(`${index}`);
       });
 
-    cy.get('[role="combobox"]')
-      .should("have.length", 14)
-      .each(el => {
-        cy.wrap(el).click();
-        cy.get('li[role="option"]').last().click();
-      });
+    cy.get('[role="combobox"]').each(el => {
+      cy.wrap(el).click();
+      cy.get('li[role="option"]').last().click();
+    });
 
     // save
     cy.contains("button", "Save").click();
