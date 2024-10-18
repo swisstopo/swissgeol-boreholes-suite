@@ -131,8 +131,8 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
     setInput("custom.project_name", "new name");
     setSelect("workgroup", 1);
-    setSelect("restriction", 3);
-    setSelect("national_interest", 1);
+    setSelect("restriction", 2);
+    setSelect("national_interest", 0);
 
     let visibleCount = 0;
 
