@@ -188,7 +188,7 @@ public class BoreholeFileCloudService
             var fileName = $"{objectName}-{index}.png";
             var key = $"dataextraction/{fileName}";
 
-            var tempFile = $"/tmp/{Path.GetRandomFileName()}";
+            var tempFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             try
             {
                 using (var s3Stream = await s3Client.GetObjectStreamAsync(bucketName, key, null).ConfigureAwait(false))
