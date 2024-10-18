@@ -111,7 +111,7 @@ const IdentifierSegment = ({ borehole, editingEnabled, updateBorehole }: Identif
                 readonly={!editingEnabled}
                 selected={identifierId}
                 onUpdate={selected => {
-                  selected && setIdentifierId(selected);
+                  setIdentifierId(selected);
                 }}
               />
             </Grid>
