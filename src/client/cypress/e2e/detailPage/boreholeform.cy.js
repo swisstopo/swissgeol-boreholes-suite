@@ -1,6 +1,22 @@
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, isDisabled, setSelect } from "../helpers/formHelpers";
-import { createBorehole, goToRouteAndAcceptTerms, newEditableBorehole, returnToOverview } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  goToRouteAndAcceptTerms,
+  newEditableBorehole,
+  returnToOverview,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
+
+function ensureEditingDisabled() {
+  cy.get('[data-cy="edit-button"]').should("exist");
+  cy.get('[data-cy="editingstop-button"]').should("not.exist");
+}
+
+function ensureEditingEnabled() {
+  cy.get('[data-cy="edit-button"]').should("not.exist");
+  cy.get('[data-cy="editingstop-button"]').should("exist");
+}
 
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {
@@ -120,6 +136,27 @@ describe("Test for the borehole form.", () => {
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
       expect(location.hash).to.eq("#geometry");
+    });
+  });
+
+  it.only("stops editing when going back to overview", () => {
+    createBorehole({ "extended.original_name": "AAA_HIPPOPOTHAMUS", "custom.alternate_name": "AAA_HIPPOPOTHAMUS" }).as(
+      "borehole_id",
+    );
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}`);
+      ensureEditingDisabled();
+      startBoreholeEditing();
+      ensureEditingEnabled();
+      returnToOverview(); // navigating with swissgeol back button stops editing
+      showTableAndWaitForData();
+      clickOnRowWithText("AAA_HIPPOPOTHAMUS");
+      ensureEditingDisabled();
+      startBoreholeEditing();
+      goToRouteAndAcceptTerms(`/`); //  navigating with browser does not stop editing
+      showTableAndWaitForData();
+      clickOnRowWithText("AAA_HIPPOPOTHAMUS");
+      ensureEditingEnabled();
     });
   });
 });
