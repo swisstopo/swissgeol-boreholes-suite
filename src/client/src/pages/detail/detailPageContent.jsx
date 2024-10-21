@@ -5,7 +5,6 @@ import { Redirect, Route, Switch, useParams } from "react-router-dom";
 import { Backdrop, Box, CircularProgress, Stack } from "@mui/material";
 import _ from "lodash";
 import { loadBorehole, patchBorehole } from "../../api-lib";
-import { useDomains } from "../../api/fetchApiV2";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
@@ -30,7 +29,6 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
   const { t } = useTranslation();
 
   const borehole = useSelector(state => state.core_borehole);
-  const { data: domains } = useDomains();
   const dispatch = useDispatch();
 
   const updateBorehole = data => {
@@ -203,8 +201,7 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
                     borehole={borehole}
                     editingEnabled={editingEnabled}
                     updateChange={updateChange}
-                    updateNumber={updateNumber}
-                    domains={domains}></LocationSegment>
+                    updateNumber={updateNumber}></LocationSegment>
                 </Stack>
               </Box>
             )}
