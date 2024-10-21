@@ -1,7 +1,8 @@
-import { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
-import { Box } from "@mui/material";
+import { FC, useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useParams } from "react-router-dom";
+import { Box, CircularProgress, Stack } from "@mui/material";
+import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
@@ -13,15 +14,37 @@ import LabelingPanel from "./labeling/labelingPanel.tsx";
 
 export const DetailPage: FC = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
   const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
+  const dispatch = useDispatch();
+  const { id } = useParams<{
+    id: string;
+  }>();
+
+  const loadOrCreate = useCallback(
+    (id: string) => {
+      setLoading(true);
+      dispatch(loadBorehole(parseInt(id, 10)))
+        //@ts-expect-error // legacy fetch function returns not typed
+        .then(response => {
+          if (response.success) {
+            setLoading(false);
+          }
+        })
+        .catch(function (error: string) {
+          console.log(error);
+        });
+    },
+    [dispatch, setLoading],
+  );
 
   useEffect(() => {
-    setEditingEnabled(borehole.data.lock !== null);
-  }, [borehole.data.lock]);
+    loadOrCreate(id);
+  }, [id, loadOrCreate]);
 
   useEffect(() => {
     if (!editingEnabled) {
@@ -44,6 +67,13 @@ export const DetailPage: FC = () => {
 
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
   }, [editingEnabled, user, borehole, location, togglePanel]);
+
+  if (loading)
+    return (
+      <Stack height="100%" alignItems="center" justifyContent="center">
+        <CircularProgress />
+      </Stack>
+    );
 
   return (
     <>
@@ -70,7 +100,11 @@ export const DetailPage: FC = () => {
             {editingEnabled && (
               <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
             )}
-            <DetailPageContent editingEnabled={editingEnabled} editableByCurrentUser={editableByCurrentUser} />
+            <DetailPageContent
+              editingEnabled={editingEnabled}
+              editableByCurrentUser={editableByCurrentUser}
+              boreholeId={parseInt(id, 10)}
+            />
           </MainContentBox>
           {editingEnabled && panelOpen && <LabelingPanel boreholeId={borehole.data.id} />}
         </Box>
