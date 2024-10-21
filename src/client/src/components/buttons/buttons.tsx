@@ -1,9 +1,8 @@
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import CloseIcon from "@mui/icons-material/Close";
-import SaveIcon from "@mui/icons-material/Save";
 import { Button } from "@mui/material";
-import { Check, Pencil, Plus, Trash2 } from "lucide-react";
+import { Check, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { ButtonProps } from "./buttonsInterface";
@@ -13,7 +12,13 @@ export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
   // As of now there is no variant "contained" with color "secondary" in the design system, fallback to "primary".
   const color = props.variant === "contained" ? "primary" : (props.color ?? "primary");
   return (
-    <Button ref={ref} {...props} data-cy={props.label?.toLowerCase() + "-button"} color={color} startIcon={props.icon}>
+    <Button
+      ref={ref}
+      {...props}
+      data-cy={props.label?.toLowerCase() + "-button"}
+      color={color}
+      endIcon={props.icon}
+      sx={{ height: "36px" }}>
       {props.label && capitalizeFirstLetter(t(props.label))}
     </Button>
   );
@@ -93,7 +98,7 @@ export const SaveButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
       label="save"
       variant={props.variant ?? "outlined"}
       color={props.color ?? "secondary"}
-      icon={<SaveIcon />}
+      icon={<Save />}
     />
   );
 });

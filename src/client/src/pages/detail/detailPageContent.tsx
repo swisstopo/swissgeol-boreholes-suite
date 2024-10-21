@@ -161,7 +161,7 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser, boreh
         <Switch>
           <Route
             exact
-            path={"/:id"}
+            path={"/:id/location"}
             render={() => (
               <Box>
                 <Stack gap={3} mr={2}>
@@ -262,6 +262,18 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser, boreh
           />
           <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={editingEnabled} />} />
           <Route exact path={"/:id/status"} render={() => <WorkflowForm id={boreholeId} />} />
+          <Route
+            path={"/:id"}
+            render={() => {
+              return (
+                <Redirect
+                  to={{
+                    pathname: `/${boreholeId}/location`,
+                  }}
+                />
+              );
+            }}
+          />
         </Switch>
       </Box>
     </>

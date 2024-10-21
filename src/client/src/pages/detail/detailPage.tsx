@@ -11,6 +11,7 @@ import { DetailPageContent } from "./detailPageContent.tsx";
 import DetailSideNav from "./detailSideNav";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
+import { SaveBar } from "./saveBar.tsx";
 
 export const DetailPage: FC = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
@@ -86,28 +87,37 @@ export const DetailPage: FC = () => {
         <SidebarBox>
           <DetailSideNav />
         </SidebarBox>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: panelPosition === "right" ? "row" : "column",
-            width: "100%",
-          }}>
-          <MainContentBox
+        <Stack width="100%" direction="column">
+          <Box
             sx={{
-              width: panelOpen && panelPosition === "right" ? "50%" : "100%",
-              height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+              display: "flex",
+              flexGrow: 1,
+              overflow: "auto",
+              flexDirection: panelPosition === "right" ? "row" : "column",
+              width: "100%",
             }}>
-            {editingEnabled && (
-              <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
-            )}
-            <DetailPageContent
-              editingEnabled={editingEnabled}
-              editableByCurrentUser={editableByCurrentUser}
-              boreholeId={parseInt(id, 10)}
-            />
-          </MainContentBox>
-          {editingEnabled && panelOpen && <LabelingPanel boreholeId={borehole.data.id} />}
-        </Box>
+            <MainContentBox
+              sx={{
+                width: panelOpen && panelPosition === "right" ? "50%" : "100%",
+                height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+              }}>
+              {editingEnabled && (
+                <LabelingToggleButton
+                  panelOpen={panelOpen}
+                  panelPosition={panelPosition}
+                  onClick={() => togglePanel()}
+                />
+              )}
+              <DetailPageContent
+                editingEnabled={editingEnabled}
+                editableByCurrentUser={editableByCurrentUser}
+                boreholeId={parseInt(id, 10)}
+              />
+            </MainContentBox>
+            {editingEnabled && panelOpen && <LabelingPanel boreholeId={borehole.data.id} />}
+          </Box>
+          {location.pathname.endsWith("/location") && <SaveBar />}
+        </Stack>
       </LayoutBox>
     </>
   );
