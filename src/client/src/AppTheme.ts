@@ -26,6 +26,7 @@ const themePalette: AppThemePalette = {
   error: {
     main: "#99191E",
     dark: "#801519",
+    light: "#D8232A",
     contrastText: "#ffffff",
     background: "#ffebee",
   },

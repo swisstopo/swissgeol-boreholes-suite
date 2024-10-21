@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
@@ -10,6 +10,7 @@ import { DetailPageContent } from "./detailPageContent.tsx";
 import DetailSideNav from "./detailSideNav";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
+import { SaveBar } from "./saveBar.tsx";
 
 export const DetailPage: FC = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
@@ -56,24 +57,40 @@ export const DetailPage: FC = () => {
         <SidebarBox>
           <DetailSideNav />
         </SidebarBox>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: panelPosition === "right" ? "row" : "column",
-            width: "100%",
-          }}>
-          <MainContentBox
+        <Stack width="100%" direction="column">
+          <Box
             sx={{
-              width: panelOpen && panelPosition === "right" ? "50%" : "100%",
-              height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+              display: "flex",
+              flexGrow: 1,
+              overflow: "auto",
+              flexDirection: panelPosition === "right" ? "row" : "column",
+              width: "100%",
             }}>
-            {editingEnabled && (
-              <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
+            <MainContentBox
+              sx={{
+                width: panelOpen && panelPosition === "right" ? "50%" : "100%",
+                height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+              }}>
+              {editingEnabled && (
+                <LabelingToggleButton
+                  panelOpen={panelOpen}
+                  panelPosition={panelPosition}
+                  onClick={() => togglePanel()}
+                />
+              )}
+              <DetailPageContent editingEnabled={editingEnabled} editableByCurrentUser={editableByCurrentUser} />
+            </MainContentBox>
+            {editingEnabled && panelOpen && <LabelingPanel boreholeId={borehole.data.id} />}
+          </Box>
+          {editingEnabled &&
+            location.pathname.endsWith("/location") && ( // temporarily invisible because the location path is not yet implemented
+              <SaveBar
+                isFormDirty={false}
+                triggerSubmit={() => console.log("trigger submit")}
+                triggerReset={() => console.log("trigger reset")}
+              />
             )}
-            <DetailPageContent editingEnabled={editingEnabled} editableByCurrentUser={editableByCurrentUser} />
-          </MainContentBox>
-          {editingEnabled && panelOpen && <LabelingPanel boreholeId={borehole.data.id} />}
-        </Box>
+        </Stack>
       </LayoutBox>
     </>
   );
