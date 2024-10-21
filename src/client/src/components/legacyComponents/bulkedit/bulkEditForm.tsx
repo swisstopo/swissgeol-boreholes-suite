@@ -100,9 +100,6 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
     (field: BulkEditFormField, newValue: BulkEditFormValue) => {
       const fieldName = field.api ?? field.fieldName;
       let updatedValue: BulkEditFormValue = newValue;
-      if (field.type === FormValueType.Boolean) {
-        updatedValue = newValue === 1 ? true : newValue === 0 ? false : undefined;
-      }
       if (field.type === FormValueType.Number) {
         updatedValue = parseFloat(newValue as string);
       }
@@ -131,9 +128,10 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
     const entryIndex = fieldsToUpdate.findIndex(([key]) => key === fieldName);
     if (entryIndex !== -1) {
       setFieldsToUpdate([...fieldsToUpdate.filter(f => f[0] !== fieldName)]);
-      formMethods.resetField(fieldName);
       if (fieldName === "workgroup") {
         setWorkgroupId(null);
+      } else {
+        formMethods.resetField(fieldName);
       }
     }
   };
@@ -155,6 +153,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
       if (field.type === FormValueType.Domain) {
         return (
           <FormDomainSelect
+            canReset={false}
             fieldName={field.api ?? field.fieldName}
             label={field.fieldName}
             schemaName={field?.domain ?? field.api ?? field.fieldName}
@@ -168,6 +167,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
       if (field.type === FormValueType.Boolean) {
         return (
           <FormBooleanSelect
+            canReset={false}
             fieldName={field.api ?? field.fieldName}
             label={field.fieldName}
             onUpdate={e => {
