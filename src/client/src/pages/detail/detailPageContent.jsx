@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch, useParams } from "react-router-dom";
@@ -25,32 +25,14 @@ import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithos
 import WorkflowForm from "./form/workflow/workflowForm.jsx";
 
 export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => {
-  const [state, setState] = useState({
-    tab: 0,
-    loadingFetch: true,
-    creationFetch: false,
-    identifier: null,
-    identifierValue: "",
-
-    // Stratigraphy
-    newStartModal: false,
-    stratigraphy_id: null,
-    layer: null,
-    layers: [],
-    layerUpdated: null,
-
-    // Finish
-    note: "",
-  });
+  const [loading, setLoading] = useState(true);
 
   const { t } = useTranslation();
 
   const borehole = useSelector(state => state.core_borehole);
   const { data: domains } = useDomains();
   const dispatch = useDispatch();
-  const getBorehole = id => {
-    return dispatch(loadBorehole(id));
-  };
+
   const updateBorehole = data => {
     return dispatch(updateBorehole(data));
   };
@@ -60,40 +42,30 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
 
   let updateAttributeDelay = {};
 
-  function loadOrCreate(id) {
-    const intId = parseInt(id, 10);
-    console.log(intId);
-    // request to edit a borehole
-    setState({
-      ...state,
-      loadingFetch: true,
-      stratigraphy_id: null,
-      layers: [],
-      layer: null,
-      borehole: null,
-    });
-
-    getBorehole(intId)
-      .then(response => {
-        if (response.success) {
-          setState({
-            ...state,
-            loadingFetch: false,
-            stratigraphy_id:
-              _.isArray(response.data.stratigraphy) && response.data.stratigraphy.length > 0
-                ? response.data.stratigraphy[0].id
-                : null,
-          });
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
+  const loadOrCreate = useCallback(
+    id => {
+      const getBorehole = id => {
+        return dispatch(loadBorehole(id));
+      };
+      const intId = parseInt(id, 10);
+      // request to edit a borehole
+      setLoading(true);
+      getBorehole(intId)
+        .then(response => {
+          if (response.success) {
+            setLoading(false);
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
-    loadOrCreate(id, 10);
-  }, [id]);
+    loadOrCreate(id);
+  }, [id, loadOrCreate]);
 
   function checkLock() {
     if (borehole.data.role !== "EDIT") {
@@ -205,7 +177,7 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
         }}>
         <Backdrop
           sx={theme => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-          open={borehole.isFetching === true || state.loadingFetch === true || state.creationFetch === true}>
+          open={borehole.isFetching === true || loading}>
           <CircularProgress color="inherit" />
         </Backdrop>
         <Switch>
