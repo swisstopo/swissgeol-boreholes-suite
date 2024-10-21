@@ -6,15 +6,10 @@ import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts"
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import DetailHeader from "./detailHeader.tsx";
-import { DetailPageContent } from "./detailPageContent";
+import { DetailPageContent } from "./detailPageContent.tsx";
 import DetailSideNav from "./detailSideNav";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
-
-interface DetailPageContentProps {
-  editingEnabled: boolean;
-  editableByCurrentUser: boolean;
-}
 
 export const DetailPage: FC = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
@@ -50,11 +45,6 @@ export const DetailPage: FC = () => {
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
   }, [editingEnabled, user, borehole, location, togglePanel]);
 
-  const props: DetailPageContentProps = {
-    editingEnabled: editingEnabled,
-    editableByCurrentUser: editableByCurrentUser,
-  };
-
   return (
     <>
       <DetailHeader
@@ -80,7 +70,7 @@ export const DetailPage: FC = () => {
             {editingEnabled && (
               <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
             )}
-            <DetailPageContent {...props} />
+            <DetailPageContent editingEnabled={editingEnabled} editableByCurrentUser={editableByCurrentUser} />
           </MainContentBox>
           {editingEnabled && panelOpen && <LabelingPanel boreholeId={borehole.data.id} />}
         </Box>

@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch, useParams } from "react-router-dom";
 import { Backdrop, Box, CircularProgress, Stack } from "@mui/material";
 import _ from "lodash";
-import { loadBorehole, patchBorehole } from "../../api-lib";
+import { loadBorehole, patchBorehole, updateBorehole } from "../../api-lib";
+import { Borehole, BoreholeAttributes, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
@@ -23,38 +24,41 @@ import Lithology from "./form/stratigraphy/lithology";
 import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
 import WorkflowForm from "./form/workflow/workflowForm.jsx";
 
-export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => {
+interface DetailPageContentProps {
+  editingEnabled: boolean;
+  editableByCurrentUser: boolean;
+}
+
+type DetailPageParams = {
+  id: string;
+};
+export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }: DetailPageContentProps) => {
   const [loading, setLoading] = useState(true);
-
   const { t } = useTranslation();
-
-  const borehole = useSelector(state => state.core_borehole);
+  const { showAlert } = useContext(AlertContext);
+  const { id } = useParams<DetailPageParams>();
+  const borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const dispatch = useDispatch();
 
-  const updateBorehole = data => {
-    return dispatch(updateBorehole(data));
-  };
-
-  const { showAlert } = useContext(AlertContext);
-  const { id } = useParams();
-
-  let updateAttributeDelay = {};
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  const updateAttributeDelay: { [index: string]: any } = {};
 
   const loadOrCreate = useCallback(
-    id => {
-      const getBorehole = id => {
+    (id: string) => {
+      const getBorehole = (id: number) => {
         return dispatch(loadBorehole(id));
       };
       const intId = parseInt(id, 10);
       // request to edit a borehole
       setLoading(true);
       getBorehole(intId)
+        //@ts-expect-error // legacy fetch function returns not typed
         .then(response => {
           if (response.success) {
             setLoading(false);
           }
         })
-        .catch(function (error) {
+        .catch(function (error: string) {
           console.log(error);
         });
     },
@@ -78,48 +82,58 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
     return true;
   }
 
-  function isNumber(value) {
-    return /^-?\d*[.,]?\d*$/.test(value);
+  function isNumber(value: string | number) {
+    return /^-?\d*[.,]?\d*$/.test(String(value));
   }
 
-  function updateNumber(attribute, value, to = true) {
+  function updateNumber(attribute: keyof Borehole["data"], value: number | null, to = true) {
     if (!checkLock()) return;
-    const newBorehole = {
+    const updatedBorehole = {
       ...borehole,
     };
-    _.set(newBorehole.data, attribute, value);
+    _.set(updatedBorehole.data, attribute, value);
 
     if (value === null) {
-      patch(newBorehole.data, attribute, value, to);
-    } else if (/^-?\d*[.,]?\d*$/.test(value)) {
-      patch(newBorehole.data, attribute, _.toNumber(value), to);
+      patch(updatedBorehole.data, attribute, value, to);
+    } else if (/^-?\d*[.,]?\d*$/.test(String(value))) {
+      patch(updatedBorehole.data, attribute, _.toNumber(value), to);
     }
   }
 
-  function updateChange(attribute, value, to = true) {
-    if (checkLock() === false) {
+  function updateChange(
+    attribute: keyof Borehole["data"],
+    value: string | number | boolean | null | (number | string | null)[],
+    to = true,
+  ) {
+    if (!checkLock()) {
       return;
     }
-    const newBorehole = {
+    const updatedBorehole = {
       ...borehole,
     };
     if (attribute === "location") {
-      _.set(newBorehole.data, "location_x", value[0]);
-      _.set(newBorehole.data, "location_y", value[1]);
-      if (value[2] !== null && isNumber(value[2])) {
-        _.set(newBorehole.data, "elevation_z", value[2]);
+      const arrayValue = value as (number | string | null)[];
+      _.set(updatedBorehole.data, "location_x", arrayValue[0]);
+      _.set(updatedBorehole.data, "location_y", arrayValue[1]);
+      if (arrayValue[2] !== null && isNumber(arrayValue[2])) {
+        _.set(updatedBorehole.data, "elevation_z", arrayValue[2]);
       }
-      _.set(newBorehole.data, "custom.country", value[3]);
-      _.set(newBorehole.data, "custom.canton", value[4]);
-      _.set(newBorehole.data, "custom.municipality", value[5]);
+      _.set(updatedBorehole.data, "custom.country", arrayValue[3]);
+      _.set(updatedBorehole.data, "custom.canton", arrayValue[4]);
+      _.set(updatedBorehole.data, "custom.municipality", arrayValue[5]);
     } else {
-      _.set(newBorehole.data, attribute, value);
+      _.set(updatedBorehole.data, attribute, value);
     }
 
-    patch(newBorehole.data, attribute, value, to);
+    patch(updatedBorehole.data, attribute, value, to);
   }
 
-  function patch(borehole, attribute, value, to = true) {
+  function patch(
+    borehole: BoreholeAttributes,
+    attribute: string,
+    value: string | number | boolean | null | (number | string | null)[],
+    to = true,
+  ) {
     if (Object.prototype.hasOwnProperty.call(updateAttributeDelay, attribute) && updateAttributeDelay[attribute]) {
       clearTimeout(updateAttributeDelay[attribute]);
       updateAttributeDelay[attribute] = false;
@@ -127,6 +141,7 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
     updateAttributeDelay[attribute] = setTimeout(
       () => {
         patchBorehole(borehole.id, attribute, value)
+          //@ts-expect-error // legacy fetch function returns not typed
           .then(response => {
             if (response.data.success) {
               borehole.lock = response.data.lock;
@@ -136,19 +151,19 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
                 borehole.custom.canton = response.data.location.canton;
                 borehole.custom.municipality = response.data.location.municipality;
               }
-              updateBorehole(borehole);
+              dispatch(updateBorehole(borehole));
             } else if (response.status === 200) {
               showAlert(response.data.message, "error");
               if (response.data.error === "errorLocked") {
-                patch(borehole.data, attribute, value, to);
+                patch(response.data, attribute, value, to);
                 borehole.lock = null;
-                updateBorehole(borehole);
+                dispatch(updateBorehole(borehole));
               } else {
                 window.location.reload();
               }
             }
           })
-          .catch(error => {
+          .catch((error: string) => {
             console.error(error);
           });
       },
@@ -157,7 +172,7 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
   }
 
   if (borehole.error !== null) {
-    return <div>{t(borehole.error, borehole.data)}</div>;
+    showAlert(borehole.error, "error");
   }
 
   return (
@@ -175,7 +190,7 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
         }}>
         <Backdrop
           sx={theme => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-          open={borehole.isFetching === true || loading}>
+          open={borehole.isFetching || loading}>
           <CircularProgress color="inherit" />
         </Backdrop>
         <Switch>
@@ -185,10 +200,7 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
             render={() => (
               <Box>
                 <Stack gap={3} mr={2}>
-                  <IdentifierSegment
-                    borehole={borehole}
-                    updateBorehole={updateBorehole}
-                    editingEnabled={editingEnabled}></IdentifierSegment>
+                  <IdentifierSegment borehole={borehole} editingEnabled={editingEnabled}></IdentifierSegment>
                   <NameSegment
                     borehole={borehole}
                     updateChange={updateChange}
@@ -219,11 +231,7 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }) => 
               />
             )}
           />
-          <Route
-            exact
-            path={"/:id/stratigraphy/lithology"}
-            render={() => <Lithology id={id} unlocked={editingEnabled} checkLock={checkLock} />}
-          />
+          <Route exact path={"/:id/stratigraphy/lithology"} render={() => <Lithology checkLock={checkLock} />} />
           <Route
             exact
             path={"/:id/stratigraphy/chronostratigraphy"}
