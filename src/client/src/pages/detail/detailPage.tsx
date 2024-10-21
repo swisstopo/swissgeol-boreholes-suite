@@ -6,7 +6,7 @@ import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts"
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import DetailHeader from "./detailHeader.tsx";
-import DetailPageContent from "./detailPageContent";
+import { DetailPageContent } from "./detailPageContent";
 import DetailSideNav from "./detailSideNav";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
