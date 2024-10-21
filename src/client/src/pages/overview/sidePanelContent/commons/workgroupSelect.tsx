@@ -3,11 +3,11 @@ import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material/";
 import { theme } from "../../../../AppTheme.ts";
 import { WorkgroupSelectProps } from "./actionsInterfaces.ts";
 
-const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx }: WorkgroupSelectProps) => {
+const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx, hideLabel }: WorkgroupSelectProps) => {
   const { t } = useTranslation();
   return (
     <>
-      <Box sx={{ ...sx, backgroundColor: theme.palette.background.default }}>
+      <Box sx={{ pt: 2, backgroundColor: theme.palette.background.default, ...sx }}>
         {(() => {
           const wg = enabledWorkgroups;
           if (wg === undefined) {
@@ -27,7 +27,7 @@ const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx }:
             }));
           return (
             <FormControl variant="outlined" sx={{ width: "100%" }}>
-              <InputLabel id="workgroup-label">{t("workgroup")}</InputLabel>
+              {!hideLabel && <InputLabel id="workgroup-label">{t("workgroup")}</InputLabel>}
               <Select
                 size="small"
                 label={t("workgroup")}
