@@ -41,3 +41,4 @@ export { FormCheckbox } from "./formCheckbox";
 export { FormDisplay } from "./formDisplay";
 export { FormCoordinate } from "./formCoordinate";
 export { FormContainer } from "./formContainer";
+export { FormBooleanSelect } from "./formBooleanSelect";
