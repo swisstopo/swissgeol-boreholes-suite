@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch, useParams } from "react-router-dom";
-import { Backdrop, Box, CircularProgress, Stack } from "@mui/material";
+import { Box, CircularProgress, Stack } from "@mui/material";
 import _ from "lodash";
 import { loadBorehole, patchBorehole, updateBorehole } from "../../api-lib";
 import { Borehole, BoreholeAttributes, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
@@ -175,6 +175,13 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }: Det
     showAlert(borehole.error, "error");
   }
 
+  if (loading)
+    return (
+      <Stack height="100%" alignItems="center" justifyContent="center">
+        <CircularProgress />
+      </Stack>
+    );
+
   return (
     <>
       <Box
@@ -188,11 +195,6 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }: Det
           overflowY: "auto",
           backgroundColor: theme.palette.background.lightgrey,
         }}>
-        <Backdrop
-          sx={theme => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-          open={borehole.isFetching || loading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
         <Switch>
           <Route
             exact
