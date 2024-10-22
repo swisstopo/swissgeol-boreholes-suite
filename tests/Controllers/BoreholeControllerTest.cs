@@ -335,12 +335,15 @@ public class BoreholeControllerTest
 
         foreach (var bh in boreholes)
         {
-           context.Entry(bh)
-                .Collection(b => b.Observations)
-                .Query()
-                .OfType<FieldMeasurement>()
-                .Include(f => f.FieldMeasurementResults)
-                .Load();
+            if (bh.Observations != null)
+            {
+                context.Entry(bh)
+                    .Collection(b => b.Observations!)
+                    .Query()
+                    .OfType<FieldMeasurement>()
+                    .Include(f => f.FieldMeasurementResults)
+                    .Load();
+            }
         }
 
         var borehole = boreholes
