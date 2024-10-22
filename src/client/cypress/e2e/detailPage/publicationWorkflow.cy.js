@@ -1,4 +1,4 @@
-import { startEditing } from "../helpers/buttonHelpers.js";
+import { startEditing, stopEditing } from "../helpers/buttonHelpers.js";
 import { createBorehole, handlePrompt, loginAsAdmin } from "../helpers/testHelpers";
 
 const verifyColorForStatus = (status, color) => {
@@ -49,6 +49,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "orange");
 
     // Restart workflow
+    stopEditing();
     startEditing();
     cy.get('[data-cy="workflow_restart"]').click();
     cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
@@ -60,6 +61,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "red");
 
     // Submit for review
+    stopEditing();
     startEditing();
     cy.get("[data-cy=workflow_submit]").click();
     cy.get("[data-cy=workflow_dialog_submit]").click();
@@ -71,6 +73,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "orange");
 
     // Submit for validation
+    stopEditing();
     startEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -83,6 +86,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("valid", "orange");
 
     // Submit for publication
+    stopEditing();
     startEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -96,6 +100,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("public", "orange");
 
     // Publish
+    stopEditing();
     startEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -104,6 +109,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("public", "green");
 
     // Restart workflow
+    stopEditing();
     startEditing();
     cy.get('[data-cy="workflow_restart"]').click();
     cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
@@ -128,6 +134,7 @@ describe("Tests the publication workflow.", () => {
     cy.wait("@workflow_edit_list");
 
     // Delete
+    stopEditing();
     startEditing();
     cy.get("[data-cy=deleteborehole-button]").click();
     handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
