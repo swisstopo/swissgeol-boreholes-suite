@@ -37,6 +37,9 @@ export interface LocationFormInputs {
   qtReferenceElevationId: number | null;
   referenceElevationTypeId: number | null;
   hrsId?: number;
+  country: string;
+  canton: string;
+  municipality: string;
 }
 
 export const LocationPanel = forwardRef(
@@ -109,6 +112,7 @@ export const LocationPanel = forwardRef(
                 <LocationSegment
                   borehole={borehole}
                   editingEnabled={editingEnabled}
+                  formMethods={formMethods}
                   updateChange={updateChange}
                   updateNumber={updateNumber}></LocationSegment>
               </Stack>
