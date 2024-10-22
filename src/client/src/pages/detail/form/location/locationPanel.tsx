@@ -58,6 +58,29 @@ export const LocationPanel = forwardRef(
       onDirtyChange(formMethods.formState.isDirty);
     }, [formMethods.formState.isDirty, onDirtyChange]);
 
+    useEffect(() => {
+      if (borehole) {
+        // necessary because borehole is not immediately available.
+        formMethods.reset({
+          alternateName: borehole.alternateName,
+          originalName: borehole.originalName,
+          projectName: borehole.projectName,
+          restrictionId: borehole.restrictionId,
+          restrictionUntil: borehole.restrictionUntil,
+          nationalInterest: borehole.nationalInterest,
+          elevationZ: borehole.elevationZ,
+          elevationPrecisionId: borehole.elevationPrecisionId,
+          referenceElevation: borehole.referenceElevation,
+          qtReferenceElevationId: borehole.qtReferenceElevationId,
+          referenceElevationTypeId: borehole.referenceElevationTypeId,
+          hrsId: borehole.hrsId,
+          country: borehole.country,
+          canton: borehole.canton,
+          municipality: borehole.municipality,
+        });
+      }
+    }, [borehole, formMethods]);
+
     useImperativeHandle(ref, () => ({
       submit: () => {
         const currentValues = formMethods.getValues();
