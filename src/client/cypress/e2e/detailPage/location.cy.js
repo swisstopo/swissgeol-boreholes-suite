@@ -1,3 +1,4 @@
+import { saveForm } from "../helpers/buttonHelpers";
 import { checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 import {
@@ -17,7 +18,9 @@ describe("Tests for 'Location' edit page.", () => {
 
     // enter original name
     originalNameInput.type("AAA_SCATORPS");
-    cy.wait("@edit_patch");
+
+    // save borehole
+    saveForm();
 
     // stop editing
     stopBoreholeEditing();
@@ -36,13 +39,15 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("completes alternate name", () => {
-    createBorehole({ "extended.original_name": "PHOTOSQUIRREL" }).as("borehole_id");
+    createBorehole({ "extended.original_name": "PHOTOSQUIRREL", "custom.alternate_name": "PHOTOSQUIRREL" }).as(
+      "borehole_id",
+    );
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
-      cy.get('[data-cy="original_name-formInput"]').within(() => {
+      cy.get('[data-cy="originalName-formInput"]').within(() => {
         cy.get("input").as("originalNameInput");
       });
-      cy.get('[data-cy="alternate_name-formInput"]').within(() => {
+      cy.get('[data-cy="alternateName-formInput"]').within(() => {
         cy.get("input").as("alternateNameInput");
       });
 
@@ -52,18 +57,15 @@ describe("Tests for 'Location' edit page.", () => {
       startBoreholeEditing();
       // changing original name should also change alternate name
       cy.get("@originalNameInput").clear().type("PHOTOCAT");
-      cy.wait("@edit_patch");
       cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
       cy.get("@alternateNameInput").should("have.value", "PHOTOCAT");
 
       cy.get("@alternateNameInput").clear().type("PHOTOMOUSE");
-      cy.wait("@edit_patch");
       cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
       cy.get("@alternateNameInput").should("have.value", "PHOTOMOUSE");
 
       cy.get("@alternateNameInput").clear();
-      cy.wait("@edit_patch");
-      stopBoreholeEditing();
+      saveForm();
       // should be reset to original name if alternate name is empty
       cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
       cy.get("@alternateNameInput").should("have.value", "PHOTOCAT");

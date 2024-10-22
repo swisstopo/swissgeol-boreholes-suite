@@ -58,6 +58,7 @@ export const DetailPage: FC = () => {
     data.referenceElevationTypeId = data.referenceElevationTypeId || null;
     data.elevationPrecisionId = data.elevationPrecisionId || null;
     data.qtReferenceElevationId = data.qtReferenceElevationId || null;
+    data.alternateName = data?.alternateName || data.originalName;
 
     delete data.hrsId;
     return data;
