@@ -2,6 +2,12 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { fetchApiV2, upload } from "./fetchApiV2";
 
 export interface BoreholeV2 {
+  id: number;
+  locationX: number | null;
+  locationY: number | null;
+  municipality: string;
+  country: string;
+  canton: string;
   alternateName: string;
   originalName: string;
   projectName: number;
