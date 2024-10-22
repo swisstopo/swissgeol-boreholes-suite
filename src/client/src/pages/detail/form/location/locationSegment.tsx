@@ -26,8 +26,6 @@ const LocationSegment = ({ borehole, editingEnabled, updateChange, updateNumber 
 
   const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
 
-  /// Todo get borehole from redux, impor updateChange , updateNumber
-  /// adapt tests
   return (
     <Stack direction="column" gap={3}>
       <Card sx={{ py: 1, px: 1 }}>
