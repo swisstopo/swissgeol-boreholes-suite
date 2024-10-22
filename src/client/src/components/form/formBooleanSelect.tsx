@@ -5,7 +5,7 @@ import { FormSelectProps } from "./formSelect.tsx";
 
 export interface FormBooleanSelectProps extends FormSelectProps {
   label: string;
-  selected?: boolean | undefined;
+  selected?: boolean | null | undefined;
 }
 
 export const FormBooleanSelect: FC<FormBooleanSelectProps> = props => {

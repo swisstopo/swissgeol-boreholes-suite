@@ -71,7 +71,7 @@ export const SimpleDomainSelect: FC<SimpleDomainSelectProps> = ({
       data-cy={fieldName + "-formSelect"}
       InputProps={{ readOnly: readonly, disabled: disabled }}>
       {menuItems.map(item => (
-        <MenuItem key={item.key} value={item.value}>
+        <MenuItem key={item.key} value={item.value as number}>
           {item.italic ? <em>{item.label}</em> : item.label}
         </MenuItem>
       ))}

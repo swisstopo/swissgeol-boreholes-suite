@@ -9,6 +9,7 @@ interface SaveBarProps {
   isFormDirty: boolean;
 }
 export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarProps) => {
+  console.log(isFormDirty);
   const changesMessage = (
     <>
       <CircleX />

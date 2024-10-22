@@ -1,8 +1,8 @@
-import { useContext } from "react";
+import { RefObject, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { Box, Stack } from "@mui/material";
+import { Box } from "@mui/material";
 import _ from "lodash";
 import { patchBorehole, updateBorehole } from "../../api-lib";
 import { Borehole, BoreholeAttributes, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
@@ -15,10 +15,7 @@ import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement.jsx";
 import Hydrotest from "./form/hydrogeology/hydrotest.jsx";
 import WaterIngress from "./form/hydrogeology/waterIngress.jsx";
-import IdentifierSegment from "./form/location/identifierSegment.tsx";
-import LocationSegment from "./form/location/locationSegment.tsx";
-import NameSegment from "./form/location/nameSegment.tsx";
-import RestrictionSegment from "./form/location/restrictionSegment.tsx";
+import { LocationFormInputs, LocationPanel } from "./form/location/locationPanel.tsx";
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
 import Lithology from "./form/stratigraphy/lithology";
 import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
@@ -28,9 +25,19 @@ interface DetailPageContentProps {
   editingEnabled: boolean;
   editableByCurrentUser: boolean;
   boreholeId: number;
+  locationPanelRef: RefObject<{ submit: () => void; reset: () => void }>;
+  handleFormSubmit: (data: LocationFormInputs) => void;
+  handleDirtyChange: (isDirty: boolean) => void;
 }
 
-export const DetailPageContent = ({ editingEnabled, editableByCurrentUser, boreholeId }: DetailPageContentProps) => {
+export const DetailPageContent = ({
+  editingEnabled,
+  editableByCurrentUser,
+  boreholeId,
+  locationPanelRef,
+  handleFormSubmit,
+  handleDirtyChange,
+}: DetailPageContentProps) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
   const borehole = useSelector((state: ReduxRootState) => state.core_borehole);
@@ -163,24 +170,14 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser, boreh
             exact
             path={"/:id/location"}
             render={() => (
-              <Box>
-                <Stack gap={3} mr={2}>
-                  <IdentifierSegment borehole={borehole} editingEnabled={editingEnabled}></IdentifierSegment>
-                  <NameSegment
-                    borehole={borehole}
-                    updateChange={updateChange}
-                    editingEnabled={editingEnabled}></NameSegment>
-                  <RestrictionSegment
-                    borehole={borehole}
-                    updateChange={updateChange}
-                    editingEnabled={editingEnabled}></RestrictionSegment>
-                  <LocationSegment
-                    borehole={borehole}
-                    editingEnabled={editingEnabled}
-                    updateChange={updateChange}
-                    updateNumber={updateNumber}></LocationSegment>
-                </Stack>
-              </Box>
+              <LocationPanel
+                ref={locationPanelRef}
+                editingEnabled={editingEnabled}
+                onSubmit={handleFormSubmit}
+                onDirtyChange={handleDirtyChange}
+                updateChange={updateChange}
+                updateNumber={updateNumber}
+              />
             )}
           />
           <Route
