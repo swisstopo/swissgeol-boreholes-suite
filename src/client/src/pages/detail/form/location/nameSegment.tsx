@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
-import { BoreholeV2 } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
 import { FormContainer, FormInput } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
@@ -16,13 +16,13 @@ const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps
   const auth = useAuth();
 
   const originalName = formMethods.watch("originalName");
-  const { dirtyFields } = formMethods.formState;
+  const { dirtyFields, isDirty } = formMethods.formState;
 
   useEffect(() => {
-    if (dirtyFields.originalName) {
+    if (dirtyFields.originalName || (!isDirty && formMethods.getValues("alternateName") === "")) {
       formMethods.setValue("alternateName", originalName);
     }
-  }, [dirtyFields.originalName, formMethods, formMethods.setValue, originalName]);
+  }, [borehole?.alternateName, dirtyFields.originalName, formMethods, formMethods.setValue, isDirty, originalName]);
 
   return (
     <Card>
