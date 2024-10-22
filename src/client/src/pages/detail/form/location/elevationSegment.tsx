@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { BoreholeV2 } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { FormContainer, FormDomainSelect, FormInput } from "../../../../components/form/form.ts";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
