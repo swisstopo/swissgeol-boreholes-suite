@@ -8,24 +8,24 @@ describe("Test for the borehole form.", () => {
     newEditableBorehole().as("borehole_id");
 
     // fills and evaluates all mui dropdowns on location tab (identifiers are tested separately)
-    setSelect("restriction", 2);
-    isDisabled("restriction_until", true);
-    setSelect("restriction", 3);
-    isDisabled("restriction_until", false);
-    setSelect("national_interest", 2);
+    setSelect("restrictionId", 2);
+    isDisabled("restrictionUntil", true);
+    setSelect("restrictionId", 3);
+    isDisabled("restrictionUntil", false);
+    setSelect("nationalInterest", 2);
     setSelect("spatial_reference_system", 0);
     setSelect("location_precision", 2);
-    setSelect("elevation_precision", 2);
-    setSelect("qt_reference_elevation", 2);
-    setSelect("reference_elevation_type", 4);
+    setSelect("elevationPrecisionId", 2);
+    setSelect("qtReferenceElevationId", 2);
+    setSelect("referenceElevationTypeId", 4);
 
-    evaluateSelect("restriction", "20111003");
-    evaluateSelect("national_interest", "2");
+    evaluateSelect("restrictionId", "20111003");
+    evaluateSelect("nationalInterest", "2");
     evaluateSelect("spatial_reference_system", "20104001");
     evaluateSelect("location_precision", "20113002");
-    evaluateSelect("elevation_precision", "20114002");
-    evaluateSelect("qt_reference_elevation", "20114002");
-    evaluateSelect("reference_elevation_type", "20117004");
+    evaluateSelect("elevationPrecisionId", "20114002");
+    evaluateSelect("qtReferenceElevationId", "20114002");
+    evaluateSelect("referenceElevationTypeId", "20117004");
 
     // fill all dropdowns on borehole tab
     cy.get('[data-cy="borehole-menu-item"]').click();
@@ -50,35 +50,35 @@ describe("Test for the borehole form.", () => {
     sortBy("Name");
     clickOnRowWithText("Zena Rath");
 
-    evaluateInput("original_name", "Zena Rath");
-    evaluateInput("alternate_name", "Zena Rath");
-    evaluateInput("project_name", "Reactive asymmetric alliance");
-    evaluateSelect("restriction", "");
-    evaluateSelect("national_interest", "0"); // No
+    evaluateInput("originalName", "Zena Rath");
+    evaluateInput("alternateName", "Zena Rath");
+    evaluateInput("projectName", "Reactive asymmetric alliance");
+    evaluateSelect("restrictionId", "");
+    evaluateSelect("nationalInterest", "0"); // No
     evaluateSelect("spatial_reference_system", "20104002"); // LV03
     evaluateSelect("location_precision", "20113005");
 
-    evaluateInput("elevation_z", "3'519.948980314633");
-    evaluateInput("reference_elevation", "3'554.9389396584306");
-    evaluateSelect("elevation_precision", "");
-    evaluateSelect("qt_reference_elevation", "20114007"); // not specified
-    evaluateSelect("reference_elevation_type", "30000013"); // kelly bushing
+    evaluateInput("elevationZ", "3'519.948980314633");
+    evaluateInput("referenceElevation", "3'554.9389396584306");
+    evaluateSelect("elevationPrecisionId", "");
+    evaluateSelect("qtReferenceElevationId", "20114007"); // not specified
+    evaluateSelect("referenceElevationTypeId", "30000013"); // kelly bushing
 
     returnToOverview();
     clickOnRowWithText("Zena Mraz");
-    evaluateInput("original_name", "Zena Mraz");
-    evaluateInput("alternate_name", "Zena Mraz");
-    evaluateInput("project_name", "Ergonomic heuristic installation");
-    evaluateSelect("restriction", "");
-    evaluateSelect("national_interest", "1"); // Yes
+    evaluateInput("originalName", "Zena Mraz");
+    evaluateInput("alternateName", "Zena Mraz");
+    evaluateInput("projectName", "Ergonomic heuristic installation");
+    evaluateSelect("restrictionId", "");
+    evaluateSelect("nationalInterest", "1"); // Yes
     evaluateSelect("spatial_reference_system", "20104002"); // LV03
     evaluateSelect("location_precision", "20113007"); // not specified
 
-    evaluateInput("elevation_z", "3'062.9991330499756");
-    evaluateInput("reference_elevation", "3'478.1368118609007");
-    evaluateSelect("elevation_precision", "20114003"); // 1
-    evaluateSelect("qt_reference_elevation", "20114005"); //0.1
-    evaluateSelect("reference_elevation_type", "30000013"); // kelly bushing
+    evaluateInput("elevationZ", "3'062.9991330499756");
+    evaluateInput("referenceElevation", "3'478.1368118609007");
+    evaluateSelect("elevationPrecisionId", "20114003"); // 1
+    evaluateSelect("qtReferenceElevationId", "20114005"); //0.1
+    evaluateSelect("referenceElevationTypeId", "30000013"); // kelly bushing
   });
 
   it("switches tabs", () => {
