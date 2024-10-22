@@ -1,7 +1,7 @@
 import { Box, Stack } from "@mui/material";
-import { CircleCheck, CircleX } from "lucide-react";
-import { theme } from "../../AppTheme.ts";
-import { DeleteButton, SaveButton } from "../../components/buttons/buttons.tsx";
+import { CircleX } from "lucide-react";
+import { theme } from "../../AppTheme";
+import { DeleteButton, SaveButton } from "../../components/buttons/buttons";
 
 interface SaveBarProps {
   triggerSubmit: () => void;
@@ -9,13 +9,6 @@ interface SaveBarProps {
   isFormDirty: boolean;
 }
 export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarProps) => {
-  const noChangesMessage = (
-    <>
-      <CircleCheck />
-      <Box> Alles gespeichert</Box>
-    </>
-  );
-
   const changesMessage = (
     <>
       <CircleX />
@@ -38,7 +31,7 @@ export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarPro
         direction="row"
         spacing={1}
         sx={{ flexGrow: 1, color: isFormDirty ? theme.palette.error.light : theme.palette.success.main }}>
-        {isFormDirty ? changesMessage : noChangesMessage}
+        {isFormDirty && changesMessage}
       </Stack>
 
       <Stack spacing={1} direction="row">
