@@ -11,7 +11,7 @@ export interface FormSelectProps {
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
-  selected?: number | boolean;
+  selected?: number | boolean | null;
   values?: FormSelectValue[];
   sx?: SxProps;
   className?: string;
@@ -26,7 +26,7 @@ export interface FormSelectValue {
 
 export interface FormSelectMenuItem {
   key: number;
-  value?: number;
+  value?: number | null;
   label: string;
   italic?: boolean;
 }
@@ -49,7 +49,7 @@ export const FormSelect: FC<FormSelectProps> = ({
 
   const menuItems: FormSelectMenuItem[] = [];
   if (!required && canReset) {
-    menuItems.push({ key: 0, value: undefined, label: t("reset"), italic: true });
+    menuItems.push({ key: 0, value: null, label: t("reset"), italic: true });
   }
 
   if (values) {
@@ -70,8 +70,9 @@ export const FormSelect: FC<FormSelectProps> = ({
       rules={{
         required: required ?? false,
         onChange: e => {
+          const value = e.target.value === "" ? null : e.target.value;
           if (onUpdate) {
-            onUpdate(e.target.value);
+            onUpdate(value);
           }
         },
       }}
@@ -92,7 +93,7 @@ export const FormSelect: FC<FormSelectProps> = ({
           data-cy={fieldName + "-formSelect"}
           InputProps={{ readOnly: readonly, disabled: disabled }}>
           {menuItems.map(item => (
-            <MenuItem key={item.key} value={item.value}>
+            <MenuItem key={item.key} value={item.value as number}>
               {item.italic ? <em>{item.label}</em> : item.label}
             </MenuItem>
           ))}

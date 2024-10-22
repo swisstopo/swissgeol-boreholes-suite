@@ -1,58 +1,54 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
+import { BoreholeV2 } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
-import { FormContainer } from "../../../../components/form/form.ts";
-import { SimpleFormInput } from "../../../../components/form/simpleFormInput.tsx";
+import { FormContainer, FormInput } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { SegmentProps } from "./segmentInterface.ts";
+import { LocationFormInputs } from "./locationPanel.tsx";
 
-const NameSegment = ({ borehole, updateChange, editingEnabled }: SegmentProps) => {
-  const [alternateName, setAlternateName] = useState("");
+interface NameSegmentProps {
+  borehole: BoreholeV2;
+  editingEnabled: boolean;
+  formMethods: UseFormReturn<LocationFormInputs>;
+}
+const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps) => {
   const auth = useAuth();
 
+  const originalName = formMethods.watch("originalName");
+  const { dirtyFields } = formMethods.formState;
+
   useEffect(() => {
-    setAlternateName(borehole.data.custom.alternate_name || borehole.data.extended.original_name);
-  }, [borehole.data]);
+    if (dirtyFields.originalName) {
+      formMethods.setValue("alternateName", originalName);
+    }
+  }, [dirtyFields.originalName, formMethods, formMethods.setValue, originalName]);
 
   return (
     <Card>
       <FormSegmentBox>
         <FormContainer>
           <FormContainer direction="row">
-            <SimpleFormInput
+            <FormInput
+              fieldName={"alternateName"}
               label={"alternate_name"}
               readonly={!editingEnabled}
-              value={alternateName}
-              onUpdate={e => {
-                setAlternateName(e);
-                // @ts-expect-error nested key for borehole attribute
-                updateChange("custom.alternate_name", e);
-              }}
+              value={borehole?.alternateName || ""}
             />
-
-            <SimpleFormInput
+            <FormInput
+              fieldName={"projectName"}
               label={"project_name"}
-              value={borehole?.data?.custom.project_name || ""}
+              value={borehole?.projectName || ""}
               readonly={!editingEnabled}
-              onUpdate={e => {
-                // @ts-expect-error nested key for borehole attribute
-                updateChange("custom.project_name", e);
-              }}
             />
           </FormContainer>
           <FormContainer direction="row">
             {!auth.anonymousModeEnabled && (
-              <SimpleFormInput
+              <FormInput
+                fieldName={"originalName"}
                 label={"original_name"}
-                value={borehole?.data?.extended.original_name || ""}
+                value={borehole?.originalName || ""}
                 readonly={!editingEnabled}
-                onUpdate={e => {
-                  setAlternateName(e);
-                  // @ts-expect-error nested key for borehole attribute
-                  updateChange("extended.original_name", e);
-                  // @ts-expect-error nested key for borehole attribute
-                  updateChange("custom.alternate_name", e);
-                }}
               />
             )}
           </FormContainer>
