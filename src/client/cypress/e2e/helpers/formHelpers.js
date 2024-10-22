@@ -94,6 +94,14 @@ export const evaluateTextarea = (fieldName, expectedValue, parent) => {
 };
 
 /**
+ * Scrolls the element into view.
+ * @param {string} selector The selector for the form element.
+ */
+export const scrollIntoView = selector => {
+  cy.get(selector).scrollIntoView();
+};
+
+/**
  * Opens the dropdown for a select or multi-select form element.
  * @param {string} selector The selector for the form element.
  */
@@ -135,6 +143,7 @@ export const closeDropdown = () => {
  */
 export const setSelect = (fieldName, index, expected, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"]`;
+  scrollIntoView(selector);
   openDropdown(selector);
   if (expected != null) {
     evaluateDropdownOptionsLength(expected);
