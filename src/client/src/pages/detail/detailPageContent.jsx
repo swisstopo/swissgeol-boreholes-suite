@@ -16,7 +16,7 @@ import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement.jsx";
 import Hydrotest from "./form/hydrogeology/hydrotest.jsx";
 import WaterIngress from "./form/hydrogeology/waterIngress.jsx";
-import IdentifierSegment from "./form/location/indentifierSegment.jsx";
+import IdentifierSegment from "./form/location/identifierSegment.tsx";
 import LocationSegment from "./form/location/locationSegment.tsx";
 import NameSegment from "./form/location/nameSegment.tsx";
 import RestrictionSegment from "./form/location/restrictionSegment.tsx";
@@ -55,7 +55,6 @@ class DetailPageContent extends React.Component {
     this.updateNumber = this.updateNumber.bind(this);
     this.updateChange = this.updateChange.bind(this);
     this.patch = this.patch.bind(this);
-    this.setStateBound = this.setState.bind(this);
   }
 
   componentDidMount() {
@@ -226,7 +225,7 @@ class DetailPageContent extends React.Component {
   }
 
   render() {
-    const { t, borehole, user, editingEnabled } = this.props;
+    const { t, borehole, editingEnabled } = this.props;
     if (borehole.error !== null) {
       return <div>{t(borehole.error, borehole.data)}</div>;
     }
@@ -280,11 +279,8 @@ class DetailPageContent extends React.Component {
                     <Stack gap={3} mr={2}>
                       <IdentifierSegment
                         borehole={borehole}
-                        identifier={this.state.identifier}
-                        identifierValue={this.state.identifierValue}
-                        setState={this.setStateBound}
                         updateBorehole={this.props.updateBorehole}
-                        user={user}></IdentifierSegment>
+                        editingEnabled={editingEnabled}></IdentifierSegment>
                       <NameSegment
                         borehole={borehole}
                         updateChange={this.updateChange}
@@ -423,7 +419,6 @@ const mapStateToProps = state => {
     borehole: state.core_borehole,
     workflow: state.core_workflow,
     domains: state.core_domain_list,
-    user: state.core_user,
   };
 };
 

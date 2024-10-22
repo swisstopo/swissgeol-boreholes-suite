@@ -16,6 +16,7 @@ export interface FormSelectProps {
   sx?: SxProps;
   className?: string;
   onUpdate?: (value: number | boolean | null) => void;
+  canReset?: boolean;
 }
 
 export interface FormSelectValue {
@@ -41,12 +42,13 @@ export const FormSelect: FC<FormSelectProps> = ({
   sx,
   className,
   onUpdate,
+  canReset = true, // option to disable reset in dropdown without using the required rule and error display
 }) => {
   const { t } = useTranslation();
   const { control } = useFormContext();
 
   const menuItems: FormSelectMenuItem[] = [];
-  if (!required) {
+  if (!required && canReset) {
     menuItems.push({ key: 0, value: undefined, label: t("reset"), italic: true });
   }
 

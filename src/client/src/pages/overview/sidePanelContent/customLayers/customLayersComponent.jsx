@@ -16,9 +16,9 @@ export const CustomLayersComponent = ({
   const { t } = useTranslation();
 
   return (
-    <>
+    <Stack sx={{ height: "100%" }}>
       <SideDrawerHeader title={t("overlay")} toggleDrawer={toggleDrawer} />
-      <Box>
+      <Box sx={{ overflow: "auto", scrollbarGutter: "stable", flex: 1 }}>
         {Object.values(layers)
           .sort((a, b) => {
             if (a.position < b.position) {
@@ -90,6 +90,6 @@ export const CustomLayersComponent = ({
             </Box>
           ))}
       </Box>
-    </>
+    </Stack>
   );
 };

@@ -20,7 +20,7 @@ interface SimpleDomainSelectProps {
   selected?: number | boolean | null;
   sx?: SxProps;
   className?: string;
-  onUpdate?: (value: number | boolean | string | null) => void;
+  onUpdate?: (value: number | null) => void;
 }
 
 export const SimpleDomainSelect: FC<SimpleDomainSelectProps> = ({
@@ -63,7 +63,7 @@ export const SimpleDomainSelect: FC<SimpleDomainSelectProps> = ({
       name={fieldName}
       onChange={e => {
         if (onUpdate) {
-          onUpdate(e.target.value);
+          onUpdate(parseInt(e.target.value));
         }
       }}
       value={selected}

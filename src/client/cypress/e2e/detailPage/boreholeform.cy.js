@@ -23,22 +23,7 @@ describe("Test for the borehole form.", () => {
     // create boreholes
     newEditableBorehole().as("borehole_id");
 
-    // fill all legacy dropdowns on location tab
-    cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 1)
-      .each(el => cy.wrap(el).click().find('[role="option"]').last().click());
-
-    const locationDropdownValues = [];
-    cy.get('[data-cy="domain-dropdown"]')
-      .each(el => {
-        const value = el[0].children[1].firstChild.data;
-        locationDropdownValues.push(value);
-      })
-      .then(() => {
-        expect(locationDropdownValues).to.deep.eq(["ID Kernlager"]);
-      });
-
-    // fills and evaluates all mui dropdowns on location tab
+    // fills and evaluates all mui dropdowns on location tab (identifiers are tested separately)
     setSelect("restriction", 2);
     isDisabled("restriction_until", true);
     setSelect("restriction", 3);

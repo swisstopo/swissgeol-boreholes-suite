@@ -57,7 +57,13 @@ interface Workflow {
   workflow: number;
 }
 
-interface BoreholeAttributes {
+export interface Identifier {
+  id: number;
+  identifier: string;
+  value: string;
+}
+
+export interface BoreholeAttributes {
   national_interest: boolean;
   restriction_until: Date;
   restriction: number;
@@ -85,6 +91,7 @@ interface BoreholeAttributes {
   precision_location_x_lv03: number;
   precision_location_y_lv03: number;
   custom: {
+    identifiers: Identifier[];
     country: string;
     canton: string;
     municipality: string;
