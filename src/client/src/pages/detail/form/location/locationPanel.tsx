@@ -1,11 +1,10 @@
-import { forwardRef, RefObject, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, RefObject, useEffect, useImperativeHandle } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { Prompt, useParams } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { Borehole, ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
-import { BoreholeV2, getBoreholeById } from "../../../../api/borehole.ts";
+import { BoreholeV2 } from "../../../../api/borehole.ts";
 import IdentifierSegment from "./identifierSegment.tsx";
 import LocationSegment from "./locationSegment.tsx";
 import NameSegment from "./nameSegment.tsx";
@@ -13,6 +12,7 @@ import RestrictionSegment from "./restrictionSegment.tsx";
 
 interface LocationPanelProps {
   editingEnabled: boolean;
+  borehole: BoreholeV2;
   onSubmit: (data: LocationFormInputs) => void;
   onDirtyChange: (isDirty: boolean) => void;
   ref: RefObject<{ submit: () => void; reset: () => void }>;
@@ -43,19 +43,9 @@ export interface LocationFormInputs {
 }
 
 export const LocationPanel = forwardRef(
-  ({ editingEnabled, onSubmit, updateNumber, updateChange, onDirtyChange }: LocationPanelProps, ref) => {
+  ({ editingEnabled, onSubmit, updateNumber, updateChange, onDirtyChange, borehole }: LocationPanelProps, ref) => {
     const formMethods = useForm<LocationFormInputs>({ mode: "all" });
     const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
-    const { id } = useParams<{
-      id: string;
-    }>();
-    const [borehole, setBorehole] = useState<BoreholeV2>();
-
-    useEffect(() => {
-      getBoreholeById(parseInt(id)).then(b => {
-        setBorehole(b);
-      });
-    }, [id]);
 
     useEffect(() => {
       onDirtyChange(formMethods.formState.isDirty);
@@ -117,10 +107,6 @@ export const LocationPanel = forwardRef(
                   updateNumber={updateNumber}></LocationSegment>
               </Stack>
             </form>
-            <Prompt
-              when={formMethods.formState.isDirty}
-              message="You have unsaved changes. Are you sure you want to leave?"
-            />
           </FormProvider>
         </Box>
       );
