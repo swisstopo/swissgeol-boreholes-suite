@@ -1,3 +1,4 @@
+import { stopEditing } from "../helpers/buttonHelpers";
 import {
   createBorehole,
   handlePrompt,
@@ -54,7 +55,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "orange");
 
     // Restart workflow
-    stopBoreholeEditing();
+    stopEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_restart"]').click();
     cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
@@ -66,7 +67,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "red");
 
     // Submit for review
-    stopBoreholeEditing();
+    stopEditing();
     startBoreholeEditing();
     cy.get("[data-cy=workflow_submit]").click();
     cy.get("[data-cy=workflow_dialog_submit]").click();
@@ -78,7 +79,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "orange");
 
     // Submit for validation
-    stopBoreholeEditing();
+    stopEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -91,7 +92,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("valid", "orange");
 
     // Submit for publication
-    stopBoreholeEditing();
+    stopEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -105,7 +106,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("public", "orange");
 
     // Publish
-    stopBoreholeEditing();
+    stopEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -114,7 +115,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("public", "green");
 
     // Restart workflow
-    stopBoreholeEditing();
+    stopEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_restart"]').click();
     cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
