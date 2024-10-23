@@ -1,10 +1,12 @@
 import { forwardRef, RefObject, useEffect, useImperativeHandle } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { Borehole, ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
+import { useBlockNavigation } from "../../useBlockNavigation.tsx";
 import IdentifierSegment from "./identifierSegment.tsx";
 import LocationSegment from "./locationSegment.tsx";
 import NameSegment from "./nameSegment.tsx";
@@ -46,6 +48,14 @@ export const LocationPanel = forwardRef(
   ({ editingEnabled, onSubmit, updateNumber, updateChange, onDirtyChange, borehole }: LocationPanelProps, ref) => {
     const formMethods = useForm<LocationFormInputs>({ mode: "all" });
     const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
+    const history = useHistory();
+    const { handleBlockedNavigation } = useBlockNavigation(formMethods.formState.isDirty);
+
+    history.block(nextLocation => {
+      if (!handleBlockedNavigation(nextLocation.pathname)) {
+        return false;
+      }
+    });
 
     useEffect(() => {
       onDirtyChange(formMethods.formState.isDirty);
