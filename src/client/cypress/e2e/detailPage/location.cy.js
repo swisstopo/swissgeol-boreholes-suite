@@ -4,6 +4,7 @@ import { setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
+  handlePrompt,
   newEditableBorehole,
   returnToOverview,
   startBoreholeEditing,
@@ -145,6 +146,27 @@ describe("Tests for 'Location' edit page.", () => {
       verifyUnsavedChanges();
       saveButton.click();
       verifyNoUnsavedChanges();
+    });
+  });
+
+  it("blocks navigating away with unsaved changes", () => {
+    newEditableBorehole().as("borehole_id");
+    let boreholeId;
+    cy.get("@borehole_id").then(id => {
+      boreholeId = id;
+    });
+
+    const originalNameInput = cy.contains("label", "Original name").next().children("input");
+    originalNameInput.type("FELIX_THE_RACOON");
+    cy.get('[data-cy="borehole-menu-item"]').click();
+    handlePrompt("Es gibt ungespeicherte Änderungen. Möchten Sie alle Änderungen verwerfen?", "cancel");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/${boreholeId}/location`);
+    });
+    cy.get('[data-cy="borehole-menu-item"]').click();
+    handlePrompt("Es gibt ungespeicherte Änderungen. Möchten Sie alle Änderungen verwerfen?", "discardChanges");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
     });
   });
 });
