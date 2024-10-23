@@ -12,6 +12,7 @@ export interface WorkgroupSelectProps {
   workgroupId: number | null;
   enabledWorkgroups: Workgroup[];
   setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
+  hideLabel?: boolean;
   sx?: SxProps;
 }
 

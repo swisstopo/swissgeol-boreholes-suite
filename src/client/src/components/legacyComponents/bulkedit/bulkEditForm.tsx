@@ -149,13 +149,12 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
 
   const renderInput = useCallback(
     (field: BulkEditFormField) => {
-      if (field.type === FormValueType.Workgroup) return;
       if (field.type === FormValueType.Domain) {
         return (
           <FormDomainSelect
             canReset={false}
             fieldName={field.api ?? field.fieldName}
-            label={field.fieldName}
+            label=""
             schemaName={field?.domain ?? field.api ?? field.fieldName}
             onUpdate={e => {
               onFieldValueChange(field, e);
@@ -169,17 +168,27 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
           <FormBooleanSelect
             canReset={false}
             fieldName={field.api ?? field.fieldName}
-            label={field.fieldName}
+            label=""
             onUpdate={e => {
               onFieldValueChange(field, e);
             }}
           />
         );
       }
+      if (field.fieldName === FormValueType.Workgroup) {
+        return (
+          <WorkgroupSelect
+            workgroupId={workgroupId}
+            enabledWorkgroups={enabledWorkgroups}
+            setWorkgroupId={setWorkgroupId}
+            hideLabel={true}
+          />
+        );
+      }
       return (
         <FormInput
           fieldName={field.api ?? field.fieldName}
-          label={field.fieldName}
+          label=""
           type={field.type}
           onUpdate={e => {
             onFieldValueChange(field, e);
@@ -187,7 +196,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
         />
       );
     },
-    [onFieldValueChange],
+    [onFieldValueChange, workgroupId, enabledWorkgroups],
   );
 
   return (
@@ -235,18 +244,9 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
                         </Typography>
                       </Stack>
                     </AccordionSummary>
-                    <AccordionDetails sx={{ pl: 5, pr: 3 }}>
+                    <AccordionDetails sx={{ pl: 5, pr: 3, mt: -4 }}>
                       <StackFullWidth>
-                        <>
-                          {renderInput(field)}
-                          {field.fieldName === FormValueType.Workgroup && (
-                            <WorkgroupSelect
-                              workgroupId={workgroupId}
-                              enabledWorkgroups={enabledWorkgroups}
-                              setWorkgroupId={setWorkgroupId}
-                            />
-                          )}
-                        </>
+                        <>{renderInput(field)}</>
                       </StackFullWidth>
                     </AccordionDetails>
                   </Accordion>
