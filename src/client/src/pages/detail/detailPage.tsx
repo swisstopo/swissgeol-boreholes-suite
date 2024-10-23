@@ -50,9 +50,11 @@ export const DetailPage: FC = () => {
   const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
 
   const prepareFormDataForSubmit = (data: LocationFormInputs) => {
-    data.elevationZ = parseFloatWithThousandsSeparator(data.elevationZ as string);
-    data.referenceElevation = parseFloatWithThousandsSeparator(data.referenceElevation as string);
-    data?.restrictionUntil ? (data.restrictionUntil += "T00:00:00.000Z") : (data.restrictionUntil = null);
+    data.elevationZ = data?.elevationZ ? parseFloatWithThousandsSeparator(data.elevationZ as string) : null;
+    data.referenceElevation = data?.referenceElevation
+      ? parseFloatWithThousandsSeparator(data.referenceElevation as string)
+      : null;
+    data.restrictionUntil = data?.restrictionUntil ? (data.restrictionUntil += "T00:00:00.000Z") : null;
     data.nationalInterest = data?.nationalInterest === 1 ? true : data?.nationalInterest === 0 ? false : null;
     data.restrictionId = data.restrictionId || null;
     data.referenceElevationTypeId = data.referenceElevationTypeId || null;
@@ -68,7 +70,8 @@ export const DetailPage: FC = () => {
     const newdata = prepareFormDataForSubmit(data);
     getBoreholeById(parseInt(id)).then(b => {
       updateBorehole({ ...b, ...newdata }).then(r => {
-        // error handling?
+        console.log(r);
+        // TODO error handling?
       });
     });
   };

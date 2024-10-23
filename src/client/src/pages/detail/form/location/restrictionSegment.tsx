@@ -54,7 +54,7 @@ const RestrictionSegment = ({ borehole, editingEnabled, formMethods }: Restricti
             type={FormValueType.Date}
           />
           <FormBooleanSelect
-            required
+            canReset={false}
             readonly={!editingEnabled}
             fieldName={"nationalInterest"}
             label="national_interest"

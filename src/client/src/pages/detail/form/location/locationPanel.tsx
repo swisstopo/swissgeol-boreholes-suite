@@ -1,7 +1,7 @@
 import { forwardRef, RefObject, useEffect, useImperativeHandle, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Prompt, useParams } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { Borehole, ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
@@ -31,9 +31,9 @@ export interface LocationFormInputs {
   restrictionId: number | null;
   restrictionUntil: Date | string | null;
   nationalInterest: number | boolean | null; // Number as select options pared to boolean
-  elevationZ: number | string; // Number with thousands separator then parsed to number
+  elevationZ: number | string | null; // Number with thousands separator then parsed to number
   elevationPrecisionId: number | null;
-  referenceElevation: number | string; // Number with thousands separator then parsed to number
+  referenceElevation: number | string | null; // Number with thousands separator then parsed to number
   qtReferenceElevationId: number | null;
   referenceElevationTypeId: number | null;
   hrsId?: number;
@@ -117,6 +117,10 @@ export const LocationPanel = forwardRef(
                   updateNumber={updateNumber}></LocationSegment>
               </Stack>
             </form>
+            <Prompt
+              when={formMethods.formState.isDirty}
+              message="You have unsaved changes. Are you sure you want to leave?"
+            />
           </FormProvider>
         </Box>
       );
