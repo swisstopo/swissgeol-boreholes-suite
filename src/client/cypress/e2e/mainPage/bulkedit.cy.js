@@ -1,12 +1,7 @@
 import adminUser from "../../fixtures/adminUser.json";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
-import {
-  createBorehole,
-  goToRouteAndAcceptTerms,
-  startBoreholeEditing,
-  stopBoreholeEditing,
-} from "../helpers/testHelpers";
+import { createBorehole, goToRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
 
 function createBoreholes() {
   createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as("borehole_id_1");
@@ -177,8 +172,6 @@ describe("Test the borehole bulk edit feature.", () => {
       cy.contains(".MuiDataGrid-row", "AAA_JUNIORSOUFFLE")
         .find('.MuiCheckbox-root input[type="checkbox"]')
         .should("be.disabled");
-      goToRouteAndAcceptTerms(`/${id}/borehole`);
-      stopBoreholeEditing();
     });
   });
 });
