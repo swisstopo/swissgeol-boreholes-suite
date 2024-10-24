@@ -96,4 +96,55 @@ describe("Tests for 'Location' edit page.", () => {
     cy.contains("ID Canton").should("not.exist");
     cy.get('[data-cy="identifier-add"]').should("be.disabled");
   });
+
+  it("displays unsaved changes message if unsaved changes are present", () => {
+    createBorehole({ "extended.original_name": "PHOTOSQUIRREL", "custom.alternate_name": "PHOTOPIGEON" }).as(
+      "borehole_id",
+    );
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}`);
+      startBoreholeEditing();
+      let saveButton;
+      let discardButton;
+
+      const getButtons = () => {
+        saveButton = cy.get('[data-cy="save-button"]');
+        discardButton = cy.get('[data-cy="discardchanges-button"]');
+      };
+
+      const verifyNoUnsavedChanges = () => {
+        getButtons();
+        saveButton.should("be.disabled");
+        discardButton.should("be.disabled");
+        cy.contains("Unsaved changes").should("not.exist");
+      };
+
+      const verifyUnsavedChanges = () => {
+        getButtons();
+        saveButton.should("not.be.disabled");
+        discardButton.should("not.be.disabled");
+        cy.contains("Unsaved changes").should("exist");
+      };
+
+      verifyNoUnsavedChanges();
+      setSelect("restrictionId", 2);
+      verifyUnsavedChanges();
+
+      // reset from form
+      setSelect("restrictionId", 0);
+      verifyNoUnsavedChanges();
+
+      // discard changes with button
+      setSelect("restrictionId", 3);
+      verifyUnsavedChanges();
+      discardButton.click();
+      verifyNoUnsavedChanges();
+
+      // save changes
+      setSelect("restrictionId", 3);
+      verifyUnsavedChanges();
+      saveButton.click();
+      verifyNoUnsavedChanges();
+    });
+  });
 });
