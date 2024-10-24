@@ -4,7 +4,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { getBoreholeById, updateBorehole } from "../../api/borehole.ts";
+import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import { parseFloatWithThousandsSeparator } from "../../components/legacyComponents/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
@@ -49,7 +49,7 @@ export const DetailPage: FC = () => {
 
   const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
 
-  const prepareFormDataForSubmit = (data: LocationFormInputs) => {
+  const prepareFormDataForSubmit = (data: BoreholeV2) => {
     data.elevationZ = data?.elevationZ ? parseFloatWithThousandsSeparator(String(data.elevationZ)) : null;
     data.referenceElevation = data?.referenceElevation
       ? parseFloatWithThousandsSeparator(String(data.referenceElevation))
@@ -67,9 +67,9 @@ export const DetailPage: FC = () => {
   };
 
   const handleFormSubmit = (data: LocationFormInputs) => {
-    const newdata = prepareFormDataForSubmit(data);
     getBoreholeById(parseInt(id)).then(b => {
-      updateBorehole({ ...b, ...newdata }).then(r => {
+      const newdata: BoreholeV2 = prepareFormDataForSubmit({ ...b, ...data });
+      updateBorehole(newdata).then(r => {
         console.log(r);
         // TODO error handling?
       });

@@ -3,23 +3,23 @@ import { fetchApiV2, upload } from "./fetchApiV2";
 
 export interface BoreholeV2 {
   id: number;
-  locationX: number | null;
-  locationY: number | null;
-  municipality: string;
-  country: string;
-  canton: string;
   alternateName: string;
   originalName: string;
   projectName: number;
-  restrictionId: number;
+  restrictionId: number | null;
   restrictionUntil: Date | string | null;
-  nationalInterest: boolean | null;
-  elevationZ: number | string; // Number with thousands separator then parsed to number
-  elevationPrecisionId: number;
-  referenceElevation: number | string; // Number with thousands separator then parsed to number
-  qtReferenceElevationId: number;
-  referenceElevationTypeId: number;
-  hrsId: number;
+  nationalInterest: number | boolean | null; // Number as select options pared to boolean
+  elevationZ: number | string | null; // Number with thousands separator then parsed to number
+  elevationPrecisionId: number | null;
+  referenceElevation: number | string | null; // Number with thousands separator then parsed to number
+  qtReferenceElevationId: number | null;
+  referenceElevationTypeId: number | null;
+  hrsId?: number;
+  country: string;
+  canton: string;
+  municipality: string;
+  locationX: number | null;
+  locationY: number | null;
 }
 
 // boreholes
