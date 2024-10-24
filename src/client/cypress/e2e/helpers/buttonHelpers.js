@@ -6,6 +6,7 @@ import { createBaseSelector } from "./testHelpers";
  */
 export const saveForm = parent => {
   const selector = createBaseSelector(parent) + '[data-cy="save-button"]';
+  cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
 
