@@ -44,7 +44,7 @@ describe("Test for the borehole form.", () => {
       });
   });
 
-  it.only("Checks if form values are updated when borehole changes", () => {
+  it("Checks if form values are updated when borehole changes", () => {
     showTableAndWaitForData();
     // sort by Name descending
     sortBy("Name");
