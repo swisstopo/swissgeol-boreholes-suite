@@ -16,6 +16,7 @@ export const saveForm = parent => {
  */
 export const startEditing = parent => {
   const selector = createBaseSelector(parent) + '[data-cy="edit-button"]';
+  cy.wait(1000);
   cy.get(selector).click({ force: true });
 };
 
@@ -25,6 +26,7 @@ export const startEditing = parent => {
  */
 export const stopEditing = parent => {
   const selector = createBaseSelector(parent) + '[data-cy="editingstop-button"]';
+  cy.wait(1000);
   cy.get(selector).click({ force: true });
 };
 
