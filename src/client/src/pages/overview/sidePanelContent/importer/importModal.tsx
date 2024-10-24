@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Header, Icon, Modal, Segment } from "semantic-ui-react";
-import { importBoreholes } from "../../../../api/fetchApiV2.js";
+import { importBoreholes } from "../../../../api/borehole.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { capitalizeFirstLetter } from "../../../../utils.ts";
