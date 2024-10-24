@@ -283,6 +283,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s geometry.
     /// </summary>
     [Column("geom_bho")]
+    [JsonIgnore]
     public Point? Geometry { get; set; }
 
     /// <summary>
@@ -355,27 +356,28 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s stratigraphies.
     /// </summary>
-    public ICollection<Stratigraphy> Stratigraphies { get; }
+    public ICollection<Stratigraphy>? Stratigraphies { get; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s completions.
     /// </summary>
-    public ICollection<Completion> Completions { get; }
+    public ICollection<Completion>? Completions { get; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s <see cref="Section"/>s.
     /// </summary>
-    public ICollection<Section> Sections { get; }
+    public ICollection<Section>? Sections { get; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s <see cref="BoreholeGeometry"/>.
     /// </summary>
-    public IList<BoreholeGeometryElement> BoreholeGeometry { get; }
+    [JsonIgnore]
+    public IList<BoreholeGeometryElement>? BoreholeGeometry { get; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s observations.
     /// </summary>
-    public ICollection<Observation> Observations { get; }
+    public ICollection<Observation>? Observations { get; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s workflows.
@@ -385,12 +387,12 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="File"/>s attached to the <see cref="Borehole"/>.
     /// </summary>
-    public ICollection<File> Files { get; }
+    public ICollection<File>? Files { get; }
 
     /// <summary>
     /// Gets the <see cref="BoreholeFile"/> join table entities.
     /// </summary>
-    public ICollection<BoreholeFile> BoreholeFiles { get; }
+    public ICollection<BoreholeFile>? BoreholeFiles { get; }
 
     /// <summary>
     /// Gets the <see cref="Codelist"/>s used by the <see cref="Borehole"/> to store multiple id types.
