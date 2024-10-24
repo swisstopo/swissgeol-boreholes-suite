@@ -24,11 +24,11 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
 
-  const toggleEditing = (editingEnabled: boolean) => {
-    setEditingEnabled(editingEnabled);
-    if (borehole.data.lock !== null && borehole.data.lock.id === user.data.id) {
+  const toggleEditing = (editing: boolean) => {
+    setEditingEnabled(editing);
+    if (!editing && borehole.data.lock !== null && borehole.data.lock.id === user.data.id) {
       dispatch(unlockBorehole(borehole.data.id));
-    } else if (borehole.data.lock === null) {
+    } else if (editing && borehole.data.lock === null) {
       dispatch(lockBorehole(borehole.data.id));
     }
   };
@@ -64,6 +64,7 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
           color="primary"
           data-cy="backButton"
           onClick={() => {
+            stopEditing();
             history.push("/");
           }}
           sx={{
