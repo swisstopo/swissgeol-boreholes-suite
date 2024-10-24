@@ -149,7 +149,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   ];
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
-    history.push(`/${params.row.id}`);
+    history.push(`/${params.row.id}/location`);
   };
 
   const getRowClassName = (params: GridRowParams) => {
