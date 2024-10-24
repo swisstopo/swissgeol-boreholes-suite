@@ -60,7 +60,7 @@ describe("Test for the borehole form.", () => {
       });
   });
 
-  it.only("Checks if form values are updated when borehole changes", () => {
+  it("Checks if form values are updated when borehole changes", () => {
     showTableAndWaitForData();
     // sort by Name descending
     sortBy("Name");
@@ -124,7 +124,7 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it.only("stops editing when going back to overview", () => {
+  it("stops editing when going back to overview", () => {
     createBorehole({ "extended.original_name": "AAA_HIPPOPOTHAMUS", "custom.alternate_name": "AAA_HIPPOPOTHAMUS" }).as(
       "borehole_id",
     );
