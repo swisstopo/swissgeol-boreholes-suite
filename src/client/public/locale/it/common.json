@@ -294,6 +294,7 @@
   "materialCasingLayer": "Tipo di materiale della tubatura",
   "maxValue": "Valore massimo",
   "member": "Membro",
+  "messageDiscardUnsavedChanges": "Sono presenti modifiche non salvate. Si desidera annullare tutte le modifiche?",
   "meter": "Metri",
   "minValue": "Valore minimo",
   "minute": "minuto",

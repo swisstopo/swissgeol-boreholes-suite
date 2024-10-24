@@ -24,14 +24,14 @@ export const useBlockNavigation = (isFormDirty: boolean): UseBlockNavigationResu
 
   const handleBlockedNavigation = (nextLocation: string): boolean => {
     if (!confirmedNavigation && isFormDirty) {
-      showPrompt("Es gibt ungespeicherte Änderungen. Möchten Sie alle Änderungen verwerfen?", [
+      showPrompt(t("messageDiscardUnsavedChanges"), [
         {
           label: t("cancel"),
           icon: <X />,
           variant: "outlined",
         },
         {
-          label: t("discardchanges"),
+          label: t("discardChanges"),
           icon: <Trash2 />,
           variant: "contained",
           action: confirmNavigation,

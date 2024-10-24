@@ -294,6 +294,7 @@
   "materialCasingLayer": "Matériau du casing",
   "maxValue": "Valeur maximale",
   "member": "Membre",
+  "messageDiscardUnsavedChanges": "Il y a des modifications non enregistrées. Voulez-vous annuler toutes les modifications?",
   "meter": "Mètres",
   "minValue": "Valeur minimale",
   "minute": "minute",

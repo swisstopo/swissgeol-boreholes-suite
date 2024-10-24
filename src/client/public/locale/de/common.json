@@ -294,6 +294,7 @@
   "materialCasingLayer": "Verrohrungsmaterial",
   "maxValue": "Maximalwert",
   "member": "Member",
+  "messageDiscardUnsavedChanges": "Es gibt ungespeicherte Änderungen. Möchten Sie alle Änderungen verwerfen?",
   "meter": "Meter",
   "minValue": "Minimalwert",
   "minute": "Minute",

@@ -294,6 +294,7 @@
   "materialCasingLayer": "Casing material",
   "maxValue": "Maximum",
   "member": "Member",
+  "messageDiscardUnsavedChanges": "There are unsaved changes. Do you want to discard all changes?",
   "meter": "Meter",
   "minValue": "Minimum",
   "minute": "minute",
