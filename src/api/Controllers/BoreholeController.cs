@@ -59,7 +59,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Borehole>> GetByIdAsync(int id)
     {
-        var borehole = await Context.Boreholes.Include(b => b.BoreholeCodelists)
+        var borehole = await GetBoreholesWithIncludes()
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);
