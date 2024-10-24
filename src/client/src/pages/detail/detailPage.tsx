@@ -50,9 +50,9 @@ export const DetailPage: FC = () => {
   const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
 
   const prepareFormDataForSubmit = (data: LocationFormInputs) => {
-    data.elevationZ = data?.elevationZ ? parseFloatWithThousandsSeparator(data.elevationZ as string) : null;
+    data.elevationZ = data?.elevationZ ? parseFloatWithThousandsSeparator(String(data.elevationZ)) : null;
     data.referenceElevation = data?.referenceElevation
-      ? parseFloatWithThousandsSeparator(data.referenceElevation as string)
+      ? parseFloatWithThousandsSeparator(String(data.referenceElevation))
       : null;
     data.restrictionUntil = data?.restrictionUntil ? (data.restrictionUntil += "T00:00:00.000Z") : null;
     data.nationalInterest = data?.nationalInterest === 1 ? true : data?.nationalInterest === 0 ? false : null;
@@ -160,13 +160,12 @@ export const DetailPage: FC = () => {
               <DetailPageContent
                 editingEnabled={editingEnabled}
                 editableByCurrentUser={editableByCurrentUser}
-                boreholeId={parseInt(id, 10)}
                 handleFormSubmit={handleFormSubmit}
                 locationPanelRef={locationPanelRef}
                 handleDirtyChange={handleDirtyChange}
               />
             </MainContentBox>
-            {editingEnabled && panelOpen && <LabelingPanel boreholeId={borehole.data.id} />}
+            {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}
           </Box>
           {editingEnabled && location.pathname.endsWith("/location") && (
             <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} isFormDirty={isFormDirty} />
