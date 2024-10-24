@@ -382,7 +382,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s workflows.
     /// </summary>
-    public ICollection<Workflow>? Workflows { get; } = new List<Workflow>();
+    public ICollection<Workflow> Workflows { get; } = new List<Workflow>();
 
     /// <summary>
     /// Gets the <see cref="File"/>s attached to the <see cref="Borehole"/>.
