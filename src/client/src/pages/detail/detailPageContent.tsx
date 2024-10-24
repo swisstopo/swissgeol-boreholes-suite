@@ -56,9 +56,6 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }: Det
           if (response.success) {
             setLoading(false);
           }
-        })
-        .catch(function (error: string) {
-          console.log(error);
         });
     },
     [dispatch],
@@ -161,9 +158,6 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }: Det
                 window.location.reload();
               }
             }
-          })
-          .catch((error: string) => {
-            console.error(error);
           });
       },
       to ? 500 : 0,
