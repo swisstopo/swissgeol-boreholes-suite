@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
-import { Check, ChevronLeft, Trash2 } from "lucide-react";
+import { Check, ChevronLeft, Trash2, X } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
@@ -15,9 +15,18 @@ interface DetailHeaderProps {
   setEditingEnabled: (editingEnabled: boolean) => void;
   editableByCurrentUser: boolean;
   borehole: BoreholeV2;
+  isFormDirty: boolean;
+  triggerReset: () => void;
 }
 
-const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser, borehole }: DetailHeaderProps) => {
+const DetailHeader = ({
+  editingEnabled,
+  setEditingEnabled,
+  editableByCurrentUser,
+  isFormDirty,
+  triggerReset,
+  borehole,
+}: DetailHeaderProps) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -36,8 +45,29 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
     toggleEditing(true);
   };
 
-  const stopEditing = () => {
+  const resetFormAndStopEditing = () => {
+    triggerReset();
     toggleEditing(false);
+  };
+
+  const stopEditing = () => {
+    if (isFormDirty) {
+      showPrompt(t("messageDiscardUnsavedChanges"), [
+        {
+          label: t("cancel"),
+          icon: <X />,
+          variant: "outlined",
+        },
+        {
+          label: t("discardChanges"),
+          icon: <Trash2 />,
+          variant: "contained",
+          action: resetFormAndStopEditing,
+        },
+      ]);
+    } else {
+      toggleEditing(false);
+    }
   };
 
   const handleDelete = async () => {

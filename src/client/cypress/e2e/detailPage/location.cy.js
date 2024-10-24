@@ -1,4 +1,4 @@
-import { saveForm } from "../helpers/buttonHelpers";
+import { saveForm, stopEditing } from "../helpers/buttonHelpers";
 import { checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 import {
@@ -149,22 +149,33 @@ describe("Tests for 'Location' edit page.", () => {
     });
   });
 
-  it("blocks navigating away with unsaved changes", () => {
+  it("blocks navigating away and stop editing with unsaved changes", () => {
     newEditableBorehole().as("borehole_id");
     let boreholeId;
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
     });
+    const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
 
     const originalNameInput = cy.contains("label", "Original name").next().children("input");
     originalNameInput.type("FELIX_THE_RACOON");
+    stopEditing();
+    handlePrompt(messageUnsavedChanges, "cancel");
+    cy.get('[data-cy="editingstop-button"]').should("exist");
+    stopEditing();
+    handlePrompt(messageUnsavedChanges, "discardChanges");
+    cy.get('[data-cy="editingstop-button"]').should("not.exist");
+
+    originalNameInput.type("FELIX_THE_BROOM");
+
     cy.get('[data-cy="borehole-menu-item"]').click();
-    handlePrompt("Es gibt ungespeicherte Änderungen. Möchten Sie alle Änderungen verwerfen?", "cancel");
+    handlePrompt(messageUnsavedChanges, "cancel");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/location`);
     });
+
     cy.get('[data-cy="borehole-menu-item"]').click();
-    handlePrompt("Es gibt ungespeicherte Änderungen. Möchten Sie alle Änderungen verwerfen?", "discardChanges");
+    handlePrompt(messageUnsavedChanges, "discardChanges");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
     });

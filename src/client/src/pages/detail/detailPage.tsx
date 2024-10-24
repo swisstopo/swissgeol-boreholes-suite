@@ -140,6 +140,8 @@ export const DetailPage: FC = () => {
         editingEnabled={editingEnabled}
         setEditingEnabled={setEditingEnabled}
         editableByCurrentUser={editableByCurrentUser}
+        isFormDirty={isFormDirty}
+        triggerReset={triggerReset}
       />
       <LayoutBox>
         <SidebarBox>
