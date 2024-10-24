@@ -43,8 +43,8 @@ export const FormInput: FC<FormInputProps> = ({
   const { t } = useTranslation();
   const { formState, register, setValue } = useFormContext();
 
-  const getDefaultValue = (value: string | number | Date | undefined) => {
-    if (value == undefined) {
+  const getDefaultValue = (value: string | number | Date | undefined | null) => {
+    if (!value) {
       return "";
     } else if (type === FormValueType.DateTime) {
       // re-format from 'YYYY-MM-DDTHH:mm:ss.sssZ' to 'YYYY-MM-DDTHH:mm'.
