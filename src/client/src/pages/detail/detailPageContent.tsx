@@ -49,10 +49,9 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }: Det
         return dispatch(loadBorehole(id));
       };
       const intId = parseInt(id, 10);
-      // request to edit a borehole
       setLoading(true);
       getBorehole(intId)
-        //@ts-expect-error // legacy fetch function returns not typed
+        //@ts-expect-error legacy fetch function returns not typed
         .then(response => {
           if (response.success) {
             setLoading(false);
@@ -82,8 +81,8 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }: Det
     return true;
   }
 
-  function isNumber(value: string | number) {
-    return /^-?\d*[.,]?\d*$/.test(String(value));
+  function isNumber(value: string | number): boolean {
+    return typeof value === "number" || !isNaN(Number(value));
   }
 
   function updateNumber(attribute: keyof Borehole["data"], value: number | null, to = true) {
@@ -95,7 +94,7 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }: Det
 
     if (value === null) {
       patch(updatedBorehole.data, attribute, value, to);
-    } else if (/^-?\d*[.,]?\d*$/.test(String(value))) {
+    } else if (isNumber(value)) {
       patch(updatedBorehole.data, attribute, _.toNumber(value), to);
     }
   }
@@ -141,7 +140,7 @@ export const DetailPageContent = ({ editingEnabled, editableByCurrentUser }: Det
     updateAttributeDelay[attribute] = setTimeout(
       () => {
         patchBorehole(borehole.id, attribute, value)
-          //@ts-expect-error // legacy fetch function returns not typed
+          //@ts-expect-error  legacy fetch function returns not typed
           .then(response => {
             if (response.data.success) {
               borehole.lock = response.data.lock;
