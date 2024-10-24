@@ -37,7 +37,6 @@ const LocationSegment = ({ borehole, updateChange, updateNumber, editingEnabled 
               editingEnabled={editingEnabled}
             />
           </Stack>
-
           <FormSegmentBox sx={{ flexGrow: 1 }}>
             <PointComponent
               setMapPointChange={setMapPointChange}

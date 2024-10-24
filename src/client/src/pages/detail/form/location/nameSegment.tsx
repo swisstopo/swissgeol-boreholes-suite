@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 import { Card } from "@mui/material";
-import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
 import { FormContainer } from "../../../../components/form/form.ts";
 import { SimpleFormInput } from "../../../../components/form/simpleFormInput.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
+import { SegmentProps } from "./segmentInterface.ts";
 
-interface NameSegmentProps {
-  borehole: Borehole;
-  updateChange: (key: string, value: string) => void;
-  editingEnabled: boolean;
-}
-
-const NameSegment = ({ borehole, updateChange, editingEnabled }: NameSegmentProps) => {
+const NameSegment = ({ borehole, updateChange, editingEnabled }: SegmentProps) => {
   const [alternateName, setAlternateName] = useState("");
   const auth = useAuth();
 
@@ -31,6 +25,7 @@ const NameSegment = ({ borehole, updateChange, editingEnabled }: NameSegmentProp
               value={alternateName}
               onUpdate={e => {
                 setAlternateName(e);
+                // @ts-expect-error nested key for borehole attribute
                 updateChange("custom.alternate_name", e);
               }}
             />
@@ -40,6 +35,7 @@ const NameSegment = ({ borehole, updateChange, editingEnabled }: NameSegmentProp
               value={borehole?.data?.custom.project_name || ""}
               readonly={!editingEnabled}
               onUpdate={e => {
+                // @ts-expect-error nested key for borehole attribute
                 updateChange("custom.project_name", e);
               }}
             />
@@ -52,7 +48,9 @@ const NameSegment = ({ borehole, updateChange, editingEnabled }: NameSegmentProp
                 readonly={!editingEnabled}
                 onUpdate={e => {
                   setAlternateName(e);
+                  // @ts-expect-error nested key for borehole attribute
                   updateChange("extended.original_name", e);
+                  // @ts-expect-error nested key for borehole attribute
                   updateChange("custom.alternate_name", e);
                 }}
               />

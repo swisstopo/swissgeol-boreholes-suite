@@ -77,8 +77,8 @@ describe("Test for the borehole form.", () => {
     evaluateInput("elevation_z", "3'519.948980314633");
     evaluateInput("reference_elevation", "3'554.9389396584306");
     evaluateSelect("elevation_precision", "");
-    evaluateSelect("qt_reference_elevation", "");
-    evaluateSelect("reference_elevation_type", "");
+    evaluateSelect("qt_reference_elevation", "20114007"); // not specified
+    evaluateSelect("reference_elevation_type", "30000013"); // kelly bushing
 
     returnToOverview();
     clickOnRowWithText("Zena Mraz");
@@ -93,7 +93,7 @@ describe("Test for the borehole form.", () => {
     evaluateInput("elevation_z", "3'062.9991330499756");
     evaluateInput("reference_elevation", "3'478.1368118609007");
     evaluateSelect("elevation_precision", "20114003"); // 1
-    evaluateSelect("qt_reference_elevation", "20114005"); // 0.1
+    evaluateSelect("qt_reference_elevation", "20114005"); //0.1
     evaluateSelect("reference_elevation_type", "30000013"); // kelly bushing
   });
 
@@ -124,7 +124,7 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it.only("stops editing when going back to overview", () => {
+  it("stops editing when going back to overview", () => {
     createBorehole({ "extended.original_name": "AAA_HIPPOPOTHAMUS", "custom.alternate_name": "AAA_HIPPOPOTHAMUS" }).as(
       "borehole_id",
     );

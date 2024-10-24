@@ -64,6 +64,7 @@ export interface Identifier {
 }
 
 export interface BoreholeAttributes {
+  updater: string;
   national_interest: boolean;
   restriction_until: Date;
   restriction: number;
@@ -74,7 +75,7 @@ export interface BoreholeAttributes {
   role: Role;
   lock: {
     id: number;
-  };
+  } | null;
   location_precision: number;
   reference_elevation: number;
   height_reference_system: number;
@@ -89,6 +90,7 @@ export interface BoreholeAttributes {
   precision_location_x: number;
   precision_location_y: number;
   precision_location_x_lv03: number;
+  location: string;
   precision_location_y_lv03: number;
   custom: {
     identifiers: Identifier[];
@@ -114,6 +116,7 @@ export interface Boreholes {
 }
 
 export interface Borehole {
+  error: string;
   isFetching: boolean;
   length: number;
   orderby: string;
