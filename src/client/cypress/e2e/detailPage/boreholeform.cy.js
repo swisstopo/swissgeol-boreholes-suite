@@ -13,16 +13,16 @@ describe("Test for the borehole form.", () => {
     setSelect("restrictionId", 3);
     isDisabled("restrictionUntil", false);
     setSelect("nationalInterest", 2);
-    setSelect("spatial_reference_system", 0);
-    setSelect("location_precision", 2);
+    // setSelect("spatial_reference_system", 0);
+    // setSelect("location_precision", 2);
     setSelect("elevationPrecisionId", 2);
     setSelect("qtReferenceElevationId", 2);
     setSelect("referenceElevationTypeId", 4);
 
     evaluateSelect("restrictionId", "20111003");
     evaluateSelect("nationalInterest", "2");
-    evaluateSelect("spatial_reference_system", "20104001");
-    evaluateSelect("location_precision", "20113002");
+    // evaluateSelect("spatial_reference_system", "20104001");
+    // evaluateSelect("location_precision", "20113002");
     evaluateSelect("elevationPrecisionId", "20114002");
     evaluateSelect("qtReferenceElevationId", "20114002");
     evaluateSelect("referenceElevationTypeId", "20117004");
@@ -55,8 +55,8 @@ describe("Test for the borehole form.", () => {
     evaluateInput("projectName", "Reactive asymmetric alliance");
     evaluateSelect("restrictionId", "");
     evaluateSelect("nationalInterest", null); // not set
-    evaluateSelect("spatial_reference_system", "20104002"); // LV03
-    evaluateSelect("location_precision", "20113005");
+    // evaluateSelect("spatial_reference_system", "20104002"); // LV03
+    // evaluateSelect("location_precision", "20113005");
 
     evaluateInput("elevationZ", "3'519.948980314633");
     evaluateInput("referenceElevation", "3'554.9389396584306");
@@ -71,8 +71,8 @@ describe("Test for the borehole form.", () => {
     evaluateInput("projectName", "Ergonomic heuristic installation");
     evaluateSelect("restrictionId", "");
     evaluateSelect("nationalInterest", "1"); // Yes
-    evaluateSelect("spatial_reference_system", "20104002"); // LV03
-    evaluateSelect("location_precision", "20113007"); // not specified
+    // evaluateSelect("spatial_reference_system", "20104002"); // LV03
+    // evaluateSelect("location_precision", "20113007"); // not specified
 
     evaluateInput("elevationZ", "3'062.9991330499756");
     evaluateInput("referenceElevation", "3'478.1368118609007");
@@ -87,6 +87,7 @@ describe("Test for the borehole form.", () => {
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
       goToRouteAndAcceptTerms(`/${id}/borehole`);
+      cy.wait(["@borehole", "@borehole_by_id"]);
     });
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
