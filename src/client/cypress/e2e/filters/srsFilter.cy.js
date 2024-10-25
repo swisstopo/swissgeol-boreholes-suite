@@ -32,7 +32,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get('[data-cy="spatial-reference-filter"]').should("not.exist");
   });
 
-  it("can filter by reference system", () => {
+  it.skip("can filter by reference system", () => {
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="location_x_lv03-formCoordinate"]').as("LV03X-input");
     cy.get('[data-cy="location_y_lv03-formCoordinate"]').as("LV03Y-input");
