@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CHANGELOG.md = CHANGELOG.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDMS.Test", "tests\BDMS.Test.csproj", "{4981EB19-F2EE-4F45-A6DD-ED21B61CB3C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDMS.Test", "tests\api\BDMS.Test.csproj", "{4981EB19-F2EE-4F45-A6DD-ED21B61CB3C6}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "BDMS.Client", "src\client\BDMS.Client.esproj", "{7B75DD13-A7EF-4BDA-8AE7-33B240A9CBF0}"
 EndProject
