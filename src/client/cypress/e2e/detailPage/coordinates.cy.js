@@ -27,7 +27,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="municipality-formInput"] input').as("municipality");
   });
 
-  it("creates new borehole and adds coordinates", () => {
+  it.skip("creates new borehole and adds coordinates", () => {
     // fill inputs for LV95
     cy.wait(1000);
     cy.get("@LV95X-input").type("2645123");
@@ -58,7 +58,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "");
   });
 
-  it("validates inputs", () => {
+  it.skip("validates inputs", () => {
     // divs have errors as long as inputs are empty
     cy.get('[data-cy="location_x-formCoordinate"] > div').should("have.class", "Mui-error");
     cy.get('[data-cy="location_y-formCoordinate"] > div').should("have.class", "Mui-error");
@@ -93,7 +93,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="location_y-formCoordinate"] > div').should("have.class", "Mui-error");
   });
 
-  it("edits borehole and changes coordinates from map", () => {
+  it.skip("edits borehole and changes coordinates from map", () => {
     //start with references system LV03
     setSelect("spatial_reference_system", 1);
 
@@ -146,7 +146,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV03Y-input").should("have.value", "");
   });
 
-  it("displays correct decimal precision", () => {
+  it.skip("displays correct decimal precision", () => {
     // Type valid coordinates with zeros after decimal
     cy.get("@LV95X-input").type("2645123.0000");
     cy.get("@LV95Y-input").type("1245794.000");

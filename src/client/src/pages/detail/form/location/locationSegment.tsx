@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { useSelector } from "react-redux";
 import { Card, Stack } from "@mui/material";
-import { Borehole, ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 import PointComponent from "../../../../components/map/pointComponent";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import CantonMunicipalitySegment from "./cantonMunicipalitySegment.tsx";
-import CoordinatesSegment from "./coordinatesSegment.tsx";
 import ElevationSegment from "./elevationSegment";
 import { LocationFormInputs } from "./locationPanel.tsx";
 
@@ -23,30 +21,25 @@ interface LocationSegmentProps {
   ) => void;
 }
 
-const LocationSegment = ({
-  borehole,
-  editingEnabled,
-  updateChange,
-  updateNumber,
-  formMethods,
-}: LocationSegmentProps) => {
+const LocationSegment = ({ borehole, editingEnabled, updateChange, formMethods }: LocationSegmentProps) => {
   const [mapPointChange, setMapPointChange] = useState(false);
+  //
+  // const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
 
-  const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
-
+  console.log(mapPointChange);
   return (
     <Stack direction="column" gap={3}>
       <Card sx={{ py: 1, px: 1 }}>
         <Stack direction="row" gap={2} sx={{ flexWrap: "wrap" }}>
           <Stack gap={2} sx={{ flexGrow: 1, minWidth: 600 }}>
-            <CoordinatesSegment
-              borehole={legacyBorehole}
-              updateChange={updateChange}
-              updateNumber={updateNumber}
-              mapPointChange={mapPointChange}
-              setMapPointChange={setMapPointChange}
-              editingEnabled={editingEnabled}
-            />
+            {/*<CoordinatesSegment*/}
+            {/*  borehole={legacyBorehole}*/}
+            {/*  updateChange={updateChange}*/}
+            {/*  updateNumber={updateNumber}*/}
+            {/*  mapPointChange={mapPointChange}*/}
+            {/*  setMapPointChange={setMapPointChange}*/}
+            {/*  editingEnabled={editingEnabled}*/}
+            {/*/>*/}
             <ElevationSegment borehole={borehole} editingEnabled={editingEnabled} />
           </Stack>
           <FormSegmentBox sx={{ flexGrow: 1 }}>

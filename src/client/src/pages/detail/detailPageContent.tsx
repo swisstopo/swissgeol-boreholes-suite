@@ -165,9 +165,11 @@ export const DetailPageContent = ({
     showAlert(legacyBorehole.error, "error");
   }
 
+  const boreholeLoaded = borehole && legacyBorehole;
+
   return (
     <>
-      {borehole && (
+      {boreholeLoaded && (
         <Box
           sx={{
             height: "100%",
