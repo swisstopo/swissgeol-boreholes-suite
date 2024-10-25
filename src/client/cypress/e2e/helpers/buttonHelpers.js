@@ -65,5 +65,11 @@ export const copyItem = parent => {
  * @param {string} itemLabel The label name of the button.
  */
 export const addItem = itemLabel => {
-  cy.get(`[data-cy="${itemLabel.toLowerCase()}-button"]`).click({ force: true });
+  cy.get(".MuiCircularProgress-root").should("not.exist");
+  const button = cy.get(`[data-cy="${itemLabel.toLowerCase()}-button"]`);
+  button.should("be.visible");
+  button.should("be.enabled");
+  button.click({ force: true });
+  cy.wait(1000);
+  cy.get(".MuiCircularProgress-root").should("not.exist");
 };
