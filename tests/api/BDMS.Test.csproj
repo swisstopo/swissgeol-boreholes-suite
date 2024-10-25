@@ -23,7 +23,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\api\BDMS.csproj" />
+    <ProjectReference Include="..\..\src\api\BDMS.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="TestData\boreholes_not_all_have_attachments.csv">
