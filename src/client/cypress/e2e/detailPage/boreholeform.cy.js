@@ -54,7 +54,7 @@ describe("Test for the borehole form.", () => {
     evaluateInput("alternateName", "Zena Rath");
     evaluateInput("projectName", "Reactive asymmetric alliance");
     evaluateSelect("restrictionId", "");
-    evaluateSelect("nationalInterest", null); // not set
+    evaluateSelect("nationalInterest", ""); // not set
     // evaluateSelect("spatial_reference_system", "20104002"); // LV03
     // evaluateSelect("location_precision", "20113005");
 
