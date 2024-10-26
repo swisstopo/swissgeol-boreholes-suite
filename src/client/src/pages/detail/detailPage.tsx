@@ -20,7 +20,7 @@ export const DetailPage: FC = () => {
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
 
   useEffect(() => {
-    setEditingEnabled(borehole.data.lock !== null);
+    setEditingEnabled(borehole?.data?.lock !== null);
   }, [borehole.data.lock]);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export const DetailPage: FC = () => {
       togglePanel(false);
     }
 
-    if (borehole.data.lock !== null && borehole.data.lock.id !== user.data.id) {
+    if (borehole?.data?.lock?.id && borehole.data.lock.id !== user.data.id) {
       setEditableByCurrentUser(false);
       return;
     }

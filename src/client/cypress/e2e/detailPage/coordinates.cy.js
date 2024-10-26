@@ -139,6 +139,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     returnToOverview();
     newUneditableBorehole();
+    cy.wait(1000);
     // verify input are cleared for new borehole
     cy.get("@LV95X-input").should("have.value", "");
     cy.get("@LV95Y-input").should("have.value", "");
