@@ -1,3 +1,4 @@
+import { saveForm } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, isDisabled, setSelect } from "../helpers/formHelpers";
 import { createBorehole, goToRouteAndAcceptTerms, newEditableBorehole, returnToOverview } from "../helpers/testHelpers";
@@ -19,6 +20,18 @@ describe("Test for the borehole form.", () => {
     setSelect("qtReferenceElevationId", 2);
     setSelect("referenceElevationTypeId", 4);
 
+    evaluateSelect("restrictionId", "20111003");
+    evaluateSelect("nationalInterest", "2");
+    // evaluateSelect("spatial_reference_system", "20104001");
+    // evaluateSelect("location_precision", "20113002");
+    evaluateSelect("elevationPrecisionId", "20114002");
+    evaluateSelect("qtReferenceElevationId", "20114002");
+    evaluateSelect("referenceElevationTypeId", "20117004");
+
+    saveForm();
+    // navigate away and back to check if values are saved
+    cy.get('[data-cy="borehole-menu-item"]').click();
+    cy.get('[data-cy="location-menu-item"]').click();
     evaluateSelect("restrictionId", "20111003");
     evaluateSelect("nationalInterest", "2");
     // evaluateSelect("spatial_reference_system", "20104001");
