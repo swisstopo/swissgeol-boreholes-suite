@@ -59,6 +59,7 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
           color="primary"
           data-cy="backButton"
           onClick={() => {
+            stopEditing();
             history.push("/");
           }}
           sx={{
