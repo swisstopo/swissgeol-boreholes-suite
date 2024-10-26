@@ -53,6 +53,7 @@ export const LocationPanel = forwardRef(
 
     useEffect(() => {
       if (borehole) {
+        const nationalInterest = borehole.nationalInterest === true ? 1 : borehole.nationalInterest === false ? 0 : 2;
         // necessary because borehole is not immediately available.
         formMethods.reset({
           alternateName: borehole.alternateName,
@@ -60,7 +61,7 @@ export const LocationPanel = forwardRef(
           projectName: borehole.projectName,
           restrictionId: borehole.restrictionId,
           restrictionUntil: borehole.restrictionUntil,
-          nationalInterest: borehole.nationalInterest,
+          nationalInterest: nationalInterest,
           elevationZ: borehole.elevationZ,
           elevationPrecisionId: borehole.elevationPrecisionId,
           referenceElevation: borehole.referenceElevation,
