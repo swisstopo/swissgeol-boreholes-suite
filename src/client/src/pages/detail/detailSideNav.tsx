@@ -1,7 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { connect } from "react-redux";
-import { useLocation, withRouter } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
@@ -11,25 +12,13 @@ import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { capitalizeFirstLetter } from "../../utils";
 
-/**
- * A component that renders the side navigation for a borehole detail. The component is used without explicitly passing props.
- *
- * @component
- * @param {Object} props - The component props.
- * @param {Object} props.borehole - The borehole object containing data and fetching status, provided by react redux state.
- * @param {Object} props.match - The match object containing the URL parameters.
- * @param {Object} props.history - The history object from `withRouter` to navigate between routes.
- * @returns {JSX.Element | null} The rendered `DetailSideNav` component.
- */
-
-const DetailSideNav = ({ borehole, history, match }) => {
+export const DetailSideNav = ({ id }: { id: string }) => {
   const [stratigraphyIsVisible, setStratigraphyIsVisible] = useState(false);
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const location = useLocation();
   const { t } = useTranslation();
   const auth = useAuth();
-
-  const id = match?.params?.id;
+  const history = useHistory();
 
   const ParentListItem = styled(ListItem)(({ active }) => ({
     padding: "1em",
@@ -54,10 +43,6 @@ const DetailSideNav = ({ borehole, history, match }) => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
     setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
   }, [location, id]);
-
-  if (borehole.isFetching === true) {
-    return null;
-  }
 
   return (
     <Box
@@ -248,13 +233,3 @@ const DetailSideNav = ({ borehole, history, match }) => {
     </Box>
   );
 };
-
-const mapStateToProps = state => {
-  return {
-    borehole: state.core_borehole,
-  };
-};
-
-const ConnectedDetailSideNav = withRouter(connect(mapStateToProps)(DetailSideNav));
-
-export default ConnectedDetailSideNav;

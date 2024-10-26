@@ -49,7 +49,7 @@ export interface Workgroup {
   roles: Role[];
 }
 
-interface Workflow {
+export interface Workflow {
   started: string;
   finished: string;
   role: Role;

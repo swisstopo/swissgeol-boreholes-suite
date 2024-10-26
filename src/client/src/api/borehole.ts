@@ -1,7 +1,9 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
+import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { fetchApiV2, upload } from "./fetchApiV2";
 
 export interface BoreholeV2 {
+  workflow: Workflow;
   id: number;
   locationX: number | null;
   locationY: number | null;

@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { Check, ChevronLeft, Trash2 } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
-import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
+import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
 import { DeleteButton, EditButton, EndEditButton } from "../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
@@ -14,10 +14,10 @@ interface DetailHeaderProps {
   editingEnabled: boolean;
   setEditingEnabled: (editingEnabled: boolean) => void;
   editableByCurrentUser: boolean;
+  borehole: BoreholeV2;
 }
 
-const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser }: DetailHeaderProps) => {
-  const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
+const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser, borehole }: DetailHeaderProps) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -25,9 +25,9 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
 
   const toggleEditing = (editing: boolean) => {
     if (!editing) {
-      dispatch(unlockBorehole(borehole.data.id));
+      dispatch(unlockBorehole(borehole.id));
     } else {
-      dispatch(lockBorehole(borehole.data.id));
+      dispatch(lockBorehole(borehole.id));
     }
     setEditingEnabled(editing);
   };
@@ -41,13 +41,9 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
   };
 
   const handleDelete = async () => {
-    await deleteBorehole(borehole.data.id);
+    await deleteBorehole(borehole.id);
     history.push("/");
   };
-
-  if (borehole.isFetching) {
-    return;
-  }
 
   return (
     <Stack
@@ -73,12 +69,12 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
           }}>
           <ChevronLeft />
         </IconButton>
-        <Typography variant="h2"> {borehole?.data.extended.original_name}</Typography>
+        <Typography variant="h2"> {borehole?.originalName}</Typography>
         <Chip
           sx={{ marginLeft: "18px" }}
-          label={t(`status${borehole?.data.workflow?.role.toLowerCase()}`)}
-          color={borehole?.data.workflow?.finished != null ? "success" : "warning"}
-          icon={borehole?.data.workflow?.finished != null ? <Check /> : <div />}
+          label={t(`status${borehole?.workflow?.role.toLowerCase()}`)}
+          color={borehole?.workflow?.finished != null ? "success" : "warning"}
+          icon={borehole?.workflow?.finished != null ? <Check /> : <div />}
         />
       </Stack>
       <Stack direction="row" gap={2}>

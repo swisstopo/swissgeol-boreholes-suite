@@ -4,13 +4,13 @@ import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { getBoreholeById, updateBorehole } from "../../api/borehole.ts";
+import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import { parseFloatWithThousandsSeparator } from "../../components/legacyComponents/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
-import DetailSideNav from "./detailSideNav";
+import { DetailSideNav } from "./detailSideNav.tsx";
 import { LocationFormInputs } from "./form/location/locationPanel";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
@@ -21,7 +21,8 @@ export const DetailPage: FC = () => {
   const [loading, setLoading] = useState(true);
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
-  const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
+  const [borehole, setBorehole] = useState<BoreholeV2 | null>(null);
+  const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
@@ -29,6 +30,12 @@ export const DetailPage: FC = () => {
   const { id } = useParams<{
     id: string;
   }>();
+
+  useEffect(() => {
+    getBoreholeById(parseInt(id, 10)).then(b => {
+      setBorehole(b);
+    });
+  }, [id]);
 
   const loadOrCreate = useCallback(
     (id: string) => {
@@ -70,7 +77,7 @@ export const DetailPage: FC = () => {
     const newdata = prepareFormDataForSubmit(data);
     getBoreholeById(parseInt(id)).then(b => {
       updateBorehole({ ...b, ...newdata }).then(r => {
-        console.log(r);
+        setBorehole(r);
         // TODO error handling?
       });
     });
@@ -101,24 +108,24 @@ export const DetailPage: FC = () => {
       togglePanel(false);
     }
 
-    if (borehole.data.lock !== null && borehole.data.lock?.id !== user.data.id) {
+    if (legacyBorehole.data.lock !== null && legacyBorehole.data.lock?.id !== user.data.id) {
       setEditableByCurrentUser(false);
       return;
     }
 
     const matchingWorkgroup =
-      user.data.workgroups.find(workgroup => workgroup.id === borehole.data.workgroup?.id) ?? false;
+      user.data.workgroups.find(workgroup => workgroup.id === legacyBorehole.data.workgroup?.id) ?? false;
     const userRoleMatches =
       matchingWorkgroup &&
       Object.prototype.hasOwnProperty.call(matchingWorkgroup, "roles") &&
-      matchingWorkgroup.roles.includes(borehole.data.role);
+      matchingWorkgroup.roles.includes(legacyBorehole.data.role);
     const isStatusPage = location.pathname.endsWith("/status");
-    const isBoreholeInEditWorkflow = borehole?.data.workflow?.role === "EDIT";
+    const isBoreholeInEditWorkflow = legacyBorehole?.data.workflow?.role === "EDIT";
 
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
-  }, [editingEnabled, user, borehole, location, togglePanel]);
+  }, [editingEnabled, user, legacyBorehole, location, togglePanel]);
 
-  if (loading)
+  if (loading || !borehole)
     return (
       <Stack height="100%" alignItems="center" justifyContent="center">
         <CircularProgress />
@@ -128,13 +135,14 @@ export const DetailPage: FC = () => {
   return (
     <>
       <DetailHeader
+        borehole={borehole}
         editingEnabled={editingEnabled}
         setEditingEnabled={setEditingEnabled}
         editableByCurrentUser={editableByCurrentUser}
       />
       <LayoutBox>
         <SidebarBox>
-          <DetailSideNav />
+          <DetailSideNav id={id} />
         </SidebarBox>
         <Stack width="100%" direction="column">
           <Box
@@ -163,6 +171,8 @@ export const DetailPage: FC = () => {
                 handleFormSubmit={handleFormSubmit}
                 locationPanelRef={locationPanelRef}
                 handleDirtyChange={handleDirtyChange}
+                borehole={borehole}
+                setBorehole={setBorehole}
               />
             </MainContentBox>
             {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}

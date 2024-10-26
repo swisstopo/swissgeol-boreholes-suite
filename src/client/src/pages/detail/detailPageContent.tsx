@@ -1,4 +1,4 @@
-import { RefObject, useContext, useEffect, useState } from "react";
+import { RefObject, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch, useParams } from "react-router-dom";
@@ -28,6 +28,8 @@ interface DetailPageContentProps {
   locationPanelRef: RefObject<{ submit: () => void; reset: () => void }>;
   handleFormSubmit: (data: LocationFormInputs) => void;
   handleDirtyChange: (isDirty: boolean) => void;
+  borehole: BoreholeV2;
+  setBorehole: (borehole: BoreholeV2) => void;
 }
 
 export const DetailPageContent = ({
@@ -36,22 +38,17 @@ export const DetailPageContent = ({
   locationPanelRef,
   handleFormSubmit,
   handleDirtyChange,
+  borehole,
+  setBorehole,
 }: DetailPageContentProps) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
   const legacyBorehole = useSelector((state: ReduxRootState) => state.core_borehole);
-  const [borehole, setBorehole] = useState<BoreholeV2>();
 
   const dispatch = useDispatch();
   const { id } = useParams<{
     id: string;
   }>();
-
-  useEffect(() => {
-    getBoreholeById(parseInt(id, 10)).then(b => {
-      setBorehole(b);
-    });
-  }, [id]);
 
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   const updateAttributeDelay: { [index: string]: any } = {};
