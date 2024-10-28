@@ -34,8 +34,9 @@ export const DetailPage: FC = () => {
   useEffect(() => {
     getBoreholeById(parseInt(id, 10)).then(b => {
       setBorehole(b);
+      setEditingEnabled(b.locked !== null && b.lockedById === user.data.id);
     });
-  }, [id]);
+  }, [id, user.data.id]);
 
   const loadOrCreate = useCallback(
     (id: string) => {
