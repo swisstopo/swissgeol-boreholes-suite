@@ -138,7 +138,7 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it.only("stops editing when going back to overview", () => {
+  it("stops editing when going back to overview", () => {
     createBorehole({ "extended.original_name": "AAA_HIPPOPOTHAMUS", "custom.alternate_name": "AAA_HIPPOPOTHAMUS" }).as(
       "borehole_id",
     );
