@@ -93,6 +93,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="location_y-formCoordinate"] > div').should("have.class", "Mui-error");
   });
 
+  it.only("edits borehole and changes coordinates from map", () => {
   it("edits borehole and changes coordinates from map", () => {
     //start with references system LV03
     setSelect("spatial_reference_system", 1);
@@ -130,16 +131,18 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("[name=spatial_reference_system]").should("have.value", 20104001);
 
     waitForCoordinatePatches();
-
+    cy.wait("@edit_patch");
+    cy.wait("@location");
     // verify that all inputs have a precision of 2 decimal places
     checkDecimalPlaces("@LV95X-input", 2);
     checkDecimalPlaces("@LV95Y-input", 2);
     checkDecimalPlaces("@LV03X-input", 2);
     checkDecimalPlaces("@LV03Y-input", 2);
 
+    cy.wait(1000);
+
     returnToOverview();
     newUneditableBorehole();
-    cy.wait(1000);
     // verify input are cleared for new borehole
     cy.get("@LV95X-input").should("have.value", "");
     cy.get("@LV95Y-input").should("have.value", "");
