@@ -93,7 +93,6 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="location_y-formCoordinate"] > div').should("have.class", "Mui-error");
   });
 
-  it.only("edits borehole and changes coordinates from map", () => {
   it("edits borehole and changes coordinates from map", () => {
     //start with references system LV03
     setSelect("spatial_reference_system", 1);
