@@ -27,11 +27,11 @@ export const referenceSystems: { [key: string]: ReferenceSystem } = {
   LV95: {
     code: ReferenceSystemCode.LV95,
     name: ReferenceSystemKey.LV95,
-    fieldName: { X: FieldNameDirectionKeys.location_x, Y: FieldNameDirectionKeys.location_y },
+    fieldName: { X: FieldNameDirectionKeys.locationX, Y: FieldNameDirectionKeys.locationY },
   },
   LV03: {
     code: ReferenceSystemCode.LV03,
     name: ReferenceSystemKey.LV03,
-    fieldName: { X: FieldNameDirectionKeys.location_x_lv03, Y: FieldNameDirectionKeys.location_y_lv03 },
+    fieldName: { X: FieldNameDirectionKeys.locationXLV03, Y: FieldNameDirectionKeys.locationYLV03 },
   },
 };

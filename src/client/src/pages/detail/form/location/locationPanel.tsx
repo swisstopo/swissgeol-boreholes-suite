@@ -19,11 +19,6 @@ interface LocationPanelProps {
   onDirtyChange: (isDirty: boolean) => void;
   ref: RefObject<{ submit: () => void; reset: () => void }>;
   updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
-  updateChange: (
-    fieldName: keyof Borehole["data"],
-    value: string | number | boolean | null | (number | string | null)[],
-    to?: boolean,
-  ) => void;
 }
 
 export interface LocationFormInputs {
@@ -38,14 +33,31 @@ export interface LocationFormInputs {
   referenceElevation: number | string | null; // Number with thousands separator then parsed to number
   qtReferenceElevationId: number | null;
   referenceElevationTypeId: number | null;
+  originalReferenceSystem: number | null;
   hrsId?: number;
+  locationXLV03: string;
+  locationYLV03: string;
+  locationY: string;
+  locationX: string;
   country: string;
   canton: string;
   municipality: string;
+  locationPrecisionId: number | boolean | null | undefined;
+}
+
+export interface BoreholeSubmission extends LocationFormInputs {
+  precisionLocationX: number | null;
+  precisionLocationY: number | null;
+  precisionLocationXLV03: number | null;
+  precisionLocationYLV03: number | null;
+  locationXLV03: string | number | null;
+  locationYLV03: string | number | null;
+  locationY: string | number | null;
+  locationX: string | number | null;
 }
 
 export const LocationPanel = forwardRef(
-  ({ editingEnabled, onSubmit, updateNumber, updateChange, onDirtyChange, borehole }: LocationPanelProps, ref) => {
+  ({ editingEnabled, onSubmit, updateNumber, onDirtyChange, borehole }: LocationPanelProps, ref) => {
     const formMethods = useForm<LocationFormInputs>({ mode: "all" });
     const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
     const history = useHistory();
@@ -58,30 +70,38 @@ export const LocationPanel = forwardRef(
     });
 
     useEffect(() => {
-      onDirtyChange(formMethods.formState.isDirty);
-    }, [formMethods.formState.isDirty, onDirtyChange]);
+      onDirtyChange(Object.keys(formMethods.formState.dirtyFields).length > 0);
+    }, [formMethods.formState.dirtyFields, onDirtyChange]);
 
     useEffect(() => {
       if (borehole) {
         const nationalInterest = borehole.nationalInterest === true ? 1 : borehole.nationalInterest === false ? 0 : 2;
         // necessary because borehole is not immediately available.
-        formMethods.reset({
-          alternateName: borehole.alternateName,
-          originalName: borehole.originalName,
-          projectName: borehole.projectName,
-          restrictionId: borehole.restrictionId,
-          restrictionUntil: borehole.restrictionUntil,
-          nationalInterest: nationalInterest,
-          elevationZ: borehole.elevationZ,
-          elevationPrecisionId: borehole.elevationPrecisionId,
-          referenceElevation: borehole.referenceElevation,
-          qtReferenceElevationId: borehole.qtReferenceElevationId,
-          referenceElevationTypeId: borehole.referenceElevationTypeId,
-          hrsId: borehole.hrsId,
-          country: borehole.country,
-          canton: borehole.canton,
-          municipality: borehole.municipality,
-        });
+
+        // really??
+        console.log("reset");
+        // formMethods.reset({
+        //   alternateName: borehole.alternateName,
+        //   originalName: borehole.originalName,
+        //   projectName: borehole.projectName,
+        //   restrictionId: borehole.restrictionId,
+        //   restrictionUntil: borehole.restrictionUntil,
+        //   nationalInterest: nationalInterest,
+        //   elevationZ: borehole.elevationZ,
+        //   elevationPrecisionId: borehole.elevationPrecisionId,
+        //   referenceElevation: borehole.referenceElevation,
+        //   qtReferenceElevationId: borehole.qtReferenceElevationId,
+        //   referenceElevationTypeId: borehole.referenceElevationTypeId,
+        //   hrsId: borehole.hrsId,
+        //   country: borehole.country,
+        //   canton: borehole.canton,
+        //   municipality: borehole.municipality,
+        //   locationX: borehole.locationX?.toString(),
+        //   locationY: borehole.locationY?.toString(),
+        //   locationXLV03: borehole.locationXLV03?.toString(),
+        //   locationYLV03: borehole.locationYLV03?.toString(),
+        //   originalReferenceSystem: borehole.originalReferenceSystem,
+        // });
       }
     }, [borehole, formMethods]);
 
@@ -114,7 +134,6 @@ export const LocationPanel = forwardRef(
                   borehole={borehole}
                   editingEnabled={editingEnabled}
                   formMethods={formMethods}
-                  updateChange={updateChange}
                   updateNumber={updateNumber}></LocationSegment>
               </Stack>
             </form>

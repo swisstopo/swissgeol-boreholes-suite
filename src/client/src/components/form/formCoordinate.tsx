@@ -34,7 +34,7 @@ export interface FormCoordinateProps {
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
-  value?: string | number;
+  value?: string;
   referenceSystem: ReferenceSystemKey;
   direction: Direction;
   sx?: SxProps;

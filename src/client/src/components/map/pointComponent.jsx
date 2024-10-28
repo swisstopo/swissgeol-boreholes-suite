@@ -351,6 +351,7 @@ class PointComponent extends React.Component {
           </Box>
           <Button.Group size="mini">
             <Button
+              type="button" // This is needed because semantic UI Buttons default to submit-buttons inside a form
               data-cy="apply-button"
               disabled={!_.isArray(this.state.point) || this.state.address || !isEditable}
               loading={this.state.address}
@@ -373,6 +374,7 @@ class PointComponent extends React.Component {
               Apply
             </Button>
             <Button
+              type="button" // This is needed because semantic UI Buttons default to submit-buttons inside a form
               disabled={!_.isArray(this.state.point)}
               icon
               onClick={() => {

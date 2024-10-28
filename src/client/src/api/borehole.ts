@@ -4,6 +4,13 @@ import { fetchApiV2, upload } from "./fetchApiV2";
 
 export interface BoreholeV2 {
   workflow: Workflow;
+  originalReferenceSystem: number;
+  precisionLocationYLV03: number;
+  precisionLocationXLV03: number;
+  precisionLocationY: number;
+  precisionLocationX: number;
+  locationXLV03: number | null;
+  locationYLV03: number | null;
   id: number;
   locationX: number | null;
   locationY: number | null;
@@ -21,6 +28,7 @@ export interface BoreholeV2 {
   referenceElevation: number | string; // Number with thousands separator then parsed to number
   qtReferenceElevationId: number;
   referenceElevationTypeId: number;
+  locationPrecisionId: number | boolean | null | undefined;
   hrsId: number;
 }
 

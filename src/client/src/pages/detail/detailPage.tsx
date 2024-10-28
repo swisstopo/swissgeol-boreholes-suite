@@ -6,12 +6,15 @@ import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
-import { parseFloatWithThousandsSeparator } from "../../components/legacyComponents/formUtils.ts";
+import {
+  getPrecisionFromString,
+  parseFloatWithThousandsSeparator,
+} from "../../components/legacyComponents/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
-import { LocationFormInputs } from "./form/location/locationPanel";
+import { BoreholeSubmission, LocationFormInputs } from "./form/location/locationPanel";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
@@ -57,7 +60,8 @@ export const DetailPage: FC = () => {
 
   const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
 
-  const prepareFormDataForSubmit = (data: LocationFormInputs) => {
+  const prepareFormDataForSubmit = (formInputs: LocationFormInputs) => {
+    const data = { ...formInputs } as BoreholeSubmission;
     data.elevationZ = data?.elevationZ ? parseFloatWithThousandsSeparator(String(data.elevationZ)) : null;
     data.referenceElevation = data?.referenceElevation
       ? parseFloatWithThousandsSeparator(String(data.referenceElevation))
@@ -67,17 +71,27 @@ export const DetailPage: FC = () => {
     data.restrictionId = data.restrictionId || null;
     data.referenceElevationTypeId = data.referenceElevationTypeId || null;
     data.elevationPrecisionId = data.elevationPrecisionId || null;
+    data.locationPrecisionId = data.locationPrecisionId || null;
     data.qtReferenceElevationId = data.qtReferenceElevationId || null;
     data.alternateName = data?.alternateName || data.originalName;
+
+    data.precisionLocationX = data?.locationX ? getPrecisionFromString(formInputs.locationX) : null;
+    data.precisionLocationY = data?.locationY ? getPrecisionFromString(formInputs.locationY) : null;
+    data.precisionLocationXLV03 = data?.locationXLV03 ? getPrecisionFromString(formInputs.locationXLV03) : null;
+    data.precisionLocationYLV03 = data?.locationYLV03 ? getPrecisionFromString(formInputs.locationYLV03) : null;
+    data.locationX = data?.locationX ? parseFloatWithThousandsSeparator(formInputs.locationX) : null;
+    data.locationY = data?.locationY ? parseFloatWithThousandsSeparator(formInputs.locationY) : null;
+    data.locationXLV03 = data?.locationXLV03 ? parseFloatWithThousandsSeparator(formInputs.locationXLV03) : null;
+    data.locationYLV03 = data?.locationYLV03 ? parseFloatWithThousandsSeparator(formInputs.locationYLV03) : null;
 
     delete data.hrsId;
     return data;
   };
 
-  const handleFormSubmit = (data: LocationFormInputs) => {
-    const newdata = prepareFormDataForSubmit(data);
+  const handleFormSubmit = (formInputs: LocationFormInputs) => {
+    const boreholeSubmission = prepareFormDataForSubmit(formInputs);
     getBoreholeById(parseInt(id)).then(b => {
-      updateBorehole({ ...b, ...newdata }).then(r => {
+      updateBorehole({ ...b, ...boreholeSubmission }).then(r => {
         setBorehole(r);
         // TODO error handling?
       });
