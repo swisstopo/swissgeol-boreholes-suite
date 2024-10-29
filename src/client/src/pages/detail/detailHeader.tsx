@@ -18,19 +18,18 @@ interface DetailHeaderProps {
 
 const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser }: DetailHeaderProps) => {
   const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
-  const user = useSelector((state: ReduxRootState) => state.core_user);
   const history = useHistory();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
 
   const toggleEditing = (editing: boolean) => {
-    setEditingEnabled(editing);
-    if (!editing && borehole.data.lock !== null && borehole.data.lock.id === user.data.id) {
+    if (!editing) {
       dispatch(unlockBorehole(borehole.data.id));
-    } else if (editing && borehole.data.lock === null) {
+    } else {
       dispatch(lockBorehole(borehole.data.id));
     }
+    setEditingEnabled(editing);
   };
 
   const startEditing = () => {

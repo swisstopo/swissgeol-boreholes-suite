@@ -5,7 +5,8 @@ import { createBaseSelector } from "./testHelpers";
  * @param {string} parent (optional) The parent of the button.
  */
 export const saveForm = parent => {
-  var selector = createBaseSelector(parent) + '[data-cy="save-button"]';
+  const selector = createBaseSelector(parent) + '[data-cy="save-button"]';
+  cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
 
@@ -14,7 +15,8 @@ export const saveForm = parent => {
  * @param {string} parent (optional) The parent of the button.
  */
 export const startEditing = parent => {
-  var selector = createBaseSelector(parent) + '[data-cy="edit-button"]';
+  const selector = createBaseSelector(parent) + '[data-cy="edit-button"]';
+  cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
 
@@ -23,7 +25,8 @@ export const startEditing = parent => {
  * @param {string} parent (optional) The parent of the button.
  */
 export const stopEditing = parent => {
-  var selector = createBaseSelector(parent) + '[data-cy="editingstop-button"]';
+  const selector = createBaseSelector(parent) + '[data-cy="editingstop-button"]';
+  cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
 
@@ -32,7 +35,8 @@ export const stopEditing = parent => {
  * @param {string} parent (optional) The parent of the button.
  */
 export const cancelEditing = parent => {
-  var selector = createBaseSelector(parent) + '[data-cy="cancel-button"]';
+  const selector = createBaseSelector(parent) + '[data-cy="cancel-button"]';
+  cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
 
@@ -41,7 +45,8 @@ export const cancelEditing = parent => {
  * @param {string} parent (optional) The parent of the button.
  */
 export const deleteItem = parent => {
-  var selector = createBaseSelector(parent) + '[data-cy="delete-button"]';
+  const selector = createBaseSelector(parent) + '[data-cy="delete-button"]';
+  cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
 
@@ -50,7 +55,8 @@ export const deleteItem = parent => {
  * @param {string} parent (optional) The parent of the button.
  */
 export const copyItem = parent => {
-  var selector = createBaseSelector(parent) + '[data-cy="copy-button"]';
+  const selector = createBaseSelector(parent) + '[data-cy="copy-button"]';
+  cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
 
