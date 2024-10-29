@@ -32,8 +32,6 @@ export interface BoreholeV2 {
   hrsId: number;
 }
 
-// boreholes
-
 export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
 
 export const updateBorehole = async (borehole: BoreholeV2) => {
