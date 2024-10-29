@@ -148,7 +148,6 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains("casing-1");
     cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains("casing-2");
 
-    startBoreholeEditing();
     cy.get('[data-cy="casing-card.1"] [data-cy="edit-button"]').click({ force: true });
 
     setInput("casingElements.0.toDepth", "8");

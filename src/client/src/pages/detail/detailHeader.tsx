@@ -108,7 +108,7 @@ const DetailHeader = ({
           icon={borehole?.workflow?.finished != null ? <Check /> : <div />}
         />
       </Stack>
-      <Stack direction="row" gap={2}>
+      <Stack direction="row" data-cy="detail-header" gap={2}>
         {editableByCurrentUser &&
           (editingEnabled ? (
             <>

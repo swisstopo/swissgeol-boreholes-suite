@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
-import { BoreholeV2 } from "../../../../api/borehole.ts";
 import {
   FormBooleanSelect,
   FormContainer,
@@ -10,11 +9,9 @@ import {
   FormValueType,
 } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { LocationFormInputs } from "./locationPanel.tsx";
+import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
-interface RestrictionSegmentProps {
-  borehole: BoreholeV2;
-  editingEnabled: boolean;
+interface RestrictionSegmentProps extends LocationBaseProps {
   formMethods: UseFormReturn<LocationFormInputs>;
 }
 const restrictionUntilCode = 20111003;
