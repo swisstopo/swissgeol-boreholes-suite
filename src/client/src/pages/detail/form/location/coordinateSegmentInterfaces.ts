@@ -1,4 +1,3 @@
-import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { LocationFormInputs } from "./locationPanel.tsx";
@@ -72,9 +71,17 @@ export interface FormValues {
 export interface CoordinatesSegmentProps {
   borehole: BoreholeV2;
   editingEnabled: boolean;
-  mapPointChange: boolean;
-  setMapPointChange: React.Dispatch<React.SetStateAction<boolean>>;
   formMethods: UseFormReturn<LocationFormInputs>;
+  setValuesForReferenceSystem: (referenceSystem: string, X: string, Y: string) => void;
+  setValuesForCountryCantonMunicipality: (location: Location) => void;
+  handleCoordinateTransformation: (
+    sourceSystem: ReferenceSystemKey,
+    targetSystem: ReferenceSystemKey,
+    X: number,
+    Y: number,
+    XPrecision: number,
+    YPrecision: number,
+  ) => Promise<void>;
 }
 
 export interface Location {

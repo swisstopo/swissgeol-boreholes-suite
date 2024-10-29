@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader } from "@mui/material";
-import { fetchApiV2 } from "../../../../api/fetchApiV2";
 import { LabelingButton } from "../../../../components/buttons/labelingButton";
 import { FormContainer, FormCoordinate, FormDomainSelect, FormSelect } from "../../../../components/form/form";
 import {
@@ -10,24 +9,23 @@ import {
 } from "../../../../components/legacyComponents/formUtils.js";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { Coordinate, ExtractionState, useLabelingContext } from "../../labeling/labelingInterfaces";
-import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants";
+import { boundingBox, referenceSystems } from "./coordinateSegmentConstants";
 import {
   Coordinates,
   CoordinatesSegmentProps,
   Direction,
   FieldNameDirectionKeys,
-  Location,
-  ReferenceSystemCode,
   ReferenceSystemKey,
 } from "./coordinateSegmentInterfaces";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   borehole,
-  mapPointChange,
-  setMapPointChange,
   editingEnabled,
   formMethods,
+  setValuesForReferenceSystem,
+  setValuesForCountryCantonMunicipality,
+  handleCoordinateTransformation,
 }) => {
   const { t } = useTranslation();
   const { extractionObject, setExtractionObject, setExtractionState, extractionState } = useLabelingContext();
@@ -37,46 +35,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   const currentReferenceSystem = formMethods.watch("originalReferenceSystem");
 
   // --- UseCallback hooks ---
-
-  // transforms coordinates from one reference system to the other.
-  const transformCoordinates = useCallback(async (referenceSystem: string, x: number, y: number) => {
-    let apiUrl;
-    if (referenceSystem === referenceSystems.LV95.name) {
-      apiUrl = webApilv95tolv03;
-    } else {
-      apiUrl = webApilv03tolv95;
-    }
-    if (x && y) {
-      const response = await fetch(apiUrl + `?easting=${x}&northing=${y}&altitude=0.0&format=json`);
-      if (response.ok) {
-        return await response.json();
-      }
-    }
-  }, []);
-
-  // programmatically set values to form.
-  const setValuesForReferenceSystem = useCallback(
-    (referenceSystem: string, X: string, Y: string) => {
-      formMethods.setValue(referenceSystems[referenceSystem].fieldName.X, X, {
-        shouldValidate: true,
-      });
-      formMethods.setValue(referenceSystems[referenceSystem].fieldName.Y, Y, {
-        shouldValidate: true,
-      });
-    },
-    [formMethods],
-  );
-
-  const setValuesForCountryCantonMunicipality = useCallback(
-    (location: Location) => {
-      for (const [key, value] of Object.entries(location) as [keyof Location, string][]) {
-        formMethods.setValue(key, value, {
-          shouldValidate: true,
-        });
-      }
-    },
-    [formMethods],
-  );
 
   // --- Utility functions ---
   const updateFormValues = useCallback(
@@ -131,29 +89,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     };
   }
 
-  const handleCoordinateTransformation = useCallback(
-    async (
-      sourceSystem: ReferenceSystemKey,
-      targetSystem: ReferenceSystemKey,
-      X: number,
-      Y: number,
-      XPrecision: number,
-      YPrecision: number,
-    ) => {
-      const response = await transformCoordinates(sourceSystem, X, Y);
-      if (!response) return; // Ensure response is valid
-
-      const maxPrecision = Math.max(XPrecision, YPrecision);
-      const transformedX = parseFloat(response.easting).toFixed(maxPrecision);
-      const transformedY = parseFloat(response.northing).toFixed(maxPrecision);
-
-      const location = await fetchApiV2(`location/identify?east=${X}&north=${Y}`, "GET");
-      setValuesForCountryCantonMunicipality(location);
-      setValuesForReferenceSystem(targetSystem, transformedX, transformedY);
-    },
-    [setValuesForCountryCantonMunicipality, setValuesForReferenceSystem, transformCoordinates],
-  );
-
   //  --- Effect hooks ---
 
   // initially validate the form to display errors.
@@ -163,7 +98,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // reset form values when the borehole or map point changes.
   useEffect(() => {
-    const shouldUpdateCoordinates = mapPointChange || borehole.id !== boreholeId;
+    const shouldUpdateCoordinates = borehole.id !== boreholeId;
     if (shouldUpdateCoordinates) {
       // Update form values for both reference systems
       updateFormValues(
@@ -182,37 +117,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       );
       setBoreholeId(borehole.id);
     }
-
-    if (mapPointChange && editingEnabled) {
-      // set coordinate system to LV95 and transform LV95 coordinates to LV03 with fixed precision of 2.
-      formMethods.setValue("originalReferenceSystem", ReferenceSystemCode.LV95);
-      setValuesForReferenceSystem(
-        ReferenceSystemKey.LV95,
-        borehole.locationX?.toFixed(2) || "",
-        borehole.locationY?.toFixed(2) || "",
-      );
-
-      handleCoordinateTransformation(
-        ReferenceSystemKey.LV95,
-        ReferenceSystemKey.LV03,
-        borehole.locationX!,
-        borehole.locationY!,
-        2,
-        2,
-      ).then(() => setMapPointChange(false));
-    }
-  }, [
-    borehole,
-    boreholeId,
-    mapPointChange,
-    setValuesForReferenceSystem,
-    transformCoordinates,
-    editingEnabled,
-    setMapPointChange,
-    updateFormValues,
-    handleCoordinateTransformation,
-    formMethods,
-  ]);
+  }, [borehole, boreholeId, setValuesForReferenceSystem, editingEnabled, updateFormValues, formMethods]);
 
   useEffect(() => {
     if (extractionObject?.type === "coordinates" && extractionState === ExtractionState.success) {
@@ -280,7 +185,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
         const X_precision = direction === Direction.X ? changedCoordinatePrecision : otherCoordinatePrecision;
         const Y_precision = direction === Direction.Y ? changedCoordinatePrecision : otherCoordinatePrecision;
 
-        if (X !== null && Y !== null && !mapPointChange) {
+        if (X !== null && Y !== null) {
           handleCoordinateTransformation(sourceSystem, targetSystem, X, Y, X_precision, Y_precision);
         }
       }
@@ -344,7 +249,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                 <FormContainer direction="row">
                   <FormContainer width={"50%"}>
                     <FormCoordinate
-                      required={true}
                       fieldName={FieldNameDirectionKeys.locationX}
                       referenceSystem={ReferenceSystemKey.LV95}
                       direction={Direction.X}
@@ -352,10 +256,9 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
                       readonly={!editingEnabled}
                       className={isCoordinateExtraction ? "ai" : ""}
-                      value={formMethods.getValues(referenceSystems.LV95.fieldName.X)}
+                      value={formMethods.watch(referenceSystems.LV95.fieldName.X)}
                     />
                     <FormCoordinate
-                      required={true}
                       fieldName={FieldNameDirectionKeys.locationY}
                       referenceSystem={ReferenceSystemKey.LV95}
                       direction={Direction.Y}
@@ -363,12 +266,11 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
                       readonly={!editingEnabled}
                       className={isCoordinateExtraction ? "ai" : ""}
-                      value={formMethods.getValues(referenceSystems.LV95.fieldName.Y)}
+                      value={formMethods.watch(referenceSystems.LV95.fieldName.Y)}
                     />
                   </FormContainer>
                   <FormContainer width={"50%"}>
                     <FormCoordinate
-                      required={true}
                       fieldName={FieldNameDirectionKeys.locationXLV03}
                       referenceSystem={ReferenceSystemKey.LV03}
                       direction={Direction.X}
@@ -376,7 +278,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
                       readonly={!editingEnabled}
                       className={isCoordinateExtraction ? "ai" : ""}
-                      value={formMethods.getValues(referenceSystems.LV03.fieldName.X)}
+                      value={formMethods.watch(referenceSystems.LV03.fieldName.X)}
                     />
                     <FormCoordinate
                       required={true}
@@ -387,7 +289,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
                       readonly={!editingEnabled}
                       className={isCoordinateExtraction ? "ai" : ""}
-                      value={formMethods.getValues(referenceSystems.LV03.fieldName.Y)}
+                      value={formMethods.watch(referenceSystems.LV03.fieldName.Y)}
                     />
                   </FormContainer>
                 </FormContainer>

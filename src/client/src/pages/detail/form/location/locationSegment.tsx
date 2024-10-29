@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useCallback } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, Stack } from "@mui/material";
 import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
+import { fetchApiV2 } from "../../../../api/fetchApiV2";
 import PointComponent from "../../../../components/map/pointComponent";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import CantonMunicipalitySegment from "./cantonMunicipalitySegment.tsx";
-import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
+import { referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.ts";
+import { Location, ReferenceSystemCode, ReferenceSystemKey } from "./coordinateSegmentInterfaces.ts";
 import CoordinatesSegment from "./coordinatesSegment.tsx";
 import ElevationSegment from "./elevationSegment";
 import { LocationFormInputs } from "./locationPanel.tsx";
@@ -19,7 +21,91 @@ interface LocationSegmentProps {
 }
 
 const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegmentProps) => {
-  const [mapPointChange, setMapPointChange] = useState(false);
+  const transformCoordinates = useCallback(async (referenceSystem: string, x: number, y: number) => {
+    let apiUrl;
+    if (referenceSystem === referenceSystems.LV95.name) {
+      apiUrl = webApilv95tolv03;
+    } else {
+      apiUrl = webApilv03tolv95;
+    }
+    console.log(x, y);
+    if (x && y) {
+      console.log("+x");
+      const response = await fetch(apiUrl + `?easting=${x}&northing=${y}&altitude=0.0&format=json`);
+      if (response.ok) {
+        return await response.json();
+      }
+    }
+  }, []);
+
+  const setValuesForReferenceSystem = useCallback(
+    (referenceSystem: string, X: string, Y: string) => {
+      formMethods.setValue(referenceSystems[referenceSystem].fieldName.X, X, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      formMethods.setValue(referenceSystems[referenceSystem].fieldName.Y, Y, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    },
+    [formMethods],
+  );
+
+  const setValuesForCountryCantonMunicipality = useCallback(
+    (location: Location) => {
+      for (const [key, value] of Object.entries(location) as [keyof Location, string][]) {
+        formMethods.setValue(key, value, {
+          shouldValidate: true,
+        });
+      }
+    },
+    [formMethods],
+  );
+
+  const handleCoordinateTransformation = useCallback(
+    async (
+      sourceSystem: ReferenceSystemKey,
+      targetSystem: ReferenceSystemKey,
+      X: number,
+      Y: number,
+      XPrecision: number,
+      YPrecision: number,
+    ) => {
+      const response = await transformCoordinates(sourceSystem, X, Y);
+      if (!response) return; // Ensure response is valid
+
+      const maxPrecision = Math.max(XPrecision, YPrecision);
+      const transformedX = parseFloat(response.easting).toFixed(maxPrecision);
+      const transformedY = parseFloat(response.northing).toFixed(maxPrecision);
+
+      const location = await fetchApiV2(`location/identify?east=${X}&north=${Y}`, "GET");
+      setValuesForCountryCantonMunicipality(location);
+      setValuesForReferenceSystem(targetSystem, transformedX, transformedY);
+    },
+    [setValuesForCountryCantonMunicipality, setValuesForReferenceSystem, transformCoordinates],
+  );
+
+  const setValuesForNewMapPoint = useCallback(
+    (x: string, y: string, height: number, country: string, canton: string, municipality: string) => {
+      formMethods.setValue("locationX", x.toString());
+      formMethods.setValue("locationY", y.toString());
+      formMethods.setValue("elevationZ", height);
+      formMethods.setValue("country", country);
+      formMethods.setValue("canton", canton);
+      formMethods.setValue("municipality", municipality);
+      formMethods.setValue("originalReferenceSystem", ReferenceSystemCode.LV95);
+      handleCoordinateTransformation(
+        ReferenceSystemKey.LV95,
+        ReferenceSystemKey.LV03,
+        parseFloat(x),
+        parseFloat(y),
+        2,
+        2,
+      );
+    },
+    [formMethods, handleCoordinateTransformation],
+  );
 
   return (
     <Stack direction="column" gap={3}>
@@ -28,16 +114,16 @@ const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegm
           <Stack gap={2} sx={{ flexGrow: 1, minWidth: 600 }}>
             <CoordinatesSegment
               borehole={borehole}
-              mapPointChange={mapPointChange}
-              setMapPointChange={setMapPointChange}
               editingEnabled={editingEnabled}
               formMethods={formMethods}
+              setValuesForReferenceSystem={setValuesForReferenceSystem}
+              handleCoordinateTransformation={handleCoordinateTransformation}
+              setValuesForCountryCantonMunicipality={setValuesForCountryCantonMunicipality}
             />
             <ElevationSegment borehole={borehole} editingEnabled={editingEnabled} />
           </Stack>
           <FormSegmentBox sx={{ flexGrow: 1 }}>
             <PointComponent
-              setMapPointChange={setMapPointChange}
               applyChange={(
                 x: string,
                 y: string,
@@ -46,13 +132,7 @@ const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegm
                 canton: string,
                 municipality: string,
               ) => {
-                formMethods.setValue("locationX", x.toString());
-                formMethods.setValue("locationY", y.toString());
-                formMethods.setValue("elevationZ", height);
-                formMethods.setValue("country", country);
-                formMethods.setValue("canton", canton);
-                formMethods.setValue("municipality", municipality);
-                formMethods.setValue("originalReferenceSystem", ReferenceSystemCode.LV95);
+                setValuesForNewMapPoint(x, y, height, country, canton, municipality);
               }}
               id={borehole.id}
               isEditable={editingEnabled}

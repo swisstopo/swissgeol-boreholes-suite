@@ -27,7 +27,7 @@ export interface LocationFormInputs {
   projectName: number;
   restrictionId: number | null;
   restrictionUntil: Date | string | null;
-  nationalInterest: number | boolean | null; // Number as select options pared to boolean
+  nationalInterest: number | boolean | null; // Number as select options parsed to boolean
   elevationZ: number | string | null; // Number with thousands separator then parsed to number
   elevationPrecisionId: number | null;
   referenceElevation: number | string | null; // Number with thousands separator then parsed to number
@@ -46,6 +46,7 @@ export interface LocationFormInputs {
 }
 
 export interface BoreholeSubmission extends LocationFormInputs {
+  //Todo fix types
   precisionLocationX: number | null;
   precisionLocationY: number | null;
   precisionLocationXLV03: number | null;
@@ -58,7 +59,33 @@ export interface BoreholeSubmission extends LocationFormInputs {
 
 export const LocationPanel = forwardRef(
   ({ editingEnabled, onSubmit, updateNumber, onDirtyChange, borehole }: LocationPanelProps, ref) => {
-    const formMethods = useForm<LocationFormInputs>({ mode: "all" });
+    const formMethods = useForm<LocationFormInputs>({
+      mode: "all",
+      defaultValues: {
+        alternateName: borehole.alternateName,
+        originalName: borehole.originalName,
+        projectName: borehole.projectName,
+        restrictionId: borehole.restrictionId,
+        restrictionUntil: borehole.restrictionUntil,
+        nationalInterest: borehole.nationalInterest === true ? 1 : borehole.nationalInterest === false ? 0 : 2,
+        elevationZ: borehole.elevationZ,
+        elevationPrecisionId: borehole.elevationPrecisionId,
+        referenceElevation: borehole.referenceElevation,
+        qtReferenceElevationId: borehole.qtReferenceElevationId,
+        referenceElevationTypeId: borehole.referenceElevationTypeId,
+        hrsId: borehole.hrsId,
+        country: borehole.country,
+        canton: borehole.canton,
+        municipality: borehole.municipality,
+        locationX: (borehole.locationX && borehole.locationX?.toFixed(borehole.precisionLocationX)) || "",
+        locationY: (borehole.locationY && borehole.locationY?.toFixed(borehole.precisionLocationY)) || "",
+        locationXLV03:
+          (borehole.locationXLV03 && borehole.locationXLV03?.toFixed(borehole.precisionLocationXLV03)) || "",
+        locationYLV03:
+          (borehole.locationYLV03 && borehole.locationYLV03?.toFixed(borehole.precisionLocationYLV03)) || "",
+        originalReferenceSystem: borehole.originalReferenceSystem,
+      },
+    });
     const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
     const history = useHistory();
     const { handleBlockedNavigation } = useBlockNavigation(formMethods.formState.isDirty);
@@ -71,39 +98,14 @@ export const LocationPanel = forwardRef(
 
     useEffect(() => {
       onDirtyChange(Object.keys(formMethods.formState.dirtyFields).length > 0);
-    }, [formMethods.formState.dirtyFields, onDirtyChange]);
+      console.log(formMethods.formState.isDirty, formMethods.formState.dirtyFields);
+    }, [formMethods.formState.dirtyFields, formMethods.formState.isDirty, onDirtyChange]);
 
-    useEffect(() => {
-      if (borehole) {
-        const nationalInterest = borehole.nationalInterest === true ? 1 : borehole.nationalInterest === false ? 0 : 2;
-        // necessary because borehole is not immediately available.
-
-        // really??
-        console.log("reset");
-        // formMethods.reset({
-        //   alternateName: borehole.alternateName,
-        //   originalName: borehole.originalName,
-        //   projectName: borehole.projectName,
-        //   restrictionId: borehole.restrictionId,
-        //   restrictionUntil: borehole.restrictionUntil,
-        //   nationalInterest: nationalInterest,
-        //   elevationZ: borehole.elevationZ,
-        //   elevationPrecisionId: borehole.elevationPrecisionId,
-        //   referenceElevation: borehole.referenceElevation,
-        //   qtReferenceElevationId: borehole.qtReferenceElevationId,
-        //   referenceElevationTypeId: borehole.referenceElevationTypeId,
-        //   hrsId: borehole.hrsId,
-        //   country: borehole.country,
-        //   canton: borehole.canton,
-        //   municipality: borehole.municipality,
-        //   locationX: borehole.locationX?.toString(),
-        //   locationY: borehole.locationY?.toString(),
-        //   locationXLV03: borehole.locationXLV03?.toString(),
-        //   locationYLV03: borehole.locationYLV03?.toString(),
-        //   originalReferenceSystem: borehole.originalReferenceSystem,
-        // });
-      }
-    }, [borehole, formMethods]);
+    // useEffect(() => {
+    //   if (borehole) {
+    //     formMethods.reset();
+    //   }
+    // }, [borehole, formMethods]);
 
     useImperativeHandle(ref, () => ({
       submit: () => {
@@ -111,7 +113,9 @@ export const LocationPanel = forwardRef(
         formMethods.reset(currentValues);
         formMethods.handleSubmit(onSubmit)();
       },
-      reset: () => formMethods.reset(),
+      reset: () => {
+        formMethods.reset();
+      },
     }));
 
     if (borehole)

@@ -144,6 +144,11 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").type("1245794.000");
 
     cy.wait("@location");
+    cy.wait(4000);
+    cy.get('[data-cy="locationX-formCoordinate"] input').as("LV95X-input");
+    cy.get('[data-cy="locationY-formCoordinate"] input').as("LV95Y-input");
+    cy.get('[data-cy="locationXLV03-formCoordinate"] input').as("LV03X-input");
+    cy.get('[data-cy="locationYLV03-formCoordinate"] input').as("LV03Y-input");
     checkDecimalPlaces("@LV95X-input", 4);
     checkDecimalPlaces("@LV95Y-input", 3);
     checkDecimalPlaces("@LV03X-input", 4);
@@ -153,6 +158,11 @@ describe("Tests for editing coordinates of a borehole.", () => {
     // Navigate somewhere else and return
     cy.get('[data-cy="borehole-menu-item"]').click();
     cy.get('[data-cy="location-menu-item"]').click();
+
+    cy.get('[data-cy="locationX-formCoordinate"] input').as("LV95X-input");
+    cy.get('[data-cy="locationY-formCoordinate"] input').as("LV95Y-input");
+    cy.get('[data-cy="locationXLV03-formCoordinate"] input').as("LV03X-input");
+    cy.get('[data-cy="locationYLV03-formCoordinate"] input').as("LV03Y-input");
 
     // Check that the values are still the same
     cy.get("@LV95X-input").should("have.value", `2'645'123.0000`);

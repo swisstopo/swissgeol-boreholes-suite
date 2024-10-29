@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   Card,
@@ -66,7 +66,6 @@ const GeometryImport = ({ boreholeId }) => {
     );
   };
 
-  const watch = useWatch({ control: formMethods.control });
   const expectedCSVHeader =
     geometryFormats?.find(f => f.key === formMethods.getValues("geometryFormat"))?.csvHeader ?? "";
 
