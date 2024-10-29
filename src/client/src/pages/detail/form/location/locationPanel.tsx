@@ -61,7 +61,7 @@ export interface BoreholeSubmission extends LocationFormInputs {
 export const LocationPanel = forwardRef(
   ({ editingEnabled, onSubmit, updateNumber, onDirtyChange, borehole }: LocationPanelProps, ref) => {
     const formMethods = useForm<LocationFormInputs>({
-      mode: "all",
+      mode: "onChange",
       defaultValues: {
         alternateName: borehole.alternateName,
         originalName: borehole.originalName,
@@ -99,14 +99,13 @@ export const LocationPanel = forwardRef(
 
     useEffect(() => {
       onDirtyChange(Object.keys(formMethods.formState.dirtyFields).length > 0);
-      console.log(formMethods.formState.isDirty, formMethods.formState.dirtyFields);
-    }, [formMethods.formState.dirtyFields, formMethods.formState.isDirty, onDirtyChange]);
-
-    // useEffect(() => {
-    //   if (borehole) {
-    //     formMethods.reset();
-    //   }
-    // }, [borehole, formMethods]);
+    }, [
+      formMethods.formState.dirtyFields,
+      formMethods.formState.isDirty,
+      formMethods,
+      formMethods.formState,
+      onDirtyChange,
+    ]);
 
     useImperativeHandle(ref, () => ({
       submit: () => {

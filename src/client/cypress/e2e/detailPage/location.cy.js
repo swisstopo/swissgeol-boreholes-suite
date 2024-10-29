@@ -163,9 +163,10 @@ describe("Tests for 'Location' edit page.", () => {
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.get('[data-cy="editingstop-button"]').should("exist");
     stopEditing();
-    handlePrompt(messageUnsavedChanges, "discardchanges");
+    handlePrompt(messageUnsavedChanges, "discard changes");
     cy.get('[data-cy="editingstop-button"]').should("not.exist");
 
+    startBoreholeEditing();
     originalNameInput.type("FELIX_THE_BROOM");
 
     cy.get('[data-cy="borehole-menu-item"]').click();
@@ -175,7 +176,7 @@ describe("Tests for 'Location' edit page.", () => {
     });
 
     cy.get('[data-cy="borehole-menu-item"]').click();
-    handlePrompt(messageUnsavedChanges, "discardchanges");
+    handlePrompt(messageUnsavedChanges, "discard changes");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
     });
