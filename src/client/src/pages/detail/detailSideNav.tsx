@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
@@ -20,7 +18,13 @@ export const DetailSideNav = ({ id }: { id: string }) => {
   const auth = useAuth();
   const history = useHistory();
 
-  const ParentListItem = styled(ListItem)(({ active }) => ({
+  interface ParentListItemProps {
+    active: boolean;
+  }
+
+  const ParentListItem = styled(ListItem, {
+    shouldForwardProp: prop => prop !== "active", // Prevents "active" from being forwarded as a DOM attribute
+  })<ParentListItemProps>(({ active }) => ({
     padding: "1em",
     display: "flex",
     height: "40px",
@@ -28,7 +32,7 @@ export const DetailSideNav = ({ id }: { id: string }) => {
     paddingLeft: "35.5px",
     color: active ? theme.palette.error.main : "",
     borderTop: `1px solid ${theme.palette.boxShadow}`,
-    borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : null,
+    borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : undefined,
     backgroundColor: active ? theme.palette.background.lightgrey : "",
     "&:hover": {
       backgroundColor: theme.palette.hover.main,
@@ -86,6 +90,7 @@ export const DetailSideNav = ({ id }: { id: string }) => {
             </List.Content>
           </ParentListItem>
           <ParentListItem
+            active={false}
             onClick={() => {
               setStratigraphyIsVisible(!stratigraphyIsVisible);
             }}>
@@ -144,6 +149,7 @@ export const DetailSideNav = ({ id }: { id: string }) => {
             </List.Content>
           </ParentListItem>
           <ParentListItem
+            active={false}
             onClick={() => {
               setHydrogeologyIsVisible(!hydrogeologyIsVisible);
             }}>
