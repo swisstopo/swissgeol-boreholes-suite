@@ -2,7 +2,7 @@ import store from "../reducers";
 import { getAuthorizationHeader } from "./authentication";
 
 export async function fetchCreatePngs(fileName) {
-  return await fetch("dataextraction/api/V1/create_pngs", {
+  return await fetch("/dataextraction/api/V1/create_pngs", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -13,7 +13,7 @@ export async function fetchCreatePngs(fileName) {
 }
 
 export async function fetchExtractData(request, abortSignal) {
-  return await fetch("dataextraction/api/V1/extract_data", {
+  return await fetch("/dataextraction/api/V1/extract_data", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
