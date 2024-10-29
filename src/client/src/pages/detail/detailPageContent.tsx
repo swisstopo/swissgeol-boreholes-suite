@@ -187,7 +187,6 @@ export const DetailPageContent = ({
                   onSubmit={handleFormSubmit}
                   borehole={borehole}
                   onDirtyChange={handleDirtyChange}
-                  updateNumber={updateNumber}
                 />
               )}
             />

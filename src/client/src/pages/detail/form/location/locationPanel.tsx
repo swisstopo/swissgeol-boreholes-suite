@@ -13,7 +13,7 @@ import NameSegment from "./nameSegment.tsx";
 import RestrictionSegment from "./restrictionSegment.tsx";
 
 export const LocationPanel = forwardRef(
-  ({ editingEnabled, onSubmit, updateNumber, onDirtyChange, borehole }: LocationPanelProps, ref) => {
+  ({ editingEnabled, onSubmit, onDirtyChange, borehole }: LocationPanelProps, ref) => {
     const formMethods = useForm<LocationFormInputs>({
       mode: "onChange",
       defaultValues: {
@@ -91,8 +91,7 @@ export const LocationPanel = forwardRef(
                 <LocationSegment
                   borehole={borehole}
                   editingEnabled={editingEnabled}
-                  formMethods={formMethods}
-                  updateNumber={updateNumber}></LocationSegment>
+                  formMethods={formMethods}></LocationSegment>
               </Stack>
             </form>
           </FormProvider>

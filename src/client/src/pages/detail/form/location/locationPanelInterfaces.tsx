@@ -1,5 +1,4 @@
 import { RefObject } from "react";
-import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 
 export interface LocationBaseProps {
@@ -11,7 +10,6 @@ export interface LocationPanelProps extends LocationBaseProps {
   onSubmit: (data: LocationFormInputs) => void;
   onDirtyChange: (isDirty: boolean) => void;
   ref: RefObject<{ submit: () => void; reset: () => void }>;
-  updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
 }
 
 interface LocationFormBaseInputs {

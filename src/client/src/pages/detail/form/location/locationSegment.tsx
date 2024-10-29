@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, Stack } from "@mui/material";
-import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2";
 import PointComponent from "../../../../components/map/pointComponent";
 import { FormSegmentBox } from "../../../../components/styledComponents";
@@ -14,7 +13,6 @@ import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces
 
 interface LocationSegmentProps extends LocationBaseProps {
   formMethods: UseFormReturn<LocationFormInputs>;
-  updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
 }
 
 const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegmentProps) => {
