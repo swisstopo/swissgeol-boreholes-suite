@@ -1,3 +1,4 @@
+import { Identifier } from "../../../../api/borehole.ts";
 import {
   getPrecisionFromString,
   parseFloatWithThousandsSeparator,
@@ -10,6 +11,10 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
   const parseValueIfNotNull = (value: string | number | null) =>
     value ? parseFloatWithThousandsSeparator(String(value)) : null;
+
+  const getCompleteCodelists = (codelists: Identifier[]) => {
+    return codelists.filter(c => c.codelistId && c.value && c.boreholeId);
+  };
 
   data.restrictionUntil = data?.restrictionUntil ? ensureDatetime(data.restrictionUntil.toString()) : null;
   data.elevationZ = parseValueIfNotNull(data?.elevationZ);
@@ -29,7 +34,9 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   data.locationY = parseValueIfNotNull(data?.locationY);
   data.locationXLV03 = parseValueIfNotNull(data?.locationXLV03);
   data.locationYLV03 = parseValueIfNotNull(data?.locationYLV03);
+  data.boreholeCodelists = getCompleteCodelists(data.boreholeCodelists);
 
   delete data.hrsId;
+  delete data.codelists;
   return data;
 };

@@ -1,5 +1,6 @@
 import { RefObject } from "react";
-import { BoreholeV2 } from "../../../../api/borehole.ts";
+import { BoreholeV2, Identifier } from "../../../../api/borehole.ts";
+import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 
 export interface LocationBaseProps {
   editingEnabled: boolean;
@@ -36,9 +37,11 @@ export interface LocationFormInputs extends LocationFormBaseInputs {
   locationYLV03: string;
   locationY: string;
   locationX: string;
+  boreholeCodelists: Identifier[];
 }
 
 export interface BoreholeSubmission extends LocationFormBaseInputs {
+  boreholeCodelists: Identifier[];
   precisionLocationX: number | null;
   precisionLocationY: number | null;
   precisionLocationXLV03: number | null;
@@ -47,4 +50,5 @@ export interface BoreholeSubmission extends LocationFormBaseInputs {
   locationYLV03: string | number | null;
   locationY: string | number | null;
   locationX: string | number | null;
+  codelists?: Codelist[];
 }
