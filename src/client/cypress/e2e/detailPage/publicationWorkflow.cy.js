@@ -1,11 +1,4 @@
-import { stopEditing } from "../helpers/buttonHelpers";
-import {
-  createBorehole,
-  handlePrompt,
-  loginAsAdmin,
-  startBoreholeEditing,
-  stopBoreholeEditing,
-} from "../helpers/testHelpers";
+import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 
 const verifyColorForStatus = (status, color) => {
   cy.get(`[data-cy="workflow_status_color_${status}"]`).should("have.have.class", `ui ${color} circular label`);
@@ -39,7 +32,6 @@ describe("Tests the publication workflow.", () => {
     });
 
     startBoreholeEditing();
-
     verifyStatusTextsInHeader(["edit"]);
     verifyStatusTextsNotInHeader(["control", "valid", "public"]);
     verifyColorForStatus("edit", "orange");
@@ -55,7 +47,6 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "orange");
 
     // Restart workflow
-    stopEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_restart"]').click();
     cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
@@ -67,7 +58,6 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "red");
 
     // Submit for review
-    stopEditing();
     startBoreholeEditing();
     cy.get("[data-cy=workflow_submit]").click();
     cy.get("[data-cy=workflow_dialog_submit]").click();
@@ -79,7 +69,6 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "orange");
 
     // Submit for validation
-    stopEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -92,7 +81,6 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("valid", "orange");
 
     // Submit for publication
-    stopEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -106,7 +94,6 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("public", "orange");
 
     // Publish
-    stopEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -115,7 +102,6 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("public", "green");
 
     // Restart workflow
-    stopEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_restart"]').click();
     cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
@@ -140,7 +126,6 @@ describe("Tests the publication workflow.", () => {
     cy.wait("@workflow_edit_list");
 
     // Delete
-    stopBoreholeEditing();
     startBoreholeEditing();
     cy.get("[data-cy=deleteborehole-button]").click();
     handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
