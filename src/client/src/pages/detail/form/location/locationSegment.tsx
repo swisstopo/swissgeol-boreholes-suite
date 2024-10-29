@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, Stack } from "@mui/material";
 import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
-import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2";
 import PointComponent from "../../../../components/map/pointComponent";
 import { FormSegmentBox } from "../../../../components/styledComponents";
@@ -11,11 +10,9 @@ import { referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordina
 import { Location, ReferenceSystemCode, ReferenceSystemKey } from "./coordinateSegmentInterfaces.ts";
 import CoordinatesSegment from "./coordinatesSegment.tsx";
 import ElevationSegment from "./elevationSegment";
-import { LocationFormInputs } from "./locationPanel.tsx";
+import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
-interface LocationSegmentProps {
-  editingEnabled: boolean;
-  borehole: BoreholeV2;
+interface LocationSegmentProps extends LocationBaseProps {
   formMethods: UseFormReturn<LocationFormInputs>;
   updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
 }

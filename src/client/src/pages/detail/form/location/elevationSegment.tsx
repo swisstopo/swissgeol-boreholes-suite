@@ -1,15 +1,11 @@
 import { FC } from "react";
-import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { FormContainer, FormDomainSelect, FormInput } from "../../../../components/form/form.ts";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
+import { LocationBaseProps } from "./locationPanelInterfaces.tsx";
 
-interface ElevationSegmentProps {
-  borehole: BoreholeV2;
-  editingEnabled: boolean;
-}
-const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, editingEnabled }) => {
+const ElevationSegment: FC<LocationBaseProps> = ({ borehole, editingEnabled }) => {
   const { data: domains } = useDomains();
 
   return (

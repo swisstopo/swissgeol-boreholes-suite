@@ -244,7 +244,7 @@ export const createBorehole = values => {
 };
 
 export const startBoreholeEditing = () => {
-  startEditing();
+  startEditing("detail-header");
   cy.wait("@edit_lock");
 };
 

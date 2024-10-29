@@ -1,15 +1,12 @@
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
-import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
 import { FormContainer, FormInput } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { LocationFormInputs } from "./locationPanel.tsx";
+import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
-interface NameSegmentProps {
-  borehole: BoreholeV2;
-  editingEnabled: boolean;
+interface NameSegmentProps extends LocationBaseProps {
   formMethods: UseFormReturn<LocationFormInputs>;
 }
 const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps) => {

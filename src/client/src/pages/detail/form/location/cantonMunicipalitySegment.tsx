@@ -5,7 +5,7 @@ import { Card, CardContent } from "@mui/material/";
 import { MapPin } from "lucide-react";
 import { FormContainer, FormValueType } from "../../../../components/form/form";
 import { FormInput } from "../../../../components/form/formInput";
-import { LocationFormInputs } from "./locationPanel.tsx";
+import { LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 interface CantonMunicipalitySegmentProps {
   country: string;

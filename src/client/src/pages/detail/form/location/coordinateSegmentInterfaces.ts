@@ -1,6 +1,5 @@
 import { UseFormReturn } from "react-hook-form";
-import { BoreholeV2 } from "../../../../api/borehole.ts";
-import { LocationFormInputs } from "./locationPanel.tsx";
+import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 export enum ReferenceSystemCode {
   LV95 = 20104001,
@@ -68,9 +67,7 @@ export interface FormValues {
   location_precision: string;
 }
 
-export interface CoordinatesSegmentProps {
-  borehole: BoreholeV2;
-  editingEnabled: boolean;
+export interface CoordinatesSegmentProps extends LocationBaseProps {
   formMethods: UseFormReturn<LocationFormInputs>;
   setValuesForReferenceSystem: (referenceSystem: string, X: string, Y: string) => void;
   setValuesForCountryCantonMunicipality: (location: Location) => void;

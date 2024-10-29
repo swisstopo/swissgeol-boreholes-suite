@@ -14,7 +14,7 @@ import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledCo
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
-import { BoreholeSubmission, LocationFormInputs } from "./form/location/locationPanel";
+import { BoreholeSubmission, LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
