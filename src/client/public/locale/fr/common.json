@@ -113,7 +113,7 @@
   "disableWorkgroup": "Désactiver le groupe de travail",
   "disabled": "Désactivé",
   "disabling": "Désactiver {{quoi}}",
-  "discardChanges": "Annuler les modifications",
+  "discardchanges": "Annuler les modifications",
   "disclaimer_publish_message": "Der von Ihnen erstellte Disclaimer wird ab sofort bei jedem Login angezeigt.",
   "disclaimer_publish_title": "La clause de non-responsabilité sera publiée",
   "done": "OK",

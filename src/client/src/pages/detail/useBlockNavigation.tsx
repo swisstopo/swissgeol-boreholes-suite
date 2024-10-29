@@ -31,7 +31,7 @@ export const useBlockNavigation = (isFormDirty: boolean): UseBlockNavigationResu
           variant: "outlined",
         },
         {
-          label: t("discardChanges"),
+          label: t("discardchanges"),
           icon: <Trash2 />,
           variant: "contained",
           action: confirmNavigation,

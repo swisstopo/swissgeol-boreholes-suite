@@ -113,7 +113,7 @@
   "disableWorkgroup": "Disable workgroup",
   "disabled": "Disabled",
   "disabling": "Disabling {{what}}",
-  "discardChanges": "Discard changes",
+  "discardchanges": "Discard changes",
   "disclaimer_publish_message": "The disclaimer you created will now be displayed on every login.",
   "disclaimer_publish_title": "Publish disclaimer",
   "done": "Done",

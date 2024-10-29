@@ -39,7 +39,7 @@ export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarPro
       <Stack spacing={1} direction="row">
         <DeleteButton
           disabled={!isFormDirty}
-          label="discardChanges"
+          label="discardchanges"
           onClick={() => {
             triggerReset();
           }}
