@@ -1,5 +1,5 @@
 import { setSelect } from "../helpers/formHelpers";
-import { delayedType, newEditableBorehole, returnToOverview } from "../helpers/testHelpers";
+import { delayedType, newEditableBorehole, newUneditableBorehole, returnToOverview } from "../helpers/testHelpers";
 
 function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
   cy.get(inputAlias)
@@ -130,15 +130,18 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("[name=spatial_reference_system]").should("have.value", 20104001);
 
     waitForCoordinatePatches();
-
+    cy.wait("@edit_patch");
+    cy.wait("@location");
     // verify that all inputs have a precision of 2 decimal places
     checkDecimalPlaces("@LV95X-input", 2);
     checkDecimalPlaces("@LV95Y-input", 2);
     checkDecimalPlaces("@LV03X-input", 2);
     checkDecimalPlaces("@LV03Y-input", 2);
 
+    cy.wait(1000);
+
     returnToOverview();
-    newEditableBorehole();
+    newUneditableBorehole();
     // verify input are cleared for new borehole
     cy.get("@LV95X-input").should("have.value", "");
     cy.get("@LV95Y-input").should("have.value", "");

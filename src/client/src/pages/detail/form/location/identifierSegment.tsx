@@ -1,10 +1,11 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import { Card, Grid, IconButton, Typography } from "@mui/material";
 import { Save, Trash2 } from "lucide-react";
 import _ from "lodash";
-import { addIdentifier, removeIdentifier } from "../../../../api-lib";
-import { Borehole, BoreholeAttributes, Identifier } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { addIdentifier, removeIdentifier, updateBorehole } from "../../../../api-lib";
+import { Borehole, Identifier } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { FormValueType } from "../../../../components/form/form.ts";
 import { SimpleDomainSelect } from "../../../../components/form/simpleDomainSelect.tsx";
@@ -15,13 +16,13 @@ import { FormSegmentBox } from "../../../../components/styledComponents";
 interface IdentifierSegmentProps {
   borehole: Borehole;
   editingEnabled: boolean;
-  updateBorehole: (borehole: BoreholeAttributes) => void;
 }
-const IdentifierSegment = ({ borehole, editingEnabled, updateBorehole }: IdentifierSegmentProps) => {
+const IdentifierSegment = ({ borehole, editingEnabled }: IdentifierSegmentProps) => {
   const [identifierId, setIdentifierId] = useState<number | null>(null);
   const [identifierValue, setIdentifierValue] = useState<string>("");
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
 
   const removeEntry = (identifier: Identifier) => {
     //@ts-expect-error // legacy fetch functions not typed
@@ -33,7 +34,7 @@ const IdentifierSegment = ({ borehole, editingEnabled, updateBorehole }: Identif
         } else {
           tmp.custom.identifiers = tmp.custom.identifiers.filter(el => el.id !== identifier.id);
         }
-        updateBorehole(tmp);
+        dispatch(updateBorehole(tmp));
       }
     });
   };
@@ -55,7 +56,7 @@ const IdentifierSegment = ({ borehole, editingEnabled, updateBorehole }: Identif
             tmp.custom.identifiers = [];
           }
           tmp.custom.identifiers.push(response.data.data);
-          updateBorehole(tmp);
+          dispatch(updateBorehole(tmp));
         }
       });
     }

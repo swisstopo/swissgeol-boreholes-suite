@@ -6,15 +6,10 @@ import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts"
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import DetailHeader from "./detailHeader.tsx";
-import DetailPageContent from "./detailPageContent";
+import { DetailPageContent } from "./detailPageContent.tsx";
 import DetailSideNav from "./detailSideNav";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
-
-interface DetailPageContentProps {
-  editingEnabled: boolean;
-  editableByCurrentUser: boolean;
-}
 
 export const DetailPage: FC = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
@@ -25,7 +20,7 @@ export const DetailPage: FC = () => {
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
 
   useEffect(() => {
-    setEditingEnabled(borehole.data.lock !== null);
+    setEditingEnabled(borehole?.data?.lock !== null);
   }, [borehole.data.lock]);
 
   useEffect(() => {
@@ -33,7 +28,7 @@ export const DetailPage: FC = () => {
       togglePanel(false);
     }
 
-    if (borehole.data.lock !== null && borehole.data.lock.id !== user.data.id) {
+    if (borehole?.data?.lock?.id && borehole.data.lock.id !== user.data.id) {
       setEditableByCurrentUser(false);
       return;
     }
@@ -49,11 +44,6 @@ export const DetailPage: FC = () => {
 
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
   }, [editingEnabled, user, borehole, location, togglePanel]);
-
-  const props: DetailPageContentProps = {
-    editingEnabled: editingEnabled,
-    editableByCurrentUser: editableByCurrentUser,
-  };
 
   return (
     <>
@@ -80,7 +70,7 @@ export const DetailPage: FC = () => {
             {editingEnabled && (
               <LabelingToggleButton panelOpen={panelOpen} panelPosition={panelPosition} onClick={() => togglePanel()} />
             )}
-            <DetailPageContent {...props} />
+            <DetailPageContent editingEnabled={editingEnabled} editableByCurrentUser={editableByCurrentUser} />
           </MainContentBox>
           {editingEnabled && panelOpen && <LabelingPanel boreholeId={borehole.data.id} />}
         </Box>
