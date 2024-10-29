@@ -41,7 +41,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     (refSystem: string, locationX: number | null, locationY: number | null, precisionX: number, precisionY: number) => {
       const locationXString = (locationX && locationX?.toFixed(precisionX)) || "";
       const locationYString = (locationY && locationY?.toFixed(precisionY)) || "";
-      console.log("use form values");
       setValuesForReferenceSystem(refSystem, locationXString, locationYString);
     },
     [setValuesForReferenceSystem],

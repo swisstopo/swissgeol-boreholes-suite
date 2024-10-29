@@ -28,9 +28,7 @@ const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegm
     } else {
       apiUrl = webApilv03tolv95;
     }
-    console.log(x, y);
     if (x && y) {
-      console.log("+x");
       const response = await fetch(apiUrl + `?easting=${x}&northing=${y}&altitude=0.0&format=json`);
       if (response.ok) {
         return await response.json();

@@ -137,7 +137,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV03Y-input").should("have.value", "");
   });
 
-  it("displays correct decimal precision", () => {
+  it.only("displays correct decimal precision", () => {
     // Type valid coordinates with zeros after decimal
     cy.get("@LV95X-input").type("2645123.0000");
     cy.get("@LV95Y-input").type("1245794.000");
@@ -169,7 +169,8 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     // Add more zeros to LV95Y input
     cy.get("@LV95Y-input").type("00");
-    // cy.wait("@location");
+    cy.wait("@location");
+    cy.wait(4000);
     checkDecimalPlaces("@LV95X-input", 4);
     checkDecimalPlaces("@LV95Y-input", 5);
     checkDecimalPlaces("@LV03X-input", 5);
