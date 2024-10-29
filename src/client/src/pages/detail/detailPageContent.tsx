@@ -31,6 +31,9 @@ interface DetailPageContentProps {
   borehole: BoreholeV2;
   setBorehole: (borehole: BoreholeV2) => void;
 }
+type DetailPageParams = {
+  id: string;
+};
 
 export const DetailPageContent = ({
   editingEnabled,
@@ -43,12 +46,9 @@ export const DetailPageContent = ({
 }: DetailPageContentProps) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
+  const { id } = useParams<DetailPageParams>();
   const legacyBorehole = useSelector((state: ReduxRootState) => state.core_borehole);
-
   const dispatch = useDispatch();
-  const { id } = useParams<{
-    id: string;
-  }>();
 
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   const updateAttributeDelay: { [index: string]: any } = {};
@@ -149,9 +149,6 @@ export const DetailPageContent = ({
                 window.location.reload();
               }
             }
-          })
-          .catch((error: string) => {
-            console.error(error);
           });
       },
       to ? 500 : 0,

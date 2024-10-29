@@ -124,11 +124,15 @@ export const DetailPage: FC = () => {
   }, [id, loadOrCreate]);
 
   useEffect(() => {
+    setEditingEnabled(legacyBorehole?.data?.lock !== null);
+  }, [legacyBorehole.data.lock]);
+
+  useEffect(() => {
     if (!editingEnabled) {
       togglePanel(false);
     }
 
-    if (legacyBorehole.data.lock !== null && legacyBorehole.data.lock?.id !== user.data.id) {
+    if (legacyBorehole?.data?.lock?.id && legacyBorehole.data.lock.id !== user.data.id) {
       setEditableByCurrentUser(false);
       return;
     }
