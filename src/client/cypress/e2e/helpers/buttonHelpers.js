@@ -1,6 +1,15 @@
 import { createBaseSelector } from "./testHelpers";
 
 /**
+ * Clicks on the save button and waits for borehole update.
+ * @param {string} parent (optional) The parent of the button.
+ */
+export const saveLocationForm = parent => {
+  saveForm(parent);
+  cy.wait(["@borehole_by_id", "@update-borehole"]);
+};
+
+/**
  * Clicks on the save button.
  * @param {string} parent (optional) The parent of the button.
  */

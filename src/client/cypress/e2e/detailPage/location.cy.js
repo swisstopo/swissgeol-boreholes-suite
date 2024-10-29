@@ -1,4 +1,4 @@
-import { saveForm, stopEditing } from "../helpers/buttonHelpers";
+import { saveLocationForm, stopEditing } from "../helpers/buttonHelpers";
 import { checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 import {
@@ -21,7 +21,7 @@ describe("Tests for 'Location' edit page.", () => {
     originalNameInput.type("AAA_SCATORPS");
 
     // save borehole
-    saveForm();
+    saveLocationForm();
 
     // stop editing
     stopBoreholeEditing();
@@ -66,7 +66,7 @@ describe("Tests for 'Location' edit page.", () => {
       cy.get("@alternateNameInput").should("have.value", "PHOTOMOUSE");
 
       cy.get("@alternateNameInput").clear();
-      saveForm();
+      saveLocationForm();
       // should be reset to original name if alternate name is empty
       cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
       cy.get("@alternateNameInput").should("have.value", "PHOTOCAT");

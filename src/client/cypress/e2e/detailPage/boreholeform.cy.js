@@ -1,4 +1,4 @@
-import { saveForm } from "../helpers/buttonHelpers";
+import { saveLocationForm } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, isDisabled, setSelect } from "../helpers/formHelpers";
 import {
@@ -44,7 +44,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("qtReferenceElevationId", "20114002");
     evaluateSelect("referenceElevationTypeId", "20117004");
 
-    saveForm();
+    saveLocationForm();
     // navigate away and back to check if values are saved
     cy.get('[data-cy="borehole-menu-item"]').click();
     cy.get('[data-cy="location-menu-item"]').click();
