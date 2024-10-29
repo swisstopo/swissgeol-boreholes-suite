@@ -161,7 +161,7 @@ describe("Test labeling tool", () => {
     evaluateCoordinate("locationX", "");
     hasAiStyle("locationX");
     hasError("locationX", false);
-    evaluateCoordinate("X", "");
+    evaluateCoordinate("locationY", "");
     hasAiStyle("locationY");
     hasError("locationY", false);
     evaluateCoordinate("locationXLV03", "");
