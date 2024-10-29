@@ -65,8 +65,6 @@ export const DetailPage: FC = () => {
     if (data?.restrictionUntil) {
       if (!data.restrictionUntil.toString().endsWith("Z")) {
         data.restrictionUntil = data.restrictionUntil.toString() + "T00:00:00.000Z";
-      } else {
-        data.restrictionUntil = data.restrictionUntil;
       }
     } else {
       data.restrictionUntil = null;

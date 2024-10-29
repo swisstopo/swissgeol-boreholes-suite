@@ -45,6 +45,7 @@ export interface LocationFormInputs {
   locationPrecisionId: number | boolean | null | undefined;
 }
 
+// @ts-expect-error temporary fix
 export interface BoreholeSubmission extends LocationFormInputs {
   //Todo fix types
   precisionLocationX: number | null;
