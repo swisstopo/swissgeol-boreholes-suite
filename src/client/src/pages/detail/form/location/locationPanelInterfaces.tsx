@@ -29,7 +29,7 @@ interface LocationFormBaseInputs {
   country: string;
   canton: string;
   municipality: string;
-  locationPrecisionId: number | boolean | null | undefined;
+  locationPrecisionId: number | null;
 }
 export interface LocationFormInputs extends LocationFormBaseInputs {
   locationXLV03: string;
