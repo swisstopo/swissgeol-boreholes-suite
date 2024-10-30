@@ -28,7 +28,7 @@ export interface BoreholeV2 {
   referenceElevation: number | string; // Number with thousands separator then parsed to number
   qtReferenceElevationId: number;
   referenceElevationTypeId: number;
-  locationPrecisionId: number | boolean | null | undefined;
+  locationPrecisionId: number | null;
   hrsId: number;
 }
 
