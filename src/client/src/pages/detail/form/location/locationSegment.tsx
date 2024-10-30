@@ -139,7 +139,6 @@ const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegm
         country={borehole.country}
         canton={borehole.canton}
         municipality={borehole.municipality}
-        editingEnabled={editingEnabled}
         formMethods={formMethods}
       />
     </Stack>

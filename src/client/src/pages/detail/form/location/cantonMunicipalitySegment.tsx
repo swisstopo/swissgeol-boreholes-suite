@@ -11,17 +11,10 @@ interface CantonMunicipalitySegmentProps {
   country: string;
   canton: string;
   municipality: string;
-  editingEnabled: boolean;
   formMethods: UseFormReturn<LocationFormInputs>;
 }
 
-const CantonMunicipalitySegment = ({
-  country,
-  canton,
-  municipality,
-  editingEnabled,
-  formMethods,
-}: CantonMunicipalitySegmentProps) => {
+const CantonMunicipalitySegment = ({ country, canton, municipality, formMethods }: CantonMunicipalitySegmentProps) => {
   useEffect(() => {
     formMethods.setValue("country", country);
   }, [formMethods, country]);
@@ -50,7 +43,7 @@ const CantonMunicipalitySegment = ({
                 </InputAdornment>
               ),
             }}
-            readonly={!editingEnabled}
+            readonly={true}
           />
           <FormInput
             fieldName={"canton"}
@@ -64,7 +57,7 @@ const CantonMunicipalitySegment = ({
                 </InputAdornment>
               ),
             }}
-            readonly={!editingEnabled}
+            readonly={true}
           />
           <FormInput
             fieldName={"municipality"}
@@ -78,7 +71,7 @@ const CantonMunicipalitySegment = ({
                 </InputAdornment>
               ),
             }}
-            readonly={!editingEnabled}
+            readonly={true}
           />
         </FormContainer>
       </CardContent>
