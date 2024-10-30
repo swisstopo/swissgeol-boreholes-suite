@@ -45,29 +45,29 @@ const DetailHeader = ({
     toggleEditing(true);
   };
 
-  const resetFormAndStopEditing = () => {
-    triggerReset();
+  const stopEditing = () => {
     toggleEditing(false);
   };
 
-  const stopEditing = () => {
-    if (isFormDirty) {
-      showPrompt(t("messageDiscardUnsavedChanges"), [
-        {
-          label: t("cancel"),
-          icon: <X />,
-          variant: "outlined",
-        },
-        {
-          label: t("discardchanges"),
-          icon: <Trash2 />,
-          variant: "contained",
-          action: resetFormAndStopEditing,
-        },
-      ]);
-    } else {
-      toggleEditing(false);
-    }
+  const resetFormAndStopEditing = () => {
+    triggerReset();
+    stopEditing();
+  };
+
+  const stopEditingWithUnsavedChanges = () => {
+    showPrompt(t("messageDiscardUnsavedChanges"), [
+      {
+        label: t("cancel"),
+        icon: <X />,
+        variant: "outlined",
+      },
+      {
+        label: t("discardchanges"),
+        icon: <Trash2 />,
+        variant: "contained",
+        action: resetFormAndStopEditing,
+      },
+    ]);
   };
 
   const handleDelete = async () => {
@@ -89,8 +89,10 @@ const DetailHeader = ({
           color="primary"
           data-cy="backButton"
           onClick={() => {
-            stopEditing();
-            history.push("/");
+            {
+              isFormDirty ? stopEditingWithUnsavedChanges() : stopEditing();
+              history.push("/");
+            }
           }}
           sx={{
             width: "36px",
@@ -130,7 +132,7 @@ const DetailHeader = ({
                   ])
                 }
               />
-              <EndEditButton onClick={stopEditing} />
+              <EndEditButton onClick={isFormDirty ? stopEditingWithUnsavedChanges : stopEditing} />
             </>
           ) : (
             <EditButton onClick={startEditing} />
