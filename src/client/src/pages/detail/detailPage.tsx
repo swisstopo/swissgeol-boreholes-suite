@@ -47,9 +47,6 @@ export const DetailPage: FC = () => {
           if (response.success) {
             setLoading(false);
           }
-        })
-        .catch(function (error: string) {
-          console.log(error);
         });
     },
     [dispatch, setLoading],
