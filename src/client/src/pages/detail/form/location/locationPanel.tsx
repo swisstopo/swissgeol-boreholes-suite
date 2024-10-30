@@ -32,12 +32,11 @@ export const LocationPanel = forwardRef(
         country: borehole.country,
         canton: borehole.canton,
         municipality: borehole.municipality,
-        locationX: (borehole.locationX && borehole.locationX?.toFixed(borehole.precisionLocationX)) || "",
-        locationY: (borehole.locationY && borehole.locationY?.toFixed(borehole.precisionLocationY)) || "",
-        locationXLV03:
-          (borehole.locationXLV03 && borehole.locationXLV03?.toFixed(borehole.precisionLocationXLV03)) || "",
-        locationYLV03:
-          (borehole.locationYLV03 && borehole.locationYLV03?.toFixed(borehole.precisionLocationYLV03)) || "",
+        locationX: borehole.locationX?.toFixed(borehole.precisionLocationX) || "",
+        locationY: borehole.locationY?.toFixed(borehole.precisionLocationY) || "",
+        locationXLV03: borehole.locationXLV03?.toFixed(borehole.precisionLocationXLV03) || "",
+        locationYLV03: borehole.locationYLV03?.toFixed(borehole.precisionLocationYLV03) || "",
+        locationPrecisionId: borehole.locationPrecisionId,
         originalReferenceSystem: borehole.originalReferenceSystem,
       },
     });
