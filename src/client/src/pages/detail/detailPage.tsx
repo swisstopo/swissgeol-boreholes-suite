@@ -54,7 +54,7 @@ export const DetailPage: FC = () => {
 
   const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
 
-  const handleFormSubmit = (formInputs: LocationFormInputs) => {
+  const onFormSubmit = (formInputs: LocationFormInputs) => {
     const boreholeSubmission = prepareLocationDataForSubmit(formInputs);
     getBoreholeById(parseInt(id)).then(b => {
       updateBorehole({ ...b, ...boreholeSubmission }).then(r => {
@@ -154,7 +154,7 @@ export const DetailPage: FC = () => {
               <DetailPageContent
                 editingEnabled={editingEnabled}
                 editableByCurrentUser={editableByCurrentUser}
-                handleFormSubmit={handleFormSubmit}
+                onFormSubmit={onFormSubmit}
                 locationPanelRef={locationPanelRef}
                 handleDirtyChange={handleDirtyChange}
                 borehole={borehole}

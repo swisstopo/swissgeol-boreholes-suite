@@ -280,7 +280,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       value={formMethods.watch(referenceSystems.LV03.fieldName.X)}
                     />
                     <FormCoordinate
-                      required={true}
                       fieldName={FieldNameDirectionKeys.locationYLV03}
                       referenceSystem={ReferenceSystemKey.LV03}
                       direction={Direction.Y}

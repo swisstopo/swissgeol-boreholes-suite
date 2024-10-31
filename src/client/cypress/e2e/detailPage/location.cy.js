@@ -12,6 +12,26 @@ import {
 } from "../helpers/testHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
+  const getButtons = () => {
+    const saveButton = cy.get('[data-cy="save-button"]');
+    const discardButton = cy.get('[data-cy="discardchanges-button"]');
+    return { saveButton, discardButton };
+  };
+
+  const verifyNoUnsavedChanges = () => {
+    const { saveButton, discardButton } = getButtons();
+    saveButton.should("be.disabled");
+    discardButton.should("be.disabled");
+    cy.contains("Unsaved changes").should("not.exist");
+  };
+
+  const verifyUnsavedChanges = () => {
+    const { saveButton, discardButton } = getButtons();
+    saveButton.should("not.be.disabled");
+    discardButton.should("not.be.disabled");
+    cy.contains("Unsaved changes").should("exist");
+  };
+
   it("creates and deletes a borehole.", () => {
     newEditableBorehole();
 
@@ -105,27 +125,6 @@ describe("Tests for 'Location' edit page.", () => {
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();
-      let saveButton;
-      let discardButton;
-
-      const getButtons = () => {
-        saveButton = cy.get('[data-cy="save-button"]');
-        discardButton = cy.get('[data-cy="discardchanges-button"]');
-      };
-
-      const verifyNoUnsavedChanges = () => {
-        getButtons();
-        saveButton.should("be.disabled");
-        discardButton.should("be.disabled");
-        cy.contains("Unsaved changes").should("not.exist");
-      };
-
-      const verifyUnsavedChanges = () => {
-        getButtons();
-        saveButton.should("not.be.disabled");
-        discardButton.should("not.be.disabled");
-        cy.contains("Unsaved changes").should("exist");
-      };
 
       verifyNoUnsavedChanges();
       setSelect("restrictionId", 2);
@@ -138,6 +137,7 @@ describe("Tests for 'Location' edit page.", () => {
       // discard changes with button
       setSelect("restrictionId", 3);
       verifyUnsavedChanges();
+      const { saveButton, discardButton } = getButtons();
       discardButton.click();
       verifyNoUnsavedChanges();
 
@@ -147,6 +147,17 @@ describe("Tests for 'Location' edit page.", () => {
       saveButton.click();
       verifyNoUnsavedChanges();
     });
+  });
+
+  it("saves with ctrl s", () => {
+    newEditableBorehole();
+
+    const originalNameInput = cy.contains("label", "Original name").next().children("input");
+    verifyNoUnsavedChanges();
+    originalNameInput.type("PHOTOFOX");
+    verifyUnsavedChanges();
+    cy.get("body").type("{ctrl}s");
+    verifyNoUnsavedChanges();
   });
 
   it("blocks navigating away and stop editing with unsaved changes", () => {

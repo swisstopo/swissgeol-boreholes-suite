@@ -27,7 +27,7 @@ interface DetailPageContentProps {
   editingEnabled: boolean;
   editableByCurrentUser: boolean;
   locationPanelRef: RefObject<{ submit: () => void; reset: () => void }>;
-  handleFormSubmit: (data: LocationFormInputs) => void;
+  onFormSubmit: (data: LocationFormInputs) => void;
   handleDirtyChange: (isDirty: boolean) => void;
   borehole: BoreholeV2;
   setBorehole: (borehole: BoreholeV2) => void;
@@ -40,7 +40,7 @@ export const DetailPageContent = ({
   editingEnabled,
   editableByCurrentUser,
   locationPanelRef,
-  handleFormSubmit,
+  onFormSubmit,
   handleDirtyChange,
   borehole,
   setBorehole,
@@ -184,7 +184,7 @@ export const DetailPageContent = ({
                 <LocationPanel
                   ref={locationPanelRef}
                   editingEnabled={editingEnabled}
-                  onSubmit={handleFormSubmit}
+                  onSubmit={onFormSubmit}
                   borehole={borehole}
                   onDirtyChange={handleDirtyChange}
                 />
