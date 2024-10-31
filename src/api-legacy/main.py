@@ -93,10 +93,7 @@ if __name__ == "__main__":
         BoreholeViewerHandler,
         BoreholeProducerHandler,
 
-        # Identifier handlers
-        IdentifierAdminHandler,
-        IdentifierProducerHandler,
-        IdentifierViewerHandler,
+
 
         # Layer handlers
         LayerViewerHandler,
@@ -134,11 +131,6 @@ if __name__ == "__main__":
         # Borehole handlers
         (r'/api/v1/borehole', BoreholeViewerHandler),
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),
-
-        # Stratigraphy handlers
-        (r'/api/v1/borehole/identifier', IdentifierViewerHandler),
-        (r'/api/v1/borehole/identifier/edit', IdentifierProducerHandler),
-        (r'/api/v1/borehole/identifier/admin', IdentifierAdminHandler),
 
         # Workflow handlers
         (r'/api/v1/workflow/edit', WorkflowProducerHandler),
