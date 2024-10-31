@@ -54,6 +54,7 @@
   "casingInnerDiameter": "Innendurchmesser [mm]",
   "casingName": "Name Verrohrung",
   "casingOuterDiameter": "Aussendurchmesser [mm]",
+  "changingCoordinateSystemResetsCoordinates": "Das Ändern des räumlichen Bezugssystems setzt die Koordinaten zurück. Wollen Sie fortfahren?",
   "chronostratigraphy": "Chronostratigraphie",
   "chronostratigraphy_id": "Chronostratigraphie",
   "chronostratigraphy_top_bedrock": "Chronostratigraphie Top Fels",

@@ -1,6 +1,12 @@
 import { saveLocationForm } from "../helpers/buttonHelpers";
-import { setSelect } from "../helpers/formHelpers";
-import { delayedType, newEditableBorehole, newUneditableBorehole, returnToOverview } from "../helpers/testHelpers";
+import { evaluateSelect, setSelect } from "../helpers/formHelpers";
+import {
+  delayedType,
+  handlePrompt,
+  newEditableBorehole,
+  newUneditableBorehole,
+  returnToOverview,
+} from "../helpers/testHelpers";
 
 function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
   cy.get(inputAlias)
@@ -40,8 +46,14 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@canton").should("have.value", "Aargau");
     cy.get("@municipality").should("have.value", "Oberentfelden");
 
-    //switch reference system
+    //switch reference system and show prompt
     setSelect("originalReferenceSystem", 1);
+    handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "Cancel");
+    evaluateSelect("originalReferenceSystem", "20104001");
+    setSelect("originalReferenceSystem", 1);
+    handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "Confirm");
+    evaluateSelect("originalReferenceSystem", "20104002");
+
     // verify all inputs are empty
     cy.get("@LV95X-input").should("be.empty");
     cy.get("@LV95Y-input").should("be.empty");
@@ -50,6 +62,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@country").should("have.value", "");
     cy.get("@canton").should("have.value", "");
     cy.get("@municipality").should("have.value", "");
+
+    // no prompt should appear if coordinate fields are empty
+    setSelect("originalReferenceSystem", 1);
+    evaluateSelect("originalReferenceSystem", "20104002");
   });
 
   it("validates inputs", () => {
