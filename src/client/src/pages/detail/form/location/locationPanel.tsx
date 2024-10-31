@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -50,6 +50,26 @@ export const LocationPanel = forwardRef(
       }
     });
 
+    const resetAndSubmitForm = useCallback(() => {
+      const currentValues = formMethods.getValues();
+      formMethods.reset(currentValues);
+      formMethods.handleSubmit(onSubmit)();
+    }, [formMethods, onSubmit]);
+
+    useEffect(() => {
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.ctrlKey && event.key === "s") {
+          event.preventDefault();
+          resetAndSubmitForm();
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }, [resetAndSubmitForm]);
+
     useEffect(() => {
       onDirtyChange(Object.keys(formMethods.formState.dirtyFields).length > 0);
     }, [
@@ -60,11 +80,10 @@ export const LocationPanel = forwardRef(
       onDirtyChange,
     ]);
 
+    // expose form methods to parent component
     useImperativeHandle(ref, () => ({
       submit: () => {
-        const currentValues = formMethods.getValues();
-        formMethods.reset(currentValues);
-        formMethods.handleSubmit(onSubmit)();
+        resetAndSubmitForm();
       },
       reset: () => {
         formMethods.reset();
