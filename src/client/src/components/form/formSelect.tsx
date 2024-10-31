@@ -86,6 +86,7 @@ export const FormSelect: FC<FormSelectProps> = ({
           label={t(label)}
           name={field.name}
           onChange={field.onChange}
+          onBlur={field.onBlur}
           inputRef={field.ref}
           value={field.value ?? ""}
           disabled={disabled ?? false}
