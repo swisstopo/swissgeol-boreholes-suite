@@ -155,38 +155,38 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-page-next"]').should("not.be.disabled");
 
     cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
-    evaluateSelect("spatial_reference_system", "20104001");
-    hasAiStyle("spatial_reference_system");
-    hasError("spatial_reference_system", false);
-    evaluateCoordinate("location_x", "");
-    hasAiStyle("location_x");
-    hasError("location_x", false);
-    evaluateCoordinate("location_y", "");
-    hasAiStyle("location_y");
-    hasError("location_y", false);
-    evaluateCoordinate("location_x_lv03", "");
-    hasAiStyle("location_x_lv03");
-    hasError("location_x_lv03", false);
-    isDisabled("location_x_lv03");
-    evaluateCoordinate("location_y_lv03", "");
-    hasAiStyle("location_y_lv03");
-    hasError("location_y_lv03", false);
-    isDisabled("location_y_lv03");
+    evaluateSelect("originalReferenceSystem", "20104001");
+    hasAiStyle("originalReferenceSystem");
+    hasError("originalReferenceSystem", false);
+    evaluateCoordinate("locationX", "");
+    hasAiStyle("locationX");
+    hasError("locationX", false);
+    evaluateCoordinate("locationY", "");
+    hasAiStyle("locationY");
+    hasError("locationY", false);
+    evaluateCoordinate("locationXLV03", "");
+    hasAiStyle("locationXLV03");
+    hasError("locationXLV03", false);
+    isDisabled("locationXLV03");
+    evaluateCoordinate("locationYLV03", "");
+    hasAiStyle("locationYLV03");
+    hasError("locationYLV03", false);
+    isDisabled("locationYLV03");
 
     drawBox(400, 60, 600, 170);
-    evaluateSelect("spatial_reference_system", "20104001");
-    evaluateCoordinate("location_x", "2'646'359.7");
-    hasError("location_x", false);
-    isDisabled("location_x", false);
-    evaluateCoordinate("location_y", "1'249'017.82");
-    hasError("location_y", false);
-    isDisabled("location_y", false);
-    evaluateCoordinate("location_x_lv03", "646'358.97");
-    hasError("location_x_lv03", false);
-    isDisabled("location_x_lv03", true);
-    evaluateCoordinate("location_y_lv03", "249'017.66");
-    hasError("location_y_lv03", false);
-    isDisabled("location_y_lv03", true);
+    evaluateSelect("originalReferenceSystem", "20104001");
+    evaluateCoordinate("locationX", "2'646'359.7");
+    hasError("locationX", false);
+    isDisabled("locationX", false);
+    evaluateCoordinate("locationY", "1'249'017.82");
+    hasError("locationY", false);
+    isDisabled("locationY", false);
+    evaluateCoordinate("locationXLV03", "646'358.97");
+    hasError("locationXLV03", false);
+    isDisabled("locationXLV03", true);
+    evaluateCoordinate("locationYLV03", "249'017.66");
+    hasError("locationYLV03", false);
+    isDisabled("locationYLV03", true);
   });
 
   // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
@@ -236,19 +236,19 @@ describe("Test labeling tool", () => {
     cy.wait(1000);
 
     drawBox(600, 60, 800, 170);
-    evaluateSelect("spatial_reference_system", "20104002");
-    evaluateCoordinate("location_x", "2'646'466");
-    hasError("location_x", false);
-    isDisabled("location_x", true);
-    evaluateCoordinate("location_y", "1'249'931");
-    hasError("location_y", false);
-    isDisabled("location_y", true);
-    evaluateCoordinate("location_x_lv03", "646'465");
-    hasError("location_x_lv03", false);
-    isDisabled("location_x_lv03", false);
-    evaluateCoordinate("location_y_lv03", "249'931");
-    hasError("location_y_lv03", false);
-    isDisabled("location_y_lv03", false);
+    evaluateSelect("originalReferenceSystem", "20104002");
+    evaluateCoordinate("locationX", "2'646'466");
+    hasError("locationX", false);
+    isDisabled("locationX", true);
+    evaluateCoordinate("locationY", "1'249'931");
+    hasError("locationY", false);
+    isDisabled("locationY", true);
+    evaluateCoordinate("locationXLV03", "646'465");
+    hasError("locationXLV03", false);
+    isDisabled("locationXLV03", false);
+    evaluateCoordinate("locationYLV03", "249'931");
+    hasError("locationYLV03", false);
+    isDisabled("locationYLV03", false);
   });
 
   // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
@@ -281,11 +281,11 @@ describe("Test labeling tool", () => {
 
     cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
     drawBox(50, 60, 400, 110);
-    evaluateSelect("spatial_reference_system", "20104002");
-    evaluateCoordinate("location_x", "2'646'466");
-    evaluateCoordinate("location_y", "1'249'931");
-    evaluateCoordinate("location_x_lv03", "646'465");
-    evaluateCoordinate("location_y_lv03", "249'931");
+    evaluateSelect("originalReferenceSystem", "20104002");
+    evaluateCoordinate("locationX", "2'646'466");
+    evaluateCoordinate("locationY", "1'249'931");
+    evaluateCoordinate("locationXLV03", "646'465");
+    evaluateCoordinate("locationYLV03", "249'931");
 
     cy.get('[data-cy="labeling-alert"]').contains("Coordinates not found.");
 
@@ -298,10 +298,10 @@ describe("Test labeling tool", () => {
     cy.contains("labeling_attachment.pdf").click();
     waitForLabelingImageLoaded();
     drawBox(400, 60, 600, 170);
-    evaluateSelect("spatial_reference_system", "20104001");
-    evaluateCoordinate("location_x", "2'646'359.7");
-    evaluateCoordinate("location_y", "1'249'017.82");
-    evaluateCoordinate("location_x_lv03", "646'358.97");
-    evaluateCoordinate("location_y_lv03", "249'017.66");
+    evaluateSelect("originalReferenceSystem", "20104001");
+    evaluateCoordinate("locationX", "2'646'359.7");
+    evaluateCoordinate("locationY", "1'249'017.82");
+    evaluateCoordinate("locationXLV03", "646'358.97");
+    evaluateCoordinate("locationYLV03", "249'017.66");
   });
 });

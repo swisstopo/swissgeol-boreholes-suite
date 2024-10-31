@@ -351,14 +351,12 @@ class PointComponent extends React.Component {
           </Box>
           <Button.Group size="mini">
             <Button
+              type="button" // This is needed because semantic UI Buttons default to submit-buttons inside a form
               data-cy="apply-button"
               disabled={!_.isArray(this.state.point) || this.state.address || !isEditable}
               loading={this.state.address}
               onClick={() => {
                 if (_.isFunction(this.props.applyChange)) {
-                  if (this.props.x !== this.state.point[0] || this.props.y !== this.state.point[1]) {
-                    this.props.setMapPointChange(true);
-                  }
                   this.props.applyChange(
                     _.round(this.state.point[0], 2),
                     _.round(this.state.point[1], 2),
@@ -373,6 +371,7 @@ class PointComponent extends React.Component {
               Apply
             </Button>
             <Button
+              type="button" // This is needed because semantic UI Buttons default to submit-buttons inside a form
               disabled={!_.isArray(this.state.point)}
               icon
               onClick={() => {

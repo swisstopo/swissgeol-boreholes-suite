@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
-import { Check, ChevronLeft, Trash2 } from "lucide-react";
+import { Check, ChevronLeft, Trash2, X } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
-import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
+import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
 import { DeleteButton, EditButton, EndEditButton } from "../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
@@ -14,10 +14,19 @@ interface DetailHeaderProps {
   editingEnabled: boolean;
   setEditingEnabled: (editingEnabled: boolean) => void;
   editableByCurrentUser: boolean;
+  borehole: BoreholeV2;
+  isFormDirty: boolean;
+  triggerReset: () => void;
 }
 
-const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser }: DetailHeaderProps) => {
-  const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
+const DetailHeader = ({
+  editingEnabled,
+  setEditingEnabled,
+  editableByCurrentUser,
+  isFormDirty,
+  triggerReset,
+  borehole,
+}: DetailHeaderProps) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -25,9 +34,9 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
 
   const toggleEditing = (editing: boolean) => {
     if (!editing) {
-      dispatch(unlockBorehole(borehole.data.id));
+      dispatch(unlockBorehole(borehole.id));
     } else {
-      dispatch(lockBorehole(borehole.data.id));
+      dispatch(lockBorehole(borehole.id));
     }
     setEditingEnabled(editing);
   };
@@ -40,14 +49,31 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
     toggleEditing(false);
   };
 
-  const handleDelete = async () => {
-    await deleteBorehole(borehole.data.id);
-    history.push("/");
+  const resetFormAndStopEditing = () => {
+    triggerReset();
+    stopEditing();
   };
 
-  if (borehole.isFetching) {
-    return;
-  }
+  const stopEditingWithUnsavedChanges = () => {
+    showPrompt(t("messageDiscardUnsavedChanges"), [
+      {
+        label: t("cancel"),
+        icon: <X />,
+        variant: "outlined",
+      },
+      {
+        label: t("discardchanges"),
+        icon: <Trash2 />,
+        variant: "contained",
+        action: resetFormAndStopEditing,
+      },
+    ]);
+  };
+
+  const handleDelete = async () => {
+    await deleteBorehole(borehole.id);
+    history.push("/");
+  };
 
   return (
     <Stack
@@ -63,8 +89,10 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
           color="primary"
           data-cy="backButton"
           onClick={() => {
-            stopEditing();
-            history.push("/");
+            {
+              isFormDirty ? stopEditingWithUnsavedChanges() : stopEditing();
+              history.push("/");
+            }
           }}
           sx={{
             width: "36px",
@@ -74,15 +102,15 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
           }}>
           <ChevronLeft />
         </IconButton>
-        <Typography variant="h2"> {borehole?.data.extended.original_name}</Typography>
+        <Typography variant="h2"> {borehole?.originalName}</Typography>
         <Chip
           sx={{ marginLeft: "18px" }}
-          label={t(`status${borehole?.data.workflow?.role.toLowerCase()}`)}
-          color={borehole?.data.workflow?.finished != null ? "success" : "warning"}
-          icon={borehole?.data.workflow?.finished != null ? <Check /> : <div />}
+          label={t(`status${borehole?.workflow?.role.toLowerCase()}`)}
+          color={borehole?.workflow?.finished != null ? "success" : "warning"}
+          icon={borehole?.workflow?.finished != null ? <Check /> : <div />}
         />
       </Stack>
-      <Stack direction="row" gap={2}>
+      <Stack direction="row" data-cy="detail-header" gap={2}>
         {editableByCurrentUser &&
           (editingEnabled ? (
             <>
@@ -104,7 +132,7 @@ const DetailHeader = ({ editingEnabled, setEditingEnabled, editableByCurrentUser
                   ])
                 }
               />
-              <EndEditButton onClick={stopEditing} />
+              <EndEditButton onClick={isFormDirty ? stopEditingWithUnsavedChanges : stopEditing} />
             </>
           ) : (
             <EditButton onClick={startEditing} />

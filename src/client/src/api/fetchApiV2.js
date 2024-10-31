@@ -62,15 +62,6 @@ export async function download(url) {
   return response;
 }
 
-// boreholes
-export const importBoreholes = async (workgroupId, combinedFormData) => {
-  return await upload(`upload?workgroupId=${workgroupId}`, "POST", combinedFormData);
-};
-
-export const copyBorehole = async (boreholeId, workgroupId) => {
-  return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
-};
-
 // layers
 export const fetchLayerById = async id => await fetchApiV2(`layer/${id}`, "GET");
 

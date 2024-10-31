@@ -128,28 +128,31 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return NotFound();
         }
 
-        // Include FieldMeasurementResults and HydrotestResults separately since Entity Framework does not support casting in an Include statement
-        var fieldMeasurements = borehole.Observations.OfType<FieldMeasurement>().ToList();
-       #pragma warning disable CS8603
-        // Cannot include null test for fieldMeasurementResults and hydrotestResults since they are not yet loaded
-        // if there are no fieldMeasurementResults of hydrotestResults the LoadAsync method will be called but have no effect
-        foreach (var fieldMeasurement in fieldMeasurements)
+        if (borehole.Observations != null)
         {
-            await Context.Entry(fieldMeasurement)
-                .Collection(f => f.FieldMeasurementResults)
-                .LoadAsync()
-                .ConfigureAwait(false);
-        }
-
-        var hydrotests = borehole.Observations.OfType<Hydrotest>().ToList();
-        foreach (var hydrotest in hydrotests)
-        {
-                await Context.Entry(hydrotest)
-                    .Collection(h => h.HydrotestResults)
+            // Include FieldMeasurementResults and HydrotestResults separately since Entity Framework does not support casting in an Include statement
+            var fieldMeasurements = borehole.Observations.OfType<FieldMeasurement>().ToList();
+           #pragma warning disable CS8603
+            // Cannot include null test for fieldMeasurementResults and hydrotestResults since they are not yet loaded
+            // if there are no fieldMeasurementResults of hydrotestResults the LoadAsync method will be called but have no effect
+            foreach (var fieldMeasurement in fieldMeasurements)
+            {
+                await Context.Entry(fieldMeasurement)
+                    .Collection(f => f.FieldMeasurementResults)
                     .LoadAsync()
                     .ConfigureAwait(false);
+            }
+
+            var hydrotests = borehole.Observations.OfType<Hydrotest>().ToList();
+            foreach (var hydrotest in hydrotests)
+            {
+                    await Context.Entry(hydrotest)
+                        .Collection(h => h.HydrotestResults)
+                        .LoadAsync()
+                        .ConfigureAwait(false);
+            }
+            #pragma warning restore CS8603
         }
-        #pragma warning restore CS8603
 
         // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
         borehole.Id = 0;

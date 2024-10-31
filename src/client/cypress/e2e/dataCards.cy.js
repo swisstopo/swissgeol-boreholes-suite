@@ -10,9 +10,10 @@ import {
 
 describe("Tests for the data cards in the editor.", () => {
   it("resets datacards when stop editing or cancel", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    createBorehole({ "extended.original_name": "FISHTRUCK" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin(`/${id}/hydrogeology/wateringress`);
+      cy.wait(["@borehole", "@borehole_by_id"]);
     });
 
     startBoreholeEditing();
@@ -46,15 +47,18 @@ describe("Tests for the data cards in the editor.", () => {
   });
 
   it("checks for unsaved changes when switching between cards", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    createBorehole({ "extended.original_name": "FROGPHONE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin(`/${id}/hydrogeology/wateringress`);
+      cy.wait(["@borehole", "@borehole_by_id"]);
     });
     startBoreholeEditing();
+    cy.wait("@wateringress_GET");
 
     addItem("addwateringress");
     cy.get('[data-cy="addwateringress-button"]').should("be.disabled");
-    cy.wait("@casing_GET");
+    cy.get(".MuiCircularProgress-root").should("not.exist");
+
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 3);
     setSelect("quantityId", 3);

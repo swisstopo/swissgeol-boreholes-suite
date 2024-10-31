@@ -33,6 +33,7 @@ declare module "@mui/material/styles" {
     error: {
       main: string;
       dark: string;
+      light: string;
       contrastText: string;
       background: string;
     };

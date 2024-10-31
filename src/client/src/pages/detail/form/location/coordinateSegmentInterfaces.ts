@@ -1,5 +1,5 @@
-import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
-import { SegmentProps } from "./segmentInterface.ts";
+import { UseFormReturn } from "react-hook-form";
+import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 export enum ReferenceSystemCode {
   LV95 = 20104001,
@@ -12,10 +12,10 @@ export enum ReferenceSystemKey {
 }
 
 export enum FieldNameDirectionKeys {
-  location_x = "location_x",
-  location_y = "location_y",
-  location_x_lv03 = "location_x_lv03",
-  location_y_lv03 = "location_y_lv03",
+  locationX = "locationX",
+  locationY = "locationY",
+  locationXLV03 = "locationXLV03",
+  locationYLV03 = "locationYLV03",
 }
 
 export enum Direction {
@@ -60,17 +60,25 @@ export interface Coordinates {
 
 export interface FormValues {
   spatial_reference_system: number;
-  location_x: string;
-  location_y: string;
-  location_x_lv03: string;
-  location_y_lv03: string;
+  locationX: string;
+  locationY: string;
+  locationXLV03: string;
+  locationYLV03: string;
   location_precision: string;
 }
 
-export interface CoordinatesSegmentProps extends SegmentProps {
-  updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
-  mapPointChange: boolean;
-  setMapPointChange: React.Dispatch<React.SetStateAction<boolean>>;
+export interface CoordinatesSegmentProps extends LocationBaseProps {
+  formMethods: UseFormReturn<LocationFormInputs>;
+  setValuesForReferenceSystem: (referenceSystem: string, X: string, Y: string) => void;
+  setValuesForCountryCantonMunicipality: (location: Location) => void;
+  handleCoordinateTransformation: (
+    sourceSystem: ReferenceSystemKey,
+    targetSystem: ReferenceSystemKey,
+    X: number,
+    Y: number,
+    XPrecision: number,
+    YPrecision: number,
+  ) => Promise<void>;
 }
 
 export interface Location {

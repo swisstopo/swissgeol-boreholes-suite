@@ -1,3 +1,4 @@
+import { saveLocationForm } from "../helpers/buttonHelpers";
 import { verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setSelect } from "../helpers/formHelpers";
 import { loginAsAdmin, newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
@@ -34,15 +35,15 @@ describe("Tests for filtering data by reference system.", () => {
 
   it("can filter by reference system", () => {
     newEditableBorehole().as("borehole_id");
-    cy.get('[data-cy="location_x_lv03-formCoordinate"]').as("LV03X-input");
-    cy.get('[data-cy="location_y_lv03-formCoordinate"]').as("LV03Y-input");
+    cy.get('[data-cy="locationXLV03-formCoordinate"]').as("LV03X-input");
+    cy.get('[data-cy="locationXLV03-formCoordinate"]').as("LV03Y-input");
 
-    setSelect("spatial_reference_system", 1);
+    setSelect("originalReferenceSystem", 1);
 
     cy.get("@LV03X-input").type("645778", { delay: 10 });
     cy.get("@LV03Y-input").type("245794", { delay: 10 });
 
-    cy.wait(["@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch"]);
+    saveLocationForm();
 
     stopBoreholeEditing();
     returnToOverview();

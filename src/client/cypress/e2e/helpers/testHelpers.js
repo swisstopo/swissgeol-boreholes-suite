@@ -33,6 +33,9 @@ export const interceptApiCalls = () => {
   cy.intercept("PUT", "/api/v2/layer").as("update-layer");
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
+  cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
+  cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
+
   cy.intercept("/api/v2/lithologicaldescription*").as("lithological_description");
   cy.intercept("/api/v2/chronostratigraphy*", req => {
     return (req.alias = `chronostratigraphy_${req.method}`);
@@ -196,7 +199,7 @@ export const newUneditableBorehole = () => {
   cy.get('[data-cy="new-borehole-button"]').click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();
-  cy.wait(["@borehole"]);
+  cy.wait(["@borehole", "@borehole_by_id"]);
   return id;
 };
 
@@ -241,7 +244,7 @@ export const createBorehole = values => {
 };
 
 export const startBoreholeEditing = () => {
-  startEditing();
+  startEditing("detail-header");
   cy.wait("@edit_lock");
 };
 

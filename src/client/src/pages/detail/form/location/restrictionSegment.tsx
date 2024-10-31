@@ -1,69 +1,68 @@
 import { useEffect, useState } from "react";
+import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
-import { FormContainer, FormValueType } from "../../../../components/form/form.ts";
-import { SimpleBooleanSelect } from "../../../../components/form/simpleBooleanSelect.tsx";
-import { SimpleDomainSelect } from "../../../../components/form/simpleDomainSelect.tsx";
-import { SimpleFormInput } from "../../../../components/form/simpleFormInput.tsx";
+import {
+  FormBooleanSelect,
+  FormContainer,
+  FormDomainSelect,
+  FormInput,
+  FormValueType,
+} from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { SegmentProps } from "./segmentInterface.ts";
+import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
+interface RestrictionSegmentProps extends LocationBaseProps {
+  formMethods: UseFormReturn<LocationFormInputs>;
+}
 const restrictionUntilCode = 20111003;
 
-const RestrictionSegment = ({ borehole, updateChange, editingEnabled }: SegmentProps) => {
+const RestrictionSegment = ({ borehole, editingEnabled, formMethods }: RestrictionSegmentProps) => {
   const [restrictionUntilEnabled, setRestrictionUntilEnabled] = useState<boolean>(
-    borehole.data.restriction === restrictionUntilCode,
+    borehole.restrictionId === restrictionUntilCode,
   );
 
+  const { dirtyFields } = formMethods.formState;
+  const restriction = formMethods.watch("restrictionId");
+
   useEffect(() => {
-    if (borehole.data.restriction !== restrictionUntilCode) {
-      setRestrictionUntilEnabled(false);
-    } else {
-      setRestrictionUntilEnabled(true);
+    if (dirtyFields.restrictionId) {
+      setRestrictionUntilEnabled(restriction === restrictionUntilCode);
+      formMethods.setValue("restrictionUntil", null);
     }
-  }, [borehole.data.restriction]);
+  }, [dirtyFields.restrictionId, formMethods, restriction]);
 
   return (
     <Card>
       <FormSegmentBox>
         <FormContainer direction="row">
-          <SimpleDomainSelect
-            fieldName={"restriction"}
+          <FormDomainSelect
+            fieldName={"restrictionId"}
             label={"restriction"}
             schemaName={"restriction"}
             readonly={!editingEnabled}
-            selected={borehole.data.restriction}
-            onUpdate={e => {
-              if (e !== restrictionUntilCode) {
-                setRestrictionUntilEnabled(false);
-                updateChange("restriction_until", "", false);
-              }
-              updateChange("restriction", e ?? null, false);
-            }}
+            selected={borehole.restrictionId}
           />
-          <SimpleFormInput
+          <FormInput
+            fieldName={"restrictionUntil"}
             label="restriction_until"
             disabled={!restrictionUntilEnabled}
             readonly={!editingEnabled || !restrictionUntilEnabled}
-            value={borehole.data.restriction_until}
+            value={borehole.restrictionUntil as Date}
             type={FormValueType.Date}
-            onUpdate={selected => {
-              updateChange("restriction_until", selected, false);
-            }}
           />
-          <SimpleBooleanSelect
-            required
+          <FormBooleanSelect
+            canReset={false}
             readonly={!editingEnabled}
-            fieldName={"national_interest"}
+            fieldName={"nationalInterest"}
             label="national_interest"
-            selected={borehole.data.national_interest}
-            onUpdate={e => {
-              updateChange("national_interest", e, false);
-            }}
+            selected={borehole.nationalInterest}
           />
         </FormContainer>
       </FormSegmentBox>
     </Card>
   );
 };
+
+// 2016-06-03T23:15:33.008Z"
 
 export default RestrictionSegment;

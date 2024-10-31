@@ -35,6 +35,7 @@ describe("Tests for the hydrotest editor.", () => {
 
     cy.get("@borehole_id").then(id => {
       loginAsAdmin(`/${id}`);
+      cy.wait(["@borehole", "@borehole_by_id"]);
     });
     startBoreholeEditing();
 
@@ -112,6 +113,7 @@ describe("Tests for the hydrotest editor.", () => {
         createHydrotest(id, "2012-11-14T12:06Z", 15203157, [15203175], null, 0, 10);
         createHydrotest(id, "2012-11-14T12:07Z", 15203157, [15203174], null, 0, 12);
         loginAsAdmin(`/${id}/hydrogeology/hydrotest`);
+        cy.wait(["@borehole", "@borehole_by_id"]);
       });
     startBoreholeEditing();
 
@@ -143,12 +145,14 @@ describe("Tests for the hydrotest editor.", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin(`/${id}/hydrogeology/hydrotest`);
+      cy.wait(["@borehole", "@borehole_by_id"]);
     });
     startBoreholeEditing();
+    cy.wait("@hydrotest_GET");
 
+    cy.get('[data-cy="addhydrotest-button"]').should("not.be.disabled");
     addItem("addHydrotest");
     cy.get('[data-cy="addhydrotest-button"]').should("be.disabled");
-    cy.wait("@casing_GET");
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 2);
     toggleMultiSelect("testKindId", [3]);

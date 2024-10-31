@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { connect } from "react-redux";
-import { useLocation, withRouter } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
@@ -11,27 +10,21 @@ import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { capitalizeFirstLetter } from "../../utils";
 
-/**
- * A component that renders the side navigation for a borehole detail. The component is used without explicitly passing props.
- *
- * @component
- * @param {Object} props - The component props.
- * @param {Object} props.borehole - The borehole object containing data and fetching status, provided by react redux state.
- * @param {Object} props.match - The match object containing the URL parameters.
- * @param {Object} props.history - The history object from `withRouter` to navigate between routes.
- * @returns {JSX.Element | null} The rendered `DetailSideNav` component.
- */
-
-const DetailSideNav = ({ borehole, history, match }) => {
+export const DetailSideNav = ({ id }: { id: string }) => {
   const [stratigraphyIsVisible, setStratigraphyIsVisible] = useState(false);
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const location = useLocation();
   const { t } = useTranslation();
   const auth = useAuth();
+  const history = useHistory();
 
-  const id = match?.params?.id;
+  interface ParentListItemProps {
+    active: boolean;
+  }
 
-  const ParentListItem = styled(ListItem)(({ active }) => ({
+  const ParentListItem = styled(ListItem, {
+    shouldForwardProp: prop => prop !== "active", // Prevents "active" from being forwarded as a DOM attribute
+  })<ParentListItemProps>(({ active }) => ({
     padding: "1em",
     display: "flex",
     height: "40px",
@@ -39,7 +32,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
     paddingLeft: "35.5px",
     color: active ? theme.palette.error.main : "",
     borderTop: `1px solid ${theme.palette.boxShadow}`,
-    borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : null,
+    borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : undefined,
     backgroundColor: active ? theme.palette.background.lightgrey : "",
     "&:hover": {
       backgroundColor: theme.palette.hover.main,
@@ -54,10 +47,6 @@ const DetailSideNav = ({ borehole, history, match }) => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
     setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
   }, [location, id]);
-
-  if (borehole.isFetching === true) {
-    return null;
-  }
 
   return (
     <Box
@@ -101,6 +90,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
             </List.Content>
           </ParentListItem>
           <ParentListItem
+            active={false}
             onClick={() => {
               setStratigraphyIsVisible(!stratigraphyIsVisible);
             }}>
@@ -159,6 +149,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
             </List.Content>
           </ParentListItem>
           <ParentListItem
+            active={false}
             onClick={() => {
               setHydrogeologyIsVisible(!hydrogeologyIsVisible);
             }}>
@@ -248,13 +239,3 @@ const DetailSideNav = ({ borehole, history, match }) => {
     </Box>
   );
 };
-
-const mapStateToProps = state => {
-  return {
-    borehole: state.core_borehole,
-  };
-};
-
-const ConnectedDetailSideNav = withRouter(connect(mapStateToProps)(DetailSideNav));
-
-export default ConnectedDetailSideNav;

@@ -22,6 +22,7 @@ describe("Casing crud tests", () => {
     // open completion editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin(`/${id}/completion`);
+      cy.wait(["@borehole", "@borehole_by_id"]);
     });
 
     cy.wait("@get-completions-by-boreholeId");
@@ -131,6 +132,7 @@ describe("Casing crud tests", () => {
         ]);
       });
       loginAsAdmin(`/${id}/completion`);
+      cy.wait(["@borehole", "@borehole_by_id"]);
     });
 
     // casing 1
@@ -146,9 +148,8 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains("casing-1");
     cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains("casing-2");
 
-    cy.get('[data-cy="casing-card.1"] [data-cy="edit-button"]').click({
-      force: true,
-    });
+    cy.get('[data-cy="casing-card.1"] [data-cy="edit-button"]').click({ force: true });
+
     setInput("casingElements.0.toDepth", "8");
     saveForm();
     cy.wait("@casing_GET");
