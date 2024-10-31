@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader } from "@mui/material";
+import { Check, X } from "lucide-react";
 import { LabelingButton } from "../../../../components/buttons/labelingButton";
 import { FormContainer, FormCoordinate, FormDomainSelect, FormSelect } from "../../../../components/form/form";
 import {
   getPrecisionFromString,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/legacyComponents/formUtils.js";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { Coordinate, ExtractionState, useLabelingContext } from "../../labeling/labelingInterfaces";
 import { boundingBox, referenceSystems } from "./coordinateSegmentConstants";
@@ -15,6 +17,7 @@ import {
   CoordinatesSegmentProps,
   Direction,
   FieldNameDirectionKeys,
+  ReferenceSystemCode,
   ReferenceSystemKey,
 } from "./coordinateSegmentInterfaces";
 
@@ -28,6 +31,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   handleCoordinateTransformation,
 }) => {
   const { t } = useTranslation();
+  const { showPrompt } = useContext(PromptContext);
   const { extractionObject, setExtractionObject, setExtractionState, extractionState } = useLabelingContext();
 
   // --- State variables ---
@@ -191,11 +195,44 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     }
   };
 
-  // Resets the form and updates the reference system.
-  const resetCoordinatesOnReferenceSystemChange = () => {
+  const confirmCoordinateChange = () => {
     setValuesForReferenceSystem(ReferenceSystemKey.LV03, "", "");
     setValuesForReferenceSystem(ReferenceSystemKey.LV95, "", "");
     setValuesForCountryCantonMunicipality({ country: "", canton: "", municipality: "" });
+  };
+
+  const onCancelCoordinateChange = (e: number) => {
+    formMethods.setValue(
+      "originalReferenceSystem",
+      Object.values(ReferenceSystemCode).find(code => typeof code === "number" && code !== e) as ReferenceSystemCode,
+    );
+  };
+
+  // Resets the form and updates the reference system.
+  const resetCoordinatesOnReferenceSystemChange = (e: number | boolean | null) => {
+    if (typeof e !== "number") return;
+    const areCoordinatesDirty = Object.keys(FieldNameDirectionKeys).some(field =>
+      Object.prototype.hasOwnProperty.call(formMethods.formState.dirtyFields, field),
+    );
+    if (!areCoordinatesDirty) {
+      confirmCoordinateChange();
+      return;
+    }
+
+    showPrompt(t("changingCoordinateSystemResetsCoordinates"), [
+      {
+        label: t("cancel"),
+        icon: <X />,
+        variant: "outlined",
+        action: () => onCancelCoordinateChange(e),
+      },
+      {
+        label: t("confirm"),
+        icon: <Check />,
+        variant: "contained",
+        action: confirmCoordinateChange,
+      },
+    ]);
   };
 
   const startLabeling = () => {

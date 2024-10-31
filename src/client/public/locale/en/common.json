@@ -54,6 +54,7 @@
   "casingInnerDiameter": "Inner diameter [mm]",
   "casingName": "Casing name",
   "casingOuterDiameter": "Outer diameter [mm]",
+  "changingCoordinateSystemResetsCoordinates": "Changing the coordinate system will reset the coordinates. Do you want to continue?",
   "chronostratigraphy": "Chronostratigraphy",
   "chronostratigraphy_id": "Chronostratigraphy",
   "chronostratigraphy_top_bedrock": "Chronostratigraphy top bedrock",

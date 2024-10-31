@@ -54,6 +54,7 @@
   "casingInnerDiameter": "Diamètre intérieur [mm]",
   "casingName": "Nom tubage",
   "casingOuterDiameter": "Diamètre extérieur [mm]",
+  "changingCoordinateSystemResetsCoordinates": "Changer le système de coordonnées réinitialise les coordonnées. Voulez-vous continuer?",
   "chronostratigraphy": "Chronostratigraphie",
   "chronostratigraphy_id": "Chronostratigraphie",
   "chronostratigraphy_top_bedrock": "Chronostratigraphie du toit du rocher",
