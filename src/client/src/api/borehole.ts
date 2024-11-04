@@ -3,16 +3,20 @@ import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
 import { fetchApiV2, upload } from "./fetchApiV2";
 
-export interface Identifier {
+export interface BasicIdentifier {
   boreholeId: number;
   codelistId: number | null;
-  borehole?: BoreholeV2;
   codelist?: Codelist;
   value: string;
 }
 
+// Avoids circular reference for BoreholeV2
+export interface Identifier extends BasicIdentifier {
+  borehole?: BoreholeV2 | null;
+}
+
 export interface BoreholeV2 {
-  boreholeCodelists: Identifier[];
+  boreholeCodelists: BasicIdentifier[];
   workflow: Workflow;
   originalReferenceSystem: number;
   precisionLocationYLV03: number;
