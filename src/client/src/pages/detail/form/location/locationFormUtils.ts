@@ -13,7 +13,13 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
     value ? parseFloatWithThousandsSeparator(String(value)) : null;
 
   const getCompleteCodelists = (codelists: Identifier[]) => {
-    return codelists.filter(c => c.codelistId && c.value && c.boreholeId);
+    return codelists
+      .map(c => {
+        delete c.borehole;
+        delete c.codelist;
+        return c;
+      })
+      .filter(c => c.codelistId && c.value && c.boreholeId);
   };
 
   data.restrictionUntil = data?.restrictionUntil ? ensureDatetime(data.restrictionUntil.toString()) : null;

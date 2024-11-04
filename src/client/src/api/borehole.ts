@@ -1,10 +1,13 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
+import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
 import { fetchApiV2, upload } from "./fetchApiV2";
 
 export interface Identifier {
   boreholeId: number;
   codelistId: number | null;
+  borehole?: BoreholeV2;
+  codelist?: Codelist;
   value: string;
 }
 

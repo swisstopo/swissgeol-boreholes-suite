@@ -47,7 +47,7 @@ const IdentifierSegment = ({ borehole, editingEnabled, formMethods }: Identifier
 
         {fields.map((field, index) => (
           <>
-            <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid key={field.id} container spacing={2} sx={{ mt: 1 }}>
               <Grid item xs={6} sx={{ display: "flex" }}>
                 <FormDomainSelect
                   fieldName={`boreholeCodelists.${index}.codelistId`}
@@ -73,20 +73,27 @@ const IdentifierSegment = ({ borehole, editingEnabled, formMethods }: Identifier
                 />
               </Grid>
               <Grid item xs={1} sx={{ textAlign: "right" }}>
-                <IconButton sx={{ mt: 2 }} onClick={() => remove(index)} data-cy={`boreholeCodelists.${index}.delete`}>
-                  <Trash2 />
-                </IconButton>
+                {editingEnabled && (
+                  <IconButton
+                    sx={{ mt: 2 }}
+                    onClick={() => remove(index)}
+                    data-cy={`boreholeCodelists.${index}.delete`}>
+                    <Trash2 />
+                  </IconButton>
+                )}
               </Grid>
             </Grid>
           </>
         ))}
         <Stack sx={{ mt: 2 }} alignItems="flex-end">
-          <AddButton
-            label="addIdentifier"
-            onClick={() => {
-              append({ boreholeId: borehole.id, codelistId: null, value: "" });
-            }}
-          />
+          {editingEnabled && (
+            <AddButton
+              label="addIdentifier"
+              onClick={() => {
+                append({ boreholeId: borehole.id, codelistId: null, value: "" });
+              }}
+            />
+          )}
         </Stack>
       </FormSegmentBox>
     </Card>

@@ -1,6 +1,6 @@
-import { saveLocationForm, stopEditing } from "../helpers/buttonHelpers";
-import { checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
-import { setInput, setSelect } from "../helpers/formHelpers";
+import { addItem, saveLocationForm, stopEditing } from "../helpers/buttonHelpers";
+import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
+import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
@@ -191,5 +191,65 @@ describe("Tests for 'Location' edit page.", () => {
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
     });
+  });
+
+  it.only("adds edits and deletes borehole identifiers", () => {
+    newEditableBorehole().as("borehole_id");
+    const originalNameInput = cy.contains("label", "Original name").next().children("input");
+    originalNameInput.type("AAA_FELIX_THE_PANDA");
+
+    // add Identifiers
+
+    addItem("addIdentifier");
+    setSelect("boreholeCodelists.0.codelistId", 2); // codelistId 100000000
+    setInput("boreholeCodelists.0.value", "pandas_for_life");
+
+    addItem("addIdentifier");
+    setSelect("boreholeCodelists.1.codelistId", 1); // codelistId 100000004
+    setInput("boreholeCodelists.1.value", "freedom_for_felix");
+
+    function saveFormAndReturnToOverview() {
+      saveLocationForm();
+      returnToOverview();
+    }
+
+    function returnToFormAndStartEditing() {
+      clickOnRowWithText("AAA_FELIX_THE_PANDA");
+      startBoreholeEditing();
+    }
+
+    // save and return
+    saveFormAndReturnToOverview();
+    showTableAndWaitForData();
+    returnToFormAndStartEditing();
+
+    evaluateInput("boreholeCodelists.0.value", "pandas_for_life");
+    evaluateSelect("boreholeCodelists.0.codelistId", "100000000");
+    evaluateInput("boreholeCodelists.1.value", "freedom_for_felix");
+    evaluateSelect("boreholeCodelists.1.codelistId", "100000004");
+
+    // edit identifier
+    setSelect("boreholeCodelists.0.codelistId", 3); // codelistId 100000010
+    setInput("boreholeCodelists.0.value", "we_must_stop_felix");
+    // save and return
+    saveFormAndReturnToOverview();
+    returnToFormAndStartEditing();
+
+    evaluateInput("boreholeCodelists.0.value", "freedom_for_felix");
+    evaluateSelect("boreholeCodelists.0.codelistId", "100000004");
+    evaluateInput("boreholeCodelists.1.value", "we_must_stop_felix");
+    evaluateSelect("boreholeCodelists.1.codelistId", "100000010");
+
+    // delete identifier
+    cy.get('[data-cy="boreholeCodelists.0.delete"]').click();
+    // identifier on position 1 should now be on position 0
+    evaluateInput("boreholeCodelists.0.value", "we_must_stop_felix");
+    evaluateSelect("boreholeCodelists.0.codelistId", "100000010");
+
+    saveFormAndReturnToOverview();
+    returnToFormAndStartEditing();
+
+    evaluateInput("boreholeCodelists.0.value", "we_must_stop_felix");
+    evaluateSelect("boreholeCodelists.0.codelistId", "100000010");
   });
 });
