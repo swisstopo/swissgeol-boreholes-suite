@@ -13,7 +13,7 @@ import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 const OverviewPage = () => {
   const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
   const location = useLocation();
-  const [workgroupId, setWorkgroupId] = useState(0);
+  const [workgroupId, setWorkgroupId] = useState("");
   const [enabledWorkgroups, setEnabledWorkgroups] = useState([]);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
   const { showAlert } = useContext(AlertContext);

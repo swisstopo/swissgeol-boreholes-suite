@@ -18,8 +18,8 @@ import ImportModal from "../sidePanelContent/importer/importModal.tsx";
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
   drawerOpen: boolean;
-  workgroupId: number | null;
-  setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
+  workgroupId: string;
+  setWorkgroupId: React.Dispatch<React.SetStateAction<string>>;
   enabledWorkgroups: Workgroup[];
   setEnabledWorkgroups: React.Dispatch<React.SetStateAction<Workgroup[]>>;
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
@@ -61,7 +61,7 @@ const MainSideNav = ({
   useEffect(() => {
     const wgs = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
     setEnabledWorkgroups(wgs);
-    setWorkgroupId(wgs.length > 0 ? wgs[0].id : null);
+    setWorkgroupId(wgs.length > 0 ? wgs[0].id.toString() : "");
   }, [setEnabledWorkgroups, setWorkgroupId, user.data.workgroups]);
 
   const handleToggleFilter = () => {
