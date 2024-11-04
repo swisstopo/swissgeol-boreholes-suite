@@ -160,6 +160,65 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task AddEditAndDeleteBoreholeIdentifiers()
+    {
+        var id = 1000067;
+
+        var boreholeToEdit = context.Boreholes.Single(c => c.Id == id);
+        Assert.AreEqual(0, boreholeToEdit.BoreholeCodelists.Count);
+
+        boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
+        {
+            BoreholeId = id,
+            CodelistId = 100000010,
+            Value = "ID GeoDIN value",
+        });
+
+        context.SaveChanges();
+        Assert.AreEqual(1, boreholeToEdit.BoreholeCodelists.Count);
+
+        // Update Borehole adding an identifier
+        var boreholeWithNewIdentifiers = new Borehole
+        {
+            Id = id,
+            BoreholeCodelists = new List<BoreholeCodelist>
+            {
+                new BoreholeCodelist
+                {
+                    BoreholeId = id,
+                    CodelistId = 100000010,
+                    Value = "ID GeoDIN value",
+                },
+                new BoreholeCodelist
+                {
+                    BoreholeId = id,
+                    CodelistId = 100000000,
+                    Value = "ID Original value",
+                },
+            },
+        };
+        var updatedResponse = await controller.EditAsync(boreholeWithNewIdentifiers);
+        ActionResultAssert.IsOk(updatedResponse.Result);
+
+        // Assert Updates
+        var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(updatedResponse.Result);
+        Assert.AreEqual(2, updatedBorehole.BoreholeCodelists.Count);
+
+        var boreholeWithNoMoreIdentifiers = new Borehole
+        {
+            Id = id,
+            BoreholeCodelists = new List<BoreholeCodelist>(),
+        };
+
+        var deletedIdentifiersResponse = await controller.EditAsync(boreholeWithNoMoreIdentifiers);
+        ActionResultAssert.IsOk(deletedIdentifiersResponse.Result);
+
+        // Assert Updates
+        var boreholeWithDeletedIdentifiers = ActionResultAssert.IsOkObjectResult<Borehole>(deletedIdentifiersResponse.Result);
+        Assert.AreEqual(0, boreholeWithDeletedIdentifiers.BoreholeCodelists.Count);
+    }
+
+    [TestMethod]
     public async Task EditWithInexistentIdReturnsNotFound()
     {
         var id = 9111794;

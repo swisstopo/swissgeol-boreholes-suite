@@ -28,6 +28,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         var existingBorehole = await Context.Boreholes
+            .Include(b => b.BoreholeCodelists)
             .SingleOrDefaultAsync(l => l.Id == entity.Id)
             .ConfigureAwait(false);
 
@@ -37,6 +38,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         Context.Entry(existingBorehole).CurrentValues.SetValues(entity);
+
+        // Update borehole identifiers with borehole
+        if (entity.BoreholeCodelists != null)
+        {
+            existingBorehole.BoreholeCodelists = entity.BoreholeCodelists;
+        }
 
         try
         {
