@@ -11,17 +11,17 @@ export const Prompt = () => {
       data-cy="prompt"
       sx={{
         margin: "auto",
-        width: "390px",
+        width: "420px",
         position: "absolute",
         "& .MuiDialog-paper": {
           p: 3,
         },
       }}>
       <DialogContent sx={{ p: 0 }}>
-        <DialogContentText>{message}</DialogContentText>
+        <DialogContentText sx={{ p: 0 }}>{message}</DialogContentText>
         {dialogContent && <div style={{ marginBottom: "16px" }}>{dialogContent}</div>}
       </DialogContent>
-      <DialogActions sx={{ pr: 0, pb: 0, pt: 2 }}>
+      <DialogActions sx={{ pr: 0, pb: 0, pt: 2, border: "none" }}>
         <Stack direction="row" spacing={2}>
           {actions?.map((action, index) => (
             <BdmsButton

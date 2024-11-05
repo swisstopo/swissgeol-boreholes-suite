@@ -5,12 +5,12 @@ import { Redirect, Route, Switch, useParams } from "react-router-dom";
 import { Box } from "@mui/material";
 import _ from "lodash";
 import { patchBorehole, updateBorehole } from "../../api-lib";
-import { Borehole, BoreholeAttributes, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
+import { BoreholeAttributes, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2, getBoreholeById } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
-import BoreholePanel from "./form/borehole/boreholePanel.jsx";
+import BoreholePanel from "./form/borehole/boreholePanel.tsx";
 import Completion from "./form/completion/completion.jsx";
 import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement.jsx";
@@ -71,7 +71,7 @@ export const DetailPageContent = ({
     return typeof value === "number" || !isNaN(Number(value));
   }
 
-  function updateNumber(attribute: keyof Borehole["data"], value: number | null, to = true) {
+  function updateNumber(attribute: string, value: number | null, to = true) {
     if (!checkLock()) return;
     const updatedBorehole = {
       ...legacyBorehole,
@@ -86,7 +86,7 @@ export const DetailPageContent = ({
   }
 
   function updateChange(
-    attribute: keyof Borehole["data"],
+    attribute: string,
     value: string | number | boolean | null | (number | string | null)[],
     to = true,
   ) {
@@ -196,7 +196,7 @@ export const DetailPageContent = ({
               render={() => (
                 <BoreholePanel
                   boreholeId={id}
-                  borehole={legacyBorehole}
+                  legacyBorehole={legacyBorehole}
                   updateChange={updateChange}
                   updateNumber={updateNumber}
                   isEditable={editingEnabled}
