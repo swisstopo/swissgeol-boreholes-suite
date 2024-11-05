@@ -147,12 +147,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         setAbortController(abortController);
         extractData(request, abortController.signal)
           .then(response => {
-            if (extractionObject.type) {
-              setExtractionState(ExtractionState.success);
-              setExtractionObject({
-                ...extractionObject,
-                value: response[extractionObject.type],
-              });
+            if (response.coordinates === "") {
+              showAlert(t("coordinatesNotFound"), "error");
+              setExtractionState(ExtractionState.error);
+            } else {
+              if (extractionObject.type) {
+                setExtractionState(ExtractionState.success);
+                setExtractionObject({
+                  ...extractionObject,
+                  value: response[extractionObject.type],
+                });
+              }
             }
           })
           .catch(error => {

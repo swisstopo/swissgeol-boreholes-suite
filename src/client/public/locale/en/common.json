@@ -73,6 +73,7 @@
   "confirm": "Confirm",
   "consistance": "Consistency",
   "coordinates": "Coordinates",
+  "coordinatesNotFound": "No coordinates found",
   "copy": "Create a copy",
   "country": "Country",
   "create": "Create",

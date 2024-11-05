@@ -73,6 +73,7 @@
   "confirm": "Bestätigen",
   "consistance": "Konsistenz",
   "coordinates": "Koordinaten",
+  "coordinatesNotFound": "Es wurden keine Koordinaten gefunden",
   "copy": "Kopie erstellen",
   "country": "Land",
   "create": "Erstellen",

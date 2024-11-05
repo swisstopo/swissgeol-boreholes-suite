@@ -100,6 +100,9 @@ export async function extractData(request: ExtractionRequest, abortSignal: Abort
     }
     return responseObject as ExtractionResponse;
   } else {
+    if (response.status === 404) {
+      return { text: "", number: "", coordinates: "" };
+    }
     throw new ApiError("errorDataExtraction", response.status);
   }
 }
