@@ -191,7 +191,7 @@ describe("Test labeling tool", () => {
 
   // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
   // api call extract_data in drawBox times out
-  it("can extract data from rotated and zoomed next page", () => {
+  it.skip("can extract data from rotated and zoomed next page", () => {
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
@@ -253,7 +253,7 @@ describe("Test labeling tool", () => {
 
   // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
   // api call extract_data in drawBox times out
-  it("shows alert if no coordinates are extracted", () => {
+  it.skip("shows alert if no coordinates are extracted", () => {
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
