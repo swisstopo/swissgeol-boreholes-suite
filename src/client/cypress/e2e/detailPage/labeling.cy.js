@@ -189,9 +189,7 @@ describe("Test labeling tool", () => {
     isDisabled("locationYLV03", true);
   });
 
-  // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
-  // api call extract_data in drawBox times out
-  it.skip("can extract data from rotated and zoomed next page", () => {
+  it("can extract data from rotated and zoomed next page", () => {
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
@@ -227,28 +225,22 @@ describe("Test labeling tool", () => {
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
     cy.wait(1000);
-
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
     cy.wait(1000);
-    cy.get('[data-cy="labeling-panel"]')
-      .trigger("pointerdown", { x: 600, y: 60 })
-      .trigger("pointerup", { x: 600, y: 200 });
-    cy.wait(1000);
-
-    drawBox(600, 60, 800, 170);
+    drawBox(400, 60, 600, 220);
     evaluateSelect("originalReferenceSystem", "20104002");
-    evaluateCoordinate("locationX", "2'646'466");
-    hasError("locationX", false);
-    isDisabled("locationX", true);
-    evaluateCoordinate("locationY", "1'249'931");
-    hasError("locationY", false);
-    isDisabled("locationY", true);
-    evaluateCoordinate("locationXLV03", "646'465");
+    evaluateCoordinate("locationXLV03", "646'465.97");
     hasError("locationXLV03", false);
     isDisabled("locationXLV03", false);
-    evaluateCoordinate("locationYLV03", "249'931");
+    evaluateCoordinate("locationYLV03", "249'931.66");
     hasError("locationYLV03", false);
     isDisabled("locationYLV03", false);
+    evaluateCoordinate("locationX", "2'646'466.70");
+    hasError("locationX", false);
+    isDisabled("locationX", true);
+    evaluateCoordinate("locationY", "1'249'931.82");
+    hasError("locationY", false);
+    isDisabled("locationY", true);
   });
 
   it("shows alert if no coordinates are extracted", () => {
