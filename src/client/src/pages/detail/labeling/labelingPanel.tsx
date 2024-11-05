@@ -147,25 +147,17 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
         setAbortController(abortController);
         extractData(request, abortController.signal)
           .then(response => {
-            if (response.coordinates === "") {
-              showAlert(t("coordinatesNotFound"), "error");
-              setExtractionState(ExtractionState.error);
-            } else {
-              if (extractionObject.type) {
-                setExtractionState(ExtractionState.success);
-                setExtractionObject({
-                  ...extractionObject,
-                  value: response[extractionObject.type],
-                });
-              }
+            if (extractionObject.type) {
+              setExtractionState(ExtractionState.success);
+              setExtractionObject({
+                ...extractionObject,
+                value: response[extractionObject.type],
+              });
             }
           })
           .catch(error => {
             if (!error?.message?.includes("AbortError")) {
               setExtractionState(ExtractionState.error);
-              // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
-              //  Check if error message is correct, resp. handle all error cases with different messages
-              //   Translate error message
               showAlert(t(error.message), "error");
             }
           })
