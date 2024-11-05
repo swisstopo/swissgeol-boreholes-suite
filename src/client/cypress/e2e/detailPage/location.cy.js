@@ -173,16 +173,6 @@ describe("Tests for 'Location' edit page.", () => {
     const originalNameInput = cy.contains("label", "Original name").next().children("input");
     originalNameInput.type("AAA_FELIX_THE_PANDA");
 
-    // add Identifiers
-
-    addItem("addIdentifier");
-    setSelect("boreholeCodelists.0.codelistId", 2); // codelistId 100000000
-    setInput("boreholeCodelists.0.value", "pandas_for_life");
-
-    addItem("addIdentifier");
-    setSelect("boreholeCodelists.1.codelistId", 1); // codelistId 100000004
-    setInput("boreholeCodelists.1.value", "freedom_for_felix");
-
     function saveFormAndReturnToOverview() {
       saveLocationForm();
       returnToOverview();
@@ -192,6 +182,15 @@ describe("Tests for 'Location' edit page.", () => {
       clickOnRowWithText("AAA_FELIX_THE_PANDA");
       startBoreholeEditing();
     }
+
+    // add Identifiers
+    addItem("addIdentifier");
+    setSelect("boreholeCodelists.0.codelistId", 2); // codelistId 100000000
+    setInput("boreholeCodelists.0.value", "pandas_for_life");
+
+    addItem("addIdentifier");
+    setSelect("boreholeCodelists.1.codelistId", 1); // codelistId 100000004
+    setInput("boreholeCodelists.1.value", "freedom_for_felix");
 
     // save and return
     saveFormAndReturnToOverview();
