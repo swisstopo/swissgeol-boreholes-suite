@@ -1,9 +1,12 @@
-import { forwardRef, SyntheticEvent, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, SyntheticEvent, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
+import { Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
+import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
+import { useBlockNavigation } from "../../useBlockNavigation.tsx";
 import BoreholeDetailSegment from "./boreholeDetailSegment";
 import BoreholeGeneralSegment from "./boreholeGeneralSegment";
 import { BoreholeFormInputs, BoreholePanelProps } from "./boreholePanelInterfaces";
@@ -12,7 +15,7 @@ import Sections from "./sections.jsx";
 
 export const BoreholePanel = forwardRef(
   (
-    { boreholeId, borehole, updateChange, updateNumber, isEditable, onDirtyChange, onSubmit }: BoreholePanelProps,
+    { boreholeId, borehole, updateChange, updateNumber, editingEnabled, onDirtyChange, onSubmit }: BoreholePanelProps,
     ref,
   ) => {
     const { t } = useTranslation();
@@ -21,7 +24,12 @@ export const BoreholePanel = forwardRef(
     const [activeIndex, setActiveIndex] = useState(0);
     const formMethods = useForm<BoreholeFormInputs>({
       mode: "onChange",
-      defaultValues: {},
+      defaultValues: {
+        typeId: borehole.typeId,
+        purposeId: borehole.purposeId,
+        statusId: borehole.statusId,
+        remarks: borehole.remarks,
+      },
     });
     const tabs = [
       {
@@ -40,6 +48,14 @@ export const BoreholePanel = forwardRef(
       }
     };
 
+    const { handleBlockedNavigation } = useBlockNavigation(formMethods.formState.isDirty);
+
+    history.block(nextLocation => {
+      if (!handleBlockedNavigation(nextLocation.pathname)) {
+        return false;
+      }
+    });
+
     useEffect(() => {
       onDirtyChange(Object.keys(formMethods.formState.dirtyFields).length > 0);
     }, [
@@ -50,10 +66,16 @@ export const BoreholePanel = forwardRef(
       onDirtyChange,
     ]);
 
+    const resetAndSubmitForm = useCallback(() => {
+      const currentValues = formMethods.getValues();
+      formMethods.reset(currentValues);
+      formMethods.handleSubmit(onSubmit)();
+    }, [formMethods, onSubmit]);
+
     // expose form methods to parent component
     useImperativeHandle(ref, () => ({
       submit: () => {
-        console.log("submit");
+        resetAndSubmitForm();
       },
       reset: () => {
         formMethods.reset();
@@ -88,20 +110,24 @@ export const BoreholePanel = forwardRef(
               <DevTool control={formMethods.control} placement="top-left" />
               <FormProvider {...formMethods}>
                 <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-                  <BoreholeGeneralSegment borehole={borehole} updateChange={updateChange} isEditable={isEditable} />
-                  <BoreholeDetailSegment
-                    borehole={borehole}
-                    updateChange={updateChange}
-                    updateNumber={updateNumber}
-                    isEditable={isEditable}
-                  />
+                  <Stack gap={3} mr={2}>
+                    <FormSegmentBox>
+                      <BoreholeGeneralSegment borehole={borehole} editingEnabled={editingEnabled} />
+                      <BoreholeDetailSegment
+                        borehole={borehole}
+                        updateChange={updateChange}
+                        updateNumber={updateNumber}
+                        editingEnabled={editingEnabled}
+                      />
+                    </FormSegmentBox>
+                  </Stack>
                 </form>
               </FormProvider>
             </>
           )}
-          {activeIndex === 1 && <Sections isEditable={isEditable} boreholeId={boreholeId} />}
+          {activeIndex === 1 && <Sections isEditable={editingEnabled} boreholeId={boreholeId} />}
           {activeIndex === 2 && (
-            <Geometry isEditable={isEditable} boreholeId={boreholeId} measuredDepth={borehole?.totalDepth} />
+            <Geometry isEditable={editingEnabled} boreholeId={boreholeId} measuredDepth={borehole?.totalDepth} />
           )}
         </BdmsTabContentBox>
       </>

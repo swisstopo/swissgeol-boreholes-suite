@@ -12,7 +12,7 @@ import TranslationText from "../../../../components/legacyComponents/translation
 import { DisabledRadio } from "../styledComponents.jsx";
 import { BoreholeDetailProps, DepthTVD } from "./boreholePanelInterfaces.ts";
 
-const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, isEditable }: BoreholeDetailProps) => {
+const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, editingEnabled }: BoreholeDetailProps) => {
   const { t } = useTranslation();
   const [depthTVD, setDepthTVD] = useState<DepthTVD>();
 
@@ -70,7 +70,7 @@ const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, isEditabl
               spellCheck="false"
               value={_.isNil(borehole.totalDepth) ? "" : borehole.totalDepth}
               thousandSeparator="'"
-              readOnly={!isEditable}
+              readOnly={!editingEnabled}
             />
           </Form.Field>
 
@@ -82,7 +82,7 @@ const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, isEditabl
               }}
               schema="depth_precision"
               selected={borehole.qtDepthId}
-              readOnly={!isEditable}
+              readOnly={!editingEnabled}
             />
           </Form.Field>
           <Form.Field
@@ -113,7 +113,7 @@ const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, isEditabl
               spellCheck="false"
               value={_.isNil(borehole.topBedrockFreshMd) ? "" : borehole.topBedrockFreshMd}
               thousandSeparator="'"
-              readOnly={!isEditable}
+              readOnly={!editingEnabled}
             />
           </Form.Field>
           <Form.Field
@@ -144,7 +144,7 @@ const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, isEditabl
               spellCheck="false"
               value={borehole.topBedrockWeatheredMd}
               thousandSeparator="'"
-              readOnly={!isEditable}
+              readOnly={!editingEnabled}
             />
           </Form.Field>
           <Form.Field
@@ -173,7 +173,7 @@ const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, isEditabl
             schema="custom.lithology_top_bedrock"
             selected={borehole.lithologyTopBedrockId}
             title={t("lithology_top_bedrock")}
-            isEditable={isEditable}
+            isEditable={editingEnabled}
           />
         </Form.Field>
         <Form.Field required>
@@ -192,7 +192,7 @@ const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, isEditabl
             schema="custom.lithostratigraphy_top_bedrock"
             selected={borehole.lithostratigraphyId}
             title={t("lithostratigraphy_top_bedrock")}
-            isEditable={isEditable}
+            isEditable={editingEnabled}
           />
         </Form.Field>
         <Form.Field required>
@@ -212,7 +212,7 @@ const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, isEditabl
             schema="custom.chronostratigraphy_top_bedrock"
             selected={borehole.chronostratigraphyId}
             title={t("chronostratigraphy_top_bedrock")}
-            isEditable={isEditable}
+            isEditable={editingEnabled}
           />
         </Form.Field>
         <Form.Field required>
@@ -227,17 +227,17 @@ const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, isEditabl
               }}>
               <FormControlLabel
                 value="TRUE"
-                control={<DisabledRadio isEditable={!isEditable} />}
+                control={<DisabledRadio isEditable={!editingEnabled} />}
                 label={<TranslationText id={"yes"} />}
               />
               <FormControlLabel
                 value="FALSE"
-                control={<DisabledRadio isEditable={!isEditable} />}
+                control={<DisabledRadio isEditable={!editingEnabled} />}
                 label={<TranslationText id={"no"} />}
               />
               <FormControlLabel
                 value="NULL"
-                control={<DisabledRadio isEditable={!isEditable} />}
+                control={<DisabledRadio isEditable={!editingEnabled} />}
                 label={<TranslationText id={"np"} />}
               />
             </RadioGroup>

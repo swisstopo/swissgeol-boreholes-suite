@@ -206,7 +206,7 @@ export const DetailPageContent = ({
                   borehole={borehole}
                   updateChange={updateChange}
                   updateNumber={updateNumber}
-                  isEditable={editingEnabled}
+                  editingEnabled={editingEnabled}
                   onDirtyChange={handleDirtyChange}
                 />
               )}

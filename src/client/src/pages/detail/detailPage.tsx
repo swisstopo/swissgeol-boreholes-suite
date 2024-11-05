@@ -81,12 +81,18 @@ export const DetailPage: FC = () => {
   };
 
   const triggerSubmit = () => {
+    if (boreholePanelRef.current) {
+      boreholePanelRef.current.submit();
+    }
     if (locationPanelRef.current) {
       locationPanelRef.current.submit();
     }
   };
 
   const triggerReset = () => {
+    if (boreholePanelRef.current) {
+      boreholePanelRef.current.reset();
+    }
     if (locationPanelRef.current) {
       locationPanelRef.current.reset();
     }
@@ -129,6 +135,9 @@ export const DetailPage: FC = () => {
       </Stack>
     );
 
+  const shouldShowSaveBar =
+    location.pathname.endsWith("/location") ||
+    (location.pathname.endsWith("/borehole") && location.hash === "#general");
   return (
     <>
       <DetailHeader
@@ -178,7 +187,7 @@ export const DetailPage: FC = () => {
             </MainContentBox>
             {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}
           </Box>
-          {editingEnabled && location.pathname.endsWith("/location") && (
+          {editingEnabled && shouldShowSaveBar && (
             <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} isFormDirty={isFormDirty} />
           )}
         </Stack>
