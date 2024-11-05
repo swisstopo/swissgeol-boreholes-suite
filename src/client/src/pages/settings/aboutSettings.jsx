@@ -47,8 +47,8 @@ class AboutSettings extends React.Component {
             :&nbsp;
           </span>
           <span>
-            <a href="https://github.com/geoadmin/suite-bdms" rel="noopener noreferrer" target="_BLANK">
-              github.com/geoadmin/suite-bdms
+            <a href="https://github.com/swisstopo/swissgeol-boreholes-suite" rel="noopener noreferrer" target="_BLANK">
+              github.com/swisstopo/swissgeol-boreholes-suite
             </a>
           </span>
         </div>
@@ -66,7 +66,8 @@ class AboutSettings extends React.Component {
           <span>
             <a
               href={
-                "https://github.com/geoadmin/suite-bdms/releases/tag/v" + import.meta.env.VITE_APP_VERSION.split("+")[0]
+                "https://github.com/swisstopo/swissgeol-boreholes-suite/releases/tag/v" +
+                import.meta.env.VITE_APP_VERSION.split("+")[0]
               }
               rel="noopener noreferrer"
               target="_BLANK"
@@ -88,7 +89,7 @@ class AboutSettings extends React.Component {
           </span>
           <span>
             <a
-              href="https://github.com/geoadmin/suite-bdms/blob/main/LICENSE"
+              href="https://github.com/swisstopo/swissgeol-boreholes-suite/blob/main/LICENSE"
               rel="noopener noreferrer"
               target="_BLANK">
               MIT
