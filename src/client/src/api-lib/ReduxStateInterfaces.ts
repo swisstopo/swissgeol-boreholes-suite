@@ -44,7 +44,7 @@ export interface UserData {
 
 export interface Workgroup {
   disabled: null;
-  id: number;
+  id: string;
   workgroup: string;
   roles: Role[];
 }
