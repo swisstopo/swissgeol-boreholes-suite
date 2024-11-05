@@ -1,7 +1,8 @@
 import { forwardRef, SyntheticEvent, useEffect, useImperativeHandle, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
+import { DevTool } from "../../../../../hookformDevtools.ts";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
 import BoreholeDetailSegment from "./boreholeDetailSegment";
 import BoreholeGeneralSegment from "./boreholeGeneralSegment";
@@ -10,7 +11,10 @@ import Geometry from "./geometry.jsx";
 import Sections from "./sections.jsx";
 
 export const BoreholePanel = forwardRef(
-  ({ boreholeId, borehole, updateChange, updateNumber, isEditable, onDirtyChange }: BoreholePanelProps, ref) => {
+  (
+    { boreholeId, borehole, updateChange, updateNumber, isEditable, onDirtyChange, onSubmit }: BoreholePanelProps,
+    ref,
+  ) => {
     const { t } = useTranslation();
     const history = useHistory();
     const location = useLocation();
@@ -81,13 +85,18 @@ export const BoreholePanel = forwardRef(
         <BdmsTabContentBox flex="1 0 0" sx={{ overflow: "auto" }}>
           {activeIndex === 0 && (
             <>
-              <BoreholeGeneralSegment borehole={borehole} updateChange={updateChange} isEditable={isEditable} />
-              <BoreholeDetailSegment
-                borehole={borehole}
-                updateChange={updateChange}
-                updateNumber={updateNumber}
-                isEditable={isEditable}
-              />
+              <DevTool control={formMethods.control} placement="top-left" />
+              <FormProvider {...formMethods}>
+                <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+                  <BoreholeGeneralSegment borehole={borehole} updateChange={updateChange} isEditable={isEditable} />
+                  <BoreholeDetailSegment
+                    borehole={borehole}
+                    updateChange={updateChange}
+                    updateNumber={updateNumber}
+                    isEditable={isEditable}
+                  />
+                </form>
+              </FormProvider>
             </>
           )}
           {activeIndex === 1 && <Sections isEditable={isEditable} boreholeId={boreholeId} />}
