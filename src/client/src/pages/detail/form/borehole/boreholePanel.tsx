@@ -48,8 +48,8 @@ const BoreholePanel = ({ boreholeId, legacyBorehole, updateChange, updateNumber,
   return (
     <>
       <BdmsTabs value={activeIndex} onChange={handleIndexChange}>
-        {tabs.map((tab, index) => {
-          return <BdmsTab data-cy={tab.hash + "-tab"} label={tab.label} key={index} />;
+        {tabs.map(tab => {
+          return <BdmsTab data-cy={tab.hash + "-tab"} label={tab.label} key={tab.hash} />;
         })}
       </BdmsTabs>
       <BdmsTabContentBox flex="1 0 0" sx={{ overflow: "auto" }}>
