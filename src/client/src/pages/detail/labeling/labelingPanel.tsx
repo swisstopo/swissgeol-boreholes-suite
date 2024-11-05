@@ -156,7 +156,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
             }
           })
           .catch(error => {
-            if (!error?.message?.includes("AbortError")) {
+            if (!error?.toString().includes("AbortError")) {
               setExtractionState(ExtractionState.error);
               showAlert(t(error.message), "error");
             }
