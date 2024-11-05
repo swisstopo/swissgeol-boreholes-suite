@@ -61,7 +61,7 @@ const MainSideNav = ({
   useEffect(() => {
     const wgs = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
     setEnabledWorkgroups(wgs);
-    setWorkgroupId(wgs.length > 0 ? wgs[0].id.toString() : "");
+    setWorkgroupId(wgs.length > 0 ? wgs[0].id : "");
   }, [setEnabledWorkgroups, setWorkgroupId, user.data.workgroups]);
 
   const handleToggleFilter = () => {

@@ -24,7 +24,7 @@ const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx, h
     .map(wg => ({
       key: wg.id,
       text: wg.workgroup,
-      value: wg.id.toString(),
+      value: wg.id,
     }));
 
   return (

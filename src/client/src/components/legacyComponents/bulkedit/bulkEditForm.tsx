@@ -119,7 +119,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
 
   useEffect(() => {
     if (workgroupId) {
-      onFieldValueChange(bulkEditFormFields.find(f => f.type === FormValueType.Workgroup)!, parseInt(workgroupId));
+      onFieldValueChange(bulkEditFormFields.find(f => f.type === FormValueType.Workgroup)!, workgroupId);
     }
   }, [bulkEditFormFields, onFieldValueChange, workgroupId]);
 
