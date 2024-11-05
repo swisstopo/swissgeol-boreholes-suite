@@ -193,7 +193,7 @@ describe("Tests for 'Location' edit page.", () => {
     });
   });
 
-  it.only("adds edits and deletes borehole identifiers", () => {
+  it("adds edits and deletes borehole identifiers", () => {
     newEditableBorehole().as("borehole_id");
     const originalNameInput = cy.contains("label", "Original name").next().children("input");
     originalNameInput.type("AAA_FELIX_THE_PANDA");

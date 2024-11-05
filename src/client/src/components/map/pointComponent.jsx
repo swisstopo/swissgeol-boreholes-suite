@@ -358,8 +358,8 @@ class PointComponent extends React.Component {
               onClick={() => {
                 if (_.isFunction(this.props.applyChange)) {
                   this.props.applyChange(
-                    _.round(this.state.point[0], 2),
-                    _.round(this.state.point[1], 2),
+                    this.state.point[0].toFixed(2),
+                    this.state.point[1].toFixed(2),
                     this.state.height !== null ? parseFloat(this.state.height) : null,
                     this.state.country,
                     this.state.canton,

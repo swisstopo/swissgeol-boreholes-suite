@@ -81,8 +81,8 @@ const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegm
 
   const setValuesForNewMapPoint = useCallback(
     (x: string, y: string, height: number, country: string, canton: string, municipality: string) => {
-      formMethods.setValue("locationX", x.toString());
-      formMethods.setValue("locationY", y.toString());
+      formMethods.setValue("locationX", x);
+      formMethods.setValue("locationY", y);
       formMethods.setValue("elevationZ", height);
       formMethods.setValue("country", country);
       formMethods.setValue("canton", canton);
