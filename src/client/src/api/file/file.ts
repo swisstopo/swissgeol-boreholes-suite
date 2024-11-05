@@ -99,7 +99,7 @@ export async function extractData(request: ExtractionRequest, abortSignal: Abort
     return responseObject as ExtractionResponse;
   } else {
     if (response.status === 404) {
-      new ApiError("coordinatesNotFound", response.status);
+      throw new ApiError("coordinatesNotFound", response.status);
     }
     throw new ApiError("errorDataExtraction", response.status);
   }
