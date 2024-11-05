@@ -1,7 +1,18 @@
 import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { BoreholeV2 } from "../../../../api/borehole.ts";
 
 export interface BoreholeGeneralProps {
   legacyBorehole: Borehole;
+  updateChange: (
+    attribute: string,
+    value: string | number | boolean | null | (number | string | null)[],
+    to?: boolean,
+  ) => void;
+  isEditable: boolean;
+}
+
+export interface Temp {
+  borehole: BoreholeV2;
   updateChange: (
     attribute: string,
     value: string | number | boolean | null | (number | string | null)[],
@@ -16,7 +27,10 @@ export interface BoreholeDetailProps extends BoreholeGeneralProps {
 
 export interface BoreholePanelProps extends BoreholeGeneralProps {
   boreholeId: string;
+  borehole: BoreholeV2;
   updateNumber: (attribute: string, value: number | null, to?: boolean) => void;
+  onSubmit: (data: BoreholeFormInputs) => void;
+  onDirtyChange: (isDirty: boolean) => void;
 }
 
 export interface DepthTVD {
@@ -24,3 +38,5 @@ export interface DepthTVD {
   "extended.top_bedrock_fresh_md"?: number;
   "custom.top_bedrock_weathered_md"?: number;
 }
+
+export interface BoreholeFormInputs {}

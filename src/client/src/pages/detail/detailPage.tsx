@@ -10,6 +10,8 @@ import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledCo
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
+import { prepareBoreholeDataForSubmit } from "./form/borehole/boreholeFormUtils.ts";
+import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
 import { prepareLocationDataForSubmit } from "./form/location/locationFormUtils.ts";
 import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
@@ -54,8 +56,18 @@ export const DetailPage: FC = () => {
   );
 
   const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
+  const boreholePanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
 
-  const onFormSubmit = (formInputs: LocationFormInputs) => {
+  const onBoreholeFormSubmit = (formInputs: BoreholeFormInputs) => {
+    const boreholeSubmission = prepareBoreholeDataForSubmit(formInputs);
+    getBoreholeById(parseInt(id)).then(b => {
+      updateBorehole({ ...b, ...boreholeSubmission }).then(r => {
+        setBorehole(r);
+      });
+    });
+  };
+
+  const onLocationFormSubmit = (formInputs: LocationFormInputs) => {
     const boreholeSubmission = prepareLocationDataForSubmit(formInputs);
     getBoreholeById(parseInt(id)).then(b => {
       updateBorehole({ ...b, ...boreholeSubmission }).then(r => {
@@ -155,8 +167,10 @@ export const DetailPage: FC = () => {
               <DetailPageContent
                 editingEnabled={editingEnabled}
                 editableByCurrentUser={editableByCurrentUser}
-                onFormSubmit={onFormSubmit}
                 locationPanelRef={locationPanelRef}
+                onLocationFormSubmit={onLocationFormSubmit}
+                boreholePanelRef={boreholePanelRef}
+                onBoreholeFormSubmit={onBoreholeFormSubmit}
                 handleDirtyChange={handleDirtyChange}
                 borehole={borehole}
                 setBorehole={setBorehole}

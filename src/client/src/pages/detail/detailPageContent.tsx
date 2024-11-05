@@ -10,7 +10,8 @@ import { BoreholeV2, getBoreholeById } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
-import BoreholePanel from "./form/borehole/boreholePanel.tsx";
+import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
+import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
 import Completion from "./form/completion/completion.jsx";
 import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement.jsx";
@@ -27,7 +28,9 @@ interface DetailPageContentProps {
   editingEnabled: boolean;
   editableByCurrentUser: boolean;
   locationPanelRef: RefObject<{ submit: () => void; reset: () => void }>;
-  onFormSubmit: (data: LocationFormInputs) => void;
+  boreholePanelRef: RefObject<{ submit: () => void; reset: () => void }>;
+  onLocationFormSubmit: (data: LocationFormInputs) => void;
+  onBoreholeFormSubmit: (data: BoreholeFormInputs) => void;
   handleDirtyChange: (isDirty: boolean) => void;
   borehole: BoreholeV2;
   setBorehole: (borehole: BoreholeV2) => void;
@@ -40,7 +43,9 @@ export const DetailPageContent = ({
   editingEnabled,
   editableByCurrentUser,
   locationPanelRef,
-  onFormSubmit,
+  boreholePanelRef,
+  onLocationFormSubmit,
+  onBoreholeFormSubmit,
   handleDirtyChange,
   borehole,
   setBorehole,
@@ -184,7 +189,7 @@ export const DetailPageContent = ({
                 <LocationPanel
                   ref={locationPanelRef}
                   editingEnabled={editingEnabled}
-                  onSubmit={onFormSubmit}
+                  onSubmit={onLocationFormSubmit}
                   borehole={borehole}
                   onDirtyChange={handleDirtyChange}
                 />
@@ -195,11 +200,15 @@ export const DetailPageContent = ({
               path={"/:id/borehole"}
               render={() => (
                 <BoreholePanel
+                  ref={boreholePanelRef}
+                  onSubmit={onBoreholeFormSubmit}
                   boreholeId={id}
                   legacyBorehole={legacyBorehole}
+                  borehole={borehole}
                   updateChange={updateChange}
                   updateNumber={updateNumber}
                   isEditable={editingEnabled}
+                  onDirtyChange={handleDirtyChange}
                 />
               )}
             />

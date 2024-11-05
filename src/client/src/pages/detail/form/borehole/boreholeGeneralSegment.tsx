@@ -2,9 +2,9 @@ import { useTranslation } from "react-i18next";
 import { Form, Segment, TextArea } from "semantic-ui-react";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import { capitalizeFirstLetter } from "../../../../utils";
-import { BoreholeGeneralProps } from "./boreholePanelInterfaces.ts";
+import { Temp } from "./boreholePanelInterfaces.ts";
 
-const BoreholeGeneralSegment = ({ legacyBorehole, updateChange, isEditable }: BoreholeGeneralProps) => {
+const BoreholeGeneralSegment = ({ borehole, updateChange, isEditable }: Temp) => {
   const { t } = useTranslation();
 
   return (
@@ -21,14 +21,14 @@ const BoreholeGeneralSegment = ({ legacyBorehole, updateChange, isEditable }: Bo
           <Form autoComplete="off" error>
             <Form.Group widths="equal">
               {/* drilling type in Borehole */}
-              <Form.Field error={legacyBorehole.data.borehole_type === null} required>
+              <Form.Field error={borehole.typeId === null} required>
                 <label>{t("borehole_type")}</label>
                 <DomainDropdown
                   onSelected={(selected: { id: number }) => {
                     updateChange("borehole_type", selected.id, false);
                   }}
                   schema="borehole_type"
-                  selected={legacyBorehole.data.borehole_type}
+                  selected={borehole.typeId}
                   readOnly={!isEditable}
                 />
               </Form.Field>
@@ -41,7 +41,7 @@ const BoreholeGeneralSegment = ({ legacyBorehole, updateChange, isEditable }: Bo
                     updateChange("extended.purpose", selected.id, false);
                   }}
                   schema="extended.purpose"
-                  selected={legacyBorehole.data.extended.purpose}
+                  selected={borehole.purposeId}
                   readOnly={!isEditable}
                 />
               </Form.Field>
@@ -54,7 +54,7 @@ const BoreholeGeneralSegment = ({ legacyBorehole, updateChange, isEditable }: Bo
                     updateChange("extended.status", selected.id, false);
                   }}
                   schema="extended.status"
-                  selected={legacyBorehole.data.extended.status}
+                  selected={borehole.statusId}
                   readOnly={!isEditable}
                 />
               </Form.Field>
@@ -74,7 +74,7 @@ const BoreholeGeneralSegment = ({ legacyBorehole, updateChange, isEditable }: Bo
                   updateChange("custom.remarks", e.target.value);
                 }}
                 rows={14}
-                value={legacyBorehole.data.custom.remarks}
+                value={borehole.remarks}
                 readOnly={!isEditable}
               />
             </Form.Field>

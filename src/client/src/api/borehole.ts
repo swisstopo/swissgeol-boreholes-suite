@@ -16,6 +16,11 @@ export interface Identifier extends BasicIdentifier {
 }
 
 export interface BoreholeV2 {
+  purposeId: number;
+  typeId: number;
+  remarks: string;
+  statusId: number;
+  workflow: Workflow;
   boreholeCodelists: BasicIdentifier[];
   workflows: Workflow[];
   originalReferenceSystem: number;
