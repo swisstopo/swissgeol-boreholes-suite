@@ -158,9 +158,6 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
           .catch(error => {
             if (!error?.message?.includes("AbortError")) {
               setExtractionState(ExtractionState.error);
-              // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
-              //  Check if error message is correct, resp. handle all error cases with different messages
-              //   Translate error message
               showAlert(t(error.message), "error");
             }
           })
