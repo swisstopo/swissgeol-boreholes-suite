@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
-import BoreholeDetailSegment from "./boreholeDetailSegment.jsx";
-import BoreholeGeneralSegment from "./boreholeGeneralSegment.jsx";
+import BoreholeDetailSegment from "./boreholeDetailSegment";
+import BoreholeGeneralSegment from "./boreholeGeneralSegment";
+import { BoreholePanelProps } from "./boreholePanelInterfaces";
 import Geometry from "./geometry.jsx";
 import Sections from "./sections.jsx";
 
-const BoreholePanel = ({ boreholeId, borehole, updateChange, updateNumber, isEditable }) => {
+const BoreholePanel = ({ boreholeId, legacyBorehole, updateChange, updateNumber, isEditable }: BoreholePanelProps) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
@@ -21,7 +22,7 @@ const BoreholePanel = ({ boreholeId, borehole, updateChange, updateNumber, isEdi
     { label: t("boreholeGeometry"), hash: "geometry" },
   ];
 
-  const handleIndexChange = (event, index) => {
+  const handleIndexChange = (event: SyntheticEvent | null, index: number) => {
     setActiveIndex(index);
     const newLocation = location.pathname + "#" + tabs[index].hash;
     if (location.pathname + location.hash !== newLocation) {
@@ -55,13 +56,12 @@ const BoreholePanel = ({ boreholeId, borehole, updateChange, updateNumber, isEdi
         {activeIndex === 0 && (
           <>
             <BoreholeGeneralSegment
-              borehole={borehole}
+              legacyBorehole={legacyBorehole}
               updateChange={updateChange}
-              updateNumber={updateNumber}
               isEditable={isEditable}
             />
             <BoreholeDetailSegment
-              borehole={borehole}
+              legacyBorehole={legacyBorehole}
               updateChange={updateChange}
               updateNumber={updateNumber}
               isEditable={isEditable}
@@ -70,7 +70,7 @@ const BoreholePanel = ({ boreholeId, borehole, updateChange, updateNumber, isEdi
         )}
         {activeIndex === 1 && <Sections isEditable={isEditable} boreholeId={boreholeId} />}
         {activeIndex === 2 && (
-          <Geometry isEditable={isEditable} boreholeId={boreholeId} measuredDepth={borehole?.data?.total_depth} />
+          <Geometry isEditable={isEditable} boreholeId={boreholeId} measuredDepth={legacyBorehole?.data?.total_depth} />
         )}
       </BdmsTabContentBox>
     </>

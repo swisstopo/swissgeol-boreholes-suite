@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NumericFormat } from "react-number-format";
 import { FormControl, FormControlLabel, RadioGroup } from "@mui/material";
@@ -10,19 +10,18 @@ import DomainTree from "../../../../components/legacyComponents/domain/tree/doma
 import { parseIfString } from "../../../../components/legacyComponents/formUtils.ts";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { DisabledRadio } from "../styledComponents.jsx";
+import { BoreholeDetailProps, DepthTVD } from "./boreholePanelInterfaces.ts";
 
-const BoreholeDetailSegment = props => {
-  const { borehole, updateChange, updateNumber, isEditable } = props;
+const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isEditable }: BoreholeDetailProps) => {
   const { t } = useTranslation();
-
-  const [depthTVD, setDepthTVD] = useState(null);
+  const [depthTVD, setDepthTVD] = useState<DepthTVD>();
 
   const updateTVD = useCallback(
-    (field, depthMD) => {
+    (field: string, depthMD: number) => {
       if (depthMD == null) {
         setDepthTVD(value => ({ ...value, [field]: null }));
       } else {
-        getBoreholeGeometryDepthTVD(borehole.data.id, depthMD).then(response => {
+        getBoreholeGeometryDepthTVD(legacyBorehole.data.id, depthMD).then(response => {
           if (response != null) {
             setDepthTVD(value => {
               return { ...value, [field]: response };
@@ -33,27 +32,27 @@ const BoreholeDetailSegment = props => {
         });
       }
     },
-    [borehole.data.id],
+    [legacyBorehole.data.id],
   );
 
   useEffect(() => {
-    updateTVD("total_depth", borehole.data.total_depth);
-  }, [borehole.data.total_depth, updateTVD]);
+    updateTVD("total_depth", legacyBorehole.data.total_depth);
+  }, [legacyBorehole.data.total_depth, updateTVD]);
 
   useEffect(() => {
-    updateTVD("extended.top_bedrock_fresh_md", borehole.data.extended.top_bedrock_fresh_md);
-  }, [borehole.data.extended.top_bedrock_fresh_md, updateTVD]);
+    updateTVD("extended.top_bedrock_fresh_md", legacyBorehole.data.extended.top_bedrock_fresh_md);
+  }, [legacyBorehole.data.extended.top_bedrock_fresh_md, updateTVD]);
 
   useEffect(() => {
-    updateTVD("custom.top_bedrock_weathered_md", borehole.data.custom.top_bedrock_weathered_md);
-  }, [borehole.data.custom.top_bedrock_weathered_md, updateTVD]);
+    updateTVD("custom.top_bedrock_weathered_md", legacyBorehole.data.custom.top_bedrock_weathered_md);
+  }, [legacyBorehole.data.custom.top_bedrock_weathered_md, updateTVD]);
 
-  const updateNumericField = (fieldNameMD, event) => {
+  const updateNumericField = (fieldNameMD: string, event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value === "" ? null : parseIfString(event.target.value);
     updateNumber(fieldNameMD, value);
   };
 
-  const roundTvdValue = value => {
+  const roundTvdValue = (value: number | undefined) => {
     return value ? Math.round(value * 100) / 100 : "";
   };
 
@@ -69,7 +68,7 @@ const BoreholeDetailSegment = props => {
               autoCorrect="off"
               onChange={e => updateNumericField("total_depth", e)}
               spellCheck="false"
-              value={_.isNil(borehole.data.total_depth) ? "" : borehole.data.total_depth}
+              value={_.isNil(legacyBorehole.data.total_depth) ? "" : legacyBorehole.data.total_depth}
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -78,11 +77,11 @@ const BoreholeDetailSegment = props => {
           <Form.Field required>
             <label>{t("qt_depth")}</label>
             <DomainDropdown
-              onSelected={selected => {
+              onSelected={(selected: { id: number }) => {
                 updateChange("custom.qt_depth", selected.id, false);
               }}
               schema="depth_precision"
-              selected={borehole.data.custom.qt_depth}
+              selected={legacyBorehole.data.custom.qt_depth}
               readOnly={!isEditable}
             />
           </Form.Field>
@@ -113,7 +112,9 @@ const BoreholeDetailSegment = props => {
               onChange={e => updateNumericField("extended.top_bedrock_fresh_md", e)}
               spellCheck="false"
               value={
-                _.isNil(borehole.data.extended.top_bedrock_fresh_md) ? "" : borehole.data.extended.top_bedrock_fresh_md
+                _.isNil(legacyBorehole.data.extended.top_bedrock_fresh_md)
+                  ? ""
+                  : legacyBorehole.data.extended.top_bedrock_fresh_md
               }
               thousandSeparator="'"
               readOnly={!isEditable}
@@ -145,7 +146,7 @@ const BoreholeDetailSegment = props => {
               autoCorrect="off"
               onChange={e => updateNumericField("custom.top_bedrock_weathered_md", e)}
               spellCheck="false"
-              value={borehole.data.custom.top_bedrock_weathered_md}
+              value={legacyBorehole.data.custom.top_bedrock_weathered_md}
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -170,11 +171,11 @@ const BoreholeDetailSegment = props => {
         <Form.Field required>
           <label>{t("lithology_top_bedrock")}</label>
           <DomainTree
-            onSelected={selected => {
+            onSelected={(selected: { id: number }) => {
               updateChange("custom.lithology_top_bedrock", selected.id, false);
             }}
             schema="custom.lithology_top_bedrock"
-            selected={borehole.data.custom.lithology_top_bedrock}
+            selected={legacyBorehole.data.custom.lithology_top_bedrock}
             title={t("lithology_top_bedrock")}
             isEditable={isEditable}
           />
@@ -189,11 +190,11 @@ const BoreholeDetailSegment = props => {
               4: "superformation",
               5: "formation",
             }}
-            onSelected={selected => {
+            onSelected={(selected: { id: number }) => {
               updateChange("custom.lithostratigraphy_top_bedrock", selected.id, false);
             }}
             schema="custom.lithostratigraphy_top_bedrock"
-            selected={borehole.data.custom.lithostratigraphy_top_bedrock}
+            selected={legacyBorehole.data.custom.lithostratigraphy_top_bedrock}
             title={t("lithostratigraphy_top_bedrock")}
             isEditable={isEditable}
           />
@@ -209,11 +210,11 @@ const BoreholeDetailSegment = props => {
               5: "5th_order_sub_epoch",
               6: "6th_order_sub_stage",
             }}
-            onSelected={selected => {
+            onSelected={(selected: { id: number }) => {
               updateChange("custom.chronostratigraphy_top_bedrock", selected.id, false);
             }}
             schema="custom.chronostratigraphy_top_bedrock"
-            selected={borehole.data.custom.chronostratigraphy_top_bedrock}
+            selected={legacyBorehole.data.custom.chronostratigraphy_top_bedrock}
             title={t("chronostratigraphy_top_bedrock")}
             isEditable={isEditable}
           />
@@ -224,14 +225,14 @@ const BoreholeDetailSegment = props => {
             <RadioGroup
               row
               value={
-                borehole.data.extended.groundwater === true
+                legacyBorehole.data.extended.groundwater
                   ? "TRUE"
-                  : borehole.data.extended.groundwater === false
+                  : !legacyBorehole.data.extended.groundwater
                     ? "FALSE"
                     : "NULL"
               }
               onChange={e => {
-                let value = e.target.value === "TRUE" ? true : e.target.value === "FALSE" ? false : null;
+                const value = e.target.value === "TRUE" ? true : e.target.value === "FALSE" ? false : null;
                 updateChange("extended.groundwater", value, false);
               }}>
               <FormControlLabel

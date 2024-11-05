@@ -64,6 +64,7 @@ export interface Identifier {
 }
 
 export interface BoreholeAttributes {
+  borehole_type: number | null;
   updater: string;
   national_interest: boolean;
   restriction_until: Date;
@@ -91,8 +92,15 @@ export interface BoreholeAttributes {
   precision_location_y: number;
   precision_location_x_lv03: number;
   location: string;
+  total_depth: number;
   precision_location_y_lv03: number;
   custom: {
+    chronostratigraphy_top_bedrock: number;
+    lithostratigraphy_top_bedrock: number;
+    lithology_top_bedrock: number;
+    qt_depth: number;
+    top_bedrock_weathered_md: number;
+    remarks: string | undefined;
     identifiers: Identifier[];
     country: string;
     canton: string;
@@ -101,6 +109,10 @@ export interface BoreholeAttributes {
     alternate_name: string;
   };
   extended: {
+    groundwater: boolean;
+    top_bedrock_fresh_md: number;
+    status: number;
+    purpose: number;
     original_name: string;
   };
 }
