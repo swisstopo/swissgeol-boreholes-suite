@@ -1,17 +1,6 @@
-import { Borehole } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 
 export interface BoreholeGeneralProps {
-  legacyBorehole: Borehole;
-  updateChange: (
-    attribute: string,
-    value: string | number | boolean | null | (number | string | null)[],
-    to?: boolean,
-  ) => void;
-  isEditable: boolean;
-}
-
-export interface Temp {
   borehole: BoreholeV2;
   updateChange: (
     attribute: string,
@@ -27,7 +16,6 @@ export interface BoreholeDetailProps extends BoreholeGeneralProps {
 
 export interface BoreholePanelProps extends BoreholeGeneralProps {
   boreholeId: string;
-  borehole: BoreholeV2;
   updateNumber: (attribute: string, value: number | null, to?: boolean) => void;
   onSubmit: (data: BoreholeFormInputs) => void;
   onDirtyChange: (isDirty: boolean) => void;

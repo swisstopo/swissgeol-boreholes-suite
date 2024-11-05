@@ -10,10 +10,7 @@ import Geometry from "./geometry.jsx";
 import Sections from "./sections.jsx";
 
 export const BoreholePanel = forwardRef(
-  (
-    { boreholeId, legacyBorehole, borehole, updateChange, updateNumber, isEditable, onDirtyChange }: BoreholePanelProps,
-    ref,
-  ) => {
+  ({ boreholeId, borehole, updateChange, updateNumber, isEditable, onDirtyChange }: BoreholePanelProps, ref) => {
     const { t } = useTranslation();
     const history = useHistory();
     const location = useLocation();
@@ -86,7 +83,7 @@ export const BoreholePanel = forwardRef(
             <>
               <BoreholeGeneralSegment borehole={borehole} updateChange={updateChange} isEditable={isEditable} />
               <BoreholeDetailSegment
-                legacyBorehole={legacyBorehole}
+                borehole={borehole}
                 updateChange={updateChange}
                 updateNumber={updateNumber}
                 isEditable={isEditable}
@@ -95,11 +92,7 @@ export const BoreholePanel = forwardRef(
           )}
           {activeIndex === 1 && <Sections isEditable={isEditable} boreholeId={boreholeId} />}
           {activeIndex === 2 && (
-            <Geometry
-              isEditable={isEditable}
-              boreholeId={boreholeId}
-              measuredDepth={legacyBorehole?.data?.total_depth}
-            />
+            <Geometry isEditable={isEditable} boreholeId={boreholeId} measuredDepth={borehole?.totalDepth} />
           )}
         </BdmsTabContentBox>
       </>

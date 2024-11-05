@@ -12,7 +12,7 @@ import TranslationText from "../../../../components/legacyComponents/translation
 import { DisabledRadio } from "../styledComponents.jsx";
 import { BoreholeDetailProps, DepthTVD } from "./boreholePanelInterfaces.ts";
 
-const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isEditable }: BoreholeDetailProps) => {
+const BoreholeDetailSegment = ({ borehole, updateChange, updateNumber, isEditable }: BoreholeDetailProps) => {
   const { t } = useTranslation();
   const [depthTVD, setDepthTVD] = useState<DepthTVD>();
 
@@ -21,7 +21,7 @@ const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isE
       if (depthMD == null) {
         setDepthTVD(value => ({ ...value, [field]: null }));
       } else {
-        getBoreholeGeometryDepthTVD(legacyBorehole.data.id, depthMD).then(response => {
+        getBoreholeGeometryDepthTVD(borehole.id, depthMD).then(response => {
           if (response != null) {
             setDepthTVD(value => {
               return { ...value, [field]: response };
@@ -32,20 +32,20 @@ const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isE
         });
       }
     },
-    [legacyBorehole.data.id],
+    [borehole.id],
   );
 
   useEffect(() => {
-    updateTVD("total_depth", legacyBorehole.data.total_depth);
-  }, [legacyBorehole.data.total_depth, updateTVD]);
+    updateTVD("total_depth", borehole.totalDepth);
+  }, [borehole.totalDepth, updateTVD]);
 
   useEffect(() => {
-    updateTVD("extended.top_bedrock_fresh_md", legacyBorehole.data.extended.top_bedrock_fresh_md);
-  }, [legacyBorehole.data.extended.top_bedrock_fresh_md, updateTVD]);
+    updateTVD("extended.top_bedrock_fresh_md", borehole.topBedrockFreshMd);
+  }, [borehole.topBedrockFreshMd, updateTVD]);
 
   useEffect(() => {
-    updateTVD("custom.top_bedrock_weathered_md", legacyBorehole.data.custom.top_bedrock_weathered_md);
-  }, [legacyBorehole.data.custom.top_bedrock_weathered_md, updateTVD]);
+    updateTVD("custom.top_bedrock_weathered_md", borehole.topBedrockWeatheredMd);
+  }, [borehole.topBedrockWeatheredMd, updateTVD]);
 
   const updateNumericField = (fieldNameMD: string, event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value === "" ? null : parseIfString(event.target.value);
@@ -68,7 +68,7 @@ const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isE
               autoCorrect="off"
               onChange={e => updateNumericField("total_depth", e)}
               spellCheck="false"
-              value={_.isNil(legacyBorehole.data.total_depth) ? "" : legacyBorehole.data.total_depth}
+              value={_.isNil(borehole.totalDepth) ? "" : borehole.totalDepth}
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -81,7 +81,7 @@ const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isE
                 updateChange("custom.qt_depth", selected.id, false);
               }}
               schema="depth_precision"
-              selected={legacyBorehole.data.custom.qt_depth}
+              selected={borehole.qtDepthId}
               readOnly={!isEditable}
             />
           </Form.Field>
@@ -111,11 +111,7 @@ const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isE
               autoCorrect="off"
               onChange={e => updateNumericField("extended.top_bedrock_fresh_md", e)}
               spellCheck="false"
-              value={
-                _.isNil(legacyBorehole.data.extended.top_bedrock_fresh_md)
-                  ? ""
-                  : legacyBorehole.data.extended.top_bedrock_fresh_md
-              }
+              value={_.isNil(borehole.topBedrockFreshMd) ? "" : borehole.topBedrockFreshMd}
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -146,7 +142,7 @@ const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isE
               autoCorrect="off"
               onChange={e => updateNumericField("custom.top_bedrock_weathered_md", e)}
               spellCheck="false"
-              value={legacyBorehole.data.custom.top_bedrock_weathered_md}
+              value={borehole.topBedrockWeatheredMd}
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -175,7 +171,7 @@ const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isE
               updateChange("custom.lithology_top_bedrock", selected.id, false);
             }}
             schema="custom.lithology_top_bedrock"
-            selected={legacyBorehole.data.custom.lithology_top_bedrock}
+            selected={borehole.lithologyTopBedrockId}
             title={t("lithology_top_bedrock")}
             isEditable={isEditable}
           />
@@ -194,7 +190,7 @@ const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isE
               updateChange("custom.lithostratigraphy_top_bedrock", selected.id, false);
             }}
             schema="custom.lithostratigraphy_top_bedrock"
-            selected={legacyBorehole.data.custom.lithostratigraphy_top_bedrock}
+            selected={borehole.lithostratigraphyId}
             title={t("lithostratigraphy_top_bedrock")}
             isEditable={isEditable}
           />
@@ -214,7 +210,7 @@ const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isE
               updateChange("custom.chronostratigraphy_top_bedrock", selected.id, false);
             }}
             schema="custom.chronostratigraphy_top_bedrock"
-            selected={legacyBorehole.data.custom.chronostratigraphy_top_bedrock}
+            selected={borehole.chronostratigraphyId}
             title={t("chronostratigraphy_top_bedrock")}
             isEditable={isEditable}
           />
@@ -224,13 +220,7 @@ const BoreholeDetailSegment = ({ legacyBorehole, updateChange, updateNumber, isE
           <FormControl className="radio-group">
             <RadioGroup
               row
-              value={
-                legacyBorehole.data.extended.groundwater
-                  ? "TRUE"
-                  : !legacyBorehole.data.extended.groundwater
-                    ? "FALSE"
-                    : "NULL"
-              }
+              value={borehole.hasGroundwater ? "TRUE" : !borehole.hasGroundwater ? "FALSE" : "NULL"}
               onChange={e => {
                 const value = e.target.value === "TRUE" ? true : e.target.value === "FALSE" ? false : null;
                 updateChange("extended.groundwater", value, false);

@@ -203,7 +203,6 @@ export const DetailPageContent = ({
                   ref={boreholePanelRef}
                   onSubmit={onBoreholeFormSubmit}
                   boreholeId={id}
-                  legacyBorehole={legacyBorehole}
                   borehole={borehole}
                   updateChange={updateChange}
                   updateNumber={updateNumber}
