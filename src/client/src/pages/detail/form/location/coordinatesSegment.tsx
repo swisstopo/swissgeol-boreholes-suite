@@ -20,6 +20,7 @@ import {
   ReferenceSystemCode,
   ReferenceSystemKey,
 } from "./coordinateSegmentInterfaces";
+import { LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -211,10 +212,10 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   // Resets the form and updates the reference system.
   const resetCoordinatesOnReferenceSystemChange = (e: number | boolean | null) => {
     if (typeof e !== "number") return;
-    const areCoordinatesDirty = Object.keys(FieldNameDirectionKeys).some(field =>
-      Object.prototype.hasOwnProperty.call(formMethods.formState.dirtyFields, field),
+    const areCoordinatesSet = Object.keys(FieldNameDirectionKeys).some(field =>
+      formMethods.getValues(field as keyof LocationFormInputs),
     );
-    if (!areCoordinatesDirty) {
+    if (!areCoordinatesSet) {
       confirmCoordinateChange();
       return;
     }
