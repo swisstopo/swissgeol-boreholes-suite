@@ -1,4 +1,4 @@
 site_name: boreholes.swissgeol.ch
 theme: readthedocs
-repo_url: https://github.com/geoadmin/suite-bdms
+repo_url: https://github.com/swisstopo/swissgeol-boreholes-suite
 edit_uri: tree/main/src/client/docs

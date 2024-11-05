@@ -14,7 +14,7 @@ const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, togg
   const { t } = useTranslation();
   const handleBoreholeCreate = () => {
     // @ts-expect-error : The createBorehole function is not typed
-    createBorehole(workgroupId)
+    createBorehole(parseInt(workgroupId))
       // @ts-expect-error : The return of the createBorehole function is not typed
       .then((response: { data: { success: boolean; id: string; message: string } }) => {
         if (response.data.success) {

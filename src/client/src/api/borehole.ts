@@ -53,10 +53,10 @@ export const updateBorehole = async (borehole: BoreholeV2) => {
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-export const importBoreholes = async (workgroupId: number | null, combinedFormData: any) => {
+export const importBoreholes = async (workgroupId: string, combinedFormData: any) => {
   return await upload(`upload?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
+export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: string | null) => {
   return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };

@@ -7,7 +7,7 @@ describe("Admin about page tests", () => {
 
     cy.get('[data-cy="version"]')
       .should("contain", "0.0.99+dev")
-      .should("have.attr", "href", "https://github.com/geoadmin/suite-bdms/releases/tag/v0.0.99");
+      .should("have.attr", "href", "https://github.com/swisstopo/swissgeol-boreholes-suite/releases/tag/v0.0.99");
   });
 
   it("shows license information (with fixtures)", () => {

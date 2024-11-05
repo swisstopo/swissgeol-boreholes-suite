@@ -20,8 +20,8 @@ interface BottomBarProps {
   search: { filter: string };
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
-  workgroup: number | null;
-  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
+  workgroup: string;
+  setWorkgroup: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const BottomBar = ({
@@ -39,13 +39,13 @@ const BottomBar = ({
   const { bottomDrawerOpen, setBottomDrawerOpen } = useContext(OverViewContext);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
-  const [currentWorkgroup, setCurrentWorkgroup] = useState<number | null>(null);
+  const [currentWorkgroup, setCurrentWorkgroup] = useState<string>("");
   const enabledWorkgroups = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
 
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
     setCopyPromptOpen(true);
     setCurrentWorkgroup(workgroup);
-    if (workgroup != currentWorkgroup || !copyPromptOpen) {
+    if (workgroup !== currentWorkgroup || !copyPromptOpen) {
       showPrompt(
         t("selectWorkgroupToCreateCopy"),
         [
