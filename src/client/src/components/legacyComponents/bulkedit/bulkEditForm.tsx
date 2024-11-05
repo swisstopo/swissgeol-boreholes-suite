@@ -30,7 +30,7 @@ import { BulkEditFormField, BulkEditFormProps, BulkEditFormValue } from "./BulkE
 
 export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => {
   const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[string, BulkEditFormValue]>>([]);
-  const [workgroupId, setWorkgroupId] = useState<number | null>(null);
+  const [workgroupId, setWorkgroupId] = useState<string>("");
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
 
@@ -129,7 +129,7 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
     if (entryIndex !== -1) {
       setFieldsToUpdate([...fieldsToUpdate.filter(f => f[0] !== fieldName)]);
       if (fieldName === "workgroup") {
-        setWorkgroupId(null);
+        setWorkgroupId("");
       } else {
         formMethods.resetField(fieldName);
       }
