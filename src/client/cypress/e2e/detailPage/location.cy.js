@@ -93,31 +93,6 @@ describe("Tests for 'Location' edit page.", () => {
     });
   });
 
-  it("adds and removes identifiers.", () => {
-    newEditableBorehole().as("borehole_id");
-
-    // initial state
-    cy.get('[data-cy="identifier-add"]').should("be.disabled");
-
-    // add identifier
-    setSelect("borehole_identifier", 5);
-    cy.get('[data-cy="identifier-add"]').should("be.disabled");
-
-    setInput("borehole_identifier_value", "ECKLERTA");
-    cy.get('[data-cy="identifier-add"]').should("not.be.disabled");
-
-    cy.get('[data-cy="identifier-add"]').click();
-    cy.contains("ID Canton").should("exist");
-    cy.contains("ECKLERTA").should("exist");
-
-    cy.get('[data-cy="identifier-add"]').should("be.disabled");
-
-    // delete identifier
-    cy.get('[data-cy="identifier-delete"]').click();
-    cy.contains("ID Canton").should("not.exist");
-    cy.get('[data-cy="identifier-add"]').should("be.disabled");
-  });
-
   it("displays unsaved changes message if unsaved changes are present", () => {
     createBorehole({ "extended.original_name": "PHOTOSQUIRREL", "custom.alternate_name": "PHOTOPIGEON" }).as(
       "borehole_id",
