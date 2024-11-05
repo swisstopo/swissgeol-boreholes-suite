@@ -41,8 +41,5 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   data.locationXLV03 = parseValueIfNotNull(data?.locationXLV03);
   data.locationYLV03 = parseValueIfNotNull(data?.locationYLV03);
   data.boreholeCodelists = getCompleteCodelists(data.boreholeCodelists);
-
-  delete data.hrsId;
-  delete data.codelists;
   return data;
 };
