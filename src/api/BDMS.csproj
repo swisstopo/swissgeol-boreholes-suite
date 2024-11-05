@@ -10,8 +10,8 @@
     <Authors>GeoWerkstatt GmbH</Authors>
     <Company>GeoWerkstatt GmbH</Company>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts</PackageOutputPath>
-    <PackageProjectUrl>https://github.com/geoadmin/suite-bdms</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/geoadmin/suite-bdms.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/swisstopo/swissgeol-boreholes-suite</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/swisstopo/swissgeol-boreholes-suite.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>

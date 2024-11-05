@@ -55,7 +55,7 @@ public class BdmsContext : DbContext
         : base(options)
     {
 #pragma warning disable CS0618 // Type or member is obsolete, however they do not plan on removing it any time soon.
-        // TODO: https://github.com/geoadmin/suite-bdms/issues/851
+        // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/851
         NpgsqlConnection.GlobalTypeMapper.MapEnum<Role>();
 #pragma warning restore CS0618 // Type or member is obsolete, however they do not plan on removing it any time soon.
     }
