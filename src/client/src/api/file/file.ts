@@ -93,13 +93,14 @@ export async function extractData(request: ExtractionRequest, abortSignal: Abort
   const response = await fetchExtractData(request, abortSignal);
   if (response.ok) {
     const responseObject = await response.json();
-    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1546
-    //  "Coordinate not found" Errors should be returned as 404 and handled in the frontend
     if (responseObject.detail) {
       throw new ApiError(responseObject.detail, 500);
     }
     return responseObject as ExtractionResponse;
   } else {
+    if (response.status === 404) {
+      throw new ApiError("coordinatesNotFound", response.status);
+    }
     throw new ApiError("errorDataExtraction", response.status);
   }
 }
