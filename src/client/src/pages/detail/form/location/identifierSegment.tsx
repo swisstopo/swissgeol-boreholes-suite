@@ -44,46 +44,40 @@ const IdentifierSegment = ({ borehole, editingEnabled, formMethods }: Identifier
           </Grid>
           <Grid item xs={1} />
         </Grid>
-
         {fields.map((field, index) => (
-          <>
-            <Grid key={field.id} container spacing={2} sx={{ mt: 1 }}>
-              <Grid item xs={6} sx={{ display: "flex" }}>
-                <FormDomainSelect
-                  fieldName={`boreholeCodelists.${index}.codelistId`}
-                  label="borehole_identifier"
-                  selected={field.codelistId}
-                  readonly={!editingEnabled}
-                  onUpdate={e => {
-                    if (fields.some(field => field.codelistId === e)) {
-                      showAlert(t("msgIdentifierAlreadyUsed"), "error");
-                      formMethods.resetField(`boreholeCodelists.${index}.codelistId`);
-                    }
-                  }}
-                  schemaName="borehole_identifier"
-                />
-              </Grid>
-              <Grid item xs={5} sx={{ display: "flex" }}>
-                <FormInput
-                  fieldName={`boreholeCodelists.${index}.value`}
-                  readonly={!editingEnabled}
-                  label="borehole_identifier_value"
-                  value={field.value || ""}
-                  type={FormValueType.Text}
-                />
-              </Grid>
-              <Grid item xs={1} sx={{ textAlign: "right" }}>
-                {editingEnabled && (
-                  <IconButton
-                    sx={{ mt: 2 }}
-                    onClick={() => remove(index)}
-                    data-cy={`boreholeCodelists.${index}.delete`}>
-                    <Trash2 />
-                  </IconButton>
-                )}
-              </Grid>
+          <Grid key={field.id} container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={6} sx={{ display: "flex" }}>
+              <FormDomainSelect
+                fieldName={`boreholeCodelists.${index}.codelistId`}
+                label="borehole_identifier"
+                selected={field.codelistId}
+                readonly={!editingEnabled}
+                onUpdate={e => {
+                  if (fields.some(field => field.codelistId === e)) {
+                    showAlert(t("msgIdentifierAlreadyUsed"), "error");
+                    formMethods.resetField(`boreholeCodelists.${index}.codelistId`);
+                  }
+                }}
+                schemaName="borehole_identifier"
+              />
             </Grid>
-          </>
+            <Grid item xs={5} sx={{ display: "flex" }}>
+              <FormInput
+                fieldName={`boreholeCodelists.${index}.value`}
+                readonly={!editingEnabled}
+                label="borehole_identifier_value"
+                value={field.value || ""}
+                type={FormValueType.Text}
+              />
+            </Grid>
+            <Grid item xs={1} sx={{ textAlign: "right" }}>
+              {editingEnabled && (
+                <IconButton sx={{ mt: 2 }} onClick={() => remove(index)} data-cy={`boreholeCodelists.${index}.delete`}>
+                  <Trash2 />
+                </IconButton>
+              )}
+            </Grid>
+          </Grid>
         ))}
         <Stack sx={{ mt: 2 }} alignItems="flex-end">
           {editingEnabled && (
