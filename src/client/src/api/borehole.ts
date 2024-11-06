@@ -3,7 +3,7 @@ import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { fetchApiV2, upload } from "./fetchApiV2";
 
 export interface BoreholeV2 {
-  workflow: Workflow;
+  workflows: Workflow[];
   originalReferenceSystem: number;
   precisionLocationYLV03: number;
   precisionLocationXLV03: number;

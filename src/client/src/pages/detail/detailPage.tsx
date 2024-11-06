@@ -24,6 +24,7 @@ export const DetailPage: FC = () => {
   const [borehole, setBorehole] = useState<BoreholeV2 | null>(null);
   const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
+  const workflowStatus = useSelector((state: ReduxRootState) => state.core_workflow);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
   const dispatch = useDispatch();
@@ -36,7 +37,7 @@ export const DetailPage: FC = () => {
       setBorehole(b);
       setEditingEnabled(b.locked !== null && b.lockedById === user.data.id);
     });
-  }, [id, user.data.id]);
+  }, [id, user.data.id, workflowStatus]);
 
   const loadOrCreate = useCallback(
     (id: string) => {

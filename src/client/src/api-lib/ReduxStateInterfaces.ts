@@ -1,6 +1,7 @@
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 
 export interface ReduxRootState {
+  core_workflow: Workflow;
   filters: Filters;
   editor: EditorStore;
   setting: Setting;
