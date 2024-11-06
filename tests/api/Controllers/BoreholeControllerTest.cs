@@ -165,7 +165,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task AddEditAndDeleteBoreholeIdentifiers()
     {
-        var id = 1000067;
+        var id = 1000068;
 
         using var initialContext = ContextFactory.CreateContext();
 
