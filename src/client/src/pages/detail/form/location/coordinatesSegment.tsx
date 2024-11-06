@@ -203,6 +203,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   };
 
   const onCancelCoordinateChange = (e: number) => {
+    formMethods.resetField("originalReferenceSystem");
     formMethods.setValue(
       "originalReferenceSystem",
       Object.values(ReferenceSystemCode).find(code => typeof code === "number" && code !== e) as ReferenceSystemCode,
