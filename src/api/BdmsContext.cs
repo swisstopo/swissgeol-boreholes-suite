@@ -50,6 +50,7 @@ public class BdmsContext : DbContext
     public DbSet<Section> Sections { get; set; }
     public DbSet<SectionElement> SectionElements { get; set; }
     public DbSet<BoreholeGeometryElement> BoreholeGeometry { get; set; }
+    public DbSet<BoreholeCodelist> BoreholeCodelists { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)

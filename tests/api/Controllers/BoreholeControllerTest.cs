@@ -18,6 +18,7 @@ public class BoreholeControllerTest
 
     private BdmsContext context;
     private BoreholeController controller;
+    private static int testBoreholeId = 1000068;
 
     [TestInitialize]
     public void TestInitialize()
@@ -37,6 +38,24 @@ public class BoreholeControllerTest
 
     [TestCleanup]
     public async Task TestCleanup() => await context.DisposeAsync();
+
+    [ClassCleanup]
+    public static async Task ClassCleanup()
+    {
+        using var cleanupContext = ContextFactory.CreateContext();
+
+        var testBoreholeWithIdentifiers = await cleanupContext.Boreholes
+            .Include(b => b.BoreholeCodelists)
+            .SingleOrDefaultAsync(b => b.Id == testBoreholeId);
+
+        if (testBoreholeWithIdentifiers != null)
+        {
+            cleanupContext.BoreholeCodelists.RemoveRange(testBoreholeWithIdentifiers.BoreholeCodelists);
+            await cleanupContext.SaveChangesAsync();
+        }
+
+        await cleanupContext.DisposeAsync();
+    }
 
     [TestMethod]
     public async Task EditBoreholeWithCompleteBorehole()
@@ -167,16 +186,14 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task AddEditAndDeleteBoreholeIdentifiers()
     {
-        var id = 1000068;
-
         using var initialContext = ContextFactory.CreateContext();
 
-        var boreholeToEdit = initialContext.Boreholes.Single(c => c.Id == id);
+        var boreholeToEdit = initialContext.Boreholes.Single(c => c.Id == testBoreholeId);
         Assert.AreEqual(0, boreholeToEdit.BoreholeCodelists.Count);
 
         boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
         {
-            BoreholeId = id,
+            BoreholeId = testBoreholeId,
             CodelistId = 100000010,
             Value = "ID GeoDIN value",
         });
@@ -189,18 +206,18 @@ public class BoreholeControllerTest
 
         var boreholeWithNewIdentifiers = new Borehole
         {
-            Id = id,
+            Id = testBoreholeId,
             BoreholeCodelists = new List<BoreholeCodelist>
             {
                 new BoreholeCodelist
                 {
-                    BoreholeId = id,
+                    BoreholeId = testBoreholeId,
                     CodelistId = 100000010,
                     Value = "ID GeoDIN value",
                 },
                 new BoreholeCodelist
                 {
-                    BoreholeId = id,
+                    BoreholeId = testBoreholeId,
                     CodelistId = 100000000,
                     Value = "ID Original value",
                 },
@@ -218,7 +235,7 @@ public class BoreholeControllerTest
 
         var boreholeWithNoMoreIdentifiers = new Borehole
         {
-            Id = id,
+            Id = testBoreholeId,
             BoreholeCodelists = new List<BoreholeCodelist>(),
         };
 
