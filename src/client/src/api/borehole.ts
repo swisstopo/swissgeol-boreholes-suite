@@ -17,7 +17,7 @@ export interface Identifier extends BasicIdentifier {
 
 export interface BoreholeV2 {
   boreholeCodelists: BasicIdentifier[];
-  workflow: Workflow;
+  workflows: Workflow[];
   originalReferenceSystem: number;
   precisionLocationYLV03: number;
   precisionLocationXLV03: number;
