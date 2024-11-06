@@ -42,6 +42,7 @@ class WorkflowForm extends React.Component {
 
   componentDidMount() {
     this.load(this.state.id);
+    this.roleMap = { EDIT: "Editor", CONTROL: "Controller", VALID: "Validator", PUBLIC: "Publisher" };
   }
 
   componentDidUpdate(prevProps) {
@@ -282,7 +283,7 @@ class WorkflowForm extends React.Component {
                                 whiteSpace: "nowrap",
                               }}>
                               <div className="bdms-header" data-cy="workflow_status_header">
-                                <TranslationText id={`status${role.toLowerCase()}`} />
+                                <TranslationText id={`status${this.roleMap[role].toLowerCase()}`} />
                               </div>
                             </div>
                             <div
