@@ -43,6 +43,8 @@ public class BoreholeControllerTest
     {
         var id = 1_000_257;
 
+        LoadBoreholeWithIncludes();
+
         var newBorehole = new Borehole
         {
             Id = id,
@@ -400,20 +402,8 @@ public class BoreholeControllerTest
     // Get the id of a borehole with certain conditions.
     private int GetBoreholeIdToCopy()
     {
-        List<Borehole> boreholes = GetBoreholesWithIncludes(context.Boreholes).ToList();
-
-        foreach (var bh in boreholes)
-        {
-            if (bh.Observations != null)
-            {
-                context.Entry(bh)
-                    .Collection(b => b.Observations!)
-                    .Query()
-                    .OfType<FieldMeasurement>()
-                    .Include(f => f.FieldMeasurementResults)
-                    .Load();
-            }
-        }
+        LoadBoreholeWithIncludes();
+        var boreholes = context.Boreholes.ToList();
 
         var borehole = boreholes
             .Where(b =>
@@ -444,6 +434,24 @@ public class BoreholeControllerTest
         Assert.IsNotNull(borehole != null, "Precondition: No borehole for conditions found.");
 
         return borehole.Id;
+    }
+
+    private void LoadBoreholeWithIncludes()
+    {
+        List<Borehole> boreholes = GetBoreholesWithIncludes(context.Boreholes).ToList();
+
+        foreach (var bh in boreholes)
+        {
+            if (bh.Observations != null)
+            {
+                context.Entry(bh)
+                    .Collection(b => b.Observations!)
+                    .Query()
+                    .OfType<FieldMeasurement>()
+                    .Include(f => f.FieldMeasurementResults)
+                    .Load();
+            }
+        }
     }
 
     [TestMethod]
