@@ -23,13 +23,16 @@ public class BoreholeControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
+        controller = GetTestController(context);
+    }
+
+    private BoreholeController GetTestController(BdmsContext testContext)
+    {
         var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new BoreholeController(context, new Mock<ILogger<BoreholeController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
-
-        boreholeId = GetBoreholeIdToCopy();
+        return new BoreholeController(testContext, new Mock<ILogger<BoreholeController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -164,24 +167,32 @@ public class BoreholeControllerTest
     {
         var id = 1000067;
 
-        var boreholeToEdit = context.Boreholes.Single(c => c.Id == id);
-        Assert.AreEqual(0, boreholeToEdit.BoreholeCodelists.Count);
-
-        boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
+        using (var initialContext = ContextFactory.CreateContext())
         {
-            BoreholeId = id,
-            CodelistId = 100000010,
-            Value = "ID GeoDIN value",
-        });
+            var boreholeToEdit = initialContext.Boreholes.Single(c => c.Id == id);
+            Assert.AreEqual(0, boreholeToEdit.BoreholeCodelists.Count);
+            boreholeToEdit.BoreholeCodelists.Clear();
+            await initialContext.SaveChangesAsync();
 
-        context.SaveChanges();
-        Assert.AreEqual(1, boreholeToEdit.BoreholeCodelists.Count);
+            boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
+            {
+                BoreholeId = id,
+                CodelistId = 100000010,
+                Value = "ID GeoDIN value",
+            });
 
-        // Update Borehole adding an identifier
-        var boreholeWithNewIdentifiers = new Borehole
+            await initialContext.SaveChangesAsync();
+            Assert.AreEqual(1, boreholeToEdit.BoreholeCodelists.Count);
+        }
+
+        using (var updateContext = ContextFactory.CreateContext())
         {
-            Id = id,
-            BoreholeCodelists = new List<BoreholeCodelist>
+            var updateController = GetTestController(updateContext);
+
+            var boreholeWithNewIdentifiers = new Borehole
+            {
+                Id = id,
+                BoreholeCodelists = new List<BoreholeCodelist>
             {
                 new BoreholeCodelist
                 {
@@ -196,26 +207,31 @@ public class BoreholeControllerTest
                     Value = "ID Original value",
                 },
             },
-        };
-        var updatedResponse = await controller.EditAsync(boreholeWithNewIdentifiers);
-        ActionResultAssert.IsOk(updatedResponse.Result);
+            };
 
-        // Assert Updates
-        var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(updatedResponse.Result);
-        Assert.AreEqual(2, updatedBorehole.BoreholeCodelists.Count);
+            var updatedResponse = await updateController.EditAsync(boreholeWithNewIdentifiers);
+            ActionResultAssert.IsOk(updatedResponse.Result);
 
-        var boreholeWithNoMoreIdentifiers = new Borehole
+            var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(updatedResponse.Result);
+            Assert.AreEqual(2, updatedBorehole.BoreholeCodelists.Count);
+        }
+
+        using (var deleteContext = ContextFactory.CreateContext())
         {
-            Id = id,
-            BoreholeCodelists = new List<BoreholeCodelist>(),
-        };
+            var deleteController = GetTestController(deleteContext);
 
-        var deletedIdentifiersResponse = await controller.EditAsync(boreholeWithNoMoreIdentifiers);
-        ActionResultAssert.IsOk(deletedIdentifiersResponse.Result);
+            var boreholeWithNoMoreIdentifiers = new Borehole
+            {
+                Id = id,
+                BoreholeCodelists = new List<BoreholeCodelist>(),
+            };
 
-        // Assert Updates
-        var boreholeWithDeletedIdentifiers = ActionResultAssert.IsOkObjectResult<Borehole>(deletedIdentifiersResponse.Result);
-        Assert.AreEqual(0, boreholeWithDeletedIdentifiers.BoreholeCodelists.Count);
+            var deletedIdentifiersResponse = await deleteController.EditAsync(boreholeWithNoMoreIdentifiers);
+            ActionResultAssert.IsOk(deletedIdentifiersResponse.Result);
+
+            var boreholeWithDeletedIdentifiers = ActionResultAssert.IsOkObjectResult<Borehole>(deletedIdentifiersResponse.Result);
+            Assert.AreEqual(0, boreholeWithDeletedIdentifiers.BoreholeCodelists.Count);
+        }
     }
 
     [TestMethod]
@@ -255,6 +271,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task Copy()
     {
+        boreholeId = GetBoreholeIdToCopy();
         var originalBorehole = GetBorehole(boreholeId);
 
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
@@ -446,6 +463,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyInvalidWorkgroupId()
     {
+        boreholeId = GetBoreholeIdToCopy();
         var result = await controller.CopyAsync(boreholeId, workgroupId: 0).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
     }
@@ -453,6 +471,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyMissingWorkgroupPermission()
     {
+        boreholeId = GetBoreholeIdToCopy();
         var result = await controller.CopyAsync(boreholeId, workgroupId: 2).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
     }
@@ -460,6 +479,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithUnknownUser()
     {
+        boreholeId = GetBoreholeIdToCopy();
         controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
@@ -468,6 +488,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithUserNotSet()
     {
+        boreholeId = GetBoreholeIdToCopy();
         controller.ControllerContext.HttpContext.User = null;
         await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
         {
@@ -478,6 +499,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
+        boreholeId = GetBoreholeIdToCopy();
         controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
