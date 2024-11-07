@@ -1,6 +1,9 @@
 import { Identifier } from "../../api/borehole.ts";
 import { BoreholeFormInputs } from "../../pages/detail/form/borehole/boreholePanelInterfaces.ts";
-import { BoreholeSubmission, LocationFormInputs } from "../../pages/detail/form/location/locationPanelInterfaces.tsx";
+import {
+  LocationFormInputs,
+  LocationFormSubmission,
+} from "../../pages/detail/form/location/locationPanelInterfaces.tsx";
 
 /**
  * Parse the input value if it's a string. If it's a number, return it as is.
@@ -44,7 +47,7 @@ export const getPrecisionFromString = (numericString: string) => numericString.s
  * @returns The location data in a format that can be submitted to the API.
  */
 export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => {
-  const data = { ...formInputs } as BoreholeSubmission;
+  const data = { ...formInputs } as LocationFormSubmission;
 
   const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
   const parseValueIfNotNull = (value: string | number | null) =>

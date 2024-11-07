@@ -15,7 +15,7 @@ import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
-import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx";
+import { LocationFormInputs, LocationFormSubmission } from "./form/location/locationPanelInterfaces.tsx";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
@@ -60,22 +60,20 @@ export const DetailPage: FC = () => {
   const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
   const boreholePanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
 
-  const onBoreholeFormSubmit = (formInputs: BoreholeFormInputs) => {
-    const boreholeSubmission = prepareBoreholeDataForSubmit(formInputs);
+  function getAndUpdateBorehole(boreholeSubmission: BoreholeFormInputs | LocationFormSubmission) {
     getBoreholeById(parseInt(id)).then(b => {
       updateBorehole({ ...b, ...boreholeSubmission }).then(r => {
         setBorehole(r);
       });
     });
+  }
+
+  const onBoreholeFormSubmit = (formInputs: BoreholeFormInputs) => {
+    getAndUpdateBorehole(prepareBoreholeDataForSubmit(formInputs));
   };
 
   const onLocationFormSubmit = (formInputs: LocationFormInputs) => {
-    const boreholeSubmission = prepareLocationDataForSubmit(formInputs);
-    getBoreholeById(parseInt(id)).then(b => {
-      updateBorehole({ ...b, ...boreholeSubmission }).then(r => {
-        setBorehole(r);
-      });
-    });
+    getAndUpdateBorehole(prepareLocationDataForSubmit(formInputs));
   };
 
   const handleDirtyChange = (isDirty: boolean) => {
@@ -83,21 +81,13 @@ export const DetailPage: FC = () => {
   };
 
   const triggerSubmit = () => {
-    if (boreholePanelRef.current) {
-      boreholePanelRef.current.submit();
-    }
-    if (locationPanelRef.current) {
-      locationPanelRef.current.submit();
-    }
+    boreholePanelRef.current?.submit();
+    locationPanelRef.current?.submit();
   };
 
   const triggerReset = () => {
-    if (boreholePanelRef.current) {
-      boreholePanelRef.current.reset();
-    }
-    if (locationPanelRef.current) {
-      locationPanelRef.current.reset();
-    }
+    boreholePanelRef.current?.reset();
+    locationPanelRef.current?.reset();
   };
 
   useEffect(() => {
@@ -140,6 +130,7 @@ export const DetailPage: FC = () => {
   const shouldShowSaveBar =
     location.pathname.endsWith("/location") ||
     (location.pathname.endsWith("/borehole") && location.hash === "#general");
+
   return (
     <>
       <DetailHeader
