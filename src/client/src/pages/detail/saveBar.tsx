@@ -42,8 +42,8 @@ export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarPro
         direction="row"
         spacing={1}
         sx={{ flexGrow: 1, color: isFormDirty ? theme.palette.error.light : theme.palette.success.main }}>
-        {!showSaveFeedback && isFormDirty && changesMessage}
-        {showSaveFeedback && savedMessage}
+        {isFormDirty && changesMessage}
+        {showSaveFeedback && !isFormDirty && savedMessage}
       </Stack>
 
       <Stack spacing={1} direction="row">
@@ -60,7 +60,7 @@ export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarPro
           onClick={() => {
             setShowSaveFeedback(true);
             triggerSubmit();
-            setTimeout(() => setShowSaveFeedback(false), 6000);
+            setTimeout(() => setShowSaveFeedback(false), 5000);
           }}
         />
       </Stack>
