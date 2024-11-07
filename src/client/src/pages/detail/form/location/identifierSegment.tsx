@@ -20,7 +20,7 @@ const IdentifierSegment = ({ borehole, editingEnabled, formMethods }: Identifier
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
 
-  const { fields, append, remove } = useFieldArray<LocationFormInputs>({
+  const { fields, append, remove } = useFieldArray<LocationFormInputs, "boreholeCodelists">({
     name: "boreholeCodelists",
     control: formMethods.control,
   });
