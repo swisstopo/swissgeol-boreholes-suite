@@ -1,4 +1,6 @@
 import { FC } from "react";
+import { TextField } from "@mui/material/";
+import { t } from "i18next";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { FormContainer, FormDomainSelect, FormInput } from "../../../../components/form/form.ts";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
@@ -51,11 +53,13 @@ const ElevationSegment: FC<LocationBaseProps> = ({ borehole, editingEnabled }) =
             schemaName={"reference_elevation_type"}
             selected={borehole.referenceElevationTypeId}
           />
-          <FormInput
-            fieldName={"hrsId"}
-            readonly={true}
-            label="height_reference_system"
-            value={domains?.find((d: Codelist) => d.id === borehole.hrsId)?.code}
+          <TextField
+            InputProps={{
+              readOnly: true,
+            }}
+            className="readonly"
+            label={t("height_reference_system")}
+            value={domains?.find((d: Codelist) => d.id === borehole.hrsId)?.en}
           />
         </FormContainer>
       </FormContainer>

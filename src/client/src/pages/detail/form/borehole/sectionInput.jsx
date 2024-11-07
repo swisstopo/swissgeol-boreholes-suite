@@ -1,8 +1,8 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import Delete from "@mui/icons-material/Delete";
 import { Divider, IconButton } from "@mui/material";
+import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
@@ -228,7 +228,7 @@ const SectionInput = ({ item, parentId }) => {
                     data-cy={`sectionElements.${index}.delete`}
                     disabled={fields.length === 1}
                     color="error">
-                    <Delete />
+                    <Trash2 />
                   </IconButton>
                 </FormContainer>
               ))}

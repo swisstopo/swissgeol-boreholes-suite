@@ -100,7 +100,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     formMethods.trigger();
   }, [formMethods.trigger, currentReferenceSystem, formMethods]);
 
-  // reset form values when the borehole or map point changes.
+  // reset form values when the borehole changes.
   useEffect(() => {
     const shouldUpdateCoordinates = borehole.id !== boreholeId;
     if (shouldUpdateCoordinates) {
