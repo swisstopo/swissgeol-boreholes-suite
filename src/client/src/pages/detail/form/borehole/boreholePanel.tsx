@@ -11,10 +11,7 @@ import Geometry from "./geometry.jsx";
 import Sections from "./sections.jsx";
 
 export const BoreholePanel = forwardRef(
-  (
-    { boreholeId, borehole, updateChange, updateNumber, editingEnabled, onDirtyChange, onSubmit }: BoreholePanelProps,
-    ref,
-  ) => {
+  ({ boreholeId, borehole, editingEnabled, onDirtyChange, onSubmit }: BoreholePanelProps, ref) => {
     const { t } = useTranslation();
     const history = useHistory();
     const location = useLocation();
@@ -36,6 +33,14 @@ export const BoreholePanel = forwardRef(
         remarks: borehole.remarks,
       },
     });
+
+    UseFormWithSaveBar({
+      formMethods,
+      onDirtyChange,
+      onSubmit,
+      ref,
+    });
+
     const tabs = [
       {
         label: t("general"),
@@ -44,13 +49,6 @@ export const BoreholePanel = forwardRef(
       { label: t("sections"), hash: "sections" },
       { label: t("boreholeGeometry"), hash: "geometry" },
     ];
-
-    UseFormWithSaveBar({
-      formMethods,
-      onDirtyChange,
-      onSubmit,
-      ref,
-    });
 
     const handleIndexChange = (event: SyntheticEvent | null, index: number) => {
       setActiveIndex(index);
@@ -88,13 +86,7 @@ export const BoreholePanel = forwardRef(
               <DevTool control={formMethods.control} placement="top-right" />
               <FormProvider {...formMethods}>
                 <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-                  <BoreholeForm
-                    borehole={borehole}
-                    updateChange={updateChange}
-                    updateNumber={updateNumber}
-                    editingEnabled={editingEnabled}
-                    formMethods={formMethods}
-                  />
+                  <BoreholeForm borehole={borehole} editingEnabled={editingEnabled} formMethods={formMethods} />
                 </form>
               </FormProvider>
             </>

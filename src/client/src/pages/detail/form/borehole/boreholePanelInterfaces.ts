@@ -8,30 +8,12 @@ export interface BoreholeGeneralProps {
 
 export interface BoreholeDetailProps extends BoreholeGeneralProps {
   formMethods: UseFormReturn<BoreholeFormInputs>;
-  updateNumber: (attribute: string, value: number | null, to?: boolean) => void;
-  updateChange: (
-    attribute: string,
-    value: string | number | boolean | null | (number | string | null)[],
-    to?: boolean,
-  ) => void;
 }
 
 export interface BoreholePanelProps extends BoreholeGeneralProps {
   boreholeId: string;
-  updateNumber: (attribute: string, value: number | null, to?: boolean) => void;
-  updateChange: (
-    attribute: string,
-    value: string | number | boolean | null | (number | string | null)[],
-    to?: boolean,
-  ) => void;
   onSubmit: (data: BoreholeFormInputs) => void;
   onDirtyChange: (isDirty: boolean) => void;
-}
-
-export interface DepthTVD {
-  totalDepth?: number;
-  topBedrockFreshMd?: number;
-  topBedrockWeatheredMd?: number;
 }
 
 export interface BoreholeFormInputs {
@@ -48,5 +30,3 @@ export interface BoreholeFormInputs {
   hasGroundwater: boolean | number | null;
   remarks: string;
 }
-
-export interface BoreholeFormSubmission extends BoreholeFormInputs {}
