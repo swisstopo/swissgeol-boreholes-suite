@@ -23,7 +23,7 @@ export const FormInputDisplayOnly: React.FC<FormInputDisplayOnlyProps> = ({
   return (
     <TextField
       label={t(label)}
-      data-cy={label + "-formInputReadonly"}
+      data-cy={label + "-formInput"}
       value={value}
       InputProps={{
         /* eslint-disable  @typescript-eslint/no-explicit-any */

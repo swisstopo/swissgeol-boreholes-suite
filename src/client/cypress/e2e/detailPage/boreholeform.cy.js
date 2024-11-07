@@ -1,9 +1,10 @@
 import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
-import { evaluateInput, evaluateSelect, isDisabled, setSelect } from "../helpers/formHelpers";
+import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
+  handlePrompt,
   newEditableBorehole,
   returnToOverview,
   startBoreholeEditing,
@@ -78,6 +79,72 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("typeId", "20101001");
     evaluateSelect("qtDepthId", "22108001");
     evaluateSelect("statusId", "22104001");
+  });
+
+  it("Fills all inputs on borehole tab and saves", () => {
+    createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      startBoreholeEditing();
+
+      setSelect("purposeId", 1);
+      setSelect("typeId", 1);
+      setSelect("qtDepthId", 1);
+      setSelect("statusId", 1);
+      setSelect("lithologyTopBedrockId", 1);
+      setSelect("lithostratigraphyId", 1);
+      setSelect("chronostratigraphyId", 1);
+      setSelect("hasGroundwater", 1);
+
+      setInput("totalDepth", 700);
+      setInput("topBedrockFreshMd", 0.60224);
+      setInput("topBedrockWeatheredMd", 78945100);
+      setInput("remarks", "This is a test remark");
+
+      // navigate away is blocked before saving
+      cy.get('[data-cy="location-menu-item"]').click();
+
+      const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
+      handlePrompt(messageUnsavedChanges, "cancel");
+
+      saveWithSaveBar();
+      cy.get('[data-cy="location-menu-item"]').click();
+      cy.contains("Boreholes.swissgeol.ch ID");
+    });
+  });
+
+  it("Updates TVD Values when depth values change in boreholeform", () => {
+    createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      startBoreholeEditing();
+      setInput("totalDepth", 700);
+      setInput("topBedrockFreshMd", 0.60224);
+      setInput("topBedrockWeatheredMd", 78945100);
+
+      evaluateInput("totalDepth", "700");
+      evaluateInput("topBedrockFreshMd", "0.60224");
+      evaluateInput("topBedrockWeatheredMd", "78'945'100");
+
+      // in display only inputs the label is used for the data-cy instead of the field name
+      evaluateInput("total_depth_tvd", "700");
+      evaluateInput("top_bedrock_fresh_tvd", "0.6");
+      evaluateInput("top_bedrock_weathered_tvd", "78'945'100");
+
+      saveWithSaveBar();
+
+      returnToOverview();
+      showTableAndWaitForData();
+      clickOnRowWithText("AAA_Ferret");
+      cy.get('[data-cy="borehole-menu-item"]').click();
+      evaluateInput("totalDepth", "700");
+      evaluateInput("topBedrockFreshMd", "0.60224");
+      evaluateInput("topBedrockWeatheredMd", "78'945'100");
+
+      evaluateInput("total_depth_tvd", "700");
+      evaluateInput("top_bedrock_fresh_tvd", "0.6");
+      evaluateInput("top_bedrock_weathered_tvd", "78'945'100");
+    });
   });
 
   it("Checks if form values are updated when borehole changes", () => {
