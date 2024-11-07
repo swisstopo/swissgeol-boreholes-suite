@@ -24,7 +24,7 @@ export const BoreholeForm = ({ formMethods, borehole, editingEnabled }: Borehole
   const topBedrockFreshMd = formMethods.watch("topBedrockFreshMd");
   const topBedrockWeatheredMd = formMethods.watch("topBedrockWeatheredMd");
 
-  const fetchTVDDepth = useCallback(
+  const fetchDepthTVD = useCallback(
     async (fieldName: string, fieldValue: number | null) => {
       if (fieldValue) {
         const getDepthTVD = async (depthMD: number | null) => {
@@ -47,27 +47,27 @@ export const BoreholeForm = ({ formMethods, borehole, editingEnabled }: Borehole
   //
   useEffect(() => {
     const fetchAndSetTotalDepthTVD = async () => {
-      const tvd = await fetchTVDDepth("totalDepthTVD", totalDepth);
+      const tvd = await fetchDepthTVD("totalDepthTVD", totalDepth);
       setTotalDepthTVD(tvd);
     };
     fetchAndSetTotalDepthTVD();
-  }, [fetchTVDDepth, totalDepth]);
+  }, [fetchDepthTVD, totalDepth]);
 
   useEffect(() => {
     const fetchAndSetTotalDepthTVD = async () => {
-      const tvd = await fetchTVDDepth("topBedrockFreshTVD", topBedrockFreshMd);
+      const tvd = await fetchDepthTVD("topBedrockFreshTVD", topBedrockFreshMd);
       setTopBedrockFreshTVD(tvd);
     };
     fetchAndSetTotalDepthTVD();
-  }, [fetchTVDDepth, topBedrockFreshMd]);
+  }, [fetchDepthTVD, topBedrockFreshMd]);
 
   useEffect(() => {
     const fetchAndSetTotalDepthTVD = async () => {
-      const tvd = await fetchTVDDepth("topBedrockWeatheredTVD", topBedrockWeatheredMd);
+      const tvd = await fetchDepthTVD("topBedrockWeatheredTVD", topBedrockWeatheredMd);
       setTopBedrockWeatheredTVD(tvd);
     };
     fetchAndSetTotalDepthTVD();
-  }, [fetchTVDDepth, topBedrockWeatheredMd]);
+  }, [fetchDepthTVD, topBedrockWeatheredMd]);
 
   return (
     <Stack gap={3} mr={2}>
