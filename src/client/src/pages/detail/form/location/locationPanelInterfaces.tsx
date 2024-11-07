@@ -32,6 +32,7 @@ interface LocationFormBaseInputs {
   municipality: string;
   locationPrecisionId: number | null;
 }
+
 export interface LocationFormInputs extends LocationFormBaseInputs {
   locationXLV03: string;
   locationYLV03: string;

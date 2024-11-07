@@ -1,4 +1,4 @@
-import { saveLocationForm } from "../helpers/buttonHelpers";
+import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { evaluateSelect, setSelect } from "../helpers/formHelpers";
 import {
   delayedType,
@@ -143,7 +143,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     checkDecimalPlaces("@LV03X-input", 2);
     checkDecimalPlaces("@LV03Y-input", 2);
 
-    saveLocationForm();
+    saveWithSaveBar();
     returnToOverview();
     newUneditableBorehole();
     // verify input are cleared for new borehole
@@ -169,7 +169,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     checkDecimalPlaces("@LV03X-input", 4);
     checkDecimalPlaces("@LV03Y-input", 4);
 
-    saveLocationForm();
+    saveWithSaveBar();
     // Navigate somewhere else and return
     cy.get('[data-cy="borehole-menu-item"]').click();
     cy.get('[data-cy="location-menu-item"]').click();

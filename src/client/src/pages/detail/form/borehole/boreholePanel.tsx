@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
+import { FormContainer } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
 import { useBlockNavigation } from "../../useBlockNavigation.tsx";
@@ -28,6 +29,14 @@ export const BoreholePanel = forwardRef(
         typeId: borehole.typeId,
         purposeId: borehole.purposeId,
         statusId: borehole.statusId,
+        totalDepth: borehole.totalDepth,
+        qtDepthId: borehole.qtDepthId,
+        topBedrockFreshMd: borehole.topBedrockFreshMd,
+        topBedrockWeatheredMd: borehole.topBedrockWeatheredMd,
+        lithologyTopBedrockId: borehole.lithologyTopBedrockId,
+        lithostratigraphyId: borehole.lithostratigraphyId,
+        chronostratigraphyId: borehole.chronostratigraphyId,
+        hasGroundwater: borehole.hasGroundwater,
         remarks: borehole.remarks,
       },
     });
@@ -107,18 +116,21 @@ export const BoreholePanel = forwardRef(
         <BdmsTabContentBox flex="1 0 0" sx={{ overflow: "auto" }}>
           {activeIndex === 0 && (
             <>
-              <DevTool control={formMethods.control} placement="top-left" />
+              <DevTool control={formMethods.control} placement="top-right" />
               <FormProvider {...formMethods}>
                 <form onSubmit={formMethods.handleSubmit(onSubmit)}>
                   <Stack gap={3} mr={2}>
                     <FormSegmentBox>
-                      <BoreholeGeneralSegment borehole={borehole} editingEnabled={editingEnabled} />
-                      <BoreholeDetailSegment
-                        borehole={borehole}
-                        updateChange={updateChange}
-                        updateNumber={updateNumber}
-                        editingEnabled={editingEnabled}
-                      />
+                      <FormContainer>
+                        <BoreholeGeneralSegment borehole={borehole} editingEnabled={editingEnabled} />
+                        <BoreholeDetailSegment
+                          borehole={borehole}
+                          updateChange={updateChange}
+                          updateNumber={updateNumber}
+                          editingEnabled={editingEnabled}
+                          formMethods={formMethods}
+                        />
+                      </FormContainer>
                     </FormSegmentBox>
                   </Stack>
                 </form>

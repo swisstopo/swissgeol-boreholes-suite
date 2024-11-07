@@ -1,3 +1,4 @@
+import { UseFormReturn } from "react-hook-form";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 
 export interface BoreholeGeneralProps {
@@ -6,6 +7,7 @@ export interface BoreholeGeneralProps {
 }
 
 export interface BoreholeDetailProps extends BoreholeGeneralProps {
+  formMethods: UseFormReturn<BoreholeFormInputs>;
   updateNumber: (attribute: string, value: number | null, to?: boolean) => void;
   updateChange: (
     attribute: string,
@@ -27,9 +29,24 @@ export interface BoreholePanelProps extends BoreholeGeneralProps {
 }
 
 export interface DepthTVD {
-  total_depth?: number;
-  "extended.top_bedrock_fresh_md"?: number;
-  "custom.top_bedrock_weathered_md"?: number;
+  totalDepth?: number;
+  topBedrockFreshMd?: number;
+  topBedrockWeatheredMd?: number;
 }
 
-export interface BoreholeFormInputs {}
+export interface BoreholeFormInputs {
+  totalDepth: number | null;
+  qtDepthId: number;
+  typeId: number;
+  purposeId: number;
+  statusId: number;
+  topBedrockFreshMd: number | null;
+  topBedrockWeatheredMd: number | null;
+  lithologyTopBedrockId: number;
+  lithostratigraphyId: number;
+  chronostratigraphyId: number;
+  hasGroundwater: boolean | number | null;
+  remarks: string;
+}
+
+export interface BoreholeFormSubmission extends BoreholeFormInputs {}

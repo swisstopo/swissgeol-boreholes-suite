@@ -1,6 +1,6 @@
-import { saveLocationForm } from "../helpers/buttonHelpers";
+import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
-import { evaluateInput, evaluateSelect, isDisabled, setSelect } from "../helpers/formHelpers";
+import { evaluateInput, evaluateSelect, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
@@ -44,7 +44,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("qtReferenceElevationId", "20114002");
     evaluateSelect("referenceElevationTypeId", "20117004");
 
-    saveLocationForm();
+    saveWithSaveBar();
     // navigate away and back to check if values are saved
     cy.get('[data-cy="borehole-menu-item"]').click();
     cy.get('[data-cy="location-menu-item"]').click();
@@ -58,19 +58,26 @@ describe("Test for the borehole form.", () => {
 
     // fill all dropdowns on borehole tab
     cy.get('[data-cy="borehole-menu-item"]').click();
-    cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 4)
-      .each(el => cy.wrap(el).click().find('[role="option"]').eq(1).click());
+    setSelect("purposeId", 1);
+    setSelect("typeId", 1);
+    setSelect("qtDepthId", 1);
+    setSelect("statusId", 1);
 
-    const boreholeDropdownValues = [];
-    cy.get('[data-cy="domain-dropdown"]')
-      .each(el => {
-        const value = el[0].children[1].firstChild.data;
-        boreholeDropdownValues.push(value);
-      })
-      .then(() => {
-        expect(boreholeDropdownValues).to.deep.eq(["borehole", "geotechnics", "open, no completion", "2"]);
-      });
+    evaluateSelect("purposeId", "22103001");
+    evaluateSelect("typeId", "20101001");
+    evaluateSelect("qtDepthId", "22108001");
+    evaluateSelect("statusId", "22104001");
+
+    saveWithSaveBar();
+
+    // navigate away and back to check if values are saved
+    cy.get('[data-cy="location-menu-item"]').click();
+    cy.get('[data-cy="borehole-menu-item"]').click();
+
+    evaluateSelect("purposeId", "22103001");
+    evaluateSelect("typeId", "20101001");
+    evaluateSelect("qtDepthId", "22108001");
+    evaluateSelect("statusId", "22104001");
   });
 
   it("Checks if form values are updated when borehole changes", () => {
