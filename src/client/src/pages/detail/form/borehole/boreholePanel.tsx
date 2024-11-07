@@ -32,7 +32,7 @@ export const BoreholePanel = forwardRef(
         lithologyTopBedrockId: borehole.lithologyTopBedrockId,
         lithostratigraphyId: borehole.lithostratigraphyId,
         chronostratigraphyId: borehole.chronostratigraphyId,
-        hasGroundwater: borehole.hasGroundwater,
+        hasGroundwater: borehole.hasGroundwater === true ? 1 : borehole.hasGroundwater === false ? 0 : 2,
         remarks: borehole.remarks,
       },
     });

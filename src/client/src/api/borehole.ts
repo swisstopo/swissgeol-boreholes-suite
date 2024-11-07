@@ -19,7 +19,7 @@ export interface BoreholeV2 {
   lithologyTopBedrockId: number;
   lithostratigraphyId: number;
   chronostratigraphyId: number;
-  hasGroundwater: boolean;
+  hasGroundwater: boolean | null;
   topBedrockWeatheredMd: number;
   topBedrockFreshMd: number;
   qtDepthId: number;
