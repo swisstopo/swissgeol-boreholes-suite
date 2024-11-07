@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -14,6 +14,7 @@ import RestrictionSegment from "./restrictionSegment.tsx";
 
 export const LocationPanel = forwardRef(
   ({ editingEnabled, onSubmit, onDirtyChange, borehole }: LocationPanelProps, ref) => {
+    const [resetKey, setResetKey] = useState(0);
     const formMethods = useForm<LocationFormInputs>({
       mode: "onChange",
       defaultValues: {
@@ -87,6 +88,7 @@ export const LocationPanel = forwardRef(
       },
       reset: () => {
         formMethods.reset();
+        setResetKey(prev => prev + 1);
       },
     }));
 
@@ -109,7 +111,8 @@ export const LocationPanel = forwardRef(
                 <LocationSegment
                   borehole={borehole}
                   editingEnabled={editingEnabled}
-                  formMethods={formMethods}></LocationSegment>
+                  formMethods={formMethods}
+                  key={resetKey}></LocationSegment>
               </Stack>
             </form>
           </FormProvider>
