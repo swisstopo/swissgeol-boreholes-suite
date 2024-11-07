@@ -1,6 +1,6 @@
 import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
-import { evaluateInput, evaluateSelect, setSelect } from "../helpers/formHelpers";
+import { evaluateInput, evaluateSelect, isDisabled, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
