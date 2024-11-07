@@ -1,9 +1,8 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
-import { useBlockNavigation } from "../../useBlockNavigation.tsx";
+import { UseFormWithSaveBar } from "../useFormWithSaveBar.ts";
 import IdentifierSegment from "./identifierSegment.tsx";
 import { LocationFormInputs, LocationPanelProps } from "./locationPanelInterfaces.tsx";
 import LocationSegment from "./locationSegment.tsx";
@@ -40,55 +39,16 @@ export const LocationPanel = forwardRef(
         boreholeCodelists: borehole?.boreholeCodelists,
       },
     });
-    const history = useHistory();
-    const { handleBlockedNavigation } = useBlockNavigation(formMethods.formState.isDirty);
 
-    history.block(nextLocation => {
-      if (!handleBlockedNavigation(nextLocation.pathname)) {
-        return false;
-      }
-    });
+    const incrementResetKey = () => setResetKey(prev => prev + 1);
 
-    const resetAndSubmitForm = useCallback(() => {
-      const currentValues = formMethods.getValues();
-      formMethods.reset(currentValues);
-      formMethods.handleSubmit(onSubmit)();
-    }, [formMethods, onSubmit]);
-
-    useEffect(() => {
-      const handleKeyDown = (event: KeyboardEvent) => {
-        if (event.ctrlKey && event.key === "s") {
-          event.preventDefault();
-          resetAndSubmitForm();
-        }
-      };
-      window.addEventListener("keydown", handleKeyDown);
-
-      return () => {
-        window.removeEventListener("keydown", handleKeyDown);
-      };
-    }, [resetAndSubmitForm]);
-
-    useEffect(() => {
-      onDirtyChange(Object.keys(formMethods.formState.dirtyFields).length > 0);
-    }, [
-      formMethods.formState.dirtyFields,
-      formMethods.formState.isDirty,
+    UseFormWithSaveBar({
       formMethods,
-      formMethods.formState,
       onDirtyChange,
-    ]);
-
-    // expose form methods to parent component
-    useImperativeHandle(ref, () => ({
-      submit: () => {
-        resetAndSubmitForm();
-      },
-      reset: () => {
-        formMethods.reset();
-        setResetKey(prev => prev + 1);
-      },
-    }));
+      onSubmit,
+      ref,
+      incrementResetKey,
+    });
 
     if (borehole)
       return (

@@ -1,10 +1,10 @@
-import { forwardRef, SyntheticEvent, useCallback, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, SyntheticEvent, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
-import { useBlockNavigation } from "../../useBlockNavigation.tsx";
+import { UseFormWithSaveBar } from "../useFormWithSaveBar.ts";
 import { BoreholeForm } from "./boreholeForm.tsx";
 import { BoreholeFormInputs, BoreholePanelProps } from "./boreholePanelInterfaces";
 import Geometry from "./geometry.jsx";
@@ -45,6 +45,13 @@ export const BoreholePanel = forwardRef(
       { label: t("boreholeGeometry"), hash: "geometry" },
     ];
 
+    UseFormWithSaveBar({
+      formMethods,
+      onDirtyChange,
+      onSubmit,
+      ref,
+    });
+
     const handleIndexChange = (event: SyntheticEvent | null, index: number) => {
       setActiveIndex(index);
       const newLocation = location.pathname + "#" + tabs[index].hash;
@@ -52,40 +59,6 @@ export const BoreholePanel = forwardRef(
         history.push(newLocation);
       }
     };
-
-    const { handleBlockedNavigation } = useBlockNavigation(formMethods.formState.isDirty);
-
-    history.block(nextLocation => {
-      if (!handleBlockedNavigation(nextLocation.pathname)) {
-        return false;
-      }
-    });
-
-    useEffect(() => {
-      onDirtyChange(Object.keys(formMethods.formState.dirtyFields).length > 0);
-    }, [
-      formMethods.formState.dirtyFields,
-      formMethods.formState.isDirty,
-      formMethods,
-      formMethods.formState,
-      onDirtyChange,
-    ]);
-
-    const resetAndSubmitForm = useCallback(() => {
-      const currentValues = formMethods.getValues();
-      formMethods.reset(currentValues);
-      formMethods.handleSubmit(onSubmit)();
-    }, [formMethods, onSubmit]);
-
-    // expose form methods to parent component
-    useImperativeHandle(ref, () => ({
-      submit: () => {
-        resetAndSubmitForm();
-      },
-      reset: () => {
-        formMethods.reset();
-      },
-    }));
 
     useEffect(() => {
       const newTabIndex = tabs.findIndex(t => t.hash === location.hash.replace("#", ""));
