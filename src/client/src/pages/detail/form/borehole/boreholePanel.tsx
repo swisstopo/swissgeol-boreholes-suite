@@ -2,14 +2,10 @@ import { forwardRef, SyntheticEvent, useCallback, useEffect, useImperativeHandle
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
-import { Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
-import { FormContainer } from "../../../../components/form/form.ts";
-import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
 import { useBlockNavigation } from "../../useBlockNavigation.tsx";
-import BoreholeDetailSegment from "./boreholeDetailSegment";
-import BoreholeGeneralSegment from "./boreholeGeneralSegment";
+import { BoreholeForm } from "./boreholeForm.tsx";
 import { BoreholeFormInputs, BoreholePanelProps } from "./boreholePanelInterfaces";
 import Geometry from "./geometry.jsx";
 import Sections from "./sections.jsx";
@@ -119,20 +115,13 @@ export const BoreholePanel = forwardRef(
               <DevTool control={formMethods.control} placement="top-right" />
               <FormProvider {...formMethods}>
                 <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-                  <Stack gap={3} mr={2}>
-                    <FormSegmentBox>
-                      <FormContainer>
-                        <BoreholeGeneralSegment borehole={borehole} editingEnabled={editingEnabled} />
-                        <BoreholeDetailSegment
-                          borehole={borehole}
-                          updateChange={updateChange}
-                          updateNumber={updateNumber}
-                          editingEnabled={editingEnabled}
-                          formMethods={formMethods}
-                        />
-                      </FormContainer>
-                    </FormSegmentBox>
-                  </Stack>
+                  <BoreholeForm
+                    borehole={borehole}
+                    updateChange={updateChange}
+                    updateNumber={updateNumber}
+                    editingEnabled={editingEnabled}
+                    formMethods={formMethods}
+                  />
                 </form>
               </FormProvider>
             </>

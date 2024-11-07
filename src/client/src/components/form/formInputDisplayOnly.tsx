@@ -11,7 +11,7 @@ interface FormInputDisplayOnlyProps extends Omit<TextFieldProps, "value"> {
   readOnly?: boolean;
 }
 
-const FormInputDisplayOnly: React.FC<FormInputDisplayOnlyProps> = ({
+export const FormInputDisplayOnly: React.FC<FormInputDisplayOnlyProps> = ({
   label,
   value,
   withThousandSeparator,
@@ -37,5 +37,3 @@ const FormInputDisplayOnly: React.FC<FormInputDisplayOnlyProps> = ({
     />
   );
 };
-
-export default FormInputDisplayOnly;
