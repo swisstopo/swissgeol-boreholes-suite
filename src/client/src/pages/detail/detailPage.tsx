@@ -6,13 +6,15 @@ import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
+import {
+  prepareBoreholeDataForSubmit,
+  prepareLocationDataForSubmit,
+} from "../../components/legacyComponents/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
-import { prepareBoreholeDataForSubmit } from "./form/borehole/boreholeFormUtils.ts";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
-import { prepareLocationDataForSubmit } from "./form/location/locationFormUtils.ts";
 import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
