@@ -1,5 +1,6 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
+import { User } from "./apiInterfaces.ts";
 import { fetchApiV2, upload } from "./fetchApiV2";
 
 export interface BoreholeV2 {
@@ -30,6 +31,9 @@ export interface BoreholeV2 {
   referenceElevationTypeId: number;
   locationPrecisionId: number | null;
   hrsId: number;
+  updated: Date | string | null;
+  updatedById: number;
+  updatedBy: User | null;
 }
 
 export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");

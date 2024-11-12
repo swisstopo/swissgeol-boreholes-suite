@@ -4,7 +4,9 @@ import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
+import { User } from "../../api/apiInterfaces.ts";
 import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
+import { fetchUser } from "../../api/user.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import DetailHeader from "./detailHeader.tsx";
@@ -22,6 +24,7 @@ export const DetailPage: FC = () => {
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
   const [borehole, setBorehole] = useState<BoreholeV2 | null>(null);
+  const [updatedBy, setUpdatedBy] = useState<User | null>(null);
   const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const location = useLocation();
@@ -37,6 +40,14 @@ export const DetailPage: FC = () => {
       setEditingEnabled(b.locked !== null && b.lockedById === user.data.id);
     });
   }, [id, user.data.id]);
+
+  useEffect(() => {
+    if (borehole?.updatedById) {
+      fetchUser(borehole.updatedById).then(user => {
+        setUpdatedBy(user);
+      });
+    }
+  }, [borehole?.updatedById]);
 
   const loadOrCreate = useCallback(
     (id: string) => {
@@ -109,7 +120,7 @@ export const DetailPage: FC = () => {
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
   }, [editingEnabled, user, legacyBorehole, location, togglePanel]);
 
-  if (loading || !borehole)
+  if (loading || !borehole || !updatedBy)
     return (
       <Stack height="100%" alignItems="center" justifyContent="center">
         <CircularProgress />
@@ -120,6 +131,7 @@ export const DetailPage: FC = () => {
     <>
       <DetailHeader
         borehole={borehole}
+        updatedBy={updatedBy}
         editingEnabled={editingEnabled}
         setEditingEnabled={setEditingEnabled}
         editableByCurrentUser={editableByCurrentUser}

@@ -5,9 +5,12 @@ import { useHistory } from "react-router-dom";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { Check, ChevronLeft, Trash2, X } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
+import { User } from "../../api/apiInterfaces.ts";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
+import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { DeleteButton, EditButton, EndEditButton } from "../../components/buttons/buttons.tsx";
+import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 
 interface DetailHeaderProps {
@@ -15,6 +18,7 @@ interface DetailHeaderProps {
   setEditingEnabled: (editingEnabled: boolean) => void;
   editableByCurrentUser: boolean;
   borehole: BoreholeV2;
+  updatedBy: User;
   isFormDirty: boolean;
   triggerReset: () => void;
 }
@@ -26,11 +30,13 @@ const DetailHeader = ({
   isFormDirty,
   triggerReset,
   borehole,
+  updatedBy,
 }: DetailHeaderProps) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
+  const auth = useAuth();
 
   const toggleEditing = (editing: boolean) => {
     if (!editing) {
@@ -84,7 +90,7 @@ const DetailHeader = ({
         height: "84px",
         padding: "16px",
       }}>
-      <Stack direction="row" sx={{ flex: "1 1 100%" }}>
+      <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"}>
         <IconButton
           color="primary"
           data-cy="backButton"
@@ -109,6 +115,12 @@ const DetailHeader = ({
           color={borehole?.workflow?.finished != null ? "success" : "warning"}
           icon={borehole?.workflow?.finished != null ? <Check /> : <div />}
         />
+        {!auth.anonymousModeEnabled && (
+          <Typography variant="body1" sx={{ marginLeft: "18px" }}>
+            Changed at: <DateText date={borehole?.updated} /> <br />
+            Changed by: {updatedBy?.firstName}
+          </Typography>
+        )}
       </Stack>
       <Stack direction="row" data-cy="detail-header" gap={2}>
         {editableByCurrentUser &&
