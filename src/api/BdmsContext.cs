@@ -50,12 +50,13 @@ public class BdmsContext : DbContext
     public DbSet<Section> Sections { get; set; }
     public DbSet<SectionElement> SectionElements { get; set; }
     public DbSet<BoreholeGeometryElement> BoreholeGeometry { get; set; }
+    public DbSet<BoreholeCodelist> BoreholeCodelists { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)
     {
 #pragma warning disable CS0618 // Type or member is obsolete, however they do not plan on removing it any time soon.
-        // TODO: https://github.com/geoadmin/suite-bdms/issues/851
+        // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/851
         NpgsqlConnection.GlobalTypeMapper.MapEnum<Role>();
 #pragma warning restore CS0618 // Type or member is obsolete, however they do not plan on removing it any time soon.
     }

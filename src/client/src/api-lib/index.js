@@ -15,7 +15,6 @@ import {
 } from "./actions/borehole";
 import { loadDomains, patchCodeConfig } from "./actions/domains";
 import { getWms } from "./actions/geoapi";
-import { addIdentifier, removeIdentifier } from "./actions/identifier";
 import { getProfileLayers } from "./actions/profile";
 import { loadSettings, patchSettings } from "./actions/settings";
 import { createLayer, deleteLayer, gapLayer } from "./actions/stratigraphy";
@@ -55,8 +54,6 @@ export {
   patchBorehole,
   patchBoreholes,
   getGeojson,
-  addIdentifier,
-  removeIdentifier,
   loadWorkflows,
   patchWorkflow,
   updateWorkflow,

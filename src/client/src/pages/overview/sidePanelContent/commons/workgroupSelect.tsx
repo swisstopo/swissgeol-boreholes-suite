@@ -37,7 +37,7 @@ const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx, h
           labelId="workgroup-label"
           data-cy="workgroup-formSelect"
           value={workgroupId}
-          onChange={e => setWorkgroupId(e.target.value as number)}
+          onChange={e => setWorkgroupId(e.target.value as string)}
           renderValue={selected => options.find(o => o.value === selected)?.text || ""}>
           {options.map(o => (
             <MenuItem key={o.key} value={o.value}>

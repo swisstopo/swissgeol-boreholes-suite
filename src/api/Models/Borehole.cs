@@ -402,6 +402,5 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the<see cref="BoreholeCodelist"/> join table entities.
     /// </summary>
-    [JsonIgnore]
     public IList<BoreholeCodelist>? BoreholeCodelists { get; set; } = new List<BoreholeCodelist>();
 }

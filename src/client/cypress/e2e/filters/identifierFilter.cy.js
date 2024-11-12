@@ -1,3 +1,4 @@
+import { addItem, saveLocationForm } from "../helpers/buttonHelpers";
 import { checkAllVisibleRows, verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
@@ -6,9 +7,10 @@ describe("Tests for filtering data by identifier.", () => {
   it("can filter by identifier", () => {
     newEditableBorehole().as("borehole_id");
 
-    setSelect("borehole_identifier", 1);
-    setInput("borehole_identifier_value", 819544732);
-    cy.get('[data-cy="identifier-add"]').click();
+    addItem("addIdentifier");
+    setSelect("boreholeCodelists.0.codelistId", 1);
+    setInput("boreholeCodelists.0.value", 819544732);
+    saveLocationForm();
 
     stopBoreholeEditing();
     returnToOverview();
@@ -35,20 +37,19 @@ describe("Tests for filtering data by identifier.", () => {
 
   it("can bulk edit boreholes while filter by identifier is set", () => {
     newEditableBorehole().as("borehole_id");
-    setSelect("borehole_identifier", 1);
-
-    setInput("borehole_identifier_value", 64531274);
-    cy.get('[data-cy="identifier-add"]').click();
+    addItem("addIdentifier");
+    setSelect("boreholeCodelists.0.codelistId", 1);
+    setInput("boreholeCodelists.0.value", 64531274);
+    saveLocationForm();
 
     stopBoreholeEditing();
     returnToOverview();
 
     newEditableBorehole().as("borehole_id_2");
-
-    setSelect("borehole_identifier", 1);
-
-    setInput("borehole_identifier_value", 436584127);
-    cy.get('[data-cy="identifier-add"]').click();
+    addItem("addIdentifier");
+    setSelect("boreholeCodelists.0.codelistId", 1);
+    setInput("boreholeCodelists.0.value", 436584127);
+    saveLocationForm();
 
     stopBoreholeEditing();
     returnToOverview();

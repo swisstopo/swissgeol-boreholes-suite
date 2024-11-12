@@ -1,10 +1,8 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
-import { Borehole, ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { useBlockNavigation } from "../../useBlockNavigation.tsx";
 import IdentifierSegment from "./identifierSegment.tsx";
 import { LocationFormInputs, LocationPanelProps } from "./locationPanelInterfaces.tsx";
@@ -14,6 +12,7 @@ import RestrictionSegment from "./restrictionSegment.tsx";
 
 export const LocationPanel = forwardRef(
   ({ editingEnabled, onSubmit, onDirtyChange, borehole }: LocationPanelProps, ref) => {
+    const [resetKey, setResetKey] = useState(0);
     const formMethods = useForm<LocationFormInputs>({
       mode: "onChange",
       defaultValues: {
@@ -38,9 +37,9 @@ export const LocationPanel = forwardRef(
         locationYLV03: borehole.locationYLV03?.toFixed(borehole.precisionLocationYLV03) || "",
         locationPrecisionId: borehole.locationPrecisionId,
         originalReferenceSystem: borehole.originalReferenceSystem,
+        boreholeCodelists: borehole?.boreholeCodelists,
       },
     });
-    const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
     const history = useHistory();
     const { handleBlockedNavigation } = useBlockNavigation(formMethods.formState.isDirty);
 
@@ -87,6 +86,7 @@ export const LocationPanel = forwardRef(
       },
       reset: () => {
         formMethods.reset();
+        setResetKey(prev => prev + 1);
       },
     }));
 
@@ -97,7 +97,10 @@ export const LocationPanel = forwardRef(
           <FormProvider {...formMethods}>
             <form onSubmit={formMethods.handleSubmit(onSubmit)}>
               <Stack gap={3} mr={2}>
-                <IdentifierSegment borehole={legacyBorehole} editingEnabled={editingEnabled}></IdentifierSegment>
+                <IdentifierSegment
+                  borehole={borehole}
+                  editingEnabled={editingEnabled}
+                  formMethods={formMethods}></IdentifierSegment>
                 <NameSegment
                   borehole={borehole}
                   editingEnabled={editingEnabled}
@@ -109,7 +112,8 @@ export const LocationPanel = forwardRef(
                 <LocationSegment
                   borehole={borehole}
                   editingEnabled={editingEnabled}
-                  formMethods={formMethods}></LocationSegment>
+                  formMethods={formMethods}
+                  key={resetKey}></LocationSegment>
               </Stack>
             </form>
           </FormProvider>

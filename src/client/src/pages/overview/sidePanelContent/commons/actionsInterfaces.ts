@@ -9,9 +9,9 @@ export interface ErrorResponse {
 }
 
 export interface WorkgroupSelectProps {
-  workgroupId: number | null;
+  workgroupId: string;
   enabledWorkgroups: Workgroup[];
-  setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
+  setWorkgroupId: React.Dispatch<React.SetStateAction<string>>;
   hideLabel?: boolean;
   sx?: SxProps;
 }
@@ -34,8 +34,8 @@ export interface ImportModalProps extends ImportContentProps {
   selectedBoreholeAttachments: Blob[] | null;
   selectedFile: Blob[] | null;
   upload: boolean;
-  workgroup: number | null;
-  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
+  workgroup: string;
+  setWorkgroup: React.Dispatch<React.SetStateAction<string>>;
   enabledWorkgroups: Workgroup[];
   setCreating: React.Dispatch<React.SetStateAction<boolean>>;
   setModal: React.Dispatch<React.SetStateAction<boolean>>;

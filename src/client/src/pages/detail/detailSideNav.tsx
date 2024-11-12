@@ -68,9 +68,9 @@ export const DetailSideNav = ({ id }: { id: string }) => {
         <List divided relaxed selection>
           <ParentListItem
             style={{ borderTop: "none" }}
-            active={location.pathname === "/" + id}
+            active={location.pathname === `/${id}/location`}
             onClick={() => {
-              history.push("/" + id);
+              history.push(`/${id}/location`);
             }}>
             <List.Content>
               <List.Header as="h3" data-cy="location-menu-item">

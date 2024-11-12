@@ -111,9 +111,9 @@ const DetailHeader = ({
         <Typography variant="h2"> {borehole?.originalName}</Typography>
         <Chip
           sx={{ marginLeft: "18px" }}
-          label={t(`status${borehole?.workflow?.role.toLowerCase()}`)}
-          color={borehole?.workflow?.finished != null ? "success" : "warning"}
-          icon={borehole?.workflow?.finished != null ? <Check /> : <div />}
+          label={t(`status${borehole?.workflows[borehole?.workflows.length - 1]?.role.toLowerCase()}`)}
+          color={borehole?.workflows[borehole?.workflows.length - 1]?.finished != null ? "success" : "warning"}
+          icon={borehole?.workflows[borehole?.workflows.length - 1]?.finished != null ? <Check /> : <div />}
         />
         {!auth.anonymousModeEnabled && (
           <Typography variant="body1" sx={{ marginLeft: "18px" }}>

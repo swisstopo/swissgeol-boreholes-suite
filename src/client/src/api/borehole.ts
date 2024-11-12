@@ -1,10 +1,24 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { User } from "./apiInterfaces.ts";
+import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
 import { fetchApiV2, upload } from "./fetchApiV2";
 
+export interface BasicIdentifier {
+  boreholeId: number;
+  codelistId: number | null;
+  codelist?: Codelist;
+  value: string;
+}
+
+// Avoids circular reference for BoreholeV2
+export interface Identifier extends BasicIdentifier {
+  borehole?: BoreholeV2 | null;
+}
+
 export interface BoreholeV2 {
-  workflow: Workflow;
+  boreholeCodelists: BasicIdentifier[];
+  workflows: Workflow[];
   originalReferenceSystem: number;
   precisionLocationYLV03: number;
   precisionLocationXLV03: number;
@@ -42,10 +56,10 @@ export const updateBorehole = async (borehole: BoreholeV2) => {
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-export const importBoreholes = async (workgroupId: number | null, combinedFormData: any) => {
+export const importBoreholes = async (workgroupId: string, combinedFormData: any) => {
   return await upload(`upload?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
+export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: string | null) => {
   return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };

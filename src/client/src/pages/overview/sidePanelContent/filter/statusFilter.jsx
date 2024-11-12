@@ -37,7 +37,7 @@ class StatusFilter extends Component {
             {capitalizeFirstLetter(t("alls"))}
           </span>
         </Form.Field>
-        {["statusedit", "statuscontrol", "statusvalid", "statuspublic"].map(role => (
+        {["statuseditor", "statuscontroller", "statusvalidator", "statuspublisher"].map(role => (
           <Form.Field key={"sec-" + role}>
             <Radio
               checked={search.filter.role === role.replace("status", "").toUpperCase()}

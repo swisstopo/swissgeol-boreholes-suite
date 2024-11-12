@@ -20,6 +20,7 @@ import {
   ReferenceSystemCode,
   ReferenceSystemKey,
 } from "./coordinateSegmentInterfaces";
+import { LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -99,7 +100,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     formMethods.trigger();
   }, [formMethods.trigger, currentReferenceSystem, formMethods]);
 
-  // reset form values when the borehole or map point changes.
+  // reset form values when the borehole changes.
   useEffect(() => {
     const shouldUpdateCoordinates = borehole.id !== boreholeId;
     if (shouldUpdateCoordinates) {
@@ -202,6 +203,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   };
 
   const onCancelCoordinateChange = (e: number) => {
+    formMethods.resetField("originalReferenceSystem");
     formMethods.setValue(
       "originalReferenceSystem",
       Object.values(ReferenceSystemCode).find(code => typeof code === "number" && code !== e) as ReferenceSystemCode,
@@ -211,10 +213,10 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   // Resets the form and updates the reference system.
   const resetCoordinatesOnReferenceSystemChange = (e: number | boolean | null) => {
     if (typeof e !== "number") return;
-    const areCoordinatesDirty = Object.keys(FieldNameDirectionKeys).some(field =>
-      Object.prototype.hasOwnProperty.call(formMethods.formState.dirtyFields, field),
+    const areCoordinatesSet = Object.keys(FieldNameDirectionKeys).some(field =>
+      formMethods.getValues(field as keyof LocationFormInputs),
     );
-    if (!areCoordinatesDirty) {
+    if (!areCoordinatesSet) {
       confirmCoordinateChange();
       return;
     }
