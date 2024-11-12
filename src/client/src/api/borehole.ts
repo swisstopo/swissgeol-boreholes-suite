@@ -44,6 +44,8 @@ export interface BoreholeV2 {
   referenceElevationTypeId: number;
   locationPrecisionId: number | null;
   hrsId: number;
+  updated: Date | string | null;
+  updatedById: number;
 }
 
 export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
