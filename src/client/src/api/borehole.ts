@@ -33,7 +33,6 @@ export interface BoreholeV2 {
   hrsId: number;
   updated: Date | string | null;
   updatedById: number;
-  updatedBy: User | null;
 }
 
 export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
