@@ -1,6 +1,5 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
-import { User } from "./apiInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
 import { fetchApiV2, upload } from "./fetchApiV2";
 
