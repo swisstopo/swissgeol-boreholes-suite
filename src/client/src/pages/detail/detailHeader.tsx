@@ -117,8 +117,8 @@ const DetailHeader = ({
         />
         {!auth.anonymousModeEnabled && (
           <Typography variant="body1" sx={{ marginLeft: "18px" }}>
-            Changed at: <DateText date={borehole?.updated} /> <br />
-            Changed by: {updatedBy?.firstName}
+            {t("updateDate")}: <DateText date={borehole?.updated} /> <br />
+            {t("updatedBy")}: {updatedBy?.firstName} {updatedBy?.lastName}
           </Typography>
         )}
       </Stack>
