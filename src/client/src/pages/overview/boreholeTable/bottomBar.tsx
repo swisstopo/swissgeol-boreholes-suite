@@ -7,7 +7,7 @@ import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
-import { BulkEditButton, CopyButton, DeleteButton } from "../../../components/buttons/buttons.tsx";
+import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
@@ -20,6 +20,7 @@ interface BottomBarProps {
   search: { filter: string };
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
+  onExportMultiple: () => void;
   workgroup: string;
   setWorkgroup: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -30,6 +31,7 @@ const BottomBar = ({
   onDeleteMultiple,
   search,
   onCopyBorehole,
+  onExportMultiple,
   boreholes,
   workgroup,
   setWorkgroup,
@@ -113,6 +115,7 @@ const BottomBar = ({
             <CopyButton color="secondary" onClick={() => showCopyPromptForSelectedWorkgroup()} />
           )}
           <BulkEditButton label={"bulkEditing"} onClick={bulkEditSelected} />
+          <ExportButton label={"export"} onClick={onExportMultiple} />
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
       ) : (
