@@ -1536,13 +1536,13 @@ VALUES
     (15200493, 'Murchisonaeoolith-Formation', 15140, '{""color"":[190,165,160]}', '15200493');
 
 -- remove references to codelists that get deleted
-UPDATE bdms.layer SET lithostratigraphy_id_cli = NULL 
+UPDATE bdms.layer SET lithostratigraphy_id_cli = NULL
 WHERE lithostratigraphy_id_cli NOT IN (SELECT geolcode FROM new_lithostrati nl);
 
-UPDATE bdms.lithostratigraphy SET lithostratigraphy_id = NULL 
+UPDATE bdms.lithostratigraphy SET lithostratigraphy_id = NULL
 WHERE lithostratigraphy_id NOT IN (SELECT geolcode FROM new_lithostrati nl);
 
-UPDATE bdms.bdms.borehole SET lithostrat_id_cli = NULL 
+UPDATE bdms.borehole SET lithostrat_id_cli = NULL
 WHERE lithostrat_id_cli NOT IN (SELECT geolcode FROM new_lithostrati nl);
 
 -- insert new lithostratigraphy codelist
@@ -1555,7 +1555,7 @@ UPDATE bdms.layer SET lithostratigraphy_id_cli = lithostratigraphy_id_cli + 1000
 
 UPDATE bdms.lithostratigraphy SET lithostratigraphy_id = lithostratigraphy_id + 100000;
 
-UPDATE bdms.bdms.borehole SET lithostrat_id_cli = lithostrat_id_cli + 100000;
+UPDATE bdms.borehole SET lithostrat_id_cli = lithostrat_id_cli + 100000;
 
 -- delete old codelist entries
 DELETE FROM bdms.codelist cl WHERE schema_cli = 'custom.lithostratigraphy_top_bedrock' AND id_cli = geolcode;
