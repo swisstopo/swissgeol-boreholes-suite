@@ -1,0 +1,12 @@
+# boreholes Test Rules
+# Description: Ignores rules that are not useful in test code because we want to test these edge cases
+
+[*.cs]
+dotnet_diagnostic.CA1001.severity = none
+dotnet_diagnostic.CA1801.severity = none
+dotnet_diagnostic.CA1804.severity = none
+dotnet_diagnostic.CS8618.severity = none
+dotnet_diagnostic.SA0001.severity = none
+dotnet_diagnostic.IDE0051.severity = none
+dotnet_diagnostic.IDE0060.severity = none
+dotnet_diagnostic.IDE0130.severity = none
