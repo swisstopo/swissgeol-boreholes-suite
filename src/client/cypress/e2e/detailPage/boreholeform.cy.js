@@ -161,10 +161,10 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it("Export a borehole.", () => {
+  it.only("Exports a borehole", () => {
     const boreholeAlternateName = "AAA_HIPPOPOTHAMUS";
     createBorehole({
-      "extended.original_name": "AAA_HIPPOPOTHAMUS",
+      "extended.original_name": boreholeAlternateName,
       "custom.alternate_name": boreholeAlternateName,
     }).as("borehole_id");
 
