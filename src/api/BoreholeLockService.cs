@@ -43,7 +43,7 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
     }
 
     private bool IsUserLackingPermissions(Borehole borehole, User user)
-        {
+    {
         if (borehole.Workflows != null)
         {
             var boreholeWorkflowRoles = borehole.Workflows
