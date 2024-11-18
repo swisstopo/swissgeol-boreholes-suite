@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BDMS.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BDMS;
 
@@ -14,20 +15,29 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
     /// <inheritdoc />
     public async Task<bool> IsBoreholeLockedAsync(int? boreholeId, string? subjectId)
     {
-        var user = await context.Users
-            .Include(u => u.WorkgroupRoles)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-            .ConfigureAwait(false) ?? throw new InvalidOperationException($"Current user with subjectId <{subjectId}> does not exist.");
+        var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
 
         // Admins can always edit boreholes
         if (user.IsAdmin) return false;
 
-        var borehole = await context.Boreholes
-            .Include(b => b.Workflows)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(b => b.Id == boreholeId)
-            .ConfigureAwait(false) ?? throw new InvalidOperationException($"Associated borehole with id <{boreholeId}> does not exist.");
+        var borehole = await GetBoreholeWithWorkflowsAsync(boreholeId).ConfigureAwait(false);
+        if (borehole.Locked.HasValue && borehole.Locked.Value.AddMinutes(LockTimeoutInMinutes) > timeProvider.GetUtcNow() && borehole.LockedById != user.Id)
+        {
+            var lockedUserFullName = $"{borehole.LockedBy?.FirstName} {borehole.LockedBy?.LastName}";
+            logger.LogWarning("Current user with subject_id <{SubjectId}> tried to edit borehole with id <{BoreholeId}>, but the borehole is locked by user <{LockedByUserName}>.", subjectId, boreholeId, lockedUserFullName);
+            return true;
+        }
+
+        return await IsUserLackingPermissions(boreholeId, subjectId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> IsUserLackingPermissions(int? boreholeId, string? subjectId)
+    {
+        var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
+
+        if (user.IsAdmin) return false;
+        var borehole = await GetBoreholeWithWorkflowsAsync(boreholeId).ConfigureAwait(false);
 
         if (borehole.Workflows != null)
         {
@@ -37,18 +47,29 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
 
             if (user.WorkgroupRoles == null || !user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId && boreholeWorkflowRoles.Contains(x.Role)))
             {
-                logger.LogWarning("Current user with subject_id <{SubjectId}> does not have the required role to edit the borehole with id <{BoreholeId}>.", subjectId, boreholeId);
+                logger.LogWarning("Current user with subject_id <{SubjectId}> does not have the required role to edit the borehole with id <{BoreholeId}>.", subjectId, borehole.Id);
                 return true;
             }
         }
 
-        if (borehole.Locked.HasValue && borehole.Locked.Value.AddMinutes(LockTimeoutInMinutes) > timeProvider.GetUtcNow() && borehole.LockedById != user.Id)
-        {
-            var lockedUserFullName = $"{borehole.LockedBy?.FirstName} {borehole.LockedBy?.LastName}";
-            logger.LogWarning("Current user with subject_id <{SubjectId}> tried to edit borehole with id <{BoreholeId}>, but the borehole is locked by user <{LockedByUserName}>.", subjectId, boreholeId, lockedUserFullName);
-            return true;
-        }
-
         return false;
+    }
+
+    private async Task<Borehole> GetBoreholeWithWorkflowsAsync(int? boreholeId)
+    {
+        return await context.Boreholes
+            .Include(b => b.Workflows)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(b => b.Id == boreholeId)
+            .ConfigureAwait(false) ?? throw new InvalidOperationException($"Associated borehole with id <{boreholeId}> does not exist.");
+    }
+
+    private async Task<User> GetUserWithWorkgroupRolesAsync(string? subjectId)
+    {
+        return await context.Users
+            .Include(u => u.WorkgroupRoles)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
+            .ConfigureAwait(false) ?? throw new InvalidOperationException($"Current user with subjectId <{subjectId}> does not exist.");
     }
 }

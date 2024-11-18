@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Azure;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -54,6 +55,10 @@ public class BoreholeFileControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
+
+        boreholeLockServiceMock
+            .Setup(x => x.IsUserLackingPermissions(It.IsAny<int?>(), "sub_viewer"))
+            .ReturnsAsync(true);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
@@ -391,6 +396,23 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(0, dataExtractionInfo.Width);
         Assert.AreEqual(0, dataExtractionInfo.Height);
         Assert.AreEqual(0, dataExtractionInfo.Count);
+    }
+
+    [TestMethod]
+    public async Task GetDataExtractionInfoFileWithUnauthorizedUser()
+    {
+        // Test setup
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
+        var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
+        ActionResultAssert.IsOk(uploadResult);
+        var file = (uploadResult as OkObjectResult)?.Value as BoreholeFile;
+        var fileUuid = file.File.NameUuid.Replace(".pdf", "");
+
+        // Test
+        controller.HttpContext.SetClaimsPrincipal("sub_viewer", PolicyNames.Viewer);
+        var result = await controller.GetDataExtractionFileInfo(file.FileId, 1);
+        ActionResultAssert.IsUnauthorized(result);
     }
 
     [TestMethod]
