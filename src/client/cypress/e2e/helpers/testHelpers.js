@@ -330,10 +330,8 @@ export const deleteDownloadedFile = fileName => {
   let filePath = "cypress/downloads/" + fileName;
 
   // If file exists in download folder, delete it.
-  cy.task("fileExistsInDownloadFolder", "languages/en.yml").then((exists) => {
-
-    if (exists)
-    {
+  cy.task("fileExistsInDownloadFolder", "languages/en.yml").then(exists => {
+    if (exists) {
       // Set the command in case of linux os
       let command = "rm -f";
 

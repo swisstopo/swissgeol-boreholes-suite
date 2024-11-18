@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import CloseIcon from "@mui/icons-material/Close";
 import { Button } from "@mui/material";
-import {Check, DownloadIcon, Pencil, Plus, Save, Trash2} from "lucide-react";
+import { Check, DownloadIcon, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { ButtonProps } from "./buttonsInterface";
