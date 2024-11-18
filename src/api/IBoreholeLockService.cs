@@ -14,7 +14,6 @@ public interface IBoreholeLockService
     /// <param name="subjectId">The <see cref="User.SubjectId" /> of the current user.</param>
     /// <returns><c>true</c> if the borehole is locked by another user; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">Provided user or <see cref="Borehole"/> does not exist.</exception>
-    /// <exception cref="UnauthorizedAccessException">Current user is not allowed to create the given <see cref="Stratigraphy"/>.</exception>
     Task<bool> IsBoreholeLockedAsync(int? boreholeId, string? subjectId);
 
     /// <summary>
