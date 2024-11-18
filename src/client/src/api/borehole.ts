@@ -31,6 +31,7 @@ export interface BoreholeV2 {
   workflow: Workflow;
   boreholeCodelists: BasicIdentifier[];
   workflows: Workflow[];
+  workgroupId: number;
   originalReferenceSystem: number;
   precisionLocationYLV03: number;
   precisionLocationXLV03: number;
