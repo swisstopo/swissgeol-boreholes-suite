@@ -17,6 +17,7 @@ export interface FormInputProps {
   multiline?: boolean;
   rows?: number;
   value?: string | number | Date;
+  controlledValue?: string | number | Date;
   sx?: SxProps;
   className?: string;
   inputProps?: InputProps;
@@ -33,7 +34,8 @@ export const FormInput: FC<FormInputProps> = ({
   type,
   multiline,
   rows,
-  value,
+  value, // default value passed to the Textfield component
+  controlledValue, // value to be controlled with react-hook-form state
   sx,
   className,
   inputProps,
@@ -85,6 +87,7 @@ export const FormInput: FC<FormInputProps> = ({
         },
       })}
       defaultValue={getDefaultValue(value)}
+      value={controlledValue}
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
       InputProps={{
