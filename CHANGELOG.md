@@ -8,7 +8,7 @@
 - Added data extraction API.
 - Added support to extract coordinates from a borehole attachment.
 - Show ChangedAt and ChangedBy information in borehole detail header.
-- Add json export for single and multiple boreholes.
+- Add JSON export for single and multiple boreholes.
 
 ### Changed
 
