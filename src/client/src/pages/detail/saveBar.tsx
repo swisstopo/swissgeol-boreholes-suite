@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack } from "@mui/material";
-import { CircleX } from "lucide-react";
+import { CircleCheck, CircleX } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 import { DeleteButton, SaveButton } from "../../components/buttons/buttons.tsx";
 
@@ -10,11 +11,19 @@ interface SaveBarProps {
   isFormDirty: boolean;
 }
 export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarProps) => {
+  const [showSaveFeedback, setShowSaveFeedback] = useState(false);
   const { t } = useTranslation();
   const changesMessage = (
     <>
       <CircleX />
       <Box> {t("unsavedChanges")}</Box>
+    </>
+  );
+
+  const savedMessage = (
+    <>
+      <CircleCheck />
+      <Box> {t("savedChanges")}</Box>
     </>
   );
   return (
@@ -34,6 +43,7 @@ export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarPro
         spacing={1}
         sx={{ flexGrow: 1, color: isFormDirty ? theme.palette.error.light : theme.palette.success.main }}>
         {isFormDirty && changesMessage}
+        {showSaveFeedback && !isFormDirty && savedMessage}
       </Stack>
 
       <Stack spacing={1} direction="row">
@@ -48,7 +58,9 @@ export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarPro
           disabled={!isFormDirty}
           variant="contained"
           onClick={() => {
+            setShowSaveFeedback(true);
             triggerSubmit();
+            setTimeout(() => setShowSaveFeedback(false), 5000);
           }}
         />
       </Stack>
