@@ -8,12 +8,16 @@ import { User } from "../../api/apiInterfaces.ts";
 import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
 import { fetchUser } from "../../api/user.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
+import {
+  prepareBoreholeDataForSubmit,
+  prepareLocationDataForSubmit,
+} from "../../components/legacyComponents/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
-import { prepareLocationDataForSubmit } from "./form/location/locationFormUtils.ts";
-import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx";
+import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
+import { LocationFormInputs, LocationFormSubmission } from "./form/location/locationPanelInterfaces.tsx";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
@@ -65,14 +69,22 @@ export const DetailPage: FC = () => {
   );
 
   const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
+  const boreholePanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
 
-  const onFormSubmit = (formInputs: LocationFormInputs) => {
-    const boreholeSubmission = prepareLocationDataForSubmit(formInputs);
+  function getAndUpdateBorehole(boreholeSubmission: BoreholeFormInputs | LocationFormSubmission) {
     getBoreholeById(parseInt(id)).then(b => {
       updateBorehole({ ...b, ...boreholeSubmission }).then(r => {
         setBorehole(r);
       });
     });
+  }
+
+  const onBoreholeFormSubmit = (formInputs: BoreholeFormInputs) => {
+    getAndUpdateBorehole(prepareBoreholeDataForSubmit(formInputs));
+  };
+
+  const onLocationFormSubmit = (formInputs: LocationFormInputs) => {
+    getAndUpdateBorehole(prepareLocationDataForSubmit(formInputs));
   };
 
   const handleDirtyChange = (isDirty: boolean) => {
@@ -80,15 +92,13 @@ export const DetailPage: FC = () => {
   };
 
   const triggerSubmit = () => {
-    if (locationPanelRef.current) {
-      locationPanelRef.current.submit();
-    }
+    boreholePanelRef.current?.submit();
+    locationPanelRef.current?.submit();
   };
 
   const triggerReset = () => {
-    if (locationPanelRef.current) {
-      locationPanelRef.current.reset();
-    }
+    boreholePanelRef.current?.reset();
+    locationPanelRef.current?.reset();
   };
 
   useEffect(() => {
@@ -127,6 +137,10 @@ export const DetailPage: FC = () => {
         <CircularProgress />
       </Stack>
     );
+
+  const shouldShowSaveBar =
+    location.pathname.endsWith("/location") ||
+    (location.pathname.endsWith("/borehole") && location.hash === "#general");
 
   return (
     <>
@@ -167,16 +181,17 @@ export const DetailPage: FC = () => {
               <DetailPageContent
                 editingEnabled={editingEnabled}
                 editableByCurrentUser={editableByCurrentUser}
-                onFormSubmit={onFormSubmit}
                 locationPanelRef={locationPanelRef}
+                onLocationFormSubmit={onLocationFormSubmit}
+                boreholePanelRef={boreholePanelRef}
+                onBoreholeFormSubmit={onBoreholeFormSubmit}
                 handleDirtyChange={handleDirtyChange}
                 borehole={borehole}
-                setBorehole={setBorehole}
               />
             </MainContentBox>
             {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}
           </Box>
-          {editingEnabled && location.pathname.endsWith("/location") && (
+          {editingEnabled && shouldShowSaveBar && (
             <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} isFormDirty={isFormDirty} />
           )}
         </Stack>

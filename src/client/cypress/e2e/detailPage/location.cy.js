@@ -1,4 +1,4 @@
-import { addItem, saveLocationForm, stopEditing } from "../helpers/buttonHelpers";
+import { addItem, saveWithSaveBar, stopEditing } from "../helpers/buttonHelpers";
 import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import {
@@ -41,7 +41,7 @@ describe("Tests for 'Location' edit page.", () => {
     originalNameInput.type("AAA_SCATORPS");
 
     // save borehole
-    saveLocationForm();
+    saveWithSaveBar();
 
     // stop editing
     stopBoreholeEditing();
@@ -86,7 +86,7 @@ describe("Tests for 'Location' edit page.", () => {
       cy.get("@alternateNameInput").should("have.value", "PHOTOMOUSE");
 
       cy.get("@alternateNameInput").clear();
-      saveLocationForm();
+      saveWithSaveBar();
       // should be reset to original name if alternate name is empty
       cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
       cy.get("@alternateNameInput").should("have.value", "PHOTOCAT");
@@ -174,7 +174,7 @@ describe("Tests for 'Location' edit page.", () => {
     originalNameInput.type("AAA_FELIX_THE_PANDA");
 
     function saveFormAndReturnToOverview() {
-      saveLocationForm();
+      saveWithSaveBar();
       returnToOverview();
     }
 

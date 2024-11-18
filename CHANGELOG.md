@@ -15,7 +15,7 @@
 - Hide the `help` button in the navigation bar in read-only mode.
 - Hide the `original_name` field in the borehole detail view in read-only mode.
 - Updated the style of the location tab.
-- Changes on the location tab are now saved by clicking the `Save` button, instead of immediately.
+- Changes on the location tab and the borehole tab are now saved by clicking the `Save` button, instead of immediately.
 
 ### Fixed
 

@@ -42,3 +42,4 @@ export { FormDisplay } from "./formDisplay";
 export { FormCoordinate } from "./formCoordinate";
 export { FormContainer } from "./formContainer";
 export { FormBooleanSelect } from "./formBooleanSelect";
+export { FormInputDisplayOnly } from "./formInputDisplayOnly";

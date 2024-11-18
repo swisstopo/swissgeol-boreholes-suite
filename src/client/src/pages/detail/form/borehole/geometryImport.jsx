@@ -77,7 +77,7 @@ const GeometryImport = ({ boreholeId }) => {
           <DevTool control={formMethods.control} placement="top-left" />
           <FormProvider {...formMethods}>
             <form onSubmit={formMethods.handleSubmit(uploadGeometryCSV)}>
-              <Stack direction="row" alignItems="flex-start">
+              <Stack direction="row" alignItems="flex-start" pt={3}>
                 <StackHalfWidth spacing={2}>
                   <FormSelect
                     fieldName="geometryFormat"
