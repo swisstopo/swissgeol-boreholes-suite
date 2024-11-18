@@ -60,6 +60,10 @@ public class BoreholeFileControllerTest
             .Setup(x => x.IsUserLackingPermissions(It.IsAny<int?>(), "sub_viewer"))
             .ReturnsAsync(true);
 
+        boreholeLockServiceMock
+            .Setup(x => x.IsUserLackingPermissions(It.IsAny<int?>(), "sub_admin"))
+            .ReturnsAsync(false);
+
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
         controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, boreholeFileCloudService, boreholeLockServiceMock.Object);
