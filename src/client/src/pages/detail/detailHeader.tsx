@@ -9,7 +9,7 @@ import { User } from "../../api/apiInterfaces.ts";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
-import { DeleteButton, EditButton, EndEditButton } from "../../components/buttons/buttons.tsx";
+import { DeleteButton, EditButton, EndEditButton, ExportButton } from "../../components/buttons/buttons.tsx";
 import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 
@@ -81,6 +81,20 @@ const DetailHeader = ({
     history.push("/");
   };
 
+  const handleExport = () => {
+    const jsonString = JSON.stringify(borehole, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    const name_without_spaces = borehole.alternateName.replace(/\s/g, "_");
+    link.download = `${name_without_spaces}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Stack
       direction="row"
@@ -147,7 +161,10 @@ const DetailHeader = ({
               <EndEditButton onClick={isFormDirty ? stopEditingWithUnsavedChanges : stopEditing} />
             </>
           ) : (
-            <EditButton onClick={startEditing} />
+            <>
+              <ExportButton onClick={handleExport} />
+              <EditButton onClick={startEditing} />
+            </>
           ))}
       </Stack>
     </Stack>
