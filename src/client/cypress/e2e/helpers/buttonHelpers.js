@@ -61,10 +61,9 @@ export const deleteItem = parent => {
 
 /**
  * Clicks on the export button.
- * @param {string} parent (optional) The parent of the button.
  */
-export const exportItem = parent => {
-  const selector = createBaseSelector(parent) + '[data-cy="export-button"]';
+export const exportItem = () => {
+  const selector = '[data-cy="export-button"]';
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };

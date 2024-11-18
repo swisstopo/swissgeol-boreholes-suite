@@ -20,7 +20,7 @@ describe("Test for exporting boreholes.", () => {
 
     deleteDownloadedFile(filename);
 
-    cy.contains("button", "Export").click();
+    exportItem();
 
     readDownloadedFile(filename);
   });

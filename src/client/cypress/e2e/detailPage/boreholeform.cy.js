@@ -173,7 +173,7 @@ describe("Test for the borehole form.", () => {
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
       ensureEditingDisabled();
-      exportItem("detail-header");
+      exportItem();
     });
 
     readDownloadedFile(`${boreholeAlternateName}.json`);
