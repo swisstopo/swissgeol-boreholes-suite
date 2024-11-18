@@ -187,6 +187,7 @@
   "evaluationMethod": "Evaluation method",
   "existingFiles": "Existing documents",
   "expand": "Expand",
+  "export": "Export",
   "extendlower": "Extend lower layer to top",
   "extendupper": "Extend upper layer to bottom",
   "facies_description": "Facies description",

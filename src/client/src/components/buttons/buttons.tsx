@@ -124,6 +124,7 @@ export const ExportButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
     <BdmsBaseButton
       ref={ref}
       {...props}
+      label="export"
       variant={props.variant ?? "outlined"}
       color={props.color ?? "secondary"}
       icon={<DownloadIcon />}
