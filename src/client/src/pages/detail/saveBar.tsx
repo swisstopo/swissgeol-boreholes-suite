@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import { CircleCheck, CircleX } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
@@ -13,6 +14,12 @@ interface SaveBarProps {
 export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarProps) => {
   const [showSaveFeedback, setShowSaveFeedback] = useState(false);
   const { t } = useTranslation();
+  const location = useLocation();
+
+  useEffect(() => {
+    setShowSaveFeedback(false);
+  }, [location.pathname]);
+
   const changesMessage = (
     <>
       <CircleX />
@@ -60,7 +67,7 @@ export const SaveBar = ({ triggerSubmit, triggerReset, isFormDirty }: SaveBarPro
           onClick={() => {
             setShowSaveFeedback(true);
             triggerSubmit();
-            setTimeout(() => setShowSaveFeedback(false), 5000);
+            setTimeout(() => setShowSaveFeedback(false), 4000);
           }}
         />
       </Stack>

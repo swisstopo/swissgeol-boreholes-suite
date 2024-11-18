@@ -1,4 +1,4 @@
-import { addItem, saveLocationForm } from "../helpers/buttonHelpers";
+import { addItem, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { checkAllVisibleRows, verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
@@ -10,7 +10,7 @@ describe("Tests for filtering data by identifier.", () => {
     addItem("addIdentifier");
     setSelect("boreholeCodelists.0.codelistId", 1);
     setInput("boreholeCodelists.0.value", 819544732);
-    saveLocationForm();
+    saveWithSaveBar();
 
     stopBoreholeEditing();
     returnToOverview();
@@ -40,7 +40,7 @@ describe("Tests for filtering data by identifier.", () => {
     addItem("addIdentifier");
     setSelect("boreholeCodelists.0.codelistId", 1);
     setInput("boreholeCodelists.0.value", 64531274);
-    saveLocationForm();
+    saveWithSaveBar();
 
     stopBoreholeEditing();
     returnToOverview();
@@ -49,7 +49,7 @@ describe("Tests for filtering data by identifier.", () => {
     addItem("addIdentifier");
     setSelect("boreholeCodelists.0.codelistId", 1);
     setInput("boreholeCodelists.0.value", 436584127);
-    saveLocationForm();
+    saveWithSaveBar();
 
     stopBoreholeEditing();
     returnToOverview();

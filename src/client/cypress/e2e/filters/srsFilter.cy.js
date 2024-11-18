@@ -1,4 +1,4 @@
-import { saveLocationForm } from "../helpers/buttonHelpers";
+import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setSelect } from "../helpers/formHelpers";
 import { loginAsAdmin, newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
@@ -43,7 +43,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("@LV03X-input").type("645778", { delay: 10 });
     cy.get("@LV03Y-input").type("245794", { delay: 10 });
 
-    saveLocationForm();
+    saveWithSaveBar();
 
     stopBoreholeEditing();
     returnToOverview();
