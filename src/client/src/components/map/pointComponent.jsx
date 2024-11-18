@@ -373,6 +373,7 @@ class PointComponent extends React.Component {
             <Button
               type="button" // This is needed because semantic UI Buttons default to submit-buttons inside a form
               disabled={!_.isArray(this.state.point)}
+              data-cy="height-button"
               icon
               onClick={() => {
                 if (_.isFunction(this.props.applyChange)) {

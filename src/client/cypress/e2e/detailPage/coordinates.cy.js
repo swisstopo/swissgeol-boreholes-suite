@@ -25,6 +25,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="locationY-formCoordinate"] input').as("LV95Y-input");
     cy.get('[data-cy="locationXLV03-formCoordinate"] input').as("LV03X-input");
     cy.get('[data-cy="locationYLV03-formCoordinate"] input').as("LV03Y-input");
+    cy.get('[data-cy="elevationZ-formInput"] input').as("elevationZ");
     cy.get('[data-cy="country-formInput"] input').as("country");
     cy.get('[data-cy="canton-formInput"] input').as("canton");
     cy.get('[data-cy="municipality-formInput"] input').as("municipality");
@@ -109,7 +110,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95X-input").should("have.value", "");
     cy.get("@LV95Y-input").should("have.value", "");
     cy.get("@LV03X-input").should("have.value", "");
-    cy.get("@LV03Y-input").should("have.value", "");
+    cy.get("@elevationZ").should("have.value", "");
     cy.get("@country").should("have.value", "");
     cy.get("@canton").should("have.value", "");
     cy.get("@municipality").should("have.value", "");
@@ -123,6 +124,8 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[class="ol-viewport"]').scrollIntoView().click(390, 250, { force: true });
 
     cy.wait("@location");
+    cy.get('[data-cy="height-button"]').click();
+    cy.wait("@height");
     cy.get('[data-cy="apply-button"]').click();
 
     // verify automatically filled inputs
@@ -130,6 +133,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").should("not.have.value", "");
     cy.get("@LV03X-input").should("not.have.value", "");
     cy.get("@LV03Y-input").should("not.have.value", "");
+    cy.get("@elevationZ").should("not.have.value", "");
     cy.get("@country").should("not.have.value", "");
     cy.get("@canton").should("not.have.value", "");
     cy.get("@municipality").should("not.have.value", "");
