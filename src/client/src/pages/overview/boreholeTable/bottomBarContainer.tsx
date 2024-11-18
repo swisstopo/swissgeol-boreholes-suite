@@ -86,7 +86,6 @@ const BottomBarContainer = ({
   };
 
   const onExportMultiple = async () => {
-    setIsBusy(true);
     const exportBoreholes = boreholes.data.filter(borehole => selectionModel.includes(borehole.id));
     const jsonString = JSON.stringify(exportBoreholes, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
@@ -98,7 +97,6 @@ const BottomBarContainer = ({
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
-    setIsBusy(false);
   };
 
   return (
