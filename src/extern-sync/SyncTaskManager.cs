@@ -10,7 +10,7 @@ namespace BDMS.ExternSync;
 public class SyncTaskManager(IEnumerable<ISyncTask> tasks, ILogger<SyncTaskManager> logger)
 {
     /// <summary>
-    /// Executes the <see cref="ISyncTask"/>s in sequence."
+    /// Executes the <see cref="ISyncTask"/>s in sequence.
     /// </summary>
     public async Task ExecuteTasksAsync(CancellationToken cancellationToken)
     {

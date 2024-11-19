@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Represents a boreholes sync context containing a source and
-/// a target database <see cref="BdmsContext">.
+/// a target database <see cref="BdmsContext"/>.
 /// </summary>
 public interface ISyncContext
 {

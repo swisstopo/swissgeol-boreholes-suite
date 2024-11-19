@@ -13,36 +13,36 @@ namespace BDMS.ExternSync.Tasks;
 /// </remarks>
 public class UpdateSequencesTask(ISyncContext syncContext, ILogger<UpdateSequencesTask> logger) : SyncTask(syncContext, logger)
 {
-    private const int minValue = 20000;
-    private const string sequenceName = "users_id_usr_seq";
-    private const string getSequenceLastValueQuery = $"SELECT last_value FROM {BoreholesDatabaseSchemaName}.{sequenceName};";
-    private const string setSequenceValueQuery = $"SELECT setval('{BoreholesDatabaseSchemaName}.{sequenceName}', ($1));";
+    private const int MinValue = 20000;
+    private const string SequenceName = "users_id_usr_seq";
+    private const string GetSequenceLastValueSql = $"SELECT last_value FROM {BoreholesDatabaseSchemaName}.{SequenceName};";
+    private const string SetSequenceValueQuery = $"SELECT setval('{BoreholesDatabaseSchemaName}.{SequenceName}', ($1));";
 
     /// <inheritdoc/>
     protected override async Task RunTaskAsync(CancellationToken cancellationToken)
     {
         var targetDbConnection = await Target.GetDbConnectionAsync(cancellationToken).ConfigureAwait(false);
-        using var selectCommand = new NpgsqlCommand(getSequenceLastValueQuery, targetDbConnection);
+        using var selectCommand = new NpgsqlCommand(GetSequenceLastValueSql, targetDbConnection);
 
         var lastValue = await selectCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false) as long? ?? -1;
-        Logger.LogInformation("{SchemaName}.{SequenceName} last_value: <{LastValue}>", BoreholesDatabaseSchemaName, sequenceName, lastValue);
+        Logger.LogInformation("{SchemaName}.{SequenceName} last_value: <{LastValue}>", BoreholesDatabaseSchemaName, SequenceName, lastValue);
 
         if (lastValue == -1)
         {
-            Logger.LogError("Error while reading sequence {SchemaName}.{SequenceName}.", BoreholesDatabaseSchemaName, sequenceName);
+            Logger.LogError("Error while reading sequence {SchemaName}.{SequenceName}.", BoreholesDatabaseSchemaName, SequenceName);
         }
-        else if (lastValue < minValue)
+        else if (lastValue < MinValue)
         {
-            using var alterCommand = new NpgsqlCommand(setSequenceValueQuery, targetDbConnection);
-            alterCommand.Parameters.AddWithValue(minValue);
+            using var alterCommand = new NpgsqlCommand(SetSequenceValueQuery, targetDbConnection);
+            alterCommand.Parameters.AddWithValue(MinValue);
 
             await alterCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
 
-            Logger.LogInformation("Sequence {SchemaName}.{SequenceName} has been set to {MinValue}.", BoreholesDatabaseSchemaName, sequenceName, minValue);
+            Logger.LogInformation("Sequence {SchemaName}.{SequenceName} has been set to {MinValue}.", BoreholesDatabaseSchemaName, SequenceName, MinValue);
         }
         else
         {
-            Logger.LogInformation("Sequence for {SchemaName}.{SequenceName} has already been set.", BoreholesDatabaseSchemaName, sequenceName);
+            Logger.LogInformation("Sequence for {SchemaName}.{SequenceName} has already been set.", BoreholesDatabaseSchemaName, SequenceName);
         }
     }
 

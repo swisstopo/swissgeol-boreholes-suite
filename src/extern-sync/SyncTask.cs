@@ -45,7 +45,9 @@ public abstract class SyncTask(ISyncContext syncContext, ILogger<SyncTask> logge
     /// </summary>
     protected abstract Task ValidateTaskAsync(CancellationToken cancellationToken);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Disposes the <see cref="Source"/> and <see cref="Target"/> database contexts.
+    /// </summary>
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue && disposing)
@@ -53,7 +55,7 @@ public abstract class SyncTask(ISyncContext syncContext, ILogger<SyncTask> logge
             Source.Dispose();
             Target.Dispose();
 
-            disposedValue=true;
+            disposedValue = true;
         }
     }
 

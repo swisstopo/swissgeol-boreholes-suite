@@ -34,6 +34,4 @@ public static class SyncContextConstants
     /// The name of the boreholes database schema.
     /// </summary>
     public const string BoreholesDatabaseSchemaName = "bdms";
-
-    
 }
