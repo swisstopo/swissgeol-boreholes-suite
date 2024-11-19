@@ -108,7 +108,7 @@ const DetailHeader = ({
           }}>
           <ChevronLeft />
         </IconButton>
-        <Typography variant="h2"> {borehole?.originalName}</Typography>
+        <Typography variant="h2"> {borehole?.alternateName}</Typography>
         <Chip
           sx={{ marginLeft: "18px" }}
           label={t(`status${borehole?.workflows[borehole?.workflows.length - 1]?.role.toLowerCase()}`)}

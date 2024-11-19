@@ -175,7 +175,7 @@ class ListGeojson(Action):
                                                         as kind,
                                                     rs.code_cli
                                                         as restriction,
-                                                    original_name_bho
+                                                    alternate_name_bho
                                                         as name,
                                                     id_bho
                                                         as id
