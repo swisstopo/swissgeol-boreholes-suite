@@ -43,8 +43,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         // Update the geometry if new coordinates are provided
         if (entity.LocationX.HasValue && entity.LocationY.HasValue)
         {
-            existingBorehole.Geometry = new Point(entity.LocationX.Value, entity.LocationY.Value)
-            { SRID = 2056, };
+            existingBorehole.Geometry = new Point(entity.LocationX.Value, entity.LocationY.Value) { SRID = 2056 };
         }
 
         // Update borehole identifiers with borehole
