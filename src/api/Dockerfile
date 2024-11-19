@@ -3,9 +3,12 @@ ENV ASPNETCORE_ENVIRONMENT=Development
 WORKDIR /src
 
 # Install missing packages
-RUN apt-get -y update
-RUN apt-get -y install git vim curl htop
-RUN dotnet tool install --global dotnet-ef --version 8.0.0
+RUN \
+  apt-get -y update && \
+  apt-get -y install curl git htop vim && \
+  rm -rf /var/lib/apt/lists/* && \
+  dotnet tool install --global dotnet-ef --version 8.0.0
+
 ENV PATH=$PATH:/root/.dotnet/tools
 
 # Restore dependencies and tools
