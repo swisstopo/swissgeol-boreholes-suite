@@ -5,13 +5,14 @@ using Microsoft.IdentityModel.Tokens;
 namespace BDMS.ExternSync.Tasks;
 
 /// <summary>
-/// Checks whether the source and target databases have the same schema version.
+/// Setups the target database by migrating the schema and checks whether the source
+/// and target databases have the same schema version.
 /// </summary>
 /// <remarks>
 /// IMPORTANT! This class does not yet implement the actual behavior. It only
 /// contains sample code to verify the testing and integration concepts.
 /// </remarks>
-public class MigrateDatabase(ISyncContext syncContext, ILogger<MigrateDatabase> logger) : SyncTask(syncContext, logger)
+public class SetupDatabaseTask(ISyncContext syncContext, ILogger<SetupDatabaseTask> logger) : SyncTask(syncContext, logger)
 {
     /// <inheritdoc/>
     protected override async Task RunTaskAsync(CancellationToken cancellationToken)

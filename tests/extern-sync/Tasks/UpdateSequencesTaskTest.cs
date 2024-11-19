@@ -1,4 +1,4 @@
-using BDMS.ExternSync.Tasks;
+﻿using BDMS.ExternSync.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Npgsql;
@@ -6,13 +6,13 @@ using Npgsql;
 namespace BDMS.ExternSync.Test;
 
 [TestClass]
-public class UpdateSequencesTest
+public class UpdateSequencesTaskTest
 {
     [TestMethod]
     public async Task UpdateSequences()
     {
         using var syncContext = await SyncContext.BuildAsync().ConfigureAwait(false);
-        using var syncTask = new UpdateSequences(syncContext, new Mock<ILogger<UpdateSequences>>().Object);
+        using var syncTask = new UpdateSequencesTask(syncContext, new Mock<ILogger<UpdateSequencesTask>>().Object);
 
         var targetDbConnection = await syncContext.Target.GetDbConnectionAsync().ConfigureAwait(false);
         using var selectCommand = new NpgsqlCommand($"SELECT last_value FROM bdms.users_id_usr_seq;", targetDbConnection);

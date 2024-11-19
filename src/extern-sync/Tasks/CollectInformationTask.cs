@@ -6,7 +6,7 @@ namespace BDMS.ExternSync.Tasks;
 /// Collects some information about the source and target databases
 /// and checks if they are not the same.
 /// </summary>
-public class CollectInformation(ISyncContext syncContext, ILogger<CollectInformation> logger) : SyncTask(syncContext, logger)
+public class CollectInformationTask(ISyncContext syncContext, ILogger<CollectInformationTask> logger) : SyncTask(syncContext, logger)
 {
     /// <inheritdoc/>
     protected override async Task RunTaskAsync(CancellationToken cancellationToken)

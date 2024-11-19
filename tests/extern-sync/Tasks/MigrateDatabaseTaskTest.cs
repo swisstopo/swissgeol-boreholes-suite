@@ -5,13 +5,13 @@ using Moq;
 namespace BDMS.ExternSync.Test;
 
 [TestClass]
-public class CollectInformationTest
+public class MigrateDatabaseTaskTest
 {
     [TestMethod]
-    public async Task CollectInformation()
+    public async Task MigrateDatabase()
     {
         using var syncContext = await SyncContext.BuildAsync().ConfigureAwait(false);
-        using var syncTask = new CollectInformation(syncContext, new Mock<ILogger<CollectInformation>>().Object);
+        using var syncTask = new SetupDatabaseTask(syncContext, new Mock<ILogger<SetupDatabaseTask>>().Object);
 
         await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token);
     }
