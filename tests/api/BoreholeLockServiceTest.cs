@@ -50,6 +50,13 @@ public class BoreholeLockServiceTest
     }
 
     [TestMethod]
+    public async Task IsUserLackingPermissionsWithUnauthorizedUser()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+        Assert.AreEqual(true, await boreholeLockService.IsUserLackingPermissions(borehole.Id, "sub_deletableUser"));
+    }
+
+    [TestMethod]
     public async Task IsBoreholeLockedByOtherUser()
     {
         var borehole = GetLockedBorehole(lockedByAdmin: true);

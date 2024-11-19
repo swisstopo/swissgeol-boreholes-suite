@@ -1,13 +1,18 @@
 import { FC } from "react";
+import { UseFormReturn } from "react-hook-form";
 import { TextField } from "@mui/material/";
 import { t } from "i18next";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { FormContainer, FormDomainSelect, FormInput } from "../../../../components/form/form.ts";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
-import { LocationBaseProps } from "./locationPanelInterfaces.tsx";
+import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
-const ElevationSegment: FC<LocationBaseProps> = ({ borehole, editingEnabled }) => {
+interface ElevationSegmentProps extends LocationBaseProps {
+  formMethods: UseFormReturn<LocationFormInputs>;
+}
+
+const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, editingEnabled, formMethods }) => {
   const { data: domains } = useDomains();
 
   return (
@@ -18,6 +23,7 @@ const ElevationSegment: FC<LocationBaseProps> = ({ borehole, editingEnabled }) =
             fieldName={"elevationZ"}
             label={"elevation_z"}
             value={borehole.elevationZ}
+            controlledValue={formMethods.watch("elevationZ") || ""}
             withThousandSeparator={true}
             readonly={!editingEnabled}
           />

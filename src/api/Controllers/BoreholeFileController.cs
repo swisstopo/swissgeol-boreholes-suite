@@ -111,6 +111,12 @@ public class BoreholeFileController : ControllerBase
                 .FirstOrDefaultAsync(f => f.FileId == boreholeFileId)
                 .ConfigureAwait(false);
 
+            // Check if user has permission to view the borehole file.
+            if (await boreholeLockService.IsUserLackingPermissions(boreholeFile.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            {
+                return Unauthorized("You are missing permissions to view the borehole file.");
+            }
+
             if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
 
             var fileUuid = boreholeFile.File.NameUuid.Replace(".pdf", "", StringComparison.OrdinalIgnoreCase);

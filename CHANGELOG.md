@@ -9,6 +9,7 @@
 - Added support to extract coordinates from a borehole attachment.
 - Show ChangedAt and ChangedBy information in borehole detail header.
 - Add JSON export for single and multiple boreholes.
+- The workgroup name is now displayed in the borehole location tab.
 
 ### Changed
 
@@ -17,6 +18,7 @@
 - Hide the `original_name` field in the borehole detail view in read-only mode.
 - Updated the style of the location tab.
 - Changes on the location tab and the borehole tab are now saved by clicking the `Save` button, instead of immediately.
+- The `alternate_name` is now displayed in the borehole detail header and the map markers.
 
 ### Fixed
 

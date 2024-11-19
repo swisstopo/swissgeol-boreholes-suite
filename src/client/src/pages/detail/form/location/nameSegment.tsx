@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { Card } from "@mui/material";
+import { useSelector } from "react-redux";
+import { Card, TextField } from "@mui/material";
+import { t } from "i18next";
+import { ReduxRootState, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
 import { FormContainer, FormInput } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
@@ -11,9 +14,10 @@ interface NameSegmentProps extends LocationBaseProps {
 }
 const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps) => {
   const auth = useAuth();
-
+  const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const originalName = formMethods.watch("originalName");
   const { dirtyFields, isDirty } = formMethods.formState;
+  const workgroupName = user.data.workgroups.find(w => w.id === borehole.workgroupId.toString())?.workgroup || "";
 
   useEffect(() => {
     if (dirtyFields.originalName || (!isDirty && formMethods.getValues("alternateName") === "")) {
@@ -48,6 +52,14 @@ const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps
                 readonly={!editingEnabled}
               />
             )}
+            <TextField
+              InputProps={{
+                readOnly: true,
+              }}
+              className="readonly"
+              label={t("workgroup")}
+              value={workgroupName}
+            />
           </FormContainer>
         </FormContainer>
       </FormSegmentBox>

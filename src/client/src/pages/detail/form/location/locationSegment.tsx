@@ -83,7 +83,7 @@ const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegm
     (x: string, y: string, height: number, country: string, canton: string, municipality: string) => {
       formMethods.setValue("locationX", x);
       formMethods.setValue("locationY", y);
-      formMethods.setValue("elevationZ", height);
+      height && formMethods.setValue("elevationZ", height);
       formMethods.setValue("country", country);
       formMethods.setValue("canton", canton);
       formMethods.setValue("municipality", municipality);
@@ -113,7 +113,7 @@ const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegm
               handleCoordinateTransformation={handleCoordinateTransformation}
               setValuesForCountryCantonMunicipality={setValuesForCountryCantonMunicipality}
             />
-            <ElevationSegment borehole={borehole} editingEnabled={editingEnabled} />
+            <ElevationSegment borehole={borehole} editingEnabled={editingEnabled} formMethods={formMethods} />
           </Stack>
           <FormSegmentBox sx={{ flexGrow: 1 }}>
             <PointComponent
