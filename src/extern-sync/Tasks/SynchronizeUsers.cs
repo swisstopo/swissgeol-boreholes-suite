@@ -19,7 +19,7 @@ public class SynchronizeUsers(ISyncContext syncContext, ILogger<SynchronizeUsers
         var targetUsers = await Target.Users.ToListAsync(cancellationToken).ConfigureAwait(false);
 
         var usersToInsert = sourceUsers
-            .Where(sourceUser => targetUsers.All(targetUser => targetUser.Id != sourceUser.Id))
+            .Where(sourceUser => targetUsers.TrueForAll(targetUser => targetUser.Id != sourceUser.Id))
             .ToList();
 
         Target.Users.AddRange(usersToInsert);
