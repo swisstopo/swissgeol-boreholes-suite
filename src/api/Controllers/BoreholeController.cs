@@ -106,7 +106,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .Include(b => b.BoreholeCodelists)
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles)
-            .Include(b => b.BoreholeGeometry);
+            .Include(b => b.BoreholeGeometry)
+            .Include(b => b.UpdatedBy);
     }
 
     /// <summary>

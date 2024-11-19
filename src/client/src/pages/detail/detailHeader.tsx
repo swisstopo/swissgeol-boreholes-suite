@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { Check, ChevronLeft, Trash2, X } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
-import { User } from "../../api/apiInterfaces.ts";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
@@ -18,7 +17,6 @@ interface DetailHeaderProps {
   setEditingEnabled: (editingEnabled: boolean) => void;
   editableByCurrentUser: boolean;
   borehole: BoreholeV2;
-  updatedBy: User;
   isFormDirty: boolean;
   triggerReset: () => void;
 }
@@ -30,7 +28,6 @@ const DetailHeader = ({
   isFormDirty,
   triggerReset,
   borehole,
-  updatedBy,
 }: DetailHeaderProps) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -122,19 +119,20 @@ const DetailHeader = ({
           }}>
           <ChevronLeft />
         </IconButton>
-        <Typography variant="h2"> {borehole?.alternateName}</Typography>
+        <Stack>
+          <Typography variant="h2"> {borehole?.alternateName}</Typography>
+          {!auth.anonymousModeEnabled && (
+            <Typography variant={"subtitle2"}>
+              {t("lastUpdated")}: <DateText date={borehole?.updated} /> {t("by")} {borehole?.updatedBy.name}{" "}
+            </Typography>
+          )}
+        </Stack>
         <Chip
           sx={{ marginLeft: "18px" }}
           label={t(`status${borehole?.workflows[borehole?.workflows.length - 1]?.role.toLowerCase()}`)}
           color={borehole?.workflows[borehole?.workflows.length - 1]?.finished != null ? "success" : "warning"}
           icon={borehole?.workflows[borehole?.workflows.length - 1]?.finished != null ? <Check /> : <div />}
         />
-        {!auth.anonymousModeEnabled && (
-          <Typography variant="body1" sx={{ marginLeft: "18px" }}>
-            {t("updateDate")}: <DateText date={borehole?.updated} /> <br />
-            {t("updatedBy")}: {updatedBy?.name}
-          </Typography>
-        )}
       </Stack>
       <Stack direction="row" data-cy="detail-header" gap={2}>
         {editableByCurrentUser &&
