@@ -8,6 +8,7 @@
 - Added data extraction API.
 - Added support to extract coordinates from a borehole attachment.
 - Show ChangedAt and ChangedBy information in borehole detail header.
+- Add JSON export for single and multiple boreholes.
 - The workgroup name is now displayed in the borehole location tab.
 
 ### Changed

@@ -1,3 +1,4 @@
+import fs from "fs";
 import { defineConfig } from "cypress";
 import vitePreprocessor from "cypress-vite";
 
@@ -17,6 +18,9 @@ export default defineConfig({
           console.log(message);
 
           return null;
+        },
+        fileExistsInDownloadFolder(filename) {
+          return fs.existsSync(filename);
         },
       });
 

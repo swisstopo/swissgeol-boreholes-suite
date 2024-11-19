@@ -331,21 +331,26 @@ export const deleteDownloadedFile = fileName => {
   // Get the path to the downloaded file you want to delete
   let filePath = "cypress/downloads/" + fileName;
 
-  // Set the command in case of linux os
-  let command = "rm -f";
+  // If file exists in download folder, delete it.
+  cy.task("fileExistsInDownloadFolder", "languages/en.yml").then(exists => {
+    if (exists) {
+      // Set the command in case of linux os
+      let command = "rm -f";
 
-  // Override the command and path in case of windows os
-  if (Cypress.platform === "win32") {
-    command = "del";
-    filePath = "cypress\\downloads\\" + fileName;
-  }
+      // Override the command and path in case of windows os
+      if (Cypress.platform === "win32") {
+        command = "del";
+        filePath = "cypress\\downloads\\" + fileName;
+      }
 
-  cy.exec(`${command} ${filePath}`).then(result => {
-    // Check if the command executed successfully
-    expect(result.code).to.equal(0);
+      cy.exec(`${command} ${filePath}`).then(result => {
+        // Check if the command executed successfully
+        expect(result.code).to.equal(0);
 
-    // Check that the file has been deleted
-    cy.readFile(filePath, { log: false }).should("not.exist");
+        // Check that the file has been deleted
+        cy.readFile(filePath, { log: false }).should("not.exist");
+      });
+    }
   });
 };
 
