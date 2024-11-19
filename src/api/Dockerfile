@@ -9,7 +9,7 @@ RUN dotnet tool install --global dotnet-ef --version 8.0.0
 ENV PATH=$PATH:/root/.dotnet/tools
 
 # Restore dependencies and tools
-COPY BDMS.csproj .
+COPY api/BDMS.csproj Directory.Build.props ./
 RUN dotnet restore
 
 ENTRYPOINT ["dotnet", "watch", "run", "--no-launch-profile"]
@@ -20,11 +20,11 @@ ARG REVISION
 WORKDIR /src
 
 # Restore dependencies and tools
-COPY BDMS.csproj .
+COPY api/BDMS.csproj Directory.Build.props ./
 RUN dotnet restore
 
 # Create optimized production build
-COPY . .
+COPY api/ Directory.Build.props ./
 RUN dotnet publish \
   -c Release \
   -p:UseAppHost=false \
