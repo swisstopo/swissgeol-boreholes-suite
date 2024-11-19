@@ -10,7 +10,7 @@ namespace BDMS.ExternSync.Tasks;
 /// IMPORTANT! This class does not yet implement the actual behavior. It only
 /// contains sample code to verify the testing and integration concepts.
 /// </remarks>
-public class SynchronizeUsers(ISyncContext syncContext, ILogger<SynchronizeUsers> logger) : SyncTask(syncContext, logger)
+public class SynchronizeUsersTask(ISyncContext syncContext, ILogger<SynchronizeUsersTask> logger) : SyncTask(syncContext, logger)
 {
     /// <inheritdoc/>
     protected override async Task RunTaskAsync(CancellationToken cancellationToken)

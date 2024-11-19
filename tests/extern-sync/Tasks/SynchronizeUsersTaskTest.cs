@@ -6,13 +6,13 @@ using Moq;
 namespace BDMS.ExternSync.Test;
 
 [TestClass]
-public class SynchronizeUsersTest
+public class SynchronizeUsersTaskTest
 {
     [TestMethod]
     public async Task SynchronizeUsers()
     {
         using var syncContext = await SyncContext.BuildAsync(useInMemory: true).ConfigureAwait(false);
-        using var syncTask = new SynchronizeUsers(syncContext, Mock.Of<ILogger<SynchronizeUsers>>());
+        using var syncTask = new SynchronizeUsersTask(syncContext, Mock.Of<ILogger<SynchronizeUsersTask>>());
 
         await syncContext.SeedUserTestDataAsync().ConfigureAwait(false);
         var (source, target) = (syncContext.Source, syncContext.Target);

@@ -11,7 +11,7 @@ namespace BDMS.ExternSync.Tasks;
 /// IMPORTANT! This class does not yet implement the actual behavior. It only
 /// contains sample code to verify the testing and integration concepts.
 /// </remarks>
-public class UpdateSequences(ISyncContext syncContext, ILogger<UpdateSequences> logger) : SyncTask(syncContext, logger)
+public class UpdateSequencesTask(ISyncContext syncContext, ILogger<UpdateSequencesTask> logger) : SyncTask(syncContext, logger)
 {
     private const int minValue = 20000;
     private const string sequenceName = "users_id_usr_seq";
