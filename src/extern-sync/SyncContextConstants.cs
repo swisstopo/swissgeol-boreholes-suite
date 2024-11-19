@@ -1,13 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using System.Data.Common;
+﻿using Npgsql;
 
 namespace BDMS.ExternSync;
 
 /// <summary>
-/// <see cref="SyncContext"/> helper methods."/>
+/// <see cref="SyncContext"/> constants.
 /// </summary>
-public static class SyncContextHelpers
+public static class SyncContextConstants
 {
     /// <summary>
     /// The name of the source <see cref="BdmsContext"/>.
@@ -37,15 +35,5 @@ public static class SyncContextHelpers
     /// </summary>
     public const string BoreholesDatabaseSchemaName = "bdms";
 
-    /// <summary>
-    /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="dbConnection"/>
-    /// </summary>
-    public static DbContextOptions<BdmsContext> GetDbContextOptions(DbConnection dbConnection) =>
-        new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(dbConnection, SyncContextExtensions.SetDbContextOptions).Options;
-
-    /// <summary>
-    /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="connectionString"/>
-    /// </summary>
-    public static DbContextOptions<BdmsContext> GetDbContextOptions(string connectionString) =>
-        new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(connectionString, SyncContextExtensions.SetDbContextOptions).Options;
+    
 }

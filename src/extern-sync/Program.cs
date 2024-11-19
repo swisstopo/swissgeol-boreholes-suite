@@ -1,10 +1,10 @@
-using BDMS.ExternSync;
+﻿using BDMS.ExternSync;
 using BDMS.ExternSync.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using static BDMS.ExternSync.SyncContextHelpers;
+using static BDMS.ExternSync.SyncContextConstants;
 
 using var app = Host.CreateDefaultBuilder(args).ConfigureServices((context, services) =>
 {

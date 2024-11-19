@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Data.Common;
-using static BDMS.ExternSync.SyncContextHelpers;
+using static BDMS.ExternSync.SyncContextConstants;
+using static BDMS.ExternSync.SyncContextExtensions;
 
 namespace BDMS.ExternSync;
 
