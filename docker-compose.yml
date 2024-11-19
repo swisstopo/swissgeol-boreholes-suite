@@ -93,12 +93,14 @@ services:
       DB_PORT: 5432
   api:
     build:
-      context: ./src/api
+      context: ./src
+      dockerfile: api/Dockerfile
       target: development
     ports:
       - 5000:5000
     volumes:
       - ./src/api:/src
+      - ./src/Directory.Build.props:/Directory.Build.props
       - /src/bin
       - /src/obj
     depends_on:

@@ -6,7 +6,7 @@ ARG REVISION
 WORKDIR /src
 
 # Restore dependencies and tools
-COPY --parents "extern-sync/BDMS.ExternSync.csproj" "api/BDMS.csproj" ./
+COPY --parents "extern-sync/BDMS.ExternSync.csproj" "api/BDMS.csproj" "Directory.Build.props" ./
 RUN dotnet restore "./extern-sync/BDMS.ExternSync.csproj"
 
 # Create optimized production build
