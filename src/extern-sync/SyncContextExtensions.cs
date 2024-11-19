@@ -2,7 +2,8 @@
 using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System.Data;
-using static BDMS.ExternSync.SyncContextHelpers;
+using System.Data.Common;
+using static BDMS.ExternSync.SyncContextConstants;
 
 namespace BDMS.ExternSync;
 
@@ -56,4 +57,16 @@ public static class SyncContextExtensions
         context.Users.RemoveRange(usersToRemove);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="dbConnection"/>
+    /// </summary>
+    public static DbContextOptions<BdmsContext> GetDbContextOptions(DbConnection dbConnection) =>
+        new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(dbConnection, SyncContextExtensions.SetDbContextOptions).Options;
+
+    /// <summary>
+    /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="connectionString"/>
+    /// </summary>
+    public static DbContextOptions<BdmsContext> GetDbContextOptions(string connectionString) =>
+        new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(connectionString, SyncContextExtensions.SetDbContextOptions).Options;
 }

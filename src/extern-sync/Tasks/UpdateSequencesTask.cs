@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
-using static BDMS.ExternSync.SyncContextHelpers;
+using static BDMS.ExternSync.SyncContextConstants;
 
 namespace BDMS.ExternSync.Tasks;
 

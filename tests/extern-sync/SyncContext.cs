@@ -1,4 +1,4 @@
-﻿using static BDMS.ExternSync.Test.SyncContextHelpers;
+﻿using static BDMS.ExternSync.Test.SyncContextExtensions;
 
 namespace BDMS.ExternSync.Test;
 
