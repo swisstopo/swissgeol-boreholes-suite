@@ -106,6 +106,8 @@ export const interceptApiCalls = () => {
     url: "/api/v2/boreholefile/dataextraction/*",
   }).as("load-extraction-file");
   cy.intercept("dataextraction/api/V1/extract_data").as("extract-data");
+
+  cy.intercept("https://api3.geo.admin.ch/rest/services/height*").as("height");
 };
 
 /**
