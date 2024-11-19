@@ -8,7 +8,7 @@ using static BDMS.ExternSync.SyncContextConstants;
 namespace BDMS.ExternSync;
 
 /// <summary>
-/// <see cref="SyncContext"/> extension methods."/>
+/// <see cref="SyncContext"/> extension methods.
 /// </summary>
 public static class SyncContextExtensions
 {
@@ -25,20 +25,21 @@ public static class SyncContextExtensions
     /// <summary>
     /// Gets the <see cref="NpgsqlConnection"/> for the specified <paramref name="context"/>.
     /// </summary>
-    public async static Task<NpgsqlConnection> GetDbConnectionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
+    public static async Task<NpgsqlConnection> GetDbConnectionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
     {
         var databaseConnection = (NpgsqlConnection)context.Database.GetDbConnection();
         if (databaseConnection.State != ConnectionState.Open)
         {
             await databaseConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
         }
+
         return databaseConnection;
     }
 
     /// <summary>
     /// Gets the database schema version for the specified <paramref name="context"/>.
     /// </summary>
-    public async static Task<string?> GetDbSchemaVersionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
+    public static async Task<string?> GetDbSchemaVersionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
     {
         var migrations = await context.Database.GetAppliedMigrationsAsync(cancellationToken).ConfigureAwait(false);
         return migrations.LastOrDefault();
@@ -59,13 +60,13 @@ public static class SyncContextExtensions
     }
 
     /// <summary>
-    /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="dbConnection"/>
+    /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="dbConnection"/>.
     /// </summary>
     public static DbContextOptions<BdmsContext> GetDbContextOptions(DbConnection dbConnection) =>
         new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(dbConnection, SyncContextExtensions.SetDbContextOptions).Options;
 
     /// <summary>
-    /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="connectionString"/>
+    /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="connectionString"/>.
     /// </summary>
     public static DbContextOptions<BdmsContext> GetDbContextOptions(string connectionString) =>
         new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(connectionString, SyncContextExtensions.SetDbContextOptions).Options;

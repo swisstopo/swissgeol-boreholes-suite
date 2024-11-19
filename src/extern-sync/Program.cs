@@ -22,7 +22,7 @@ using var app = Host.CreateDefaultBuilder(args).ConfigureServices((context, serv
     services.AddScoped<ISyncTask, SetupDatabaseTask>();
     services.AddScoped<ISyncTask, UpdateSequencesTask>();
     services.AddScoped<ISyncTask, SynchronizeUsersTask>();
-    
+
     // Register task manager
     services.AddScoped<SyncTaskManager>();
 })

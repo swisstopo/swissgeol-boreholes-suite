@@ -18,7 +18,9 @@ public class SyncContext(
     /// <inheritdoc/>
     public BdmsContext Target { get; } = new BdmsContext(GetDbContextOptions(targetDbConnection));
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Disposes the <see cref="Source"/> and <see cref="Target"/> database contexts.
+    /// </summary>
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue && disposing)
@@ -26,7 +28,7 @@ public class SyncContext(
             Source.Dispose();
             Target.Dispose();
 
-            disposedValue=true;
+            disposedValue = true;
         }
     }
 
