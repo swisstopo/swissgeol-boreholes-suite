@@ -85,6 +85,20 @@ const BottomBarContainer = ({
     setIsBusy(false);
   };
 
+  const onExportMultiple = async () => {
+    const exportBoreholes = boreholes.data.filter(borehole => selectionModel.includes(borehole.id));
+    const jsonString = JSON.stringify(exportBoreholes, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `bulkexport_${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <BottomBar
@@ -92,6 +106,7 @@ const BottomBarContainer = ({
         multipleSelected={multipleSelected}
         onCopyBorehole={onCopyBorehole}
         onDeleteMultiple={onDeleteMultiple}
+        onExportMultiple={onExportMultiple}
         search={search}
         boreholes={boreholes}
         workgroup={workgroupId}

@@ -1,11 +1,13 @@
-import { saveWithSaveBar } from "../helpers/buttonHelpers";
+import { exportItem, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
+  deleteDownloadedFile,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
+  readDownloadedFile,
   returnToOverview,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -231,5 +233,23 @@ describe("Test for the borehole form.", () => {
       clickOnRowWithText("AAA_HIPPOPOTHAMUS");
       ensureEditingEnabled();
     });
+  });
+
+  it("Exports a borehole", () => {
+    const boreholeAlternateName = "AAA_HIPPOPOTHAMUS";
+    createBorehole({
+      "extended.original_name": boreholeAlternateName,
+      "custom.alternate_name": boreholeAlternateName,
+    }).as("borehole_id");
+
+    deleteDownloadedFile(`${boreholeAlternateName}.json`);
+
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}`);
+      ensureEditingDisabled();
+      exportItem();
+    });
+
+    readDownloadedFile(`${boreholeAlternateName}.json`);
   });
 });
