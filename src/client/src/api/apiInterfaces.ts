@@ -29,9 +29,7 @@ export interface Workgroup {
 
 export interface WorkgroupRole {
   userId: number;
-  user?: User;
   workgroupId: number;
-  workgroup?: Workgroup;
   role: Role;
   isActive?: boolean;
 }
@@ -50,7 +48,6 @@ export interface Term {
 
 export interface TermsAccepted {
   userId: number;
-  user: User;
   termId: number;
   term: Term;
   acceptedAt: Date;
