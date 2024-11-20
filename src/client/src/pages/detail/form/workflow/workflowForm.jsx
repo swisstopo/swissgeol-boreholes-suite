@@ -31,6 +31,7 @@ class WorkflowForm extends React.Component {
     this.load = this.load.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.updateAttributeDelay = false;
+    this.roleMap = { EDIT: "Editor", CONTROL: "Controller", VALID: "Validator", PUBLIC: "Publisher" };
     this.state = {
       expanded: false,
       id: props.id,
@@ -42,7 +43,6 @@ class WorkflowForm extends React.Component {
 
   componentDidMount() {
     this.load(this.state.id);
-    this.roleMap = { EDIT: "Editor", CONTROL: "Controller", VALID: "Validator", PUBLIC: "Publisher" };
   }
 
   componentDidUpdate(prevProps) {

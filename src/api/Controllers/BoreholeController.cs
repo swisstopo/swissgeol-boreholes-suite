@@ -3,6 +3,7 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Controllers;
@@ -38,6 +39,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         Context.Entry(existingBorehole).CurrentValues.SetValues(entity);
+
+        // Update the geometry if new coordinates are provided
+        if (entity.LocationX.HasValue && entity.LocationY.HasValue)
+        {
+            existingBorehole.Geometry = new Point(entity.LocationX.Value, entity.LocationY.Value) { SRID = 2056 };
+        }
 
         // Update borehole identifiers with borehole
         if (entity.BoreholeCodelists != null)
