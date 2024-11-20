@@ -79,14 +79,22 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         }
       };
 
-      // @ts-expect-error onChange is not in the GridColumnHeaderParams type, but can be used
-      return <GridHeaderCheckbox {...params} onChange={handleHeaderCheckboxClick} />;
+      return (
+        <GridHeaderCheckbox
+          {...params}
+          // @ts-expect-error onChange is not in the GridColumnHeaderParams type, but can be used
+          onChange={handleHeaderCheckboxClick}
+          data-cy={"table-header-checkbox"}
+          sx={{ m: 1 }}
+        />
+      );
     };
   }, [boreholes.filtered_borehole_ids, setSelectionModel]);
 
   const columns: GridColDef[] = [
     {
       field: "__check__",
+      width: 10,
       resizable: false,
       sortable: false,
       filterable: false,
@@ -94,7 +102,11 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       disableReorder: true,
       disableExport: true,
       renderHeader: renderHeaderCheckbox,
-      renderCell: params => <GridCellCheckboxRenderer {...params} />,
+      renderCell: params => (
+        <Box sx={{ p: 1 }}>
+          <GridCellCheckboxRenderer {...params} />
+        </Box>
+      ),
     },
     { field: "alternate_name", headerName: t("name"), flex: 1 },
     {
@@ -165,6 +177,12 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       field: "lock",
       headerName: "",
       width: 20,
+      resizable: false,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      disableReorder: true,
+      disableExport: true,
       renderCell: value => {
         if (value.row.lock) {
           return (
@@ -256,7 +274,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         ".MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
           outline: "none",
         },
-        ".MuiDataGrid-cellCheckbox": { minWidth: "42px", width: "42px" },
         ".MuiTablePagination-toolbar p": {
           margin: 0,
         },
