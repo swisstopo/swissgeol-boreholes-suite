@@ -275,7 +275,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             boreholeGeometry.Id = 0;
         }
 
-        // remove navigation properties
         borehole.UpdatedBy = null;
         borehole.Workgroup = null;
 
