@@ -1,7 +1,7 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
-import { User } from "./apiInterfaces.ts";
+import { User, Workgroup } from "./apiInterfaces.ts";
 import { fetchApiV2, upload } from "./fetchApiV2";
 
 export interface BasicIdentifier {
@@ -33,6 +33,7 @@ export interface BoreholeV2 {
   boreholeCodelists: BasicIdentifier[];
   workflows: Workflow[];
   workgroupId: number;
+  workgroup: Workgroup;
   originalReferenceSystem: number;
   precisionLocationYLV03: number;
   precisionLocationXLV03: number;
