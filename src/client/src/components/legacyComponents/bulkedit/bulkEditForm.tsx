@@ -29,6 +29,7 @@ import { StackFullWidth } from "../../styledComponents.ts";
 import { BulkEditFormField, BulkEditFormProps, BulkEditFormValue } from "./BulkEditFormProps.ts";
 
 export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => {
+  console.log(selected);
   const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[string, BulkEditFormValue]>>([]);
   const [workgroupId, setWorkgroupId] = useState<string>("");
   const { showAlert } = useContext(AlertContext);

@@ -601,6 +601,7 @@ export function boreholeEditorList() {
           isFetching: false,
           fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data,
+          filtered_borehole_ids: action.json.filtered_borehole_ids,
           // eslint-disable-next-line no-prototype-builtins
           pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
           page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,

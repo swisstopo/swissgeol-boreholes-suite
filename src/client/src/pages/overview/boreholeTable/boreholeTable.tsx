@@ -5,8 +5,11 @@ import { useHistory } from "react-router-dom";
 import { Box } from "@mui/system";
 import {
   DataGrid,
+  GridCellCheckboxRenderer,
   GridColDef,
+  GridColumnHeaderParams,
   GridEventListener,
+  GridHeaderCheckbox,
   GridPaginationModel,
   GridRowParams,
   GridRowSelectionModel,
@@ -66,7 +69,33 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     return rowCountRef.current;
   }, [boreholes?.length]);
 
+  const renderHeaderCheckbox = useMemo(() => {
+    return (params: GridColumnHeaderParams) => {
+      const handleHeaderCheckboxClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.checked) {
+          setSelectionModel(boreholes.filtered_borehole_ids);
+        } else {
+          setSelectionModel([]);
+        }
+      };
+
+      // @ts-expect-error onChange is not in the GridColumnHeaderParams type, but can be used
+      return <GridHeaderCheckbox {...params} onChange={handleHeaderCheckboxClick} />;
+    };
+  }, [boreholes.filtered_borehole_ids, setSelectionModel]);
+
   const columns: GridColDef[] = [
+    {
+      field: "__check__",
+      resizable: false,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      disableReorder: true,
+      disableExport: true,
+      renderHeader: renderHeaderCheckbox,
+      renderCell: params => <GridCellCheckboxRenderer {...params} />,
+    },
     { field: "alternate_name", headerName: t("name"), flex: 1 },
     {
       field: "workgroup",
@@ -227,6 +256,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         ".MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
           outline: "none",
         },
+        ".MuiDataGrid-cellCheckbox": { minWidth: "42px", width: "42px" },
         ".MuiTablePagination-toolbar p": {
           margin: 0,
         },
