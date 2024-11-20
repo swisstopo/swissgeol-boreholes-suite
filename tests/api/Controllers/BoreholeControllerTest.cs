@@ -142,6 +142,7 @@ public class BoreholeControllerTest
         Assert.AreEqual(newBorehole.LocationY, updatedBorehole.LocationY);
         Assert.AreEqual(newBorehole.PrecisionLocationY, updatedBorehole.PrecisionLocationY);
         Assert.AreEqual("POINT (2600000 1200000)", updatedBorehole.Geometry.ToString());
+        Assert.AreEqual("a. user", updatedBorehole.UpdatedBy.Name.ToLower());
         Assert.AreEqual(newBorehole.LocationXLV03, updatedBorehole.LocationXLV03);
         Assert.AreEqual(newBorehole.PrecisionLocationXLV03, updatedBorehole.PrecisionLocationXLV03);
         Assert.AreEqual(newBorehole.LocationYLV03, updatedBorehole.LocationYLV03);
