@@ -107,6 +107,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles)
             .Include(b => b.BoreholeGeometry)
+            .Include(b => b.Workgroup)
             .Include(b => b.UpdatedBy);
     }
 
@@ -274,8 +275,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             boreholeGeometry.Id = 0;
         }
 
-        // remove navigation property
         borehole.UpdatedBy = null;
+        borehole.Workgroup = null;
 
         borehole.WorkgroupId = workgroupId;
 
