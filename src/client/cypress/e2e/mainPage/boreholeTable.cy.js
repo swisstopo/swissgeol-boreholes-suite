@@ -1,4 +1,5 @@
 import {
+  checkRowWithText,
   clickOnRowWithText,
   showTableAndWaitForData,
   sortBy,
