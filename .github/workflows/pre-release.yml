@@ -125,6 +125,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./src
+          file: ./src/api/Dockerfile
           push: true
           build-args: |
             VERSION=${{ env.VERSION }}
