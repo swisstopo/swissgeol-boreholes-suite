@@ -21,6 +21,7 @@ import { LockKeyhole } from "lucide-react";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../../api/fetchApiV2";
 import { theme } from "../../../AppTheme.ts";
+import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { muiLocales } from "../../../mui.locales.ts";
 import { OverViewContext } from "../overViewContext.tsx";
 import { TablePaginationActions } from "./TablePaginationActions.tsx";
@@ -54,6 +55,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const history = useHistory();
   const domains = useDomains();
   const apiRef = useGridApiRef();
+  const auth = useAuth();
   const firstRender = useRef(true);
   const { tableScrollPosition, setTableScrollPosition } = useContext(OverViewContext);
   const hasLoaded = useRef(false);
@@ -109,14 +111,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       ),
     },
     { field: "alternate_name", headerName: t("name"), flex: 1 },
-    {
-      field: "workgroup",
-      valueGetter: (value: { name: string }) => {
-        return value.name;
-      },
-      headerName: t("workgroup"),
-      flex: 1,
-    },
     {
       field: "borehole_type",
       valueGetter: (value: number) => {
@@ -194,6 +188,17 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       },
     },
   ];
+
+  // Add workgroup column if not in anonymous mode
+  !auth.anonymousModeEnabled &&
+    columns.splice(1, 0, {
+      field: "workgroup",
+      valueGetter: (value: { name: string }) => {
+        return value.name;
+      },
+      headerName: t("workgroup"),
+      flex: 1,
+    });
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
     history.push(`/${params.row.id}/location`);
