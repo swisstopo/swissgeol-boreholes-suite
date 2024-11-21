@@ -10,18 +10,8 @@ internal static class ContextFactory
     /// Creates an instance of <see cref="BdmsContext"/>.
     /// </summary>
     /// <returns>The initialized <see cref="BdmsContext"/>.</returns>
-    public static BdmsContext CreateContext()
-    {
-        return new BdmsContext(
-             new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(
-                ConnectionString,
-                options =>
-                {
-                    options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                    options.UseNetTopologySuite();
-                    options.MigrationsHistoryTable("__EFMigrationsHistory", "bdms");
-                }).Options);
-    }
+    public static BdmsContext CreateContext() =>
+        new(new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(ConnectionString, BdmsContextExtensions.SetDbContextOptions).Options);
 
     /// <summary>
     /// Creates a new DbContext and starts a transaction.

@@ -92,3 +92,18 @@ jobs:
       - name: Run view-sync
         working-directory: src/view-sync
         run: docker compose -f docker-compose.yml up --build --exit-code-from view-sync
+
+  extern-sync:
+    runs-on: ubuntu-latest
+    name: Run extern-sync
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup environment
+        working-directory: src/extern-sync
+        run: docker compose -f docker-compose.services.yml up --build --wait
+
+      - name: Run extern-sync
+        working-directory: src/extern-sync
+        run: docker compose -f docker-compose.yml up --build --exit-code-from extern-sync

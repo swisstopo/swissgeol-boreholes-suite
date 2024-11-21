@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Security.Claims;
+using static BDMS.BdmsContextConstants;
 
 namespace BDMS;
 
@@ -96,7 +97,7 @@ public class BdmsContext : DbContext
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("bdms");
+        modelBuilder.HasDefaultSchema(BoreholesDatabaseSchemaName);
         modelBuilder.Entity<UserWorkgroupRole>().HasKey(k => new { k.UserId, k.WorkgroupId, k.Role });
         modelBuilder.Entity<TermsAccepted>().HasKey(k => new { k.UserId, k.TermId });
 
