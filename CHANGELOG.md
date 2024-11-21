@@ -27,6 +27,7 @@
 - The basemap selector buttons were not displayed correctly on hover.
 - No scrollbar was displayed in the side drawer when many additional layers were added.
 - There was no appropriate error message when the drawn box did not contain extractable coordinates.
+- The responsive design of the coordinate segment in the detail view was broken.
 - When clicking the select all checkbox in the borehole table, only the boreholes on the current page were selected.
 
 ## v2.1.870 - 2024-09-27

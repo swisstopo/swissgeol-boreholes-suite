@@ -175,6 +175,7 @@ export const DetailPage: FC = () => {
                 onBoreholeFormSubmit={onBoreholeFormSubmit}
                 handleDirtyChange={handleDirtyChange}
                 borehole={borehole}
+                panelOpen={panelOpen}
               />
             </MainContentBox>
             {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}

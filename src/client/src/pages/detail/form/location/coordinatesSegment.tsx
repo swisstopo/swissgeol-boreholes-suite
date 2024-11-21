@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardHeader } from "@mui/material";
+import { Box, Card, CardContent, CardHeader } from "@mui/material";
 import { Check, X } from "lucide-react";
 import { LabelingButton } from "../../../../components/buttons/labelingButton";
 import { FormContainer, FormCoordinate, FormDomainSelect, FormSelect } from "../../../../components/form/form";
@@ -261,12 +261,12 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
               sx={{ p: 4, pb: 3 }}
               titleTypographyProps={{ variant: "h5" }}
               action={
-                editingEnabled && (
+                <Box sx={{ visibility: editingEnabled ? "visible" : "hidden" }}>
                   <LabelingButton
                     className={extractionObject?.type === "coordinates" ? "Mui-active" : ""}
                     onClick={() => startLabeling()}
                   />
-                )
+                </Box>
               }
             />
             <CardContent sx={{ pt: 4, px: 3 }}>

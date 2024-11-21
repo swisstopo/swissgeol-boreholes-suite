@@ -28,7 +28,15 @@ const IdentifierSegment = ({ borehole, editingEnabled, formMethods }: Identifier
   return (
     <Card>
       <FormSegmentBox>
-        <Grid container spacing={2}>
+        <Stack sx={{ visibility: editingEnabled ? "visible" : "hidden" }} alignItems="flex-end">
+          <AddButton
+            label="addIdentifier"
+            onClick={() => {
+              append({ boreholeId: borehole.id, codelistId: null, value: "" });
+            }}
+          />
+        </Stack>
+        <Grid container spacing={2} sx={{ mt: -6 }}>
           <Grid item xs={6}>
             <Typography variant="h6"> {t("borehole_identifier")}</Typography>
           </Grid>
@@ -79,16 +87,6 @@ const IdentifierSegment = ({ borehole, editingEnabled, formMethods }: Identifier
             </Grid>
           </Grid>
         ))}
-        <Stack sx={{ mt: 2 }} alignItems="flex-end">
-          {editingEnabled && (
-            <AddButton
-              label="addIdentifier"
-              onClick={() => {
-                append({ boreholeId: borehole.id, codelistId: null, value: "" });
-              }}
-            />
-          )}
-        </Stack>
       </FormSegmentBox>
     </Card>
   );

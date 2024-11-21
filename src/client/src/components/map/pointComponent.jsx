@@ -33,7 +33,6 @@ class PointComponent extends React.Component {
     this.changefeature = this.updatePointAndGetAddress.bind(this);
     this.detailMapStyleFunction = detailMapStyleFunction.bind(this);
     this.getAddress = this.getAddress.bind(this);
-    this.setStateBound = this.setState.bind(this);
     this.srs = "EPSG:2056";
 
     _.forEach(projections, function (proj, srs) {
@@ -309,11 +308,11 @@ class PointComponent extends React.Component {
           style={{
             padding: "0px",
             flex: "1 1 100%",
-            height: 525,
+            height: 380,
           }}
         />
         <MapControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
-        <Box sx={{ position: "absolute", right: 0, top: 500 }}>
+        <Box sx={{ position: "absolute", right: 0, top: 355 }}>
           <BasemapSelector marginBottom="0px" />
         </Box>
         <Box
@@ -329,6 +328,7 @@ class PointComponent extends React.Component {
           <Box
             sx={{
               flex: "1 1 100%",
+              width: "300px",
             }}>
             <Label color="black">
               <Icon name="map marker" />
