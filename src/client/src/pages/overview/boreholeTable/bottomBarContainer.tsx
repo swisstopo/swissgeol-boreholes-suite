@@ -25,6 +25,8 @@ interface BottomBarContainerProps {
   ) => void;
   multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
   rowToHighlight: number | null;
+  selectionModel: GridRowSelectionModel;
+  setSelectionModel: React.Dispatch<React.SetStateAction<GridRowSelectionModel>>;
 }
 
 const BottomBarContainer = ({
@@ -34,6 +36,8 @@ const BottomBarContainer = ({
   search,
   setHover,
   rowToHighlight,
+  selectionModel,
+  setSelectionModel,
 }: BottomBarContainerProps) => {
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const history = useHistory();
@@ -45,7 +49,6 @@ const BottomBarContainer = ({
     pageSize: boreholes.limit ?? 100,
     page: boreholes.page ? boreholes.page - 1 : 0, // MUI pagination starts at 0, whereas server pagination starts at 1
   });
-  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
       field: boreholes.orderby ?? "alternate_name",

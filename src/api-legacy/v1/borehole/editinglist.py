@@ -26,15 +26,6 @@ class ListEditingBorehole(Action):
 
         where, params = self.filterBorehole(filter)
 
-        if limit is not None and page is not None:
-            paging = """
-                LIMIT %s
-                OFFSET %s
-            """ % (self.getIdx(), self.getIdx())
-            params += [
-                limit, (int(limit) * (int(page) - 1))
-            ]
-
         rowsSql = f"""
             SELECT
                 borehole.id_bho as id,
@@ -446,11 +437,17 @@ class ListEditingBorehole(Action):
         rec = await self.conn.fetchrow(
             sql, *(layer_params + chronostratigraphy_params + lithostratigraphy_params + params)
         )
+
+        data = self.decode(rec[0]) if rec[0] is not None else []
+        offset = (page - 1) * limit if page is not None and limit is not None else 0
+        paginated_data = data[offset:offset + limit] if limit is not None else data
+        borehole_ids = [borehole['id'] for borehole in data if borehole.get('lock') is None]
         return {
-            "data": self.decode(rec[0]) if rec[0] is not None else [],
+            "data": paginated_data,
             "orderby": orderby,
             "direction": direction,
             "page": page if page is not None else 1,
             "pages": math.ceil(rec[1]/limit) if limit is not None else 1,
-            "rows": rec[1]
+            "rows": rec[1],
+            "filtered_borehole_ids": borehole_ids,
         }

@@ -18,6 +18,7 @@ interface MapViewProps {
 export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
   const [rowToHighlight, setRowToHighlight] = useState<number | null>(null);
+  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const history = useHistory();
   const {
     filterPolygon,
@@ -93,7 +94,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
               featureIds,
             );
           }}
-          selected={editorStore.mselected}
+          selected={selectionModel}
         />
       </Dialog>
       <MapComponent
@@ -128,6 +129,8 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         loadEditingBoreholes={loadBoreholes}
         multipleSelected={multipleSelected}
         search={search}
+        selectionModel={selectionModel}
+        setSelectionModel={setSelectionModel}
         rowToHighlight={rowToHighlight}
         setHover={setHover}
       />

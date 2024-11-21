@@ -2,6 +2,7 @@ import {
   clickOnRowWithText,
   showTableAndWaitForData,
   sortBy,
+  unCheckRowWithText,
   verifyPaginationText,
   verifyRowContains,
   waitForTableData,
@@ -76,5 +77,40 @@ describe("Borehole editor table tests", () => {
     waitForTableData();
     verifyPaginationText("401–500 of 1626");
     verifyRowContains("Nichole VonRueden", 0);
+  });
+
+  it("verifies all rows are selected on header checkbox click", () => {
+    loginAsAdmin();
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+    showTableAndWaitForData();
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+
+    // check all rows
+    cy.get('[data-cy="table-header-checkbox"]').click();
+    cy.contains("1'626").should("not.exist");
+    cy.contains("1478 selected").should("be.visible"); // does not select locked rows
+
+    // uncheck one row
+    unCheckRowWithText("Aaliyah Casper");
+    cy.contains("1477 selected").should("be.visible");
+
+    // uncheck all rows
+    cy.get('[data-cy="table-header-checkbox"]').click();
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+
+    // verify select all rows with filtered data
+    cy.get('[data-cy="show-filter-button"]').click();
+    cy.contains("Registration").click();
+    cy.contains("Show all fields").children(".checkbox").click();
+
+    // input value
+    cy.contains("Created by").next().find("input").type("v_ U%r");
+    cy.wait("@edit_list");
+    verifyPaginationText("1–100 of 329");
+
+    // check all rows
+    cy.get('[data-cy="table-header-checkbox"]').click();
+    cy.contains("1'626").should("not.exist");
+    cy.contains("298 selected").should("be.visible"); // does not select locked rows
   });
 });

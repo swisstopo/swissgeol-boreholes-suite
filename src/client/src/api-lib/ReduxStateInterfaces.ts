@@ -1,3 +1,4 @@
+import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 
 export interface ReduxRootState {
@@ -119,6 +120,7 @@ export interface BoreholeAttributes {
 }
 
 export interface Boreholes {
+  filtered_borehole_ids: GridRowSelectionModel;
   limit: number;
   isFetching: boolean;
   length: number;
