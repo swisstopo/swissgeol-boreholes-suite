@@ -113,7 +113,7 @@ describe("Borehole editor table tests", () => {
     cy.contains("1 selected").should("be.visible");
 
     // navigate to previous page
-    cy.get('[aria-label="next page"]').scrollIntoView().click();
+    cy.get('[aria-label="previous page"]').scrollIntoView().click();
     waitForTableData();
     cy.contains("1 selected").should("be.visible");
 
