@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { Card, Stack } from "@mui/material";
+import { Card, Grid, Stack } from "@mui/material";
 import { fetchApiV2 } from "../../../../api/fetchApiV2";
 import PointComponent from "../../../../components/map/pointComponent";
 import { FormSegmentBox } from "../../../../components/styledComponents";
@@ -13,9 +13,10 @@ import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces
 
 interface LocationSegmentProps extends LocationBaseProps {
   formMethods: UseFormReturn<LocationFormInputs>;
+  labelingPanelOpen: boolean;
 }
 
-const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegmentProps) => {
+const LocationSegment = ({ borehole, editingEnabled, labelingPanelOpen, formMethods }: LocationSegmentProps) => {
   const transformCoordinates = useCallback(async (referenceSystem: string, x: number, y: number) => {
     let apiUrl;
     if (referenceSystem === referenceSystems.LV95.name) {
@@ -103,8 +104,8 @@ const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegm
   return (
     <Stack direction="column" gap={3}>
       <Card sx={{ py: 1, px: 1 }}>
-        <Stack direction="row" gap={2} sx={{ flexWrap: "wrap" }}>
-          <Stack gap={2} sx={{ flexGrow: 1, minWidth: 600 }}>
+        <Grid container spacing={2}>
+          <Grid xs={12} md={12} lg={labelingPanelOpen ? 12 : 6}>
             <CoordinatesSegment
               borehole={borehole}
               editingEnabled={editingEnabled}
@@ -113,27 +114,31 @@ const LocationSegment = ({ borehole, editingEnabled, formMethods }: LocationSegm
               handleCoordinateTransformation={handleCoordinateTransformation}
               setValuesForCountryCantonMunicipality={setValuesForCountryCantonMunicipality}
             />
+          </Grid>
+          <Grid xs={12} md={12} lg={labelingPanelOpen ? 12 : 6}>
+            <FormSegmentBox>
+              <PointComponent
+                applyChange={(
+                  x: string,
+                  y: string,
+                  height: number,
+                  country: string,
+                  canton: string,
+                  municipality: string,
+                ) => {
+                  setValuesForNewMapPoint(x, y, height, country, canton, municipality);
+                }}
+                id={borehole.id}
+                isEditable={editingEnabled}
+                x={borehole.locationX ? Number(borehole.locationX) : null}
+                y={borehole.locationY ? Number(borehole.locationY) : null}
+              />
+            </FormSegmentBox>
+          </Grid>
+          <Grid xs={12}>
             <ElevationSegment borehole={borehole} editingEnabled={editingEnabled} formMethods={formMethods} />
-          </Stack>
-          <FormSegmentBox sx={{ flexGrow: 1 }}>
-            <PointComponent
-              applyChange={(
-                x: string,
-                y: string,
-                height: number,
-                country: string,
-                canton: string,
-                municipality: string,
-              ) => {
-                setValuesForNewMapPoint(x, y, height, country, canton, municipality);
-              }}
-              id={borehole.id}
-              isEditable={editingEnabled}
-              x={borehole.locationX ? Number(borehole.locationX) : null}
-              y={borehole.locationY ? Number(borehole.locationY) : null}
-            />
-          </FormSegmentBox>
-        </Stack>
+          </Grid>
+        </Grid>
       </Card>
       <CantonMunicipalitySegment
         country={borehole.country}

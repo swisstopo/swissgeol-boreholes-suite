@@ -302,6 +302,9 @@ class PointComponent extends React.Component {
         style={{
           position: "relative",
           padding: 0,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
         }}>
         <div
           className="stbg"
@@ -309,11 +312,12 @@ class PointComponent extends React.Component {
           style={{
             padding: "0px",
             flex: "1 1 100%",
-            height: 525,
+            height: "100%",
+            minHeight: 380,
           }}
         />
         <MapControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
-        <Box sx={{ position: "absolute", right: 0, top: 500 }}>
+        <Box sx={{ position: "absolute", right: 0, bottom: 80 }}>
           <BasemapSelector marginBottom="0px" />
         </Box>
         <Box
