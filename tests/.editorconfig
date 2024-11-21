@@ -3,9 +3,17 @@
 
 [*.cs]
 dotnet_diagnostic.CA1001.severity = none
+dotnet_diagnostic.CA1014.severity = none
 dotnet_diagnostic.CA1801.severity = none
 dotnet_diagnostic.CA1804.severity = none
+dotnet_diagnostic.CA2000.severity = none
+dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.CS1591.severity = none
+dotnet_diagnostic.CS8604.severity = none
 dotnet_diagnostic.CS8618.severity = none
+dotnet_diagnostic.CS8620.severity = none
+dotnet_diagnostic.CS8625.severity = none
+dotnet_diagnostic.CS8629.severity = none
 dotnet_diagnostic.SA0001.severity = none
 dotnet_diagnostic.IDE0051.severity = none
 dotnet_diagnostic.IDE0060.severity = none
