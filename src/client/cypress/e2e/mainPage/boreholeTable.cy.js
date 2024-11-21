@@ -95,7 +95,7 @@ describe("Borehole editor table tests", () => {
     cy.get('[data-cy="table-header-checkbox"]').click();
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
 
-    // verify select all rows with filteres data
+    // verify select all rows with filtered data
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
