@@ -52,12 +52,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 
 var connectionString = builder.Configuration.GetConnectionString(nameof(BdmsContext));
-builder.Services.AddNpgsql<BdmsContext>(connectionString, options =>
-{
-    options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-    options.UseNetTopologySuite();
-    options.MigrationsHistoryTable("__EFMigrationsHistory", "bdms");
-});
+builder.Services.AddNpgsql<BdmsContext>(connectionString, BdmsContextExtensions.SetDbContextOptions);
 
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddSwaggerGen(options =>

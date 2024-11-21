@@ -24,14 +24,4 @@ public static class SyncContextConstants
     /// services with different connection strings.
     /// </remarks>
     public const string TargetBdmsContextName = "TargetBdmsContext";
-
-    /// <summary>
-    /// The name of the boreholes database.
-    /// </summary>
-    public const string BoreholesDatabaseName = "bdms";
-
-    /// <summary>
-    /// The name of the boreholes database schema.
-    /// </summary>
-    public const string BoreholesDatabaseSchemaName = "bdms";
 }

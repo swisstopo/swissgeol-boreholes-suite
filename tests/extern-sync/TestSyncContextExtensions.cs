@@ -2,7 +2,7 @@
 using DotNet.Testcontainers.Builders;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
-using static BDMS.ExternSync.SyncContextConstants;
+using static BDMS.BdmsContextConstants;
 using static BDMS.ExternSync.SyncContextExtensions;
 
 namespace BDMS.ExternSync;

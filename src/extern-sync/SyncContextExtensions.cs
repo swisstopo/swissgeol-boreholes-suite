@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System.Data;
 using System.Data.Common;
-using static BDMS.ExternSync.SyncContextConstants;
 
 namespace BDMS.ExternSync;
 
@@ -12,16 +10,6 @@ namespace BDMS.ExternSync;
 /// </summary>
 public static class SyncContextExtensions
 {
-    /// <summary>
-    /// Sets the <see cref="NpgsqlDbContextOptionsBuilder"/> options for the boreholes database context.
-    /// </summary>
-    public static void SetDbContextOptions(this NpgsqlDbContextOptionsBuilder options)
-    {
-        options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-        options.UseNetTopologySuite();
-        options.MigrationsHistoryTable("__EFMigrationsHistory", BoreholesDatabaseName);
-    }
-
     /// <summary>
     /// Gets and opens the <see cref="NpgsqlConnection"/> for the specified <paramref name="context"/>.
     /// </summary>
@@ -63,11 +51,11 @@ public static class SyncContextExtensions
     /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="dbConnection"/>.
     /// </summary>
     public static DbContextOptions<BdmsContext> GetDbContextOptions(DbConnection dbConnection) =>
-        new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(dbConnection, SyncContextExtensions.SetDbContextOptions).Options;
+        new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(dbConnection, options => BdmsContextExtensions.SetDbContextOptions(options)).Options;
 
     /// <summary>
     /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="connectionString"/>.
     /// </summary>
     public static DbContextOptions<BdmsContext> GetDbContextOptions(string connectionString) =>
-        new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(connectionString, SyncContextExtensions.SetDbContextOptions).Options;
+        new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(connectionString, BdmsContextExtensions.SetDbContextOptions).Options;
 }
