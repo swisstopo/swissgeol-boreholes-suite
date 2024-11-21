@@ -81,7 +81,12 @@ export const DetailPageContent = ({
             display: "flex",
             flex: "1 1 100%",
             flexDirection: "column",
-            px: 11,
+            px: {
+              xs: 2,
+              sm: panelOpen ? 2 : 6,
+              md: panelOpen ? 2 : 11,
+              lg: panelOpen ? 4 : 11,
+            },
             py: 5,
             overflowY: "auto",
             backgroundColor: theme.palette.background.lightgrey,
