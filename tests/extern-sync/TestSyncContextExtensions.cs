@@ -5,14 +5,14 @@ using Testcontainers.PostgreSql;
 using static BDMS.ExternSync.SyncContextConstants;
 using static BDMS.ExternSync.SyncContextExtensions;
 
-namespace BDMS.ExternSync.Test;
+namespace BDMS.ExternSync;
 
 /// <summary>
-/// <see cref="SyncContext"/> extension methods.
+/// <see cref="TestSyncContext"/> extension methods.
 /// </summary>
-internal static class SyncContextExtensions
+internal static class TestSyncContextExtensions
 {
-    internal static async Task SeedUserTestDataAsync(this SyncContext syncContext)
+    internal static async Task SeedUserTestDataAsync(this TestSyncContext syncContext)
     {
         var (source, target) = (syncContext.Source, syncContext.Target);
 

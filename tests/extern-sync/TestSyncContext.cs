@@ -1,13 +1,13 @@
-﻿using static BDMS.ExternSync.Test.SyncContextExtensions;
+﻿using static BDMS.ExternSync.TestSyncContextExtensions;
 
-namespace BDMS.ExternSync.Test;
+namespace BDMS.ExternSync;
 
 /// <summary>
-/// Represents a <see cref="SyncContext"/> containing a source and target
+/// Represents a <see cref="TestSyncContext"/> containing a source and target
 /// <see cref="BdmsContext"/> for testing purposes. The <see cref="BdmsContext"/>
 /// can either use a real PostgreSQL database or an in-memory context.
 /// </summary>
-internal class SyncContext : ISyncContext, IDisposable
+internal class TestSyncContext : ISyncContext, IDisposable
 {
     private bool disposedValue;
 
@@ -18,27 +18,27 @@ internal class SyncContext : ISyncContext, IDisposable
     public BdmsContext Target { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SyncContext"/> class.
+    /// Initializes a new instance of the <see cref="TestSyncContext"/> class.
     /// </summary>
-    private SyncContext(BdmsContext source, BdmsContext target)
+    private TestSyncContext(BdmsContext source, BdmsContext target)
     {
         Source = source;
         Target = target;
     }
 
     /// <summary>
-    /// Builds a new instance of the <see cref="SyncContext"/> class.
+    /// Builds a new instance of the <see cref="TestSyncContext"/> class.
     /// </summary>
     /// <param name="useInMemory">By default a real PostgreSQL database is used
     /// when source and target database contexts are created. This allows to execute
     /// raw SQL queries but comes with a performance penalty. When set to <c>true</c>
     /// an in-memory database is used instead.</param>
-    public static async Task<SyncContext> BuildAsync(bool useInMemory = false)
+    public static async Task<TestSyncContext> BuildAsync(bool useInMemory = false)
     {
         var source = CreateDbContextAsync(useInMemory);
         var target = CreateDbContextAsync(useInMemory);
         await Task.WhenAll(source, target).ConfigureAwait(false);
-        return new SyncContext(source.Result, target.Result);
+        return new TestSyncContext(source.Result, target.Result);
     }
 
     /// <summary>

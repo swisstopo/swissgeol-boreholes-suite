@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace BDMS.ExternSync.Test;
+namespace BDMS.ExternSync;
 
 [TestClass]
 public class SyncTaskManagerTest

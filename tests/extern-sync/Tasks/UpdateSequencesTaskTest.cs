@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Npgsql;
 
-namespace BDMS.ExternSync.Test;
+namespace BDMS.ExternSync;
 
 [TestClass]
 public class UpdateSequencesTaskTest
@@ -11,7 +11,7 @@ public class UpdateSequencesTaskTest
     [TestMethod]
     public async Task UpdateSequences()
     {
-        using var syncContext = await SyncContext.BuildAsync().ConfigureAwait(false);
+        using var syncContext = await TestSyncContext.BuildAsync().ConfigureAwait(false);
         using var syncTask = new UpdateSequencesTask(syncContext, new Mock<ILogger<UpdateSequencesTask>>().Object);
 
         var targetDbConnection = await syncContext.Target.GetAndOpenDbConnectionAsync().ConfigureAwait(false);

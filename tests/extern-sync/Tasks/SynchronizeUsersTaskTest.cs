@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace BDMS.ExternSync.Test;
+namespace BDMS.ExternSync;
 
 [TestClass]
 public class SynchronizeUsersTaskTest
@@ -11,7 +11,7 @@ public class SynchronizeUsersTaskTest
     [TestMethod]
     public async Task SynchronizeUsers()
     {
-        using var syncContext = await SyncContext.BuildAsync(useInMemory: true).ConfigureAwait(false);
+        using var syncContext = await TestSyncContext.BuildAsync(useInMemory: true).ConfigureAwait(false);
         using var syncTask = new SynchronizeUsersTask(syncContext, Mock.Of<ILogger<SynchronizeUsersTask>>());
 
         await syncContext.SeedUserTestDataAsync().ConfigureAwait(false);
