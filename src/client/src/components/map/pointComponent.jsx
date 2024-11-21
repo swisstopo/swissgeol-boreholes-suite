@@ -33,7 +33,6 @@ class PointComponent extends React.Component {
     this.changefeature = this.updatePointAndGetAddress.bind(this);
     this.detailMapStyleFunction = detailMapStyleFunction.bind(this);
     this.getAddress = this.getAddress.bind(this);
-    this.setStateBound = this.setState.bind(this);
     this.srs = "EPSG:2056";
 
     _.forEach(projections, function (proj, srs) {
@@ -302,9 +301,6 @@ class PointComponent extends React.Component {
         style={{
           position: "relative",
           padding: 0,
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
         }}>
         <div
           className="stbg"
@@ -312,8 +308,7 @@ class PointComponent extends React.Component {
           style={{
             padding: "0px",
             flex: "1 1 100%",
-            height: "100%",
-            minHeight: 380,
+            height: 380,
           }}
         />
         <MapControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
@@ -338,7 +333,10 @@ class PointComponent extends React.Component {
             <Label color="black">
               <Icon name="map marker" />
               {_.isArray(this.state.point)
-                ? "E" + this.state.point[0].toFixed(2) + " N" + this.state.point[1].toFixed(2)
+                ? "E" +
+                  _.round(this.state.point[0], 2).toLocaleString() +
+                  " N" +
+                  _.round(this.state.point[1], 2).toLocaleString()
                 : "n/p"}
               <Label.Detail>{this.srs}</Label.Detail>
             </Label>
