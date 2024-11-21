@@ -85,16 +85,16 @@ describe("Borehole editor table tests", () => {
     showTableAndWaitForData();
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
 
-    //check all rows
+    // check all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
     cy.contains("1'626").should("not.exist");
     cy.contains("1478 selected").should("be.visible"); // does not select locked rows
 
-    //uncheck one row
+    // uncheck one row
     unCheckRowWithText("Aaliyah Casper");
     cy.contains("1477 selected").should("be.visible");
 
-    //uncheck all rows
+    // uncheck all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
 
