@@ -5,8 +5,11 @@ import { useHistory } from "react-router-dom";
 import { Box } from "@mui/system";
 import {
   DataGrid,
+  GridCellCheckboxRenderer,
   GridColDef,
+  GridColumnHeaderParams,
   GridEventListener,
+  GridHeaderCheckbox,
   GridPaginationModel,
   GridRowParams,
   GridRowSelectionModel,
@@ -68,7 +71,45 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     return rowCountRef.current;
   }, [boreholes?.length]);
 
+  const renderHeaderCheckbox = useMemo(() => {
+    return (params: GridColumnHeaderParams) => {
+      const handleHeaderCheckboxClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.checked) {
+          setSelectionModel(boreholes.filtered_borehole_ids);
+        } else {
+          setSelectionModel([]);
+        }
+      };
+
+      return (
+        <GridHeaderCheckbox
+          {...params}
+          // @ts-expect-error onChange is not in the GridColumnHeaderParams type, but can be used
+          onChange={handleHeaderCheckboxClick}
+          data-cy={"table-header-checkbox"}
+          sx={{ m: 1 }}
+        />
+      );
+    };
+  }, [boreholes.filtered_borehole_ids, setSelectionModel]);
+
   const columns: GridColDef[] = [
+    {
+      field: "__check__",
+      width: 10,
+      resizable: false,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      disableReorder: true,
+      disableExport: true,
+      renderHeader: renderHeaderCheckbox,
+      renderCell: params => (
+        <Box sx={{ p: 1 }}>
+          <GridCellCheckboxRenderer {...params} />
+        </Box>
+      ),
+    },
     { field: "alternate_name", headerName: t("name"), flex: 1 },
     {
       field: "borehole_type",
@@ -130,6 +171,12 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       field: "lock",
       headerName: "",
       width: 20,
+      resizable: false,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      disableReorder: true,
+      disableExport: true,
       renderCell: value => {
         if (value.row.lock) {
           return (
@@ -144,7 +191,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 
   // Add workgroup column if not in anonymous mode
   !auth.anonymousModeEnabled &&
-    columns.splice(1, 0, {
+    columns.splice(2, 0, {
       field: "workgroup",
       valueGetter: (value: { name: string }) => {
         return value.name;

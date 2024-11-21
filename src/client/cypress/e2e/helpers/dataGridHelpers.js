@@ -35,6 +35,10 @@ export const checkRowWithText = text => {
   cy.contains(".MuiDataGrid-row", text).find('.MuiCheckbox-root input[type="checkbox"]').check({ force: true });
 };
 
+export const unCheckRowWithText = text => {
+  cy.contains(".MuiDataGrid-row", text).find('.MuiCheckbox-root input[type="checkbox"]').uncheck({ force: true });
+};
+
 export const clickOnRowWithText = text => {
   cy.contains(".MuiDataGrid-row", text).click();
 };
