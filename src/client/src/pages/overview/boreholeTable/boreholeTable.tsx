@@ -191,7 +191,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 
   // Add workgroup column if not in anonymous mode
   !auth.anonymousModeEnabled &&
-    columns.splice(1, 0, {
+    columns.splice(2, 0, {
       field: "workgroup",
       valueGetter: (value: { name: string }) => {
         return value.name;
