@@ -41,7 +41,9 @@ internal class SyncContext : ISyncContext, IDisposable
         return new SyncContext(source.Result, target.Result);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Disposes the <see cref="Source"/> and <see cref="Target"/> database contexts.
+    /// </summary>
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue && disposing)
@@ -49,7 +51,7 @@ internal class SyncContext : ISyncContext, IDisposable
             Source.Dispose();
             Target.Dispose();
 
-            disposedValue=true;
+            disposedValue = true;
         }
     }
 

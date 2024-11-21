@@ -17,10 +17,10 @@ public class UpdateSequencesTaskTest
         var targetDbConnection = await syncContext.Target.GetAndOpenDbConnectionAsync().ConfigureAwait(false);
         using var selectCommand = new NpgsqlCommand($"SELECT last_value FROM bdms.users_id_usr_seq;", targetDbConnection);
 
-        Assert.AreEqual((long)8, await selectCommand.ExecuteScalarAsync());
+        Assert.AreEqual(8L, await selectCommand.ExecuteScalarAsync());
 
         await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token);
 
-        Assert.AreEqual((long)20000, await selectCommand.ExecuteScalarAsync());
+        Assert.AreEqual(20000L, await selectCommand.ExecuteScalarAsync());
     }
 }
