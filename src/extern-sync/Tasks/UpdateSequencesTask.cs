@@ -21,7 +21,7 @@ public class UpdateSequencesTask(ISyncContext syncContext, ILogger<UpdateSequenc
     /// <inheritdoc/>
     protected override async Task RunTaskAsync(CancellationToken cancellationToken)
     {
-        var targetDbConnection = await Target.GetDbConnectionAsync(cancellationToken).ConfigureAwait(false);
+        var targetDbConnection = await Target.GetAndOpenDbConnectionAsync(cancellationToken).ConfigureAwait(false);
         using var selectCommand = new NpgsqlCommand(GetSequenceLastValueSql, targetDbConnection);
 
         var lastValue = await selectCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false) as long? ?? -1;

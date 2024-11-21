@@ -12,8 +12,8 @@ public class CollectInformationTask(ISyncContext syncContext, ILogger<CollectInf
     protected override async Task RunTaskAsync(CancellationToken cancellationToken)
     {
         // Log the source and target database connection information
-        var source = await Source.GetDbConnectionAsync(cancellationToken).ConfigureAwait(false);
-        var target = await Target.GetDbConnectionAsync(cancellationToken).ConfigureAwait(false);
+        var source = await Source.GetAndOpenDbConnectionAsync(cancellationToken).ConfigureAwait(false);
+        var target = await Target.GetAndOpenDbConnectionAsync(cancellationToken).ConfigureAwait(false);
 
         Logger.LogInformation(
             "Source database: {SourceDatabase}\nTarget database: {TargetDatabase}",
@@ -25,8 +25,8 @@ public class CollectInformationTask(ISyncContext syncContext, ILogger<CollectInf
     protected override async Task ValidateTaskAsync(CancellationToken cancellationToken)
     {
         // Check if the source and target databases are the same
-        var source = await Source.GetDbConnectionAsync(cancellationToken).ConfigureAwait(false);
-        var target = await Target.GetDbConnectionAsync(cancellationToken).ConfigureAwait(false);
+        var source = await Source.GetAndOpenDbConnectionAsync(cancellationToken).ConfigureAwait(false);
+        var target = await Target.GetAndOpenDbConnectionAsync(cancellationToken).ConfigureAwait(false);
 
         if (source.Database == target.Database && source.Host == target.Host && source.Port == target.Port)
         {

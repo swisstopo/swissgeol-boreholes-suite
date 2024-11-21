@@ -14,7 +14,7 @@ public class UpdateSequencesTaskTest
         using var syncContext = await SyncContext.BuildAsync().ConfigureAwait(false);
         using var syncTask = new UpdateSequencesTask(syncContext, new Mock<ILogger<UpdateSequencesTask>>().Object);
 
-        var targetDbConnection = await syncContext.Target.GetDbConnectionAsync().ConfigureAwait(false);
+        var targetDbConnection = await syncContext.Target.GetAndOpenDbConnectionAsync().ConfigureAwait(false);
         using var selectCommand = new NpgsqlCommand($"SELECT last_value FROM bdms.users_id_usr_seq;", targetDbConnection);
 
         Assert.AreEqual((long)8, await selectCommand.ExecuteScalarAsync());

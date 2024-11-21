@@ -23,17 +23,17 @@ public static class SyncContextExtensions
     }
 
     /// <summary>
-    /// Gets the <see cref="NpgsqlConnection"/> for the specified <paramref name="context"/>.
+    /// Gets and opens the <see cref="NpgsqlConnection"/> for the specified <paramref name="context"/>.
     /// </summary>
-    public static async Task<NpgsqlConnection> GetDbConnectionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
+    public static async Task<NpgsqlConnection> GetAndOpenDbConnectionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
     {
-        var databaseConnection = (NpgsqlConnection)context.Database.GetDbConnection();
-        if (databaseConnection.State != ConnectionState.Open)
+        var dbConnection = (NpgsqlConnection)context.Database.GetDbConnection();
+        if (dbConnection.State != ConnectionState.Open)
         {
-            await databaseConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        return databaseConnection;
+        return dbConnection;
     }
 
     /// <summary>

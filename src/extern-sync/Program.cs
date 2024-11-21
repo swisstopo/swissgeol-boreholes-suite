@@ -10,8 +10,7 @@ using var app = Host.CreateDefaultBuilder(args).ConfigureServices((context, serv
 {
     // Register source and target database contexts
     string GetConnectionString(string name) =>
-        context.Configuration.GetConnectionString(name) ??
-        throw new InvalidOperationException($"Connection string <{name}> not found.");
+        context.Configuration.GetConnectionString(name) ?? throw new InvalidOperationException($"Connection string <{name}> not found.");
 
     services.AddNpgsqlDataSource(GetConnectionString(SourceBdmsContextName), serviceKey: SourceBdmsContextName);
     services.AddNpgsqlDataSource(GetConnectionString(TargetBdmsContextName), serviceKey: TargetBdmsContextName);
