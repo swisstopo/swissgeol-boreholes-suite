@@ -27,6 +27,7 @@
 - The basemap selector buttons were not displayed correctly on hover.
 - No scrollbar was displayed in the side drawer when many additional layers were added.
 - There was no appropriate error message when the drawn box did not contain extractable coordinates.
+- There was an internal error alert when navigating back from the borehole detail to the borehole table in anonymous mode.
 
 ## v2.1.870 - 2024-09-27
 
