@@ -107,7 +107,7 @@ const DetailHeader = ({
           data-cy="backButton"
           onClick={() => {
             {
-              isFormDirty ? stopEditingWithUnsavedChanges() : stopEditing();
+              editingEnabled && (isFormDirty ? stopEditingWithUnsavedChanges() : stopEditing());
               history.push("/");
             }
           }}

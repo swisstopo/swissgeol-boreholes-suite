@@ -4,17 +4,29 @@ using EFCore.BulkExtensions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using static BDMS.BdmsContextConstants;
 
 namespace BDMS;
 
 #pragma warning disable CA1505
 /// <summary>
-/// Contains extensions methods for the BDMS db context.
+/// Contains extensions methods for the <see cref="BdmsContext"/>.
 /// </summary>
 public static class BdmsContextExtensions
 {
+    /// <summary>
+    /// Sets the default <see cref="NpgsqlDbContextOptionsBuilder"/> options for the boreholes database context.
+    /// </summary>
+    public static void SetDbContextOptions(this NpgsqlDbContextOptionsBuilder options)
+    {
+        options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+        options.UseNetTopologySuite();
+        options.MigrationsHistoryTable("__EFMigrationsHistory", BoreholesDatabaseName);
+    }
+
     /// <summary>
     /// Seed test data but only if the database is not yet seeded.
     /// </summary>

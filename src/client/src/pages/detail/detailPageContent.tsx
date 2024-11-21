@@ -31,6 +31,7 @@ interface DetailPageContentProps {
   onBoreholeFormSubmit: (data: BoreholeFormInputs) => void;
   handleDirtyChange: (isDirty: boolean) => void;
   borehole: BoreholeV2;
+  panelOpen: boolean;
 }
 type DetailPageParams = {
   id: string;
@@ -45,6 +46,7 @@ export const DetailPageContent = ({
   onBoreholeFormSubmit,
   handleDirtyChange,
   borehole,
+  panelOpen,
 }: DetailPageContentProps) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
@@ -95,6 +97,7 @@ export const DetailPageContent = ({
                   onSubmit={onLocationFormSubmit}
                   borehole={borehole}
                   onDirtyChange={handleDirtyChange}
+                  labelingPanelOpen={panelOpen}
                 />
               )}
             />

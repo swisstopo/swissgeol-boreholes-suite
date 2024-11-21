@@ -17,6 +17,10 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "BDMS.Client", "src\client\B
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2B4BC48D-B932-4CB4-B9D6-1336A9F64D79}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDMS.ExternSync", "src\extern-sync\BDMS.ExternSync.csproj", "{951E6B71-6561-4FA7-9709-5D7F4E1D0DCA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDMS.ExternSync.Test", "tests\extern-sync\BDMS.ExternSync.Test.csproj", "{7874F0AF-6311-4A8A-897A-C4DD82A97E6F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +45,14 @@ Global
 		{2B4BC48D-B932-4CB4-B9D6-1336A9F64D79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B4BC48D-B932-4CB4-B9D6-1336A9F64D79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B4BC48D-B932-4CB4-B9D6-1336A9F64D79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{951E6B71-6561-4FA7-9709-5D7F4E1D0DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{951E6B71-6561-4FA7-9709-5D7F4E1D0DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{951E6B71-6561-4FA7-9709-5D7F4E1D0DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{951E6B71-6561-4FA7-9709-5D7F4E1D0DCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7874F0AF-6311-4A8A-897A-C4DD82A97E6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7874F0AF-6311-4A8A-897A-C4DD82A97E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7874F0AF-6311-4A8A-897A-C4DD82A97E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7874F0AF-6311-4A8A-897A-C4DD82A97E6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

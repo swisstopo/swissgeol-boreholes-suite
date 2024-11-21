@@ -1,0 +1,13 @@
+services:
+  extern-sync:
+    build:
+      context: ../
+      dockerfile: extern-sync/Dockerfile
+      args:
+        - VERSION=0.0.99
+        - REVISION=dev
+    environment:
+      - CONNECTIONSTRINGS__SourceBdmsContext=Host=host.docker.internal;Port=5432;Database=bdms;Username=SPAWNPLOW;Password=YELLOWSPATULA
+      - CONNECTIONSTRINGS__TargetBdmsContext=Host=host.docker.internal;Port=5433;Database=WAXDIONYSUS;Username=CHOCOLATESLAW;Password=FRUGALCLUSTER
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
