@@ -25,6 +25,24 @@ const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps
     <Card>
       <FormSegmentBox>
         <FormContainer>
+          {!auth.anonymousModeEnabled && (
+            <FormContainer direction="row">
+              <FormInput
+                fieldName={"originalName"}
+                label={"original_name"}
+                value={borehole?.originalName || ""}
+                readonly={!editingEnabled}
+              />
+              <TextField
+                InputProps={{
+                  readOnly: true,
+                }}
+                className="readonly"
+                label={t("workgroup")}
+                value={borehole?.workgroup?.name || ""}
+              />
+            </FormContainer>
+          )}
           <FormContainer direction="row">
             <FormInput
               fieldName={"alternateName"}
@@ -37,24 +55,6 @@ const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps
               label={"project_name"}
               value={borehole?.projectName || ""}
               readonly={!editingEnabled}
-            />
-          </FormContainer>
-          <FormContainer direction="row">
-            {!auth.anonymousModeEnabled && (
-              <FormInput
-                fieldName={"originalName"}
-                label={"original_name"}
-                value={borehole?.originalName || ""}
-                readonly={!editingEnabled}
-              />
-            )}
-            <TextField
-              InputProps={{
-                readOnly: true,
-              }}
-              className="readonly"
-              label={t("workgroup")}
-              value={borehole?.workgroup?.name || ""}
             />
           </FormContainer>
         </FormContainer>
