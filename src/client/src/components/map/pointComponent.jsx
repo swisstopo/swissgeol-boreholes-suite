@@ -329,14 +329,12 @@ class PointComponent extends React.Component {
           <Box
             sx={{
               flex: "1 1 100%",
+              width: "300px",
             }}>
             <Label color="black">
               <Icon name="map marker" />
               {_.isArray(this.state.point)
-                ? "E" +
-                  _.round(this.state.point[0], 2).toLocaleString() +
-                  " N" +
-                  _.round(this.state.point[1], 2).toLocaleString()
+                ? "E" + this.state.point[0].toFixed(2) + " N" + this.state.point[1].toFixed(2)
                 : "n/p"}
               <Label.Detail>{this.srs}</Label.Detail>
             </Label>
