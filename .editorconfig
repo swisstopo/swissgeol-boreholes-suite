@@ -259,8 +259,9 @@ dotnet_diagnostic.SA1624.severity = none
 dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1639.severity = warning
 dotnet_diagnostic.SA1642.severity = none
-dotnet_diagnostic.SA1649.severity = none
+dotnet_diagnostic.SA1649.severity = warning
 dotnet_diagnostic.IDE0161.severity = warning
+
 
 csharp_indent_labels = one_less_than_current
 csharp_space_around_binary_operators = ignore
