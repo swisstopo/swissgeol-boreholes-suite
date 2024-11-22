@@ -1,10 +1,7 @@
 ﻿using Amazon.S3;
-using Amazon.S3.Model;
-using Azure;
 using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -186,19 +183,20 @@ public class BoreholeFileControllerTest
         await controller.Upload(pdfFormFile, secondBoreholeId);
 
         // Check counts after upload
-        Assert.AreEqual(filesCountBeforeUpload + 1, context.Files.Count());
+        Assert.AreEqual(filesCountBeforeUpload + 2, context.Files.Count());
         Assert.AreEqual(boreholeFilesCountBeforeUpload + 2, context.BoreholeFiles.Count());
         Assert.AreEqual(firstBoreholeBoreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
         Assert.AreEqual(secondBoreholeBoreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count());
 
-        // Get latest file in db
-        var latestFileInDb = context.Files.OrderBy(f => f.Id).Last();
+        // Get the added files
+        var firstBoreholeAddedFile = context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).OrderBy(bf => bf.FileId).Last().File;
+        var secondBoreholeAddedFile = context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).OrderBy(bf => bf.FileId).Last().File;
 
         // Clear context to ensure file has no info about its boreholeFiles
         context.ChangeTracker.Clear();
 
         // Detach borehole file from first borehole
-        await controller.DetachFromBorehole(firstBoreholeId, latestFileInDb.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
+        await controller.DetachFromBorehole(firstBoreholeId, firstBoreholeAddedFile.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
 
         // Check counts after detach
         Assert.AreEqual(filesCountBeforeUpload + 1, context.Files.Count());
@@ -206,18 +204,19 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(firstBoreholeBoreholeFilesBeforeUpload, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
         Assert.AreEqual(secondBoreholeBoreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count());
 
-        // Ensure file exists
-        await boreholeFileCloudService.GetObject(latestFileInDb.NameUuid!);
+        // Ensure the file got deleted for the first borehole
+        var exception = await Assert.ThrowsExceptionAsync<AmazonS3Exception>(() => boreholeFileCloudService.GetObject(firstBoreholeAddedFile.NameUuid!));
+        Assert.AreEqual("The specified key does not exist.", exception.Message);
+
+        // Ensure the file still exists for the second borehole
+        await boreholeFileCloudService.GetObject(secondBoreholeAddedFile.NameUuid!);
     }
 
     [TestMethod]
     public async Task DetachFromBoreholeWithFileNotUsedByOtherBoreholeShouldDetachAndDeleteFile()
     {
-        var fileName = $"{Guid.NewGuid()}.pdf";
-
         // Get borehole Ids
         var firstBoreholeId = context.Boreholes.First().Id;
-        var secondBoreholeId = context.Boreholes.Skip(1).First().Id;
 
         // Get counts before upload
         var filesCountBeforeUpload = context.Files.Count();
@@ -302,15 +301,15 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
-    public async Task UploadWithFileAlreadyAttachedShouldThrowError()
+    public async Task CanUploadIdenticalFileMultipleTimes()
     {
-        var fileName = $"{Guid.NewGuid()}.pdf";
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
-        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
+        var fileContent = "ANT-VII, REDASSOCIATION\r\nMONKEYBONES";
 
-        await controller.Upload(pdfFormFile, minBoreholeId);
-
-        await AssertIsBadRequestResponse(() => controller.Upload(pdfFormFile, minBoreholeId));
+        // Upload same content using the same and different file names
+        await AssertIsOkResponse(() => controller.Upload(GetFormFileByContent(fileContent, "IRATEWATCH.pdf"), minBoreholeId));
+        await AssertIsOkResponse(() => controller.Upload(GetFormFileByContent(fileContent, "IRATEWATCH.pdf"), minBoreholeId));
+        await AssertIsOkResponse(() => controller.Upload(GetFormFileByContent(fileContent, "PAINTEDSHADOW.png"), minBoreholeId));
     }
 
     [TestMethod]
@@ -458,9 +457,9 @@ public class BoreholeFileControllerTest
         await boreholeFileCloudService.DeleteObject($"dataextraction/{fileUuid}-1.png");
     }
 
-    private async Task AssertIsBadRequestResponse(Func<Task<IActionResult>> action)
-    {
-        var result = await action();
-        ActionResultAssert.IsBadRequest(result);
-    }
+    private static async Task AssertIsBadRequestResponse(Func<Task<IActionResult>> func) =>
+        ActionResultAssert.IsBadRequest(await func());
+
+    private static async Task AssertIsOkResponse(Func<Task<IActionResult>> func) =>
+        ActionResultAssert.IsOk(await func());
 }

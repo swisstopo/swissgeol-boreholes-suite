@@ -89,6 +89,7 @@ const FilesTableComponent = props => {
               {props.unlocked === true ? (
                 <Table.Cell>
                   <IconButton
+                    data-cy="attachments-detach-button"
                     onClick={e => {
                       e.stopPropagation();
                       props.detachFile(props.id, boreholeFile.fileId);
