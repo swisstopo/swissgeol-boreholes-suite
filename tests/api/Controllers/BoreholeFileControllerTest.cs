@@ -96,7 +96,6 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(content, contentResult);
 
         // Get file
-        Assert.AreNotEqual(null, file.Hash);
         Assert.AreEqual(DateTime.UtcNow.Date, file.Created?.Date);
         Assert.AreEqual(adminUser.SubjectId, file.CreatedBy.SubjectId);
         Assert.AreEqual(adminUser.Id, file.CreatedById);
@@ -260,7 +259,7 @@ public class BoreholeFileControllerTest
         var borehole = new Borehole();
         context.Boreholes.Add(borehole);
 
-        var file = new Models.File() { Name = $"{Guid.NewGuid}.pdf", NameUuid = $"{Guid.NewGuid}.pdf", Hash = Guid.NewGuid().ToString(), Type = "pdf" };
+        var file = new Models.File() { Name = $"{Guid.NewGuid}.pdf", NameUuid = $"{Guid.NewGuid}.pdf", Type = "pdf" };
         context.Files.Add(file);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
