@@ -11,8 +11,11 @@ namespace BDMS.BoreholeGeometry;
 internal sealed class PitchRollFormat : IBoreholeGeometryFormat
 {
     public string Key => "PitchRoll";
+
     public string Name => "Pitch Roll";
+
     private Lazy<string> expectedCsvHeader = new(Helper.GetCSVHeader<Geometry>);
+
     public string CsvHeader => expectedCsvHeader.Value;
 
     public IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId)
@@ -66,10 +69,13 @@ internal sealed class PitchRollFormat : IBoreholeGeometryFormat
     {
         [Name("MD_m")]
         public double MeasuredDepth { get; set; }
+
         [Name("Roll_deg")]
         public double RollRad { get; set; }
+
         [Name("Pitch_deg")]
         public double PitchRad { get; set; }
+
         [Name("Yaw_deg")]
         public double YawRad { get; set; }
     }

@@ -146,13 +146,14 @@ public class BoreholeGeometryControllerTest
         ActionResultAssert.IsBadRequest(result);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
-        StringAssert.StartsWith(problemDetails.Detail, string.Join(Environment.NewLine,
-            [
+        StringAssert.StartsWith(
+            problemDetails.Detail,
+            string.Join(
+                Environment.NewLine,
                 "Header with name 'MD_m'[0] was not found.",
                 "Header with name 'X_m'[0] was not found.",
                 "Header with name 'Y_m'[0] was not found.",
-                "Header with name 'Z_m'[0] was not found.",
-            ]));
+                "Header with name 'Z_m'[0] was not found."));
     }
 
     [TestMethod]
@@ -166,12 +167,13 @@ public class BoreholeGeometryControllerTest
         ActionResultAssert.IsBadRequest(result);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
-        StringAssert.StartsWith(problemDetails.Detail, string.Join(Environment.NewLine,
-            [
+        StringAssert.StartsWith(
+            problemDetails.Detail,
+            string.Join(
+                Environment.NewLine,
                 "The conversion cannot be performed.",
                 "    Text: 'NOT A DOUBLE'",
-                "    MemberName: Y"
-            ]));
+                "    MemberName: Y"));
     }
 
     [TestMethod]

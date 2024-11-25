@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.Json;
 
 namespace BDMS;
+
 public class LocationService
 {
     private readonly IHttpClientFactory httpClientFactory;
