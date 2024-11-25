@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace BDMS;
+
 public class DateOnlyJsonConverter : JsonConverter<DateOnly>
 {
     private const string Format = "yyyy-MM-dd";

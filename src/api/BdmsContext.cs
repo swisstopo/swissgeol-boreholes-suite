@@ -12,45 +12,75 @@ namespace BDMS;
 public class BdmsContext : DbContext
 {
     public DbSet<Borehole> Boreholes { get; set; }
+
     public DbSet<Codelist> Codelists { get; set; }
+
     public DbSet<Config> Configs { get; set; }
+
     public DbSet<Models.File> Files { get; set; }
+
     public DbSet<Layer> Layers { get; set; }
+
     public DbSet<Stratigraphy> Stratigraphies { get; set; }
+
     public DbSet<Term> Terms { get; set; }
+
     public DbSet<User> Users { get; set; }
+
     public IQueryable<User> UsersWithIncludes => Users
         .Include(u => u.WorkgroupRoles)
         .ThenInclude(wr => wr.Workgroup)
         .Include(u => u.TermsAccepted)
         .ThenInclude(ta => ta.Term);
+
     public DbSet<UserWorkgroupRole> UserWorkgroupRoles { get; set; }
+
     public DbSet<Workflow> Workflows { get; set; }
+
     public DbSet<Workgroup> Workgroups { get; set; }
 
-    public IQueryable<Workgroup> WorkgroupsWithIncludes => Workgroups
-        .Include(w => w.Boreholes);
+    public IQueryable<Workgroup> WorkgroupsWithIncludes => Workgroups.Include(w => w.Boreholes);
 
     public DbSet<BoreholeFile> BoreholeFiles { get; set; }
+
     public DbSet<LithologicalDescription> LithologicalDescriptions { get; set; }
+
     public DbSet<FaciesDescription> FaciesDescriptions { get; set; }
+
     public DbSet<ChronostratigraphyLayer> ChronostratigraphyLayers { get; set; }
+
     public DbSet<LithostratigraphyLayer> LithostratigraphyLayers { get; set; }
+
     public DbSet<Observation> Observations { get; set; }
+
     public DbSet<WaterIngress> WaterIngresses { get; set; }
+
     public DbSet<Hydrotest> Hydrotests { get; set; }
+
     public DbSet<HydrotestResult> HydrotestResults { get; set; }
+
     public DbSet<GroundwaterLevelMeasurement> GroundwaterLevelMeasurements { get; set; }
+
     public DbSet<FieldMeasurement> FieldMeasurements { get; set; }
+
     public DbSet<FieldMeasurementResult> FieldMeasurementResults { get; set; }
+
     public DbSet<Completion> Completions { get; set; }
+
     public DbSet<Instrumentation> Instrumentations { get; set; }
+
     public DbSet<Backfill> Backfills { get; set; }
+
     public DbSet<Casing> Casings { get; set; }
+
     public DbSet<CasingElement> CasingElements { get; set; }
+
     public DbSet<Section> Sections { get; set; }
+
     public DbSet<SectionElement> SectionElements { get; set; }
+
     public DbSet<BoreholeGeometryElement> BoreholeGeometry { get; set; }
+
     public DbSet<BoreholeCodelist> BoreholeCodelists { get; set; }
 
     public BdmsContext(DbContextOptions options)

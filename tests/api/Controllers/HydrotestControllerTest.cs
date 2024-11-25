@@ -1,17 +1,15 @@
-﻿using Amazon.Runtime.Internal.Util;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Security.Claims;
-using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
 [TestClass]
-public class HydrotestControllerTests
+public class HydrotestControllerTest
 {
     private BdmsContext context;
     private HydrotestController controller;

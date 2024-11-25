@@ -10,8 +10,11 @@ namespace BDMS.BoreholeGeometry;
 internal sealed class XYZFormat : IBoreholeGeometryFormat
 {
     public string Key => "XYZ";
+
     public string Name => "X Y Z";
+
     private Lazy<string> expectedCsvHeader = new(Helper.GetCSVHeader<Geometry>);
+
     public string CsvHeader => expectedCsvHeader.Value;
 
     public IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId)

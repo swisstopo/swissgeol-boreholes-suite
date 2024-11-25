@@ -11,8 +11,11 @@ namespace BDMS.BoreholeGeometry;
 internal sealed class AzIncFormat : IBoreholeGeometryFormat
 {
     public string Key => "AzInc";
+
     public string Name => "Azimuth Inclination";
+
     private Lazy<string> expectedCsvHeader = new(Helper.GetCSVHeader<Geometry>);
+
     public string CsvHeader => expectedCsvHeader.Value;
 
     public IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId)
@@ -96,12 +99,16 @@ internal sealed class AzIncFormat : IBoreholeGeometryFormat
     {
         [Name("MD_m")]
         public double MeasuredDepth { get; set; }
+
         [Name("HAZI_deg")]
         public double Azimuth { get; set; }
+
         [Name("DEVI_deg")]
         public double Inclination { get; set; }
+
         [Ignore]
         public double AzimuthRad { get; set; }
+
         [Ignore]
         public double InclinationRad { get; set; }
     }

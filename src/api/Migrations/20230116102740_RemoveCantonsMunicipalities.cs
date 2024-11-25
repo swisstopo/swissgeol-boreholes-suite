@@ -5,6 +5,7 @@ using System;
 #nullable disable
 
 namespace BDMS.Migrations;
+
 public partial class RemoveCantonsMunicipalities : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)

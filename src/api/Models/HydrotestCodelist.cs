@@ -10,9 +10,11 @@ public class HydrotestCodelist
 {
     [Column("id_ht_fk")]
     public int HydrotestId { get; set; }
+
     public Hydrotest Hydrotest { get; set; }
 
     [Column("id_cli_fk")]
     public int CodelistId { get; set; }
+
     public Codelist Codelist { get; set; }
 }

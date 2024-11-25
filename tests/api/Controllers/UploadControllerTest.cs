@@ -628,11 +628,9 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[]
-        {
-            "Attachment file 'is_not_present_in_upload_files.pdf' not found.",
-        },
-        problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(
+            new[] { "Attachment file 'is_not_present_in_upload_files.pdf' not found." },
+            problemDetails.Errors["Row1"]);
     }
 
     [TestMethod]
@@ -699,13 +697,14 @@ public class UploadControllerTest
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[] { "Field 'location_y' is required." }, problemDetails.Errors["Row2"]);
-        CollectionAssert.AreEquivalent(new[]
-        {
-            "Field 'original_name' is required.",
-            "Field 'location_x' is required.",
-            "Field 'location_y' is required.",
-        },
-        problemDetails.Errors["Row3"]);
+        CollectionAssert.AreEquivalent(
+            new[]
+            {
+                "Field 'original_name' is required.",
+                "Field 'location_x' is required.",
+                "Field 'location_y' is required.",
+            },
+            problemDetails.Errors["Row3"]);
     }
 
     [TestMethod]
@@ -781,12 +780,13 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[]
-        {
-            $"Lithology with {nameof(LithologyImport.StratiImportId)} '1001' has various {nameof(LithologyImport.StratiName)}.",
-            $"Lithology with {nameof(LithologyImport.StratiImportId)} '1001' has various {nameof(LithologyImport.StratiDate)}.",
-        },
-        problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(
+            new[]
+            {
+                $"Lithology with {nameof(LithologyImport.StratiImportId)} '1001' has various {nameof(LithologyImport.StratiName)}.",
+                $"Lithology with {nameof(LithologyImport.StratiImportId)} '1001' has various {nameof(LithologyImport.StratiDate)}.",
+            },
+            problemDetails.Errors["Row1"]);
     }
 
     [TestMethod]
@@ -804,11 +804,9 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[]
-        {
-            $"Borehole with ImportId '2' not found.",
-        },
-        problemDetails.Errors["Row2"]);
+        CollectionAssert.AreEquivalent(
+            new[] { "Borehole with ImportId '2' not found." },
+            problemDetails.Errors["Row2"]);
     }
 
     [TestMethod]
