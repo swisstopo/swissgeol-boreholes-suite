@@ -37,7 +37,6 @@ class MapComponent extends React.Component {
   constructor(props) {
     super(props);
     this.onSelected = this.onSelected.bind(this);
-    this.setStateBound = this.setState.bind(this);
     this.fetchAndDisplayGeojson = this.fetchAndDisplayGeojson.bind(this);
     this.styleFunction = styleFunction.bind(this);
     this.clusterStyleFunction = clusterStyleFunction.bind(this);

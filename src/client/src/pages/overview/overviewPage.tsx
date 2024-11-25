@@ -13,7 +13,7 @@ import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 
 interface OverviewPageProps extends RouteComponentProps {}
 
-export const OverviewPage: FC<OverviewPageProps> = props => {
+export const OverviewPage: FC<OverviewPageProps> = () => {
   const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
   const location = useLocation();
   const [workgroupId, setWorkgroupId] = useState<number | null>(null);
