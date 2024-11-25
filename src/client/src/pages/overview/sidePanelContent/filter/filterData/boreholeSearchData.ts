@@ -1,4 +1,6 @@
-export const boreholeSearchData = [
+import { SearchData } from "./searchDataInterfaces.ts";
+
+export const boreholeSearchData: SearchData[] = [
   // isVisibleValue + placeholder + hasUnknown for Radio + hasTwoFields + inputType ==>new
   // remove isVisable + require
   {

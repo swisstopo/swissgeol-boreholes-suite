@@ -7,7 +7,7 @@ import { MapView } from "./layout/mapView.tsx";
 import { SideDrawer } from "./layout/sideDrawer.tsx";
 import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
 import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
-import { FilterComponent } from "./sidePanelContent/filter/filterComponent.jsx";
+import { FilterComponent } from "./sidePanelContent/filter/filterComponent.tsx";
 import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 
 const OverviewPage = () => {

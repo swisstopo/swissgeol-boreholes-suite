@@ -1,4 +1,6 @@
-export const lithostratigraphySearchData = [
+import { SearchData } from "./searchDataInterfaces.ts";
+
+export const lithostratigraphySearchData: SearchData[] = [
   {
     id: 0,
     type: "HierarchicalData",

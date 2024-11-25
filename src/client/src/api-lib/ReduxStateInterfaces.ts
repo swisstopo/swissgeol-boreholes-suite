@@ -1,5 +1,6 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
+import { Filter } from "../pages/overview/sidePanelContent/filter/FilterInterface.ts";
 
 export interface ReduxRootState {
   core_workflow: Workflow;
@@ -22,7 +23,7 @@ export interface SettingData {
   };
 }
 export interface Filters {
-  filter: string;
+  filter: Filter;
 }
 
 export interface EditorStore {

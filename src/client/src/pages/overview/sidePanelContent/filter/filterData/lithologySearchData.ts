@@ -1,4 +1,6 @@
-export const lithologySearchData = [
+import { SearchData } from "./searchDataInterfaces.ts";
+
+export const lithologySearchData: SearchData[] = [
   {
     id: 0,
     type: "Input",

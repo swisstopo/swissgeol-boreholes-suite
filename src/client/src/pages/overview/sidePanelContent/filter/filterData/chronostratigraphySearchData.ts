@@ -1,4 +1,6 @@
-export const chronostratigraphySearchData = [
+import { SearchData } from "./searchDataInterfaces.ts";
+
+export const chronostratigraphySearchData: SearchData[] = [
   {
     id: 0,
     type: "HierarchicalData",

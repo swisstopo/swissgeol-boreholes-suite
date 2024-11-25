@@ -5,22 +5,24 @@ import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stac
 import { styled } from "@mui/material/styles";
 import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
+import { ReduxRootState, Setting, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import FilterChips from "./FilterChips.tsx";
 import { FilterContext } from "./filterContext.tsx";
 import { boreholeSearchData } from "./filterData/boreholeSearchData.js";
 import { chronostratigraphySearchData } from "./filterData/chronostratigraphySearchData.js";
-import { lithologySearchData } from "./filterData/lithologySearchData.js";
+import { lithologySearchData } from "./filterData/lithologySearchData.ts";
 import { lithostratigraphySearchData } from "./filterData/lithostratigraphySearchData.js";
 import { LocationSearchData } from "./filterData/LocationSearchData.js";
 import { registrationSearchData } from "./filterData/registrationSearchData.js";
+import { Filter } from "./FilterInterface.ts";
 import { FilterReset } from "./filterReset.tsx";
-import ListFilter from "./listFilter.jsx";
-import StatusFilter from "./statusFilter.jsx";
+import ListFilter from "./listFilter";
+import { StatusFilter } from "./statusFilter.js";
 import WorkgroupRadioGroup from "./workgroupRadioGroup.jsx";
 
-export const FilterComponent = ({ toggleDrawer }) => {
+export const FilterComponent = ({ toggleDrawer }: { toggleDrawer: (open: boolean) => void }) => {
   const {
     setActiveFilterLength,
     filterPolygon,
@@ -30,9 +32,9 @@ export const FilterComponent = ({ toggleDrawer }) => {
     setPolygonSelectionEnabled,
   } = useContext(FilterContext);
   const { t } = useTranslation();
-  const settings = useSelector(state => state.setting);
-  const user = useSelector(state => state.core_user);
-  const search = useSelector(state => state.filters);
+  const settings: Setting = useSelector((state: ReduxRootState) => state.setting);
+  const user: User = useSelector((state: ReduxRootState) => state.core_user);
+  const search: { filter: Filter } = useSelector((state: ReduxRootState) => state.filters);
   const dispatch = useDispatch();
 
   const reset = () => {
@@ -41,7 +43,7 @@ export const FilterComponent = ({ toggleDrawer }) => {
     });
   };
 
-  const setFilter = (key, value) => {
+  const setFilter = (key: string, value: string | number | boolean | null) => {
     dispatch({
       type: "SEARCH_EDITOR_FILTER_CHANGED",
       key: key,
@@ -94,7 +96,7 @@ export const FilterComponent = ({ toggleDrawer }) => {
     });
   };
 
-  const [activeFilters, setActiveFilters] = useState([]);
+  const [activeFilters, setActiveFilters] = useState<Filter[]>([]);
   const [searchList, setSearchList] = useState([
     {
       id: 0,
@@ -167,7 +169,7 @@ export const FilterComponent = ({ toggleDrawer }) => {
   }, [search, setActiveFilterLength, setActiveFilters]);
 
   const handleButtonSelected = () => {
-    return searchList.find(s => s.isSelected === true)?.searchData;
+    return searchList.find(s => s.isSelected)?.searchData;
   };
 
   const handlePolygonFilterClick = () => {
@@ -200,11 +202,7 @@ export const FilterComponent = ({ toggleDrawer }) => {
   return (
     <Stack direction="column" sx={{ height: "100%" }}>
       <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
-      <FilterChips
-        setPolygonSelectionEnabled={setPolygonSelectionEnabled}
-        activeFilters={activeFilters}
-        setFilter={setFilter}
-      />
+      <FilterChips activeFilters={activeFilters} setFilter={setFilter} />
       <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
         <Button
           onClick={() => {
@@ -270,7 +268,7 @@ export const FilterComponent = ({ toggleDrawer }) => {
                 <StyledAccordionDetails>
                   <WorkgroupRadioGroup
                     filter={search.filter.workgroup}
-                    onChange={workgroup => {
+                    onChange={(workgroup: string) => {
                       setFilter("workgroup", workgroup);
                     }}
                     workgroups={user.data.workgroups}
@@ -279,19 +277,7 @@ export const FilterComponent = ({ toggleDrawer }) => {
               )}
               {filter?.name === "status" && filter?.isSelected && (
                 <StyledAccordionDetails>
-                  <StatusFilter
-                    resetBoreInc={resetBoreInc}
-                    resetBoreIncDir={resetBoreIncDir}
-                    resetDrillDiameter={resetDrillDiameter}
-                    resetDrilling={resetDrilling}
-                    resetElevation={resetElevation}
-                    resetRestriction={resetRestriction}
-                    resetTotBedrock={resetTotBedrock}
-                    search={search}
-                    setFilter={setFilter}
-                    settings={settings.data.efilter}
-                    resetCreatedDate={resetCreatedDate}
-                  />
+                  <StatusFilter search={search} setFilter={setFilter} />
                 </StyledAccordionDetails>
               )}
               <StyledAccordionDetails>

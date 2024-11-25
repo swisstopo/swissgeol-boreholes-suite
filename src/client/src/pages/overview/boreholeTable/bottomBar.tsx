@@ -11,13 +11,14 @@ import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../..
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
+import { Filter } from "../sidePanelContent/filter/FilterInterface.ts";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 
 interface BottomBarProps {
   boreholes: Boreholes;
   selectionModel: GridRowSelectionModel;
-  multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
-  search: { filter: string };
+  multipleSelected: (selection: GridRowSelectionModel, filter: Filter) => void;
+  search: { filter: Filter };
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
   onExportMultiple: () => void;

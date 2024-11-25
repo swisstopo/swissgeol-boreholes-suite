@@ -1,4 +1,6 @@
-export const LocationSearchData = [
+import { SearchData } from "./searchDataInterfaces.ts";
+
+export const LocationSearchData: SearchData[] = [
   {
     id: 0,
     type: "Dropdown",

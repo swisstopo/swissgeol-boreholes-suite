@@ -4,12 +4,13 @@ import { useHistory } from "react-router-dom";
 import { Dialog, Stack } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { loadEditingBoreholes } from "../../../api-lib";
-import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { Boreholes, EditorStore, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { BulkEditForm } from "../../../components/legacyComponents/bulkedit/bulkEditForm.js";
 import MapComponent from "../../../components/map/mapComponent.jsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
+import { Filter } from "../sidePanelContent/filter/FilterInterface.ts";
 
 interface MapViewProps {
   displayErrorMessage: string;
@@ -33,7 +34,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const boreholes: Boreholes = useSelector((state: ReduxRootState) => state.core_borehole_editor_list);
   const setting: Setting = useSelector((state: ReduxRootState) => state.setting);
   const editorStore: EditorStore = useSelector((state: ReduxRootState) => state.editor);
-  const search: Filters = useSelector((state: ReduxRootState) => state.filters);
+  const search: { filter: Filter } = useSelector((state: ReduxRootState) => state.filters);
   const dispatch = useDispatch();
 
   const lock = (id: string) => {
@@ -44,7 +45,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     history.push("/" + id);
   };
 
-  const multipleSelected = (selection: GridRowSelectionModel, filter: string | null = null) => {
+  const multipleSelected = (selection: GridRowSelectionModel, filter: Filter | null = null) => {
     dispatch({
       type: "EDITOR_MULTIPLE_SELECTED",
       selection: selection,

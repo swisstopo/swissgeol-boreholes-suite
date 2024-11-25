@@ -7,23 +7,24 @@ import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInte
 import { copyBorehole } from "../../../api/borehole.ts";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
+import { Filter } from "../sidePanelContent/filter/FilterInterface.ts";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
 
 interface BottomBarContainerProps {
   boreholes: Boreholes;
-  search: { filter: string };
+  search: { filter: Filter };
   setHover: React.Dispatch<React.SetStateAction<number | null>>;
   loadEditingBoreholes: (
     page: number,
     limit: number,
-    filter: string,
+    filter: Filter,
     orderby: string,
     direction: string,
     featureIds: number[],
   ) => void;
-  multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
+  multipleSelected: (selection: GridRowSelectionModel, filter: Filter) => void;
   rowToHighlight: number | null;
   selectionModel: GridRowSelectionModel;
   setSelectionModel: React.Dispatch<React.SetStateAction<GridRowSelectionModel>>;

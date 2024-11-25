@@ -1,4 +1,6 @@
-export const registrationSearchData = [
+import { SearchData } from "./searchDataInterfaces.ts";
+
+export const registrationSearchData: SearchData[] = [
   {
     id: 0,
     type: "Input",
