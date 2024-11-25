@@ -6,7 +6,8 @@ import { Badge, Stack } from "@mui/material";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
 import UploadIcon from "../../../assets/icons/upload.svg?react";
-import { ReduxRootState, User, Workgroup } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { Workgroup } from "../../../api/apiInterfaces.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
@@ -18,8 +19,8 @@ import ImportModal from "../sidePanelContent/importer/importModal.tsx";
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
   drawerOpen: boolean;
-  workgroupId: string;
-  setWorkgroupId: React.Dispatch<React.SetStateAction<string>>;
+  workgroupId: number | null;
+  setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
   enabledWorkgroups: Workgroup[];
   setEnabledWorkgroups: React.Dispatch<React.SetStateAction<Workgroup[]>>;
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
@@ -61,7 +62,7 @@ const MainSideNav = ({
   useEffect(() => {
     const wgs = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
     setEnabledWorkgroups(wgs);
-    setWorkgroupId(wgs.length > 0 ? wgs[0].id : "");
+    setWorkgroupId(wgs.length > 0 ? wgs[0].id : null);
   }, [setEnabledWorkgroups, setWorkgroupId, user.data.workgroups]);
 
   const handleToggleFilter = () => {

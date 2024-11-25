@@ -13,7 +13,7 @@ import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { Filter } from "../sidePanelContent/filter/FilterInterface.ts";
 
 interface MapViewProps {
-  displayErrorMessage: string;
+  displayErrorMessage: (message: any) => void;
 }
 
 export const MapView = ({ displayErrorMessage }: MapViewProps) => {

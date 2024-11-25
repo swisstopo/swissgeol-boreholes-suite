@@ -1,4 +1,5 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
+import { Workgroup } from "../api/apiInterfaces.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { Filter } from "../pages/overview/sidePanelContent/filter/FilterInterface.ts";
 
@@ -30,7 +31,7 @@ export interface EditorStore {
   mselected: number[];
 }
 
-export type Role = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";
+export type legacyRole = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";
 
 export interface User {
   data: UserData;
@@ -39,23 +40,16 @@ export interface User {
 export interface UserData {
   // Incomplete type definition, add other properties as needed
   workgroups: Workgroup[];
-  roles: Role[];
+  roles: legacyRole[];
   id: number;
   name: string;
   username: string;
 }
 
-export interface Workgroup {
-  disabled: null;
-  id: string;
-  workgroup: string;
-  roles: Role[];
-}
-
 export interface Workflow {
   started: string;
   finished: string;
-  role: Role;
+  role: legacyRole;
   username: string;
   workflow: number;
 }
@@ -76,7 +70,7 @@ export interface BoreholeAttributes {
   workflow: Workflow;
   id: number;
   spatial_reference_system: ReferenceSystemCode;
-  role: Role;
+  role: legacyRole;
   lock: {
     id: number;
   } | null;

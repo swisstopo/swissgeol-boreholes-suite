@@ -1,6 +1,6 @@
 import React from "react";
 import { SxProps } from "@mui/material";
-import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
+import { Workgroup } from "../../../../api/apiInterfaces.ts";
 
 export interface ErrorResponse {
   detail: string;
@@ -9,9 +9,9 @@ export interface ErrorResponse {
 }
 
 export interface WorkgroupSelectProps {
-  workgroupId: string;
+  workgroupId: number | null;
   enabledWorkgroups: Workgroup[];
-  setWorkgroupId: React.Dispatch<React.SetStateAction<string>>;
+  setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
   hideLabel?: boolean;
   sx?: SxProps;
 }
@@ -34,8 +34,8 @@ export interface ImportModalProps extends ImportContentProps {
   selectedBoreholeAttachments: Blob[] | null;
   selectedFile: Blob[] | null;
   upload: boolean;
-  workgroup: string;
-  setWorkgroup: React.Dispatch<React.SetStateAction<string>>;
+  workgroup: number | null;
+  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
   enabledWorkgroups: Workgroup[];
   setCreating: React.Dispatch<React.SetStateAction<boolean>>;
   setModal: React.Dispatch<React.SetStateAction<boolean>>;

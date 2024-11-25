@@ -1,3 +1,5 @@
+import { legacyRole } from "../api-lib/ReduxStateInterfaces.ts";
+
 export class ApiError extends Error {
   status?: number;
 
@@ -25,6 +27,9 @@ export interface Workgroup {
   createdAt?: Date | string;
   settings?: string;
   boreholeCount: number;
+  disabled: null;
+  workgroup: string;
+  roles: legacyRole[];
 }
 
 export interface WorkgroupRole {

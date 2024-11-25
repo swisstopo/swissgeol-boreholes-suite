@@ -1,5 +1,6 @@
-import { useContext, useEffect, useState } from "react";
-import { useLocation, withRouter } from "react-router-dom";
+import { FC, useContext, useEffect, useState } from "react";
+import { RouteComponentProps, useLocation } from "react-router-dom";
+import { Workgroup } from "../../api/apiInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import MainSideNav from "./layout/mainSideNav.tsx";
@@ -10,15 +11,17 @@ import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel
 import { FilterComponent } from "./sidePanelContent/filter/filterComponent.tsx";
 import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 
-const OverviewPage = () => {
+interface OverviewPageProps extends RouteComponentProps {}
+
+export const OverviewPage: FC<OverviewPageProps> = props => {
   const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
   const location = useLocation();
-  const [workgroupId, setWorkgroupId] = useState("");
-  const [enabledWorkgroups, setEnabledWorkgroups] = useState([]);
+  const [workgroupId, setWorkgroupId] = useState<number | null>(null);
+  const [enabledWorkgroups, setEnabledWorkgroups] = useState<Workgroup[]>([]);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
   const { showAlert } = useContext(AlertContext);
 
-  const toggleSideDrawer = open => {
+  const toggleSideDrawer = (open: boolean) => {
     setSideDrawerOpen(open);
   };
 
@@ -65,6 +68,3 @@ const OverviewPage = () => {
     </LayoutBox>
   );
 };
-
-const OverviewPageWithRouter = withRouter(OverviewPage);
-export default OverviewPageWithRouter;

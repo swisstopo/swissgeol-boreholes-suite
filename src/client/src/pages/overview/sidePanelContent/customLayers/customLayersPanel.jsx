@@ -24,6 +24,7 @@ CustomLayersPanel.propTypes = {
   setSelectedLayer: PropTypes.func,
   setting: PropTypes.object,
   toggleVisibility: PropTypes.func,
+  toggleDrawer: PropTypes.func,
 };
 
 const mapStateToProps = state => {
