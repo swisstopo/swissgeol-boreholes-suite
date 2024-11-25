@@ -160,6 +160,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// </summary>
     [Column("restriction_id_cli")]
     public int? RestrictionId { get; set; }
+
     public Codelist? Restriction { get; set; }
 
     /// <summary>
@@ -191,6 +192,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// </summary>
     [Column("qt_location_id_cli")]
     public int? LocationPrecisionId { get; set; }
+
     public Codelist? LocationPrecision { get; set; }
 
     /// <summary>

@@ -6,12 +6,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Security.Claims;
-using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
 [TestClass]
-public class WaterIngressControllerTests
+public class WaterIngressControllerTest
 {
     private BdmsContext context;
     private WaterIngressController controller;
