@@ -54,12 +54,6 @@ export const FilterComponent = ({ toggleDrawer }: { toggleDrawer: (open: boolean
   const [expandedFilterAccordion, setExpandedFilterAccordion] = useState<FilterAccordionValue | null>(null);
 
   useEffect(() => {
-    console.log("render filter component");
-    return () => {
-      console.log("unmount filter component");
-    };
-  }, []);
-  useEffect(() => {
     const af = Object.entries(search.filter)
       .filter(
         ([key, value]) =>
@@ -68,7 +62,6 @@ export const FilterComponent = ({ toggleDrawer }: { toggleDrawer: (open: boolean
       .map(([key, value]) => ({ key: key, value: value }));
     setActiveFilterLength(af.length);
     setActiveFilters(af);
-    console.log("render filter component");
   }, [search, setActiveFilterLength, setActiveFilters]);
 
   const handlePolygonFilterClick = () => {

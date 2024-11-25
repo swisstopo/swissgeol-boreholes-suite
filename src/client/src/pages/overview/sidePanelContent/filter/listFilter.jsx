@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Checkbox, Form, Input, TextArea } from "semantic-ui-react";
@@ -38,12 +37,6 @@ const ListFilter = ({ attributeId, showAllForAccordion, setShowAllForAccordion }
     setShowAllForAccordion(showAllForAccordion.map(f => (f.id === attributeId ? { id: attributeId, showAll } : f)));
   };
 
-  useEffect(() => {
-    console.log("mounted");
-    return () => {
-      console.log("unmount");
-    };
-  }, []);
   const showCheckbox = attribute?.hideShowAllFields !== true;
 
   return (

@@ -1,15 +1,8 @@
-import { useEffect } from "react";
 import { withTranslation } from "react-i18next";
 import { Form, Radio } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 const WorkgroupRadioGroup = props => {
-  useEffect(() => {
-    console.log("mounted wg");
-    return () => {
-      console.log("unmount wg");
-    };
-  }, []);
   return (
     <Form
       size="tiny"

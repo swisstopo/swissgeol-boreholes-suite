@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, Radio } from "semantic-ui-react";
 import { capitalizeFirstLetter } from "../../../../utils";
@@ -9,13 +8,6 @@ interface StatusFilterProps {
   setFilter: (key: string, value: string) => void;
 }
 export const StatusFilter = ({ search, setFilter }: StatusFilterProps) => {
-  useEffect(() => {
-    console.log("mounted status filter");
-    return () => {
-      console.log("unmount status filter");
-    };
-  }, []);
-
   const { t } = useTranslation();
   return (
     <Form
