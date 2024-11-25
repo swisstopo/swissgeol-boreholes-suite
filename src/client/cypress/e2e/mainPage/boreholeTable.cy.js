@@ -98,11 +98,11 @@ describe("Borehole editor table tests", () => {
     // navigate to next page
     cy.get('[aria-label="next page"]').scrollIntoView().click();
     waitForTableData();
-    cy.contains("1477 selected").should("be.visible");
+    cy.contains("1476 selected").should("be.visible");
 
     // uncheck another row
     unCheckRowWithText("Andres Miller");
-    cy.contains("1476 selected").should("be.visible");
+    cy.contains("1475 selected").should("be.visible");
 
     // uncheck all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
