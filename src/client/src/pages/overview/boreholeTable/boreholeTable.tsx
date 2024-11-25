@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
+import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -11,6 +11,7 @@ import {
   GridEventListener,
   GridHeaderCheckbox,
   GridPaginationModel,
+  GridRenderCellParams,
   GridRowParams,
   GridRowSelectionModel,
   GridScrollParams,
@@ -23,6 +24,7 @@ import { useDomains } from "../../../api/fetchApiV2";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { muiLocales } from "../../../mui.locales.ts";
+import { areArraysEqual } from "../../../utils.ts";
 import { OverViewContext } from "../overViewContext.tsx";
 import { TablePaginationActions } from "./TablePaginationActions.tsx";
 
@@ -63,6 +65,19 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const scrollPositionRef = useRef(tableScrollPosition);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const userIsEditor = user.data.roles.includes("EDIT");
+  const [filteredIds, setFilteredIds] = useState<number[]>([]);
+
+  // This useEffect makes sure that the table selection model is only updated when the
+  // filtered_borehole_ids have changed and not whenever the boreholes.data changes,
+  // which also happens on every pagination event (server side pagination).
+  useEffect(() => {
+    if (boreholes?.filtered_borehole_ids && filteredIds) {
+      if (!areArraysEqual(boreholes.filtered_borehole_ids as number[], filteredIds)) {
+        setFilteredIds(boreholes.filtered_borehole_ids as number[]);
+        setSelectionModel([]);
+      }
+    }
+  }, [boreholes.filtered_borehole_ids, filteredIds, setSelectionModel]);
 
   const rowCount = useMemo(() => {
     if (boreholes?.length > 0) {
@@ -71,8 +86,8 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     return rowCountRef.current;
   }, [boreholes?.length]);
 
-  const renderHeaderCheckbox = useMemo(() => {
-    return (params: GridColumnHeaderParams) => {
+  const renderHeaderCheckbox = useCallback(
+    (params: GridColumnHeaderParams) => {
       const handleHeaderCheckboxClick = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
           setSelectionModel(boreholes.filtered_borehole_ids);
@@ -90,8 +105,32 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
           sx={{ m: 1 }}
         />
       );
-    };
-  }, [boreholes.filtered_borehole_ids, setSelectionModel]);
+    },
+    [boreholes.filtered_borehole_ids, setSelectionModel],
+  );
+
+  const renderCellCheckbox = useCallback(
+    (params: GridRenderCellParams) => {
+      const handleCheckBoxClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const rowId = params.id as number;
+        if (event.target.checked) {
+          setSelectionModel([...new Set([...selectionModel, rowId])]);
+        } else {
+          setSelectionModel(selectionModel.filter(item => item !== rowId));
+        }
+      };
+      return (
+        <Box sx={{ p: 1 }}>
+          <GridCellCheckboxRenderer
+            {...params}
+            // @ts-expect-error onChange is not in the GridColumnHeaderParams type, but can be used
+            onChange={handleCheckBoxClick}
+          />
+        </Box>
+      );
+    },
+    [selectionModel, setSelectionModel],
+  );
 
   const columns: GridColDef[] = [
     {
@@ -104,11 +143,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       disableReorder: true,
       disableExport: true,
       renderHeader: renderHeaderCheckbox,
-      renderCell: params => (
-        <Box sx={{ p: 1 }}>
-          <GridCellCheckboxRenderer {...params} />
-        </Box>
-      ),
+      renderCell: renderCellCheckbox,
     },
     { field: "alternate_name", headerName: t("name"), flex: 1 },
     {
@@ -339,7 +374,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       isRowSelectable={(params: GridRowParams) => params.row.lock === null}
       disableRowSelectionOnClick
       rowSelectionModel={selectionModel}
-      onRowSelectionModelChange={setSelectionModel}
       hideFooterSelectedRowCount
       sortingMode="server"
       sortModel={sortModel}
