@@ -8,6 +8,5 @@ export const chronostratigraphySearchData: SearchData[] = [
     value: "chronostratigraphy_id",
     schema: "custom.chronostratigraphy_top_bedrock",
     isVisible: true,
-    hideShowAllFields: true,
   },
 ];

@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 import { Checkbox, Form, Input, TextArea } from "semantic-ui-react";
 import _ from "lodash";
 import DateField from "../../../../components/legacyComponents/dateField.jsx";
@@ -8,53 +9,56 @@ import DomainTree from "../../../../components/legacyComponents/domain/tree/doma
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import HierarchicalDataSearch from "../../../detail/form/stratigraphy/hierarchicalDataSearch";
 import CantonDropdown from "./cantonDropdown.jsx";
+import { filterAccordionValues } from "./filterData/filterAccordionValues";
 import * as Styled from "./listFilterStyles";
 
-const ListFilter = props => {
-  const { attribute, search, setFilter, settings } = props;
-  const { t } = useTranslation();
-  const [showAll, setShowAll] = useState(false);
+const ListFilter = ({ attributeId, showAllForAccordion, setShowAllForAccordion }) => {
+  const dispatch = useDispatch();
+  const setFilter = (key, value) => {
+    dispatch({
+      type: "SEARCH_EDITOR_FILTER_CHANGED",
+      key: key,
+      value: value,
+    });
+  };
 
-  useEffect(() => {
-    setShowAll(false);
-  }, [attribute]);
+  const { t } = useTranslation();
+  const settings = useSelector(state => state.setting);
+  const search = useSelector(state => state.filters);
+
+  const attribute = filterAccordionValues.find(f => f.id === attributeId);
 
   const isVisibleFunction = filter => {
-    return _.get(settings, filter) === true;
+    return _.get(settings.data.efilter, filter) === true;
   };
 
-  const showCheckbox = () => {
-    let isVisibleCounter = 0;
+  const showAll = showAllForAccordion.find(f => f.id === attributeId)?.showAll;
 
-    for (let i = 0; i < attribute?.length; i++) {
-      if (attribute[i]?.hideShowAllFields === true) {
-        return false;
-      }
-      if (isVisibleFunction(attribute[i]?.isVisibleValue)) {
-        isVisibleCounter++;
-      }
-    }
-
-    return isVisibleCounter !== attribute?.length;
+  const setShowAll = showAll => {
+    setShowAllForAccordion(showAllForAccordion.map(f => (f.id === attributeId ? { id: attributeId, showAll } : f)));
   };
 
-  const updateChange = (attribute, value) => {
-    setFilter(attribute, value);
-  };
+  useEffect(() => {
+    console.log("mounted");
+    return () => {
+      console.log("unmount");
+    };
+  }, []);
+  const showCheckbox = attribute?.hideShowAllFields !== true;
 
   return (
-    <Styled.Container>
-      {showCheckbox() && (
+    <Styled.Container key={attributeId}>
+      {showCheckbox && (
         <Styled.CheckboxContainer>
           {t("showallfields")}
           <Checkbox checked={showAll} onChange={() => setShowAll(!showAll)} toggle />
         </Styled.CheckboxContainer>
       )}
 
-      {attribute && (
+      {attribute?.searchData && (
         <Styled.ContainerList>
-          {attribute.map((item, key) => (
-            <Form autoComplete="false" error key={key}>
+          {attribute.searchData.map(item => (
+            <Form autoComplete="false" error key={item.id}>
               <Styled.AttributesContainer>
                 {(item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) &&
                   item.type !== "HierarchicalData" && (
@@ -69,7 +73,7 @@ const ListFilter = props => {
                       autoComplete="off"
                       autoCorrect="off"
                       onChange={e =>
-                        updateChange(item.value, e.target.value === "" ? "" : e.target.value, item?.to, item?.isNumber)
+                        setFilter(item.value, e.target.value === "" ? "" : e.target.value, item?.to, item?.isNumber)
                       }
                       placeholder={t(item?.placeholder)}
                       spellCheck="false"
@@ -83,7 +87,7 @@ const ListFilter = props => {
                 {item.type === "TextArea" && (item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) && (
                   <Styled.AttributesItem>
                     <TextArea
-                      onChange={e => updateChange(item.value, e.target.value)}
+                      onChange={e => setFilter(item.value, e.target.value)}
                       style={{ width: "100%" }}
                       value={_.isNil(search.filter?.[item.value]) ? "" : search.filter[item.value]}
                     />
@@ -98,7 +102,7 @@ const ListFilter = props => {
                           <Form.Radio
                             checked={search.filter?.[item.value] === true}
                             label={t("yes")}
-                            onChange={() => updateChange(item.value, true, item?.to)}
+                            onChange={() => setFilter(item.value, true, item?.to)}
                             style={{
                               paddingRight: "10px",
                               paddingLeft: "10px",
@@ -107,13 +111,13 @@ const ListFilter = props => {
                           <Form.Radio
                             checked={search.filter?.[item.value] === false}
                             label={t("no")}
-                            onChange={() => updateChange(item.value, false, item?.to)}
+                            onChange={() => setFilter(item.value, false, item?.to)}
                             style={{ paddingRight: "10px" }}
                           />
                           <Form.Radio
                             checked={search.filter?.[item.value] === null}
                             label={t("np")}
-                            onChange={() => updateChange(item.value, null, item?.to)}
+                            onChange={() => setFilter(item.value, null, item?.to)}
                           />
                         </>
                       )}
@@ -136,13 +140,13 @@ const ListFilter = props => {
                               data-cy="radiobutton-all"
                               checked={search.filter?.[item.value] === null}
                               label={t("all")}
-                              onChange={() => updateChange(item.value, null, item?.to)}
+                              onChange={() => setFilter(item.value, null, item?.to)}
                             />
                             <Form.Radio
                               data-cy="radiobutton-LV95"
                               checked={search.filter?.[item.value] === 20104001}
                               label="LV95"
-                              onChange={() => updateChange(item.value, 20104001, item?.to)}
+                              onChange={() => setFilter(item.value, 20104001, item?.to)}
                               style={{
                                 paddingRight: "10px",
                                 paddingLeft: "10px",
@@ -152,7 +156,7 @@ const ListFilter = props => {
                               data-cy="radiobutton-LV03"
                               checked={search.filter?.[item.value] === 20104002}
                               label="LV03"
-                              onChange={() => updateChange(item.value, 20104002, item?.to)}
+                              onChange={() => setFilter(item.value, 20104002, item?.to)}
                               style={{ paddingRight: "10px" }}
                             />
                           </>
@@ -165,7 +169,7 @@ const ListFilter = props => {
                   <Styled.AttributesItem>
                     <DomainDropdown
                       multiple={item.multiple}
-                      onSelected={e => updateChange(item.value, item.multiple ? e.map(mlpr => mlpr.id) : e.id, false)}
+                      onSelected={e => setFilter(item.value, item.multiple ? e.map(mlpr => mlpr.id) : e.id, false)}
                       schema={item.schema}
                       search={item.search}
                       additionalValues={item.additionalValues}
@@ -178,7 +182,7 @@ const ListFilter = props => {
                   (item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) && (
                     <HierarchicalDataSearch
                       onSelected={e => {
-                        updateChange(item.value, e.id, false);
+                        setFilter(item.value, e.id, false);
                       }}
                       schema={item.schema}
                       labels={item.labels}
@@ -191,7 +195,7 @@ const ListFilter = props => {
                     <Styled.AttributesItem>
                       <DomainTree
                         levels={item.levels}
-                        onSelected={e => updateChange(item.value, e.id, false)}
+                        onSelected={e => setFilter(item.value, e.id, false)}
                         schema={item.schema}
                         selected={_.isNil(search.filter?.[item.value]) ? null : search.filter[item.value]}
                         title={<TranslationText id={item.label} />}
@@ -205,7 +209,7 @@ const ListFilter = props => {
                     <DateField
                       date={search.filter?.[item.value] ? search.filter[item.value] : null}
                       onChange={selected => {
-                        updateChange(item.value, selected, false);
+                        setFilter(item.value, selected, false);
                       }}
                       placeholder={t(item?.placeholder)}
                     />
@@ -216,7 +220,7 @@ const ListFilter = props => {
                   <Styled.AttributesItem>
                     <CantonDropdown
                       onSelected={selected => {
-                        updateChange(item.value, selected, false);
+                        setFilter(item.value, selected, false);
                       }}
                       selected={search.filter?.[item.value]}
                     />

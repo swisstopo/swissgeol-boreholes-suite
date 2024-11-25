@@ -25,8 +25,8 @@ export interface AdditionalValues {
 
 export interface SearchData {
   id: number;
-  type: string;
   value: string;
+  type?: string;
   label?: string;
   labels?: string[];
   require?: boolean;

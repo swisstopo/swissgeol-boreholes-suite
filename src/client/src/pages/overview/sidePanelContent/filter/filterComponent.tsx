@@ -5,17 +5,12 @@ import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stac
 import { styled } from "@mui/material/styles";
 import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
-import { ReduxRootState, Setting, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { ReduxRootState, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import FilterChips from "./FilterChips.tsx";
 import { FilterContext } from "./filterContext.tsx";
-import { boreholeSearchData } from "./filterData/boreholeSearchData.js";
-import { chronostratigraphySearchData } from "./filterData/chronostratigraphySearchData.js";
-import { lithologySearchData } from "./filterData/lithologySearchData.ts";
-import { lithostratigraphySearchData } from "./filterData/lithostratigraphySearchData.js";
-import { LocationSearchData } from "./filterData/LocationSearchData.js";
-import { registrationSearchData } from "./filterData/registrationSearchData.js";
+import { FilterAccordionValue, filterAccordionValues } from "./filterData/filterAccordionValues.ts";
 import { Filter } from "./FilterInterface.ts";
 import { FilterReset } from "./filterReset.tsx";
 import ListFilter from "./listFilter";
@@ -32,7 +27,6 @@ export const FilterComponent = ({ toggleDrawer }: { toggleDrawer: (open: boolean
     setPolygonSelectionEnabled,
   } = useContext(FilterContext);
   const { t } = useTranslation();
-  const settings: Setting = useSelector((state: ReduxRootState) => state.setting);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const search: { filter: Filter } = useSelector((state: ReduxRootState) => state.filters);
   const dispatch = useDispatch();
@@ -50,113 +44,21 @@ export const FilterComponent = ({ toggleDrawer }: { toggleDrawer: (open: boolean
       value: value,
     });
   };
-  const resetRestriction = () => {
-    dispatch({
-      type: "SEARCH_EDITOR_FILTER_RESET_RESTRICTION",
-    });
-  };
-  const resetElevation = () => {
-    dispatch({
-      type: "SEARCH_EDITOR_FILTER_RESET_ELEVATION",
-    });
-  };
-  const resetTotBedrock = () => {
-    dispatch({
-      type: "SEARCH_EDITOR_FILTER_RESET_TOP_BEDROCK",
-    });
-  };
-  const resetDrilling = () => {
-    dispatch({
-      type: "SEARCH_EDITOR_FILTER_RESET_DRILLING",
-    });
-  };
-  const resetDrillDiameter = () => {
-    dispatch({
-      type: "SEARCH_EDITOR_FILTER_RESET_DRILL_DIAMETER",
-    });
-  };
-  const resetBoreInc = () => {
-    dispatch({
-      type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC",
-    });
-  };
-  const resetBoreIncDir = () => {
-    dispatch({
-      type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR",
-    });
-  };
-  const resetDepth = () => {
-    dispatch({
-      type: "SEARCH_EDITOR_FILTER_RESET_DEPTH",
-    });
-  };
-  const resetCreatedDate = () => {
-    dispatch({
-      type: "SEARCH_EDITOR_FILTER_RESET_CREATED_DATE",
-    });
-  };
 
   const [activeFilters, setActiveFilters] = useState<Filter[]>([]);
-  const [searchList, setSearchList] = useState([
-    {
-      id: 0,
-      name: "workgroup",
-      translationId: "workgroup",
-      isSelected: false,
-      searchData: [{ value: "workgroup", hideShowAllFields: true }],
-    },
-    {
-      id: 1,
-      name: "status",
-      translationId: "status",
-      isSelected: false,
-      searchData: [{ value: "role", hideShowAllFields: true }],
-    },
-    {
-      id: 2,
-      name: "location",
-      translationId: "location",
-      isSelected: false,
-      searchData: LocationSearchData,
-    },
-    {
-      id: 3,
-      name: "borehole",
-      translationId: "borehole",
-      isSelected: false,
-      searchData: boreholeSearchData,
-    },
-    {
-      id: 4,
-      name: "lithology",
-      translationId: "lithology",
-      isSelected: false,
-      searchData: lithologySearchData,
-    },
-    {
-      id: 5,
-      name: "chronostratigraphy",
-      translationId: "chronostratigraphy",
-      isSelected: false,
-      searchData: chronostratigraphySearchData,
-    },
-    {
-      id: 6,
-      name: "lithostratigraphy",
-      translationId: "lithostratigraphy",
-      isSelected: false,
-      searchData: lithostratigraphySearchData,
-    },
-    {
-      id: 7,
-      name: "registration",
-      translationId: "registration",
-      isSelected: false,
-      searchData: registrationSearchData,
-    },
-  ]);
+  const [showAllForAccordion, setShowAllForAccordion] = useState<{ id: number; showAll: boolean }[]>(
+    filterAccordionValues.map(f => {
+      return { id: f.id, showAll: false };
+    }),
+  );
+  const [expandedFilterAccordion, setExpandedFilterAccordion] = useState<FilterAccordionValue | null>(null);
 
-  // on mount
+  useEffect(() => {
+    console.log("render filter component");
+    return () => {
+      console.log("unmount filter component");
+    };
+  }, []);
   useEffect(() => {
     const af = Object.entries(search.filter)
       .filter(
@@ -166,11 +68,8 @@ export const FilterComponent = ({ toggleDrawer }: { toggleDrawer: (open: boolean
       .map(([key, value]) => ({ key: key, value: value }));
     setActiveFilterLength(af.length);
     setActiveFilters(af);
+    console.log("render filter component");
   }, [search, setActiveFilterLength, setActiveFilters]);
-
-  const handleButtonSelected = () => {
-    return searchList.find(s => s.isSelected)?.searchData;
-  };
 
   const handlePolygonFilterClick = () => {
     setPolygonSelectionEnabled(!polygonSelectionEnabled);
@@ -247,59 +146,52 @@ export const FilterComponent = ({ toggleDrawer }: { toggleDrawer: (open: boolean
             <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />
           )}
         </Button>
-        {searchList?.map((filter, idx) => {
-          const currentSearchList = searchList.find(l => l.name === filter.name);
+
+        {filterAccordionValues.map(filterAccordionValue => {
           const activeFilterLength = activeFilters.filter(f =>
-            currentSearchList?.searchData.some(d => d.value === f.key),
+            filterAccordionValue?.searchData.some(d => d.value === f.key),
           ).length;
+          const isAccordionExpanded = filterAccordionValue.id === expandedFilterAccordion?.id;
           return (
-            <StyledAccordion key={idx} expanded={filter?.isSelected}>
-              <AccordionSummary
-                expandIcon={<ChevronDown />}
-                onClick={() => {
-                  setSearchList(
-                    searchList.map(obj => ({ ...obj, isSelected: obj.id === idx ? !obj.isSelected : false })),
-                  );
-                }}>
-                <Typography variant="h6">{t(filter?.translationId)} </Typography>
-                <Badge badgeContent={activeFilterLength} sx={{ marginLeft: "18px", marginTop: "10px" }} />
-              </AccordionSummary>
-              {filter?.name === "workgroup" && filter?.isSelected && (
-                <StyledAccordionDetails>
-                  <WorkgroupRadioGroup
-                    filter={search.filter.workgroup}
-                    onChange={(workgroup: string) => {
-                      setFilter("workgroup", workgroup);
-                    }}
-                    workgroups={user.data.workgroups}
-                  />
-                </StyledAccordionDetails>
-              )}
-              {filter?.name === "status" && filter?.isSelected && (
-                <StyledAccordionDetails>
-                  <StatusFilter search={search} setFilter={setFilter} />
-                </StyledAccordionDetails>
-              )}
-              <StyledAccordionDetails>
-                {handleButtonSelected() !== null && filter?.isSelected && (
-                  <ListFilter
-                    attribute={handleButtonSelected()}
-                    resetBoreInc={resetBoreInc}
-                    resetBoreIncDir={resetBoreIncDir}
-                    resetDepth={resetDepth}
-                    resetDrillDiameter={resetDrillDiameter}
-                    resetDrilling={resetDrilling}
-                    resetElevation={resetElevation}
-                    resetRestriction={resetRestriction}
-                    resetTotBedrock={resetTotBedrock}
-                    search={search}
-                    setFilter={setFilter}
-                    settings={settings.data.efilter}
-                    resetCreatedDate={resetCreatedDate}
-                  />
+            <>
+              <StyledAccordion key={filterAccordionValue.id} expanded={isAccordionExpanded}>
+                <AccordionSummary
+                  expandIcon={<ChevronDown />}
+                  onClick={() => {
+                    if (isAccordionExpanded) {
+                      setExpandedFilterAccordion(null);
+                    } else {
+                      setExpandedFilterAccordion(filterAccordionValue);
+                    }
+                  }}>
+                  <Typography variant="h6">{t(filterAccordionValue?.translationId)} </Typography>
+                  <Badge badgeContent={activeFilterLength} sx={{ marginLeft: "18px", marginTop: "10px" }} />
+                </AccordionSummary>
+                {filterAccordionValue?.name === "workgroup" && isAccordionExpanded && (
+                  <StyledAccordionDetails>
+                    <WorkgroupRadioGroup
+                      filter={search.filter.workgroup}
+                      onChange={(workgroup: string) => {
+                        setFilter("workgroup", workgroup);
+                      }}
+                      workgroups={user.data.workgroups}
+                    />
+                  </StyledAccordionDetails>
                 )}
-              </StyledAccordionDetails>
-            </StyledAccordion>
+                {filterAccordionValue?.name === "status" && isAccordionExpanded && (
+                  <StyledAccordionDetails>
+                    <StatusFilter search={search} setFilter={setFilter} />
+                  </StyledAccordionDetails>
+                )}
+                <StyledAccordionDetails>
+                  <ListFilter
+                    attributeId={expandedFilterAccordion?.id}
+                    showAllForAccordion={showAllForAccordion}
+                    setShowAllForAccordion={setShowAllForAccordion}
+                  />
+                </StyledAccordionDetails>
+              </StyledAccordion>
+            </>
           );
         })}
       </Box>

@@ -8,6 +8,5 @@ export const lithostratigraphySearchData: SearchData[] = [
     value: "lithostratigraphy_id",
     schema: "custom.lithostratigraphy_top_bedrock",
     isVisible: true,
-    hideShowAllFields: true,
   },
 ];
