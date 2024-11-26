@@ -115,7 +115,8 @@ class FilterComponent extends React.Component {
     const activeFilters = Object.entries(search.filter)
       .filter(
         ([key, value]) =>
-          value != null && value !== "" && value !== -1 && !["refresh"].includes(key) && value !== "all",
+          (value != null && value !== "" && value !== -1 && !["refresh"].includes(key) && value !== "all") ||
+          (["national_interest", "groundwater", "striae"].includes(key) && value === null),
       )
       .map(([key, value]) => ({ key: key, value: value }));
     this.context.setActiveFilterLength(activeFilters.length);
