@@ -29,7 +29,19 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
   return (
     <Box sx={{ marginBottom: activeFilters.length > 0 ? "14px" : undefined }}>
       {activeFilters.map((filter, index) => {
-        const filterLabel = filter.key === "role" ? t("status") : t(filter.key);
+        const customFilterLabels: { [key: string]: string } = {
+          role: "status",
+          status: "boreholeStatus",
+          description_quality: "completeness",
+          layer_gradation: "gradation",
+          layer_depth_from_from: "fromdepth_from",
+          layer_depth_from_to: "fromdepth_to",
+          layer_depth_to_to: "todepth_to",
+          layer_depth_to_from: "todepth_from",
+        };
+
+        const filterLabel = t(customFilterLabels[filter.key] || filter.key);
+
         return (
           <Tooltip key={index} title={filterLabel.length > 15 && filterLabel}>
             <Chip
