@@ -121,7 +121,6 @@ class FilterComponent extends React.Component {
       .map(([key, value]) => ({ key: key, value: value }));
     this.context.setActiveFilterLength(activeFilters.length);
     this.setState({ activeFilters: activeFilters });
-    console.log(search.filter, activeFilters);
   }
 
   isVisible(filter) {
