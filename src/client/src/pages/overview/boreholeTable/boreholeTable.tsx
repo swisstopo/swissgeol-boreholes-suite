@@ -19,12 +19,12 @@ import {
   useGridApiRef,
 } from "@mui/x-data-grid";
 import { LockKeyhole } from "lucide-react";
+import _ from "lodash";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../../api/fetchApiV2";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { muiLocales } from "../../../mui.locales.ts";
-import { areArraysEqual } from "../../../utils.ts";
 import { OverViewContext } from "../overViewContext.tsx";
 import { TablePaginationActions } from "./TablePaginationActions.tsx";
 
@@ -72,7 +72,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   // which also happens on every pagination event (server side pagination).
   useEffect(() => {
     if (boreholes?.filtered_borehole_ids && filteredIds) {
-      if (!areArraysEqual(boreholes.filtered_borehole_ids as number[], filteredIds)) {
+      if (!_.isEqual(boreholes.filtered_borehole_ids, filteredIds)) {
         setFilteredIds(boreholes.filtered_borehole_ids as number[]);
         setSelectionModel([]);
       }
