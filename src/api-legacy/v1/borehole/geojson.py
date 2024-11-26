@@ -24,6 +24,7 @@ class ListGeojson(Action):
         wr = ''
 
         if len(layer_params) > 0:
+            layer_params = [param for param in layer_params if param is not None]
 
             joins_string = "\n".join(layer_joins) if len(layer_joins)>0 else ''
 
@@ -137,6 +138,10 @@ class ListGeojson(Action):
                 permissions
             )
 
+        print(wr_strt)
+        print(layer_params)
+        print(wr)
+        print(params)
         rec = await self.conn.fetchrow("""
             SELECT
                 row_to_json(t)
