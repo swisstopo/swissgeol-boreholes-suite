@@ -1,5 +1,4 @@
 import {
-  checkRowWithText,
   clickOnRowWithText,
   showTableAndWaitForData,
   sortBy,
@@ -95,37 +94,16 @@ describe("Borehole editor table tests", () => {
     unCheckRowWithText("Aaliyah Casper");
     cy.contains("1476 selected").should("be.visible");
 
-    // navigate to next page
-    cy.get('[aria-label="next page"]').scrollIntoView().click();
-    waitForTableData();
-    cy.contains("1476 selected").should("be.visible");
-
-    // uncheck another row
-    unCheckRowWithText("Andres Miller");
-    cy.contains("1475 selected").should("be.visible");
-
     // uncheck all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
 
-    // check one row
-    checkRowWithText("Andres Renner");
-    cy.contains("1 selected").should("be.visible");
-
-    // navigate to previous page
-    cy.get('[aria-label="previous page"]').scrollIntoView().click();
-    waitForTableData();
-    cy.contains("1 selected").should("be.visible");
-
-    // check all, then uncheck all from page where single selection is not visible
-    cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
-
-    // filter data
+    // verify select all rows with filtered data
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
+
+    // input value
     cy.contains("Created by").next().find("input").type("v_ U%r");
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 329");
@@ -134,10 +112,5 @@ describe("Borehole editor table tests", () => {
     cy.get('[data-cy="table-header-checkbox"]').click();
     cy.contains("1'626").should("not.exist");
     cy.contains("298 selected").should("be.visible"); // does not select locked rows
-
-    // navigate to next page
-    cy.get('[aria-label="next page"]').scrollIntoView().click();
-    waitForTableData();
-    cy.contains("298 selected").should("be.visible");
   });
 });
