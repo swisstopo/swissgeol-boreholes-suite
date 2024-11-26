@@ -389,16 +389,42 @@ export const getImportFileFromFixtures = (fileName, encoding, dataSet) => {
 };
 
 export const createStratigraphy = (boreholeId, kindId) => {
-  cy.get("@id_token").then(token => {
+  return cy.get("@id_token").then(token => {
+    return cy
+      .request({
+        method: "POST",
+        url: "/api/v2/stratigraphy",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: {
+          boreholeId: boreholeId,
+          kindId: kindId,
+        },
+        auth: bearerAuth(token),
+      })
+      .then(res => {
+        return cy.wrap(res.body.id);
+      });
+  });
+};
+
+export const createLithologyLayer = (stratigraphyId, layer) => {
+  return cy.get("@id_token").then(token => {
     return cy.request({
       method: "POST",
-      url: "/api/v2/stratigraphy",
-      body: {
-        boreholeId: boreholeId,
-        kindId: kindId,
-      },
+      url: "/api/v2/layer",
       cache: "no-cache",
       credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: {
+        stratigraphyId: stratigraphyId,
+        ...layer,
+      },
       auth: bearerAuth(token),
     });
   });

@@ -48,7 +48,7 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
           <Tooltip key={index} title={filterLabel.length > 15 && filterLabel}>
             <Chip
               sx={{ marginRight: "10px", marginBottom: "10px" }}
-              data-cy="filter-chip"
+              data-cy={`filter-chip-${filter.key}`}
               color="secondary"
               label={filterLabel.length < 15 ? filterLabel : filterLabel.substring(0, 15) + "..."}
               onDelete={() => onRemoveFilter(filter)}

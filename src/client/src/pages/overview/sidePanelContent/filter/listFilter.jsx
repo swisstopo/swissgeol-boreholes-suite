@@ -98,6 +98,7 @@ const ListFilter = props => {
                           <Form.Radio
                             checked={search.filter?.[item.value] === true}
                             label={t("yes")}
+                            data-cy={`${item.label}-yes`}
                             onChange={() => updateChange(item.value, true, item?.to)}
                             style={{
                               paddingRight: "10px",
@@ -107,12 +108,14 @@ const ListFilter = props => {
                           <Form.Radio
                             checked={search.filter?.[item.value] === false}
                             label={t("no")}
+                            data-cy={`${item.label}-no`}
                             onChange={() => updateChange(item.value, false, item?.to)}
                             style={{ paddingRight: "10px" }}
                           />
                           <Form.Radio
                             checked={search.filter?.[item.value] === null}
                             label={t("np")}
+                            data-cy={`${item.label}-np`}
                             onChange={() => updateChange(item.value, null, item?.to)}
                           />
                         </>
