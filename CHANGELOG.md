@@ -30,6 +30,7 @@
 - There was an internal error alert when navigating back from the borehole detail to the borehole table in anonymous mode.
 - The responsive design of the coordinate segment in the detail view was broken.
 - When clicking the select all checkbox in the borehole table, only the boreholes on the current page were selected.
+- Some filter chips were missing translations or where not displayed correctly.
 
 ## v2.1.870 - 2024-09-27
 
