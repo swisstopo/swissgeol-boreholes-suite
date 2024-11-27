@@ -31,6 +31,7 @@
 - The responsive design of the coordinate segment in the detail view was broken.
 - When clicking the select all checkbox in the borehole table, only the boreholes on the current page were selected.
 - Some filter chips were missing translations or where not displayed correctly.
+- Filtering striae for "not specified" returned wrong results.
 
 ## v2.1.870 - 2024-09-27
 

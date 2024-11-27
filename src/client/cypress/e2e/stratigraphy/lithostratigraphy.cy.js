@@ -11,10 +11,8 @@ describe("Tests for the lithostratigraphy editor.", () => {
     // Add new borehole with some lithology layers
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => createStratigraphy(id, 3000))
-      .then(response => {
-        expect(response).to.have.property("status", 200);
-
+      .then(id => createStratigraphy(id, 3000).as("stratigraphy_id"))
+      .then(stratigraphyId => {
         [
           {
             lithologyId: 15104758,
@@ -46,7 +44,7 @@ describe("Tests for the lithostratigraphy editor.", () => {
                   "Content-Type": "application/json",
                 },
                 body: {
-                  stratigraphyId: response.body.id,
+                  stratigraphyId: stratigraphyId,
                   ...layer,
                 },
                 auth: bearerAuth(token),

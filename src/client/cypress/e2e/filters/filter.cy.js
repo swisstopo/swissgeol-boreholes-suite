@@ -1,5 +1,5 @@
 import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { loginAsAdmin } from "../helpers/testHelpers.js";
+import { createBorehole, createLithologyLayer, createStratigraphy, loginAsAdmin } from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
@@ -88,6 +88,136 @@ describe("Search filter tests", () => {
     // check content of table
     showTableAndWaitForData();
     verifyPaginationText("1–100 of 329");
+  });
+
+  it("filters boreholes national_interest and striae", () => {
+    createBorehole({
+      "extended.original_name": "Borehole 1 with striae: true",
+      "custom.alternate_name": "striae true / null",
+      national_interest: false,
+    })
+      .as("borehole_id")
+      .then(boreholeId => {
+        createStratigraphy(boreholeId, 3000)
+          .as("stratigraphy_id")
+          .then(id => {
+            createLithologyLayer(id, { isStriae: null });
+            createLithologyLayer(id, { isStriae: true });
+          });
+      });
+
+    createBorehole({
+      "extended.original_name": "Borehole 1 with striae: false",
+      "custom.alternate_name": "striae false / null",
+      national_interest: false,
+    })
+      .as("borehole_id2")
+      .then(boreholeId2 => {
+        createStratigraphy(boreholeId2, 3000)
+          .as("stratigraphy_id")
+          .then(id => {
+            createLithologyLayer(id, { isStriae: false });
+            createLithologyLayer(id, { isStriae: null });
+          });
+      });
+
+    createBorehole({
+      "extended.original_name": "Borehole 2 with striae: false",
+      "custom.alternate_name": "striae false / null",
+      national_interest: false,
+    })
+      .as("borehole_id3")
+      .then(boreholeId3 => {
+        createStratigraphy(boreholeId3, 3000)
+          .as("stratigraphy_id")
+          .then(id => {
+            createLithologyLayer(id, { isStriae: false });
+          });
+      });
+
+    createBorehole({
+      "extended.original_name": "Borehole 3 with striae: false",
+      "custom.alternate_name": "striae false, national_interest null",
+      national_interest: null,
+    })
+      .as("borehole_id3")
+      .then(boreholeId3 => {
+        createStratigraphy(boreholeId3, 3000)
+          .as("stratigraphy_id")
+          .then(id => {
+            createLithologyLayer(id, { isStriae: false });
+          });
+      });
+
+    loginAsAdmin();
+    cy.get('[data-cy="show-filter-button"]').click();
+    cy.contains("Location").click();
+    cy.contains("Show all fields").children(".checkbox").click();
+
+    cy.get('[data-cy="national_interest-yes"]').click();
+    cy.wait("@edit_list");
+
+    showTableAndWaitForData();
+    verifyPaginationText("1–100 of 160");
+    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+
+    cy.get('[data-cy="national_interest-np"]').click();
+    cy.wait("@edit_list");
+    verifyPaginationText("1–1 of 1");
+    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+
+    cy.get('[data-cy="national_interest-no"]').click();
+    cy.wait("@edit_list");
+    verifyPaginationText("1–100 of 1469");
+    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+
+    cy.contains("Lithology").click();
+    cy.contains("Show all fields").children(".checkbox").click();
+    cy.get('[data-cy="striae-yes"]').click();
+    cy.wait("@edit_list");
+    verifyPaginationText("1–100 of 1401");
+    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+
+    cy.get('[data-cy="striae-no"]').click();
+    cy.wait("@edit_list");
+    verifyPaginationText("1–100 of 1402");
+    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+
+    cy.get('[data-cy="striae-np"]').click();
+    cy.wait("@edit_list");
+    verifyPaginationText("1–2 of 2");
+    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+
+    // reset national interest filter
+    cy.get('[data-cy="filter-chip-national_interest"]')
+      .should("exist")
+      .within(() => {
+        cy.get("svg").click();
+      });
+
+    cy.wait("@edit_list");
+    cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
+    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+
+    cy.get('[data-cy="striae-no"]').click();
+    cy.wait("@edit_list");
+    verifyPaginationText("1–100 of 1555");
+    cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
+    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+
+    // reset striae filter
+    cy.get('[data-cy="filter-chip-striae"]')
+      .should("exist")
+      .within(() => {
+        cy.get("svg").click();
+      });
+
+    cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
+    cy.get('[data-cy="filter-chip-striae"]').should("not.exist");
+    verifyPaginationText("1–100 of 1630");
   });
 
   it("filters boreholes by color and uscs3", () => {

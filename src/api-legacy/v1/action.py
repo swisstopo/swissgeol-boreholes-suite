@@ -308,12 +308,12 @@ class Action():
             """ % self.getIdx())
 
         if 'striae' in keys and filter['striae'] != -1:
+            params.append(filter['striae'])
             if filter['striae'] == None:
                 where.append("""
                     striae_lay IS NULL
                 """)
             else:
-                params.append(filter['striae'])
                 where.append("""
                     striae_lay = %s
                 """ % self.getIdx())

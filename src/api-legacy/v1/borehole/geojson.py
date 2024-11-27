@@ -24,6 +24,7 @@ class ListGeojson(Action):
         wr = ''
 
         if len(layer_params) > 0:
+            layer_params = [param for param in layer_params if param is not None]
 
             joins_string = "\n".join(layer_joins) if len(layer_joins)>0 else ''
 
