@@ -4,7 +4,7 @@ import { FormContainer } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import ObservationInput from "./observationInput";
+import ObservationInput from "./observationInput.tsx";
 import { ObservationType } from "./observationType";
 
 const WaterIngressInput = props => {

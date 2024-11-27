@@ -17,7 +17,7 @@ import {
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import ObservationInput from "./observationInput";
+import ObservationInput from "./observationInput.tsx";
 import { ObservationType } from "./observationType";
 import { getHydrotestParameterUnits } from "./parameterUnits";
 

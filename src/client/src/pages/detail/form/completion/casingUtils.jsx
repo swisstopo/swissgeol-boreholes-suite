@@ -35,7 +35,7 @@ export const useGetCasingName = () => {
     } else if (item?.casingId) {
       return `${item?.casing?.completion?.name} - ${item?.casing?.name}`;
     }
-    return null;
+    return "";
   };
 
   return { getCasingNameWithCompletion };
