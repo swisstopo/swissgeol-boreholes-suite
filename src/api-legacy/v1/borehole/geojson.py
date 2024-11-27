@@ -138,10 +138,6 @@ class ListGeojson(Action):
                 permissions
             )
 
-        print(wr_strt)
-        print(layer_params)
-        print(wr)
-        print(params)
         rec = await self.conn.fetchrow("""
             SELECT
                 row_to_json(t)
