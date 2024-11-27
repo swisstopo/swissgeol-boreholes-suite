@@ -1,14 +1,13 @@
 import { deleteGroundwaterLevelMeasurement } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
-import ObservationDisplay from "./observationDisplay";
+import { GroundwaterLevelMeasurementDisplayProps } from "./Observation.ts";
+import ObservationDisplay from "./observationDisplay.tsx";
 
-const GroundwaterLevelMeasurementDisplay = props => {
-  const { item, isEditable } = props;
-
+const GroundwaterLevelMeasurementDisplay = ({ item, isEditable }: GroundwaterLevelMeasurementDisplayProps) => {
   return (
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteGroundwaterLevelMeasurement}>
-      <ObservationDisplay observation={item} />
+      <ObservationDisplay observation={item} showDepthInputs={false} />
       <FormContainer direction="row">
         <FormDisplay label="gwlm_kind" value={item?.kind} type={FormValueType.Domain} />
       </FormContainer>

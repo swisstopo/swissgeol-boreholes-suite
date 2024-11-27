@@ -19,6 +19,7 @@
 - Updated the style of the location tab.
 - Changes on the location tab and the borehole tab are now saved by clicking the `Save` button, instead of immediately.
 - The `alternate_name` is now displayed in the borehole detail header and the map markers.
+- From depth and to depth are no longer displayed in groundwater level measurements.
 
 ### Fixed
 

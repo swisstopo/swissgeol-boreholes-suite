@@ -4,7 +4,7 @@ import { deleteHydrotest, useDomains } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
-import ObservationDisplay from "./observationDisplay";
+import ObservationDisplay from "./observationDisplay.tsx";
 import { getHydrotestParameterUnits } from "./parameterUnits";
 
 const HydrotestDisplay = props => {

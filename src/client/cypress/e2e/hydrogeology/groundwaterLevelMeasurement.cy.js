@@ -4,7 +4,6 @@ import {
   createBorehole,
   createCasing,
   createCompletion,
-  createGroundwaterLevelMeasurement,
   handlePrompt,
   loginAsAdmin,
   selectLanguage,
@@ -66,36 +65,5 @@ describe("Tests for the groundwater level measurement editor.", () => {
     handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "Löschen");
     cy.wait("@groundwaterlevelmeasurement_DELETE");
     cy.get("body").should("not.contain", "Drucksonde");
-  });
-
-  it("sorts groundwaterlevelmeasurement", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
-    cy.get("@borehole_id").then(id => {
-      createGroundwaterLevelMeasurement(id, "2012-11-14T12:06Z", 15203157, 15203208, null, 0, 10);
-      createGroundwaterLevelMeasurement(id, "2012-11-14T12:07Z", 15203157, 15203207, null, 0, 12);
-      loginAsAdmin(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
-    });
-    startBoreholeEditing();
-
-    cy.get('[data-cy="groundwaterLevelMeasurement-card.0"] [data-cy="todepth-formDisplay"]').contains("10");
-    cy.get('[data-cy="groundwaterLevelMeasurement-card.1"] [data-cy="todepth-formDisplay"]').contains("12");
-
-    cy.get('[data-cy="groundwaterLevelMeasurement-card.1"] [data-cy="edit-button"]').click({
-      force: true,
-    });
-    setInput("toDepthM", "8");
-    saveForm();
-    cy.wait("@groundwaterlevelmeasurement_GET");
-    cy.get('[data-cy="groundwaterLevelMeasurement-card.0"] [data-cy="todepth-formDisplay"]').contains("8");
-    cy.get('[data-cy="groundwaterLevelMeasurement-card.1"] [data-cy="todepth-formDisplay"]').contains("10");
-
-    cy.get('[data-cy="groundwaterLevelMeasurement-card.0"] [data-cy="edit-button"]').click({
-      force: true,
-    });
-    setInput("fromDepthM", "5");
-    saveForm();
-    cy.wait("@groundwaterlevelmeasurement_GET");
-    cy.get('[data-cy="groundwaterLevelMeasurement-card.0"] [data-cy="fromdepth-formDisplay"]').contains("0");
-    cy.get('[data-cy="groundwaterLevelMeasurement-card.1"] [data-cy="fromdepth-formDisplay"]').contains("5");
   });
 });

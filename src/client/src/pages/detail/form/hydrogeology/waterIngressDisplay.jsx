@@ -1,7 +1,7 @@
 import { deleteWaterIngress } from "../../../../api/fetchApiV2";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
-import ObservationDisplay from "./observationDisplay";
+import ObservationDisplay from "./observationDisplay.tsx";
 
 const WaterIngressDisplay = props => {
   const { item, isEditable } = props;

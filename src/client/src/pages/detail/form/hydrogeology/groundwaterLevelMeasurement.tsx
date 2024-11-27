@@ -3,8 +3,9 @@ import DataCards from "../../../../components/dataCard/dataCards.jsx";
 import { sortByDepth } from "../sorter.jsx";
 import GroundwaterLevelMeasurementDisplay from "./groundwaterLevelMeasurementDisplay";
 import GroundwaterLevelMeasurementInput from "./groundwaterLevelMeasurementInput";
+import { GroundwaterLevelMeasurementDisplayProps, GroundwaterLevelMeasurementInputProps } from "./Observation.ts";
 
-const GroundwaterLevelMeasurement = ({ isEditable, boreholeId }) => {
+const GroundwaterLevelMeasurement = ({ isEditable, boreholeId }: { isEditable: boolean; boreholeId: number }) => {
   return (
     <DataCards
       isEditable={isEditable}
@@ -13,9 +14,11 @@ const GroundwaterLevelMeasurement = ({ isEditable, boreholeId }) => {
       cyLabel="groundwaterLevelMeasurement"
       addLabel="addGroundwaterLevelMeasurement"
       emptyLabel="msgGroundwaterLevelMeasurementsEmpty"
-      renderInput={props => <GroundwaterLevelMeasurementInput {...props} />}
-      renderDisplay={props => <GroundwaterLevelMeasurementDisplay {...props} />}
-      sortDisplayed={(a, b) => {
+      renderInput={(props: GroundwaterLevelMeasurementInputProps) => <GroundwaterLevelMeasurementInput {...props} />}
+      renderDisplay={(props: GroundwaterLevelMeasurementDisplayProps) => (
+        <GroundwaterLevelMeasurementDisplay {...props} />
+      )}
+      sortDisplayed={(a: number, b: number) => {
         return sortByDepth(a, b, "fromDepthM", "toDepthM");
       }}
     />

@@ -5,9 +5,9 @@ import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import { ObservationInputProps } from "./Observation.ts";
 
-const ObservationInput = props => {
-  const { observation, boreholeId } = props;
+const ObservationInput = ({ observation, boreholeId, showDepthInputs = true }: ObservationInputProps) => {
   const [casings, setCasings] = useState([]);
   const getCasingOptions = useGetCasingOptions();
 
@@ -21,29 +21,33 @@ const ObservationInput = props => {
 
   return (
     <>
-      <FormContainer direction="row">
-        <FormInput
-          fieldName="fromDepthM"
-          label="fromdepth"
-          value={observation.fromDepthM}
-          type={FormValueType.Number}
-        />
-        <FormInput fieldName="toDepthM" label="todepth" value={observation.toDepthM} type={FormValueType.Number} />
-      </FormContainer>
-      <FormContainer direction="row">
-        <FormInput
-          fieldName="fromDepthMasl"
-          label="fromDepthMasl"
-          value={observation.fromDepthMasl}
-          type={FormValueType.Number}
-        />
-        <FormInput
-          fieldName="toDepthMasl"
-          label="toDepthMasl"
-          value={observation.toDepthMasl}
-          type={FormValueType.Number}
-        />
-      </FormContainer>
+      {showDepthInputs && (
+        <>
+          <FormContainer direction="row">
+            <FormInput
+              fieldName="fromDepthM"
+              label="fromdepth"
+              value={observation.fromDepthM}
+              type={FormValueType.Number}
+            />
+            <FormInput fieldName="toDepthM" label="todepth" value={observation.toDepthM} type={FormValueType.Number} />
+          </FormContainer>
+          <FormContainer direction="row">
+            <FormInput
+              fieldName="fromDepthMasl"
+              label="fromDepthMasl"
+              value={observation.fromDepthMasl}
+              type={FormValueType.Number}
+            />
+            <FormInput
+              fieldName="toDepthMasl"
+              label="toDepthMasl"
+              value={observation.toDepthMasl}
+              type={FormValueType.Number}
+            />
+          </FormContainer>
+        </>
+      )}
       <FormContainer direction="row">
         <FormInput
           fieldName="startTime"
