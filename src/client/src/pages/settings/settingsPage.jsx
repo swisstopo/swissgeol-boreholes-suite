@@ -2,6 +2,7 @@ import { withTranslation } from "react-i18next";
 import { Route, Switch, withRouter } from "react-router-dom";
 import { Box } from "@mui/material";
 import { useAuth } from "../../auth/useBdmsAuth";
+import { DetailHeaderSettings } from "../detail/detailHeaderSettings";
 import AboutSettings from "./aboutSettings";
 import AdminSettings from "./admin/adminSettings";
 import EditorSettings from "./editorSettings.tsx";
@@ -17,6 +18,7 @@ const SettingsPage = () => {
         flexDirection: "column",
         height: "100%",
       }}>
+      <DetailHeaderSettings />
       <Box
         sx={{
           flex: "1 1 100%",

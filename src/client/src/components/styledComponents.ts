@@ -63,3 +63,9 @@ export const DialogFooterContainer = styled(Box)({
   borderTop: "1px solid " + theme.palette.border,
   padding: theme.spacing(3),
 });
+
+export const DetailHeaderStack = styled(Stack)({
+  borderBottom: "1px solid " + theme.palette.boxShadow,
+  height: "84px",
+  padding: "16px",
+});

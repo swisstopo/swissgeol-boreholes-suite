@@ -11,7 +11,6 @@ const MenuSettings = props => {
 
   return (
     <div>
-      <ListItem path="/" name="done" location={location} history={history} icon="arrow left" t={t} hasTranslation />
       {!auth.anonymousModeEnabled && (
         <ListItem path="/setting" name={t("header_settings")} location={location} history={history} icon="cog" />
       )}
