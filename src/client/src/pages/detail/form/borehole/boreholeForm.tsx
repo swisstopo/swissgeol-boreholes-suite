@@ -135,34 +135,38 @@ export const BoreholeForm = ({ formMethods, borehole, editingEnabled }: Borehole
             withThousandSeparator={true}
           />
         </FormContainer>
-        <FormDomainSelect
-          fieldName={"lithologyTopBedrockId"}
-          label={"lithology_top_bedrock"}
-          schemaName={"custom.lithology_top_bedrock"}
-          readonly={!editingEnabled}
-          selected={borehole.lithologyTopBedrockId}
-        />
-        <FormDomainSelect
-          fieldName={"lithostratigraphyId"}
-          label={"lithostratigraphy_top_bedrock"}
-          schemaName={"custom.lithostratigraphy_top_bedrock"}
-          readonly={!editingEnabled}
-          selected={borehole.lithostratigraphyId}
-        />
-        <FormDomainSelect
-          fieldName={"chronostratigraphyId"}
-          label={"chronostratigraphy_top_bedrock"}
-          schemaName={"custom.chronostratigraphy_top_bedrock"}
-          readonly={!editingEnabled}
-          selected={borehole.chronostratigraphyId}
-        />
-        <FormBooleanSelect
-          canReset={false}
-          readonly={!editingEnabled}
-          fieldName={"hasGroundwater"}
-          label="groundwater"
-          selected={borehole.hasGroundwater}
-        />
+        <FormContainer direction="row">
+          <FormDomainSelect
+            fieldName={"lithologyTopBedrockId"}
+            label={"lithology_top_bedrock"}
+            schemaName={"custom.lithology_top_bedrock"}
+            readonly={!editingEnabled}
+            selected={borehole.lithologyTopBedrockId}
+          />
+          <FormDomainSelect
+            fieldName={"lithostratigraphyId"}
+            label={"lithostratigraphy_top_bedrock"}
+            schemaName={"custom.lithostratigraphy_top_bedrock"}
+            readonly={!editingEnabled}
+            selected={borehole.lithostratigraphyId}
+          />
+        </FormContainer>
+        <FormContainer direction="row">
+          <FormDomainSelect
+            fieldName={"chronostratigraphyId"}
+            label={"chronostratigraphy_top_bedrock"}
+            schemaName={"custom.chronostratigraphy_top_bedrock"}
+            readonly={!editingEnabled}
+            selected={borehole.chronostratigraphyId}
+          />
+          <FormBooleanSelect
+            canReset={false}
+            readonly={!editingEnabled}
+            fieldName={"hasGroundwater"}
+            label="groundwater"
+            selected={borehole.hasGroundwater}
+          />
+        </FormContainer>
         <FormInput
           fieldName={"remarks"}
           multiline={true}
