@@ -5,6 +5,7 @@ import {
   createStratigraphy,
   loginAsAdmin,
   returnToOverview,
+  startBoreholeEditing,
 } from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
