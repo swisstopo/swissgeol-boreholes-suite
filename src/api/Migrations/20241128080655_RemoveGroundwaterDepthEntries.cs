@@ -3,6 +3,7 @@
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class RemoveGroundwaterDepthEntries : Migration
@@ -16,3 +17,5 @@ public partial class RemoveGroundwaterDepthEntries : Migration
 	            WHERE observation_type = 2;");
     }
 }
+
+#pragma warning restore CA1505
