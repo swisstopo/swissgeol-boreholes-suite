@@ -32,7 +32,8 @@ public class UploadController : ControllerBase
         PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
         MissingFieldFound = null,
     };
-    private static readonly JsonSerializerOptions jsonImportOptions = new() { PropertyNameCaseInsensitive = true };
+
+     private static readonly JsonSerializerOptions jsonImportOptions = new() { PropertyNameCaseInsensitive = true };
 
     public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService)
     {
