@@ -6,9 +6,9 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
 using System.Globalization;
 using System.Net;
+using System.Text.Json;
 
 namespace BDMS.Controllers;
 
@@ -32,6 +32,7 @@ public class UploadController : ControllerBase
         PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
         MissingFieldFound = null,
     };
+    private static readonly JsonSerializerOptions jsonImportOptions = new() { PropertyNameCaseInsensitive = true };
 
     public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService)
     {
@@ -40,6 +41,200 @@ public class UploadController : ControllerBase
         this.locationService = locationService;
         this.coordinateService = coordinateService;
         this.boreholeFileCloudService = boreholeFileCloudService;
+    }
+
+    /// <summary>
+    /// Receives an uploaded JSON file to import one or several <see cref="Borehole"/>(s).
+    /// </summary>
+    /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
+    /// <param name="file">The <see cref="IFormFile"/> containing the borehole JSON records that were uploaded.</param>
+    /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
+    [HttpPost("json")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(int.MaxValue)]
+    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    public async Task<ActionResult<int>> UploadJsonFile(int workgroupId, IFormFile file)
+    {
+        // Increase max allowed errors to be able to return more validation errors at once.
+        ModelState.MaxAllowedErrors = 1000;
+
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("No file uploaded.");
+        }
+
+        if (!FileTypeChecker.IsJson(file)) return BadRequest("Invalid file type for borehole json.");
+
+        try
+        {
+            using var stream = file.OpenReadStream();
+            using var reader = new StreamReader(stream);
+            var jsonContent = await reader.ReadToEndAsync().ConfigureAwait(false);
+
+            List<BoreholeImport>? boreholes;
+
+            try
+            {
+                boreholes = JsonSerializer.Deserialize<List<BoreholeImport>>(jsonContent, jsonImportOptions);
+            }
+            catch (JsonException)
+            {
+                return BadRequest("The provided file is not a array of boreholes or is not a valid json format.");
+            }
+
+            if (boreholes == null || boreholes.Count == 0)
+            {
+                return BadRequest("No boreholes found in file.");
+            }
+
+            for (var i = 0; i < boreholes.Count; i++)
+            {
+                boreholes[i].ImportId = i + 1;
+            }
+
+            ValidateBoreholeImports(workgroupId, boreholes, true);
+
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+            }
+
+            var subjectId = HttpContext.GetUserSubjectId();
+
+            var user = await context.Users
+                .AsNoTracking()
+                .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
+                .ConfigureAwait(false);
+
+            foreach (var borehole in boreholes)
+            {
+                borehole.WorkgroupId = workgroupId;
+                borehole.Id = 0;
+                borehole.LockedById = null;
+
+                foreach (var strati in borehole.Stratigraphies)
+                {
+                    strati.Id = 0;
+                    strati.BoreholeId = 0;
+                    strati.Borehole = borehole;
+                    foreach (var lithology in strati.Layers)
+                    {
+                        lithology.Id = 0;
+                        lithology.StratigraphyId = 0;
+                        lithology.Stratigraphy = strati;
+                    }
+
+                    foreach (var chronostratigraphyLayer in strati.ChronostratigraphyLayers)
+                    {
+                        chronostratigraphyLayer.Id = 0;
+                        chronostratigraphyLayer.StratigraphyId = 0;
+                        chronostratigraphyLayer.Stratigraphy = strati;
+                    }
+
+                    foreach (var lithostratigraphyLayer in strati.LithostratigraphyLayers)
+                    {
+                        lithostratigraphyLayer.Id = 0;
+                        lithostratigraphyLayer.StratigraphyId = 0;
+                        lithostratigraphyLayer.Stratigraphy = strati;
+                    }
+
+                    foreach (var lithologicalDescription in strati.LithologicalDescriptions)
+                    {
+                        lithologicalDescription.Id = 0;
+                        lithologicalDescription.StratigraphyId = 0;
+                        lithologicalDescription.Stratigraphy = strati;
+                    }
+
+                    foreach (var faciesDescription in strati.FaciesDescriptions)
+                    {
+                        faciesDescription.Id = 0;
+                        faciesDescription.StratigraphyId = 0;
+                        faciesDescription.Stratigraphy = strati;
+                    }
+
+                    foreach (var chronostratigraphyLayer in strati.ChronostratigraphyLayers)
+                    {
+                        chronostratigraphyLayer.Id = 0;
+                        chronostratigraphyLayer.StratigraphyId = 0;
+                        chronostratigraphyLayer.Stratigraphy = strati;
+                    }
+                }
+
+                foreach (var completion in borehole.Completions)
+                {
+                    completion.Id = 0;
+                    completion.BoreholeId = 0;
+                    completion.Borehole = borehole;
+                    foreach (var instrumentation in completion.Instrumentations)
+                    {
+                        instrumentation.Id = 0;
+                        instrumentation.CompletionId = 0;
+                        instrumentation.Completion = completion;
+                    }
+
+                    foreach (var casing in completion.Casings)
+                    {
+                        casing.Id = 0;
+                        casing.CompletionId = 0;
+                        casing.Completion = completion;
+
+                        foreach (var casingElement in casing.CasingElements)
+                        {
+                            casingElement.Id = 0;
+                            casingElement.CasingId = 0;
+                            casingElement.Casing = casing;
+                        }
+                    }
+
+                    foreach (var backfill in completion.Backfills)
+                    {
+                        backfill.Id = 0;
+                        backfill.CompletionId = 0;
+                        backfill.Completion = completion;
+                    }
+
+                    foreach (var instrumentation in completion.Instrumentations)
+                    {
+                        instrumentation.Id = 0;
+                        instrumentation.CompletionId = 0;
+                        instrumentation.Completion = completion;
+                    }
+                }
+
+                foreach (var section in borehole.Sections)
+                {
+                    section.Id = 0;
+                    section.BoreholeId = 0;
+                    section.Borehole = borehole;
+
+                    foreach (var sectionElement in section.SectionElements)
+                    {
+                        sectionElement.Id = 0;
+                        sectionElement.SectionId = 0;
+                        sectionElement.Section = section;
+                    }
+                }
+
+                foreach (var observation in borehole.Observations)
+                {
+                    observation.Id = 0;
+                    observation.BoreholeId = 0;
+                    observation.Borehole = borehole;
+                }
+
+                borehole.Workflows.Clear();
+                borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id });
+            }
+
+            await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
+            var result = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -78,7 +273,7 @@ public class UploadController : ControllerBase
             if (lithologyFile != null && !FileTypeChecker.IsCsv(lithologyFile)) return BadRequest("Invalid file type for lithology csv.");
 
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
-            ValidateBoreholeImports(workgroupId, boreholeImports, attachments);
+            ValidateBoreholeImports(workgroupId, boreholeImports, false, attachments);
 
             var lithologyImports = new List<LithologyImport>();
             if (lithologyFile != null)
@@ -311,7 +506,7 @@ public class UploadController : ControllerBase
         return 0;
     }
 
-    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
+    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, bool zeroBasedIndex, IList<IFormFile>? attachments = null)
     {
         // Get boreholes from db with same workgroupId as provided.
         var boreholesFromDb = context.Boreholes
@@ -321,21 +516,23 @@ public class UploadController : ControllerBase
             .ToList();
 
         // Iterate over provided boreholes, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
-        foreach (var boreholeFromFile in boreholesFromFile.Select((value, index) => (value, index: index + 1)))
+        foreach (var boreholeFromFile in boreholesFromFile.Select((value, index) => (value, index)))
         {
+            var processingIndex = zeroBasedIndex ? boreholeFromFile.index : boreholeFromFile.index + 1;
+            var prefix = zeroBasedIndex ? "Borehole" : "Row";
             if (string.IsNullOrEmpty(boreholeFromFile.value.OriginalName))
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
+                ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
             }
 
             if (boreholeFromFile.value.LocationX == null && boreholeFromFile.value.LocationXLV03 == null)
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
+                ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
             }
 
             if (boreholeFromFile.value.LocationY == null && boreholeFromFile.value.LocationYLV03 == null)
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
+                ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
             }
 
             // Check if any borehole with same coordinates (in tolerance) and same total depth is duplicated in file
@@ -345,7 +542,7 @@ public class UploadController : ControllerBase
                 CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) &&
                 CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2)))
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.");
+                ModelState.AddModelError($"{prefix}{processingIndex}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.");
             }
 
             // Check if borehole with same coordinates (in tolerance) and same total depth already exists in db.
@@ -354,22 +551,25 @@ public class UploadController : ControllerBase
                 (CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, boreholeFromFile.value.LocationX, 2)) &&
                 (CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, boreholeFromFile.value.LocationY, 2))))
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
+                ModelState.AddModelError($"{prefix}{processingIndex}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
             }
 
-            // Checks if each file name in the comma separated string is present in the list of the attachments.
-            var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?
-                .Split(",")
-                .Select(s => s.Replace(" ", "", StringComparison.OrdinalIgnoreCase))
-                .Where(s => !string.IsNullOrEmpty(s))
-                .ToList()
-                ?? new List<string>();
-
-            foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
+            if (attachments != null && !string.IsNullOrEmpty(boreholeFromFile.value.Attachments))
             {
-                if (attachments?.Any(a => a.FileName.Equals(attachmentFileNameToLink, StringComparison.OrdinalIgnoreCase)) == false)
+                // Checks if each file name in the comma separated string is present in the list of the attachments.
+                var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?
+                    .Split(",")
+                    .Select(s => s.Replace(" ", "", StringComparison.OrdinalIgnoreCase))
+                    .Where(s => !string.IsNullOrEmpty(s))
+                    .ToList()
+                    ?? new List<string>();
+
+                foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
                 {
-                    ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Attachment file '{attachmentFileNameToLink}' not found.");
+                    if (attachments?.Any(a => a.FileName.Equals(attachmentFileNameToLink, StringComparison.OrdinalIgnoreCase)) == false)
+                    {
+                        ModelState.AddModelError($"{prefix}{processingIndex}", $"Attachment file '{attachmentFileNameToLink}' not found.");
+                    }
                 }
             }
         }
