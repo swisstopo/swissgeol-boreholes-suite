@@ -47,6 +47,7 @@ class StatusFilter extends Component {
             <Radio
               checked={search.filter.role === role.name}
               label={""}
+              data-cy={role.translationKey}
               name="radioGroup"
               onChange={() => {
                 this.props.setFilter("role", role.name);
