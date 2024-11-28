@@ -78,6 +78,406 @@ public class UploadControllerTest
     }
 
     [TestMethod]
+    public async Task UploadJsonWithSingleObjectInsteadOfArrayShouldReturnError()
+    {
+        var boreholeJsonFile = GetFormFileByExistingFile("json_import_single.json");
+
+        ActionResult<int> response = await controller.UploadJsonFile(workgroupId: 1, boreholeJsonFile);
+
+        ActionResultAssert.IsBadRequest(response.Result);
+        BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
+        Assert.AreEqual("The provided file is not a list of boreholes or is not a valid json format.", badRequestResult.Value);
+    }
+
+    [TestMethod]
+    public async Task UploadJsonWithValidJsonShouldSaveData()
+    {
+        var boreholeJsonFile = GetFormFileByExistingFile("json_import_valid.json");
+
+        ActionResult<int> response = await controller.UploadJsonFile(workgroupId: 1, boreholeJsonFile);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(2, okResult.Value);
+
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "PURPLETOLL");
+
+        // Assert borehole
+        Assert.IsNotNull(borehole.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(borehole.Created, "Created should not be null");
+        Assert.IsNotNull(borehole.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(borehole.Updated, "Updated should not be null");
+        Assert.IsNull(borehole.LockedById, "LockedById should be null");
+        Assert.IsNull(borehole.Locked, "Locked should be null");
+        Assert.AreEqual(1, borehole.WorkgroupId, "WorkgroupId");
+        Assert.IsNotNull(borehole.Workgroup, "Workgroup should not be null");
+        Assert.IsTrue(borehole.IsPublic, "IsPublic");
+        Assert.IsNull(borehole.TypeId, "TypeId should be null");
+        Assert.IsNull(borehole.Type, "Type should be null");
+        Assert.AreEqual(2739000, borehole.LocationX, "LocationX");
+        Assert.AreEqual(6, borehole.PrecisionLocationX, "PrecisionLocationX");
+        Assert.AreEqual(1291100, borehole.LocationY, "LocationY");
+        Assert.AreEqual(7, borehole.PrecisionLocationY, "PrecisionLocationY");
+        Assert.AreEqual(610700, borehole.LocationXLV03, "LocationXLV03");
+        Assert.AreEqual(4, borehole.PrecisionLocationXLV03, "PrecisionLocationXLV03");
+        Assert.AreEqual(102500, borehole.LocationYLV03, "LocationYLV03");
+        Assert.AreEqual(3, borehole.PrecisionLocationYLV03, "PrecisionLocationYLV03");
+        Assert.AreEqual((ReferenceSystem)20104002, borehole.OriginalReferenceSystem, "OriginalReferenceSystem");
+        Assert.AreEqual(3160.6575921925983, borehole.ElevationZ, "ElevationZ");
+        Assert.AreEqual(20106001, borehole.HrsId, "HrsId");
+        Assert.IsNull(borehole.Hrs, "Hrs should be null");
+        Assert.AreEqual(567.0068294587577, borehole.TotalDepth, "TotalDepth");
+        Assert.IsNull(borehole.RestrictionId, "RestrictionId should be null");
+        Assert.IsNull(borehole.Restriction, "Restriction should be null");
+        Assert.IsNull(borehole.RestrictionUntil, "RestrictionUntil should be null");
+        Assert.IsFalse(borehole.NationalInterest, "NationalInterest");
+        Assert.AreEqual("PURPLETOLL", borehole.OriginalName, "OriginalName");
+        Assert.AreEqual("GREYGOAT", borehole.AlternateName, "AlternateName");
+        Assert.IsNull(borehole.LocationPrecisionId, "LocationPrecisionId should be null");
+        Assert.IsNull(borehole.LocationPrecision, "LocationPrecision should be null");
+        Assert.AreEqual(20114002, borehole.ElevationPrecisionId, "ElevationPrecisionId");
+        Assert.IsNull(borehole.ElevationPrecision, "ElevationPrecision should be null");
+        Assert.AreEqual("Switchable explicit superstructure", borehole.ProjectName, "ProjectName");
+        Assert.AreEqual("Montenegro", borehole.Country, "Country");
+        Assert.AreEqual("Texas", borehole.Canton, "Canton");
+        Assert.AreEqual("Lake Reecechester", borehole.Municipality, "Municipality");
+        Assert.AreEqual(22103009, borehole.PurposeId, "PurposeId");
+        Assert.IsNull(borehole.Purpose, "Purpose should be null");
+        Assert.AreEqual(22104006, borehole.StatusId, "StatusId");
+        Assert.IsNull(borehole.Status, "Status should be null");
+        Assert.AreEqual(22108003, borehole.QtDepthId, "QtDepthId");
+        Assert.IsNull(borehole.QtDepth, "QtDepth should be null");
+        Assert.AreEqual(759.5479580385368, borehole.TopBedrockFreshMd, "TopBedrockFreshMd");
+        Assert.AreEqual(1.338392690447342, borehole.TopBedrockWeatheredMd, "TopBedrockWeatheredMd");
+        Assert.IsFalse(borehole.HasGroundwater, "HasGroundwater");
+        Assert.AreEqual(borehole.Remarks, "This product works too well.");
+        Assert.AreEqual(15104543, borehole.LithologyTopBedrockId, "LithologyTopBedrockId");
+        Assert.IsNull(borehole.LithologyTopBedrock, "LithologyTopBedrock should be null");
+        Assert.AreEqual(15302037, borehole.LithostratigraphyId, "LithostratigraphyId");
+        Assert.IsNull(borehole.Lithostratigraphy, "Lithostratigraphy should be null");
+        Assert.AreEqual(15001060, borehole.ChronostratigraphyId, "ChronostratigraphyId");
+        Assert.IsNull(borehole.Chronostratigraphy, "Chronostratigraphy should be null");
+        Assert.AreEqual(899.1648284248844, borehole.ReferenceElevation, "ReferenceElevation");
+        Assert.AreEqual(20114006, borehole.QtReferenceElevationId, "QtReferenceElevationId");
+        Assert.IsNull(borehole.QtReferenceElevation, "QtReferenceElevation should be null");
+        Assert.AreEqual(20117005, borehole.ReferenceElevationTypeId, "ReferenceElevationTypeId");
+        Assert.IsNull(borehole.ReferenceElevationType, "ReferenceElevationType should be null");
+
+        // Assert stratigraphy
+        Assert.AreEqual(2, borehole.Stratigraphies.Count, "Stratigraphies.Count");
+        var stratigraphy = borehole.Stratigraphies.First();
+        Assert.IsNotNull(stratigraphy.Borehole, "stratigraphy.Borehole should not be null");
+        Assert.IsTrue(stratigraphy.IsPrimary, "IsPrimary");
+        Assert.IsNotNull(stratigraphy.Updated, "Updated should not be null");
+        Assert.IsNotNull(stratigraphy.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(stratigraphy.Created, "Created should not be null");
+        Assert.IsNotNull(stratigraphy.CreatedById, "CreatedById should not be null");
+        Assert.AreEqual("Marjolaine Hegmann", stratigraphy.Name, "Name");
+        Assert.AreEqual(9003, stratigraphy.QualityId, "QualityId");
+        Assert.IsNull(stratigraphy.Quality, "Quality should be null");
+        Assert.AreEqual("My co-worker Ali has one of these. He says it looks towering.", stratigraphy.Notes, "Notes");
+
+        // Assert stratigraphy's layers
+        Assert.AreEqual(2, stratigraphy.Layers.Count, "Stratigraphy.Layers.Count");
+        var layer = stratigraphy.Layers.First();
+        Assert.IsNotNull(layer.Created, "Created should not be null");
+        Assert.IsNotNull(layer.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(layer.Updated, "Updated should not be null");
+        Assert.IsNotNull(layer.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(layer.Stratigraphy, "layer.Stratigraphy should not be null");
+        Assert.IsTrue(layer.IsUndefined, "IsUndefined should be true");
+        Assert.AreEqual(0, layer.FromDepth, "FromDepth");
+        Assert.AreEqual(10, layer.ToDepth, "ToDepth");
+        Assert.IsFalse(layer.IsLast, "IsLast should be false");
+        Assert.AreEqual(9002, layer.DescriptionQualityId, "DescriptionQualityId");
+        Assert.IsNull(layer.DescriptionQuality, "DescriptionQuality should be null");
+        Assert.AreEqual(15104888, layer.LithologyId, "LithologyId");
+        Assert.IsNull(layer.Lithology, "Lithology should be null");
+        Assert.AreEqual(21101003, layer.PlasticityId, "PlasticityId");
+        Assert.IsNull(layer.Plasticity, "Plasticity should be null");
+        Assert.AreEqual(21103003, layer.ConsistanceId, "ConsistanceId");
+        Assert.IsNull(layer.Consistance, "Consistance should be null");
+        Assert.IsNull(layer.AlterationId, "AlterationId should be null");
+        Assert.IsNull(layer.Alteration, "Alteration should be null");
+        Assert.AreEqual(21102003, layer.CompactnessId, "CompactnessId");
+        Assert.IsNull(layer.Compactness, "Compactness should be null");
+        Assert.AreEqual(21109002, layer.GrainSize1Id, "GrainSize1Id");
+        Assert.IsNull(layer.GrainSize1, "GrainSize1 should be null");
+        Assert.AreEqual(21109002, layer.GrainSize2Id, "GrainSize2Id");
+        Assert.IsNull(layer.GrainSize2, "GrainSize2 should be null");
+        Assert.AreEqual(21116003, layer.CohesionId, "CohesionId");
+        Assert.IsNull(layer.Cohesion, "Cohesion should be null");
+        Assert.AreEqual("synergistic", layer.OriginalUscs, "OriginalUscs");
+        Assert.AreEqual(23107001, layer.UscsDeterminationId, "UscsDeterminationId");
+        Assert.IsNull(layer.UscsDetermination, "UscsDetermination should be null");
+        Assert.AreEqual("payment optical copy networks", layer.Notes, "Notes");
+        Assert.AreEqual(15303008, layer.LithostratigraphyId, "LithostratigraphyId");
+        Assert.IsNull(layer.Lithostratigraphy, "Lithostratigraphy should be null");
+        Assert.AreEqual(21105004, layer.HumidityId, "HumidityId");
+        Assert.IsNull(layer.Humidity, "Humidity should be null");
+        Assert.IsTrue(layer.IsStriae, "IsStriae should be true");
+        Assert.AreEqual(30000019, layer.GradationId, "GradationId");
+        Assert.IsNull(layer.Gradation, "Gradation should be null");
+        Assert.AreEqual(15104470, layer.LithologyTopBedrockId, "LithologyTopBedrockId");
+        Assert.IsNull(layer.LithologyTopBedrock, "LithologyTopBedrock should be null");
+        Assert.AreEqual("Handmade connect Data Progressive Danish Krone", layer.OriginalLithology, "OriginalLithology");
+        Assert.IsNotNull(layer.LayerDebrisCodes, "LayerDebrisCodes should not be null");
+        Assert.IsNotNull(layer.LayerGrainShapeCodes, "LayerGrainShapeCodes should not be null");
+        Assert.IsNotNull(layer.LayerGrainAngularityCodes, "LayerGrainAngularityCodes should not be null");
+        Assert.IsNotNull(layer.LayerOrganicComponentCodes, "LayerOrganicComponentCodes should not be null");
+        Assert.IsNotNull(layer.LayerUscs3Codes, "LayerUscs3Codes should not be null");
+        Assert.IsNotNull(layer.LayerColorCodes, "LayerColorCodes should not be null");
+
+        // Assert stratigraphy's lithological descriptions
+        Assert.AreEqual(2, stratigraphy.LithologicalDescriptions.Count, "Stratigraphy.LithologicalDescriptions.Count");
+        var lithologicalDescription = stratigraphy.LithologicalDescriptions.First(x => x.FromDepth == 0);
+        Assert.IsNotNull(lithologicalDescription.Created, "Created should not be null");
+        Assert.IsNotNull(lithologicalDescription.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(lithologicalDescription.Updated, "Updated should not be null");
+        Assert.IsNotNull(lithologicalDescription.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(lithologicalDescription.Stratigraphy, "lithologicalDescription.Stratigraphy should not be null");
+        Assert.AreEqual("Bouvet Island (Bouvetoya) Borders networks", lithologicalDescription.Description, "Description");
+        Assert.AreEqual(9005, lithologicalDescription.DescriptionQualityId, "DescriptionQualityId");
+        Assert.IsNull(lithologicalDescription.DescriptionQuality, "DescriptionQuality should be null");
+        Assert.AreEqual(0, lithologicalDescription.FromDepth, "FromDepth");
+        Assert.AreEqual(10, lithologicalDescription.ToDepth, "ToDepth");
+
+        // Assert stratigraphy's facies descriptions
+        Assert.AreEqual(2, stratigraphy.FaciesDescriptions.Count, "Stratigraphy.FaciesDescriptions.Count");
+        var faciesDescription = stratigraphy.FaciesDescriptions.First(x => x.FromDepth == 0);
+        Assert.IsNotNull(faciesDescription.Created, "Created should not be null");
+        Assert.IsNotNull(faciesDescription.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(faciesDescription.Updated, "Updated should not be null");
+        Assert.IsNotNull(faciesDescription.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(faciesDescription.Stratigraphy, "faciesDescription.Stratigraphy should not be null");
+        Assert.AreEqual("Bouvet Island (Bouvetoya) Borders networks", faciesDescription.Description, "Description");
+        Assert.AreEqual(9005, faciesDescription.DescriptionQualityId, "DescriptionQualityId");
+        Assert.IsNull(faciesDescription.DescriptionQuality, "DescriptionQuality should be null");
+        Assert.AreEqual(0, faciesDescription.FromDepth, "FromDepth");
+        Assert.AreEqual(10, faciesDescription.ToDepth, "ToDepth");
+
+        // Assert stratigraphy's chronostratigraphy layers
+        Assert.AreEqual(2, stratigraphy.ChronostratigraphyLayers.Count, "Stratigraphy.ChronostratigraphyLayers.Count");
+        var chronostratigraphyLayer = stratigraphy.ChronostratigraphyLayers.First(x => x.FromDepth == 0);
+        Assert.IsNotNull(chronostratigraphyLayer.Created, "Created should not be null");
+        Assert.IsNotNull(chronostratigraphyLayer.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(chronostratigraphyLayer.Updated, "Updated should not be null");
+        Assert.IsNotNull(chronostratigraphyLayer.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(chronostratigraphyLayer.Stratigraphy, "chronostratigraphyLayer.Stratigraphy should not be null");
+        Assert.AreEqual(15001134, chronostratigraphyLayer.ChronostratigraphyId, "ChronostratigraphyId");
+        Assert.IsNull(chronostratigraphyLayer.Chronostratigraphy, "Chronostratigraphy should be null");
+        Assert.AreEqual(0, chronostratigraphyLayer.FromDepth, "FromDepth");
+        Assert.AreEqual(10, chronostratigraphyLayer.ToDepth, "ToDepth");
+
+        // Assert stratigraphy's lithostratigraphy layers
+        Assert.AreEqual(2, stratigraphy.LithostratigraphyLayers.Count, "Stratigraphy.LithostratigraphyLayers.Count");
+        var lithostratigraphyLayer = stratigraphy.LithostratigraphyLayers.First(x => x.FromDepth == 0);
+        Assert.IsNotNull(lithostratigraphyLayer.Created, "Created should not be null");
+        Assert.IsNotNull(lithostratigraphyLayer.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(lithostratigraphyLayer.Updated, "Updated should not be null");
+        Assert.IsNotNull(lithostratigraphyLayer.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(lithostratigraphyLayer.Stratigraphy, "lithostratigraphyLayer.Stratigraphy should not be null");
+        Assert.AreEqual(15303501, lithostratigraphyLayer.LithostratigraphyId, "LithostratigraphyId");
+        Assert.IsNull(lithostratigraphyLayer.Lithostratigraphy, "lithostratigraphyLayer.Lithostratigraphy should not be null");
+        Assert.AreEqual(0, lithostratigraphyLayer.FromDepth, "FromDepth");
+        Assert.AreEqual(10, lithostratigraphyLayer.ToDepth, "ToDepth");
+
+        // Assert borehole's completions
+        Assert.AreEqual(2, borehole.Completions.Count, "Completions.Count");
+        var completion = borehole.Completions.First();
+        Assert.IsNotNull(completion.Created, "Created should not be null");
+        Assert.IsNotNull(completion.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(completion.Updated, "Updated should not be null");
+        Assert.IsNotNull(completion.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(completion.Borehole, "completion.Borehole should not be null");
+        Assert.AreEqual("Handcrafted Rubber Chair", completion.Name, "Name");
+        Assert.AreEqual(16000000, completion.KindId, "KindId");
+        Assert.IsNull(completion.Kind, "Kind should be null");
+        Assert.AreEqual("Ratione ut non in recusandae labore.", completion.Notes, "Notes");
+        Assert.AreEqual(DateOnly.Parse("2021-01-24"), completion.AbandonDate, "AbandonDate");
+
+        // Assert completion's instrumentations
+        Assert.AreEqual(1, completion.Instrumentations.Count, "Instrumentations.Count");
+        var instrumentation = completion.Instrumentations.First();
+        Assert.IsNotNull(instrumentation.Created, "Created should not be null");
+        Assert.IsNotNull(instrumentation.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(instrumentation.Updated, "Updated should not be null");
+        Assert.IsNotNull(instrumentation.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(instrumentation.Completion, "instrumentation.Completion should be null");
+        Assert.AreEqual(70, instrumentation.FromDepth, "FromDepth");
+        Assert.AreEqual(80, instrumentation.ToDepth, "ToDepth");
+        Assert.AreEqual("Explorer", instrumentation.Name, "Name");
+        Assert.AreEqual(25000201, instrumentation.KindId, "KindId");
+        Assert.IsNull(instrumentation.Kind, "Kind should be null");
+        Assert.AreEqual(25000213, instrumentation.StatusId, "StatusId");
+        Assert.IsNull(instrumentation.Status, "Status should be null");
+        Assert.IsFalse(instrumentation.IsOpenBorehole, "IsOpenBorehole should be false");
+        Assert.AreEqual(17000312, instrumentation.CasingId, "CasingId");
+        Assert.IsNotNull(instrumentation.Casing, "instrumentation.Casing should not be null");
+        Assert.AreEqual("copy Field bandwidth Burg", instrumentation.Notes, "Notes");
+
+        // Assert completion's backfills
+        Assert.AreEqual(1, completion.Backfills.Count, "Backfills.Count");
+        var backfill = completion.Backfills.First();
+        Assert.IsNotNull(backfill.Created, "Created should not be null");
+        Assert.IsNotNull(backfill.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(backfill.Updated, "Updated should not be null");
+        Assert.IsNotNull(backfill.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(backfill.Completion, "backfill.Completion should be null");
+        Assert.AreEqual(70, backfill.FromDepth, "FromDepth");
+        Assert.AreEqual(80, backfill.ToDepth, "ToDepth");
+        Assert.AreEqual(25000300, backfill.KindId, "KindId");
+        Assert.IsNull(backfill.Kind, "Kind should be null");
+        Assert.AreEqual(25000306, backfill.MaterialId, "MaterialId");
+        Assert.IsNull(backfill.Material, "Material should be null");
+        Assert.IsFalse(backfill.IsOpenBorehole, "IsOpenBorehole should be false");
+        Assert.AreEqual(17000011, backfill.CasingId, "CasingId");
+        Assert.IsNotNull(backfill.Casing, "backfill.Casing should not be null");
+        Assert.AreEqual("Licensed Plastic Soap Managed withdrawal Tools & Industrial", backfill.Notes, "Notes");
+
+        // Assert completion's casings
+        Assert.AreEqual(1, completion.Casings.Count, "Casings.Count");
+        var casing = completion.Casings.First();
+        Assert.IsNotNull(casing.Created, "Created should not be null");
+        Assert.IsNotNull(casing.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(casing.Updated, "Updated should not be null");
+        Assert.IsNotNull(casing.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(casing.Completion, "casing.Completion should not be null");
+        Assert.AreEqual("Rustic", casing.Name, "Name");
+        Assert.AreEqual(DateOnly.Parse("2021-03-24"), casing.DateStart, "DateStart");
+        Assert.AreEqual(DateOnly.Parse("2021-12-12"), casing.DateFinish, "DateFinish");
+        Assert.AreEqual("matrices Managed withdrawal Tools & Industrial", casing.Notes, "Notes");
+
+        // Assert casing's casingelements
+        Assert.AreEqual(2, casing.CasingElements.Count, "CasingElements.Count");
+        var casingElement = casing.CasingElements.First();
+        Assert.IsNotNull(casingElement.Created, "Created should not be null");
+        Assert.IsNotNull(casingElement.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(casingElement.Updated, "Updated should not be null");
+        Assert.IsNotNull(casingElement.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(casingElement.Casing, "casingElement.Casing should not be null");
+        Assert.AreEqual(0, casingElement.FromDepth, "FromDepth");
+        Assert.AreEqual(10, casingElement.ToDepth, "ToDepth");
+        Assert.AreEqual(25000116, casingElement.KindId, "KindId");
+        Assert.IsNull(casingElement.Kind, "Kind should be null");
+        Assert.AreEqual(25000114, casingElement.MaterialId, "MaterialId");
+        Assert.IsNull(casingElement.Material, "Material should be null");
+        Assert.AreEqual(7.91766288360472, casingElement.InnerDiameter, "InnerDiameter");
+        Assert.AreEqual(4.857009269696199, casingElement.OuterDiameter, "OuterDiameter");
+
+        // Assert borehole's sections
+        Assert.AreEqual(2, borehole.Sections.Count, "Sections.Count");
+        var section = borehole.Sections.First();
+        Assert.IsNotNull(section.Created, "Created should not be null");
+        Assert.IsNotNull(section.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(section.Updated, "Updated should not be null");
+        Assert.IsNotNull(section.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(section.Borehole, "section.Borehole should not be null");
+        Assert.AreEqual("Gourde", section.Name, "Name");
+
+        // Assert section's sectionelements
+        Assert.AreEqual(2, section.SectionElements.Count, "SectionElements.Count");
+        var sectionElement = section.SectionElements.First();
+        Assert.IsNotNull(sectionElement.Created, "Created should not be null");
+        Assert.IsNotNull(sectionElement.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(sectionElement.Updated, "Updated should not be null");
+        Assert.IsNotNull(sectionElement.UpdatedById, "UpdatedById should not be null");
+        Assert.IsNotNull(sectionElement.Section, "sectionElement.Section should not be null");
+        Assert.AreEqual(60, sectionElement.FromDepth, "FromDepth");
+        Assert.AreEqual(143, sectionElement.ToDepth, "ToDepth");
+        Assert.AreEqual(0, sectionElement.Order, "Order");
+        Assert.AreEqual(22107004, sectionElement.DrillingMethodId, "DrillingMethodId");
+        Assert.AreEqual(DateOnly.Parse("2021-04-06"), sectionElement.DrillingStartDate, "DrillingStartDate");
+        Assert.AreEqual(DateOnly.Parse("2021-05-31"), sectionElement.DrillingEndDate, "DrillingEndDate");
+        Assert.AreEqual(22102002, sectionElement.CuttingsId, "CuttingsId");
+        Assert.AreEqual(8.990221083625322, sectionElement.DrillingDiameter, "DrillingDiameter");
+        Assert.AreEqual(18.406672318655378, sectionElement.DrillingCoreDiameter, "DrillingCoreDiameter");
+        Assert.AreEqual(22109003, sectionElement.DrillingMudTypeId, "DrillingMudTypeId");
+        Assert.AreEqual(22109020, sectionElement.DrillingMudSubtypeId, "DrillingMudSubtypeId");
+
+        // Assert borehole's observations
+        Assert.AreEqual(2, borehole.Observations.Count, "Observations.Count");
+        var observation = borehole.Observations.First(x => x.FromDepthM == 1900);
+        Assert.IsNotNull(observation.Created, "Created should not be null");
+        Assert.IsNotNull(observation.CreatedById, "CreatedById should not be null");
+        Assert.IsNotNull(observation.Updated, "Updated should not be null");
+        Assert.IsNotNull(observation.UpdatedById, "UpdatedById should not be null");
+        Assert.AreEqual((ObservationType)2, observation.Type, "Type");
+        Assert.AreEqual(DateTime.Parse("2021-10-05T17:41:48.389173Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal), observation.StartTime, "StartTime");
+        Assert.AreEqual(DateTime.Parse("2021-09-21T20:42:21.785577Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal), observation.EndTime, "EndTime");
+        Assert.AreEqual(1380.508568643829, observation.Duration, "Duration");
+        Assert.AreEqual(1900.0, observation.FromDepthM, "FromDepthM");
+        Assert.AreEqual(2227.610979433456, observation.ToDepthM, "ToDepthM");
+        Assert.AreEqual(3136.3928836828063, observation.FromDepthMasl, "FromDepthMasl");
+        Assert.AreEqual(4047.543691819787, observation.ToDepthMasl, "ToDepthMasl");
+        Assert.IsTrue(observation.IsOpenBorehole, "IsOpenBorehole");
+        Assert.IsNotNull(observation.Casing, "observation.Casing should be null");
+        Assert.AreEqual("Quis repellendus nihil et ipsam ut ad eius.", observation.Comment, "Comment");
+        Assert.AreEqual(15203156, observation.ReliabilityId, "ReliabilityId");
+        Assert.IsNull(observation.Reliability, "Reliability should be null");
+        Assert.IsNotNull(observation.Borehole, "observation.Borehole should not be null");
+
+        // Assert borehole's workflows
+        Assert.AreEqual(1, borehole.Workflows.Count, "Workflows.Count");
+        var workflow = borehole.Workflows.First();
+        Assert.IsNull(workflow.Started, "Started should be null");
+        Assert.IsNull(workflow.Finished, "Finished should be null");
+        Assert.IsNull(workflow.Notes, "Notes should be null");
+        Assert.AreEqual(Role.Editor, workflow.Role, "Role");
+        Assert.IsNotNull(workflow.User, "User should be null");
+        Assert.IsNotNull(workflow.Borehole, "workflow.Borehole should not be null");
+        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
+        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
+    }
+
+    [TestMethod]
+    public async Task UploadJsonWithNoJsonFileShouldReturnError()
+    {
+        var boreholeJsonFile = GetFormFileByExistingFile("not_a_json_file.csv");
+
+        ActionResult<int> response = await controller.UploadJsonFile(workgroupId: 1, boreholeJsonFile);
+
+        ActionResultAssert.IsBadRequest(response.Result);
+        BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
+        Assert.AreEqual("Invalid file type for borehole json.", badRequestResult.Value);
+    }
+
+    [TestMethod]
+    public async Task UploadJsonWithDuplicateBoreholesByLocationShouldReturnError()
+    {
+        var boreholeJsonFile = GetFormFileByExistingFile("json_import_duplicated_by_location.json");
+
+        ActionResult<int> response = await controller.UploadJsonFile(workgroupId: 1, boreholeJsonFile);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        ActionResultAssert.IsBadRequest(result);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(2, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole0"]);
+        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole1"]);
+    }
+
+    [TestMethod]
+    public async Task UploadJsonWithDuplicatesExistingBoreholeShouldReturnError()
+    {
+        var boreholeJsonFile = GetFormFileByExistingFile("json_import_duplicates_existing.json");
+
+        ActionResult<int> response = await controller.UploadJsonFile(workgroupId: 1, boreholeJsonFile);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        ActionResultAssert.IsBadRequest(result);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(1, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Borehole0"]);
+    }
+
+    [TestMethod]
     public async Task UploadLithologyShouldSaveData()
     {
         httpClientFactoryMock
