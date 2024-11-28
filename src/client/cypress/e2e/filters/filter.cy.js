@@ -1,5 +1,12 @@
 import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { createBorehole, createLithologyLayer, createStratigraphy, loginAsAdmin } from "../helpers/testHelpers.js";
+import {
+  createBorehole,
+  createLithologyLayer,
+  createStratigraphy,
+  loginAsAdmin,
+  returnToOverview,
+  startBoreholeEditing,
+} from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
@@ -218,6 +225,24 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
     cy.get('[data-cy="filter-chip-striae"]').should("not.exist");
     verifyPaginationText("1–100 of 1630");
+  });
+
+  it("filters boreholes by status", () => {
+    createBorehole({ "extended.original_name": "Filter by status" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin(`/${id}/status`);
+      startBoreholeEditing();
+      cy.get('[data-cy="workflow_submit"]').click();
+      cy.get('[data-cy="workflow_dialog_submit"]').click();
+      returnToOverview();
+      cy.get('[data-cy="show-filter-button"]').click();
+      cy.contains("Status").click();
+      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'627");
+      cy.get('[data-cy="statuseditor"]').click();
+      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+      cy.get('[data-cy="statuscontroller"]').click();
+      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1");
+    });
   });
 
   it("filters boreholes by color and uscs3", () => {
