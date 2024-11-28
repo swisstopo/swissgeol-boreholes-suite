@@ -1,34 +1,36 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@mui/material";
+import { Button, Checkbox } from "@mui/material";
 import { Segment } from "semantic-ui-react";
-import _ from "lodash";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import * as Styled from "./styles";
 
 const EditorSettingList = props => {
   const { data, toggleFilter, attribute, toggleField, listName, codes, toggleFieldArray, toggleFilterArray } = props;
-
   const { t } = useTranslation();
+  const [checkedStates, setCheckedStates] = useState({});
 
-  const isChecked = item => {
-    return listName === "lithologyfields"
-      ? isVisible(item.value)
-      : item.value.split(".").length > 1
-        ? data?.[item.value.split(".")[0]]?.[item.value.split(".")[1]]
-        : data?.[item.value];
-  };
-  const isVisible = field => {
-    if (_.has(codes, "data.layer_kind") && _.isArray(codes.data.layer_kind)) {
-      for (let idx = 0; idx < codes.data.layer_kind.length; idx++) {
-        const element = codes.data.layer_kind[idx];
+  useEffect(() => {
+    const isChecked = item => {
+      const isVisible = field => {
+        const layerKindConfigEntry = codes?.find(c => c.schema === "layer_kind");
 
-        if (element.code === "Geol") {
-          return element.conf.fields[field];
-        }
-      }
-    }
-    return false;
-  };
+        const conf = layerKindConfigEntry?.conf ? JSON.parse(layerKindConfigEntry?.conf) : "";
+        return conf?.fields?.[field] ?? false;
+      };
+      return listName === "lithologyfields"
+        ? isVisible(item.value)
+        : item.value.split(".").length > 1
+          ? data?.[item.value.split(".")[0]]?.[item.value.split(".")[1]]
+          : data?.[item.value];
+    };
+
+    const initialState = {};
+    attribute.forEach(item => {
+      initialState[item.value] = isChecked(item);
+    });
+    setCheckedStates(initialState);
+  }, [attribute, codes, data, listName]);
 
   const sendSelectAll = value => {
     const newData = [];
@@ -39,7 +41,29 @@ const EditorSettingList = props => {
     if (listName === "lithologyfields") {
       toggleFieldArray(newData, value);
     } else toggleFilterArray(newData, value);
+
+    setCheckedStates(prevState => {
+      const newState = { ...prevState };
+      attribute.forEach(item => {
+        newState[item.value] = value;
+      });
+      return newState;
+    });
   };
+
+  const handleCheckboxChange = (item, value) => {
+    setCheckedStates(prevState => ({
+      ...prevState,
+      [item.value]: value,
+    }));
+
+    if (listName === "lithologyfields") {
+      toggleField(item.value, value);
+    } else {
+      toggleFilter(item.value, value);
+    }
+  };
+
   return (
     <Styled.Container>
       <Segment>
@@ -60,15 +84,10 @@ const EditorSettingList = props => {
       </Segment>
       {attribute?.map((item, index) => (
         <Segment key={index}>
-          <Styled.CheckboxContainer
-            checked={isChecked(item)}
-            onChange={(e, d) => {
-              if (listName === "lithologyfields") {
-                toggleField(item.value, d.checked);
-              } else {
-                toggleFilter(item.value, d.checked);
-              }
-            }}
+          <Checkbox
+            checked={!!checkedStates[item.value]}
+            onChange={e => handleCheckboxChange(item, e.target.checked)}
+            data-cy={`checkbox-${item.value}`}
           />
           <TranslationText id={item.label} />
         </Segment>
