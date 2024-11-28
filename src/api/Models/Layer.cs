@@ -266,37 +266,31 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="LayerColorCode"/> join table entities.
     /// </summary>
-    [JsonIgnore]
     public IList<LayerColorCode>? LayerColorCodes { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="LayerDebrisCode"/> join table entities.
     /// </summary>
-    [JsonIgnore]
     public IList<LayerDebrisCode>? LayerDebrisCodes { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="LayerGrainShapeCode"/> join table entities.
     /// </summary>
-    [JsonIgnore]
     public IList<LayerGrainShapeCode>? LayerGrainShapeCodes { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="LayerGrainAngularityCode"/> join table entities.
     /// </summary>
-    [JsonIgnore]
     public IList<LayerGrainAngularityCode>? LayerGrainAngularityCodes { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="LayerOrganicComponentCode"/> join table entities.
     /// </summary>
-    [JsonIgnore]
     public IList<LayerOrganicComponentCode>? LayerOrganicComponentCodes { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="LayerUscs3Code"/> join table entities.
     /// </summary>
-    [JsonIgnore]
     public IList<LayerUscs3Code>? LayerUscs3Codes { get; set; }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -12,6 +13,7 @@ public class LayerColorCode : ILayerCode
     [Column("layer_id")]
     public int LayerId { get; set; }
 
+    [JsonIgnore]
     /// <inheritdoc/>
     public Layer Layer { get; set; }
 
@@ -19,6 +21,7 @@ public class LayerColorCode : ILayerCode
     [Column("color_id")]
     public int CodelistId { get; set; }
 
+    [JsonIgnore]
     /// <inheritdoc/>
     public Codelist Codelist { get; set; }
 }
