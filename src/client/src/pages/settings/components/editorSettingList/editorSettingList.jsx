@@ -69,6 +69,7 @@ const EditorSettingList = props => {
       <Segment>
         <Button
           variant="outlined"
+          sx={{ mr: 1 }}
           onClick={() => {
             sendSelectAll(true);
           }}>
