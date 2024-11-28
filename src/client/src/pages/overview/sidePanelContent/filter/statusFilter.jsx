@@ -37,14 +37,19 @@ class StatusFilter extends Component {
             {capitalizeFirstLetter(t("alls"))}
           </span>
         </Form.Field>
-        {["statuseditor", "statuscontroller", "statusvalidator", "statuspublisher"].map(role => (
-          <Form.Field key={"sec-" + role}>
+        {[
+          { name: "EDIT", translationKey: "statuseditor" },
+          { name: "CONTROL", translationKey: "statuscontroller" },
+          { name: "VALID", translationKey: "statusvalidator" },
+          { name: "PUBLIC", translationKey: "statuspublic" },
+        ].map(role => (
+          <Form.Field key={"sec-" + role.translationKey}>
             <Radio
-              checked={search.filter.role === role.replace("status", "").toUpperCase()}
+              checked={search.filter.role === role.name}
               label={""}
               name="radioGroup"
               onChange={() => {
-                this.props.setFilter("role", role.replace("status", "").toUpperCase());
+                this.props.setFilter("role", role.name);
               }}
             />
             <span
@@ -52,7 +57,7 @@ class StatusFilter extends Component {
                 color: "black",
                 fontSize: "1.1em",
               }}>
-              {capitalizeFirstLetter(t(role))}
+              {capitalizeFirstLetter(t(role.translationKey))}
             </span>
           </Form.Field>
         ))}
