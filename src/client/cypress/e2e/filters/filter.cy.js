@@ -1,5 +1,11 @@
 import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { createBorehole, createLithologyLayer, createStratigraphy, loginAsAdmin } from "../helpers/testHelpers.js";
+import {
+  createBorehole,
+  createLithologyLayer,
+  createStratigraphy,
+  loginAsAdmin,
+  returnToOverview,
+} from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
@@ -62,7 +68,7 @@ describe("Search filter tests", () => {
     cy.wait("@setting");
 
     // check visibility of filters
-    cy.contains("h3", "Done").click();
+    returnToOverview();
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Created by");

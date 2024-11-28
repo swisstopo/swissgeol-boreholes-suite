@@ -1,4 +1,4 @@
-import { goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
+import { goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers.js";
 
 describe("map settings", () => {
   it("Adds wms and wmts to user maps", () => {
@@ -28,7 +28,7 @@ describe("map settings", () => {
     cy.get('[data-cy="maps-for-user-box"]').contains(wmtsName);
 
     // Verify layers are added to overview map
-    cy.contains("h3", "Done").click();
+    returnToOverview();
     cy.get('[data-cy="layers-button"]').click();
     cy.contains(wmsName);
     cy.contains(wmtsName);
