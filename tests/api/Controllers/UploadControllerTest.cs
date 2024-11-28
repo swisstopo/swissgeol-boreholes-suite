@@ -86,7 +86,7 @@ public class UploadControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("The provided file is not a list of boreholes or is not a valid json format.", badRequestResult.Value);
+        Assert.AreEqual("The provided file is not a array of boreholes or is not a valid JSON format.", badRequestResult.Value);
     }
 
     [TestMethod]
@@ -439,7 +439,7 @@ public class UploadControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("Invalid file type for borehole json.", badRequestResult.Value);
+        Assert.AreEqual("Invalid file type for borehole JSON.", badRequestResult.Value);
     }
 
     [TestMethod]

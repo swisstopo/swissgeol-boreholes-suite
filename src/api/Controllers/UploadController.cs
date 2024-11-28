@@ -64,7 +64,7 @@ public class UploadController : ControllerBase
             return BadRequest("No file uploaded.");
         }
 
-        if (!FileTypeChecker.IsJson(file)) return BadRequest("Invalid file type for borehole json.");
+        if (!FileTypeChecker.IsJson(file)) return BadRequest("Invalid file type for borehole JSON.");
 
         try
         {
@@ -80,7 +80,7 @@ public class UploadController : ControllerBase
             }
             catch (JsonException)
             {
-                return BadRequest("The provided file is not a array of boreholes or is not a valid json format.");
+                return BadRequest("The provided file is not a array of boreholes or is not a valid JSON format.");
             }
 
             if (boreholes == null || boreholes.Count == 0)
