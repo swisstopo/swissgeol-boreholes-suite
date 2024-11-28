@@ -123,7 +123,7 @@ const DetailHeader = ({
           <Typography variant="h2"> {borehole?.alternateName}</Typography>
           {!auth.anonymousModeEnabled && (
             <Typography variant={"subtitle2"}>
-              {t("lastUpdated")}: <DateText date={borehole?.updated} /> {t("by")} {borehole?.updatedBy.name}{" "}
+              {t("lastUpdated")}: <DateText date={borehole?.updated} /> {t("by")} {borehole?.updatedBy?.name}
             </Typography>
           )}
         </Stack>
