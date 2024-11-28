@@ -4,7 +4,7 @@ import {
   createLithologyLayer,
   createStratigraphy,
   loginAsAdmin,
-  returnToOverview
+  returnToOverview,
 } from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
