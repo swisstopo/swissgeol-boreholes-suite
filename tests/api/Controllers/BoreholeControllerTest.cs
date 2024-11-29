@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -55,6 +54,49 @@ public class BoreholeControllerTest
         }
 
         await cleanupContext.DisposeAsync();
+    }
+
+    [TestMethod]
+    public async Task GetAllAsyncWithFilterIds()
+    {
+        var ids = new List<int> { 1_000_100, 1_000_200, 1_000_300, 1_000_400 };
+        var pageNumber = 1;
+        var pageSize = 3;
+
+        var response = await controller.GetAllAsync(ids, pageNumber, pageSize);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        PaginatedResponse<Borehole> paginatedResponse = (PaginatedResponse<Borehole>)okResult.Value!;
+        Assert.AreEqual(3, paginatedResponse.Items.Count());
+        Assert.AreEqual(100, paginatedResponse.MaxPageSize);
+        Assert.AreEqual(1, paginatedResponse.PageNumber);
+        Assert.AreEqual(3, paginatedResponse.PageSize);
+        Assert.AreEqual(4, paginatedResponse.TotalCount);
+
+        foreach (var item in paginatedResponse.Items)
+        {
+            Assert.IsTrue(ids.Contains(item.Id), $"Borehole.Id {item.Id} is not in the provided list of ids.");
+        }
+    }
+
+    [TestMethod]
+    public async Task GetAllAsyncWithoutFilterIds()
+    {
+        var boreHoleCount = context.Boreholes.Count();
+        var pageNumber = 1;
+        var pageSize = 10;
+
+        var response = await controller.GetAllAsync(null, pageNumber, pageSize);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        PaginatedResponse<Borehole> paginatedResponse = (PaginatedResponse<Borehole>)okResult.Value!;
+        Assert.AreEqual(10, paginatedResponse.Items.Count());
+        Assert.AreEqual(100, paginatedResponse.MaxPageSize);
+        Assert.AreEqual(1, paginatedResponse.PageNumber);
+        Assert.AreEqual(10, paginatedResponse.PageSize);
+        Assert.AreEqual(boreHoleCount, paginatedResponse.TotalCount);
     }
 
     [TestMethod]

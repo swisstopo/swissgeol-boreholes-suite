@@ -14,6 +14,8 @@ namespace BDMS.Controllers;
 [Route("api/v2/[controller]")]
 public class BoreholeController : BoreholeControllerBase<Borehole>
 {
+    private const int MaxPageSize = 100;
+
     public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger, IBoreholeLockService boreholeLockService)
     : base(context, logger, boreholeLockService)
     {
@@ -63,6 +65,36 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             Logger?.LogError(ex, errorMessage);
             return Problem(errorMessage);
         }
+    }
+
+    /// <summary>
+    /// Asynchronously gets all <see cref="Borehole"/> records with optional filtering by ids and pagination.
+    /// </summary>
+    /// <param name="ids">The optional list of borehole ids to filter by.</param>
+    /// <param name="pageNumber">The page number for pagination.</param>
+    /// <param name="pageSize">The page size for pagination.</param>
+    [HttpGet]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<PaginatedResponse<Borehole>>> GetAllAsync([FromQuery] IEnumerable<int>? ids = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    {
+        pageSize = pageSize > MaxPageSize ? MaxPageSize : pageSize;
+
+        var skip = (pageNumber - 1) * pageSize;
+
+        var query = GetBoreholesWithIncludes().AsNoTracking();
+
+        if (ids != null && ids.Any())
+        {
+            query = query.Where(borehole => ids.Contains(borehole.Id));
+        }
+
+        var totalCount = await query.CountAsync().ConfigureAwait(false);
+
+        var items = await query.Skip(skip).Take(pageSize).ToListAsync().ConfigureAwait(false);
+
+        var paginatedResponse = new PaginatedResponse<Borehole>(items, totalCount, pageNumber, pageSize, MaxPageSize);
+
+        return Ok(paginatedResponse);
     }
 
     /// <summary>
