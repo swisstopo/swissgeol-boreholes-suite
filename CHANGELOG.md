@@ -10,6 +10,7 @@
 - Show ChangedAt and ChangedBy information in borehole detail header.
 - Add JSON export for single and multiple boreholes.
 - The workgroup name is now displayed in the borehole location tab.
+- Added borehole get all endpoint.
 
 ### Changed
 
