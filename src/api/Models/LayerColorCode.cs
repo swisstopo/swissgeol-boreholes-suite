@@ -14,14 +14,12 @@ public class LayerColorCode : ILayerCode
     public int LayerId { get; set; }
 
     /// <inheritdoc/>
-    [JsonIgnore]
-    public Layer Layer { get; set; }
+    public Layer? Layer { get; set; }
 
     /// <inheritdoc/>
     [Column("color_id")]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>
-    [JsonIgnore]
-    public Codelist Codelist { get; set; }
+    public Codelist? Codelist { get; set; }
 }
