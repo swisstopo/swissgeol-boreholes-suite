@@ -1,5 +1,6 @@
+import { createBorehole } from "../helpers/createEntitiesHelpers";
 import { showTableAndWaitForData } from "../helpers/dataGridHelpers";
-import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import { handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Test copying of boreholes", () => {
   it("copies a borehole", () => {

@@ -1,15 +1,7 @@
 import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { createBorehole, createCasing, createCompletion, createWateringress } from "../helpers/createEntitiesHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
-import {
-  createBorehole,
-  createCasing,
-  createCompletion,
-  createWateringress,
-  handlePrompt,
-  loginAsAdmin,
-  selectLanguage,
-  startBoreholeEditing,
-} from "../helpers/testHelpers";
+import { handlePrompt, loginAsAdmin, selectLanguage, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Tests for the wateringress editor.", () => {
   it("Creates, updates and deletes wateringresses", () => {

@@ -1,12 +1,6 @@
+import { createBorehole, createLithologyLayer, createStratigraphy } from "../helpers/createEntitiesHelpers";
 import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import {
-  createBorehole,
-  createLithologyLayer,
-  createStratigraphy,
-  loginAsAdmin,
-  returnToOverview,
-  startBoreholeEditing,
-} from "../helpers/testHelpers.js";
+import { loginAsAdmin, returnToOverview, startBoreholeEditing } from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {

@@ -1,14 +1,7 @@
 import { addItem, cancelEditing, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { createBorehole, createCasing, createCompletion, createInstrument } from "../helpers/createEntitiesHelpers";
 import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
-import {
-  createBorehole,
-  createCasing,
-  createCompletion,
-  createInstrument,
-  handlePrompt,
-  loginAsAdmin,
-  startBoreholeEditing,
-} from "../helpers/testHelpers";
+import { handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Instrumentation crud tests", () => {
   beforeEach(() => {

@@ -1,10 +1,5 @@
-import {
-  bearerAuth,
-  createBorehole,
-  createStratigraphy,
-  loginAsAdmin,
-  startBoreholeEditing,
-} from "../helpers/testHelpers";
+import { createBorehole, createStratigraphy } from "../helpers/createEntitiesHelpers";
+import { bearerAuth, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Tests for the lithostratigraphy editor.", () => {
   beforeEach(function () {

@@ -1,8 +1,8 @@
 import { addItem, saveWithSaveBar, stopEditing } from "../helpers/buttonHelpers";
+import { createBorehole } from "../helpers/createEntitiesHelpers";
 import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import {
-  createBorehole,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,

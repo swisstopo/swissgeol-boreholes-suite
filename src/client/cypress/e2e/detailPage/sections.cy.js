@@ -1,6 +1,7 @@
 import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { createBorehole } from "../helpers/createEntitiesHelpers";
 import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
-import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import { handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Section crud tests", () => {
   beforeEach(() => {

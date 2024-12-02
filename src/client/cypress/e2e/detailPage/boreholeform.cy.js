@@ -1,8 +1,8 @@
 import { exportItem, saveWithSaveBar } from "../helpers/buttonHelpers";
+import { createBorehole } from "../helpers/createEntitiesHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
-  createBorehole,
   deleteDownloadedFile,
   goToRouteAndAcceptTerms,
   handlePrompt,

@@ -1,10 +1,12 @@
 import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
-import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   createCasing,
   createCompletion,
   createFieldMeasurement,
+} from "../helpers/createEntitiesHelpers";
+import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
+import {
   goToRouteAndAcceptTerms,
   handlePrompt,
   loginAsAdmin,

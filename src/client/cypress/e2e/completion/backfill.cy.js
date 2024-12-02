@@ -1,14 +1,7 @@
 import { addItem, cancelEditing, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { createBackfill, createBorehole, createCasing, createCompletion } from "../helpers/createEntitiesHelpers";
 import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
-import {
-  createBackfill,
-  createBorehole,
-  createCasing,
-  createCompletion,
-  handlePrompt,
-  loginAsAdmin,
-  startBoreholeEditing,
-} from "../helpers/testHelpers";
+import { handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Backfill crud tests", () => {
   beforeEach(() => {

@@ -1,6 +1,7 @@
 import { exportItem } from "../helpers/buttonHelpers";
+import { createBorehole } from "../helpers/createEntitiesHelpers";
 import { checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers.js";
-import { createBorehole, deleteDownloadedFile, loginAsAdmin, readDownloadedFile } from "../helpers/testHelpers";
+import { deleteDownloadedFile, loginAsAdmin, readDownloadedFile } from "../helpers/testHelpers";
 
 describe("Test for exporting boreholes.", () => {
   it("exports a borehole", () => {

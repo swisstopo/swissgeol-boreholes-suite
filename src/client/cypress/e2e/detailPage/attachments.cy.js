@@ -1,5 +1,5 @@
+import { createBorehole } from "../helpers/createEntitiesHelpers";
 import {
-  createBorehole,
   deleteBorehole,
   deleteDownloadedFile,
   loginAsAdmin,

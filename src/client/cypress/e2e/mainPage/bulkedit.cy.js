@@ -1,7 +1,8 @@
 import adminUser from "../../fixtures/adminUser.json";
+import { createBorehole } from "../helpers/createEntitiesHelpers";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
-import { createBorehole, goToRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
+import { goToRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
 
 function createBoreholes() {
   createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as("borehole_id_1");

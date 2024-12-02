@@ -1,4 +1,5 @@
 import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { createBorehole, createCasing, createCompletion, createHydrotest } from "../helpers/createEntitiesHelpers";
 import {
   evaluateDisplayValue,
   evaluateMultiSelect,
@@ -7,16 +8,7 @@ import {
   setSelect,
   toggleMultiSelect,
 } from "../helpers/formHelpers";
-import {
-  createBorehole,
-  createCasing,
-  createCompletion,
-  createHydrotest,
-  handlePrompt,
-  loginAsAdmin,
-  selectLanguage,
-  startBoreholeEditing,
-} from "../helpers/testHelpers";
+import { handlePrompt, loginAsAdmin, selectLanguage, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Tests for the hydrotest editor.", () => {
   it("Creates, updates and deletes hydrotests", () => {
