@@ -210,9 +210,9 @@ public class BoreholeFileController : ControllerBase
         try
         {
             // Get the file and its borehole files from the database.
-            var boreholeFile = await context.BoreholeFiles.Include(f => f.File).FirstOrDefaultAsync(f => f.FileId == boreholeFileId).ConfigureAwait(false);
+            var boreholeFile = await context.BoreholeFiles.Include(f => f.File).SingleOrDefaultAsync(f => f.FileId == boreholeFileId).ConfigureAwait(false);
 
-            if (boreholeFile == null) return NotFound();
+            if (boreholeFile == null) return NotFound("Borehole file for the provided boreholeFileId not found.");
 
             var fileId = boreholeFile.File.Id;
 
@@ -220,11 +220,9 @@ public class BoreholeFileController : ControllerBase
             context.BoreholeFiles.Remove(boreholeFile);
             await context.SaveChangesAsync().ConfigureAwait(false);
 
-            // Get the file and its borehole files from the database.
-            var file = await context.Files.Include(f => f.BoreholeFiles).FirstOrDefaultAsync(f => f.Id == fileId).ConfigureAwait(false);
-
-            // If the file is not linked to any boreholes, delete it from the cloud storage and the database.
-            if (file?.NameUuid != null && file.BoreholeFiles.Count == 0)
+            // Delete the file from the cloud storage and the database.
+            var file = await context.Files.SingleOrDefaultAsync(f => f.Id == fileId).ConfigureAwait(false);
+            if (file?.NameUuid != null)
             {
                 await boreholeFileCloudService.DeleteObject(file.NameUuid).ConfigureAwait(false);
                 context.Files.Remove(file);
