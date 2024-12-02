@@ -1,4 +1,4 @@
-import { loginAsAdmin } from "../helpers/testHelpers.js";
+import { loginAsAdmin, selectByDataCyAttribute } from "../helpers/testHelpers.js";
 
 const buttonInactiveColor = "rgb(255, 255, 255)";
 const buttonActiveColor = "rgb(214, 226, 230)";
@@ -13,22 +13,22 @@ function drawPolygon() {
 }
 
 function assertIsFilteredByPolygon() {
-  cy.get('[data-cy="boreholes-number-preview"]').should("not.have.text", "1'626"); // exact number can vary based on screen.
-  cy.get('[data-cy="polygon-filter-chip"]').should("exist");
-  cy.get('[data-cy="polygon-filter-badge"]').should("exist");
+  selectByDataCyAttribute("boreholes-number-preview").should("not.have.text", "1'626"); // exact number can vary based on screen.
+  selectByDataCyAttribute("polygon-filter-chip").should("exist");
+  selectByDataCyAttribute("polygon-filter-badge").should("exist");
 }
 
 function assertPolygonFilterInactive() {
-  cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
-  cy.get('[data-cy="polygon-filter-chip"]').should("not.exist");
-  cy.get('[data-cy="polygon-filter-badge"]').should("not.exist");
+  selectByDataCyAttribute("boreholes-number-preview").should("have.text", "1'626");
+  selectByDataCyAttribute("polygon-filter-chip").should("not.exist");
+  selectByDataCyAttribute("polygon-filter-badge").should("not.exist");
 }
 
 function assertPolygonFilterActive() {
-  const polygonFilterButton = cy.get('[data-cy="polygon-filter-button"]');
+  const polygonFilterButton = selectByDataCyAttribute("polygon-filter-button");
   polygonFilterButton.should("have.css", "background-color", buttonActiveColor);
-  cy.get('[data-cy="polygon-filter-chip"]').should("not.exist");
-  cy.get('[data-cy="polygon-filter-badge"]').should("not.exist");
+  selectByDataCyAttribute("polygon-filter-chip").should("not.exist");
+  selectByDataCyAttribute("polygon-filter-badge").should("not.exist");
 }
 
 describe("Polygon filter tests", () => {
@@ -36,17 +36,17 @@ describe("Polygon filter tests", () => {
     loginAsAdmin();
     cy.wait(5000);
     cy.wait("@borehole_geojson");
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
 
     assertPolygonFilterInactive();
 
-    cy.get('[data-cy="polygon-filter-button"]').click();
+    selectByDataCyAttribute("polygon-filter-button").click();
     assertPolygonFilterActive();
     drawPolygon();
     assertIsFilteredByPolygon();
 
     // click delete icon
-    cy.get('[data-cy="polygon-filter-chip"]').children().eq(1).click();
+    selectByDataCyAttribute("polygon-filter-chip").children().eq(1).click();
 
     assertPolygonFilterInactive();
     cy.wait("@borehole_geojson");
@@ -54,13 +54,13 @@ describe("Polygon filter tests", () => {
     cy.wait(2000);
 
     // Redraw polygon
-    cy.get('[data-cy="polygon-filter-button"]').click();
+    selectByDataCyAttribute("polygon-filter-button").click();
     drawPolygon();
     assertIsFilteredByPolygon();
 
     // click reset button
-    cy.get('[data-cy="reset-filter-button"]').click();
+    selectByDataCyAttribute("reset-filter-button").click();
     assertPolygonFilterInactive();
-    cy.get('[data-cy="polygon-filter-button"]').should("have.css", "background-color", buttonInactiveColor);
+    selectByDataCyAttribute("polygon-filter-button").should("have.css", "background-color", buttonInactiveColor);
   });
 });

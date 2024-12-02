@@ -1,7 +1,7 @@
 import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 import { createBorehole } from "../helpers/createEntitiesHelpers";
 import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
-import { handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import { handlePrompt, loginAsAdmin, selectByDataCyAttribute, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Section crud tests", () => {
   beforeEach(() => {
@@ -21,15 +21,15 @@ describe("Section crud tests", () => {
     cy.wait(30);
     addItem("addSection");
     cy.wait("@codelist_GET");
-    cy.get('[data-cy="sectionElements.0.delete"]').should("be.disabled");
-    cy.get('[data-cy="addsection-button"]').should("be.disabled");
-    cy.get('[data-cy="save-button"]').should("be.disabled");
+    selectByDataCyAttribute("sectionElements.0.delete").should("be.disabled");
+    selectByDataCyAttribute("addsection-button").should("be.disabled");
+    selectByDataCyAttribute("save-button").should("be.disabled");
 
     setInput("name", "section-1");
     setInput("sectionElements.0.fromDepth", "0");
     setInput("sectionElements.0.toDepth", "10");
 
-    cy.get('[data-cy="save-button"]').should("be.enabled");
+    selectByDataCyAttribute("save-button").should("be.enabled");
 
     setSelect("sectionElements.0.drillingMethodId", 2);
     setSelect("sectionElements.0.cuttingsId", 2);
@@ -41,8 +41,8 @@ describe("Section crud tests", () => {
     setInput("sectionElements.0.drillingCoreDiameter", "5.6");
 
     addItem("addSectionElement");
-    cy.get('[data-cy="sectionElements.0.delete"]').should("be.enabled");
-    cy.get('[data-cy="sectionElements.1.delete"]').should("be.enabled");
+    selectByDataCyAttribute("sectionElements.0.delete").should("be.enabled");
+    selectByDataCyAttribute("sectionElements.1.delete").should("be.enabled");
 
     evaluateInput("sectionElements.1.fromDepth", "0");
     evaluateInput("sectionElements.1.toDepth", "10");
@@ -83,7 +83,7 @@ describe("Section crud tests", () => {
 
     setInput("name", "section-1 updated");
     setSelect("sectionElements.1.drillingMethodId", 13);
-    cy.get('[data-cy="sectionElements.0.delete"]').click();
+    selectByDataCyAttribute("sectionElements.0.delete").click();
 
     saveForm();
     cy.wait("@section_PUT");
@@ -95,12 +95,12 @@ describe("Section crud tests", () => {
     deleteItem();
     handlePrompt("Do you really want to delete this entry?", "Cancel");
     cy.wait("@section_GET");
-    cy.get('[data-cy="section-card.0"]').should("exist");
+    selectByDataCyAttribute("section-card.0").should("exist");
 
     deleteItem();
     handlePrompt("Do you really want to delete this entry?", "Delete");
     cy.wait("@section_DELETE");
-    cy.get('[data-cy="section-card.0"]').should("not.exist");
+    selectByDataCyAttribute("section-card.0").should("not.exist");
   });
 
   it("changes drillingMudSubtype select options based on drillingMudType", () => {

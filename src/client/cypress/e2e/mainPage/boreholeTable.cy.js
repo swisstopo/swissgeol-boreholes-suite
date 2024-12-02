@@ -8,7 +8,7 @@ import {
   verifyRowContains,
   waitForTableData,
 } from "../helpers/dataGridHelpers";
-import { loginAsAdmin, loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
+import { loginAsAdmin, loginAsEditor, returnToOverview, selectByDataCyAttribute } from "../helpers/testHelpers.js";
 
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
@@ -82,12 +82,12 @@ describe("Borehole editor table tests", () => {
 
   it("verifies all rows are selected on header checkbox click", () => {
     loginAsAdmin();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+    selectByDataCyAttribute("boreholes-number-preview").should("have.text", "1'626");
     showTableAndWaitForData();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+    selectByDataCyAttribute("boreholes-number-preview").should("have.text", "1'626");
 
     // check all rows
-    cy.get('[data-cy="table-header-checkbox"]').click();
+    selectByDataCyAttribute("table-header-checkbox").click();
     cy.contains("1'626").should("not.exist");
     cy.contains("1477 selected").should("be.visible"); // does not select locked rows
 
@@ -105,8 +105,8 @@ describe("Borehole editor table tests", () => {
     cy.contains("1475 selected").should("be.visible");
 
     // uncheck all rows
-    cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+    selectByDataCyAttribute("table-header-checkbox").click();
+    selectByDataCyAttribute("boreholes-number-preview").should("have.text", "1'626");
 
     // check one row
     checkRowWithText("Andres Renner");
@@ -118,12 +118,12 @@ describe("Borehole editor table tests", () => {
     cy.contains("1 selected").should("be.visible");
 
     // check all, then uncheck all from page where single selection is not visible
-    cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+    selectByDataCyAttribute("table-header-checkbox").click();
+    selectByDataCyAttribute("table-header-checkbox").click();
+    selectByDataCyAttribute("boreholes-number-preview").should("have.text", "1'626");
 
     // filter data
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
     cy.contains("Created by").next().find("input").type("v_ U%r");
@@ -131,7 +131,7 @@ describe("Borehole editor table tests", () => {
     verifyPaginationText("1–100 of 329");
 
     // check all rows
-    cy.get('[data-cy="table-header-checkbox"]').click();
+    selectByDataCyAttribute("table-header-checkbox").click();
     cy.contains("1'626").should("not.exist");
     cy.contains("298 selected").should("be.visible"); // does not select locked rows
 

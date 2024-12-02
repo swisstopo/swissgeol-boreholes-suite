@@ -2,7 +2,7 @@ import adminUser from "../../fixtures/adminUser.json";
 import { createBorehole } from "../helpers/createEntitiesHelpers";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
-import { goToRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
+import { goToRouteAndAcceptTerms, selectByDataCyAttribute, startBoreholeEditing } from "../helpers/testHelpers";
 
 function createBoreholes() {
   createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as("borehole_id_1");
@@ -11,7 +11,7 @@ function createBoreholes() {
 
 function startBulkEditing() {
   // select the boreholes for bulk edit
-  cy.get('[data-cy="borehole-table"]').within(() => {
+  selectByDataCyAttribute("borehole-table").within(() => {
     checkRowWithText("AAA_NINTIC");
     checkRowWithText("AAA_LOMONE");
   });
@@ -60,10 +60,10 @@ describe("Test the borehole bulk edit feature.", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 
-    cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 20);
+    selectByDataCyAttribute("bulk-edit-accordion").should("have.length", 20);
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
-    cy.get('[data-cy="workgroup-formSelect"]')
+    selectByDataCyAttribute("workgroup-formSelect")
       .should("have.length", 1)
       .each(el => {
         cy.wrap(el).scrollIntoView().click();
@@ -133,7 +133,7 @@ describe("Test the borehole bulk edit feature.", () => {
     let visibleCount = 0;
 
     // expect 4 visible reset buttons
-    cy.get('[data-cy="bulk-edit-reset-button"]')
+    selectByDataCyAttribute("bulk-edit-reset-button")
       .each(button => {
         cy.wrap(button)
           .scrollIntoView()
@@ -153,7 +153,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains(".MuiDialog-container", "Blue").should("exist");
     cy.contains(".MuiDialog-container", "Yes").should("exist");
 
-    cy.get('[data-cy="bulk-edit-reset-button"]').click({ multiple: true, force: true });
+    selectByDataCyAttribute("bulk-edit-reset-button").click({ multiple: true, force: true });
     cy.get("h6").contains("Project name").scrollIntoView();
     evaluateInput("custom.project_name", "");
     cy.contains(".MuiDialog-container", "restricted until").should("not.exist");

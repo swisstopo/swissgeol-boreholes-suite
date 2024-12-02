@@ -31,8 +31,8 @@ describe("Tests for the hydrotest editor.", () => {
     });
     startBoreholeEditing();
 
-    cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
-    cy.get('[data-cy="hydrotest-menu-item"]').click({ force: true });
+    selectByDataCyAttribute("hydrogeology-menu-item").click({ force: true });
+    selectByDataCyAttribute("hydrotest-menu-item").click({ force: true });
 
     selectLanguage("de");
 
@@ -63,7 +63,7 @@ describe("Tests for the hydrotest editor.", () => {
     toggleMultiSelect("testKindId", [3]);
     evaluateMultiSelect("flowDirectionId", []);
     evaluateMultiSelect("evaluationMethodId", []);
-    cy.get('[data-cy="hydrotestResult-0"]').should("not.exist");
+    selectByDataCyAttribute("hydrotestResult-0").should("not.exist");
 
     toggleMultiSelect("testKindId", [3]);
     toggleMultiSelect("flowDirectionId", [2, 1], 4);
@@ -142,14 +142,14 @@ describe("Tests for the hydrotest editor.", () => {
     startBoreholeEditing();
     cy.wait("@hydrotest_GET");
 
-    cy.get('[data-cy="addhydrotest-button"]').should("not.be.disabled");
+    selectByDataCyAttribute("addhydrotest-button").should("not.be.disabled");
     addItem("addHydrotest");
-    cy.get('[data-cy="addhydrotest-button"]').should("be.disabled");
+    selectByDataCyAttribute("addhydrotest-button").should("be.disabled");
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 2);
     toggleMultiSelect("testKindId", [3]);
     saveForm();
-    cy.get('[data-cy="addhydrotest-button"]').should("be.enabled");
+    selectByDataCyAttribute("addhydrotest-button").should("be.enabled");
 
     startEditing();
     setInput("comment", "Lorem.");
@@ -176,8 +176,8 @@ describe("Tests for the hydrotest editor.", () => {
     setSelect("reliabilityId", 3);
     startEditing();
     handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "Reset");
-    cy.get('[data-cy="hydrotest-card.0.edit"]').should("be.visible");
-    cy.get('[data-cy="hydrotest-card.1"]').should("not.exist");
+    selectByDataCyAttribute("hydrotest-card.0.edit").should("be.visible");
+    selectByDataCyAttribute("hydrotest-card.1").should("not.exist");
 
     // can save new card and switch to existing card
     addItem("addHydrotest");
@@ -186,7 +186,7 @@ describe("Tests for the hydrotest editor.", () => {
     toggleMultiSelect("testKindId", [4]);
     startEditing();
     handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "Save");
-    cy.get('[data-cy="hydrotest-card.0.edit"]').should("exist");
-    cy.get('[data-cy="hydrotest-card.1"]').should("exist");
+    selectByDataCyAttribute("hydrotest-card.0.edit").should("exist");
+    selectByDataCyAttribute("hydrotest-card.1").should("exist");
   });
 });

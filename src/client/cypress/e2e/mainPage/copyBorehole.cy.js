@@ -21,7 +21,7 @@ describe("Test copying of boreholes", () => {
 
     startBoreholeEditing();
 
-    cy.get('[data-cy="deleteborehole-button"]').click({ force: true });
+    selectByDataCyAttribute("deleteborehole-button").click({ force: true });
     handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
   });
 });

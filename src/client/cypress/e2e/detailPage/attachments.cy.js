@@ -4,6 +4,7 @@ import {
   deleteDownloadedFile,
   loginAsAdmin,
   readDownloadedFile,
+  selectByDataCyAttribute,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -17,7 +18,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       startBoreholeEditing();
 
       // navigate to attachments tab
-      cy.get('[data-cy="attachments-menu-item"]').click();
+      selectByDataCyAttribute("attachments-menu-item").click();
 
       // intercept get all Attachments for borehole request
       cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
@@ -35,7 +36,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       );
 
       // // upload file
-      cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
+      selectByDataCyAttribute("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files"]);
       cy.wait(["@getAllAttachments"]);
 
@@ -55,7 +56,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       );
 
       // upload and verify file IRATETRINITY.pdf
-      cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
+      selectByDataCyAttribute("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files"]);
       cy.wait(["@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 2);
@@ -73,7 +74,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       );
 
       // Upload "IRATETRINITY.pdf" second time. Should not be uploaded.
-      cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
+      selectByDataCyAttribute("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files"]);
 
       // Check if error message is displayed.

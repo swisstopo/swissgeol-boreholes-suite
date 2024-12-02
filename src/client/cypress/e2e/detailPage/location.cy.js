@@ -7,14 +7,15 @@ import {
   handlePrompt,
   newEditableBorehole,
   returnToOverview,
+  selectByDataCyAttribute,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
   const getButtons = () => {
-    const saveButton = cy.get('[data-cy="save-button"]');
-    const discardButton = cy.get('[data-cy="discardchanges-button"]');
+    const saveButton = selectByDataCyAttribute("save-button");
+    const discardButton = selectByDataCyAttribute("discardchanges-button");
     return { saveButton, discardButton };
   };
 
@@ -49,14 +50,14 @@ describe("Tests for 'Location' edit page.", () => {
     showTableAndWaitForData();
 
     // search the newly created borehole and delete it
-    cy.get('[data-cy="borehole-table"]').within(() => {
+    selectByDataCyAttribute("borehole-table").within(() => {
       checkRowWithText("AAA_SCATORPS");
     });
 
-    cy.get('[data-cy="delete-button"]').click();
+    selectByDataCyAttribute("delete-button").click();
     cy.get('.MuiButton-containedPrimary[data-cy="delete-button"]').click();
     cy.wait(["@edit_deletelist", "@edit_list"]);
-    cy.get('[data-cy="borehole-table"]').contains("AAA_SCATORPS").should("not.exist");
+    selectByDataCyAttribute("borehole-table").contains("AAA_SCATORPS").should("not.exist");
   });
 
   it("completes alternate name", () => {
@@ -65,10 +66,10 @@ describe("Tests for 'Location' edit page.", () => {
     );
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
-      cy.get('[data-cy="originalName-formInput"]').within(() => {
+      selectByDataCyAttribute("originalName-formInput").within(() => {
         cy.get("input").as("originalNameInput");
       });
-      cy.get('[data-cy="alternateName-formInput"]').within(() => {
+      selectByDataCyAttribute("alternateName-formInput").within(() => {
         cy.get("input").as("alternateNameInput");
       });
 
@@ -147,21 +148,21 @@ describe("Tests for 'Location' edit page.", () => {
     originalNameInput.type("FELIX_THE_RACOON");
     stopEditing();
     handlePrompt(messageUnsavedChanges, "cancel");
-    cy.get('[data-cy="editingstop-button"]').should("exist");
+    selectByDataCyAttribute("editingstop-button").should("exist");
     stopEditing();
     handlePrompt(messageUnsavedChanges, "discard changes");
-    cy.get('[data-cy="editingstop-button"]').should("not.exist");
+    selectByDataCyAttribute("editingstop-button").should("not.exist");
 
     startBoreholeEditing();
     originalNameInput.type("FELIX_THE_BROOM");
 
-    cy.get('[data-cy="borehole-menu-item"]').click();
+    selectByDataCyAttribute("borehole-menu-item").click();
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/location`);
     });
 
-    cy.get('[data-cy="borehole-menu-item"]').click();
+    selectByDataCyAttribute("borehole-menu-item").click();
     handlePrompt(messageUnsavedChanges, "discard changes");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
@@ -215,7 +216,7 @@ describe("Tests for 'Location' edit page.", () => {
     evaluateSelect("boreholeCodelists.1.codelistId", "100000010");
 
     // delete identifier
-    cy.get('[data-cy="boreholeCodelists.0.delete"]').click();
+    selectByDataCyAttribute("boreholeCodelists.0.delete").click();
     // identifier on position 1 should now be on position 0
     evaluateInput("boreholeCodelists.0.value", "we_must_stop_felix");
     evaluateSelect("boreholeCodelists.0.codelistId", "100000010");

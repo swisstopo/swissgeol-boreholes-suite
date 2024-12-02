@@ -6,6 +6,7 @@ import {
   newEditableBorehole,
   newUneditableBorehole,
   returnToOverview,
+  selectByDataCyAttribute,
 } from "../helpers/testHelpers";
 
 function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
@@ -116,17 +117,17 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "");
 
     // zoom into map
-    cy.get('[data-cy="zoom-in-button"]').click({ force: true });
-    cy.get('[data-cy="zoom-in-button"]').click({ force: true });
+    selectByDataCyAttribute("zoom-in-button").click({ force: true });
+    selectByDataCyAttribute("zoom-in-button").click({ force: true });
 
     cy.wait(2000);
     // click on map
     cy.get('[class="ol-viewport"]').scrollIntoView().click(390, 250, { force: true });
 
     cy.wait("@location");
-    cy.get('[data-cy="height-button"]').click();
+    selectByDataCyAttribute("height-button").click();
     cy.wait("@height");
-    cy.get('[data-cy="apply-button"]').click();
+    selectByDataCyAttribute("apply-button").click();
 
     // verify automatically filled inputs
     cy.get("@LV95X-input").should("not.have.value", "");
@@ -175,8 +176,8 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     saveWithSaveBar();
     // Navigate somewhere else and return
-    cy.get('[data-cy="borehole-menu-item"]').click();
-    cy.get('[data-cy="location-menu-item"]').click();
+    selectByDataCyAttribute("borehole-menu-item").click();
+    selectByDataCyAttribute("location-menu-item").click();
 
     cy.get('[data-cy="locationX-formCoordinate"] input').as("LV95X-input");
     cy.get('[data-cy="locationY-formCoordinate"] input').as("LV95Y-input");

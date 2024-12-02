@@ -1,17 +1,22 @@
 import { createBorehole, createLithologyLayer, createStratigraphy } from "../helpers/createEntitiesHelpers";
 import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { loginAsAdmin, returnToOverview, startBoreholeEditing } from "../helpers/testHelpers.js";
+import {
+  loginAsAdmin,
+  returnToOverview,
+  selectByDataCyAttribute,
+  startBoreholeEditing,
+} from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("Filters");
   });
 
   it("shows the correct dropdowns", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("h6", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
     let indentifierDropdown = cy.contains("label", "ID type").next();
@@ -47,7 +52,7 @@ describe("Search filter tests", () => {
   it("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("Registration").click();
     cy.contains("Show all fields")
       .next()
@@ -57,20 +62,20 @@ describe("Search filter tests", () => {
       });
 
     // turn on registration filters
-    cy.get('[data-cy="settings-button"]').click();
+    selectByDataCyAttribute("settings-button").click();
     cy.contains("Registration filters").click();
     cy.contains("Select all").click();
     cy.wait("@setting");
 
     // check visibility of filters
     returnToOverview();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("Registration").click();
     cy.contains("Created by");
     cy.contains("Creation date");
 
     // reset setting
-    cy.get('[data-cy="settings-button"]').click();
+    selectByDataCyAttribute("settings-button").click();
     cy.contains("Registration filters").click();
     cy.contains("Unselect all").click();
     cy.wait("@setting");
@@ -78,7 +83,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by creator name", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -151,73 +156,73 @@ describe("Search filter tests", () => {
       });
 
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("Location").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
-    cy.get('[data-cy="national_interest-yes"]').click();
+    selectByDataCyAttribute("national_interest-yes").click();
     cy.wait("@edit_list");
 
     showTableAndWaitForData();
     verifyPaginationText("1–100 of 160");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+    selectByDataCyAttribute("filter-chip-national_interest").should("exist");
 
-    cy.get('[data-cy="national_interest-np"]').click();
+    selectByDataCyAttribute("national_interest-np").click();
     cy.wait("@edit_list");
     verifyPaginationText("1–1 of 1");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+    selectByDataCyAttribute("filter-chip-national_interest").should("exist");
 
-    cy.get('[data-cy="national_interest-no"]').click();
+    selectByDataCyAttribute("national_interest-no").click();
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 1469");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+    selectByDataCyAttribute("filter-chip-national_interest").should("exist");
 
     cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
-    cy.get('[data-cy="striae-yes"]').click();
+    selectByDataCyAttribute("striae-yes").click();
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 1401");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+    selectByDataCyAttribute("filter-chip-national_interest").should("exist");
+    selectByDataCyAttribute("filter-chip-striae").should("exist");
 
-    cy.get('[data-cy="striae-no"]').click();
+    selectByDataCyAttribute("striae-no").click();
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 1402");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+    selectByDataCyAttribute("filter-chip-national_interest").should("exist");
+    selectByDataCyAttribute("filter-chip-striae").should("exist");
 
-    cy.get('[data-cy="striae-np"]').click();
+    selectByDataCyAttribute("striae-np").click();
     cy.wait("@edit_list");
     verifyPaginationText("1–2 of 2");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+    selectByDataCyAttribute("filter-chip-national_interest").should("exist");
+    selectByDataCyAttribute("filter-chip-striae").should("exist");
 
     // reset national interest filter
-    cy.get('[data-cy="filter-chip-national_interest"]')
+    selectByDataCyAttribute("filter-chip-national_interest")
       .should("exist")
       .within(() => {
         cy.get("svg").click();
       });
 
     cy.wait("@edit_list");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+    selectByDataCyAttribute("filter-chip-national_interest").should("not.exist");
+    selectByDataCyAttribute("filter-chip-striae").should("exist");
 
-    cy.get('[data-cy="striae-no"]').click();
+    selectByDataCyAttribute("striae-no").click();
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 1555");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+    selectByDataCyAttribute("filter-chip-national_interest").should("not.exist");
+    selectByDataCyAttribute("filter-chip-striae").should("exist");
 
     // reset striae filter
-    cy.get('[data-cy="filter-chip-striae"]')
+    selectByDataCyAttribute("filter-chip-striae")
       .should("exist")
       .within(() => {
         cy.get("svg").click();
       });
 
-    cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("not.exist");
+    selectByDataCyAttribute("filter-chip-national_interest").should("not.exist");
+    selectByDataCyAttribute("filter-chip-striae").should("not.exist");
     verifyPaginationText("1–100 of 1630");
   });
 
@@ -226,22 +231,22 @@ describe("Search filter tests", () => {
     cy.get("@borehole_id").then(id => {
       loginAsAdmin(`/${id}/status`);
       startBoreholeEditing();
-      cy.get('[data-cy="workflow_submit"]').click();
-      cy.get('[data-cy="workflow_dialog_submit"]').click();
+      selectByDataCyAttribute("workflow_submit").click();
+      selectByDataCyAttribute("workflow_dialog_submit").click();
       returnToOverview();
-      cy.get('[data-cy="show-filter-button"]').click();
+      selectByDataCyAttribute("show-filter-button").click();
       cy.contains("Status").click();
-      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'627");
-      cy.get('[data-cy="statuseditor"]').click();
-      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
-      cy.get('[data-cy="statuscontroller"]').click();
-      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1");
+      selectByDataCyAttribute("boreholes-number-preview").should("have.text", "1'627");
+      selectByDataCyAttribute("statuseditor").click();
+      selectByDataCyAttribute("boreholes-number-preview").should("have.text", "1'626");
+      selectByDataCyAttribute("statuscontroller").click();
+      selectByDataCyAttribute("boreholes-number-preview").should("have.text", "1");
     });
   });
 
   it("filters boreholes by boreholestatus", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("Borehole").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -253,13 +258,13 @@ describe("Search filter tests", () => {
     });
     cy.wait("@edit_list");
 
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "169");
-    cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
+    selectByDataCyAttribute("boreholes-number-preview").should("have.text", "169");
+    selectByDataCyAttribute("filter-chip-boreholestatus").contains("Borehole status");
   });
 
   it("filters boreholes by color and uscs3", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -309,7 +314,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by original lithology in editor mode", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     filterByOriginalLithology();
     cy.wait("@edit_list");
     showTableAndWaitForData();
@@ -317,7 +322,7 @@ describe("Search filter tests", () => {
   });
   it("filters boreholes by creation date", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -345,7 +350,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by workgroup", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     showTableAndWaitForData();
     cy.contains("Workgroup").click();
     cy.contains("Name").click();

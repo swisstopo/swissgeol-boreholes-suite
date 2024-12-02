@@ -13,7 +13,7 @@ describe("Test for exporting boreholes.", () => {
     );
     loginAsAdmin();
     showTableAndWaitForData();
-    cy.get('[data-cy="borehole-table"]').within(() => {
+    selectByDataCyAttribute("borehole-table").within(() => {
       checkRowWithText("AAA_NINTIC");
       checkRowWithText("AAA_LOMONE");
     });

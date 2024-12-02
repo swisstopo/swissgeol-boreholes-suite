@@ -152,10 +152,9 @@ export const login = user => {
 /**
  * Login into the application as admin.
  */
-
 export const goToRouteAndAcceptTerms = route => {
   cy.visit(route);
-  cy.get('[data-cy="accept-button"]').click();
+  selectByDataCyAttribute("accept-button").click();
 };
 
 export const loginAsAdmin = (route = "/") => {
@@ -198,7 +197,7 @@ export const newEditableBorehole = () => {
 };
 
 export const newUneditableBorehole = () => {
-  cy.get('[data-cy="new-borehole-button"]').click();
+  selectByDataCyAttribute("new-borehole-button").click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();
   cy.wait(["@borehole", "@borehole_by_id"]);
@@ -223,7 +222,7 @@ export const stopBoreholeEditing = () => {
 };
 
 export const returnToOverview = () => {
-  cy.get('[data-cy="backButton"]').click();
+  selectByDataCyAttribute("backButton").click();
   cy.wait(["@edit_list", "@borehole"]);
 };
 
@@ -356,9 +355,9 @@ export const getImportFileFromFixtures = (fileName, encoding, dataSet) => {
 };
 
 export const handlePrompt = (message, action) => {
-  cy.get('[data-cy="prompt"]').should("be.visible");
+  selectByDataCyAttribute("prompt").should("be.visible");
   cy.contains(message);
-  cy.get('[data-cy="prompt"]').find(`[data-cy="${action.toLowerCase()}-button"]`).click();
+  selectByDataCyAttribute("prompt").find(`[data-cy="${action.toLowerCase()}-button"]`).click();
 };
 
 export const createBaseSelector = parent => {
@@ -369,8 +368,16 @@ export const createBaseSelector = parent => {
   }
 };
 
+export const selectByDataCyAttribute = attribute => {
+  return cy.get(`[data-cy="${attribute}"]`);
+};
+
+export const selectByDataCyAttributeStartingWith = attribute => {
+  return cy.get(`[data-cy^="${attribute}"]`);
+};
+
 export const selectLanguage = language => {
-  cy.get('[data-cy="language-button-select"]').click({ force: true });
+  selectByDataCyAttribute("language-button-select").click({ force: true });
   cy.get(`[data-cy="${language.toLowerCase()}-button-select-item"]`).click({ force: true });
   cy.wait(1000);
 };

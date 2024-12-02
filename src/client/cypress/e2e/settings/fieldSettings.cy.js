@@ -1,4 +1,9 @@
-import { goToRouteAndAcceptTerms, loginAsAdmin, returnToOverview } from "../helpers/testHelpers";
+import {
+  goToRouteAndAcceptTerms,
+  loginAsAdmin,
+  returnToOverview,
+  selectByDataCyAttribute,
+} from "../helpers/testHelpers";
 
 it("checks that the field settings control the field visibility.", () => {
   loginAsAdmin("/");
@@ -6,14 +11,14 @@ it("checks that the field settings control the field visibility.", () => {
   const waitForSettings = () => {
     cy.wait(["@setting", "@codes", "@codelist_GET"]);
   };
-  cy.get('[data-cy="settings-button"]').click();
+  selectByDataCyAttribute("settings-button").click();
   cy.contains("Lithology fields").click();
   cy.contains("Select all").click();
   cy.wait("@setting");
   waitForSettings();
 
   goToRouteAndAcceptTerms("/1001140/stratigraphy/lithology");
-  cy.get('[data-cy="styled-layer-9"]').click();
+  selectByDataCyAttribute("styled-layer-9").click();
   cy.contains("From depth [m MD]").should("exist");
   cy.contains("To depth [m MD]").should("exist");
   cy.contains("End of borehole").should("exist");
@@ -44,13 +49,13 @@ it("checks that the field settings control the field visibility.", () => {
   cy.contains("Notes").should("exist");
 
   returnToOverview();
-  cy.get('[data-cy="settings-button"]').click();
+  selectByDataCyAttribute("settings-button").click();
   cy.contains("Lithology fields").click();
   cy.contains("Unselect all").click();
   waitForSettings();
 
   goToRouteAndAcceptTerms("/1001140/stratigraphy/lithology");
-  cy.get('[data-cy="styled-layer-9"]').click();
+  selectByDataCyAttribute("styled-layer-9").click();
   cy.contains("From depth [m MD]").should("exist");
   cy.contains("To depth [m MD]").should("exist");
   cy.contains("End of borehole").should("not.exist");
@@ -79,15 +84,15 @@ it("checks that the field settings control the field visibility.", () => {
   cy.contains("Notes").should("not.exist");
 
   returnToOverview();
-  cy.get('[data-cy="settings-button"]').click();
+  selectByDataCyAttribute("settings-button").click();
   cy.contains("Lithology fields").click();
   waitForSettings();
   cy.wait(500);
 
   // manually check some and verify states
-  cy.get('[data-cy="checkbox-original_lithology"]').click();
-  cy.get('[data-cy="checkbox-plasticity"]').click();
-  cy.get('[data-cy="checkbox-uscs_1"]').click();
+  selectByDataCyAttribute("checkbox-original_lithology").click();
+  selectByDataCyAttribute("checkbox-plasticity").click();
+  selectByDataCyAttribute("checkbox-uscs_1").click();
   cy.get('[data-cy="checkbox-plasticity"] input').should("be.checked");
   cy.get('[data-cy="checkbox-original_lithology"] input').should("be.checked");
   cy.get('[data-cy="checkbox-uscs_1"] input').should("be.checked");

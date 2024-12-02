@@ -1,7 +1,12 @@
 import { addItem, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { checkAllVisibleRows, verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
-import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
+import {
+  newEditableBorehole,
+  returnToOverview,
+  selectByDataCyAttribute,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by identifier.", () => {
   it("can filter by identifier", () => {
@@ -14,7 +19,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     stopBoreholeEditing();
     returnToOverview();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
 
     cy.contains("h6", "Location").click();
     // show all options
@@ -22,7 +27,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     verifyPaginationText("1–100 of 1627");
 
-    cy.get('[data-cy="domain-dropdown"]')
+    selectByDataCyAttribute("domain-dropdown")
       .first()
       .click({ force: true })
       .find('[role="option"]')
@@ -31,7 +36,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     verifyPaginationText("1–1 of 1");
     // click reset label
-    cy.get('[data-cy="reset-filter-button"]').click();
+    selectByDataCyAttribute("reset-filter-button").click();
     verifyPaginationText("1–100 of 1627");
   });
 
@@ -53,13 +58,13 @@ describe("Tests for filtering data by identifier.", () => {
 
     stopBoreholeEditing();
     returnToOverview();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
 
     cy.contains("h6", "Location").click();
     // show all options
     cy.get('[class="ui fitted toggle checkbox"]').eq(0).children().first().check({ force: true });
 
-    cy.get('[data-cy="domain-dropdown"]')
+    selectByDataCyAttribute("domain-dropdown")
       .first()
       .click({ force: true })
       .find('[role="option"]')
@@ -74,6 +79,6 @@ describe("Tests for filtering data by identifier.", () => {
     cy.contains("button", "Cancel").click();
 
     // click reset label
-    cy.get('[data-cy="reset-filter-button"]').click();
+    selectByDataCyAttribute("reset-filter-button").click();
   });
 });

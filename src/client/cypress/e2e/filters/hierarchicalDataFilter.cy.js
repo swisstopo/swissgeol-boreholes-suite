@@ -1,20 +1,20 @@
-import { loginAsAdmin } from "../helpers/testHelpers.js";
+import { loginAsAdmin, selectByDataCyAttribute } from "../helpers/testHelpers.js";
 
 describe("Hierachical data filter tests", () => {
   it("check visible filters", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
-    cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 7);
+    selectByDataCyAttribute("hierarchical-data-search").should("have.length", 7);
     cy.contains("h6", "Lithostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
-    cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 3);
+    selectByDataCyAttribute("hierarchical-data-search").should("have.length", 3);
   });
 
   it("check sorting of filter values", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
     let periodsDropdown = cy.contains("label", "Period").next();
     periodsDropdown.click();
@@ -49,48 +49,48 @@ describe("Hierachical data filter tests", () => {
       "late Burdigalian",
     ];
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
-    cy.get('[data-cy="hierarchical-data-search"]')
+    selectByDataCyAttribute("hierarchical-data-search")
       .eq(filterValues.length - 1)
       .find("input")
       .type(filterValues[filterValues.length - 1] + "{enter}");
     cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]')
+    selectByDataCyAttribute("hierarchical-data-search")
       .find("div.divider.text")
       .should("have.length", filterValues.length)
       .each((el, i) => {
         expect(el).to.have.text(filterValues[i]);
       });
-    cy.get('[data-cy="hierarchical-data-search"]')
+    selectByDataCyAttribute("hierarchical-data-search")
       .eq(filterValues.length - 2)
       .find("div.dropdown")
       .click();
-    cy.get('[data-cy="hierarchical-data-search"]')
+    selectByDataCyAttribute("hierarchical-data-search")
       .eq(filterValues.length - 2)
       .find('[role="option"]')
       .first()
       .scrollIntoView()
       .click();
     cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]')
+    selectByDataCyAttribute("hierarchical-data-search")
       .find("div.divider.text")
       .should("have.length", filterValues.length - 2)
       .each((el, i) => {
         expect(el).to.have.text(filterValues[i]);
       });
-    cy.get('[data-cy="hierarchical-data-search"]')
+    selectByDataCyAttribute("hierarchical-data-search")
       .eq(filterValues.length - 4)
       .find("div.dropdown")
       .click();
-    cy.get('[data-cy="hierarchical-data-search"]')
+    selectByDataCyAttribute("hierarchical-data-search")
       .eq(filterValues.length - 4)
       .find('[role="option"]')
       .first()
       .scrollIntoView()
       .click();
     cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]')
+    selectByDataCyAttribute("hierarchical-data-search")
       .find("div.divider.text")
       .should("have.length", filterValues.length - 4)
       .each((el, i) => {
@@ -98,6 +98,6 @@ describe("Hierachical data filter tests", () => {
       });
     cy.contains("button", "Reset").click();
     cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]').find("div.divider.text").should("have.length", 0);
+    selectByDataCyAttribute("hierarchical-data-search").find("div.divider.text").should("have.length", 0);
   });
 });

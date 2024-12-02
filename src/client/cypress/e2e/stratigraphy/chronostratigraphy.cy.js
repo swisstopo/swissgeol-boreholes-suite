@@ -1,5 +1,5 @@
 import { createBorehole, createStratigraphy } from "../helpers/createEntitiesHelpers";
-import { bearerAuth, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import { bearerAuth, loginAsAdmin, selectByDataCyAttribute, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Tests for the chronostratigraphy editor.", () => {
   beforeEach(function () {
@@ -79,7 +79,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
 
   it("Creates, updates and deletes chronostratigraphy layers", () => {
     // create chronostratigraphy
-    cy.get('[data-cy="add-layer-button"]').click({ force: true });
+    selectByDataCyAttribute("add-layer-button").click({ force: true });
     cy.wait("@chronostratigraphy_POST");
 
     // edit chronostratigraphy
@@ -87,7 +87,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
     cy.get('[data-cy="layer-card"] :nth-child(4)').click();
 
     // Ensure clone and delete buttons in header are disabled for chronostratigraphy.
-    cy.get('[data-cy="clone-and-delete-buttons"]').should("not.exist");
+    selectByDataCyAttribute("clone-and-delete-buttons").should("not.exist");
 
     cy.get('.MuiPaper-elevation [role="listbox"]').find('[role="option"]').eq(1).click();
     cy.wait("@chronostratigraphy_PUT");

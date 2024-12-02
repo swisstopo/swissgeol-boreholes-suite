@@ -1,5 +1,10 @@
 import { addItem } from "../helpers/buttonHelpers";
-import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
+import {
+  newEditableBorehole,
+  returnToOverview,
+  selectByDataCyAttribute,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 
 describe("Tests for the layer form.", () => {
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {
@@ -7,11 +12,11 @@ describe("Tests for the layer form.", () => {
     newEditableBorehole().as("borehole_id");
 
     // navigate to stratigraphy
-    cy.get('[data-cy="stratigraphy-menu-item"]').click();
-    cy.get('[data-cy="lithology-menu-item"]').click();
+    selectByDataCyAttribute("stratigraphy-menu-item").click();
+    selectByDataCyAttribute("lithology-menu-item").click();
     addItem("addStratigraphy");
     cy.wait("@stratigraphy_POST");
-    cy.get('[data-cy="add-layer-icon"]').click();
+    selectByDataCyAttribute("add-layer-icon").click();
     cy.wait("@layer");
 
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
@@ -66,7 +71,7 @@ describe("Tests for the layer form.", () => {
       });
 
     // click somewhere else to close the last dropdown
-    cy.get('[data-cy="notes"]').click();
+    selectByDataCyAttribute("notes").click();
 
     // veryfiy that the dropdowns are reset
     [...new Set(expectedValues)].forEach(value => {

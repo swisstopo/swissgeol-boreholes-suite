@@ -1,7 +1,13 @@
 import { addItem, cancelEditing, saveForm, startEditing } from "./helpers/buttonHelpers";
 import { createBorehole } from "./helpers/createEntitiesHelpers";
 import { evaluateDisplayValue, evaluateTextarea, setInput, setSelect } from "./helpers/formHelpers";
-import { handlePrompt, loginAsAdmin, startBoreholeEditing, stopBoreholeEditing } from "./helpers/testHelpers";
+import {
+  handlePrompt,
+  loginAsAdmin,
+  selectByDataCyAttribute,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+} from "./helpers/testHelpers";
 
 describe("Tests for the data cards in the editor.", () => {
   it("resets datacards when stop editing or cancel", () => {
@@ -16,15 +22,15 @@ describe("Tests for the data cards in the editor.", () => {
 
     //Add card and cancel editing in datacard
     addItem("addwateringress");
-    cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
+    selectByDataCyAttribute("waterIngress-card.0.edit").should("exist");
     cancelEditing();
-    cy.get('[data-cy="waterIngress-card.0.edit"]').should("not.exist");
+    selectByDataCyAttribute("waterIngress-card.0.edit").should("not.exist");
 
     //Add card and stop editing borehole
     addItem("addwateringress");
-    cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
+    selectByDataCyAttribute("waterIngress-card.0.edit").should("exist");
     stopBoreholeEditing();
-    cy.get('[data-cy="waterIngress-card.0.edit"]').should("not.exist");
+    selectByDataCyAttribute("waterIngress-card.0.edit").should("not.exist");
 
     startBoreholeEditing();
     cy.wait(500);
@@ -51,14 +57,14 @@ describe("Tests for the data cards in the editor.", () => {
     cy.wait("@wateringress_GET");
 
     addItem("addwateringress");
-    cy.get('[data-cy="addwateringress-button"]').should("be.disabled");
+    selectByDataCyAttribute("addwateringress-button").should("be.disabled");
     cy.get(".MuiCircularProgress-root").should("not.exist");
 
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 3);
     setSelect("quantityId", 3);
     saveForm();
-    cy.get('[data-cy="addwateringress-button"]').should("be.enabled");
+    selectByDataCyAttribute("addwateringress-button").should("be.enabled");
 
     startEditing();
     setInput("comment", "Lorem.");
@@ -85,8 +91,8 @@ describe("Tests for the data cards in the editor.", () => {
     setSelect("reliabilityId", 2);
     startEditing();
     handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Reset");
-    cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
-    cy.get('[data-cy="waterIngress-card.1"]').should("not.exist");
+    selectByDataCyAttribute("waterIngress-card.0.edit").should("exist");
+    selectByDataCyAttribute("waterIngress-card.1").should("not.exist");
 
     // can save new card and switch to existing card
     addItem("addwateringress");
@@ -95,7 +101,7 @@ describe("Tests for the data cards in the editor.", () => {
     setSelect("quantityId", 3);
     startEditing();
     handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Save");
-    cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
-    cy.get('[data-cy="waterIngress-card.1"]').should("exist");
+    selectByDataCyAttribute("waterIngress-card.0.edit").should("exist");
+    selectByDataCyAttribute("waterIngress-card.1").should("exist");
   });
 });

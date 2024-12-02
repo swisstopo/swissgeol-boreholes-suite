@@ -1,7 +1,7 @@
 import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 import { createBorehole, createCasing, createCompletion } from "../helpers/createEntitiesHelpers";
 import { evaluateDisplayValue, evaluateInput, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
-import { handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import { handlePrompt, loginAsAdmin, selectByDataCyAttribute, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Casing crud tests", () => {
   beforeEach(() => {
@@ -33,7 +33,7 @@ describe("Casing crud tests", () => {
     // create casing
     addItem("addcasing");
     cy.wait("@codelist_GET");
-    cy.get('[data-cy="casingElements.0.delete"]').should("be.disabled");
+    selectByDataCyAttribute("casingElements.0.delete").should("be.disabled");
 
     setInput("name", "casing-1");
     setInput("dateStart", "2021-01-01");
@@ -52,7 +52,7 @@ describe("Casing crud tests", () => {
     // add casing element and verify fromDepth is set to previous toDepth
     addItem("addcasingelement");
     cy.get('[name="casingElements.1.fromDepth"]').should("have.value", "10");
-    cy.get('[data-cy="casingElements.1.delete"]').click();
+    selectByDataCyAttribute("casingElements.1.delete").click();
 
     saveForm();
     cy.wait("@casing_GET");
@@ -162,14 +162,14 @@ describe("Casing crud tests", () => {
 
   it("checks for unsaved changes when switching between cards", () => {
     addItem("addcasing");
-    cy.get('[data-cy="addcasing-button"]').should("be.disabled");
+    selectByDataCyAttribute("addcasing-button").should("be.disabled");
     cy.wait("@codelist_GET");
     setInput("name", "casing 1");
     setInput("casingElements.0.fromDepth", "5");
     setInput("casingElements.0.toDepth", "10");
     setSelect("casingElements.0.kindId", 3);
     saveForm();
-    cy.get('[data-cy="addcasing-button"]').should("be.enabled");
+    selectByDataCyAttribute("addcasing-button").should("be.enabled");
 
     // can switch cards without prompt if no changes were made
     startEditing();
@@ -199,8 +199,8 @@ describe("Casing crud tests", () => {
     setSelect("casingElements.0.kindId", 3);
     startEditing();
     handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Reset");
-    cy.get('[data-cy="casing-card.0.edit"]').should("be.visible");
-    cy.get('[data-cy="casing-card.1"]').should("not.exist");
+    selectByDataCyAttribute("casing-card.0.edit").should("be.visible");
+    selectByDataCyAttribute("casing-card.1").should("not.exist");
 
     // can save new card and switch to existing card
     addItem("addcasing");
@@ -210,7 +210,7 @@ describe("Casing crud tests", () => {
     setSelect("casingElements.0.kindId", 3);
     startEditing();
     handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Save");
-    cy.get('[data-cy="casing-card.0.edit"]').should("exist");
-    cy.get('[data-cy="casing-card.1"]').should("exist");
+    selectByDataCyAttribute("casing-card.0.edit").should("exist");
+    selectByDataCyAttribute("casing-card.1").should("exist");
   });
 });

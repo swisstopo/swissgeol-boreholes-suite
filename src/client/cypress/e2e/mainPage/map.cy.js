@@ -1,4 +1,4 @@
-import { loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
+import { loginAsEditor, returnToOverview, selectByDataCyAttribute } from "../helpers/testHelpers.js";
 
 describe("Map tests", () => {
   it("map preserves zoom level and center", () => {
@@ -7,8 +7,8 @@ describe("Map tests", () => {
     cy.get(".ol-viewport");
 
     // zoom in twice
-    cy.get('[data-cy="zoom-in-button"]').click();
-    cy.get('[data-cy="zoom-in-button"]').click();
+    selectByDataCyAttribute("zoom-in-button").click();
+    selectByDataCyAttribute("zoom-in-button").click();
 
     // drag map
     const canvas = cy.get("canvas");
@@ -25,7 +25,7 @@ describe("Map tests", () => {
     });
 
     // navigate to settings
-    cy.get('[data-cy="settings-button"]').click();
+    selectByDataCyAttribute("settings-button").click();
 
     // return to map
     returnToOverview();

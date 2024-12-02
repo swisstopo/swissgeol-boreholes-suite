@@ -9,17 +9,18 @@ import {
   newEditableBorehole,
   readDownloadedFile,
   returnToOverview,
+  selectByDataCyAttribute,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
 function ensureEditingDisabled() {
-  cy.get('[data-cy="edit-button"]').should("exist");
-  cy.get('[data-cy="editingstop-button"]').should("not.exist");
+  selectByDataCyAttribute("edit-button").should("exist");
+  selectByDataCyAttribute("editingstop-button").should("not.exist");
 }
 
 function ensureEditingEnabled() {
-  cy.get('[data-cy="edit-button"]').should("not.exist");
-  cy.get('[data-cy="editingstop-button"]').should("exist");
+  selectByDataCyAttribute("edit-button").should("not.exist");
+  selectByDataCyAttribute("editingstop-button").should("exist");
 }
 
 describe("Test for the borehole form.", () => {
@@ -49,8 +50,8 @@ describe("Test for the borehole form.", () => {
 
     saveWithSaveBar();
     // navigate away and back to check if values are saved
-    cy.get('[data-cy="borehole-menu-item"]').click();
-    cy.get('[data-cy="location-menu-item"]').click();
+    selectByDataCyAttribute("borehole-menu-item").click();
+    selectByDataCyAttribute("location-menu-item").click();
     evaluateSelect("restrictionId", "20111003");
     evaluateSelect("nationalInterest", "2");
     evaluateSelect("originalReferenceSystem", "20104001");
@@ -60,7 +61,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("referenceElevationTypeId", "20117004");
 
     // fill all dropdowns on borehole tab
-    cy.get('[data-cy="borehole-menu-item"]').click();
+    selectByDataCyAttribute("borehole-menu-item").click();
     setSelect("purposeId", 1);
     setSelect("typeId", 1);
     setSelect("qtDepthId", 1);
@@ -74,8 +75,8 @@ describe("Test for the borehole form.", () => {
     saveWithSaveBar();
 
     // navigate away and back to check if values are saved
-    cy.get('[data-cy="location-menu-item"]').click();
-    cy.get('[data-cy="borehole-menu-item"]').click();
+    selectByDataCyAttribute("location-menu-item").click();
+    selectByDataCyAttribute("borehole-menu-item").click();
 
     evaluateSelect("purposeId", "22103001");
     evaluateSelect("typeId", "20101001");
@@ -104,13 +105,13 @@ describe("Test for the borehole form.", () => {
       setInput("remarks", "This is a test remark");
 
       // navigate away is blocked before saving
-      cy.get('[data-cy="location-menu-item"]').click();
+      selectByDataCyAttribute("location-menu-item").click();
 
       const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
       handlePrompt(messageUnsavedChanges, "cancel");
 
       saveWithSaveBar();
-      cy.get('[data-cy="location-menu-item"]').click();
+      selectByDataCyAttribute("location-menu-item").click();
       cy.contains("Boreholes.swissgeol.ch ID");
     });
   });
@@ -138,7 +139,7 @@ describe("Test for the borehole form.", () => {
       returnToOverview();
       showTableAndWaitForData();
       clickOnRowWithText("AAA_Ferret");
-      cy.get('[data-cy="borehole-menu-item"]').click();
+      selectByDataCyAttribute("borehole-menu-item").click();
       evaluateInput("totalDepth", "700");
       evaluateInput("topBedrockFreshMd", "0.60224");
       evaluateInput("topBedrockWeatheredMd", "78'945'100");
@@ -199,14 +200,14 @@ describe("Test for the borehole form.", () => {
       expect(location.hash).to.eq("#general");
     });
 
-    cy.get('[data-cy="sections-tab"]').click();
+    selectByDataCyAttribute("sections-tab").click();
     cy.wait("@get-sections-by-boreholeId");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
       expect(location.hash).to.eq("#sections");
     });
 
-    cy.get('[data-cy="geometry-tab"]').click();
+    selectByDataCyAttribute("geometry-tab").click();
     cy.wait("@boreholegeometry_GET");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);

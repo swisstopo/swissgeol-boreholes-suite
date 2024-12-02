@@ -1,3 +1,5 @@
+import { selectByDataCyAttribute } from "./testHelpers";
+
 export const verifyPaginationText = text => {
   cy.get(".MuiTablePagination-displayedRows").should("have.text", text);
 };
@@ -23,7 +25,7 @@ export const waitForTableData = () => {
 };
 
 export const showTableAndWaitForData = () => {
-  cy.get('[data-cy="showTableButton"]').click();
+  selectByDataCyAttribute("showTableButton").click();
   waitForTableData();
 };
 

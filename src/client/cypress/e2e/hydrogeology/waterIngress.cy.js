@@ -1,7 +1,13 @@
 import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 import { createBorehole, createCasing, createCompletion, createWateringress } from "../helpers/createEntitiesHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
-import { handlePrompt, loginAsAdmin, selectLanguage, startBoreholeEditing } from "../helpers/testHelpers";
+import {
+  handlePrompt,
+  loginAsAdmin,
+  selectByDataCyAttribute,
+  selectLanguage,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
 
 describe("Tests for the wateringress editor.", () => {
   it("Creates, updates and deletes wateringresses", () => {
@@ -26,8 +32,8 @@ describe("Tests for the wateringress editor.", () => {
     // start editing session
     startBoreholeEditing();
 
-    cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
-    cy.get('[data-cy="wateringress-menu-item"]').click({ force: true });
+    selectByDataCyAttribute("hydrogeology-menu-item").click({ force: true });
+    selectByDataCyAttribute("wateringress-menu-item").click({ force: true });
 
     cy.wait("@wateringress_GET");
 

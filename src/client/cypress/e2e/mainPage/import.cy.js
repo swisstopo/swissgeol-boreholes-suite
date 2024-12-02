@@ -1,9 +1,9 @@
-import { getImportFileFromFixtures, loginAsAdmin } from "../helpers/testHelpers";
+import { getImportFileFromFixtures, loginAsAdmin, selectByDataCyAttribute } from "../helpers/testHelpers";
 
 describe("Test for importing boreholes.", () => {
   it("Successfully imports multiple boreholes.", () => {
     loginAsAdmin();
-    cy.get('[data-cy="import-borehole-button"]').click();
+    selectByDataCyAttribute("import-borehole-button").click();
 
     // Select borehole csv file
     let boreholeFile = new DataTransfer();
@@ -14,7 +14,7 @@ describe("Test for importing boreholes.", () => {
       boreholeFile.items.add(file);
     });
 
-    cy.get('[data-cy="import-boreholeFile-input"]').within(() => {
+    selectByDataCyAttribute("import-boreholeFile-input").within(() => {
       cy.get("input[type=file]", { force: true }).then(input => {
         input[0].files = boreholeFile.files;
         input[0].dispatchEvent(new Event("change", { bubbles: true }));
@@ -35,7 +35,7 @@ describe("Test for importing boreholes.", () => {
       });
       attachmentFileList.items.add(file);
     });
-    cy.get('[data-cy="import-boreholeFile-attachments-input"]').within(() => {
+    selectByDataCyAttribute("import-boreholeFile-attachments-input").within(() => {
       cy.get("input[type=file]", { force: true }).then(input => {
         input[0].files = attachmentFileList.files;
         input[0].dispatchEvent(new Event("change", { bubbles: true }));
@@ -50,7 +50,7 @@ describe("Test for importing boreholes.", () => {
       });
       lithologyFile.items.add(file);
     });
-    cy.get('[data-cy="import-lithologyFile-input"]').within(() => {
+    selectByDataCyAttribute("import-lithologyFile-input").within(() => {
       cy.get("input[type=file]", { force: true }).then(input => {
         input[0].files = lithologyFile.files;
         input[0].dispatchEvent(new Event("change", { bubbles: true }));
@@ -61,7 +61,7 @@ describe("Test for importing boreholes.", () => {
     cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
 
     // Import boreholes and attachments
-    cy.get('[data-cy="import-button"]').click();
+    selectByDataCyAttribute("import-button").click();
     cy.wait("@borehole-upload");
 
     // Check if boreholes were imported
@@ -70,7 +70,7 @@ describe("Test for importing boreholes.", () => {
 
   it("Displays borehole validation errors.", () => {
     loginAsAdmin();
-    cy.get('[data-cy="import-borehole-button"]').click();
+    selectByDataCyAttribute("import-borehole-button").click();
 
     // Select borehole csv file
     getImportFileFromFixtures("boreholes-missing-fields-and-duplicates.csv", null)
@@ -83,7 +83,7 @@ describe("Test for importing boreholes.", () => {
         return boreholeFile;
       })
       .then(boreholeFile => {
-        cy.get('[data-cy="import-boreholeFile-input"]').within(() => {
+        selectByDataCyAttribute("import-boreholeFile-input").within(() => {
           cy.get("input[type=file]", { force: true }).then(input => {
             input[0].files = boreholeFile.files;
             input[0].dispatchEvent(new Event("change", { bubbles: true }));
@@ -93,11 +93,11 @@ describe("Test for importing boreholes.", () => {
 
     cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
 
-    cy.get('[data-cy="import-button"]').click();
+    selectByDataCyAttribute("import-button").click();
 
     cy.wait("@borehole-upload");
 
-    cy.get('[data-cy="borehole-import-error-modal-content"]')
+    selectByDataCyAttribute("borehole-import-error-modal-content")
       .should("not.contain", "Row0")
       .should("contain", "Row1")
       .should("contain", "Field 'location_x' is required.")
@@ -109,7 +109,7 @@ describe("Test for importing boreholes.", () => {
 
   it("Displays lithology validation errors.", () => {
     loginAsAdmin();
-    cy.get('[data-cy="import-borehole-button"]').click();
+    selectByDataCyAttribute("import-borehole-button").click();
 
     // Select borehole csv file
     getImportFileFromFixtures("boreholes-multiple-valid.csv", null)
@@ -122,7 +122,7 @@ describe("Test for importing boreholes.", () => {
         return boreholeFile;
       })
       .then(boreholeFile => {
-        cy.get('[data-cy="import-boreholeFile-input"]').within(() => {
+        selectByDataCyAttribute("import-boreholeFile-input").within(() => {
           cy.get("input[type=file]", { force: true }).then(input => {
             input[0].files = boreholeFile.files;
             input[0].dispatchEvent(new Event("change", { bubbles: true }));
@@ -141,7 +141,7 @@ describe("Test for importing boreholes.", () => {
         return lithologyFile;
       })
       .then(lithologyFile => {
-        cy.get('[data-cy="import-lithologyFile-input"]').within(() => {
+        selectByDataCyAttribute("import-lithologyFile-input").within(() => {
           cy.get("input[type=file]", { force: true }).then(input => {
             input[0].files = lithologyFile.files;
             input[0].dispatchEvent(new Event("change", { bubbles: true }));
@@ -151,11 +151,11 @@ describe("Test for importing boreholes.", () => {
 
     cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
 
-    cy.get('[data-cy="import-button"]').click();
+    selectByDataCyAttribute("import-button").click();
 
     cy.wait("@borehole-upload");
 
-    cy.get('[data-cy="borehole-import-error-modal-content"]')
+    selectByDataCyAttribute("borehole-import-error-modal-content")
       .should("not.contain", "Row0")
       .should("contain", "Row1")
       .should("contain", "Field 'to_depth' is required.")

@@ -1,17 +1,23 @@
 import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setSelect } from "../helpers/formHelpers";
-import { loginAsAdmin, newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
+import {
+  loginAsAdmin,
+  newEditableBorehole,
+  returnToOverview,
+  selectByDataCyAttribute,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
-    cy.get('[data-cy="settings-button"]').click();
+    selectByDataCyAttribute("settings-button").click();
     cy.contains("div", "Location filters").click();
   }
 
   it("can set filters as editor", () => {
     loginAsAdmin();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     goToEditorLocationFilter();
 
     cy.contains("div", "Spatial reference system").children().first().children().first().as("checkbox");
@@ -19,24 +25,24 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("@checkbox").should("be.checked");
 
     returnToOverview();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("h6", "Location").click();
-    cy.get('[data-cy="spatial-reference-filter"]').should("exist");
+    selectByDataCyAttribute("spatial-reference-filter").should("exist");
 
     goToEditorLocationFilter();
     cy.get("@checkbox").uncheck({ force: true });
     cy.get("@checkbox").should("not.be.checked");
 
     returnToOverview();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
     cy.contains("h6", "Location").click();
-    cy.get('[data-cy="spatial-reference-filter"]').should("not.exist");
+    selectByDataCyAttribute("spatial-reference-filter").should("not.exist");
   });
 
   it("can filter by reference system", () => {
     newEditableBorehole().as("borehole_id");
-    cy.get('[data-cy="locationXLV03-formCoordinate"]').as("LV03X-input");
-    cy.get('[data-cy="locationXLV03-formCoordinate"]').as("LV03Y-input");
+    selectByDataCyAttribute("locationXLV03-formCoordinate").as("LV03X-input");
+    selectByDataCyAttribute("locationXLV03-formCoordinate").as("LV03Y-input");
 
     setSelect("originalReferenceSystem", 1);
 
@@ -47,23 +53,23 @@ describe("Tests for filtering data by reference system.", () => {
 
     stopBoreholeEditing();
     returnToOverview();
-    cy.get('[data-cy="show-filter-button"]').click();
+    selectByDataCyAttribute("show-filter-button").click();
 
     cy.contains("h6", "Location").click();
     cy.get('[class="ui fitted toggle checkbox"]').eq(0).children().first().check({ force: true });
-    cy.get('[data-cy="radiobutton-all"]').click();
+    selectByDataCyAttribute("radiobutton-all").click();
     verifyPaginationText("1–100 of 1627");
 
-    cy.get('[data-cy="spatial-reference-filter"]').should("exist");
+    selectByDataCyAttribute("spatial-reference-filter").should("exist");
 
-    cy.get('[data-cy="radiobutton-LV95"]').click();
+    selectByDataCyAttribute("radiobutton-LV95").click();
     verifyPaginationText("1–100 of 813");
 
-    cy.get('[data-cy="radiobutton-LV03"]').click();
+    selectByDataCyAttribute("radiobutton-LV03").click();
     verifyPaginationText("1–100 of 814");
 
     // click reset label
-    cy.get('[data-cy="reset-filter-button"]').click();
+    selectByDataCyAttribute("reset-filter-button").click();
     verifyPaginationText("1–100 of 1627");
   });
 });

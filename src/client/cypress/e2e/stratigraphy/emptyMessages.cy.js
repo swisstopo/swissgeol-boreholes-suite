@@ -1,4 +1,4 @@
-import { newUneditableBorehole, startBoreholeEditing } from "../helpers/testHelpers";
+import { newUneditableBorehole, selectByDataCyAttribute, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Messages for empty profiles", () => {
   beforeEach(() => {
@@ -6,11 +6,11 @@ describe("Messages for empty profiles", () => {
   });
 
   it("Displays correct messages for stratigraphy", () => {
-    cy.get('[data-cy="stratigraphy-menu-item"]').click();
-    cy.get('[data-cy="lithology-menu-item"]').click();
-    cy.get('[data-cy="stratigraphy-message"]').should("contain", "No stratigraphy available");
+    selectByDataCyAttribute("stratigraphy-menu-item").click();
+    selectByDataCyAttribute("lithology-menu-item").click();
+    selectByDataCyAttribute("stratigraphy-message").should("contain", "No stratigraphy available");
     startBoreholeEditing();
-    cy.get('[data-cy="stratigraphy-message"]').should(
+    selectByDataCyAttribute("stratigraphy-message").should(
       "contain",
       "For the recording of a stratigraphic profile please click the plus symbol at the top left",
     );
