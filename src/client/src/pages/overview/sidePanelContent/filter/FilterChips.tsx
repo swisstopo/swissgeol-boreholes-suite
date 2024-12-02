@@ -33,7 +33,7 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
       {activeFilters.map((filter, index) => {
         const customFilterLabels: { [key: string]: string } = {
           role: "status",
-          status: "boreholeStatus",
+          status: "boreholestatus",
           description_quality: "completeness",
           layer_gradation: "gradation",
           layer_depth_from_from: "fromdepth_from",
@@ -48,7 +48,7 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
           <Tooltip key={index} title={filterLabel.length > 15 && filterLabel}>
             <Chip
               sx={{ marginRight: "10px", marginBottom: "10px" }}
-              data-cy={`filter-chip-${filter.key}`}
+              data-cy={`filter-chip-${customFilterLabels[filter.key] || filter.key}`}
               color="secondary"
               label={filterLabel.length < 15 ? filterLabel : filterLabel.substring(0, 15) + "..."}
               onDelete={() => onRemoveFilter(filter)}
