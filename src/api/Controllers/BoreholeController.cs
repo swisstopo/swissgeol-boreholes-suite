@@ -170,14 +170,17 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             #pragma warning restore CS8603
         }
 
-        // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
-        borehole.Id = 0;
+        borehole.MarkAsNew();
+        borehole.Completions?.MarkAsNew();
+        borehole.Sections?.MarkAsNew();
+        borehole.Observations?.MarkAsNew();
+
         foreach (var stratigraphy in borehole.Stratigraphies)
         {
-            stratigraphy.Id = 0;
+            stratigraphy.MarkAsNew();
             foreach (var layer in stratigraphy.Layers)
             {
-                layer.Id = 0;
+                layer.MarkAsNew();
                 layer.LayerColorCodes?.ResetLayerIds();
                 layer.LayerDebrisCodes?.ResetLayerIds();
                 layer.LayerGrainShapeCodes?.ResetLayerIds();
@@ -186,83 +189,10 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
                 layer.LayerUscs3Codes?.ResetLayerIds();
             }
 
-            foreach (var lithologicalDescription in stratigraphy.LithologicalDescriptions)
-            {
-                lithologicalDescription.Id = 0;
-            }
-
-            foreach (var faciesDescription in stratigraphy.FaciesDescriptions)
-            {
-                faciesDescription.Id = 0;
-            }
-
-            foreach (var chronostratigraphy in stratigraphy.ChronostratigraphyLayers)
-            {
-                chronostratigraphy.Id = 0;
-            }
-
-            foreach (var lithostratigraphy in stratigraphy.LithostratigraphyLayers)
-            {
-                lithostratigraphy.Id = 0;
-            }
-        }
-
-        foreach (var completion in borehole.Completions)
-        {
-            completion.Id = 0;
-            foreach (var casing in completion.Casings)
-            {
-                casing.Id = 0;
-                foreach (var casingElement in casing.CasingElements)
-                {
-                    casingElement.Id = 0;
-                }
-            }
-
-            foreach (var instrumentation in completion.Instrumentations)
-            {
-                instrumentation.Id = 0;
-            }
-
-            foreach (var backfill in completion.Backfills)
-            {
-                backfill.Id = 0;
-            }
-        }
-
-        foreach (var section in borehole.Sections)
-        {
-            section.Id = 0;
-            foreach (var sectionElement in section.SectionElements)
-            {
-                sectionElement.Id = 0;
-            }
-        }
-
-        foreach (var observation in borehole.Observations)
-        {
-            observation.Id = 0;
-            if (observation is FieldMeasurement fieldMeasurement)
-            {
-                if (fieldMeasurement.FieldMeasurementResults != null)
-                {
-                    foreach (var fieldMeasurementResult in fieldMeasurement.FieldMeasurementResults)
-                    {
-                        fieldMeasurementResult.Id = 0;
-                    }
-                }
-            }
-
-            if (observation is Hydrotest hydrotest)
-            {
-                if (hydrotest.HydrotestResults != null)
-                {
-                    foreach (var hydrotestResult in hydrotest.HydrotestResults)
-                    {
-                        hydrotestResult.Id = 0;
-                    }
-                }
-            }
+            stratigraphy.LithologicalDescriptions?.MarkAsNew();
+            stratigraphy.FaciesDescriptions?.MarkAsNew();
+            stratigraphy.ChronostratigraphyLayers?.MarkAsNew();
+            stratigraphy.LithostratigraphyLayers?.MarkAsNew();
         }
 
         foreach (var boreholeFile in borehole.BoreholeFiles)

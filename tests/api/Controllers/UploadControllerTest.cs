@@ -356,7 +356,7 @@ public class UploadControllerTest
         Assert.IsNotNull(casingElement.Updated, "Updated should not be null");
         Assert.IsNotNull(casingElement.UpdatedById, "UpdatedById should not be null");
         Assert.IsNotNull(casingElement.Casing, "casingElement.Casing should not be null");
-        Assert.AreEqual(0, casingElement.FromDepth, "FromDepth");
+        Assert.AreEqual(0.1, casingElement.FromDepth, "FromDepth");
         Assert.AreEqual(10, casingElement.ToDepth, "ToDepth");
         Assert.AreEqual(25000116, casingElement.KindId, "KindId");
         Assert.IsNull(casingElement.Kind, "Kind should be null");

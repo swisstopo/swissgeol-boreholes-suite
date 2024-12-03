@@ -109,119 +109,14 @@ public class UploadController : ControllerBase
 
             foreach (var borehole in boreholes)
             {
+                borehole.MarkAsNew();
                 borehole.WorkgroupId = workgroupId;
-                borehole.Id = 0;
                 borehole.LockedById = null;
 
-                foreach (var strati in borehole.Stratigraphies)
-                {
-                    strati.Id = 0;
-                    strati.BoreholeId = 0;
-                    strati.Borehole = borehole;
-                    foreach (var lithology in strati.Layers)
-                    {
-                        lithology.Id = 0;
-                        lithology.StratigraphyId = 0;
-                        lithology.Stratigraphy = strati;
-                    }
-
-                    foreach (var chronostratigraphyLayer in strati.ChronostratigraphyLayers)
-                    {
-                        chronostratigraphyLayer.Id = 0;
-                        chronostratigraphyLayer.StratigraphyId = 0;
-                        chronostratigraphyLayer.Stratigraphy = strati;
-                    }
-
-                    foreach (var lithostratigraphyLayer in strati.LithostratigraphyLayers)
-                    {
-                        lithostratigraphyLayer.Id = 0;
-                        lithostratigraphyLayer.StratigraphyId = 0;
-                        lithostratigraphyLayer.Stratigraphy = strati;
-                    }
-
-                    foreach (var lithologicalDescription in strati.LithologicalDescriptions)
-                    {
-                        lithologicalDescription.Id = 0;
-                        lithologicalDescription.StratigraphyId = 0;
-                        lithologicalDescription.Stratigraphy = strati;
-                    }
-
-                    foreach (var faciesDescription in strati.FaciesDescriptions)
-                    {
-                        faciesDescription.Id = 0;
-                        faciesDescription.StratigraphyId = 0;
-                        faciesDescription.Stratigraphy = strati;
-                    }
-
-                    foreach (var chronostratigraphyLayer in strati.ChronostratigraphyLayers)
-                    {
-                        chronostratigraphyLayer.Id = 0;
-                        chronostratigraphyLayer.StratigraphyId = 0;
-                        chronostratigraphyLayer.Stratigraphy = strati;
-                    }
-                }
-
-                foreach (var completion in borehole.Completions)
-                {
-                    completion.Id = 0;
-                    completion.BoreholeId = 0;
-                    completion.Borehole = borehole;
-                    foreach (var instrumentation in completion.Instrumentations)
-                    {
-                        instrumentation.Id = 0;
-                        instrumentation.CompletionId = 0;
-                        instrumentation.Completion = completion;
-                    }
-
-                    foreach (var casing in completion.Casings)
-                    {
-                        casing.Id = 0;
-                        casing.CompletionId = 0;
-                        casing.Completion = completion;
-
-                        foreach (var casingElement in casing.CasingElements)
-                        {
-                            casingElement.Id = 0;
-                            casingElement.CasingId = 0;
-                            casingElement.Casing = casing;
-                        }
-                    }
-
-                    foreach (var backfill in completion.Backfills)
-                    {
-                        backfill.Id = 0;
-                        backfill.CompletionId = 0;
-                        backfill.Completion = completion;
-                    }
-
-                    foreach (var instrumentation in completion.Instrumentations)
-                    {
-                        instrumentation.Id = 0;
-                        instrumentation.CompletionId = 0;
-                        instrumentation.Completion = completion;
-                    }
-                }
-
-                foreach (var section in borehole.Sections)
-                {
-                    section.Id = 0;
-                    section.BoreholeId = 0;
-                    section.Borehole = borehole;
-
-                    foreach (var sectionElement in section.SectionElements)
-                    {
-                        sectionElement.Id = 0;
-                        sectionElement.SectionId = 0;
-                        sectionElement.Section = section;
-                    }
-                }
-
-                foreach (var observation in borehole.Observations)
-                {
-                    observation.Id = 0;
-                    observation.BoreholeId = 0;
-                    observation.Borehole = borehole;
-                }
+                borehole?.Stratigraphies?.MarkAsNew();
+                borehole?.Completions?.MarkAsNew();
+                borehole?.Sections?.MarkAsNew();
+                borehole?.Observations?.MarkAsNew();
 
                 borehole.Workflows.Clear();
                 borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id });
