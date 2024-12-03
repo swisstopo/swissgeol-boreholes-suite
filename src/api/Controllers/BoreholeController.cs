@@ -14,6 +14,10 @@ namespace BDMS.Controllers;
 [Route("api/v2/[controller]")]
 public class BoreholeController : BoreholeControllerBase<Borehole>
 {
+    // Limit the maximum number of items per request to 100.
+    // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
+    private const int MaxPageSize = 100;
+
     public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger, IBoreholeLockService boreholeLockService)
     : base(context, logger, boreholeLockService)
     {
@@ -63,6 +67,33 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             Logger?.LogError(ex, errorMessage);
             return Problem(errorMessage);
         }
+    }
+
+    /// <summary>
+    /// Asynchronously gets all <see cref="Borehole"/> records with optional filtering by ids and pagination.
+    /// </summary>
+    /// <param name="ids">The optional list of borehole ids to filter by.</param>
+    /// <param name="pageNumber">The page number for pagination.</param>
+    /// <param name="pageSize">The page size for pagination.</param>
+    [HttpGet]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<PaginatedBoreholeResponse>> GetAllAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>? ids = null, [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1, [FromQuery] [Range(1, MaxPageSize)] int pageSize = 100)
+    {
+        pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
+
+        var skip = (pageNumber - 1) * pageSize;
+        var query = GetBoreholesWithIncludes().AsNoTracking();
+
+        if (ids != null && ids.Any())
+        {
+            query = query.Where(borehole => ids.Contains(borehole.Id));
+        }
+
+        var totalCount = await query.CountAsync().ConfigureAwait(false);
+        var boreholes = await query.Skip(skip).Take(pageSize).ToListAsync().ConfigureAwait(false);
+        var paginatedResponse = new PaginatedBoreholeResponse(totalCount, pageNumber, pageSize, MaxPageSize, boreholes);
+
+        return Ok(paginatedResponse);
     }
 
     /// <summary>
