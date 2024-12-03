@@ -3,6 +3,7 @@ import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { useBlockNavigation } from "../useBlockNavigation.tsx";
 import { useFormDirty } from "../useFormDirty.tsx";
+import { useSaveOnCtrlS } from "../useSaveOnCtrlS.ts";
 
 interface UseFormWithSaveBarProps<T extends FieldValues> {
   formMethods: UseFormReturn<T>;
@@ -23,7 +24,7 @@ export function UseFormWithSaveBar<T extends FieldValues>({
 
   // Block navigation if form is dirty
   history.block(nextLocation => {
-    if (!handleBlockedNavigation(nextLocation.pathname)) {
+    if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
       return false;
     }
   });
@@ -48,19 +49,7 @@ export function UseFormWithSaveBar<T extends FieldValues>({
   }, [formMethods, onSubmit]);
 
   // Save with ctrl+s
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key === "s") {
-        event.preventDefault();
-        resetAndSubmitForm();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [resetAndSubmitForm]);
+  useSaveOnCtrlS(resetAndSubmitForm);
 
   // Expose form methods to parent component (save bar)
   useImperativeHandle(ref, () => ({

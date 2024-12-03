@@ -10,11 +10,14 @@ import { DataCardButtonContainer } from "../../../../components/dataCard/dataCar
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
+import { useFormDirty } from "../../useFormDirty";
+import { useSaveOnCtrlS } from "../../useSaveOnCtrlS";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
+  const { setIsFormDirty } = useFormDirty();
 
   const sectionElementDefaults = {
     fromDepth: null,
@@ -91,6 +94,20 @@ const SectionInput = ({ item, parentId }) => {
     formMethods.trigger();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formMethods.trigger]);
+
+  // Track form dirty state
+  useEffect(() => {
+    setIsFormDirty(Object.keys(formMethods.formState.dirtyFields).length > 0);
+    return () => setIsFormDirty(false);
+  }, [
+    formMethods.formState.dirtyFields,
+    formMethods.formState.isDirty,
+    formMethods,
+    formMethods.formState,
+    setIsFormDirty,
+  ]);
+
+  useSaveOnCtrlS(formMethods.handleSubmit(submitForm));
 
   useEffect(() => {
     formMethods.trigger("sectionElements");
