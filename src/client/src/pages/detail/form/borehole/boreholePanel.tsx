@@ -1,12 +1,9 @@
 import { forwardRef, SyntheticEvent, useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
-import { DevTool } from "../../../../../hookformDevtools.ts";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
-import { UseFormWithSaveBar } from "../useFormWithSaveBar.ts";
 import { BoreholeForm } from "./boreholeForm.tsx";
-import { BoreholeFormInputs, BoreholePanelProps } from "./boreholePanelInterfaces";
+import { BoreholePanelProps } from "./boreholePanelInterfaces";
 import Geometry from "./geometry.jsx";
 import Sections from "./sections.jsx";
 
@@ -16,29 +13,6 @@ export const BoreholePanel = forwardRef(
     const history = useHistory();
     const location = useLocation();
     const [activeIndex, setActiveIndex] = useState(0);
-    const formMethods = useForm<BoreholeFormInputs>({
-      mode: "onChange",
-      defaultValues: {
-        typeId: borehole.typeId,
-        purposeId: borehole.purposeId,
-        statusId: borehole.statusId,
-        totalDepth: borehole.totalDepth,
-        qtDepthId: borehole.qtDepthId,
-        topBedrockFreshMd: borehole.topBedrockFreshMd,
-        topBedrockWeatheredMd: borehole.topBedrockWeatheredMd,
-        lithologyTopBedrockId: borehole.lithologyTopBedrockId,
-        lithostratigraphyId: borehole.lithostratigraphyId,
-        chronostratigraphyId: borehole.chronostratigraphyId,
-        hasGroundwater: borehole.hasGroundwater === true ? 1 : borehole.hasGroundwater === false ? 0 : 2,
-        remarks: borehole.remarks,
-      },
-    });
-
-    UseFormWithSaveBar({
-      formMethods,
-      onSubmit,
-      ref,
-    });
 
     const tabs = [
       {
@@ -81,14 +55,7 @@ export const BoreholePanel = forwardRef(
         </BdmsTabs>
         <BdmsTabContentBox flex="1 0 0" sx={{ overflow: "auto" }}>
           {activeIndex === 0 && (
-            <>
-              <DevTool control={formMethods.control} placement="top-right" />
-              <FormProvider {...formMethods}>
-                <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-                  <BoreholeForm borehole={borehole} editingEnabled={editingEnabled} formMethods={formMethods} />
-                </form>
-              </FormProvider>
-            </>
+            <BoreholeForm borehole={borehole} editingEnabled={editingEnabled} onSubmit={onSubmit} ref={ref} />
           )}
           {activeIndex === 1 && <Sections isEditable={editingEnabled} boreholeId={boreholeId} />}
           {activeIndex === 2 && (

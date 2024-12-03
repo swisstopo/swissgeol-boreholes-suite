@@ -109,10 +109,10 @@ export const DetailPageContent = ({
               render={() => (
                 <BoreholePanel
                   ref={boreholePanelRef}
-                  onSubmit={onBoreholeFormSubmit}
                   boreholeId={id}
                   borehole={borehole}
                   editingEnabled={editingEnabled}
+                  onSubmit={onBoreholeFormSubmit}
                 />
               )}
             />
