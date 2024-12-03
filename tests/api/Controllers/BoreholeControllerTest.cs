@@ -67,14 +67,14 @@ public class BoreholeControllerTest
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
-        PaginatedResponse<Borehole> paginatedResponse = (PaginatedResponse<Borehole>)okResult.Value!;
-        Assert.AreEqual(3, paginatedResponse.Items.Count());
+        PaginatedBoreholeResponse paginatedResponse = (PaginatedBoreholeResponse)okResult.Value!;
+        Assert.AreEqual(3, paginatedResponse.Boreholes.Count());
         Assert.AreEqual(100, paginatedResponse.MaxPageSize);
         Assert.AreEqual(1, paginatedResponse.PageNumber);
         Assert.AreEqual(3, paginatedResponse.PageSize);
         Assert.AreEqual(4, paginatedResponse.TotalCount);
 
-        foreach (var item in paginatedResponse.Items)
+        foreach (var item in paginatedResponse.Boreholes)
         {
             Assert.IsTrue(ids.Contains(item.Id), $"Borehole.Id {item.Id} is not in the provided list of ids.");
         }

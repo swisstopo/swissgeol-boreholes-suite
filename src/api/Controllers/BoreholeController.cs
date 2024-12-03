@@ -77,12 +77,11 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <param name="pageSize">The page size for pagination.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<PaginatedResponse<Borehole>>> GetAllAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>? ids = null, [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1, [FromQuery] [Range(1, MaxPageSize)] int pageSize = 100)
+    public async Task<ActionResult<PaginatedBoreholeResponse>> GetAllAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>? ids = null, [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1, [FromQuery] [Range(1, MaxPageSize)] int pageSize = 100)
     {
         pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
 
         var skip = (pageNumber - 1) * pageSize;
-
         var query = GetBoreholesWithIncludes().AsNoTracking();
 
         if (ids != null && ids.Any())
@@ -91,10 +90,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         var totalCount = await query.CountAsync().ConfigureAwait(false);
-
-        var items = await query.Skip(skip).Take(pageSize).ToListAsync().ConfigureAwait(false);
-
-        var paginatedResponse = new PaginatedResponse<Borehole>(items, totalCount, pageNumber, pageSize, MaxPageSize);
+        var boreholes = await query.Skip(skip).Take(pageSize).ToListAsync().ConfigureAwait(false);
+        var paginatedResponse = new PaginatedBoreholeResponse(totalCount, pageNumber, pageSize, MaxPageSize, boreholes);
 
         return Ok(paginatedResponse);
     }
