@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { DevTool } from "../../../hookformDevtools";
-import { useSaveOnKeyDown } from "../../pages/detail/useSaveOnCtrlS";
+import { useSaveOnCtrlS } from "../../pages/detail/useSaveOnCtrlS";
 import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
 import { FormContainer } from "../form/form";
 import { PromptContext } from "../prompt/promptContext.tsx";
@@ -75,7 +75,7 @@ export const DataInputCard = props => {
   };
 
   // Save with ctrl+s
-  useSaveOnKeyDown(formMethods.handleSubmit(submitForm));
+  useSaveOnCtrlS(formMethods.handleSubmit(submitForm));
 
   return (
     <>

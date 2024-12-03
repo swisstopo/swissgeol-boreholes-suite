@@ -3,7 +3,7 @@ import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { useBlockNavigation } from "../useBlockNavigation.tsx";
 import { useFormDirty } from "../useFormDirty.tsx";
-import { useSaveOnKeyDown } from "../useSaveOnCtrlS.ts";
+import { useSaveOnCtrlS } from "../useSaveOnCtrlS.ts";
 
 interface UseFormWithSaveBarProps<T extends FieldValues> {
   formMethods: UseFormReturn<T>;
@@ -49,7 +49,7 @@ export function UseFormWithSaveBar<T extends FieldValues>({
   }, [formMethods, onSubmit]);
 
   // Save with ctrl+s
-  useSaveOnKeyDown(resetAndSubmitForm);
+  useSaveOnCtrlS(resetAndSubmitForm);
 
   // Expose form methods to parent component (save bar)
   useImperativeHandle(ref, () => ({

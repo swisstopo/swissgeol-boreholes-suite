@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export function useSaveOnKeyDown(callback: () => void) {
+export function useSaveOnCtrlS(callback: () => void) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.key === "s") {

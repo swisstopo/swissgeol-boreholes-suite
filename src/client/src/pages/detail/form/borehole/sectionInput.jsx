@@ -11,7 +11,7 @@ import { DataCardContext } from "../../../../components/dataCard/dataCardContext
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useFormDirty } from "../../useFormDirty";
-import { useSaveOnKeyDown } from "../../useSaveOnCtrlS";
+import { useSaveOnCtrlS } from "../../useSaveOnCtrlS";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
@@ -107,7 +107,7 @@ const SectionInput = ({ item, parentId }) => {
     setIsFormDirty,
   ]);
 
-  useSaveOnKeyDown(formMethods.handleSubmit(submitForm));
+  useSaveOnCtrlS(formMethods.handleSubmit(submitForm));
 
   useEffect(() => {
     formMethods.trigger("sectionElements");
