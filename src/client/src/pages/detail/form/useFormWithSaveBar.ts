@@ -1,8 +1,8 @@
 import { ForwardedRef, useCallback, useEffect, useImperativeHandle } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { useFormDirty } from "../FormDirtyContext.tsx";
 import { useBlockNavigation } from "../useBlockNavigation.tsx";
+import { useFormDirty } from "../useFormDirty.tsx";
 
 interface UseFormWithSaveBarProps<T extends FieldValues> {
   formMethods: UseFormReturn<T>;

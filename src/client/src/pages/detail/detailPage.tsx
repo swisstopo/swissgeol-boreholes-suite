@@ -16,7 +16,7 @@ import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
 import { LocationFormInputs, LocationFormSubmission } from "./form/location/locationPanelInterfaces.tsx";
-import { FormDirtyProvider } from "./FormDirtyContext.tsx";
+import { FormDirtyProvider } from "./formDirtyContext.tsx";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";

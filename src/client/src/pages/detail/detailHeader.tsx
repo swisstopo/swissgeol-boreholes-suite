@@ -17,7 +17,7 @@ import {
 import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
-import { useFormDirty } from "./FormDirtyContext.tsx";
+import { useFormDirty } from "./useFormDirty.tsx";
 
 interface DetailHeaderProps {
   editingEnabled: boolean;
