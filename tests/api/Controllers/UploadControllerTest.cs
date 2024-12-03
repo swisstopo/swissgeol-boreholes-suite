@@ -230,7 +230,7 @@ public class UploadControllerTest
 
         // Assert stratigraphy's lithological descriptions
         Assert.AreEqual(2, stratigraphy.LithologicalDescriptions.Count, "Stratigraphy.LithologicalDescriptions.Count");
-        var lithologicalDescription = stratigraphy.LithologicalDescriptions.First(x => x.FromDepth == 0);
+        var lithologicalDescription = stratigraphy.LithologicalDescriptions.First(x => x.FromDepth == 0f);
         Assert.IsNotNull(lithologicalDescription.Created, "Created should not be null");
         Assert.IsNotNull(lithologicalDescription.CreatedById, "CreatedById should not be null");
         Assert.IsNotNull(lithologicalDescription.Updated, "Updated should not be null");
@@ -244,7 +244,7 @@ public class UploadControllerTest
 
         // Assert stratigraphy's facies descriptions
         Assert.AreEqual(2, stratigraphy.FaciesDescriptions.Count, "Stratigraphy.FaciesDescriptions.Count");
-        var faciesDescription = stratigraphy.FaciesDescriptions.First(x => x.FromDepth == 0);
+        var faciesDescription = stratigraphy.FaciesDescriptions.First(x => x.FromDepth == 0f);
         Assert.IsNotNull(faciesDescription.Created, "Created should not be null");
         Assert.IsNotNull(faciesDescription.CreatedById, "CreatedById should not be null");
         Assert.IsNotNull(faciesDescription.Updated, "Updated should not be null");
@@ -258,7 +258,7 @@ public class UploadControllerTest
 
         // Assert stratigraphy's chronostratigraphy layers
         Assert.AreEqual(2, stratigraphy.ChronostratigraphyLayers.Count, "Stratigraphy.ChronostratigraphyLayers.Count");
-        var chronostratigraphyLayer = stratigraphy.ChronostratigraphyLayers.First(x => x.FromDepth == 0);
+        var chronostratigraphyLayer = stratigraphy.ChronostratigraphyLayers.First(x => x.FromDepth == 0f);
         Assert.IsNotNull(chronostratigraphyLayer.Created, "Created should not be null");
         Assert.IsNotNull(chronostratigraphyLayer.CreatedById, "CreatedById should not be null");
         Assert.IsNotNull(chronostratigraphyLayer.Updated, "Updated should not be null");
@@ -271,7 +271,7 @@ public class UploadControllerTest
 
         // Assert stratigraphy's lithostratigraphy layers
         Assert.AreEqual(2, stratigraphy.LithostratigraphyLayers.Count, "Stratigraphy.LithostratigraphyLayers.Count");
-        var lithostratigraphyLayer = stratigraphy.LithostratigraphyLayers.First(x => x.FromDepth == 0);
+        var lithostratigraphyLayer = stratigraphy.LithostratigraphyLayers.First(x => x.FromDepth == 0f);
         Assert.IsNotNull(lithostratigraphyLayer.Created, "Created should not be null");
         Assert.IsNotNull(lithostratigraphyLayer.CreatedById, "CreatedById should not be null");
         Assert.IsNotNull(lithostratigraphyLayer.Updated, "Updated should not be null");
