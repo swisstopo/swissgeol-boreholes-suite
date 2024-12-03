@@ -16,6 +16,7 @@ import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
 import { LocationFormInputs, LocationFormSubmission } from "./form/location/locationPanelInterfaces.tsx";
+import { FormDirtyProvider } from "./FormDirtyContext.tsx";
 import { useLabelingContext } from "./labeling/labelingInterfaces.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
@@ -23,7 +24,6 @@ import { SaveBar } from "./saveBar";
 export const DetailPage: FC = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isFormDirty, setIsFormDirty] = useState(false);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
   const [borehole, setBorehole] = useState<BoreholeV2 | null>(null);
   const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
@@ -74,10 +74,6 @@ export const DetailPage: FC = () => {
 
   const onLocationFormSubmit = (formInputs: LocationFormInputs) => {
     getAndUpdateBorehole(prepareLocationDataForSubmit(formInputs));
-  };
-
-  const handleDirtyChange = (isDirty: boolean) => {
-    setIsFormDirty(isDirty);
   };
 
   const triggerSubmit = () => {
@@ -133,58 +129,58 @@ export const DetailPage: FC = () => {
 
   return (
     <>
-      <DetailHeader
-        borehole={borehole}
-        editingEnabled={editingEnabled}
-        setEditingEnabled={setEditingEnabled}
-        editableByCurrentUser={editableByCurrentUser}
-        isFormDirty={isFormDirty}
-        triggerReset={triggerReset}
-      />
-      <LayoutBox>
-        <SidebarBox>
-          <DetailSideNav id={id} />
-        </SidebarBox>
-        <Stack width="100%" direction="column">
-          <Box
-            sx={{
-              display: "flex",
-              flexGrow: 1,
-              overflow: "auto",
-              flexDirection: panelPosition === "right" ? "row" : "column",
-              width: "100%",
-            }}>
-            <MainContentBox
+      <FormDirtyProvider>
+        <DetailHeader
+          borehole={borehole}
+          editingEnabled={editingEnabled}
+          setEditingEnabled={setEditingEnabled}
+          editableByCurrentUser={editableByCurrentUser}
+          triggerReset={triggerReset}
+        />
+        <LayoutBox>
+          <SidebarBox>
+            <DetailSideNav id={id} />
+          </SidebarBox>
+          <Stack width="100%" direction="column">
+            <Box
               sx={{
-                width: panelOpen && panelPosition === "right" ? "50%" : "100%",
-                height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+                display: "flex",
+                flexGrow: 1,
+                overflow: "auto",
+                flexDirection: panelPosition === "right" ? "row" : "column",
+                width: "100%",
               }}>
-              {editingEnabled && (
-                <LabelingToggleButton
+              <MainContentBox
+                sx={{
+                  width: panelOpen && panelPosition === "right" ? "50%" : "100%",
+                  height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+                }}>
+                {editingEnabled && (
+                  <LabelingToggleButton
+                    panelOpen={panelOpen}
+                    panelPosition={panelPosition}
+                    onClick={() => togglePanel()}
+                  />
+                )}
+                <DetailPageContent
+                  editingEnabled={editingEnabled}
+                  editableByCurrentUser={editableByCurrentUser}
+                  locationPanelRef={locationPanelRef}
+                  onLocationFormSubmit={onLocationFormSubmit}
+                  boreholePanelRef={boreholePanelRef}
+                  onBoreholeFormSubmit={onBoreholeFormSubmit}
+                  borehole={borehole}
                   panelOpen={panelOpen}
-                  panelPosition={panelPosition}
-                  onClick={() => togglePanel()}
                 />
-              )}
-              <DetailPageContent
-                editingEnabled={editingEnabled}
-                editableByCurrentUser={editableByCurrentUser}
-                locationPanelRef={locationPanelRef}
-                onLocationFormSubmit={onLocationFormSubmit}
-                boreholePanelRef={boreholePanelRef}
-                onBoreholeFormSubmit={onBoreholeFormSubmit}
-                handleDirtyChange={handleDirtyChange}
-                borehole={borehole}
-                panelOpen={panelOpen}
-              />
-            </MainContentBox>
-            {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}
-          </Box>
-          {editingEnabled && shouldShowSaveBar && (
-            <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} isFormDirty={isFormDirty} />
-          )}
-        </Stack>
-      </LayoutBox>
+              </MainContentBox>
+              {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}
+            </Box>
+            {editingEnabled && shouldShowSaveBar && (
+              <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} />
+            )}
+          </Stack>
+        </LayoutBox>
+      </FormDirtyProvider>
     </>
   );
 };

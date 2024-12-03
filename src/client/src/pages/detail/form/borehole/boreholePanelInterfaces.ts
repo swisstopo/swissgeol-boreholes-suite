@@ -13,7 +13,6 @@ export interface BoreholeDetailProps extends BoreholeGeneralProps {
 export interface BoreholePanelProps extends BoreholeGeneralProps {
   boreholeId: string;
   onSubmit: (data: BoreholeFormInputs) => void;
-  onDirtyChange: (isDirty: boolean) => void;
 }
 
 export interface BoreholeFormInputs {

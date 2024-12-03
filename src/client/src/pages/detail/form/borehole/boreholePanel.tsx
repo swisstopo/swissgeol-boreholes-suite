@@ -11,7 +11,7 @@ import Geometry from "./geometry.jsx";
 import Sections from "./sections.jsx";
 
 export const BoreholePanel = forwardRef(
-  ({ boreholeId, borehole, editingEnabled, onDirtyChange, onSubmit }: BoreholePanelProps, ref) => {
+  ({ boreholeId, borehole, editingEnabled, onSubmit }: BoreholePanelProps, ref) => {
     const { t } = useTranslation();
     const history = useHistory();
     const location = useLocation();
@@ -36,7 +36,6 @@ export const BoreholePanel = forwardRef(
 
     UseFormWithSaveBar({
       formMethods,
-      onDirtyChange,
       onSubmit,
       ref,
     });
