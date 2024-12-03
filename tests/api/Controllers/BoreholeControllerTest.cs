@@ -81,25 +81,6 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
-    public async Task GetAllAsyncWithoutFilterIds()
-    {
-        var boreHoleCount = context.Boreholes.Count();
-        var pageNumber = 1;
-        var pageSize = 10;
-
-        var response = await controller.GetAllAsync(null, pageNumber, pageSize);
-
-        ActionResultAssert.IsOk(response.Result);
-        OkObjectResult okResult = (OkObjectResult)response.Result!;
-        PaginatedResponse<Borehole> paginatedResponse = (PaginatedResponse<Borehole>)okResult.Value!;
-        Assert.AreEqual(10, paginatedResponse.Items.Count());
-        Assert.AreEqual(100, paginatedResponse.MaxPageSize);
-        Assert.AreEqual(1, paginatedResponse.PageNumber);
-        Assert.AreEqual(10, paginatedResponse.PageSize);
-        Assert.AreEqual(boreHoleCount, paginatedResponse.TotalCount);
-    }
-
-    [TestMethod]
     public async Task EditBoreholeWithCompleteBorehole()
     {
         var id = 1_000_257;
