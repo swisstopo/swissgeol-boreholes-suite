@@ -1,4 +1,4 @@
-import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { addItem, deleteItem, saveForm, saveWithSaveBar, startEditing } from "../helpers/buttonHelpers";
 import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
 import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 
@@ -100,6 +100,52 @@ describe("Section crud tests", () => {
     handlePrompt("Do you really want to delete this entry?", "Delete");
     cy.wait("@section_DELETE");
     cy.get('[data-cy="section-card.0"]').should("not.exist");
+  });
+
+  it.only("saves section with ctrl s without resetting content", () => {
+    cy.wait(30);
+    // add section and save with ctrl s
+    addItem("addSection");
+    cy.wait("@codelist_GET");
+    setInput("name", "A");
+    setInput("sectionElements.0.fromDepth", "0");
+    setInput("sectionElements.0.toDepth", "1");
+    setSelect("sectionElements.0.drillingMudTypeId", 5);
+    cy.get("body").type("{ctrl}s");
+    evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
+
+    // switch tab to borehole general tab and edit depth
+    cy.get('[data-cy="general-tab"]').click();
+    setInput("totalDepth", 5);
+    evaluateInput("totalDepth", "5");
+
+    // click on sections without saving
+    cy.get('[data-cy="sections-tab"]').click();
+    const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
+    handlePrompt(messageUnsavedChanges, "cancel");
+    evaluateInput("totalDepth", "5");
+    cy.get('[data-cy="sections-tab"]').click();
+    handlePrompt(messageUnsavedChanges, "discard changes");
+
+    // sections tab should be unchanged when retuning from borehole tab
+    evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
+
+    // switch tab to borehole general tab and edit depth with saving
+    cy.get('[data-cy="general-tab"]').click();
+    evaluateInput("totalDepth", "");
+    setInput("totalDepth", 7);
+    evaluateInput("totalDepth", "7");
+    saveWithSaveBar();
+
+    // edit sections tab and save again
+    cy.get('[data-cy="sections-tab"]').click();
+    startEditing();
+    setSelect("sectionElements.0.drillingMudTypeId", 4);
+    cy.get("body").type("{ctrl}s");
+
+    // borehole tab should still display saved depth value
+    cy.get('[data-cy="general-tab"]').click();
+    evaluateInput("totalDepth", "7");
   });
 
   it("changes drillingMudSubtype select options based on drillingMudType", () => {
