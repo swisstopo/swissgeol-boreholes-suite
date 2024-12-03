@@ -77,7 +77,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<PaginatedResponse<Borehole>>> GetAllAsync([FromQuery] IEnumerable<int>? ids = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
-        pageSize = pageSize > MaxPageSize ? MaxPageSize : pageSize;
+        pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
 
         var skip = (pageNumber - 1) * pageSize;
 
