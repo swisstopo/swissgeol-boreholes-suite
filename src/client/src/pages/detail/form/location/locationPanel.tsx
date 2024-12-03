@@ -10,7 +10,7 @@ import NameSegment from "./nameSegment.tsx";
 import RestrictionSegment from "./restrictionSegment.tsx";
 
 export const LocationPanel = forwardRef(
-  ({ editingEnabled, onSubmit, onDirtyChange, borehole, labelingPanelOpen }: LocationPanelProps, ref) => {
+  ({ editingEnabled, onSubmit, borehole, labelingPanelOpen }: LocationPanelProps, ref) => {
     const [resetKey, setResetKey] = useState(0);
     const formMethods = useForm<LocationFormInputs>({
       mode: "onChange",
@@ -44,7 +44,6 @@ export const LocationPanel = forwardRef(
 
     UseFormWithSaveBar({
       formMethods,
-      onDirtyChange,
       onSubmit,
       ref,
       incrementResetKey,
