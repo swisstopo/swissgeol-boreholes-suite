@@ -186,7 +186,7 @@ public class UploadControllerTest
         Assert.IsNotNull(layer.UpdatedById, "UpdatedById should not be null");
         Assert.IsNotNull(layer.Stratigraphy, "layer.Stratigraphy should not be null");
         Assert.IsTrue(layer.IsUndefined, "IsUndefined should be true");
-        Assert.AreEqual(0, layer.FromDepth, "FromDepth");
+        Assert.AreEqual(0.1, layer.FromDepth, "FromDepth");
         Assert.AreEqual(10, layer.ToDepth, "ToDepth");
         Assert.IsFalse(layer.IsLast, "IsLast should be false");
         Assert.AreEqual(9002, layer.DescriptionQualityId, "DescriptionQualityId");
@@ -230,7 +230,7 @@ public class UploadControllerTest
 
         // Assert stratigraphy's lithological descriptions
         Assert.AreEqual(2, stratigraphy.LithologicalDescriptions.Count, "Stratigraphy.LithologicalDescriptions.Count");
-        var lithologicalDescription = stratigraphy.LithologicalDescriptions.First(x => x.FromDepth == 0f);
+        var lithologicalDescription = stratigraphy.LithologicalDescriptions.First(x => x.FromDepth == 0.1);
         Assert.IsNotNull(lithologicalDescription.Created, "Created should not be null");
         Assert.IsNotNull(lithologicalDescription.CreatedById, "CreatedById should not be null");
         Assert.IsNotNull(lithologicalDescription.Updated, "Updated should not be null");
@@ -239,12 +239,12 @@ public class UploadControllerTest
         Assert.AreEqual("Bouvet Island (Bouvetoya) Borders networks", lithologicalDescription.Description, "Description");
         Assert.AreEqual(9005, lithologicalDescription.DescriptionQualityId, "DescriptionQualityId");
         Assert.IsNull(lithologicalDescription.DescriptionQuality, "DescriptionQuality should be null");
-        Assert.AreEqual(0, lithologicalDescription.FromDepth, "FromDepth");
+        Assert.AreEqual(0.1, lithologicalDescription.FromDepth, "FromDepth");
         Assert.AreEqual(10, lithologicalDescription.ToDepth, "ToDepth");
 
         // Assert stratigraphy's facies descriptions
         Assert.AreEqual(2, stratigraphy.FaciesDescriptions.Count, "Stratigraphy.FaciesDescriptions.Count");
-        var faciesDescription = stratigraphy.FaciesDescriptions.First(x => x.FromDepth == 0f);
+        var faciesDescription = stratigraphy.FaciesDescriptions.First(x => x.FromDepth == 0.1);
         Assert.IsNotNull(faciesDescription.Created, "Created should not be null");
         Assert.IsNotNull(faciesDescription.CreatedById, "CreatedById should not be null");
         Assert.IsNotNull(faciesDescription.Updated, "Updated should not be null");
@@ -253,12 +253,12 @@ public class UploadControllerTest
         Assert.AreEqual("Bouvet Island (Bouvetoya) Borders networks", faciesDescription.Description, "Description");
         Assert.AreEqual(9005, faciesDescription.DescriptionQualityId, "DescriptionQualityId");
         Assert.IsNull(faciesDescription.DescriptionQuality, "DescriptionQuality should be null");
-        Assert.AreEqual(0, faciesDescription.FromDepth, "FromDepth");
+        Assert.AreEqual(0.1, faciesDescription.FromDepth, "FromDepth");
         Assert.AreEqual(10, faciesDescription.ToDepth, "ToDepth");
 
         // Assert stratigraphy's chronostratigraphy layers
         Assert.AreEqual(2, stratigraphy.ChronostratigraphyLayers.Count, "Stratigraphy.ChronostratigraphyLayers.Count");
-        var chronostratigraphyLayer = stratigraphy.ChronostratigraphyLayers.First(x => x.FromDepth == 0f);
+        var chronostratigraphyLayer = stratigraphy.ChronostratigraphyLayers.First(x => x.FromDepth == 0.1);
         Assert.IsNotNull(chronostratigraphyLayer.Created, "Created should not be null");
         Assert.IsNotNull(chronostratigraphyLayer.CreatedById, "CreatedById should not be null");
         Assert.IsNotNull(chronostratigraphyLayer.Updated, "Updated should not be null");
@@ -266,12 +266,12 @@ public class UploadControllerTest
         Assert.IsNotNull(chronostratigraphyLayer.Stratigraphy, "chronostratigraphyLayer.Stratigraphy should not be null");
         Assert.AreEqual(15001134, chronostratigraphyLayer.ChronostratigraphyId, "ChronostratigraphyId");
         Assert.IsNull(chronostratigraphyLayer.Chronostratigraphy, "Chronostratigraphy should be null");
-        Assert.AreEqual(0, chronostratigraphyLayer.FromDepth, "FromDepth");
+        Assert.AreEqual(0.1, chronostratigraphyLayer.FromDepth, "FromDepth");
         Assert.AreEqual(10, chronostratigraphyLayer.ToDepth, "ToDepth");
 
         // Assert stratigraphy's lithostratigraphy layers
         Assert.AreEqual(2, stratigraphy.LithostratigraphyLayers.Count, "Stratigraphy.LithostratigraphyLayers.Count");
-        var lithostratigraphyLayer = stratigraphy.LithostratigraphyLayers.First(x => x.FromDepth == 0f);
+        var lithostratigraphyLayer = stratigraphy.LithostratigraphyLayers.First(x => x.FromDepth == 0.1);
         Assert.IsNotNull(lithostratigraphyLayer.Created, "Created should not be null");
         Assert.IsNotNull(lithostratigraphyLayer.CreatedById, "CreatedById should not be null");
         Assert.IsNotNull(lithostratigraphyLayer.Updated, "Updated should not be null");
@@ -279,7 +279,7 @@ public class UploadControllerTest
         Assert.IsNotNull(lithostratigraphyLayer.Stratigraphy, "lithostratigraphyLayer.Stratigraphy should not be null");
         Assert.AreEqual(15303501, lithostratigraphyLayer.LithostratigraphyId, "LithostratigraphyId");
         Assert.IsNull(lithostratigraphyLayer.Lithostratigraphy, "lithostratigraphyLayer.Lithostratigraphy should not be null");
-        Assert.AreEqual(0, lithostratigraphyLayer.FromDepth, "FromDepth");
+        Assert.AreEqual(0.1, lithostratigraphyLayer.FromDepth, "FromDepth");
         Assert.AreEqual(10, lithostratigraphyLayer.ToDepth, "ToDepth");
 
         // Assert borehole's completions
@@ -397,7 +397,7 @@ public class UploadControllerTest
 
         // Assert borehole's observations
         Assert.AreEqual(2, borehole.Observations.Count, "Observations.Count");
-        var observation = borehole.Observations.First(x => x.FromDepthM == 1900);
+        var observation = borehole.Observations.First(x => x.FromDepthM == 1900.0);
         Assert.IsNotNull(observation.Created, "Created should not be null");
         Assert.IsNotNull(observation.CreatedById, "CreatedById should not be null");
         Assert.IsNotNull(observation.Updated, "Updated should not be null");
