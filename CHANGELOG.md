@@ -21,6 +21,7 @@
 - Changes on the location tab and the borehole tab are now saved by clicking the `Save` button, instead of immediately.
 - The `alternate_name` is now displayed in the borehole detail header and the map markers.
 - From depth and to depth are no longer displayed in groundwater level measurements.
+- Updated the layout of the borehole general tab.
 
 ### Fixed
 
@@ -33,7 +34,8 @@
 - The responsive design of the coordinate segment in the detail view was broken.
 - When clicking the select all checkbox in the borehole table, only the boreholes on the current page were selected.
 - Some filter chips were missing translations or where not displayed correctly.
-- Filtering striae for "not specified" returned wrong results.
+- Filtering striae for `not specified` returned wrong results.
+- Filtering by `borehole status` did not work.
 
 ## v2.1.870 - 2024-09-27
 

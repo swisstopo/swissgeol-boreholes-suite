@@ -2,15 +2,21 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Chip, IconButton, Stack, Typography } from "@mui/material";
-import { Check, ChevronLeft, Trash2, X } from "lucide-react";
+import { Chip, Stack, Typography } from "@mui/material";
+import { Check, Trash2, X } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
 import { BoreholeV2 } from "../../api/borehole.ts";
-import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
-import { DeleteButton, EditButton, EndEditButton, ExportButton } from "../../components/buttons/buttons.tsx";
+import {
+  DeleteButton,
+  EditButton,
+  EndEditButton,
+  ExportButton,
+  ReturnButton,
+} from "../../components/buttons/buttons.tsx";
 import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
+import { DetailHeaderStack } from "../../components/styledComponents.ts";
 
 interface DetailHeaderProps {
   editingEnabled: boolean;
@@ -93,37 +99,21 @@ const DetailHeader = ({
   };
 
   return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      sx={{
-        borderBottom: "1px solid " + theme.palette.boxShadow,
-        height: "84px",
-        padding: "16px",
-      }}>
+    <DetailHeaderStack direction="row" alignItems="center">
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"}>
-        <IconButton
-          color="primary"
-          data-cy="backButton"
+        <ReturnButton
           onClick={() => {
             {
               editingEnabled && (isFormDirty ? stopEditingWithUnsavedChanges() : stopEditing());
               history.push("/");
             }
           }}
-          sx={{
-            width: "36px",
-            height: "36px",
-            marginRight: "18px",
-            borderRadius: "2px",
-          }}>
-          <ChevronLeft />
-        </IconButton>
+        />
         <Stack>
           <Typography variant="h2"> {borehole?.alternateName}</Typography>
           {!auth.anonymousModeEnabled && (
             <Typography variant={"subtitle2"}>
-              {t("lastUpdated")}: <DateText date={borehole?.updated} /> {t("by")} {borehole?.updatedBy.name}{" "}
+              {t("lastUpdated")}: <DateText date={borehole?.updated} /> {t("by")} {borehole?.updatedBy?.name}
             </Typography>
           )}
         </Stack>
@@ -165,7 +155,7 @@ const DetailHeader = ({
             </>
           ))}
       </Stack>
-    </Stack>
+    </DetailHeaderStack>
   );
 };
 

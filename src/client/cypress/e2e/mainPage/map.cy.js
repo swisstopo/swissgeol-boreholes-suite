@@ -1,4 +1,4 @@
-import { loginAsEditor } from "../helpers/testHelpers.js";
+import { loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
 
 describe("Map tests", () => {
   it("map preserves zoom level and center", () => {
@@ -28,7 +28,7 @@ describe("Map tests", () => {
     cy.get('[data-cy="settings-button"]').click();
 
     // return to map
-    cy.contains("h3", "Done").click();
+    returnToOverview();
 
     // verify resolution and map center
     cy.window().then(win => {

@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import CloseIcon from "@mui/icons-material/Close";
-import { Button } from "@mui/material";
-import { ArrowDownToLine, Check, Pencil, Plus, Save, Trash2 } from "lucide-react";
+import { Button, IconButton } from "@mui/material";
+import { ArrowDownToLine, Check, ChevronLeft, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { ButtonProps } from "./buttonsInterface";
@@ -131,3 +131,20 @@ export const ExportButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
     />
   );
 });
+
+export const ReturnButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <IconButton
+      color="primary"
+      data-cy="backButton"
+      onClick={onClick}
+      sx={{
+        width: "36px",
+        height: "36px",
+        marginRight: "18px",
+        borderRadius: "2px",
+      }}>
+      <ChevronLeft />
+    </IconButton>
+  );
+};
