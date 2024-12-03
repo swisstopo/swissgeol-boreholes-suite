@@ -102,7 +102,7 @@ describe("Section crud tests", () => {
     cy.get('[data-cy="section-card.0"]').should("not.exist");
   });
 
-  it.only("saves section with ctrl s without resetting content", () => {
+  it("saves section with ctrl s without resetting content", () => {
     cy.wait(30);
     // add section and save with ctrl s
     addItem("addSection");
