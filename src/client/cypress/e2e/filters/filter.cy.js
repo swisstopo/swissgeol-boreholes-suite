@@ -245,6 +245,24 @@ describe("Search filter tests", () => {
     });
   });
 
+  it("filters boreholes by boreholestatus", () => {
+    loginAsAdmin();
+    cy.get('[data-cy="show-filter-button"]').click();
+    cy.contains("Borehole").click();
+    cy.contains("Show all fields").children(".checkbox").click();
+
+    let boreholeStatusDropdown = cy.contains("label", "Borehole status").next();
+
+    boreholeStatusDropdown.click();
+    boreholeStatusDropdown.find("div[role='option']").then(options => {
+      cy.wrap(options).contains("decayed").click({ force: true });
+    });
+    cy.wait("@edit_list");
+
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "169");
+    cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
+  });
+
   it("filters boreholes by color and uscs3", () => {
     loginAsAdmin();
     cy.get('[data-cy="show-filter-button"]').click();
