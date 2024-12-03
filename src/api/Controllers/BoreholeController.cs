@@ -14,6 +14,8 @@ namespace BDMS.Controllers;
 [Route("api/v2/[controller]")]
 public class BoreholeController : BoreholeControllerBase<Borehole>
 {
+    // Limit the maximum number of items per request to 100.
+    // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
     private const int MaxPageSize = 100;
 
     public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger, IBoreholeLockService boreholeLockService)
@@ -75,7 +77,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <param name="pageSize">The page size for pagination.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<PaginatedResponse<Borehole>>> GetAllAsync([FromQuery] IEnumerable<int>? ids = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    public async Task<ActionResult<PaginatedResponse<Borehole>>> GetAllAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>? ids = null, [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1, [FromQuery] [Range(1, MaxPageSize)] int pageSize = 100)
     {
         pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
 
