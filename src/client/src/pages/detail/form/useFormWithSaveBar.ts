@@ -24,7 +24,7 @@ export function UseFormWithSaveBar<T extends FieldValues>({
 
   // Block navigation if form is dirty
   history.block(nextLocation => {
-    if (!handleBlockedNavigation(nextLocation.pathname)) {
+    if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
       return false;
     }
   });

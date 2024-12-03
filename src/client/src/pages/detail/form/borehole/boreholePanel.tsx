@@ -1,4 +1,4 @@
-import { forwardRef, SyntheticEvent, useEffect, useState } from "react";
+import { forwardRef, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
@@ -14,37 +14,36 @@ export const BoreholePanel = forwardRef(
     const location = useLocation();
     const [activeIndex, setActiveIndex] = useState(0);
 
-    const tabs = [
-      {
-        label: t("general"),
-        hash: "general",
-      },
-      { label: t("sections"), hash: "sections" },
-      { label: t("boreholeGeometry"), hash: "geometry" },
-    ];
+    const tabs = useMemo(
+      () => [
+        {
+          label: t("general"),
+          hash: "general",
+        },
+        { label: t("sections"), hash: "sections" },
+        { label: t("boreholeGeometry"), hash: "geometry" },
+      ],
+      [t],
+    );
 
     const handleIndexChange = (event: SyntheticEvent | null, index: number) => {
-      setActiveIndex(index);
       const newLocation = location.pathname + "#" + tabs[index].hash;
       if (location.pathname + location.hash !== newLocation) {
         history.push(newLocation);
       }
     };
 
-    useEffect(() => {
-      const newTabIndex = tabs.findIndex(t => t.hash === location.hash.replace("#", ""));
-      if (newTabIndex > -1 && activeIndex !== newTabIndex) {
-        handleIndexChange(null, newTabIndex);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.hash]);
-
+    // Update active tab index based on hash
     useEffect(() => {
       if (!location.hash) {
         history.replace(location.pathname + "#" + tabs[activeIndex].hash);
+      } else {
+        const newTabIndex = tabs.findIndex(t => t.hash === location.hash.replace("#", ""));
+        if (newTabIndex > -1) {
+          setActiveIndex(newTabIndex);
+        }
       }
-      // eslint-disable-next-line
-    }, []);
+    }, [activeIndex, history, location.hash, location.pathname, tabs]);
 
     return (
       <>
