@@ -35,6 +35,7 @@
 - Some filter chips were missing translations or where not displayed correctly.
 - Filtering striae for `not specified` returned wrong results.
 - Filtering by `borehole status` did not work.
+- When saving with ctrl+s in the borehole sections, the form content was reset.
 
 ## v2.1.870 - 2024-09-27
 
