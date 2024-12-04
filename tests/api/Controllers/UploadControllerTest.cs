@@ -389,8 +389,8 @@ public class UploadControllerTest
         Assert.AreEqual(143, sectionElement.ToDepth, nameof(sectionElement.ToDepth));
         Assert.AreEqual(0, sectionElement.Order, nameof(sectionElement.Order));
         Assert.AreEqual(22107004, sectionElement.DrillingMethodId, nameof(sectionElement.DrillingMethodId));
-        Assert.AreEqual(DateOnly.Parse("2021-04-06"), sectionElement.DrillingStartDate, nameof(sectionElement.DrillingStartDate));
-        Assert.AreEqual(DateOnly.Parse("2021-05-31"), sectionElement.DrillingEndDate, nameof(sectionElement.DrillingEndDate));
+        Assert.AreEqual(DateOnly.Parse("2021-04-06", CultureInfo.InvariantCulture), sectionElement.DrillingStartDate, nameof(sectionElement.DrillingStartDate));
+        Assert.AreEqual(DateOnly.Parse("2021-05-31", CultureInfo.InvariantCulture), sectionElement.DrillingEndDate, nameof(sectionElement.DrillingEndDate));
         Assert.AreEqual(22102002, sectionElement.CuttingsId, nameof(sectionElement.CuttingsId));
         Assert.AreEqual(8.990221083625322, sectionElement.DrillingDiameter, nameof(sectionElement.DrillingDiameter));
         Assert.AreEqual(18.406672318655378, sectionElement.DrillingCoreDiameter, nameof(sectionElement.DrillingCoreDiameter));
@@ -405,8 +405,8 @@ public class UploadControllerTest
         Assert.IsNotNull(observation.Updated, nameof(observation.Updated).ShouldNotBeNullMessage());
         Assert.IsNotNull(observation.UpdatedById, nameof(observation.UpdatedById).ShouldNotBeNullMessage());
         Assert.AreEqual((ObservationType)2, observation.Type, nameof(observation.Type));
-        Assert.AreEqual(DateTime.Parse("2021-10-05T17:41:48.389173Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal), observation.StartTime, nameof(observation.StartTime));
-        Assert.AreEqual(DateTime.Parse("2021-09-21T20:42:21.785577Z", null, System.Globalization.DateTimeStyles.AdjustToUniversal), observation.EndTime, nameof(observation.EndTime));
+        Assert.AreEqual(DateTime.Parse("2021-10-05T17:41:48.389173Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), observation.StartTime, nameof(observation.StartTime));
+        Assert.AreEqual(DateTime.Parse("2021-09-21T20:42:21.785577Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), observation.EndTime, nameof(observation.EndTime));
         Assert.AreEqual(1380.508568643829, observation.Duration, nameof(observation.Duration));
         Assert.AreEqual(1900.0, observation.FromDepthM, nameof(observation.FromDepthM));
         Assert.AreEqual(2227.610979433456, observation.ToDepthM, nameof(observation.ToDepthM));
