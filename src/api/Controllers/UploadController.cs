@@ -113,10 +113,10 @@ public class UploadController : ControllerBase
                 borehole.WorkgroupId = workgroupId;
                 borehole.LockedById = null;
 
-                borehole?.Stratigraphies?.MarkAsNew();
-                borehole?.Completions?.MarkAsNew();
-                borehole?.Sections?.MarkAsNew();
-                borehole?.Observations?.MarkAsNew();
+                borehole.Stratigraphies?.MarkAsNew();
+                borehole.Completions?.MarkAsNew();
+                borehole.Sections?.MarkAsNew();
+                borehole.Observations?.MarkAsNew();
 
                 borehole.Workflows.Clear();
                 borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id });
