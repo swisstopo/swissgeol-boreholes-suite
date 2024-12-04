@@ -28,25 +28,21 @@ internal static class IIdentifyableExtensions
 
     private static void SetIdToZeroRecursive(IIdentifyable item)
     {
-        item.Id = 0;
-        var properties = item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        item.MarkAsNew();
 
-        foreach (var property in properties)
+        // Select all IEnumerable properties of the object that are not strings
+        var collectionProperties = item.GetType()
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(property => typeof(IEnumerable).IsAssignableFrom(property.PropertyType) && property.PropertyType != typeof(string));
+
+        foreach (var property in collectionProperties)
         {
-            // Check if the property is a collection (excluding string)
-            if (typeof(IEnumerable).IsAssignableFrom(property.PropertyType) && property.PropertyType != typeof(string))
+            // If the property value is an IEnumerable of IIdentifyable objects, process it recursively
+            if (property.GetValue(item) is IEnumerable collection)
             {
-                // Try to cast the property value to IEnumerable
-                var collection = property.GetValue(item) as IEnumerable;
-                if (collection != null)
+                foreach (var identifyableElement in collection.OfType<IIdentifyable>())
                 {
-                    foreach (var element in collection)
-                    {
-                        if (element is IIdentifyable identifyableElement)
-                        {
-                            SetIdToZeroRecursive(identifyableElement);
-                        }
-                    }
+                    SetIdToZeroRecursive(identifyableElement);
                 }
             }
         }
