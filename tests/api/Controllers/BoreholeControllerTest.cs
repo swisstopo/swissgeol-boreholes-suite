@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -55,6 +54,30 @@ public class BoreholeControllerTest
         }
 
         await cleanupContext.DisposeAsync();
+    }
+
+    [TestMethod]
+    public async Task GetAllAsyncWithFilterIds()
+    {
+        var ids = new List<int> { 1_000_100, 1_000_200, 1_000_300, 1_000_400 };
+        var pageNumber = 1;
+        var pageSize = 3;
+
+        var response = await controller.GetAllAsync(ids, pageNumber, pageSize);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        PaginatedBoreholeResponse paginatedResponse = (PaginatedBoreholeResponse)okResult.Value!;
+        Assert.AreEqual(3, paginatedResponse.Boreholes.Count());
+        Assert.AreEqual(100, paginatedResponse.MaxPageSize);
+        Assert.AreEqual(1, paginatedResponse.PageNumber);
+        Assert.AreEqual(3, paginatedResponse.PageSize);
+        Assert.AreEqual(4, paginatedResponse.TotalCount);
+
+        foreach (var item in paginatedResponse.Boreholes)
+        {
+            Assert.IsTrue(ids.Contains(item.Id), $"Borehole.Id {item.Id} is not in the provided list of ids.");
+        }
     }
 
     [TestMethod]

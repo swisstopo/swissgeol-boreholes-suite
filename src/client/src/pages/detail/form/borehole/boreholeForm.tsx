@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { DevTool } from "../../../../../hookformDevtools.ts";
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.js";
 import {
   FormBooleanSelect,
@@ -9,9 +11,10 @@ import {
 } from "../../../../components/form/form.ts";
 import { parseFloatWithThousandsSeparator } from "../../../../components/legacyComponents/formUtils.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
-import { BoreholeDetailProps } from "./boreholePanelInterfaces.ts";
+import { UseFormWithSaveBar } from "../useFormWithSaveBar.ts";
+import { BoreholeDetailProps, BoreholeFormInputs } from "./boreholePanelInterfaces.ts";
 
-export const BoreholeForm = ({ formMethods, borehole, editingEnabled }: BoreholeDetailProps) => {
+export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: BoreholeDetailProps, ref) => {
   const [totalDepthTVD, setTotalDepthTVD] = useState<number | null>(null);
   const [topBedrockFreshTVD, setTopBedrockFreshTVD] = useState<number | null>(null);
   const [topBedrockWeatheredTVD, setTopBedrockWeatheredTVD] = useState<number | null>(null);
@@ -19,9 +22,33 @@ export const BoreholeForm = ({ formMethods, borehole, editingEnabled }: Borehole
     return value ? Math.round(value * 100) / 100 : null;
   };
 
+  const formMethods = useForm<BoreholeFormInputs>({
+    mode: "onChange",
+    defaultValues: {
+      typeId: borehole.typeId,
+      purposeId: borehole.purposeId,
+      statusId: borehole.statusId,
+      totalDepth: borehole.totalDepth,
+      qtDepthId: borehole.qtDepthId,
+      topBedrockFreshMd: borehole.topBedrockFreshMd,
+      topBedrockWeatheredMd: borehole.topBedrockWeatheredMd,
+      lithologyTopBedrockId: borehole.lithologyTopBedrockId,
+      lithostratigraphyId: borehole.lithostratigraphyId,
+      chronostratigraphyId: borehole.chronostratigraphyId,
+      hasGroundwater: borehole.hasGroundwater === true ? 1 : borehole.hasGroundwater === false ? 0 : 2,
+      remarks: borehole.remarks,
+    },
+  });
+
   const totalDepth = formMethods.watch("totalDepth");
   const topBedrockFreshMd = formMethods.watch("topBedrockFreshMd");
   const topBedrockWeatheredMd = formMethods.watch("topBedrockWeatheredMd");
+
+  UseFormWithSaveBar({
+    formMethods,
+    onSubmit,
+    ref,
+  });
 
   const fetchDepthTVD = useCallback(
     async (fieldValue: number | null) => {
@@ -63,118 +90,125 @@ export const BoreholeForm = ({ formMethods, borehole, editingEnabled }: Borehole
   }, [fetchDepthTVD, topBedrockWeatheredMd]);
 
   return (
-    <FormSegmentBox>
-      <FormContainer>
-        <FormContainer direction="row">
-          <FormDomainSelect
-            fieldName={"typeId"}
-            label={"borehole_type"}
-            schemaName={"borehole_type"}
-            readonly={!editingEnabled}
-            selected={borehole.typeId}
-          />
-          <FormDomainSelect
-            fieldName={"purposeId"}
-            label={"purpose"}
-            schemaName={"extended.purpose"}
-            readonly={!editingEnabled}
-            selected={borehole.purposeId}
-          />
-          <FormDomainSelect
-            fieldName={"statusId"}
-            label={"boreholestatus"}
-            schemaName={"extended.status"}
-            readonly={!editingEnabled}
-            selected={borehole.statusId}
-          />
-        </FormContainer>
-        <FormContainer>
-          <FormContainer direction="row">
-            <FormInput
-              fieldName={"totalDepth"}
-              label={"totaldepth"}
-              value={borehole?.totalDepth || ""}
-              withThousandSeparator={true}
-              readonly={!editingEnabled}
-            />
-            <FormDomainSelect
-              fieldName={"qtDepthId"}
-              label={"qt_depth"}
-              schemaName={"depth_precision"}
-              readonly={!editingEnabled}
-              selected={borehole.qtDepthId}
-            />
-            <FormInputDisplayOnly label={"total_depth_tvd"} value={totalDepthTVD} withThousandSeparator={true} />
-          </FormContainer>
-        </FormContainer>
-        <FormContainer direction="row">
-          <FormInput
-            fieldName={"topBedrockFreshMd"}
-            label={"top_bedrock_fresh_md"}
-            value={borehole?.topBedrockFreshMd || ""}
-            withThousandSeparator={true}
-            readonly={!editingEnabled}
-          />
-          <FormInputDisplayOnly
-            label={"top_bedrock_fresh_tvd"}
-            value={topBedrockFreshTVD}
-            withThousandSeparator={true}
-          />
-        </FormContainer>
-        <FormContainer direction="row">
-          <FormInput
-            fieldName={"topBedrockWeatheredMd"}
-            label={"top_bedrock_weathered_md"}
-            value={borehole?.topBedrockWeatheredMd || ""}
-            withThousandSeparator={true}
-            readonly={!editingEnabled}
-          />
-          <FormInputDisplayOnly
-            label={"top_bedrock_weathered_tvd"}
-            value={topBedrockWeatheredTVD}
-            withThousandSeparator={true}
-          />
-        </FormContainer>
-        <FormContainer direction="row">
-          <FormDomainSelect
-            fieldName={"lithologyTopBedrockId"}
-            label={"lithology_top_bedrock"}
-            schemaName={"custom.lithology_top_bedrock"}
-            readonly={!editingEnabled}
-            selected={borehole.lithologyTopBedrockId}
-          />
-          <FormDomainSelect
-            fieldName={"lithostratigraphyId"}
-            label={"lithostratigraphy_top_bedrock"}
-            schemaName={"custom.lithostratigraphy_top_bedrock"}
-            readonly={!editingEnabled}
-            selected={borehole.lithostratigraphyId}
-          />
-        </FormContainer>
-        <FormContainer direction="row">
-          <FormDomainSelect
-            fieldName={"chronostratigraphyId"}
-            label={"chronostratigraphy_top_bedrock"}
-            schemaName={"custom.chronostratigraphy_top_bedrock"}
-            readonly={!editingEnabled}
-            selected={borehole.chronostratigraphyId}
-          />
-          <FormBooleanSelect
-            canReset={false}
-            readonly={!editingEnabled}
-            fieldName={"hasGroundwater"}
-            label="groundwater"
-            selected={borehole.hasGroundwater}
-          />
-        </FormContainer>
-        <FormInput
-          fieldName={"remarks"}
-          multiline={true}
-          label={"remarks"}
-          value={borehole?.remarks || ""}
-          readonly={!editingEnabled}
-        />
-      </FormContainer>
-    </FormSegmentBox>
+    <>
+      <DevTool control={formMethods.control} placement="top-right" />
+      <FormProvider {...formMethods}>
+        <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+          <FormSegmentBox>
+            <FormContainer>
+              <FormContainer direction="row">
+                <FormDomainSelect
+                  fieldName={"typeId"}
+                  label={"borehole_type"}
+                  schemaName={"borehole_type"}
+                  readonly={!editingEnabled}
+                  selected={borehole.typeId}
+                />
+                <FormDomainSelect
+                  fieldName={"purposeId"}
+                  label={"purpose"}
+                  schemaName={"extended.purpose"}
+                  readonly={!editingEnabled}
+                  selected={borehole.purposeId}
+                />
+                <FormDomainSelect
+                  fieldName={"statusId"}
+                  label={"boreholestatus"}
+                  schemaName={"extended.status"}
+                  readonly={!editingEnabled}
+                  selected={borehole.statusId}
+                />
+              </FormContainer>
+              <FormContainer>
+                <FormContainer direction="row">
+                  <FormInput
+                    fieldName={"totalDepth"}
+                    label={"totaldepth"}
+                    value={borehole?.totalDepth || ""}
+                    withThousandSeparator={true}
+                    readonly={!editingEnabled}
+                  />
+                  <FormDomainSelect
+                    fieldName={"qtDepthId"}
+                    label={"qt_depth"}
+                    schemaName={"depth_precision"}
+                    readonly={!editingEnabled}
+                    selected={borehole.qtDepthId}
+                  />
+                  <FormInputDisplayOnly label={"total_depth_tvd"} value={totalDepthTVD} withThousandSeparator={true} />
+                </FormContainer>
+              </FormContainer>
+              <FormContainer direction="row">
+                <FormInput
+                  fieldName={"topBedrockFreshMd"}
+                  label={"top_bedrock_fresh_md"}
+                  value={borehole?.topBedrockFreshMd || ""}
+                  withThousandSeparator={true}
+                  readonly={!editingEnabled}
+                />
+                <FormInputDisplayOnly
+                  label={"top_bedrock_fresh_tvd"}
+                  value={topBedrockFreshTVD}
+                  withThousandSeparator={true}
+                />
+              </FormContainer>
+              <FormContainer direction="row">
+                <FormInput
+                  fieldName={"topBedrockWeatheredMd"}
+                  label={"top_bedrock_weathered_md"}
+                  value={borehole?.topBedrockWeatheredMd || ""}
+                  withThousandSeparator={true}
+                  readonly={!editingEnabled}
+                />
+                <FormInputDisplayOnly
+                  label={"top_bedrock_weathered_tvd"}
+                  value={topBedrockWeatheredTVD}
+                  withThousandSeparator={true}
+                />
+              </FormContainer>
+              <FormContainer direction="row">
+                <FormDomainSelect
+                  fieldName={"lithologyTopBedrockId"}
+                  label={"lithology_top_bedrock"}
+                  schemaName={"custom.lithology_top_bedrock"}
+                  readonly={!editingEnabled}
+                  selected={borehole.lithologyTopBedrockId}
+                />
+                <FormDomainSelect
+                  fieldName={"lithostratigraphyId"}
+                  label={"lithostratigraphy_top_bedrock"}
+                  schemaName={"custom.lithostratigraphy_top_bedrock"}
+                  readonly={!editingEnabled}
+                  selected={borehole.lithostratigraphyId}
+                />
+              </FormContainer>
+              <FormContainer direction="row">
+                <FormDomainSelect
+                  fieldName={"chronostratigraphyId"}
+                  label={"chronostratigraphy_top_bedrock"}
+                  schemaName={"custom.chronostratigraphy_top_bedrock"}
+                  readonly={!editingEnabled}
+                  selected={borehole.chronostratigraphyId}
+                />
+                <FormBooleanSelect
+                  canReset={false}
+                  readonly={!editingEnabled}
+                  fieldName={"hasGroundwater"}
+                  label="groundwater"
+                  selected={borehole.hasGroundwater}
+                />
+              </FormContainer>
+              <FormInput
+                fieldName={"remarks"}
+                multiline={true}
+                label={"remarks"}
+                value={borehole?.remarks || ""}
+                readonly={!editingEnabled}
+              />
+            </FormContainer>
+          </FormSegmentBox>
+        </form>
+      </FormProvider>
+    </>
   );
-};
+});

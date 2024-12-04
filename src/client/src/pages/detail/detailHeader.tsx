@@ -17,13 +17,13 @@ import {
 import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
+import { useFormDirty } from "./useFormDirty.tsx";
 
 interface DetailHeaderProps {
   editingEnabled: boolean;
   setEditingEnabled: (editingEnabled: boolean) => void;
   editableByCurrentUser: boolean;
   borehole: BoreholeV2;
-  isFormDirty: boolean;
   triggerReset: () => void;
 }
 
@@ -31,7 +31,6 @@ const DetailHeader = ({
   editingEnabled,
   setEditingEnabled,
   editableByCurrentUser,
-  isFormDirty,
   triggerReset,
   borehole,
 }: DetailHeaderProps) => {
@@ -39,6 +38,7 @@ const DetailHeader = ({
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
+  const { isFormDirty } = useFormDirty();
   const auth = useAuth();
 
   const toggleEditing = (editing: boolean) => {

@@ -1,4 +1,3 @@
-import { UseFormReturn } from "react-hook-form";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 
 export interface BoreholeGeneralProps {
@@ -7,13 +6,12 @@ export interface BoreholeGeneralProps {
 }
 
 export interface BoreholeDetailProps extends BoreholeGeneralProps {
-  formMethods: UseFormReturn<BoreholeFormInputs>;
+  onSubmit: (data: BoreholeFormInputs) => void;
 }
 
 export interface BoreholePanelProps extends BoreholeGeneralProps {
   boreholeId: string;
   onSubmit: (data: BoreholeFormInputs) => void;
-  onDirtyChange: (isDirty: boolean) => void;
 }
 
 export interface BoreholeFormInputs {

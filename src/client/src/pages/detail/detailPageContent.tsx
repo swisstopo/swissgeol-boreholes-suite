@@ -29,7 +29,6 @@ interface DetailPageContentProps {
   boreholePanelRef: RefObject<{ submit: () => void; reset: () => void }>;
   onLocationFormSubmit: (data: LocationFormInputs) => void;
   onBoreholeFormSubmit: (data: BoreholeFormInputs) => void;
-  handleDirtyChange: (isDirty: boolean) => void;
   borehole: BoreholeV2;
   panelOpen: boolean;
 }
@@ -44,7 +43,6 @@ export const DetailPageContent = ({
   boreholePanelRef,
   onLocationFormSubmit,
   onBoreholeFormSubmit,
-  handleDirtyChange,
   borehole,
   panelOpen,
 }: DetailPageContentProps) => {
@@ -101,7 +99,6 @@ export const DetailPageContent = ({
                   editingEnabled={editingEnabled}
                   onSubmit={onLocationFormSubmit}
                   borehole={borehole}
-                  onDirtyChange={handleDirtyChange}
                   labelingPanelOpen={panelOpen}
                 />
               )}
@@ -112,11 +109,10 @@ export const DetailPageContent = ({
               render={() => (
                 <BoreholePanel
                   ref={boreholePanelRef}
-                  onSubmit={onBoreholeFormSubmit}
                   boreholeId={id}
                   borehole={borehole}
                   editingEnabled={editingEnabled}
-                  onDirtyChange={handleDirtyChange}
+                  onSubmit={onBoreholeFormSubmit}
                 />
               )}
             />

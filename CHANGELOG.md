@@ -10,6 +10,7 @@
 - Show ChangedAt and ChangedBy information in borehole detail header.
 - Add JSON export for single and multiple boreholes.
 - The workgroup name is now displayed in the borehole location tab.
+- Added new API endpoint to retrieve all boreholes.
 - Add JSON import for boreholes.
 
 ### Changed
@@ -36,6 +37,7 @@
 - Some filter chips were missing translations or where not displayed correctly.
 - Filtering striae for `not specified` returned wrong results.
 - Filtering by `borehole status` did not work.
+- When saving with ctrl+s in the borehole sections, the form content was reset.
 
 ## v2.1.870 - 2024-09-27
 
