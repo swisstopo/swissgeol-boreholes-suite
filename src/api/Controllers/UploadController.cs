@@ -404,69 +404,90 @@ public class UploadController : ControllerBase
 
     private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, bool zeroBasedIndex, IList<IFormFile>? attachments = null)
     {
-        // Get boreholes from db with same workgroupId as provided.
+        var prefix = zeroBasedIndex ? "Borehole" : "Row";
+
+        foreach (var borehole in boreholesFromFile.Select((value, index) => (value, index)))
+        {
+            var processingIndex = zeroBasedIndex ? borehole.index : borehole.index + 1;
+            var boreholeValue = borehole.value;
+
+            ValidateBorehole(boreholeValue, boreholesFromFile, workgroupId, processingIndex, prefix, attachments);
+        }
+    }
+
+    private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int processingIndex, string prefix, IList<IFormFile>? attachments)
+    {
+        ValidateRequiredFields(borehole, processingIndex, prefix);
+        ValidateDuplicateInFile(borehole, boreholesFromFile, processingIndex, prefix);
+        ValidateDuplicateInDb(borehole, workgroupId, processingIndex, prefix);
+        ValidateAttachments(borehole, attachments, processingIndex, prefix);
+    }
+
+    private void ValidateRequiredFields(BoreholeImport borehole, int processingIndex, string prefix)
+    {
+        if (string.IsNullOrEmpty(borehole.OriginalName))
+        {
+            ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
+        }
+
+        if (borehole.LocationX == null && borehole.LocationXLV03 == null)
+        {
+            ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
+        }
+
+        if (borehole.LocationY == null && borehole.LocationYLV03 == null)
+        {
+            ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
+        }
+    }
+
+    private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, string prefix)
+    {
+        if (boreholesFromFile.Any(b =>
+            b.ImportId != borehole.ImportId &&
+            CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
+            CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) &&
+            CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2)))
+        {
+            ModelState.AddModelError($"{prefix}{processingIndex}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.");
+        }
+    }
+
+    private void ValidateDuplicateInDb(BoreholeImport borehole, int workgroupId, int processingIndex, string prefix)
+    {
         var boreholesFromDb = context.Boreholes
             .Where(b => b.WorkgroupId == workgroupId)
             .AsNoTracking()
             .Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY, b.LocationXLV03, b.LocationYLV03 })
             .ToList();
 
-        // Iterate over provided boreholes, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
-        foreach (var boreholeFromFile in boreholesFromFile.Select((value, index) => (value, index)))
+        if (boreholesFromDb.Any(b =>
+            CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
+            (CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, borehole.LocationX, 2)) &&
+            (CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, borehole.LocationY, 2))))
         {
-            var processingIndex = zeroBasedIndex ? boreholeFromFile.index : boreholeFromFile.index + 1;
-            var prefix = zeroBasedIndex ? "Borehole" : "Row";
-            if (string.IsNullOrEmpty(boreholeFromFile.value.OriginalName))
-            {
-                ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
-            }
+            ModelState.AddModelError($"{prefix}{processingIndex}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
+        }
+    }
 
-            if (boreholeFromFile.value.LocationX == null && boreholeFromFile.value.LocationXLV03 == null)
-            {
-                ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
-            }
+    private void ValidateAttachments(BoreholeImport borehole, IList<IFormFile>? attachments, int processingIndex, string prefix)
+    {
+        if (attachments == null || string.IsNullOrEmpty(borehole.Attachments))
+        {
+            return;
+        }
 
-            if (boreholeFromFile.value.LocationY == null && boreholeFromFile.value.LocationYLV03 == null)
-            {
-                ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
-            }
+        var attachmentFileNamesToLink = borehole.Attachments
+            .Split(",")
+            .Select(s => s.Trim())
+            .Where(s => !string.IsNullOrEmpty(s))
+            .ToList();
 
-            // Check if any borehole with same coordinates (in tolerance) and same total depth is duplicated in file
-            if (boreholesFromFile.Any(b =>
-                b.ImportId != boreholeFromFile.value.ImportId &&
-                CompareValuesWithTolerance(b.TotalDepth, boreholeFromFile.value.TotalDepth, 0) &&
-                CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) &&
-                CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2)))
+        foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
+        {
+            if (!attachments.Any(a => a.FileName.Equals(attachmentFileNameToLink, StringComparison.OrdinalIgnoreCase)))
             {
-                ModelState.AddModelError($"{prefix}{processingIndex}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.");
-            }
-
-            // Check if borehole with same coordinates (in tolerance) and same total depth already exists in db.
-            if (boreholesFromDb.Any(b =>
-                CompareValuesWithTolerance(b.TotalDepth, boreholeFromFile.value.TotalDepth, 0) &&
-                (CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, boreholeFromFile.value.LocationX, 2)) &&
-                (CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, boreholeFromFile.value.LocationY, 2))))
-            {
-                ModelState.AddModelError($"{prefix}{processingIndex}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
-            }
-
-            if (attachments != null && !string.IsNullOrEmpty(boreholeFromFile.value.Attachments))
-            {
-                // Checks if each file name in the comma separated string is present in the list of the attachments.
-                var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?
-                    .Split(",")
-                    .Select(s => s.Replace(" ", "", StringComparison.OrdinalIgnoreCase))
-                    .Where(s => !string.IsNullOrEmpty(s))
-                    .ToList()
-                    ?? new List<string>();
-
-                foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
-                {
-                    if (attachments?.Any(a => a.FileName.Equals(attachmentFileNameToLink, StringComparison.OrdinalIgnoreCase)) == false)
-                    {
-                        ModelState.AddModelError($"{prefix}{processingIndex}", $"Attachment file '{attachmentFileNameToLink}' not found.");
-                    }
-                }
+                ModelState.AddModelError($"{prefix}{processingIndex}", $"Attachment file '{attachmentFileNameToLink}' not found.");
             }
         }
     }
