@@ -83,7 +83,7 @@ public class UploadControllerTest
     {
         var boreholeJsonFile = GetFormFileByExistingFile("json_import_single.json");
 
-        ActionResult<int> response = await controller.UploadJsonFile(workgroupId: 1, boreholeJsonFile);
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -95,7 +95,7 @@ public class UploadControllerTest
     {
         var boreholeJsonFile = GetFormFileByExistingFile("json_import_valid.json");
 
-        ActionResult<int> response = await controller.UploadJsonFile(workgroupId: 1, boreholeJsonFile);
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -437,7 +437,7 @@ public class UploadControllerTest
     {
         var boreholeJsonFile = GetFormFileByExistingFile("not_a_json_file.csv");
 
-        ActionResult<int> response = await controller.UploadJsonFile(workgroupId: 1, boreholeJsonFile);
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -449,7 +449,7 @@ public class UploadControllerTest
     {
         var boreholeJsonFile = GetFormFileByExistingFile("json_import_duplicated_by_location.json");
 
-        ActionResult<int> response = await controller.UploadJsonFile(workgroupId: 1, boreholeJsonFile);
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -467,7 +467,7 @@ public class UploadControllerTest
     {
         var boreholeJsonFile = GetFormFileByExistingFile("json_import_duplicates_existing.json");
 
-        ActionResult<int> response = await controller.UploadJsonFile(workgroupId: 1, boreholeJsonFile);
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;

@@ -54,7 +54,7 @@ public class UploadController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<ActionResult<int>> UploadJsonFile(int workgroupId, IFormFile file)
+    public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile file)
     {
         // Increase max allowed errors to be able to return more validation errors at once.
         ModelState.MaxAllowedErrors = 1000;
