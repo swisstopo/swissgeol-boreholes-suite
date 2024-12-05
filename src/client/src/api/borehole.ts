@@ -80,7 +80,7 @@ export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupI
   return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
 
-export const getAllBoreholes = async (ids: number[], pageNumber: number, pageSize: number) => {
+export const getAllBoreholes = async (ids: number[] | GridRowSelectionModel, pageNumber: number, pageSize: number) => {
   const idsQuery = ids.map(id => `ids=${id}`).join("&");
   return await fetchApiV2(`borehole?${idsQuery}&pageNumber=${pageNumber}&pageSize=${pageSize}`, "GET");
 };

@@ -89,8 +89,7 @@ const BottomBarContainer = ({
   };
 
   const onExportMultiple = async () => {
-    const selectedIds = selectionModel.map(id => Number(id));
-    const paginatedResponse = await getAllBoreholes(selectedIds, 1, selectedIds.length);
+    const paginatedResponse = await getAllBoreholes(selectionModel, 1, selectionModel.length);
     const jsonString = JSON.stringify(paginatedResponse.boreholes, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
