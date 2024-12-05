@@ -105,8 +105,9 @@ public class UploadController : ControllerBase
                 borehole.Sections?.MarkAsNew();
                 borehole.Observations?.MarkAsNew();
 
+                // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
                 borehole.Workflows.Clear();
-                borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id });
+                borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
             }
 
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
