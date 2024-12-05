@@ -115,9 +115,7 @@ public class UploadController : ControllerBase
             }
 
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-            var result = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
-
-            return result;
+            return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -459,7 +457,7 @@ public class UploadController : ControllerBase
     private void ValidateAttachments(BoreholeImport borehole, IList<IFormFile>? attachments, int processingIndex, string prefix)
     {
         if (attachments == null || string.IsNullOrEmpty(borehole.Attachments)) return;
-
+ 
         var attachmentFileNamesToLink = borehole.Attachments
             .Split(",")
             .Select(s => s.Trim())
