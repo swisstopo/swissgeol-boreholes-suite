@@ -119,19 +119,11 @@ const BottomBarContainer = ({
     ]);
   };
 
-  const onExportMultipleJson = () => {
+  const onExportMultiple = async (callback: { (): Promise<void> }) => {
     if (selectionModel.length > 100) {
-      showPromptExportMoreThan100(handleExportMultipleJson);
+      showPromptExportMoreThan100(callback);
     } else {
-      handleExportMultipleJson();
-    }
-  };
-
-  const onExportMultipleCsv = async () => {
-    if (selectionModel.length > 100) {
-      showPromptExportMoreThan100(handleExportMultipleCsv);
-    } else {
-      await handleExportMultipleCsv();
+      await callback();
     }
   };
 
@@ -142,8 +134,8 @@ const BottomBarContainer = ({
         multipleSelected={multipleSelected}
         onCopyBorehole={onCopyBorehole}
         onDeleteMultiple={onDeleteMultiple}
-        onExportMultipleJson={onExportMultipleJson}
-        onExportMultipleCsv={onExportMultipleCsv}
+        onExportMultipleJson={() => onExportMultiple(handleExportMultipleJson)}
+        onExportMultipleCsv={() => onExportMultiple(handleExportMultipleCsv)}
         search={search}
         boreholes={boreholes}
         workgroup={workgroupId}
