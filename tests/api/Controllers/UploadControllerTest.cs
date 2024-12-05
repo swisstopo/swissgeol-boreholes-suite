@@ -422,7 +422,7 @@ public class UploadControllerTest
         // Assert borehole's workflows
         Assert.AreEqual(1, borehole.Workflows.Count, nameof(borehole.Workflows.Count));
         var workflow = borehole.Workflows.First();
-        Assert.IsNull(workflow.Started, nameof(workflow.Started).ShouldNotBeNullMessage());
+        Assert.IsNotNull(workflow.Started, nameof(workflow.Started).ShouldNotBeNullMessage());
         Assert.IsNull(workflow.Finished, nameof(workflow.Finished).ShouldBeNullMessage());
         Assert.IsNull(workflow.Notes, nameof(workflow.Notes).ShouldBeNullMessage());
         Assert.AreEqual(Role.Editor, workflow.Role, nameof(workflow.Role));
