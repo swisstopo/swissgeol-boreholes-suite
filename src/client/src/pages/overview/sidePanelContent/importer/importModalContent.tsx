@@ -80,7 +80,7 @@ const ImportModalContent = ({
           {ExampleHeadings(
             "import_id;id_geodin_shortname;id_info_geol;id_original;" +
               "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
-              "id_geodin;id_kernlager;original_name;project_name;alternate_name;" +
+              "id_geodin;id_kernlager;original_name;project_name;name;" +
               "restriction_id;restriction_until;national_interest;location_x;location_y;" +
               "location_precision;elevation_z;elevation_precision_id;" +
               "reference_elevation;reference_elevation_type_id;" +
