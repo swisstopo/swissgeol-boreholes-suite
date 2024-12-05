@@ -36,7 +36,7 @@ describe("Test for the borehole form.", () => {
     setSelect("originalReferenceSystem", 0);
     setSelect("locationPrecisionId", 2);
     setSelect("elevationPrecisionId", 2);
-    setSelect("qtReferenceElevationId", 2);
+    setSelect("referenceElevationPrecisionId", 2);
     setSelect("referenceElevationTypeId", 4);
 
     evaluateSelect("restrictionId", "20111003");
@@ -44,7 +44,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("originalReferenceSystem", "20104001");
     evaluateSelect("locationPrecisionId", "20113002");
     evaluateSelect("elevationPrecisionId", "20114002");
-    evaluateSelect("qtReferenceElevationId", "20114002");
+    evaluateSelect("referenceElevationPrecisionId", "20114002");
     evaluateSelect("referenceElevationTypeId", "20117004");
 
     saveWithSaveBar();
@@ -56,19 +56,19 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("originalReferenceSystem", "20104001");
     evaluateSelect("locationPrecisionId", "20113002");
     evaluateSelect("elevationPrecisionId", "20114002");
-    evaluateSelect("qtReferenceElevationId", "20114002");
+    evaluateSelect("referenceElevationPrecisionId", "20114002");
     evaluateSelect("referenceElevationTypeId", "20117004");
 
     // fill all dropdowns on borehole tab
     cy.get('[data-cy="borehole-menu-item"]').click();
     setSelect("purposeId", 1);
     setSelect("typeId", 1);
-    setSelect("qtDepthId", 1);
+    setSelect("depthPrecisionId", 1);
     setSelect("statusId", 1);
 
     evaluateSelect("purposeId", "22103001");
     evaluateSelect("typeId", "20101001");
-    evaluateSelect("qtDepthId", "22108001");
+    evaluateSelect("depthPrecisionId", "22108001");
     evaluateSelect("statusId", "22104001");
 
     saveWithSaveBar();
@@ -79,7 +79,7 @@ describe("Test for the borehole form.", () => {
 
     evaluateSelect("purposeId", "22103001");
     evaluateSelect("typeId", "20101001");
-    evaluateSelect("qtDepthId", "22108001");
+    evaluateSelect("depthPrecisionId", "22108001");
     evaluateSelect("statusId", "22104001");
   });
 
@@ -91,7 +91,7 @@ describe("Test for the borehole form.", () => {
 
       setSelect("purposeId", 1);
       setSelect("typeId", 1);
-      setSelect("qtDepthId", 1);
+      setSelect("depthPrecisionId", 1);
       setSelect("statusId", 1);
       setSelect("lithologyTopBedrockId", 1);
       setSelect("lithostratigraphyId", 1);
@@ -166,7 +166,7 @@ describe("Test for the borehole form.", () => {
     evaluateInput("elevationZ", "3'519.948980314633");
     evaluateInput("referenceElevation", "3'554.9389396584306");
     evaluateSelect("elevationPrecisionId", "");
-    evaluateSelect("qtReferenceElevationId", "20114007"); // not specified
+    evaluateSelect("referenceElevationPrecisionId", "20114007"); // not specified
     evaluateSelect("referenceElevationTypeId", "30000013"); // kelly bushing
 
     returnToOverview();
@@ -182,7 +182,7 @@ describe("Test for the borehole form.", () => {
     evaluateInput("elevationZ", "3'062.9991330499756");
     evaluateInput("referenceElevation", "3'478.1368118609007");
     evaluateSelect("elevationPrecisionId", "20114003"); // 1
-    evaluateSelect("qtReferenceElevationId", "20114005"); //0.1
+    evaluateSelect("referenceElevationPrecisionId", "20114005"); //0.1
     evaluateSelect("referenceElevationTypeId", "30000013"); // kelly bushing
   });
 

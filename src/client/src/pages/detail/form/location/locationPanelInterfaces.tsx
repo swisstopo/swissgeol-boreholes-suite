@@ -23,7 +23,7 @@ interface LocationFormBaseInputs {
   elevationZ: number | string | null; // Number with thousands separator then parsed to number
   elevationPrecisionId: number | null;
   referenceElevation: number | string | null; // Number with thousands separator then parsed to number
-  qtReferenceElevationId: number | null;
+  referenceElevationPrecisionId: number | null;
   referenceElevationTypeId: number | null;
   originalReferenceSystem: number | null;
   hrsId?: number;

@@ -24,7 +24,7 @@ export const LocationPanel = forwardRef(
         elevationZ: borehole.elevationZ,
         elevationPrecisionId: borehole.elevationPrecisionId,
         referenceElevation: borehole.referenceElevation,
-        qtReferenceElevationId: borehole.qtReferenceElevationId,
+        referenceElevationPrecisionId: borehole.referenceElevationPrecisionId,
         referenceElevationTypeId: borehole.referenceElevationTypeId,
         hrsId: borehole.hrsId,
         country: borehole.country,

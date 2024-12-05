@@ -23,7 +23,7 @@ export interface BoreholeV2 {
   hasGroundwater: boolean | null;
   topBedrockWeatheredMd: number;
   topBedrockFreshMd: number;
-  qtDepthId: number;
+  depthPrecisionId: number;
   totalDepth: number;
   purposeId: number;
   typeId: number;
@@ -56,7 +56,7 @@ export interface BoreholeV2 {
   elevationZ: number | string; // Number with thousands separator then parsed to number
   elevationPrecisionId: number;
   referenceElevation: number | string; // Number with thousands separator then parsed to number
-  qtReferenceElevationId: number;
+  referenceElevationPrecisionId: number;
   referenceElevationTypeId: number;
   locationPrecisionId: number | null;
   hrsId: number;
