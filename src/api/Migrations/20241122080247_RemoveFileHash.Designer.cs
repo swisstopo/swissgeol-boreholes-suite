@@ -901,11 +901,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("id_usr_fk");
 
-                    b.Property<string>("Hash")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("hash_fil");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
