@@ -212,7 +212,7 @@ public class BoreholeFileController : ControllerBase
             // Get the file and its borehole files from the database.
             var boreholeFile = await context.BoreholeFiles.Include(f => f.File).SingleOrDefaultAsync(f => f.FileId == boreholeFileId).ConfigureAwait(false);
 
-            if (boreholeFile == null) return NotFound("Borehole file for the provided boreholeFileId not found.");
+            if (boreholeFile == null) return NotFound($"Borehole file for the provided {nameof(boreholeFileId)} not found.");
 
             var fileId = boreholeFile.File.Id;
 
