@@ -191,6 +191,8 @@
   "expand": "Étendre",
   "export": "Exporter",
   "export100Boreholes": "Exporter 100 forages",
+  "exportCsv": "Exporter CSV",
+  "exportJson": "Exporter JSON",
   "extendlower": "Étendre la couche inférieure jusqu'au sommet",
   "extendupper": "Étendre la couche supérieure à la couche inférieure",
   "facies_description": "Description du faciès géologique",

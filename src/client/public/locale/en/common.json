@@ -191,6 +191,8 @@
   "expand": "Expand",
   "export": "Export",
   "export100Boreholes": "Export 100 boreholes",
+  "exportCsv": "Export CSV",
+  "exportJson": "Export JSON",
   "extendlower": "Extend lower layer to top",
   "extendupper": "Extend upper layer to bottom",
   "facies_description": "Facies description",

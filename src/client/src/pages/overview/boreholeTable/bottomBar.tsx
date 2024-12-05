@@ -118,7 +118,7 @@ const BottomBar = ({
           )}
           <BulkEditButton label={"bulkEditing"} onClick={bulkEditSelected} />
           <ExportButton label={"exportJson"} onClick={onExportMultipleJson} />
-          <ExportButton label={"exportCSV"} onClick={onExportMultipleCsv} />
+          <ExportButton label={"exportCsv"} onClick={onExportMultipleCsv} />
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
       ) : (
