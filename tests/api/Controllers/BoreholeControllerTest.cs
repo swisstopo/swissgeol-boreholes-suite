@@ -565,7 +565,38 @@ public class BoreholeControllerTest
         var csvData = Encoding.UTF8.GetString(result.FileContents);
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2; // Remove header and last line break
-        Assert.IsTrue(recordCount <= 100);
+        Assert.AreEqual(100, recordCount);
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvWithGeometryReturnsTVDInCSV()
+    {
+        var ids = Enumerable.Range(testBoreholeId, 120).ToList();
+
+        var boreholesWithGeometry = context.Boreholes
+             .Include(b => b.BoreholeGeometry)
+             .Where(b => b.BoreholeGeometry.Count > 1)
+             .Take(3).Select(b => b.Id);
+
+        var result = await controller.DownloadCsv(boreholesWithGeometry) as FileContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("text/csv", result.ContentType);
+        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
+        var csvData = Encoding.UTF8.GetString(result.FileContents);
+        var lines = csvData.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+        var header = lines[0].Split(',');
+
+        // Tvd column should be present at the end of the header
+        var tvdIndex = Array.IndexOf(header, "Tvd\r");
+        Assert.AreEqual(28, tvdIndex);
+
+        for (int i = 1; i < lines.Length; i++) // Start from 1 to skip the header
+        {
+            var columns = lines[i].Split(',');
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(columns[tvdIndex]), $"Tvd value is missing in row {i}.");
+        }
     }
 
     [TestMethod]
