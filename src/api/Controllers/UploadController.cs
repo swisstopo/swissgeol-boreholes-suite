@@ -59,10 +59,7 @@ public class UploadController : ControllerBase
         // Increase max allowed errors to be able to return more validation errors at once.
         ModelState.MaxAllowedErrors = 1000;
 
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("No file uploaded.");
-        }
+        if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
 
         if (!FileTypeChecker.IsJson(file)) return BadRequest("Invalid file type for borehole JSON.");
 
@@ -83,10 +80,7 @@ public class UploadController : ControllerBase
                 return BadRequest("The provided file is not a array of boreholes or is not a valid JSON format.");
             }
 
-            if (boreholes == null || boreholes.Count == 0)
-            {
-                return BadRequest("No boreholes found in file.");
-            }
+            if (boreholes == null || boreholes.Count == 0) return BadRequest("No boreholes found in file.");
 
             for (var i = 0; i < boreholes.Count; i++)
             {
@@ -95,10 +89,8 @@ public class UploadController : ControllerBase
 
             ValidateBoreholeImports(workgroupId, boreholes, true);
 
-            if (!ModelState.IsValid)
-            {
-                return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
-            }
+            // If any validation error occured, return a bad request.
+            if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
 
             var subjectId = HttpContext.GetUserSubjectId();
 
@@ -179,10 +171,7 @@ public class UploadController : ControllerBase
             }
 
             // If any validation error occured, return a bad request.
-            if (!ModelState.IsValid)
-            {
-                return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
-            }
+            if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
 
             var subjectId = HttpContext.GetUserSubjectId();
 
@@ -350,10 +339,7 @@ public class UploadController : ControllerBase
     /// <returns>A list of integers parsed from the input string.</returns>
     internal List<int> ParseIds(string ids)
     {
-        if (string.IsNullOrEmpty(ids))
-        {
-            return new List<int>();
-        }
+        if (string.IsNullOrEmpty(ids)) return new List<int>();
 
         return ids
             .Split(',')
@@ -472,10 +458,7 @@ public class UploadController : ControllerBase
 
     private void ValidateAttachments(BoreholeImport borehole, IList<IFormFile>? attachments, int processingIndex, string prefix)
     {
-        if (attachments == null || string.IsNullOrEmpty(borehole.Attachments))
-        {
-            return;
-        }
+        if (attachments == null || string.IsNullOrEmpty(borehole.Attachments)) return;
 
         var attachmentFileNamesToLink = borehole.Attachments
             .Split(",")
