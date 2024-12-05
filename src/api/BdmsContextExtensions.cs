@@ -168,7 +168,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Purpose, _ => default!)
            .RuleFor(o => o.StatusId, f => f.PickRandom(statusIds).OrNull(f, .05f))
            .RuleFor(o => o.Status, _ => default!)
-           .RuleFor(o => o.DepthPresicionId, f => f.PickRandom(qtDepthIds).OrNull(f, .05f))
+           .RuleFor(o => o.DepthPrecisionId, f => f.PickRandom(qtDepthIds).OrNull(f, .05f))
            .RuleFor(o => o.DepthPrecision, _ => default!)
            .RuleFor(o => o.TopBedrockFreshMd, f => f.Random.Double(0, 1000).OrNull(f, .05f))
            .RuleFor(o => o.TopBedrockWeatheredMd, f => f.Random.Double(0, 2).OrNull(f, .05f))

@@ -123,7 +123,7 @@ public class BoreholeControllerTest
             Municipality = "Zurich",
             PurposeId = 22103002,
             StatusId = 22104001,
-            DepthPresicionId = 22108005,
+            DepthPrecisionId = 22108005,
             TopBedrockFreshMd = 10.5,
             TopBedrockWeatheredMd = 8.0,
             HasGroundwater = true,
@@ -187,7 +187,7 @@ public class BoreholeControllerTest
         Assert.AreEqual(newBorehole.Municipality, updatedBorehole.Municipality);
         Assert.AreEqual(newBorehole.PurposeId, updatedBorehole.PurposeId);
         Assert.AreEqual(newBorehole.StatusId, updatedBorehole.StatusId);
-        Assert.AreEqual(newBorehole.DepthPresicionId, updatedBorehole.DepthPresicionId);
+        Assert.AreEqual(newBorehole.DepthPrecisionId, updatedBorehole.DepthPrecisionId);
         Assert.AreEqual(newBorehole.TopBedrockFreshMd, updatedBorehole.TopBedrockFreshMd);
         Assert.AreEqual(newBorehole.TopBedrockWeatheredMd, updatedBorehole.TopBedrockWeatheredMd);
         Assert.AreEqual(newBorehole.HasGroundwater, updatedBorehole.HasGroundwater);

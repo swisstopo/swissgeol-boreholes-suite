@@ -186,7 +186,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
                                         b.StatusId,
                                         b.Remarks,
                                         b.TotalDepth,
-                                        b.DepthPresicionId,
+                                        b.DepthPrecisionId,
                                         b.TopBedrockFreshMd,
                                         b.TopBedrockWeatheredMd,
                                         b.HasGroundwater,

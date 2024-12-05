@@ -256,7 +256,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s Depth presicion id.
     /// </summary>
     [Column("qt_depth_id_cli")]
-    public int? DepthPresicionId { get; set; }
+    public int? DepthPrecisionId { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Depth presicion.

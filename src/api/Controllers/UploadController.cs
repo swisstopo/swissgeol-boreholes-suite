@@ -526,7 +526,7 @@ public class UploadController : ControllerBase
             Map(m => m.ProjectName).Optional();
             Map(m => m.PurposeId).Optional();
             Map(m => m.StatusId).Optional();
-            Map(m => m.DepthPresicionId).Optional();
+            Map(m => m.DepthPrecisionId).Optional();
             Map(m => m.TopBedrockFreshMd).Optional();
             Map(m => m.TopBedrockWeatheredMd).Optional();
             Map(m => m.HasGroundwater).Optional();

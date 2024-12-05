@@ -165,7 +165,7 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Borehole>().HasOne(l => l.LithologyTopBedrock).WithMany().HasForeignKey(l => l.LithologyTopBedrockId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.LithostratigraphyTopBedrock).WithMany().HasForeignKey(l => l.LithostratigraphyTopBedrockId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Purpose).WithMany().HasForeignKey(l => l.PurposeId);
-        modelBuilder.Entity<Borehole>().HasOne(l => l.DepthPrecision).WithMany().HasForeignKey(l => l.DepthPresicionId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.DepthPrecision).WithMany().HasForeignKey(l => l.DepthPrecisionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.ElevationPrecision).WithMany().HasForeignKey(l => l.ElevationPrecisionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.LocationPrecision).WithMany().HasForeignKey(l => l.LocationPrecisionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.ReferenceElevationPrecision).WithMany().HasForeignKey(l => l.ReferenceElevationPrecisionId);
