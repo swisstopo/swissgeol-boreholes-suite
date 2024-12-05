@@ -59,6 +59,8 @@ public class UploadController : ControllerBase
         // Increase max allowed errors to be able to return more validation errors at once.
         ModelState.MaxAllowedErrors = 1000;
 
+        logger.LogInformation("Import boreholes json to workgroup with id <{WorkgroupId}>", workgroupId);
+
         if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
 
         if (!FileTypeChecker.IsJson(file)) return BadRequest("Invalid file type for borehole JSON.");
@@ -72,8 +74,9 @@ public class UploadController : ControllerBase
             {
                 boreholes = JsonSerializer.Deserialize<List<BoreholeImport>>(await reader.ReadToEndAsync().ConfigureAwait(false), jsonImportOptions);
             }
-            catch (JsonException)
+            catch (JsonException ex)
             {
+                logger.LogError("Error while deserializing borehole json file: <{Error}>", ex);
                 return BadRequest("The provided file is not an array of boreholes or is not a valid JSON format.");
             }
 
@@ -116,7 +119,8 @@ public class UploadController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
+            logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{Error}>", workgroupId, ex);
+            return Problem("Error while importing borehole(s) via json file.");
         }
     }
 
