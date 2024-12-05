@@ -561,7 +561,7 @@ public class BoreholeControllerTest
 
         Assert.IsNotNull(result);
         Assert.AreEqual("text/csv", result.ContentType);
-        Assert.AreEqual("boreholes.csv", result.FileDownloadName);
+        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
         var csvData = Encoding.UTF8.GetString(result.FileContents);
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2; // Remove header and last line break
