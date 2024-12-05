@@ -76,7 +76,7 @@ public class UploadController : ControllerBase
             }
             catch (JsonException ex)
             {
-                logger.LogError("Error while deserializing borehole json file: <{Error}>", ex);
+                logger.LogError(ex, "Error while deserializing borehole json file.");
                 return BadRequest("The provided file is not an array of boreholes or is not a valid JSON format.");
             }
 
@@ -115,7 +115,7 @@ public class UploadController : ControllerBase
         }
         catch (Exception ex)
         {
-            logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{Error}>", workgroupId, ex);
+            logger.LogError(ex, "Error while importing borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
             return Problem("Error while importing borehole(s) via json file.");
         }
     }
@@ -322,7 +322,7 @@ public class UploadController : ControllerBase
         }
         catch (Exception ex)
         {
-            logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{Error}>", workgroupId, ex);
+            logger.LogError(ex, "Error while importing borehole(s) to workgroup with id <{WorkgroupId}>.", workgroupId);
             return Problem("Error while importing borehole(s).");
         }
     }
