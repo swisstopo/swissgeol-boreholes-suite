@@ -74,7 +74,7 @@ public class UploadController : ControllerBase
             }
             catch (JsonException)
             {
-                return BadRequest("The provided file is not a array of boreholes or is not a valid JSON format.");
+                return BadRequest("The provided file is not an array of boreholes or is not a valid JSON format.");
             }
 
             if (boreholes == null || boreholes.Count == 0) return BadRequest("No boreholes found in file.");
