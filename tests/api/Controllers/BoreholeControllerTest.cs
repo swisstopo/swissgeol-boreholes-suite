@@ -114,7 +114,7 @@ public class BoreholeControllerTest
             RestrictionUntil = DateTime.UtcNow.AddYears(1),
             NationalInterest = false,
             OriginalName = "BH-257",
-            AlternateName = "Borehole 257",
+            Name = "Borehole 257",
             LocationPrecisionId = 20113002,
             ElevationPrecisionId = null,
             ProjectName = "Project Alpha",
@@ -123,17 +123,17 @@ public class BoreholeControllerTest
             Municipality = "Zurich",
             PurposeId = 22103002,
             StatusId = 22104001,
-            QtDepthId = 22108005,
+            DepthPresicionId = 22108005,
             TopBedrockFreshMd = 10.5,
             TopBedrockWeatheredMd = 8.0,
             HasGroundwater = true,
             Geometry = null,
             Remarks = "Test borehole for project",
             LithologyTopBedrockId = 15104934,
-            LithostratigraphyId = 15300259,
-            ChronostratigraphyId = 15001141,
+            LithostratigraphyTopBedrockId = 15300259,
+            ChronostratigraphyTopBedrockId = 15001141,
             ReferenceElevation = 500.0,
-            QtReferenceElevationId = 20114002,
+            ReferenceElevationPrecisionId = 20114002,
             ReferenceElevationTypeId = 20117003,
         };
 
@@ -178,7 +178,7 @@ public class BoreholeControllerTest
         Assert.AreEqual(newBorehole.RestrictionUntil.ToString(), updatedBorehole.RestrictionUntil.ToString());
         Assert.AreEqual(newBorehole.NationalInterest, updatedBorehole.NationalInterest);
         Assert.AreEqual(newBorehole.OriginalName, updatedBorehole.OriginalName);
-        Assert.AreEqual(newBorehole.AlternateName, updatedBorehole.AlternateName);
+        Assert.AreEqual(newBorehole.Name, updatedBorehole.Name);
         Assert.AreEqual(newBorehole.LocationPrecisionId, updatedBorehole.LocationPrecisionId);
         Assert.AreEqual(newBorehole.ElevationPrecisionId, updatedBorehole.ElevationPrecisionId);
         Assert.AreEqual(newBorehole.ProjectName, updatedBorehole.ProjectName);
@@ -187,16 +187,16 @@ public class BoreholeControllerTest
         Assert.AreEqual(newBorehole.Municipality, updatedBorehole.Municipality);
         Assert.AreEqual(newBorehole.PurposeId, updatedBorehole.PurposeId);
         Assert.AreEqual(newBorehole.StatusId, updatedBorehole.StatusId);
-        Assert.AreEqual(newBorehole.QtDepthId, updatedBorehole.QtDepthId);
+        Assert.AreEqual(newBorehole.DepthPresicionId, updatedBorehole.DepthPresicionId);
         Assert.AreEqual(newBorehole.TopBedrockFreshMd, updatedBorehole.TopBedrockFreshMd);
         Assert.AreEqual(newBorehole.TopBedrockWeatheredMd, updatedBorehole.TopBedrockWeatheredMd);
         Assert.AreEqual(newBorehole.HasGroundwater, updatedBorehole.HasGroundwater);
         Assert.AreEqual(newBorehole.Remarks, updatedBorehole.Remarks);
         Assert.AreEqual(newBorehole.LithologyTopBedrockId, updatedBorehole.LithologyTopBedrockId);
-        Assert.AreEqual(newBorehole.LithostratigraphyId, updatedBorehole.LithostratigraphyId);
-        Assert.AreEqual(newBorehole.ChronostratigraphyId, updatedBorehole.ChronostratigraphyId);
+        Assert.AreEqual(newBorehole.LithostratigraphyTopBedrockId, updatedBorehole.LithostratigraphyTopBedrockId);
+        Assert.AreEqual(newBorehole.ChronostratigraphyTopBedrockId, updatedBorehole.ChronostratigraphyTopBedrockId);
         Assert.AreEqual(newBorehole.ReferenceElevation, updatedBorehole.ReferenceElevation);
-        Assert.AreEqual(newBorehole.QtReferenceElevationId, updatedBorehole.QtReferenceElevationId);
+        Assert.AreEqual(newBorehole.ReferenceElevationPrecisionId, updatedBorehole.ReferenceElevationPrecisionId);
         Assert.AreEqual(newBorehole.ReferenceElevationTypeId, updatedBorehole.ReferenceElevationTypeId);
 
         // Stratigraphies and workflows remain unchanged
@@ -578,5 +578,4 @@ public class BoreholeControllerTest
         Assert.IsNotNull(result);
         Assert.AreEqual("The list of IDs must not be empty.", result.Value);
     }
-
 }

@@ -157,6 +157,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         {
             return BadRequest("The list of IDs must not be empty.");
         }
+
         Logger.LogInformation("Export borehole(s) with ids <{Ids}>.", string.Join(", ", ids));
 
         var boreholes = await Context.Boreholes
@@ -167,7 +168,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
                                         b.Id,
                                         b.OriginalName,
                                         b.ProjectName,
-                                        b.AlternateName,
+                                        b.Name,
                                         b.RestrictionId,
                                         b.RestrictionUntil,
                                         b.NationalInterest,
@@ -178,21 +179,20 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
                                         b.ElevationPrecisionId,
                                         b.ReferenceElevation,
                                         b.ReferenceElevationTypeId,
-                                        b.QtReferenceElevationId,
+                                        b.ReferenceElevationPrecisionId,
                                         b.HrsId,
                                         b.TypeId,
                                         b.PurposeId,
                                         b.StatusId,
                                         b.Remarks,
                                         b.TotalDepth,
-                                        b.QtDepthId,
+                                        b.DepthPresicionId,
                                         b.TopBedrockFreshMd,
                                         b.TopBedrockWeatheredMd,
                                         b.HasGroundwater,
                                         b.LithologyTopBedrockId,
-                                        b.ChronostratigraphyId,
-                                        b.LithostratigraphyId,
-
+                                        b.ChronostratigraphyTopBedrockId,
+                                        b.LithostratigraphyTopBedrockId,
                                     })
                                 .ToListAsync()
                                 .ConfigureAwait(false);

@@ -159,16 +159,16 @@ public class BdmsContext : DbContext
                     .HasForeignKey(bf => bf.BoreholeId),
                 j => j.HasKey(bf => new { bf.BoreholeId, bf.CodelistId }));
 
-        modelBuilder.Entity<Borehole>().HasOne(l => l.Chronostratigraphy).WithMany().HasForeignKey(l => l.ChronostratigraphyId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.ChronostratigraphyTopBedrock).WithMany().HasForeignKey(l => l.ChronostratigraphyTopBedrockId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Type).WithMany().HasForeignKey(l => l.TypeId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Hrs).WithMany().HasForeignKey(l => l.HrsId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.LithologyTopBedrock).WithMany().HasForeignKey(l => l.LithologyTopBedrockId);
-        modelBuilder.Entity<Borehole>().HasOne(l => l.Lithostratigraphy).WithMany().HasForeignKey(l => l.LithostratigraphyId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.LithostratigraphyTopBedrock).WithMany().HasForeignKey(l => l.LithostratigraphyTopBedrockId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Purpose).WithMany().HasForeignKey(l => l.PurposeId);
-        modelBuilder.Entity<Borehole>().HasOne(l => l.QtDepth).WithMany().HasForeignKey(l => l.QtDepthId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.DepthPrecision).WithMany().HasForeignKey(l => l.DepthPresicionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.ElevationPrecision).WithMany().HasForeignKey(l => l.ElevationPrecisionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.LocationPrecision).WithMany().HasForeignKey(l => l.LocationPrecisionId);
-        modelBuilder.Entity<Borehole>().HasOne(l => l.QtReferenceElevation).WithMany().HasForeignKey(l => l.QtReferenceElevationId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.ReferenceElevationPrecision).WithMany().HasForeignKey(l => l.ReferenceElevationPrecisionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.ReferenceElevationType).WithMany().HasForeignKey(l => l.ReferenceElevationTypeId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Restriction).WithMany().HasForeignKey(l => l.RestrictionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Status).WithMany().HasForeignKey(l => l.StatusId);

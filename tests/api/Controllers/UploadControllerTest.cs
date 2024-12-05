@@ -227,7 +227,7 @@ public class UploadControllerTest
         // Assert imported values
         var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_6");
         Assert.AreEqual(1, borehole.WorkgroupId);
-        Assert.AreEqual("Unit_Test_6_a", borehole.AlternateName);
+        Assert.AreEqual("Unit_Test_6_a", borehole.Name);
         Assert.AreEqual(null, borehole.IsPublic);
         Assert.AreEqual(new DateTime(2024, 06, 15), borehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, borehole.TotalDepth);
@@ -274,7 +274,7 @@ public class UploadControllerTest
         // Assert imported values
         var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_2");
         Assert.AreEqual(1, borehole.WorkgroupId);
-        Assert.AreEqual(null, borehole.AlternateName);
+        Assert.AreEqual(null, borehole.Name);
         Assert.AreEqual(null, borehole.IsPublic);
         Assert.AreEqual(null, borehole.RestrictionUntil);
         Assert.AreEqual(null, borehole.TotalDepth);

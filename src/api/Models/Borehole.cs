@@ -185,7 +185,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s alternate name.
     /// </summary>
     [Column("alternate_name_bho")]
-    public string? AlternateName { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s location precision.
@@ -253,15 +253,15 @@ public class Borehole : IChangeTracking, IIdentifyable
     public Codelist? Status { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s QtDepth id.
+    /// Gets or sets the <see cref="Borehole"/>'s Depth presicion id.
     /// </summary>
     [Column("qt_depth_id_cli")]
-    public int? QtDepthId { get; set; }
+    public int? DepthPresicionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s QtDepth.
+    /// Gets or sets the <see cref="Borehole"/>'s Depth presicion.
     /// </summary>
-    public Codelist? QtDepth { get; set; }
+    public Codelist? DepthPrecision { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s top bedrock.
@@ -306,26 +306,26 @@ public class Borehole : IChangeTracking, IIdentifyable
     public Codelist? LithologyTopBedrock { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s lithostratigraphy id.
+    /// Gets or sets the <see cref="Borehole"/>'s lithostratigraphy top bedrock id.
     /// </summary>
     [Column("lithostrat_id_cli")]
-    public int? LithostratigraphyId { get; set; }
+    public int? LithostratigraphyTopBedrockId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s lithostratigraphy.
+    /// Gets or sets the <see cref="Borehole"/>'s lithostratigraphy top bedrock.
     /// </summary>
-    public Codelist? Lithostratigraphy { get; set; }
+    public Codelist? LithostratigraphyTopBedrock { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s chronostratigraphy id.
+    /// Gets or sets the <see cref="Borehole"/>'s chronostratigraphy top bedrock id.
     /// </summary>
     [Column("chronostrat_id_cli")]
-    public int? ChronostratigraphyId { get; set; }
+    public int? ChronostratigraphyTopBedrockId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s chronostratigraphy.
+    /// Gets or sets the <see cref="Borehole"/>'s chronostratigraphy top bedrock.
     /// </summary>
-    public Codelist? Chronostratigraphy { get; set; }
+    public Codelist? ChronostratigraphyTopBedrock { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation.
@@ -334,15 +334,15 @@ public class Borehole : IChangeTracking, IIdentifyable
     public double? ReferenceElevation { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s Qt reference elevation id.
+    /// Gets or sets the <see cref="Borehole"/>'s reference elevation precision id.
     /// </summary>
     [Column("qt_reference_elevation_id_cli")]
-    public int? QtReferenceElevationId { get; set; }
+    public int? ReferenceElevationPrecisionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s Qt reference elevation.
+    /// Gets or sets the <see cref="Borehole"/>'s reference elevation precision.
     /// </summary>
-    public Codelist? QtReferenceElevation { get; set; }
+    public Codelist? ReferenceElevationPrecision { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation type id.
