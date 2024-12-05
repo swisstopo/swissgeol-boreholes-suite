@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
 import { Check, Trash2, X } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
-import { BoreholeV2 } from "../../api/borehole.ts";
+import { BoreholeV2, exportCSVBorehole } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import {
   DeleteButton,
@@ -17,6 +17,7 @@ import {
 import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
+import { downloadData } from "../../utils.ts";
 import { useFormDirty } from "./useFormDirty.tsx";
 
 interface DetailHeaderProps {
@@ -84,18 +85,14 @@ const DetailHeader = ({
     history.push("/");
   };
 
-  const handleExport = () => {
+  const handleJsonExport = () => {
     const jsonString = JSON.stringify([borehole], null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    const name_without_spaces = borehole.alternateName.replace(/\s/g, "_");
-    link.download = `${name_without_spaces}.json`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    downloadData(jsonString, borehole.alternateName.replace(/\s/g, "_"), "application/json");
+  };
+
+  const handleCSVExport = async () => {
+    const csvData = await exportCSVBorehole([borehole.id]);
+    downloadData(csvData, borehole.alternateName.replace(/\s/g, "_"), "text/csv");
   };
 
   return (
@@ -150,7 +147,8 @@ const DetailHeader = ({
             </>
           ) : (
             <>
-              <ExportButton onClick={handleExport} />
+              <ExportButton label="exportJson" onClick={handleJsonExport} />
+              <ExportButton label="exportCSV" onClick={handleCSVExport} />
               <EditButton onClick={startEditing} />
             </>
           ))}

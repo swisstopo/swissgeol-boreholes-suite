@@ -4,7 +4,8 @@ import { useHistory } from "react-router-dom";
 import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import { deleteBoreholes } from "../../../api-lib";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { copyBorehole, getAllBoreholes } from "../../../api/borehole.ts";
+import { copyBorehole, exportCSVBorehole, getAllBoreholes } from "../../../api/borehole.ts";
+import { downloadData } from "../../../utils.ts";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { BoreholeTable } from "./boreholeTable.tsx";
@@ -88,18 +89,15 @@ const BottomBarContainer = ({
     setIsBusy(false);
   };
 
-  const onExportMultiple = async () => {
+  const onExportMultipleJson = async () => {
     const paginatedResponse = await getAllBoreholes(selectionModel, 1, selectionModel.length);
     const jsonString = JSON.stringify(paginatedResponse.boreholes, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `bulkexport_${new Date().toISOString().split("T")[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    downloadData(jsonString, `bulkexport_${new Date().toISOString().split("T")[0]}`, "application/json");
+  };
+
+  const onExportMultipleCsv = async () => {
+    const csvData = await exportCSVBorehole(selectionModel);
+    downloadData(csvData, `bulkexport__${new Date().toISOString().split("T")[0]}`, "text/csv");
   };
 
   return (
@@ -109,7 +107,8 @@ const BottomBarContainer = ({
         multipleSelected={multipleSelected}
         onCopyBorehole={onCopyBorehole}
         onDeleteMultiple={onDeleteMultiple}
-        onExportMultiple={onExportMultiple}
+        onExportMultipleJson={onExportMultipleJson}
+        onExportMultipleCsv={onExportMultipleCsv}
         search={search}
         boreholes={boreholes}
         workgroup={workgroupId}

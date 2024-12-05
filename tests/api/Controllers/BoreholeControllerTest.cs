@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Text;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -550,4 +551,32 @@ public class BoreholeControllerTest
         Assert.IsNotNull(copiedBoreholeId);
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
     }
+
+    [TestMethod]
+    public async Task DownloadCsvWithValidIdsReturnsFileResultWithMax100Boreholes()
+    {
+        var ids = Enumerable.Range(testBoreholeId, 120).ToList();
+
+        var result = await controller.DownloadCsv(ids) as FileContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("text/csv", result.ContentType);
+        Assert.AreEqual("boreholes.csv", result.FileDownloadName);
+        var csvData = Encoding.UTF8.GetString(result.FileContents);
+        var fileLength = csvData.Split('\n').Length;
+        var recordCount = fileLength - 2; // Remove header and last line break
+        Assert.IsTrue(recordCount <= 100);
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvEmptyIdsReturnsBadRequest()
+    {
+        var ids = new List<int>();
+
+        var result = await controller.DownloadCsv(ids) as BadRequestObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("The list of IDs must not be empty.", result.Value);
+    }
+
 }

@@ -1,10 +1,12 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace BDMS.Controllers;
 
@@ -77,7 +79,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <param name="pageSize">The page size for pagination.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<PaginatedBoreholeResponse>> GetAllAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>? ids = null, [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1, [FromQuery] [Range(1, MaxPageSize)] int pageSize = 100)
+    public async Task<ActionResult<PaginatedBoreholeResponse>> GetAllAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>? ids = null, [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1, [FromQuery][Range(1, MaxPageSize)] int pageSize = 100)
     {
         pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
 
@@ -143,6 +145,71 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     }
 
     /// <summary>
+    /// Exports the details of up to 100 boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
+    /// </summary>
+    /// <param name="ids">The list of IDs for the boreholes to be exported.</param>
+    /// <returns>A CSV file containing the details of up to 100 specified boreholes.</returns>
+    [HttpGet("export-csv")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> DownloadCsv([FromQuery] IEnumerable<int> ids)
+    {
+        if (!ids.Any())
+        {
+            return BadRequest("The list of IDs must not be empty.");
+        }
+        Logger.LogInformation("Export borehole(s) with ids <{Ids}>.", string.Join(", ", ids));
+
+        var boreholes = await Context.Boreholes
+                                    .Where(borehole => ids.Contains(borehole.Id))
+                                    .Take(100)
+                                    .Select(b => new
+                                    {
+                                        b.Id,
+                                        b.OriginalName,
+                                        b.ProjectName,
+                                        b.AlternateName,
+                                        b.RestrictionId,
+                                        b.RestrictionUntil,
+                                        b.NationalInterest,
+                                        b.LocationX,
+                                        b.LocationY,
+                                        b.LocationPrecisionId,
+                                        b.ElevationZ,
+                                        b.ElevationPrecisionId,
+                                        b.ReferenceElevation,
+                                        b.ReferenceElevationTypeId,
+                                        b.QtReferenceElevationId,
+                                        b.HrsId,
+                                        b.TypeId,
+                                        b.PurposeId,
+                                        b.StatusId,
+                                        b.Remarks,
+                                        b.TotalDepth,
+                                        b.QtDepthId,
+                                        b.TopBedrockFreshMd,
+                                        b.TopBedrockWeatheredMd,
+                                        b.HasGroundwater,
+                                        b.LithologyTopBedrockId,
+                                        b.ChronostratigraphyId,
+                                        b.LithostratigraphyId,
+
+                                    })
+                                .ToListAsync()
+                                .ConfigureAwait(false);
+
+        var stream = new MemoryStream();
+        using (var writer = new StreamWriter(stream, leaveOpen: true))
+        using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
+        {
+            csvWriter.WriteRecords(boreholes);
+        }
+
+        stream.Position = 0;
+
+        return File(stream.ToArray(), "text/csv", "boreholes_export.csv");
+    }
+
+    /// <summary>
     /// Asynchronously copies a <see cref="Borehole"/>.
     /// </summary>
     /// <param name="id">The <see cref="Borehole.Id"/> of the borehole to copy.</param>
@@ -179,7 +246,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         {
             // Include FieldMeasurementResults and HydrotestResults separately since Entity Framework does not support casting in an Include statement
             var fieldMeasurements = borehole.Observations.OfType<FieldMeasurement>().ToList();
-           #pragma warning disable CS8603
+#pragma warning disable CS8603
             // Cannot include null test for fieldMeasurementResults and hydrotestResults since they are not yet loaded
             // if there are no fieldMeasurementResults of hydrotestResults the LoadAsync method will be called but have no effect
             foreach (var fieldMeasurement in fieldMeasurements)
@@ -193,12 +260,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             var hydrotests = borehole.Observations.OfType<Hydrotest>().ToList();
             foreach (var hydrotest in hydrotests)
             {
-                    await Context.Entry(hydrotest)
-                        .Collection(h => h.HydrotestResults)
-                        .LoadAsync()
-                        .ConfigureAwait(false);
+                await Context.Entry(hydrotest)
+                    .Collection(h => h.HydrotestResults)
+                    .LoadAsync()
+                    .ConfigureAwait(false);
             }
-            #pragma warning restore CS8603
+#pragma warning restore CS8603
         }
 
         // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.

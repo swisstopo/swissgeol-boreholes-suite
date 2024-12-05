@@ -84,3 +84,8 @@ export const getAllBoreholes = async (ids: number[] | GridRowSelectionModel, pag
   const idsQuery = ids.map(id => `ids=${id}`).join("&");
   return await fetchApiV2(`borehole?${idsQuery}&pageNumber=${pageNumber}&pageSize=${pageSize}`, "GET");
 };
+
+export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel) => {
+  const idsQuery = boreholeIds.map(id => `ids=${id}`).join("&");
+  return await fetchApiV2(`borehole/export-csv?${idsQuery}`, "GET");
+};
