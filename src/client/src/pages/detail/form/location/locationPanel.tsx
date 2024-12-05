@@ -15,7 +15,7 @@ export const LocationPanel = forwardRef(
     const formMethods = useForm<LocationFormInputs>({
       mode: "onChange",
       defaultValues: {
-        alternateName: borehole.alternateName,
+        name: borehole.name,
         originalName: borehole.originalName,
         projectName: borehole.projectName,
         restrictionId: borehole.restrictionId,

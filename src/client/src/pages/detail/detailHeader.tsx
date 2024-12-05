@@ -87,12 +87,12 @@ const DetailHeader = ({
 
   const handleJsonExport = () => {
     const jsonString = JSON.stringify([borehole], null, 2);
-    downloadData(jsonString, borehole.alternateName.replace(/\s/g, "_"), "application/json");
+    downloadData(jsonString, borehole.name.replace(/\s/g, "_"), "application/json");
   };
 
   const handleCSVExport = async () => {
     const csvData = await exportCSVBorehole([borehole.id]);
-    downloadData(csvData, borehole.alternateName.replace(/\s/g, "_"), "text/csv");
+    downloadData(csvData, borehole.name.replace(/\s/g, "_"), "text/csv");
   };
 
   return (
@@ -107,7 +107,7 @@ const DetailHeader = ({
           }}
         />
         <Stack>
-          <Typography variant="h2"> {borehole?.alternateName}</Typography>
+          <Typography variant="h2"> {borehole?.name}</Typography>
           {!auth.anonymousModeEnabled && (
             <Typography variant={"subtitle2"}>
               {t("lastUpdated")}: <DateText date={borehole?.updated} /> {t("by")} {borehole?.updatedBy?.name}

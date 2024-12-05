@@ -47,7 +47,7 @@ export interface BoreholeV2 {
   municipality: string;
   country: string;
   canton: string;
-  alternateName: string;
+  name: string;
   originalName: string;
   projectName: number;
   restrictionId: number;

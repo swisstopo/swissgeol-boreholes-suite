@@ -14,7 +14,7 @@ export interface LocationPanelProps extends LocationBaseProps {
 }
 
 interface LocationFormBaseInputs {
-  alternateName: string;
+  name: string;
   originalName: string;
   projectName: number;
   restrictionId: number | null;

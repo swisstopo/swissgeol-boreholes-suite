@@ -1,4 +1,4 @@
-import { exportJsonItem, saveWithSaveBar } from "../helpers/buttonHelpers";
+import { exportCSVItem, exportJsonItem, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
@@ -156,7 +156,7 @@ describe("Test for the borehole form.", () => {
     clickOnRowWithText("Zena Rath");
 
     evaluateInput("originalName", "Zena Rath");
-    evaluateInput("alternateName", "Zena Rath");
+    evaluateInput("name", "Zena Rath");
     evaluateInput("projectName", "Reactive asymmetric alliance");
     evaluateSelect("restrictionId", "");
     cy.get(`[data-cy="nationalInterest-formSelect"] input`).should("have.attr", "value", "0");
@@ -172,7 +172,7 @@ describe("Test for the borehole form.", () => {
     returnToOverview();
     clickOnRowWithText("Zena Mraz");
     evaluateInput("originalName", "Zena Mraz");
-    evaluateInput("alternateName", "Zena Mraz");
+    evaluateInput("name", "Zena Mraz");
     evaluateInput("projectName", "Ergonomic heuristic installation");
     evaluateSelect("restrictionId", "");
     evaluateSelect("nationalInterest", "1"); // Yes
@@ -236,14 +236,14 @@ describe("Test for the borehole form.", () => {
   });
 
   it("Exports a borehole as csv and json", () => {
-    const boreholeAlternateName = "AAA_HIPPOPOTHAMUS";
+    const boreholeName = "AAA_HIPPOPOTHAMUS";
     createBorehole({
-      "extended.original_name": boreholeAlternateName,
-      "custom.alternate_name": boreholeAlternateName,
+      "extended.original_name": boreholeName,
+      "custom.alternate_name": boreholeName,
     }).as("borehole_id");
 
-    deleteDownloadedFile(`${boreholeAlternateName}.json`);
-    deleteDownloadedFile(`${boreholeAlternateName}.csv`);
+    deleteDownloadedFile(`${boreholeName}.json`);
+    deleteDownloadedFile(`${boreholeName}.csv`);
 
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
@@ -252,7 +252,7 @@ describe("Test for the borehole form.", () => {
       exportCSVItem();
     });
 
-    readDownloadedFile(`${boreholeAlternateName}.json`);
-    readDownloadedFile(`${boreholeAlternateName}.csv`);
+    readDownloadedFile(`${boreholeName}.json`);
+    readDownloadedFile(`${boreholeName}.csv`);
   });
 });
