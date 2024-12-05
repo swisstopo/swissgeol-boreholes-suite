@@ -382,57 +382,43 @@ public class UploadController : ControllerBase
         return 0;
     }
 
-    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, bool zeroBasedIndex, IList<IFormFile>? attachments = null)
+    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, bool isJsonFile, IList<IFormFile>? attachments = null)
     {
-        var prefix = zeroBasedIndex ? "Borehole" : "Row";
-
         foreach (var borehole in boreholesFromFile.Select((value, index) => (value, index)))
         {
-            var processingIndex = zeroBasedIndex ? borehole.index : borehole.index + 1;
-            var boreholeValue = borehole.value;
-
-            ValidateBorehole(boreholeValue, boreholesFromFile, workgroupId, processingIndex, prefix, attachments);
+            ValidateBorehole(borehole.value, boreholesFromFile, workgroupId, borehole.index, isJsonFile, attachments);
         }
     }
 
-    private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int processingIndex, string prefix, IList<IFormFile>? attachments)
+    private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int boreholeIndex, bool isJsonFile, IList<IFormFile>? attachments)
     {
-        ValidateRequiredFields(borehole, processingIndex, prefix);
-        ValidateDuplicateInFile(borehole, boreholesFromFile, processingIndex, prefix);
-        ValidateDuplicateInDb(borehole, workgroupId, processingIndex, prefix);
-        ValidateAttachments(borehole, attachments, processingIndex, prefix);
+        ValidateRequiredFields(borehole, boreholeIndex, isJsonFile);
+        ValidateDuplicateInFile(borehole, boreholesFromFile, boreholeIndex, isJsonFile);
+        ValidateDuplicateInDb(borehole, workgroupId, boreholeIndex, isJsonFile);
+        ValidateAttachments(borehole, attachments, boreholeIndex, isJsonFile);
     }
 
-    private void ValidateRequiredFields(BoreholeImport borehole, int processingIndex, string prefix)
+    private void ValidateRequiredFields(BoreholeImport borehole, int processingIndex, bool isJsonFile)
     {
-        if (string.IsNullOrEmpty(borehole.OriginalName))
-        {
-            ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
-        }
+        if (string.IsNullOrEmpty(borehole.OriginalName)) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"), isJsonFile);
 
-        if (borehole.LocationX == null && borehole.LocationXLV03 == null)
-        {
-            ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
-        }
+        if (borehole.LocationX == null && borehole.LocationXLV03 == null) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"), isJsonFile);
 
-        if (borehole.LocationY == null && borehole.LocationYLV03 == null)
-        {
-            ModelState.AddModelError($"{prefix}{processingIndex}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
-        }
+        if (borehole.LocationY == null && borehole.LocationYLV03 == null) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"), isJsonFile);
     }
 
-    private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, string prefix)
+    private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, bool isJsonFile)
     {
         if (boreholesFromFile.Count(b =>
             CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
             CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) &&
             CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2)) > 1)
         {
-            ModelState.AddModelError($"{prefix}{processingIndex}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.");
+            AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", isJsonFile);
         }
     }
 
-    private void ValidateDuplicateInDb(BoreholeImport borehole, int workgroupId, int processingIndex, string prefix)
+    private void ValidateDuplicateInDb(BoreholeImport borehole, int workgroupId, int processingIndex, bool isJsonFile)
     {
         var boreholesFromDb = context.Boreholes
             .Where(b => b.WorkgroupId == workgroupId)
@@ -445,59 +431,45 @@ public class UploadController : ControllerBase
             (CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, borehole.LocationX, 2)) &&
             (CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, borehole.LocationY, 2))))
         {
-            ModelState.AddModelError($"{prefix}{processingIndex}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
+            AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", isJsonFile);
         }
     }
 
-    private void ValidateAttachments(BoreholeImport borehole, IList<IFormFile>? attachments, int processingIndex, string prefix)
+    private void ValidateAttachments(BoreholeImport borehole, IList<IFormFile>? attachments, int processingIndex, bool isJsonFile)
     {
         if (attachments == null || string.IsNullOrEmpty(borehole.Attachments)) return;
- 
-        var attachmentFileNamesToLink = borehole.Attachments
+
+        var boreholeFileNames = borehole.Attachments
             .Split(",")
             .Select(s => s.Trim())
             .Where(s => !string.IsNullOrEmpty(s))
             .ToList();
 
-        foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
+        foreach (var boreholeFileName in boreholeFileNames)
         {
-            if (!attachments.Any(a => a.FileName.Equals(attachmentFileNameToLink, StringComparison.OrdinalIgnoreCase)))
+            // Check if the name of any attached file matches the name of the borehole file
+            if (!attachments.Any(a => a.FileName.Equals(boreholeFileName, StringComparison.OrdinalIgnoreCase)))
             {
-                ModelState.AddModelError($"{prefix}{processingIndex}", $"Attachment file '{attachmentFileNameToLink}' not found.");
+                AddValidationErrorToModelState(processingIndex, $"Attachment file '{boreholeFileName}' not found.", isJsonFile);
             }
         }
     }
 
     private void ValidateLithologyImports(List<int> importIds, List<LithologyImport> lithologyImports)
     {
-        // Iterate over provided lithology imports, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
-        foreach (var lithology in lithologyImports.Select((value, index) => (value, index: index + 1)))
+        // Iterate over provided lithology imports, validate them, and create error messages when necessary.
+        foreach (var lithology in lithologyImports.Select((value, index) => (value, index)))
         {
-            if (lithology.value.ImportId == 0)
-            {
-                ModelState.AddModelError($"Row{lithology.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "import_id"));
-            }
+            if (lithology.value.ImportId == 0) AddValidationErrorToModelState(lithology.index, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "import_id"), false);
 
-            if (lithology.value.StratiImportId == 0)
-            {
-                ModelState.AddModelError($"Row{lithology.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "strati_import_id"));
-            }
+            if (lithology.value.StratiImportId == 0) AddValidationErrorToModelState(lithology.index, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "strati_import_id"), false);
 
-            if (lithology.value.FromDepth == null)
-            {
-                ModelState.AddModelError($"Row{lithology.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "from_depth"));
-            }
+            if (lithology.value.FromDepth == null) AddValidationErrorToModelState(lithology.index, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "from_depth"), false);
 
-            if (lithology.value.ToDepth == null)
-            {
-                ModelState.AddModelError($"Row{lithology.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "to_depth"));
-            }
+            if (lithology.value.ToDepth == null) AddValidationErrorToModelState(lithology.index, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "to_depth"), false);
 
             // Check if all import ids exist in the list of provided import ids (from borehole import file)
-            if (!importIds.Contains(lithology.value.ImportId))
-            {
-                ModelState.AddModelError($"Row{lithology.index}", $"Borehole with {nameof(LithologyImport.ImportId)} '{lithology.value.ImportId}' not found.");
-            }
+            if (!importIds.Contains(lithology.value.ImportId)) AddValidationErrorToModelState(lithology.index, $"Borehole with {nameof(LithologyImport.ImportId)} '{lithology.value.ImportId}' not found.", false);
 
             // Check if all multi code list values are numbers
             try
@@ -506,7 +478,7 @@ public class UploadController : ControllerBase
             }
             catch
             {
-                ModelState.AddModelError($"Row{lithology.index}", $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.");
+                AddValidationErrorToModelState(lithology.index, $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.", false);
             }
         }
 
@@ -522,13 +494,13 @@ public class UploadController : ControllerBase
                 // Check if all records with the same strati import id have the same strati name.
                 if (stratiGroup.Select(s => s.StratiName).Distinct().Count() > 1)
                 {
-                    ModelState.AddModelError($"Row{stratiGroup.First().ImportId}", $"Lithology with {nameof(LithologyImport.StratiImportId)} '{stratiGroup.Key}' has various {nameof(LithologyImport.StratiName)}.");
+                    ModelState.AddModelError($"import_id{stratiGroup.First().ImportId}", $"Lithology with {nameof(LithologyImport.StratiImportId)} '{stratiGroup.Key}' has various {nameof(LithologyImport.StratiName)}.");
                 }
 
                 // Check if all records with the same strati import id have the same strati date.
                 if (stratiGroup.Select(s => s.StratiDate).Distinct().Count() > 1)
                 {
-                    ModelState.AddModelError($"Row{stratiGroup.First().ImportId}", $"Lithology with {nameof(LithologyImport.StratiImportId)} '{stratiGroup.Key}' has various {nameof(LithologyImport.StratiDate)}.");
+                    ModelState.AddModelError($"import_id{stratiGroup.First().ImportId}", $"Lithology with {nameof(LithologyImport.StratiImportId)} '{stratiGroup.Key}' has various {nameof(LithologyImport.StratiDate)}.");
                 }
             }
         }
@@ -581,6 +553,14 @@ public class UploadController : ControllerBase
             borehole.Canton = locationInfo.Canton;
             borehole.Municipality = locationInfo.Municipality;
         }
+    }
+
+    private void AddValidationErrorToModelState(int boreholeIndex, string errorMessage, bool isJsonFile)
+    {
+        // Use 'Borehole' as prefix and zero based index for json files, 'Row' as prefix and one based index for csv files. E.g. 'Borehole0' or 'Row1'.
+        var fileTypeBasedPrefix = isJsonFile ? "Borehole" : "Row";
+        boreholeIndex = isJsonFile ? boreholeIndex : boreholeIndex + 1;
+        ModelState.AddModelError($"{fileTypeBasedPrefix}{boreholeIndex}", errorMessage);
     }
 
     private sealed class CsvImportBoreholeMap : ClassMap<BoreholeImport>

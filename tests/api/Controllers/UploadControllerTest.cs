@@ -87,7 +87,7 @@ public class UploadControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("The provided file is not a array of boreholes or is not a valid JSON format.", badRequestResult.Value);
+        Assert.AreEqual("The provided file is not an array of boreholes or is not a valid JSON format.", badRequestResult.Value);
     }
 
     [TestMethod]
@@ -1188,7 +1188,7 @@ public class UploadControllerTest
                 $"Lithology with {nameof(LithologyImport.StratiImportId)} '1001' has various {nameof(LithologyImport.StratiName)}.",
                 $"Lithology with {nameof(LithologyImport.StratiImportId)} '1001' has various {nameof(LithologyImport.StratiDate)}.",
             },
-            problemDetails.Errors["Row1"]);
+            problemDetails.Errors["import_id1"]);
     }
 
     [TestMethod]
