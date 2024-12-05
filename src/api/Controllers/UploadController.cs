@@ -82,11 +82,6 @@ public class UploadController : ControllerBase
 
             if (boreholes == null || boreholes.Count == 0) return BadRequest("No boreholes found in file.");
 
-            for (var i = 0; i < boreholes.Count; i++)
-            {
-                boreholes[i].ImportId = i + 1;
-            }
-
             ValidateBoreholeImports(workgroupId, boreholes, true);
 
             // If any validation error occured, return a bad request.
@@ -428,11 +423,10 @@ public class UploadController : ControllerBase
 
     private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, string prefix)
     {
-        if (boreholesFromFile.Any(b =>
-            b.ImportId != borehole.ImportId &&
+        if (boreholesFromFile.Count(b =>
             CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
             CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) &&
-            CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2)))
+            CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2)) > 1)
         {
             ModelState.AddModelError($"{prefix}{processingIndex}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.");
         }
