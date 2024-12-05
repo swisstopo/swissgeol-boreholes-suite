@@ -119,7 +119,7 @@ const BottomBarContainer = ({
     ]);
   };
 
-  const onExportMultiple = async (callback: { (): Promise<void> }) => {
+  const onExportMultiple = async (callback: () => Promise<void>) => {
     if (selectionModel.length > 100) {
       showPromptExportMoreThan100(callback);
     } else {
