@@ -158,8 +158,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return BadRequest("The list of IDs must not be empty.");
         }
 
-        Logger.LogInformation("Export borehole(s) with ids <{Ids}>.", string.Join(", ", ids));
-
         var boreholes = await Context.Boreholes
                                     .Where(borehole => ids.Contains(borehole.Id))
                                     .Take(100)
