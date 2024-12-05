@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import { deleteBoreholes } from "../../../api-lib";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { copyBorehole } from "../../../api/borehole.ts";
+import { copyBorehole, getAllBoreholes } from "../../../api/borehole.ts";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { BoreholeTable } from "./boreholeTable.tsx";
@@ -89,8 +89,8 @@ const BottomBarContainer = ({
   };
 
   const onExportMultiple = async () => {
-    const exportBoreholes = boreholes.data.filter(borehole => selectionModel.includes(borehole.id));
-    const jsonString = JSON.stringify(exportBoreholes, null, 2);
+    const paginatedResponse = await getAllBoreholes(selectionModel, 1, selectionModel.length);
+    const jsonString = JSON.stringify(paginatedResponse.boreholes, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
