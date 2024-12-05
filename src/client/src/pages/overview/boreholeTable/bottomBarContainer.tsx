@@ -94,7 +94,7 @@ const BottomBarContainer = ({
     setIsBusy(false);
   };
 
-  const handleExportMultipleJson = () => {
+  const handleExportMultipleJson = async () => {
     const paginatedResponse = await getAllBoreholes(selectionModel, 1, selectionModel.length);
     const jsonString = JSON.stringify(paginatedResponse.boreholes, null, 2);
     downloadData(jsonString, `bulkexport_${new Date().toISOString().split("T")[0]}.json`, "application/json");
