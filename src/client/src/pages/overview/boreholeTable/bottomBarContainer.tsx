@@ -97,12 +97,12 @@ const BottomBarContainer = ({
   const handleExportMultipleJson = () => {
     const paginatedResponse = await getAllBoreholes(selectionModel, 1, selectionModel.length);
     const jsonString = JSON.stringify(paginatedResponse.boreholes, null, 2);
-    downloadData(jsonString, `bulkexport_${new Date().toISOString().split("T")[0]}`, "application/json");
+    downloadData(jsonString, `bulkexport_${new Date().toISOString().split("T")[0]}.json`, "application/json");
   };
 
   const handleExportMultipleCsv = async () => {
     const csvData = await exportCSVBorehole(selectionModel.slice(0, 100));
-    downloadData(csvData, `bulkexport__${new Date().toISOString().split("T")[0]}`, "text/csv");
+    downloadData(csvData, `bulkexport_${new Date().toISOString().split("T")[0]}.csv`, "text/csv");
   };
 
   const showPromptExportMoreThan100 = (callback: () => void) => {
@@ -111,7 +111,7 @@ const BottomBarContainer = ({
         label: t("cancel"),
       },
       {
-        label: t("export100Records"),
+        label: t("export100Boreholes"),
         icon: <ArrowDownToLine />,
         variant: "contained",
         action: callback,

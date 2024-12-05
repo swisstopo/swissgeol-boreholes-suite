@@ -1,4 +1,4 @@
-import { exportItem, saveWithSaveBar } from "../helpers/buttonHelpers";
+import { exportJsonItem, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
@@ -235,7 +235,7 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it("Exports a borehole", () => {
+  it("Exports a borehole as csv and json", () => {
     const boreholeAlternateName = "AAA_HIPPOPOTHAMUS";
     createBorehole({
       "extended.original_name": boreholeAlternateName,
@@ -243,13 +243,16 @@ describe("Test for the borehole form.", () => {
     }).as("borehole_id");
 
     deleteDownloadedFile(`${boreholeAlternateName}.json`);
+    deleteDownloadedFile(`${boreholeAlternateName}.csv`);
 
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
       ensureEditingDisabled();
-      exportItem();
+      exportJsonItem();
+      exportCSVItem();
     });
 
     readDownloadedFile(`${boreholeAlternateName}.json`);
+    readDownloadedFile(`${boreholeAlternateName}.csv`);
   });
 });
