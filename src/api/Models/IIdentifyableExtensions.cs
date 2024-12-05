@@ -6,16 +6,13 @@ namespace BDMS.Models;
 internal static class IIdentifyableExtensions
 {
     /// <summary>
-    /// Sets the <see cref="IIdentifyable.Id"/> property of the object to 0.
+    /// Sets the <see cref="IIdentifyable.Id"/> property of the object to 0. Entity Framework interprets this as a added object.
     /// </summary>
     /// <param name="item"><see cref="IIdentifyable"/> object.</param>
-    public static void MarkAsNew(this IIdentifyable item)
-    {
-        item.Id = 0;
-    }
+    public static void MarkAsNew(this IIdentifyable item) => item.Id = 0;
 
     /// <summary>
-    /// Sets the <see cref="IIdentifyable.Id"/> property of the objects in the collection to 0, and recursively sets the <see cref="IIdentifyable.Id"/> properties of nested collections of <see cref="IIdentifyable"/> objects to zero.
+    /// Mark the <see cref="IIdentifyable"/> objects in the collection as new, and recursively mark <see cref="IIdentifyable"/> objects of nested collections as new.
     /// </summary>
     /// <param name="items">Collection of <see cref="IIdentifyable"/> objects.</param>
     public static void MarkAsNew(this IEnumerable<IIdentifyable> items)
