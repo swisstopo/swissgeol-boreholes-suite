@@ -201,7 +201,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         using (var writer = new StreamWriter(stream, leaveOpen: true))
         using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
         {
-            csvWriter.WriteRecords(boreholes);
+           await csvWriter.WriteRecordsAsync(boreholes).ConfigureAwait(false);
         }
 
         stream.Position = 0;
