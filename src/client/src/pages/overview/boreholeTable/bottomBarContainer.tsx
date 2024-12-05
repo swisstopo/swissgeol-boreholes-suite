@@ -120,7 +120,7 @@ const BottomBarContainer = ({
   };
 
   const onExportMultipleJson = () => {
-    if (selectionModel.length > 0) {
+    if (selectionModel.length > 100) {
       showPromptExportMoreThan100(handleExportMultipleJson);
     } else {
       handleExportMultipleJson();
@@ -128,7 +128,7 @@ const BottomBarContainer = ({
   };
 
   const onExportMultipleCsv = async () => {
-    if (selectionModel.length > 0) {
+    if (selectionModel.length > 100) {
       showPromptExportMoreThan100(handleExportMultipleCsv);
     } else {
       await handleExportMultipleCsv();
