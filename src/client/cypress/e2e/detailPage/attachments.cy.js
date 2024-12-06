@@ -36,8 +36,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // // upload file
       cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
-      cy.wait(["@upload-files"]);
-      cy.wait(["@getAllAttachments"]);
+      cy.wait(["@upload-files", "@getAllAttachments"]);
 
       // check list of attachments
       cy.get("tbody").children().should("have.length", 1);
@@ -56,8 +55,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // upload and verify file IRATETRINITY.pdf
       cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
-      cy.wait(["@upload-files"]);
-      cy.wait(["@getAllAttachments"]);
+      cy.wait(["@upload-files", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 2);
       cy.get("tbody").children().contains("td", "text/plain");
       cy.get("tbody").children().contains("td", "application/pdf");
@@ -72,8 +70,7 @@ describe("Tests for 'Attachments' edit page.", () => {
         { force: true },
       );
       cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
-      cy.wait(["@upload-files"]);
-      cy.wait(["@getAllAttachments"]);
+      cy.wait(["@upload-files", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 3);
       cy.get("tbody").children().contains("td", "text/plain");
       cy.get("tbody").children().contains("td", "application/pdf");
@@ -96,16 +93,13 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // delete attachments
       cy.get('[data-cy="attachments-detach-button"]').children().first().click();
-      cy.wait(["@delete-file"]);
-      cy.wait(["@getAllAttachments"]);
+      cy.wait(["@delete-file", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 2);
       cy.get('[data-cy="attachments-detach-button"]').children().first().click();
-      cy.wait(["@delete-file"]);
-      cy.wait(["@getAllAttachments"]);
+      cy.wait(["@delete-file", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 1);
       cy.get('[data-cy="attachments-detach-button"]').children().first().click();
-      cy.wait(["@delete-file"]);
-      cy.wait(["@getAllAttachments"]);
+      cy.wait(["@delete-file", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 0);
 
       // stop editing
