@@ -141,7 +141,7 @@ public class CoordinateControllerTest
             LocationXLV03 = 765875.1615463407,
             LocationYLV03 = 78390.10392298926,
             OriginalReferenceSystem = ReferenceSystem.LV95,
-            AlternateName = "Laurence.Padberg3",
+            Name = "Laurence.Padberg3",
         };
         context.Boreholes.Add(borehole);
         context.SaveChanges();
@@ -159,7 +159,7 @@ public class CoordinateControllerTest
             LocationXLV03 = 655269,
             LocationYLV03 = 297874,
             OriginalReferenceSystem = ReferenceSystem.LV03,
-            AlternateName = "Floyd29",
+            Name = "Floyd29",
         };
         context.Boreholes.Add(borehole);
         context.SaveChanges();
@@ -177,7 +177,7 @@ public class CoordinateControllerTest
             LocationXLV03 = null,
             LocationYLV03 = 224735.18581408318,
             OriginalReferenceSystem = ReferenceSystem.LV03,
-            AlternateName = "Brendan.Trantow38",
+            Name = "Brendan.Trantow38",
         };
         context.Boreholes.Add(borehole);
         context.SaveChanges();
@@ -195,7 +195,7 @@ public class CoordinateControllerTest
             LocationXLV03 = 523204.9377711746,
             LocationYLV03 = null,
             OriginalReferenceSystem = ReferenceSystem.LV95,
-            AlternateName = "Sherri.Goodwin99",
+            Name = "Sherri.Goodwin99",
         };
         context.Boreholes.Add(borehole);
         context.SaveChanges();
@@ -206,7 +206,7 @@ public class CoordinateControllerTest
     private void AssertUnchanged(Borehole initialBohrung)
     {
         var editierteBohrung = context.Boreholes.Single(b => b.Id == initialBohrung.Id);
-        Assert.AreEqual(initialBohrung.AlternateName, editierteBohrung.AlternateName);
+        Assert.AreEqual(initialBohrung.Name, editierteBohrung.Name);
         Assert.AreEqual(initialBohrung.OriginalReferenceSystem, editierteBohrung.OriginalReferenceSystem);
         Assert.AreEqual(initialBohrung.LocationX, editierteBohrung.LocationX);
         Assert.AreEqual(initialBohrung.LocationY, editierteBohrung.LocationY);
@@ -227,7 +227,7 @@ public class CoordinateControllerTest
     private void AssertLV95BoreholeWithAllCoordinatesSet(Borehole initialBohrung)
     {
         var editierteBohrung = context.Boreholes.Single(b => b.Id == initialBohrung.Id);
-        Assert.AreEqual("Laurence.Padberg3", editierteBohrung.AlternateName);
+        Assert.AreEqual("Laurence.Padberg3", editierteBohrung.Name);
         Assert.AreEqual(ReferenceSystem.LV95, editierteBohrung.OriginalReferenceSystem);
         Assert.AreEqual(2626103.1988343936, editierteBohrung.LocationX);
         Assert.AreEqual(1125366.3469565178, editierteBohrung.LocationY);
@@ -239,7 +239,7 @@ public class CoordinateControllerTest
     private void AssertLV03BoreholeWithAllCoordinatesSet(Borehole initialBohrung)
     {
         var editierteBohrung = context.Boreholes.Single(b => b.Id == initialBohrung.Id);
-        Assert.AreEqual("Floyd29", editierteBohrung.AlternateName);
+        Assert.AreEqual("Floyd29", editierteBohrung.Name);
         Assert.AreEqual(ReferenceSystem.LV03, editierteBohrung.OriginalReferenceSystem);
         Assert.AreEqual(9877, editierteBohrung.LocationX);
         Assert.AreEqual(1235, editierteBohrung.LocationY);
@@ -251,7 +251,7 @@ public class CoordinateControllerTest
     private void AssertLV95BoreholeWithMissingDestCoordinates(Borehole initialBohrung)
     {
         var editierteBohrung = context.Boreholes.Single(b => b.Id == initialBohrung.Id);
-        Assert.AreEqual("Sherri.Goodwin99", editierteBohrung.AlternateName);
+        Assert.AreEqual("Sherri.Goodwin99", editierteBohrung.Name);
         Assert.AreEqual(ReferenceSystem.LV95, editierteBohrung.OriginalReferenceSystem);
         Assert.AreEqual(2582431.203588229, editierteBohrung.LocationX);
         Assert.AreEqual(1189604.098138797, editierteBohrung.LocationY);

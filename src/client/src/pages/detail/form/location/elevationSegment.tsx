@@ -44,11 +44,11 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, editingEnabled,
             readonly={!editingEnabled}
           />
           <FormDomainSelect
-            fieldName={"qtReferenceElevationId"}
+            fieldName={"referenceElevationPrecisionId"}
             label={"reference_elevation_qt"}
             readonly={!editingEnabled}
             schemaName={"elevation_precision"}
-            selected={borehole.qtReferenceElevationId}
+            selected={borehole.referenceElevationPrecisionId}
           />
         </FormContainer>
         <FormContainer direction="row">
