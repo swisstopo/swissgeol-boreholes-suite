@@ -71,7 +71,7 @@ public class UploadController : ControllerBase
             try
             {
                 using var stream = file.OpenReadStream();
-                boreholes = JsonSerializer.Deserialize<List<BoreholeImport>>(stream, jsonImportOptions);
+                boreholes = await JsonSerializer.DeserializeAsync<List<BoreholeImport>>(stream, jsonImportOptions).ConfigureAwait(false);
             }
             catch (JsonException ex)
             {
