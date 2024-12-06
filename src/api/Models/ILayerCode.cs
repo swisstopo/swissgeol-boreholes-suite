@@ -15,7 +15,7 @@ public interface ILayerCode
     /// <summary>
     /// Gets or sets the layer in the join table.
     /// </summary>
-    Layer Layer { get; set; }
+    Layer? Layer { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the codelist in the join table.
@@ -25,5 +25,5 @@ public interface ILayerCode
     /// <summary>
     /// Gets or sets the codelist in the join table.
     /// </summary>
-    Codelist Codelist { get; set; }
+    Codelist? Codelist { get; set; }
 }

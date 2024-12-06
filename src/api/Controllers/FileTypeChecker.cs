@@ -13,6 +13,13 @@ public static class FileTypeChecker
     public static bool IsCsv(IFormFile file) => HasCorrectFileExtension(file, ".csv");
 
     /// <summary>
+    /// Checks if the <paramref name="file"/> is a JSON file.
+    /// </summary>
+    /// <param name="file">The file to check the type for.</param>
+    /// <returns><c>true</c> if the <paramref name="file"/> is a JSON file; <c>false</c> otherwise.</returns>
+    public static bool IsJson(IFormFile file) => HasCorrectFileExtension(file, ".json");
+
+    /// <summary>
     /// Checks if the <paramref name="file"/> is of the expected type.
     /// </summary>
     /// <param name="file">The file to check the type for.</param>

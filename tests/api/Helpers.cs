@@ -181,4 +181,10 @@ internal static class Helpers
             .Include(l => l.LayerOrganicComponentCodes)
             .Include(l => l.OrganicComponentCodelists);
     }
+
+    internal static string ShouldBeNullMessage(this string propertyName)
+        => $"{propertyName} should be null.";
+
+    internal static string ShouldNotBeNullMessage(this string propertyName)
+        => $"{propertyName} should not be null.";
 }

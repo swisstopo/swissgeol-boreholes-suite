@@ -13,12 +13,12 @@ public class LayerUscs3Code : ILayerCode
     public int LayerId { get; set; }
 
     /// <inheritdoc/>
-    public Layer Layer { get; set; }
+    public Layer? Layer { get; set; }
 
     /// <inheritdoc/>
     [Column("uscs3_id")]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>
-    public Codelist Codelist { get; set; }
+    public Codelist? Codelist { get; set; }
 }
