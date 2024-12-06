@@ -79,3 +79,8 @@ export const importBoreholes = async (workgroupId: string, combinedFormData: any
 export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: string | null) => {
   return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
+
+export const getAllBoreholes = async (ids: number[] | GridRowSelectionModel, pageNumber: number, pageSize: number) => {
+  const idsQuery = ids.map(id => `ids=${id}`).join("&");
+  return await fetchApiV2(`borehole?${idsQuery}&pageNumber=${pageNumber}&pageSize=${pageSize}`, "GET");
+};

@@ -85,7 +85,7 @@ const DetailHeader = ({
   };
 
   const handleExport = () => {
-    const jsonString = JSON.stringify(borehole, null, 2);
+    const jsonString = JSON.stringify([borehole], null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");

@@ -220,7 +220,6 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.UpdatedBy, _ => default!)
                .RuleFor(o => o.Updated, _ => default!)
                .RuleFor(o => o.Name, f => f.Random.Word())
-               .RuleFor(o => o.Hash, f => f.Random.Hash())
                .RuleFor(o => o.Type, f => f.Random.Word())
                .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
                .RuleFor(o => o.NameUuid, f => null);
