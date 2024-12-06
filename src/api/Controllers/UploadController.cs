@@ -67,12 +67,11 @@ public class UploadController : ControllerBase
 
         try
         {
-            using var reader = new StreamReader(file.OpenReadStream());
             List<BoreholeImport>? boreholes;
-
             try
             {
-                boreholes = JsonSerializer.Deserialize<List<BoreholeImport>>(await reader.ReadToEndAsync().ConfigureAwait(false), jsonImportOptions);
+                using var stream = file.OpenReadStream();
+                boreholes = JsonSerializer.Deserialize<List<BoreholeImport>>(stream, jsonImportOptions);
             }
             catch (JsonException ex)
             {
