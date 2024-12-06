@@ -22,6 +22,8 @@
 - The `alternate_name` is now displayed in the borehole detail header and the map markers.
 - From depth and to depth are no longer displayed in groundwater level measurements.
 - Updated the layout of the borehole general tab.
+- Removed deduplication check when adding and detaching attachments.
+- When copying a borehole, attachments won't be copied.
 
 ### Fixed
 

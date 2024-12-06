@@ -31,22 +31,10 @@ public class BoreholeFileCloudService
     /// <summary>
     /// Uploads a file to the cloud storage and links it to the borehole.
     /// </summary>
-    /// <param name="file">The file to upload and link to the <see cref="Borehole"/>.</param>
-    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded <paramref name="file"/> to.</param>
-    public async Task<BoreholeFile> UploadFileAndLinkToBorehole(IFormFile file, int boreholeId)
+    /// <param name="formFile">The file to upload and link to the <see cref="Borehole"/>.</param>
+    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded <paramref name="formFile"/> to.</param>
+    public async Task<BoreholeFile> UploadFileAndLinkToBorehole(IFormFile formFile, int boreholeId)
     {
-        // Generate a hash based on the file content.
-        var base64Hash = "";
-        using (SHA256 sha256Hash = SHA256.Create())
-        {
-            using Stream stream = file.OpenReadStream();
-            byte[] hashBytes = await sha256Hash.ComputeHashAsync(stream).ConfigureAwait(false);
-            base64Hash = Convert.ToBase64String(hashBytes);
-        }
-
-        // Check any file with the same hash already exists in the database.
-        var fileId = context.Files.FirstOrDefault(f => f.Hash == base64Hash)?.Id;
-
         // Use transaction to ensure data is only stored to db if the file upload was sucessful. Only create a transaction if there is not already one from the calling method.
         using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;
         try
@@ -60,28 +48,26 @@ public class BoreholeFileCloudService
 
             if (user == null || subjectId == null) throw new InvalidOperationException($"No user with subject_id <{subjectId}> found.");
 
-            // If file does not exist on storage, upload it and create file in database.
-            if (fileId == null)
-            {
-                var fileExtension = Path.GetExtension(file.FileName);
-                var fileNameGuid = $"{Guid.NewGuid()}{fileExtension}";
+            // Register the new file in the boreholes database.
+            var fileExtension = Path.GetExtension(formFile.FileName);
+            var fileNameGuid = $"{Guid.NewGuid()}{fileExtension}";
 
-                var bdmsFile = new Models.File { Name = file.FileName, NameUuid = fileNameGuid, Hash = base64Hash, Type = file.ContentType };
+            var file = new Models.File { Name = formFile.FileName, NameUuid = fileNameGuid, Type = formFile.ContentType };
 
-                await context.Files.AddAsync(bdmsFile).ConfigureAwait(false);
-                await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
+            await context.Files.AddAsync(file).ConfigureAwait(false);
+            await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
 
-                fileId = bdmsFile.Id;
+            var fileId = file.Id;
 
-                // Upload the file to the cloud storage.
-                await UploadObject(file, fileNameGuid).ConfigureAwait(false);
-            }
+            // Upload the file to the cloud storage.
+            await UploadObject(formFile, fileNameGuid).ConfigureAwait(false);
 
             // If file is already linked to the borehole, throw an exception.
-            if (context.BoreholeFiles.Any(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId)) throw new InvalidOperationException($"File <{file.FileName}> is already attached to borehole with Id <{boreholeId}>.");
+            if (await context.BoreholeFiles.AnyAsync(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId).ConfigureAwait(false))
+                throw new InvalidOperationException($"File <{formFile.FileName}> is already attached to borehole with Id <{boreholeId}>.");
 
             // Link file to the borehole.
-            var boreholeFile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.UtcNow };
+            var boreholeFile = new BoreholeFile { FileId = fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.UtcNow };
 
             var entityEntry = await context.BoreholeFiles.AddAsync(boreholeFile).ConfigureAwait(false);
             await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
@@ -91,7 +77,7 @@ public class BoreholeFileCloudService
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, $"Error attaching file <{file.FileName}> to borehole with Id <{boreholeId}>.");
+            logger.LogError(ex, "Error attaching file <{FileName}> to borehole with Id <{BoreholeId}>.", formFile.FileName, boreholeId);
             throw;
         }
     }

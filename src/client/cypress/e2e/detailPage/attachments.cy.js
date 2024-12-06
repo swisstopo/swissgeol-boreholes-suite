@@ -36,8 +36,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // // upload file
       cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
-      cy.wait(["@upload-files"]);
-      cy.wait(["@getAllAttachments"]);
+      cy.wait(["@upload-files", "@getAllAttachments"]);
 
       // check list of attachments
       cy.get("tbody").children().should("have.length", 1);
@@ -56,52 +55,51 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // upload and verify file IRATETRINITY.pdf
       cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
-      cy.wait(["@upload-files"]);
-      cy.wait(["@getAllAttachments"]);
+      cy.wait(["@upload-files", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 2);
       cy.get("tbody").children().contains("td", "text/plain");
       cy.get("tbody").children().contains("td", "application/pdf");
 
-      // Select "IRATETRINITY.pdf" second time.
+      // Upload and verify file "IRATETRINITY.pdf" for the second time but with different file name.
       cy.get("input[type=file]").selectFile(
         {
           contents: Cypress.Buffer.from(fileContent),
-          fileName: "IRATETRINITY.pdf",
+          fileName: "IRATETRINITY_2.pdf",
           mimeType: "application/pdf",
         },
         { force: true },
       );
-
-      // Upload "IRATETRINITY.pdf" second time. Should not be uploaded.
       cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
-      cy.wait(["@upload-files"]);
-
-      // Check if error message is displayed.
-      cy.contains("This file has already been uploaded for this borehole");
-
-      // Ensure file does not exist in download folder before download. If so, delete it.
-      deleteDownloadedFile("IRATETRINITY.pdf");
+      cy.wait(["@upload-files", "@getAllAttachments"]);
+      cy.get("tbody").children().should("have.length", 3);
+      cy.get("tbody").children().contains("td", "text/plain");
+      cy.get("tbody").children().contains("td", "application/pdf");
 
       // intercept download file request
       cy.intercept("/api/v2/boreholefile/download?boreholeFileId=**").as("download-file");
 
+      // Ensure file does not exist in download folder before download. If so, delete it.
+      deleteDownloadedFile("IRATETRINITY_2.pdf");
+
       // Download recently uploaded file
-      cy.get("tbody").children().contains("span", "IRATETRINITY.pdf").click();
+      cy.get("tbody").children().contains("span", "IRATETRINITY_2.pdf").click();
       cy.wait("@download-file");
 
-      // Check if file is present in download folder.
-      readDownloadedFile("IRATETRINITY.pdf");
+      // Check if the file is present in download folder.
+      readDownloadedFile("IRATETRINITY_2.pdf");
 
       // intercept delete file request
       cy.intercept("/api/v2/boreholefile/detachFile?boreholeId=**&boreholeFileId=**").as("delete-file");
 
       // delete attachments
-      cy.get("tbody").children().first().get("td button").children().first().click();
-      cy.wait(["@delete-file"]);
-      cy.wait(["@getAllAttachments"]);
-      cy.get("tbody").children().first().get("td button").children().first().click();
-      cy.wait(["@delete-file"]);
-      cy.wait(["@getAllAttachments"]);
+      cy.get('[data-cy="attachments-detach-button"]').children().first().click();
+      cy.wait(["@delete-file", "@getAllAttachments"]);
+      cy.get("tbody").children().should("have.length", 2);
+      cy.get('[data-cy="attachments-detach-button"]').children().first().click();
+      cy.wait(["@delete-file", "@getAllAttachments"]);
+      cy.get("tbody").children().should("have.length", 1);
+      cy.get('[data-cy="attachments-detach-button"]').children().first().click();
+      cy.wait(["@delete-file", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 0);
 
       // stop editing
