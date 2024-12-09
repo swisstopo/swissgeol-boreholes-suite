@@ -227,7 +227,7 @@ public class BoreholeFileCloudService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error deleting file <{objectName}> from cloud storage.");
+            logger.LogError(ex, $"Error deleting file from cloud storage.");
             throw;
         }
     }
