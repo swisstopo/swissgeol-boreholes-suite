@@ -71,8 +71,8 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   data.referenceElevationTypeId = data.referenceElevationTypeId ?? null;
   data.elevationPrecisionId = data.elevationPrecisionId ?? null;
   data.locationPrecisionId = data.locationPrecisionId ?? null;
-  data.qtReferenceElevationId = data.qtReferenceElevationId ?? null;
-  data.alternateName = data?.alternateName ?? data.originalName;
+  data.referenceElevationPrecisionId = data.referenceElevationPrecisionId ?? null;
+  data.name = data?.name ?? data.originalName;
   data.precisionLocationX = data?.locationX ? getPrecisionFromString(formInputs.locationX) : null;
   data.precisionLocationY = data?.locationY ? getPrecisionFromString(formInputs.locationY) : null;
   data.precisionLocationXLV03 = data?.locationXLV03 ? getPrecisionFromString(formInputs.locationXLV03) : null;

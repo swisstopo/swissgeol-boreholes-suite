@@ -60,10 +60,19 @@ export const deleteItem = parent => {
 };
 
 /**
- * Clicks on the export button.
+ * Clicks on the JSON-export button.
  */
-export const exportItem = () => {
-  const selector = '[data-cy="export-button"]';
+export const exportJsonItem = () => {
+  const selector = '[data-cy="exportjson-button"]';
+  cy.get(selector).should("not.be.disabled");
+  cy.get(selector).click({ force: true });
+};
+
+/**
+ * Clicks on the CSV-export button.
+ */
+export const exportCSVItem = () => {
+  const selector = '[data-cy="exportcsv-button"]';
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };

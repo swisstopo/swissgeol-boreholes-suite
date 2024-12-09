@@ -29,7 +29,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
       purposeId: borehole.purposeId,
       statusId: borehole.statusId,
       totalDepth: borehole.totalDepth,
-      qtDepthId: borehole.qtDepthId,
+      depthPrecisionId: borehole.depthPrecisionId,
       topBedrockFreshMd: borehole.topBedrockFreshMd,
       topBedrockWeatheredMd: borehole.topBedrockWeatheredMd,
       lithologyTopBedrockId: borehole.lithologyTopBedrockId,
@@ -129,11 +129,11 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                     readonly={!editingEnabled}
                   />
                   <FormDomainSelect
-                    fieldName={"qtDepthId"}
+                    fieldName={"depthPrecisionId"}
                     label={"qt_depth"}
                     schemaName={"depth_precision"}
                     readonly={!editingEnabled}
-                    selected={borehole.qtDepthId}
+                    selected={borehole.depthPrecisionId}
                   />
                   <FormInputDisplayOnly label={"total_depth_tvd"} value={totalDepthTVD} withThousandSeparator={true} />
                 </FormContainer>
