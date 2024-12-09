@@ -209,7 +209,7 @@ public class BoreholeFileCloudService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error retrieving image information from data extraction folder in cloud storage.");
+            logger.LogError(ex, "Error retrieving image information from data extraction folder in cloud storage.");
             throw;
         }
     }
@@ -227,7 +227,7 @@ public class BoreholeFileCloudService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error deleting file from cloud storage.");
+            logger.LogError(ex, "Error deleting file from cloud storage.");
             throw;
         }
     }
