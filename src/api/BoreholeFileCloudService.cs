@@ -97,7 +97,7 @@ public class BoreholeFileCloudService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error uploading file <{file.FileName}> to cloud storage.");
+            logger.LogError(ex, "Error uploading file to cloud storage.");
             throw;
         }
     }
@@ -121,7 +121,7 @@ public class BoreholeFileCloudService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error downloading file from cloud storage.");
+            logger.LogError(ex, "Error downloading file from cloud storage.");
             throw;
         }
     }
@@ -156,7 +156,7 @@ public class BoreholeFileCloudService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error counting files in data extraction folder in cloud storage.");
+            logger.LogError(ex, "Error counting files in data extraction folder in cloud storage.");
             throw;
         }
     }
@@ -209,7 +209,7 @@ public class BoreholeFileCloudService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error retrieving image information from data extraction folder in cloud storage.");
+            logger.LogError(ex, "Error retrieving image information from data extraction folder in cloud storage.");
             throw;
         }
     }
@@ -227,7 +227,7 @@ public class BoreholeFileCloudService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, $"Error deleting file <{objectName}> from cloud storage.");
+            logger.LogError(ex, "Error deleting file from cloud storage.");
             throw;
         }
     }
