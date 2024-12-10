@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Text;
 
 namespace BDMS.Controllers;
 
@@ -194,16 +195,11 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         if (boreholes.Count == 0) return NotFound("No borehole(s) found for the provided id(s).");
 
-        var stream = new MemoryStream();
-        using (var writer = new StreamWriter(stream, leaveOpen: true))
-        using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
-        {
-           await csvWriter.WriteRecordsAsync(boreholes).ConfigureAwait(false);
-        }
+        using var stringWriter = new StringWriter();
+        using var csvWriter = new CsvWriter(stringWriter, CultureInfo.InvariantCulture);
+        await csvWriter.WriteRecordsAsync(boreholes).ConfigureAwait(false);
 
-        stream.Position = 0;
-
-        return File(stream.ToArray(), "text/csv", "boreholes_export.csv");
+        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", "boreholes_export.csv");
     }
 
     /// <summary>
