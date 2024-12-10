@@ -124,7 +124,7 @@ describe("Tests for 'Location' edit page.", () => {
     });
   });
 
-  it.only("Saves restriction until date.", () => {
+  it("Saves restriction until date.", () => {
     newEditableBorehole().as("borehole_id");
 
     setSelect("restrictionId", 3);
