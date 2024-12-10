@@ -6,7 +6,6 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
 using System.Globalization;
 using System.Net;
 
@@ -47,14 +46,13 @@ public class UploadController : ControllerBase
     /// </summary>
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
     /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole csv records that were uploaded.</param>
-    /// <param name="lithologyFile">The <see cref="IFormFile"/> containing the lithology csv records that were uploaded.</param>
     /// <param name="attachments">The list of <see cref="IFormFile"/> containing the borehole attachments referred in <paramref name="boreholesFile"/>.</param>
     /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IFormFile? lithologyFile = null, IList<IFormFile>? attachments = null)
+    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IList<IFormFile>? attachments = null)
     {
         // Increase max allowed errors to be able to return more validation errors at once.
         ModelState.MaxAllowedErrors = 1000;
@@ -74,18 +72,8 @@ public class UploadController : ControllerBase
             // Checks if any of the provided attachments exceeds the maximum file size.
             if (attachments?.Any(a => a.Length > MaxFileSize) == true) return BadRequest($"One or more attachment exceed maximum file size of {MaxFileSize / 1024 / 1024} Mb.");
 
-            // if a lithology file is provided, checks if it is a CSV file.
-            if (lithologyFile != null && !FileTypeChecker.IsCsv(lithologyFile)) return BadRequest("Invalid file type for lithology csv.");
-
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
             ValidateBoreholeImports(workgroupId, boreholeImports, attachments);
-
-            var lithologyImports = new List<LithologyImport>();
-            if (lithologyFile != null)
-            {
-                lithologyImports = ReadLithologiesFromCsv(lithologyFile);
-                ValidateLithologyImports(boreholeImports.Select(bhi => bhi.ImportId).ToList(), lithologyImports);
-            }
 
             // If any validation error occured, return a bad request.
             if (!ModelState.IsValid)
@@ -175,69 +163,6 @@ public class UploadController : ControllerBase
                 }
             }
 
-            // Add lithology imports if provided
-            if (lithologyImports.Count > 0)
-            {
-                // Get the kind id of a lithostratigraphy.
-                var lithoStratiKindId = context.Codelists.Single(cl => cl.Schema == "layer_kind" && cl.IsDefault == true).Id;
-
-                // Group lithology records by import id to get lithologies by boreholes.
-                var boreholeGroups = lithologyImports.GroupBy(l => l.ImportId);
-
-                var codeLists = await context.Codelists.ToListAsync().ConfigureAwait(false);
-
-                var stratiesToAdd = new List<Stratigraphy>();
-                var lithologiesToAdd = new List<Layer>();
-                foreach (var boreholeLithologies in boreholeGroups)
-                {
-                    // Group lithology of one borehole by strati import id to get lithologies per stratigraphy.
-                    var stratiGroups = boreholeLithologies.GroupBy(bhoGroup => bhoGroup.StratiImportId);
-                    foreach (var stratiGroup in stratiGroups)
-                    {
-                        // Create a stratigraphy and assign it to the borehole with the provided import id.
-                        var strati = new Stratigraphy
-                        {
-                            BoreholeId = boreholeImports.Single(bhi => bhi.ImportId == boreholeLithologies.Key).Id,
-                            Date = stratiGroup.First().StratiDate != null ? DateTime.SpecifyKind(stratiGroup.First().StratiDate!.Value, DateTimeKind.Utc) : null,
-                            Name = stratiGroup.First().StratiName,
-                        };
-
-                        // Create a lithology for each record in the group (same strati id) and assign it to the new stratigraphy.
-                        var lithologies = stratiGroup.Select(sg =>
-                        {
-                            var lithology = (Layer)sg;
-                            lithology.ColorCodelistIds = ParseIds(sg.ColorIds);
-                            lithology.DebrisCodelistIds = ParseIds(sg.DebrisIds);
-                            lithology.GrainShapeCodelistIds = ParseIds(sg.GrainShapeIds);
-                            lithology.GrainAngularityCodelistIds = ParseIds(sg.GrainGranularityIds);
-                            lithology.OrganicComponentCodelistIds = ParseIds(sg.OrganicComponentIds);
-                            lithology.Uscs3CodelistIds = ParseIds(sg.Uscs3Ids);
-
-                            lithology.LayerColorCodes = CreateLayerCodes<LayerColorCode>(GetCodelists(lithology.ColorCodelistIds));
-                            lithology.LayerDebrisCodes = CreateLayerCodes<LayerDebrisCode>(GetCodelists(lithology.DebrisCodelistIds));
-                            lithology.LayerGrainShapeCodes = CreateLayerCodes<LayerGrainShapeCode>(GetCodelists(lithology.GrainShapeCodelistIds));
-                            lithology.LayerGrainAngularityCodes = CreateLayerCodes<LayerGrainAngularityCode>(GetCodelists(lithology.GrainAngularityCodelistIds));
-                            lithology.LayerOrganicComponentCodes = CreateLayerCodes<LayerOrganicComponentCode>(GetCodelists(lithology.OrganicComponentCodelistIds));
-                            lithology.LayerUscs3Codes = CreateLayerCodes<LayerUscs3Code>(GetCodelists(lithology.Uscs3CodelistIds));
-
-                            lithology.Stratigraphy = strati;
-                            return lithology;
-                        }).ToList();
-
-                        stratiesToAdd.Add(strati);
-                        lithologiesToAdd.AddRange(lithologies);
-                    }
-                }
-
-                // Add stratigraphies to database.
-                await context.Stratigraphies.AddRangeAsync(stratiesToAdd).ConfigureAwait(false);
-                await SaveChangesAsync(() => Ok(stratiesToAdd.Count)).ConfigureAwait(false);
-
-                // Add litholigies to database.
-                await context.Layers.AddRangeAsync(lithologiesToAdd).ConfigureAwait(false);
-                await SaveChangesAsync(() => Ok(lithologiesToAdd.Count)).ConfigureAwait(false);
-            }
-
             await transaction.CommitAsync().ConfigureAwait(false);
             return result;
         }
@@ -250,51 +175,6 @@ public class UploadController : ControllerBase
             logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{Error}>", workgroupId, ex);
             return Problem("Error while importing borehole(s).");
         }
-    }
-
-    /// <summary>
-    /// Parses a string of <see cref="Codelist"/> IDs into a list of integers.
-    /// </summary>
-    /// <param name="ids">The string of <see cref="Codelist"/> IDs to parse. IDs are expected to be separated by commas.</param>
-    /// <returns>A list of integers parsed from the input string.</returns>
-    internal List<int> ParseIds(string ids)
-    {
-        if (string.IsNullOrEmpty(ids))
-        {
-            return new List<int>();
-        }
-
-        return ids
-            .Split(',')
-            .Select(s =>
-            {
-                if (!int.TryParse(s, out var num))
-                {
-                    logger.LogError($"Invalid code list value: {s}");
-                    throw new FormatException($"Invalid code list value: {s}");
-                }
-
-                return num;
-            }).ToList();
-    }
-
-    internal List<Codelist> GetCodelists(ICollection<int> codelistIds)
-    {
-        return context.Codelists.Where(c => codelistIds.Contains(c.Id)).ToList();
-    }
-
-    internal List<T> CreateLayerCodes<T>(List<Codelist> codelists)
-        where T : ILayerCode, new()
-    {
-        return codelists.Select(c => new T { Codelist = c, CodelistId = c.Id }).ToList();
-    }
-
-    internal List<int> ParseMultiValueCodeListIds(LithologyImport lithologyImport)
-    {
-        // Select all code list ids of all multi value code list properties.
-        return new[] { lithologyImport.ColorIds, lithologyImport.OrganicComponentIds, lithologyImport.GrainShapeIds, lithologyImport.GrainGranularityIds, lithologyImport.Uscs3Ids, lithologyImport.DebrisIds }
-            .SelectMany(str => str.Split(','))
-            .Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
     }
 
     internal static int GetPrecision(IReaderRow row, string fieldName)
@@ -375,72 +255,6 @@ public class UploadController : ControllerBase
         }
     }
 
-    private void ValidateLithologyImports(List<int> importIds, List<LithologyImport> lithologyImports)
-    {
-        // Iterate over provided lithology imports, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
-        foreach (var lithology in lithologyImports.Select((value, index) => (value, index: index + 1)))
-        {
-            if (lithology.value.ImportId == 0)
-            {
-                ModelState.AddModelError($"Row{lithology.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "import_id"));
-            }
-
-            if (lithology.value.StratiImportId == 0)
-            {
-                ModelState.AddModelError($"Row{lithology.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "strati_import_id"));
-            }
-
-            if (lithology.value.FromDepth == null)
-            {
-                ModelState.AddModelError($"Row{lithology.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "from_depth"));
-            }
-
-            if (lithology.value.ToDepth == null)
-            {
-                ModelState.AddModelError($"Row{lithology.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "to_depth"));
-            }
-
-            // Check if all import ids exist in the list of provided import ids (from borehole import file)
-            if (!importIds.Contains(lithology.value.ImportId))
-            {
-                ModelState.AddModelError($"Row{lithology.index}", $"Borehole with {nameof(LithologyImport.ImportId)} '{lithology.value.ImportId}' not found.");
-            }
-
-            // Check if all multi code list values are numbers
-            try
-            {
-                ParseMultiValueCodeListIds(lithology.value);
-            }
-            catch
-            {
-                ModelState.AddModelError($"Row{lithology.index}", $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.");
-            }
-        }
-
-        // Group lithology records by import id to get lithologies per borehole.
-        var boreholeGroups = lithologyImports.GroupBy(l => l.ImportId);
-
-        foreach (var boreholeLithologies in boreholeGroups)
-        {
-            // Group lithology records per borehole by strati import id to get lithologies per stratigraphy.
-            var stratiGroups = boreholeLithologies.GroupBy(bhoGroup => bhoGroup.StratiImportId);
-            foreach (var stratiGroup in stratiGroups)
-            {
-                // Check if all records with the same strati import id have the same strati name.
-                if (stratiGroup.Select(s => s.StratiName).Distinct().Count() > 1)
-                {
-                    ModelState.AddModelError($"Row{stratiGroup.First().ImportId}", $"Lithology with {nameof(LithologyImport.StratiImportId)} '{stratiGroup.Key}' has various {nameof(LithologyImport.StratiName)}.");
-                }
-
-                // Check if all records with the same strati import id have the same strati date.
-                if (stratiGroup.Select(s => s.StratiDate).Distinct().Count() > 1)
-                {
-                    ModelState.AddModelError($"Row{stratiGroup.First().ImportId}", $"Lithology with {nameof(LithologyImport.StratiImportId)} '{stratiGroup.Key}' has various {nameof(LithologyImport.StratiDate)}.");
-                }
-            }
-        }
-    }
-
     internal static bool CompareValuesWithTolerance(double? firstValue, double? secondValue, double tolerance)
     {
         if (firstValue == null && secondValue == null) return true;
@@ -457,16 +271,6 @@ public class UploadController : ControllerBase
         csv.Context.RegisterClassMap(new CsvImportBoreholeMap());
 
         return csv.GetRecords<BoreholeImport>().ToList();
-    }
-
-    private List<LithologyImport> ReadLithologiesFromCsv(IFormFile? file)
-    {
-        using var reader = new StreamReader(file.OpenReadStream());
-        using var csv = new CsvReader(reader, csvConfig);
-
-        csv.Context.RegisterClassMap(new CsvImportLithologyMap());
-
-        return csv.GetRecords<LithologyImport>().ToList();
     }
 
     private async Task UpdateBoreholeLocationAndCoordinates(Borehole borehole)
@@ -590,60 +394,6 @@ public class UploadController : ControllerBase
             Map(m => m.PrecisionLocationXLV03).Convert(args => GetPrecision(args.Row, "location_x"));
             Map(m => m.PrecisionLocationY).Convert(args => GetPrecision(args.Row, "location_y"));
             Map(m => m.PrecisionLocationYLV03).Convert(args => GetPrecision(args.Row, "location_y"));
-        }
-    }
-
-    private sealed class CsvImportLithologyMap : ClassMap<LithologyImport>
-    {
-        private readonly CultureInfo swissCulture = new("de-CH");
-
-        public CsvImportLithologyMap()
-        {
-            var config = new CsvConfiguration(swissCulture)
-            {
-                IgnoreReferences = true,
-                PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
-            };
-
-            AutoMap(config);
-
-            // Define all optional properties of Layer (ef navigation properties do not need to be defined as optional).
-            Map(m => m.StratiDate).Optional();
-            Map(m => m.StratiName).Optional();
-            Map(m => m.Id).Optional();
-            Map(m => m.StratigraphyId).Optional();
-            Map(m => m.CreatedById).Optional();
-            Map(m => m.Created).Optional();
-            Map(m => m.UpdatedById).Optional();
-            Map(m => m.Updated).Optional();
-            Map(m => m.IsUndefined).Optional();
-            Map(m => m.IsLast).Optional();
-            Map(m => m.DescriptionQualityId).Optional();
-            Map(m => m.LithologyId).Optional();
-            Map(m => m.PlasticityId).Optional();
-            Map(m => m.ConsistanceId).Optional();
-            Map(m => m.AlterationId).Optional();
-            Map(m => m.CompactnessId).Optional();
-            Map(m => m.GrainSize1Id).Optional();
-            Map(m => m.GrainSize2Id).Optional();
-            Map(m => m.CohesionId).Optional();
-            Map(m => m.Uscs1Id).Optional();
-            Map(m => m.Uscs2Id).Optional();
-            Map(m => m.OriginalUscs).Optional();
-            Map(m => m.UscsDeterminationId).Optional();
-            Map(m => m.Notes).Optional();
-            Map(m => m.LithostratigraphyId).Optional();
-            Map(m => m.HumidityId).Optional();
-            Map(m => m.IsStriae).Optional();
-            Map(m => m.GradationId).Optional();
-            Map(m => m.LithologyTopBedrockId).Optional();
-            Map(m => m.OriginalLithology).Optional();
-            Map(m => m.ColorIds).Optional();
-            Map(m => m.OrganicComponentIds).Optional();
-            Map(m => m.GrainShapeIds).Optional();
-            Map(m => m.GrainGranularityIds).Optional();
-            Map(m => m.Uscs3Ids).Optional();
-            Map(m => m.DebrisIds).Optional();
         }
     }
 
