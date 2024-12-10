@@ -85,14 +85,17 @@ const DetailHeader = ({
     history.push("/");
   };
 
+  const getFileName = (name: string) => {
+    return name.replace(/\s/g, "_");
+  };
   const handleJsonExport = () => {
     const jsonString = JSON.stringify([borehole], null, 2);
-    downloadData(jsonString, borehole.name.replace(/\s/g, "_"), "application/json");
+    downloadData(jsonString, getFileName(borehole.name), "application/json");
   };
 
   const handleCSVExport = async () => {
     const csvData = await exportCSVBorehole([borehole.id]);
-    downloadData(csvData, borehole.name.replace(/\s/g, "_"), "text/csv");
+    downloadData(csvData, getFileName(borehole.name), "text/csv");
   };
 
   return (

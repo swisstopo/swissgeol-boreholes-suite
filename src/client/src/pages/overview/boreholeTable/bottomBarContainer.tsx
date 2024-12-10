@@ -94,15 +94,19 @@ const BottomBarContainer = ({
     setIsBusy(false);
   };
 
+  const getBulkExportFilename = (suffix: string) => {
+    return `bulkexport_${new Date().toISOString().split("T")[0]}.${suffix}`;
+  };
+
   const handleExportMultipleJson = async () => {
     const paginatedResponse = await getAllBoreholes(selectionModel, 1, selectionModel.length);
     const jsonString = JSON.stringify(paginatedResponse.boreholes, null, 2);
-    downloadData(jsonString, `bulkexport_${new Date().toISOString().split("T")[0]}.json`, "application/json");
+    downloadData(jsonString, getBulkExportFilename("json"), "application/json");
   };
 
   const handleExportMultipleCsv = async () => {
     const csvData = await exportCSVBorehole(selectionModel.slice(0, 100));
-    downloadData(csvData, `bulkexport_${new Date().toISOString().split("T")[0]}.csv`, "text/csv");
+    downloadData(csvData, getBulkExportFilename("csv"), "text/csv");
   };
 
   const showPromptExportMoreThan100 = (callback: () => void) => {
