@@ -360,10 +360,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             }
         }
 
-        foreach (var boreholeFile in borehole.BoreholeFiles)
-        {
-            boreholeFile.BoreholeId = 0;
-        }
+        // Do not copy borehole attachments
+        borehole.BoreholeFiles.Clear();
 
         foreach (var boreholeGeometry in borehole.BoreholeGeometry)
         {

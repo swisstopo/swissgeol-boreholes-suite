@@ -22,6 +22,9 @@
 - The `alternate_name` is now displayed in the borehole detail header and the map markers.
 - From depth and to depth are no longer displayed in groundwater level measurements.
 - Updated the layout of the borehole general tab.
+- Removed deduplication check when adding and detaching attachments.
+- When copying a borehole, attachments won't be copied.
+- Removed layers settings for anonymous users.
 
 ### Fixed
 
@@ -37,6 +40,7 @@
 - Filtering striae for `not specified` returned wrong results.
 - Filtering by `borehole status` did not work.
 - When saving with ctrl+s in the borehole sections, the form content was reset.
+- There was a bug when changing the order, transparency or visibility of custom WMS user layers.
 
 ## v2.1.870 - 2024-09-27
 

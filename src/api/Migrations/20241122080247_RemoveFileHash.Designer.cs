@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20241128080655_RemoveGroundwaterDepthEntries")]
-    partial class RemoveGroundwaterDepthEntries
+    [Migration("20241122080247_RemoveFileHash")]
+    partial class RemoveFileHash
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

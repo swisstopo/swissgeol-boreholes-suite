@@ -43,12 +43,6 @@ public class File : IChangeTracking, IIdentifyable
     public string? NameUuid { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="File"/>'s hash.
-    /// </summary>
-    [Column("hash_fil")]
-    public string Hash { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="File"/>'s type.
     /// </summary>
     [Column("type_fil")]
