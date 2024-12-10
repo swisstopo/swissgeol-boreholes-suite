@@ -481,7 +481,7 @@ class WorkflowForm extends React.Component {
                               whiteSpace: "nowrap",
                             }}>
                             <Typography variant="h6" sx={{ color: "#909090" }}>
-                              <TranslationText id={`status${role.toLowerCase()}`} />
+                              <TranslationText id={`status${this.roleMap[role].toLowerCase()}`} />
                             </Typography>
                           </div>
                           <div
