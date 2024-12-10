@@ -145,10 +145,10 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     }
 
     /// <summary>
-    /// Exports the details of up to 100 boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The list of IDs for the boreholes to be exported.</param>
-    /// <returns>A CSV file containing the details of up to 100 specified boreholes.</returns>
+    /// <returns>A CSV file containing the details specified boreholes.</returns>
     [HttpGet("export-csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> DownloadCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
