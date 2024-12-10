@@ -1,6 +1,6 @@
 import { addItem, saveWithSaveBar, stopEditing } from "../helpers/buttonHelpers";
 import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
-import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
+import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
@@ -122,6 +122,21 @@ describe("Tests for 'Location' edit page.", () => {
       saveButton.click();
       verifyNoUnsavedChanges();
     });
+  });
+
+  it.only("Saves restriction until date.", () => {
+    newEditableBorehole().as("borehole_id");
+
+    setSelect("restrictionId", 3);
+    isDisabled("restrictionUntil", false);
+    setInput("restrictionUntil", "2012-11-14");
+    evaluateInput("restrictionUntil", "2012-11-14");
+    saveWithSaveBar();
+    // navigate away and back to check if values are saved
+    cy.get('[data-cy="borehole-menu-item"]').click();
+    cy.get('[data-cy="location-menu-item"]').click();
+
+    evaluateInput("restrictionUntil", "2012-11-14");
   });
 
   it("saves with ctrl s", () => {
