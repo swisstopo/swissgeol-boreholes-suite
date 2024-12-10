@@ -582,7 +582,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task DownloadCsvWithPartiallyValidIdsReturnsFileForPartillyValidIds()
     {
-        var ids = new List<int> { 9, 8 , 0, testBoreholeId };
+        var ids = new List<int> { 9, 8, 0, testBoreholeId };
 
         var result = await controller.DownloadCsvAsync(ids) as FileContentResult;
 
