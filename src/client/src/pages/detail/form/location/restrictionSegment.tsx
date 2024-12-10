@@ -25,6 +25,11 @@ const RestrictionSegment = ({ borehole, editingEnabled, formMethods }: Restricti
   const restriction = formMethods.watch("restrictionId");
 
   useEffect(() => {
+    //TODO: Adapt data type on backend to Date instead of slicing the returned DateTime
+    formMethods.setValue("restrictionUntil", borehole.restrictionUntil?.toString().slice(0, 10) ?? "");
+  }, [borehole.restrictionUntil, formMethods]);
+
+  useEffect(() => {
     if (dirtyFields.restrictionId) {
       setRestrictionUntilEnabled(restriction === restrictionUntilCode);
       formMethods.setValue("restrictionUntil", null);
