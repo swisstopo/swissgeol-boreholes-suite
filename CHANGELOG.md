@@ -40,7 +40,7 @@
 - Filtering striae for `not specified` returned wrong results.
 - Filtering by `borehole status` did not work.
 - When saving with ctrl+s in the borehole sections, the form content was reset.
-- There was a bug when changing the order,transparency or visibility of custom WMS user layers.
+- There was a bug when changing the order, transparency or visibility of custom WMS user layers.
 
 ## v2.1.870 - 2024-09-27
 
