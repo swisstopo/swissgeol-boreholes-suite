@@ -151,13 +151,13 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <returns>A CSV file containing the details of up to 100 specified boreholes.</returns>
     [HttpGet("export-csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> DownloadCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>ids)
+    public async Task<IActionResult> DownloadCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
+        ids = ids.Take(MaxPageSize).ToList();
         if (!ids.Any()) return BadRequest("The list of IDs must not be empty.");
 
         var boreholes = await Context.Boreholes
             .Where(borehole => ids.Contains(borehole.Id))
-            .Take(100)
             .Select(b => new
             {
                 b.Id,
@@ -192,7 +192,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .ToListAsync()
             .ConfigureAwait(false);
 
-        if (!boreholes.Any()) return NotFound("No borehole(s) found for the provided id(s).");
+        if (boreholes.Count == 0) return NotFound("No borehole(s) found for the provided id(s).");
 
         var stream = new MemoryStream();
         using (var writer = new StreamWriter(stream, leaveOpen: true))
