@@ -193,12 +193,27 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             var hydrotests = borehole.Observations.OfType<Hydrotest>().ToList();
             foreach (var hydrotest in hydrotests)
             {
-                    await Context.Entry(hydrotest)
-                        .Collection(h => h.HydrotestResults)
-                        .LoadAsync()
-                        .ConfigureAwait(false);
+                await Context.Entry(hydrotest)
+                    .Collection(h => h.HydrotestResults)
+                    .LoadAsync()
+                    .ConfigureAwait(false);
+
+                await Context.Entry(hydrotest)
+                    .Collection(h => h.KindCodelists)
+                    .LoadAsync()
+                    .ConfigureAwait(false);
+
+                await Context.Entry(hydrotest)
+                    .Collection(h => h.EvaluationMethodCodelists)
+                    .LoadAsync()
+                    .ConfigureAwait(false);
+
+                await Context.Entry(hydrotest)
+                    .Collection(h => h.FlowDirectionCodelists)
+                    .LoadAsync()
+                    .ConfigureAwait(false);
             }
-            #pragma warning restore CS8603
+#pragma warning restore CS8603
         }
 
         // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.

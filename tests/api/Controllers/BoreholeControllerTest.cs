@@ -17,6 +17,7 @@ public class BoreholeControllerTest
 
     private BdmsContext context;
     private BoreholeController controller;
+    private HydrotestController hydrotestController;
     private static int testBoreholeId = 1000068;
 
     [TestInitialize]
@@ -24,15 +25,29 @@ public class BoreholeControllerTest
     {
         context = ContextFactory.GetTestContext();
         controller = GetTestController(context);
+        hydrotestController = GetHydrotestController(context);
+    }
+
+    private Mock<IBoreholeLockService> CreateBoreholeLockServiceMock()
+    {
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>();
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int>(), It.IsAny<string>()))
+            .ReturnsAsync(false);
+
+        return boreholeLockServiceMock;
     }
 
     private BoreholeController GetTestController(BdmsContext testContext)
     {
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(false);
-        return new BoreholeController(testContext, new Mock<ILogger<BoreholeController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        var boreholeLockServiceMock = CreateBoreholeLockServiceMock();
+        return new BoreholeController(testContext, new Mock<ILogger<BoreholeController>>().Object, boreholeLockServiceMock.Object);
+    }
+
+    private HydrotestController GetHydrotestController(BdmsContext testContext)
+    {
+        var boreholeLockServiceMock = CreateBoreholeLockServiceMock();
+        return new HydrotestController(testContext, new Mock<ILogger<HydrotestController>>().Object, boreholeLockServiceMock.Object);
     }
 
     [TestCleanup]
@@ -306,6 +321,37 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task CopyBoreholeWithHydrotests()
+    {
+        var borehole = new Borehole
+        {
+            Id = 9,
+            OriginalName = "Borehole with hydrotest",
+            WorkgroupId = DefaultWorkgroupId,
+
+        };
+
+        var response = await controller.CreateAsync(borehole);
+        ActionResultAssert.IsOk(response.Result);
+
+        var hydrotest = new Hydrotest
+        {
+            BoreholeId= 9,
+            StartTime = DateTime.UtcNow,
+            EndTime = DateTime.UtcNow.AddHours(2),
+            Type = ObservationType.Hydrotest,
+            Comment = "Hydrotest observation for testing",
+            EvaluationMethodCodelistIds = new List<int> { 15203191, 15203189, 15203193 },
+            FlowDirectionCodelistIds = new List<int> { 15203187, 5203188 },
+            KindCodelistIds = new List<int> { 15203172, 15203176 },
+        };
+
+        var hydrotestsResponse = await hydrotestController.CreateAsync(hydrotest);
+        ActionResultAssert.IsOk(hydrotestsResponse.Result);
+
+    }
+
+    [TestMethod]
     public async Task Copy()
     {
         boreholeId = GetBoreholeIdToCopy();
@@ -506,7 +552,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyInvalidWorkgroupId()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         var result = await controller.CopyAsync(boreholeId, workgroupId: 0).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
     }
@@ -514,7 +560,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyMissingWorkgroupPermission()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         var result = await controller.CopyAsync(boreholeId, workgroupId: 2).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
     }
@@ -522,7 +568,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithUnknownUser()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
@@ -531,7 +577,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithUserNotSet()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         controller.ControllerContext.HttpContext.User = null;
         await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
         {
@@ -542,7 +588,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
