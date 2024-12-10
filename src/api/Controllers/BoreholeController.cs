@@ -192,6 +192,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .ToListAsync()
             .ConfigureAwait(false);
 
+        if (!boreholes.Any()) return NotFound("No borehole(s) found for the provided id(s).");
+
         var stream = new MemoryStream();
         using (var writer = new StreamWriter(stream, leaveOpen: true))
         using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))

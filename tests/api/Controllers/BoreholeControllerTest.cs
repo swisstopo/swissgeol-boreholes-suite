@@ -569,6 +569,34 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task DownloadCsvWithInvalidIdsReturnsNotFound()
+    {
+        var ids = new List<int> { 8, 2, 11, 87 };
+
+        var result = await controller.DownloadCsvAsync(ids) as NotFoundObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("No borehole(s) found for the provided id(s).", result.Value);
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvWithPartiallyValidIdsReturnsFileForPartillyValidIds()
+    {
+        var ids = new List<int> { 9, 8 , 0, testBoreholeId };
+
+        var result = await controller.DownloadCsvAsync(ids) as FileContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result);
+        Assert.AreEqual("text/csv", result.ContentType);
+        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
+        var csvData = Encoding.UTF8.GetString(result.FileContents);
+        var fileLength = csvData.Split('\n').Length;
+        var recordCount = fileLength - 2;
+        Assert.AreEqual(recordCount, 1);
+    }
+
+    [TestMethod]
     public async Task DownloadCsvEmptyIdsReturnsBadRequest()
     {
         var ids = new List<int>();
