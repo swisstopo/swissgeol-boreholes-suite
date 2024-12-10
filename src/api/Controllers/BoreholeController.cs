@@ -153,10 +153,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> DownloadCsv([FromQuery] IEnumerable<int> ids)
     {
-        if (!ids.Any())
-        {
-            return BadRequest("The list of IDs must not be empty.");
-        }
+        if (!ids.Any()) return BadRequest("The list of IDs must not be empty.");
 
         var boreholes = await Context.Boreholes
                                     .Where(borehole => ids.Contains(borehole.Id))
