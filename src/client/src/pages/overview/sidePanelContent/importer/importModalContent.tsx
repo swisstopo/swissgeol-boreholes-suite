@@ -35,11 +35,7 @@ const ExampleHeadings = (headings: string) => {
   );
 };
 
-const ImportModalContent = ({
-  setSelectedBoreholeAttachments,
-  setSelectedFile,
-  selectedFile,
-}: ImportContentProps) => {
+const ImportModalContent = ({ setSelectedBoreholeAttachments, setSelectedFile, selectedFile }: ImportContentProps) => {
   const { t } = useTranslation();
 
   const handleBoreholeAttachmentChange = useCallback(
