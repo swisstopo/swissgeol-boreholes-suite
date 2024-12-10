@@ -67,7 +67,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | id_kernlager                | Zahl           | Nein        | ID Kernlager                                                                          |
 | original_name               | Text           | Ja          | Originalname                                                                          |
 | project_name                | Text           | Nein        | Projektname                                                                           |
-| name                        | Text           | Nein        | Name                                                                     |
+| name                        | Text           | Nein        | Name                                                                                  |
 | restriction_id              | ID (Codeliste) | Nein        | Beschränkung                                                                          |
 | restriction_until           | Datum          | Nein        | Ablaufdatum der Beschränkung                                                          |
 | national_interest           | True/False     | Nein        | Nationales Interesse                                                                  |
