@@ -72,11 +72,12 @@ const EditorSettings = () => {
     position: number,
     queryable: boolean,
   ) => {
+    const key = type === "WMTS" ? layer?.Identifier : layer?.Name;
     dispatch(
       patchSettings(
         "map.explorer",
         {
-          Identifier: layer.Identifier,
+          Identifier: key,
           Abstract: layer.Abstract,
           position: position,
           Title: layer.Title,
@@ -88,7 +89,7 @@ const EditorSettings = () => {
           conf: conf,
         },
         // @ts-expect-error typing not complete
-        type === "WMTS" ? layer?.Identifier : layer?.Name,
+        key,
       ),
     );
   };
