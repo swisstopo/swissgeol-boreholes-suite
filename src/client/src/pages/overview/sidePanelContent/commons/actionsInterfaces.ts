@@ -24,13 +24,11 @@ export interface ImportContentProps {
   setSelectedBoreholeAttachments: React.Dispatch<React.SetStateAction<Blob[] | null>>;
   selectedFile: Blob[] | null;
   setSelectedFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
-  setSelectedLithologyFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
 }
 
 export interface ImportModalProps extends ImportContentProps {
   modal: boolean;
   creating: boolean;
-  selectedLithologyFile: Blob[] | null;
   selectedBoreholeAttachments: Blob[] | null;
   selectedFile: Blob[] | null;
   upload: boolean;
@@ -43,6 +41,5 @@ export interface ImportModalProps extends ImportContentProps {
   setErrorsResponse: React.Dispatch<React.SetStateAction<ErrorResponse | null>>;
   setValidationErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
-  setSelectedLithologyFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
   refresh: () => void;
 }

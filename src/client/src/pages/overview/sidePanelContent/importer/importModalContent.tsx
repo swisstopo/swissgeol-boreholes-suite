@@ -38,7 +38,6 @@ const ExampleHeadings = (headings: string) => {
 const ImportModalContent = ({
   setSelectedBoreholeAttachments,
   setSelectedFile,
-  setSelectedLithologyFile,
   selectedFile,
 }: ImportContentProps) => {
   const { t } = useTranslation();
@@ -48,13 +47,6 @@ const ImportModalContent = ({
       setSelectedBoreholeAttachments(attachmentsFromDropzone);
     },
     [setSelectedBoreholeAttachments],
-  );
-
-  const handleLithologyFileChange = useCallback(
-    (lithologyFileFromDropzone: Blob[]) => {
-      setSelectedLithologyFile(lithologyFileFromDropzone);
-    },
-    [setSelectedLithologyFile],
   );
 
   const handleBoreholeFileChange = useCallback(
@@ -112,30 +104,6 @@ const ImportModalContent = ({
           dataCy={"import-boreholeFile-attachments-input"}
           maxFilesToSelectAtOnce={Infinity}
           maxFilesToUpload={Infinity}
-        />
-      </Stack>
-      {SeparatorLine()}
-      <h3>{capitalizeFirstLetter(t("lithology"))}</h3>
-      <Stack direction="row" alignItems="flex-start">
-        <StackHalfWidth>
-          {t("csvFormatExplanation")}
-          {ExampleHeadings(
-            "import_id;strati_import_id;strati_date;strati_name;from_depth;to_depth;" +
-              "is_last;description_quality_id;lithology_id;" +
-              "original_uscs;uscs_determination_id;uscs_1_id;grain_size_1_id;uscs_2_id;grain_size_2_id;" +
-              "is_striae;consistance_id;plasticity_id;compactness_id;cohesion_id;humidity_id;alteration_id;" +
-              "notes;original_lithology;uscs_3_ids;grain_shape_ids;grain_granularity_ids;organic_component_ids;" +
-              "debris_ids;color_ids;gradation_id;lithology_top_bedrock_id;",
-          )}
-        </StackHalfWidth>
-        <FileDropzone
-          onHandleFileChange={handleLithologyFileChange}
-          defaultText={"dropZoneLithologyText"}
-          restrictAcceptedFileTypeToCsv={true}
-          maxFilesToSelectAtOnce={1}
-          maxFilesToUpload={1}
-          isDisabled={selectedFile?.length === 0}
-          dataCy={"import-lithologyFile-input"}
         />
       </Stack>
       {SeparatorLine()}

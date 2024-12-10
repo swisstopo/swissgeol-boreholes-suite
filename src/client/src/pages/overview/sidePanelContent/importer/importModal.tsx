@@ -24,8 +24,6 @@ const ImportModal = ({
   enabledWorkgroups,
   workgroup,
   setWorkgroup,
-  selectedLithologyFile,
-  setSelectedLithologyFile,
   refresh,
 }: ImportModalProps) => {
   const { showAlert } = useContext(AlertContext);
@@ -41,11 +39,6 @@ const ImportModal = ({
       if (selectedBoreholeAttachments !== null) {
         selectedBoreholeAttachments.forEach((attachment: string | Blob) => {
           combinedFormData.append("attachments", attachment);
-        });
-      }
-      if (selectedLithologyFile !== null) {
-        selectedLithologyFile.forEach((lithologyFile: string | Blob) => {
-          combinedFormData.append("lithologyFile", lithologyFile);
         });
       }
     }
@@ -107,7 +100,6 @@ const ImportModal = ({
         <ImportModalContent
           setSelectedBoreholeAttachments={setSelectedBoreholeAttachments}
           setSelectedFile={setSelectedFile}
-          setSelectedLithologyFile={setSelectedLithologyFile}
           selectedFile={selectedFile}
         />
         <h3>{capitalizeFirstLetter(t("workgroup"))}</h3>

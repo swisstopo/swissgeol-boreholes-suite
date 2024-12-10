@@ -46,7 +46,6 @@ const MainSideNav = ({
   const [validationErrorModal, setValidationErrorModal] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<Blob[] | null>(null);
   const [selectedBoreholeAttachments, setSelectedBoreholeAttachments] = useState<Blob[] | null>(null);
-  const [selectedLithologyFile, setSelectedLithologyFile] = useState<Blob[] | null>(null);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   const filterContext = useContext(FilterContext);
 
@@ -176,7 +175,6 @@ const MainSideNav = ({
         setValidationErrorModal={setValidationErrorModal}
         refresh={refresh}
         setSelectedFile={setSelectedFile}
-        setSelectedLithologyFile={setSelectedLithologyFile}
         setWorkgroup={setWorkgroupId}
         enabledWorkgroups={enabledWorkgroups}
         setSelectedBoreholeAttachments={setSelectedBoreholeAttachments}
@@ -185,7 +183,6 @@ const MainSideNav = ({
         selectedBoreholeAttachments={selectedBoreholeAttachments}
         modal={modal}
         upload={upload}
-        selectedLithologyFile={selectedLithologyFile}
       />
       <ImportErrorModal
         setValidationErrorModal={setValidationErrorModal}
