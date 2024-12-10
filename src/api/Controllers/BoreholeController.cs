@@ -156,41 +156,41 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         if (!ids.Any()) return BadRequest("The list of IDs must not be empty.");
 
         var boreholes = await Context.Boreholes
-                                    .Where(borehole => ids.Contains(borehole.Id))
-                                    .Take(100)
-                                    .Select(b => new
-                                    {
-                                        b.Id,
-                                        b.OriginalName,
-                                        b.ProjectName,
-                                        b.Name,
-                                        b.RestrictionId,
-                                        b.RestrictionUntil,
-                                        b.NationalInterest,
-                                        b.LocationX,
-                                        b.LocationY,
-                                        b.LocationPrecisionId,
-                                        b.ElevationZ,
-                                        b.ElevationPrecisionId,
-                                        b.ReferenceElevation,
-                                        b.ReferenceElevationTypeId,
-                                        b.ReferenceElevationPrecisionId,
-                                        b.HrsId,
-                                        b.TypeId,
-                                        b.PurposeId,
-                                        b.StatusId,
-                                        b.Remarks,
-                                        b.TotalDepth,
-                                        b.DepthPrecisionId,
-                                        b.TopBedrockFreshMd,
-                                        b.TopBedrockWeatheredMd,
-                                        b.HasGroundwater,
-                                        b.LithologyTopBedrockId,
-                                        b.ChronostratigraphyTopBedrockId,
-                                        b.LithostratigraphyTopBedrockId,
-                                    })
-                                .ToListAsync()
-                                .ConfigureAwait(false);
+            .Where(borehole => ids.Contains(borehole.Id))
+            .Take(100)
+            .Select(b => new
+            {
+                b.Id,
+                b.OriginalName,
+                b.ProjectName,
+                b.Name,
+                b.RestrictionId,
+                b.RestrictionUntil,
+                b.NationalInterest,
+                b.LocationX,
+                b.LocationY,
+                b.LocationPrecisionId,
+                b.ElevationZ,
+                b.ElevationPrecisionId,
+                b.ReferenceElevation,
+                b.ReferenceElevationTypeId,
+                b.ReferenceElevationPrecisionId,
+                b.HrsId,
+                b.TypeId,
+                b.PurposeId,
+                b.StatusId,
+                b.Remarks,
+                b.TotalDepth,
+                b.DepthPrecisionId,
+                b.TopBedrockFreshMd,
+                b.TopBedrockWeatheredMd,
+                b.HasGroundwater,
+                b.LithologyTopBedrockId,
+                b.ChronostratigraphyTopBedrockId,
+                b.LithostratigraphyTopBedrockId,
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
 
         var stream = new MemoryStream();
         using (var writer = new StreamWriter(stream, leaveOpen: true))
