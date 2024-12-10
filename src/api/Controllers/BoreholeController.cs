@@ -151,7 +151,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <returns>A CSV file containing the details of up to 100 specified boreholes.</returns>
     [HttpGet("export-csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> DownloadCsv([FromQuery] IEnumerable<int> ids)
+    public async Task<IActionResult> DownloadCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>ids)
     {
         if (!ids.Any()) return BadRequest("The list of IDs must not be empty.");
 

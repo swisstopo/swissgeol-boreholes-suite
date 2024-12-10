@@ -557,7 +557,7 @@ public class BoreholeControllerTest
     {
         var ids = Enumerable.Range(testBoreholeId, 120).ToList();
 
-        var result = await controller.DownloadCsv(ids) as FileContentResult;
+        var result = await controller.DownloadCsvAsync(ids) as FileContentResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual("text/csv", result.ContentType);
@@ -573,7 +573,7 @@ public class BoreholeControllerTest
     {
         var ids = new List<int>();
 
-        var result = await controller.DownloadCsv(ids) as BadRequestObjectResult;
+        var result = await controller.DownloadCsvAsync(ids) as BadRequestObjectResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual("The list of IDs must not be empty.", result.Value);
