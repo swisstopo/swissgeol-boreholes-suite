@@ -313,6 +313,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id });
 
         borehole.OriginalName += " (Copy)";
+        borehole.AlternateName += " (Copy)";
 
         var entityEntry = await Context.AddAsync(borehole).ConfigureAwait(false);
         await Context.SaveChangesAsync().ConfigureAwait(false);
