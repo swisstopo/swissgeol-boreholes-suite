@@ -119,10 +119,7 @@ public class BoreholeGeometryController : ControllerBase
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
 
         var tvd = GetTVDIfGeometryExists(depthMD, geometry);
-        if (tvd != null)
-        {
-            return Ok(tvd);
-        }
+        if (tvd != null) return Ok(tvd);
 
         logger?.LogInformation($"Invalid input, could not calculate true vertical depth from measured depth of {depthMD}");
         return Ok();
@@ -146,7 +143,7 @@ public class BoreholeGeometryController : ControllerBase
             }
             catch (ArgumentOutOfRangeException)
             {
-                // Exception is ignored so that the action returns an empty response in case the input was invalid.
+                // Exception is ignored so that the method returns null in case the input was invalid.
             }
         }
 

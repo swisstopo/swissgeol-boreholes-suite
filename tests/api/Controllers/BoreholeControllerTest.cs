@@ -587,7 +587,6 @@ public class BoreholeControllerTest
              .Take(3);
 
         var boreholes = boreholesWithoutGeometry.Concat(boreholesWithGeometry).Select(b => b.Id).ToList();
-
         var result = await controller.DownloadCsvAsync(boreholes) as FileContentResult;
 
         Assert.IsNotNull(result);
@@ -601,7 +600,6 @@ public class BoreholeControllerTest
             Delimiter = ";",
         };
         using var csv = new CsvReader(reader, csvConfig);
-
         var records = csv.GetRecords<dynamic>().ToList();
         for (int i = 0; i < records.Count; i++)
         {
