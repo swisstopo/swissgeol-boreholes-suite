@@ -16,7 +16,7 @@ export interface BoreholePanelProps extends BoreholeGeneralProps {
 
 export interface BoreholeFormInputs {
   totalDepth: number | null;
-  qtDepthId: number;
+  depthPrecisionId: number;
   typeId: number;
   purposeId: number;
   statusId: number;

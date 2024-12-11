@@ -16,10 +16,10 @@ const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps
   const { dirtyFields, isDirty } = formMethods.formState;
 
   useEffect(() => {
-    if (dirtyFields.originalName || (!isDirty && formMethods.getValues("alternateName") === "")) {
-      formMethods.setValue("alternateName", originalName);
+    if (dirtyFields.originalName || (!isDirty && formMethods.getValues("name") === "")) {
+      formMethods.setValue("name", originalName);
     }
-  }, [borehole?.alternateName, dirtyFields.originalName, formMethods, formMethods.setValue, isDirty, originalName]);
+  }, [borehole?.name, dirtyFields.originalName, formMethods, formMethods.setValue, isDirty, originalName]);
 
   return (
     <Card>
@@ -45,10 +45,10 @@ const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps
           )}
           <FormContainer direction="row">
             <FormInput
-              fieldName={"alternateName"}
+              fieldName={"name"}
               label={"alternate_name"}
               readonly={!editingEnabled}
-              value={borehole?.alternateName || ""}
+              value={borehole?.name || ""}
             />
             <FormInput
               fieldName={"projectName"}

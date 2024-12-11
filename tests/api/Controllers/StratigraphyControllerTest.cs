@@ -343,7 +343,7 @@ public class StratigraphyControllerTest
         Assert.AreEqual(stratigraphyWithoutBedrockLayer.Id, bedrockLayer.StratigraphyId);
         Assert.AreEqual(boreholeWithBedrock.TopBedrockFreshMd.Value, bedrockLayer.FromDepth);
         Assert.AreEqual(boreholeWithBedrock.LithologyTopBedrockId, bedrockLayer.LithologyTopBedrockId);
-        Assert.AreEqual(boreholeWithBedrock.LithostratigraphyId, bedrockLayer.LithostratigraphyId);
+        Assert.AreEqual(boreholeWithBedrock.LithostratigraphyTopBedrockId, bedrockLayer.LithostratigraphyId);
         Assert.AreEqual(false, bedrockLayer.IsLast);
     }
 

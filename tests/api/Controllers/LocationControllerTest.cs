@@ -135,7 +135,7 @@ public class LocationControllerTest
             LocationXLV03 = null,
             LocationYLV03 = 78390.10392298926,
             OriginalReferenceSystem = ReferenceSystem.LV95,
-            AlternateName = "Byron_West",
+            Name = "Byron_West",
             Country = "Northern Mariana Islands",
             Canton = "South Dakota",
             Municipality = "Lake Chayamouth",
@@ -156,7 +156,7 @@ public class LocationControllerTest
             LocationXLV03 = 741929.5530394556,
             LocationYLV03 = 78390.10392298926,
             OriginalReferenceSystem = ReferenceSystem.LV95,
-            AlternateName = "Andy.Lang",
+            Name = "Andy.Lang",
             Country = null,
             Canton = "South Dakota",
             Municipality = "Lake Chayamouth",
@@ -177,7 +177,7 @@ public class LocationControllerTest
             LocationXLV03 = 741929.5530394556,
             LocationYLV03 = 78390.10392298926,
             OriginalReferenceSystem = ReferenceSystem.LV95,
-            AlternateName = "Tasha.Walsh",
+            Name = "Tasha.Walsh",
             Country = "British Indian Ocean Territory (Chagos Archipelago)",
             Canton = "South Dakota",
             Municipality = "Lake Chayamouth",
@@ -191,7 +191,7 @@ public class LocationControllerTest
     private void AssertUnchanged(Borehole initialBohrung)
     {
         var editierteBohrung = context.Boreholes.Single(b => b.Id == initialBohrung.Id);
-        Assert.AreEqual(initialBohrung.AlternateName, editierteBohrung.AlternateName);
+        Assert.AreEqual(initialBohrung.Name, editierteBohrung.Name);
         Assert.AreEqual(initialBohrung.OriginalReferenceSystem, editierteBohrung.OriginalReferenceSystem);
         Assert.AreEqual(initialBohrung.LocationX, editierteBohrung.LocationX);
         Assert.AreEqual(initialBohrung.LocationY, editierteBohrung.LocationY);
@@ -204,7 +204,7 @@ public class LocationControllerTest
     private void AssertBoreholeWithAllLocationAttributes(Borehole initialBohrung)
     {
         var editierteBohrung = context.Boreholes.Single(b => b.Id == initialBohrung.Id);
-        Assert.AreEqual("Byron_West", editierteBohrung.AlternateName);
+        Assert.AreEqual("Byron_West", editierteBohrung.Name);
         Assert.AreEqual(ReferenceSystem.LV95, editierteBohrung.OriginalReferenceSystem);
         Assert.AreEqual("RAGETRINITY", editierteBohrung.Country);
         Assert.AreEqual("SLEEPYMONKEY", editierteBohrung.Canton);
@@ -214,7 +214,7 @@ public class LocationControllerTest
     private void AssertBoreholeWithMissingLocationAttributes(Borehole initialBohrung)
     {
         var editierteBohrung = context.Boreholes.Single(b => b.Id == initialBohrung.Id);
-        Assert.AreEqual("Andy.Lang", editierteBohrung.AlternateName);
+        Assert.AreEqual("Andy.Lang", editierteBohrung.Name);
         Assert.AreEqual(ReferenceSystem.LV95, editierteBohrung.OriginalReferenceSystem);
         Assert.AreEqual("RAGETRINITY", editierteBohrung.Country);
         Assert.AreEqual("SLEEPYMONKEY", editierteBohrung.Canton);

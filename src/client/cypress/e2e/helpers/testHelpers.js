@@ -33,6 +33,7 @@ export const interceptApiCalls = () => {
   cy.intercept("PUT", "/api/v2/layer").as("update-layer");
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
+  cy.intercept("/api/v2/borehole/export-csv**").as("borehole_export_csv");
   cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
 
@@ -354,8 +355,7 @@ export const deleteDownloadedFile = fileName => {
   });
 };
 
-// Read the downloaded file in Cypress' downloads folder
-export const readDownloadedFile = fileName => {
+export const prepareDownloadPath = fileName => {
   // Get the path to the downloaded file you want to read
   let filePath = "cypress/downloads/" + fileName;
 
@@ -363,6 +363,12 @@ export const readDownloadedFile = fileName => {
   if (Cypress.platform === "win32") {
     filePath = "cypress\\downloads\\" + fileName;
   }
+  return filePath;
+};
+
+// Read the downloaded file in Cypress' downloads folder
+export const readDownloadedFile = fileName => {
+  let filePath = prepareDownloadPath(fileName);
 
   cy.readFile(filePath);
 };
