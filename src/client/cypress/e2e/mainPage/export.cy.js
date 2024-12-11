@@ -11,8 +11,8 @@ import {
   deleteDownloadedFile,
   getElementByDataCy,
   getImportFileFromFixtures,
+  goToRouteAndAcceptTerms,
   handlePrompt,
-  loginAsAdmin,
   prepareDownloadPath,
   readDownloadedFile,
   startBoreholeEditing,
@@ -49,7 +49,6 @@ describe("Test for exporting boreholes.", () => {
     createBorehole({ "extended.original_name": "AAA_LOMONE", "custom.alternate_name": "AAA_LOMONE" }).as(
       "borehole_id_2",
     );
-    loginAsAdmin();
     showTableAndWaitForData();
     getElementByDataCy("borehole-table").within(() => {
       checkRowWithText("AAA_NINTIC");
@@ -71,8 +70,9 @@ describe("Test for exporting boreholes.", () => {
     createBorehole({ "extended.original_name": boreholeName, "custom.alternate_name": boreholeName }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin(`/${id}`);
+      goToRouteAndAcceptTerms(`/${id}`);
     });
+
     //add geometry to borehole and verify export tvd changed
     getElementByDataCy("borehole-menu-item").click();
     startBoreholeEditing();
@@ -134,7 +134,6 @@ describe("Test for exporting boreholes.", () => {
   });
 
   it("downloads a maximum of 100 boreholes", () => {
-    loginAsAdmin();
     showTableAndWaitForData();
     checkAllVisibleRows();
     deleteDownloadedFile(csvFileName);
