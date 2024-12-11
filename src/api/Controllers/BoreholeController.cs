@@ -228,13 +228,9 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         using var stringWriter = new StringWriter();
-        var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+        var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
         {
-            ShouldQuote = args =>
-            {
-                if (args.Field.ToString().Contains(',', StringComparison.OrdinalIgnoreCase)) return true;
-                return ConfigurationFunctions.ShouldQuote(args);
-            },
+            Delimiter = ";",
         };
         using var csvWriter = new CsvWriter(stringWriter, csvConfig);
         await csvWriter.WriteRecordsAsync(boreholes).ConfigureAwait(false);

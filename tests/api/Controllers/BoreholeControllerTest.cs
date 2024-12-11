@@ -596,7 +596,11 @@ public class BoreholeControllerTest
 
         using var memoryStream = new MemoryStream(result.FileContents);
         using var reader = new StreamReader(memoryStream);
-        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
+        {
+            Delimiter = ";",
+        };
+        using var csv = new CsvReader(reader, csvConfig);
 
         var records = csv.GetRecords<dynamic>().ToList();
         for (int i = 0; i < records.Count; i++)
