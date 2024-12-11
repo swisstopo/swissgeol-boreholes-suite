@@ -606,20 +606,36 @@ public class BoreholeControllerTest
         for (int i = 0; i < records.Count; i++)
         {
             var record = records[i];
-            var tvdValue = record.Tvd;
-            var totalDepthValue = record.TotalDepth;
-            Assert.IsFalse(string.IsNullOrWhiteSpace(tvdValue), $"Tvd value is missing or empty in row {i + 1}.");
-            Assert.IsFalse(string.IsNullOrWhiteSpace(totalDepthValue), $"Total depth value is missing or empty in row {i + 1}.");
+            var totalDepthTvd = record.TotalDepthTvd;
+            var totalDepthMd = record.TotalDepth;
+            var topBedrockFreshTvd = record.TopBedrockFreshTvd;
+            var topBedrockFreshMd = record.TopBedrockFreshMd;
+            var topBedrockWeatheredTvd = record.TopBedrockWeatheredTvd;
+            var topBedrockWeatheredMd = record.TopBedrockWeatheredMd;
 
             if (i < 3)
             {
                 // Boreholes without geometry
-                Assert.AreEqual(totalDepthValue, tvdValue);
+                Assert.AreEqual(totalDepthMd, totalDepthTvd);
+                Assert.AreEqual(topBedrockFreshMd, topBedrockFreshTvd);
+                Assert.AreEqual(topBedrockWeatheredMd, topBedrockWeatheredTvd);
+            }
+            else if (i < 5)
+            {
+                // Boreholes with geometry
+                Assert.AreNotEqual(totalDepthMd, totalDepthTvd);
+                Assert.AreNotEqual(topBedrockFreshMd, topBedrockFreshTvd);
+                Assert.AreNotEqual(topBedrockWeatheredMd, topBedrockWeatheredTvd);
             }
             else
             {
-                // Boreholes with geometry
-                Assert.AreNotEqual(totalDepthValue, tvdValue);
+                // Borehole with geometry, assert actual values
+                Assert.AreEqual(100.0, totalDepthMd);
+                Assert.AreEqual(2382354.2, topBedrockFreshMd);
+                Assert.AreEqual(null, topBedrockWeatheredMd);
+                Assert.AreEqual(216.25173394135473, totalDepthTvd);
+                Assert.AreEqual(100.2, topBedrockFreshTvd);
+                Assert.AreEqual(null, topBedrockWeatheredTvd);
             }
         }
     }

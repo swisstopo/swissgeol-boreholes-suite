@@ -146,7 +146,17 @@ public class BoreholeExport
     public int? LithostratigraphyTopBedrockId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="BoreholeExport"/>'s true vertical depth.
+    /// Gets or sets the <see cref="BoreholeExport"/>'s true vertical total depth.
     /// </summary>
-    public double? Tvd { get; set; }
+    public double? TotalDepthTvd { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="BoreholeExport"/>'s true vertical top fresh bedrock depth.
+    /// </summary>
+    public double? TopBedrockFreshTvd { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="BoreholeExport"/>'s true vertical top weathered bedrock depth.
+    /// </summary>
+    public double? TopBedrockWeatheredTvd { get; set; }
 }

@@ -22,13 +22,22 @@ import {
 const jsonFileName = `bulkexport_${new Date().toISOString().split("T")[0]}.json`;
 const csvFileName = `bulkexport_${new Date().toISOString().split("T")[0]}.csv`;
 
-const verifyTVDContentInCSVFile = (fileName, expectedTVDValue) => {
+const verifyTVDContentInCSVFile = (
+  fileName,
+  expectedTotalDepthVD,
+  expectedTopBedrockFreshTVD,
+  expectedTopBedrockWeatheredTVD,
+) => {
   cy.readFile(prepareDownloadPath(fileName)).then(fileContent => {
     const lines = fileContent.split("\n");
-    const rows = lines.map(row => row.split(","));
+    const rows = lines.map(row => row.split(";"));
     expect(lines.length).to.equal(3);
-    expect(rows[0][28]).to.equal("Tvd\r");
-    expect(rows[1][28]).to.equal(expectedTVDValue);
+    expect(rows[0][28]).to.equal("TotalDepthTvd");
+    expect(rows[1][28]).to.equal(expectedTotalDepthVD);
+    expect(rows[0][29]).to.equal("TopBedrockFreshTvd");
+    expect(rows[1][29]).to.equal(expectedTopBedrockFreshTVD);
+    expect(rows[0][30]).to.equal("TopBedrockWeatheredTvd\r");
+    expect(rows[1][30]).to.equal(expectedTopBedrockWeatheredTVD);
   });
 };
 
@@ -57,7 +66,7 @@ describe("Test for exporting boreholes.", () => {
     clickOnRowWithText("AAA_NINTIC");
   });
 
-  it.only("exports TVD for a borehole with and without geometry", () => {
+  it("exports TVD for a borehole with and without geometry", () => {
     const boreholeName = "AAA_FROGGY";
     createBorehole({ "extended.original_name": boreholeName, "custom.alternate_name": boreholeName }).as("borehole_id");
 
@@ -68,15 +77,22 @@ describe("Test for exporting boreholes.", () => {
     getElementByDataCy("borehole-menu-item").click();
     startBoreholeEditing();
     setInput("totalDepth", 700);
+    setInput("topBedrockFreshMd", 800);
+    setInput("topBedrockWeatheredMd", 900);
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "700");
+    evaluateInput("topBedrockFreshMd", "800");
+    evaluateInput("top_bedrock_fresh_tvd", "800");
+    evaluateInput("topBedrockWeatheredMd", "900");
+    evaluateInput("top_bedrock_weathered_tvd", "900");
+
     saveWithSaveBar();
 
     stopBoreholeEditing();
     exportCSVItem();
 
     const fileName = `${boreholeName}.csv`;
-    verifyTVDContentInCSVFile(fileName, "700\r");
+    verifyTVDContentInCSVFile(fileName, "700", "800", "900\r");
     deleteDownloadedFile(fileName);
     startBoreholeEditing();
 
@@ -113,7 +129,7 @@ describe("Test for exporting boreholes.", () => {
     stopBoreholeEditing();
     exportCSVItem();
     const newFileName = `${newBoreholeName}.csv`;
-    verifyTVDContentInCSVFile(newFileName, "674.87\r");
+    verifyTVDContentInCSVFile(newFileName, "674.8678208299723", "762.6098263945338", "846.9637100889873" + "\r");
     deleteDownloadedFile(newFileName);
   });
 
