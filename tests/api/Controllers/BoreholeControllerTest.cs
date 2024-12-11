@@ -586,7 +586,7 @@ public class BoreholeControllerTest
              .Where(b => b.BoreholeGeometry.Count > 1)
              .Take(3);
 
-        var boreholes = boreholesWithoutGeometry.Concat(boreholesWithGeometry).Select(b => b.Id).ToList();
+        var boreholes = await boreholesWithoutGeometry.Concat(boreholesWithGeometry).Select(b => b.Id).ToListAsync();
         var result = await controller.DownloadCsvAsync(boreholes) as FileContentResult;
 
         Assert.IsNotNull(result);
