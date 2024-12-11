@@ -205,26 +205,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .ToListAsync()
             .ConfigureAwait(false);
 
-            // todo reuse this codeblock
-            if (boreholeGeometry.Count < 2)
-            {
-                if (b.TotalDepth >= 0)
-                {
-                    // Return the depthMD unchanged as if the borehole is perfectly vertical and infinitely long.
-                    b.Tvd = b.TotalDepth;
-                }
-            }
-            else
-            {
-                try
-                {
-                   b.Tvd = Math.Round(boreholeGeometry.GetDepthTVD(b.TotalDepth!.Value), 2);
-                }
-                catch (ArgumentOutOfRangeException)
-                {
-                    // Exception is ignored so that the action returns an empty response in case the input was invalid.
-                }
-            }
+            b.Tvd = BoreholeGeometryController.GetTVDIfGeometryExists(b.TotalDepth, boreholeGeometry);
         }
 
         using var stringWriter = new StringWriter();

@@ -573,7 +573,7 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
-    public async Task DownloadCsvWithGeometryReturnsTVDInCSV()
+    public async Task DownloadCsvReturnsTVD()
     {
         var boreholeQuery = context.Boreholes
              .Include(b => b.BoreholeGeometry);
