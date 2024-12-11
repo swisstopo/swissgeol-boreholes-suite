@@ -630,12 +630,12 @@ public class BoreholeControllerTest
             else
             {
                 // Borehole with geometry, assert actual values
-                Assert.AreEqual(100.0, totalDepthMd);
-                Assert.AreEqual(2382354.2, topBedrockFreshMd);
-                Assert.AreEqual(null, topBedrockWeatheredMd);
-                Assert.AreEqual(216.25173394135473, totalDepthTvd);
-                Assert.AreEqual(100.2, topBedrockFreshTvd);
-                Assert.AreEqual(null, topBedrockWeatheredTvd);
+                Assert.AreEqual("680.5358560199551", totalDepthMd);
+                Assert.AreEqual("601.9441138962023", topBedrockFreshMd);
+                Assert.AreEqual("", topBedrockWeatheredMd);
+                Assert.AreEqual("216.25173394135473", totalDepthTvd);
+                Assert.AreEqual("191.34988682963814", topBedrockFreshTvd);
+                Assert.AreEqual("", topBedrockWeatheredTvd);
             }
         }
     }
