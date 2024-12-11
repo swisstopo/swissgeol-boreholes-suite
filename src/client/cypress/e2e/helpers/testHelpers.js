@@ -261,6 +261,10 @@ export const returnToOverview = () => {
   cy.wait(["@edit_list", "@borehole"]);
 };
 
+export const getElementByDataCy = attribute => {
+  return cy.get(`[data-cy=${attribute}]`);
+};
+
 export const deleteBorehole = id => {
   cy.get("@id_token").then(token => {
     cy.request({

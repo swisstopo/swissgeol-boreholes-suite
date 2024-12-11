@@ -2,6 +2,7 @@
 using BDMS.BoreholeGeometry;
 using BDMS.Models;
 using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -155,11 +156,11 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> DownloadCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        ids = ids.Take(MaxPageSize).ToList();
         if (!ids.Any()) return BadRequest("The list of IDs must not be empty.");
-
+        List<int> idList = ids.Take(MaxPageSize).ToList();
         List<BoreholeExport> boreholes = await Context.Boreholes
-            .Where(borehole => ids.Contains(borehole.Id))
+            .Where(borehole => idList.Contains(borehole.Id))
+            .OrderBy(b => idList.IndexOf(b.Id))
             .Select(b => new BoreholeExport
             {
                 Id = b.Id,
@@ -183,7 +184,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
                 StatusId = b.StatusId,
                 Remarks = b.Remarks,
                 TotalDepth = b.TotalDepth,
-                DepthPresicionId = b.DepthPresicionId,
+                DepthPresicionId = b.DepthPrecisionId,
                 TopBedrockFreshMd = b.TopBedrockFreshMd,
                 TopBedrockWeatheredMd = b.TopBedrockWeatheredMd,
                 HasGroundwater = b.HasGroundwater,
@@ -201,31 +202,41 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             var boreholeGeometry = await Context.BoreholeGeometry
             .AsNoTracking()
             .Where(g => g.BoreholeId == b.Id)
-            .OrderBy(g => g.MD)
             .ToListAsync()
             .ConfigureAwait(false);
 
-            double? tvd = null;
-
-            try
+            // todo reuse this codeblock
+            if (boreholeGeometry.Count < 2)
             {
-                if (b.TotalDepth != null)
+                if (b.TotalDepth >= 0)
                 {
-                    tvd = boreholeGeometry.Count < 2 && b.TotalDepth > 0
-                    ? boreholeGeometry.GetDepthTVD(b.TotalDepth.Value)
-                    : b.TotalDepth;
+                    // Return the depthMD unchanged as if the borehole is perfectly vertical and infinitely long.
+                    b.Tvd = b.TotalDepth;
                 }
-
-                b.Tvd = tvd;
             }
-            catch (ArgumentOutOfRangeException)
+            else
             {
-                // Ignore exception and return tvd as null in case the input was invalid
+                try
+                {
+                   b.Tvd = Math.Round(boreholeGeometry.GetDepthTVD(b.TotalDepth!.Value), 2);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    // Exception is ignored so that the action returns an empty response in case the input was invalid.
+                }
             }
         }
 
         using var stringWriter = new StringWriter();
-        using var csvWriter = new CsvWriter(stringWriter, CultureInfo.InvariantCulture);
+        var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            ShouldQuote = args =>
+            {
+                if (args.Field.ToString().Contains(',', StringComparison.OrdinalIgnoreCase)) return true;
+                return ConfigurationFunctions.ShouldQuote(args);
+            },
+        };
+        using var csvWriter = new CsvWriter(stringWriter, csvConfig);
         await csvWriter.WriteRecordsAsync(boreholes).ConfigureAwait(false);
         return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", "boreholes_export.csv");
     }

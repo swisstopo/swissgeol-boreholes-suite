@@ -1,10 +1,14 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Globalization;
+using System.IO;
 using System.Text;
 using static BDMS.Helpers;
 
@@ -571,31 +575,48 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task DownloadCsvWithGeometryReturnsTVDInCSV()
     {
-        var ids = Enumerable.Range(testBoreholeId, 120).ToList();
+        var boreholeQuery = context.Boreholes
+             .Include(b => b.BoreholeGeometry);
 
-        var boreholesWithGeometry = context.Boreholes
-             .Include(b => b.BoreholeGeometry)
+        var boreholesWithoutGeometry = boreholeQuery
+             .Where(b => b.BoreholeGeometry.Count < 2)
+             .Take(3);
+
+        var boreholesWithGeometry = boreholeQuery
              .Where(b => b.BoreholeGeometry.Count > 1)
-             .Take(3).Select(b => b.Id);
+             .Take(3);
 
-        var result = await controller.DownloadCsv(boreholesWithGeometry) as FileContentResult;
+        var boreholes = boreholesWithoutGeometry.Concat(boreholesWithGeometry).Select(b => b.Id).ToList();
+
+        var result = await controller.DownloadCsvAsync(boreholes) as FileContentResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual("text/csv", result.ContentType);
         Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
-        var csvData = Encoding.UTF8.GetString(result.FileContents);
-        var lines = csvData.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
-        var header = lines[0].Split(',');
+        using var memoryStream = new MemoryStream(result.FileContents);
+        using var reader = new StreamReader(memoryStream);
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
 
-        // Tvd column should be present at the end of the header
-        var tvdIndex = Array.IndexOf(header, "Tvd\r");
-        Assert.AreEqual(28, tvdIndex);
-
-        for (int i = 1; i < lines.Length; i++) // Start from 1 to skip the header
+        var records = csv.GetRecords<dynamic>().ToList();
+        for (int i = 0; i < records.Count; i++)
         {
-            var columns = lines[i].Split(',');
-            Assert.IsTrue(!string.IsNullOrWhiteSpace(columns[tvdIndex]), $"Tvd value is missing in row {i}.");
+            var record = records[i];
+            var tvdValue = record.Tvd;
+            var totalDepthValue = record.TotalDepth;
+            Assert.IsFalse(string.IsNullOrWhiteSpace(tvdValue), $"Tvd value is missing or empty in row {i + 1}.");
+            Assert.IsFalse(string.IsNullOrWhiteSpace(totalDepthValue), $"Total depth value is missing or empty in row {i + 1}.");
+
+            if (i < 3)
+            {
+                // Boreholes without geometry
+                Assert.AreEqual(totalDepthValue, tvdValue);
+            }
+            else
+            {
+                // Boreholes with geometry
+                Assert.AreNotEqual(totalDepthValue, tvdValue);
+            }
         }
     }
 
