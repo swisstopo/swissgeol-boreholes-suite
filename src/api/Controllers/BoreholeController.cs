@@ -156,8 +156,9 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> DownloadCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        if (!ids.Any()) return BadRequest("The list of IDs must not be empty.");
         List<int> idList = ids.Take(MaxPageSize).ToList();
+        if (idList.Count < 1) return BadRequest("The list of IDs must not be empty.");
+
         List<BoreholeExport> boreholes = await Context.Boreholes
             .Where(borehole => idList.Contains(borehole.Id))
             .OrderBy(b => idList.IndexOf(b.Id))
