@@ -1,10 +1,14 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Globalization;
+using System.IO;
 using System.Text;
 using static BDMS.Helpers;
 
@@ -565,7 +569,73 @@ public class BoreholeControllerTest
         var csvData = Encoding.UTF8.GetString(result.FileContents);
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2; // Remove header and last line break
-        Assert.IsTrue(recordCount <= 100);
+        Assert.AreEqual(100, recordCount);
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvReturnsTVD()
+    {
+        var boreholeQuery = context.Boreholes
+             .Include(b => b.BoreholeGeometry);
+
+        var boreholesWithoutGeometry = boreholeQuery
+             .Where(b => b.BoreholeGeometry.Count < 2)
+             .Take(3);
+
+        var boreholesWithGeometry = boreholeQuery
+             .Where(b => b.BoreholeGeometry.Count > 1)
+             .Take(3);
+
+        var boreholes = await boreholesWithoutGeometry.Concat(boreholesWithGeometry).Select(b => b.Id).ToListAsync();
+        var result = await controller.DownloadCsvAsync(boreholes) as FileContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("text/csv", result.ContentType);
+        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
+
+        using var memoryStream = new MemoryStream(result.FileContents);
+        using var reader = new StreamReader(memoryStream);
+        var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
+        {
+            Delimiter = ";",
+        };
+        using var csv = new CsvReader(reader, csvConfig);
+        var records = csv.GetRecords<dynamic>().ToList();
+        for (int i = 0; i < records.Count; i++)
+        {
+            var record = records[i];
+            var totalDepthTvd = record.TotalDepthTvd;
+            var totalDepthMd = record.TotalDepth;
+            var topBedrockFreshTvd = record.TopBedrockFreshTvd;
+            var topBedrockFreshMd = record.TopBedrockFreshMd;
+            var topBedrockWeatheredTvd = record.TopBedrockWeatheredTvd;
+            var topBedrockWeatheredMd = record.TopBedrockWeatheredMd;
+
+            if (i < 3)
+            {
+                // Boreholes without geometry
+                Assert.AreEqual(totalDepthMd, totalDepthTvd);
+                Assert.AreEqual(topBedrockFreshMd, topBedrockFreshTvd);
+                Assert.AreEqual(topBedrockWeatheredMd, topBedrockWeatheredTvd);
+            }
+            else if (i < 5)
+            {
+                // Boreholes with geometry
+                Assert.AreNotEqual(totalDepthMd, totalDepthTvd);
+                Assert.AreNotEqual(topBedrockFreshMd, topBedrockFreshTvd);
+                Assert.AreNotEqual(topBedrockWeatheredMd, topBedrockWeatheredTvd);
+            }
+            else
+            {
+                // Borehole with geometry, assert actual values
+                Assert.AreEqual("680.5358560199551", totalDepthMd);
+                Assert.AreEqual("601.9441138962023", topBedrockFreshMd);
+                Assert.AreEqual("", topBedrockWeatheredMd);
+                Assert.AreEqual("216.25173394135473", totalDepthTvd);
+                Assert.AreEqual("191.34988682963814", topBedrockFreshTvd);
+                Assert.AreEqual("", topBedrockWeatheredTvd);
+            }
+        }
     }
 
     [TestMethod]

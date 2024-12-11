@@ -1,6 +1,8 @@
 ﻿using BDMS.Authentication;
+using BDMS.BoreholeGeometry;
 using BDMS.Models;
 using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -149,56 +151,73 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The list of IDs for the boreholes to be exported.</param>
-    /// <returns>A CSV file containing the details specified boreholes.</returns>
+    /// <returns>A CSV file containing the details of the specified boreholes.</returns>
     [HttpGet("export-csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> DownloadCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        ids = ids.Take(MaxPageSize).ToList();
-        if (!ids.Any()) return BadRequest("The list of IDs must not be empty.");
+        List<int> idList = ids.Take(MaxPageSize).ToList();
+        if (idList.Count < 1) return BadRequest("The list of IDs must not be empty.");
 
-        var boreholes = await Context.Boreholes
-            .Where(borehole => ids.Contains(borehole.Id))
-            .Select(b => new
+        List<BoreholeExport> boreholes = await Context.Boreholes
+            .Where(borehole => idList.Contains(borehole.Id))
+            .OrderBy(b => idList.IndexOf(b.Id))
+            .Select(b => new BoreholeExport
             {
-                b.Id,
-                b.OriginalName,
-                b.ProjectName,
-                b.Name,
-                b.RestrictionId,
-                b.RestrictionUntil,
-                b.NationalInterest,
-                b.LocationX,
-                b.LocationY,
-                b.LocationPrecisionId,
-                b.ElevationZ,
-                b.ElevationPrecisionId,
-                b.ReferenceElevation,
-                b.ReferenceElevationTypeId,
-                b.ReferenceElevationPrecisionId,
-                b.HrsId,
-                b.TypeId,
-                b.PurposeId,
-                b.StatusId,
-                b.Remarks,
-                b.TotalDepth,
-                b.DepthPrecisionId,
-                b.TopBedrockFreshMd,
-                b.TopBedrockWeatheredMd,
-                b.HasGroundwater,
-                b.LithologyTopBedrockId,
-                b.ChronostratigraphyTopBedrockId,
-                b.LithostratigraphyTopBedrockId,
+                Id = b.Id,
+                OriginalName = b.OriginalName,
+                ProjectName = b.ProjectName,
+                Name = b.Name,
+                RestrictionId = b.RestrictionId,
+                RestrictionUntil = b.RestrictionUntil,
+                NationalInterest = b.NationalInterest,
+                LocationX = b.LocationX,
+                LocationY = b.LocationY,
+                LocationPrecisionId = b.LocationPrecisionId,
+                ElevationZ = b.ElevationZ,
+                ElevationPrecisionId = b.ElevationPrecisionId,
+                ReferenceElevation = b.ReferenceElevation,
+                ReferenceElevationTypeId = b.ReferenceElevationTypeId,
+                ReferenceElevationPrecisionId = b.ReferenceElevationPrecisionId,
+                HrsId = b.HrsId,
+                TypeId = b.TypeId,
+                PurposeId = b.PurposeId,
+                StatusId = b.StatusId,
+                Remarks = b.Remarks,
+                TotalDepth = b.TotalDepth,
+                DepthPresicionId = b.DepthPrecisionId,
+                TopBedrockFreshMd = b.TopBedrockFreshMd,
+                TopBedrockWeatheredMd = b.TopBedrockWeatheredMd,
+                HasGroundwater = b.HasGroundwater,
+                LithologyTopBedrockId = b.LithologyTopBedrockId,
+                ChronostratigraphyTopBedrockId = b.ChronostratigraphyTopBedrockId,
+                LithostratigraphyTopBedrockId = b.LithostratigraphyTopBedrockId,
             })
             .ToListAsync()
             .ConfigureAwait(false);
 
         if (boreholes.Count == 0) return NotFound("No borehole(s) found for the provided id(s).");
 
-        using var stringWriter = new StringWriter();
-        using var csvWriter = new CsvWriter(stringWriter, CultureInfo.InvariantCulture);
-        await csvWriter.WriteRecordsAsync(boreholes).ConfigureAwait(false);
+        foreach (var b in boreholes)
+        {
+            var boreholeGeometry = await Context.BoreholeGeometry
+            .AsNoTracking()
+            .Where(g => g.BoreholeId == b.Id)
+            .ToListAsync()
+            .ConfigureAwait(false);
 
+            b.TotalDepthTvd = BoreholeGeometryController.GetTVDIfGeometryExists(b.TotalDepth, boreholeGeometry);
+            b.TopBedrockFreshTvd = BoreholeGeometryController.GetTVDIfGeometryExists(b.TopBedrockFreshMd, boreholeGeometry);
+            b.TopBedrockWeatheredTvd = BoreholeGeometryController.GetTVDIfGeometryExists(b.TopBedrockWeatheredMd, boreholeGeometry);
+        }
+
+        using var stringWriter = new StringWriter();
+        var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
+        {
+            Delimiter = ";",
+        };
+        using var csvWriter = new CsvWriter(stringWriter, csvConfig);
+        await csvWriter.WriteRecordsAsync(boreholes).ConfigureAwait(false);
         return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", "boreholes_export.csv");
     }
 
