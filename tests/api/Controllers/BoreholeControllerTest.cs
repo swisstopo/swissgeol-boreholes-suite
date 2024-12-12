@@ -18,7 +18,6 @@ namespace BDMS.Controllers;
 public class BoreholeControllerTest
 {
     private const int DefaultWorkgroupId = 1;
-    private const int MaxBoreholeSeedId = 1_002_999;
     private int boreholeId;
 
     private BdmsContext context;
