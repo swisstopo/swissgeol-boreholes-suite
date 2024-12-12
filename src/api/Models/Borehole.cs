@@ -379,7 +379,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s observations.
     /// </summary>
-    public ICollection<Observation>? Observations { get; }
+    public ICollection<Observation>? Observations { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s workflows.
