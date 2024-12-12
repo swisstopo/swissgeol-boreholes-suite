@@ -320,6 +320,7 @@ public class BoreholeControllerTest
         var copiedBorehole = GetBorehole((int)copiedBoreholeId);
 
         Assert.AreEqual($"{originalBorehole.OriginalName} (Copy)", copiedBorehole.OriginalName);
+        Assert.AreEqual($"{originalBorehole.AlternateName} (Copy)", copiedBorehole.AlternateName);
         Assert.AreEqual(originalBorehole.CreatedBy.SubjectId, copiedBorehole.CreatedBy.SubjectId);
         Assert.AreEqual(originalBorehole.UpdatedBy.SubjectId, copiedBorehole.UpdatedBy.SubjectId);
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
