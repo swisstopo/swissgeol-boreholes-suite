@@ -353,6 +353,9 @@ public class UploadController : ControllerBase
             Map(b => b.Canton).Ignore();
             Map(b => b.Country).Ignore();
             Map(m => m.Id).Ignore();
+            Map(m => m.TotalDepthTvd).Ignore();
+            Map(m => m.TopBedrockFreshTvd).Ignore();
+            Map(m => m.TopBedrockWeatheredTvd).Ignore();
 
             // Define additional mapping logic
             Map(m => m.BoreholeCodelists).Convert(args =>
