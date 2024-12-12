@@ -266,7 +266,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyBoreholeWithHydrotests()
     {
-        boreholeId = MaxBoreholeSeedId + 1;
+        boreholeId = MaxBoreholeSeedId + 10;
 
         var newBorehole = GetBoreholeToAdd(boreholeId);
 
