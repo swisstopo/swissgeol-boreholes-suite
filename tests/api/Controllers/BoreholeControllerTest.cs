@@ -18,6 +18,7 @@ namespace BDMS.Controllers;
 public class BoreholeControllerTest
 {
     private const int DefaultWorkgroupId = 1;
+    private const int MaxBoreholeSeedId = 1_002_999;
     private int boreholeId;
 
     private BdmsContext context;
@@ -57,6 +58,11 @@ public class BoreholeControllerTest
             cleanupContext.BoreholeCodelists.RemoveRange(testBoreholeWithIdentifiers.BoreholeCodelists);
             await cleanupContext.SaveChangesAsync();
         }
+
+        // This is necessary because the some tests work with multiple contexts and actually write to the database.
+        var boreholesToDelete = cleanupContext.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
+        cleanupContext.Boreholes.RemoveRange(boreholesToDelete);
+        cleanupContext.BoreholeCodelists.RemoveRange(cleanupContext.BoreholeCodelists.Where(bc => bc.BoreholeId > MaxBoreholeSeedId));
 
         await cleanupContext.DisposeAsync();
     }
@@ -501,6 +507,18 @@ public class BoreholeControllerTest
         }
     }
 
+    private static List<dynamic> GetRecordsFromFileContent(FileContentResult result)
+    {
+        var memoryStream = new MemoryStream(result.FileContents);
+        var reader = new StreamReader(memoryStream);
+        var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
+        {
+            Delimiter = ";",
+        };
+        var csv = new CsvReader(reader, csvConfig);
+        return csv.GetRecords<dynamic>().ToList();
+    }
+
     [TestMethod]
     public async Task CopyInvalidBoreholeId()
     {
@@ -636,6 +654,81 @@ public class BoreholeControllerTest
                 Assert.AreEqual("", topBedrockWeatheredTvd);
             }
         }
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvWithCustomIds()
+    {
+        var firstBoreholeId = 1_009_068;
+        var boreholeWithCustomIds = new Borehole
+        {
+            Id = firstBoreholeId,
+            BoreholeCodelists = new List<BoreholeCodelist>
+            {
+                new BoreholeCodelist
+                {
+                    BoreholeId = firstBoreholeId,
+                    CodelistId = 100000010,
+                    Value = "ID GeoDIN value",
+                },
+                new BoreholeCodelist
+                {
+                    BoreholeId = firstBoreholeId,
+                    CodelistId = 100000011,
+                    Value = "ID Kernlager value",
+                },
+            },
+        };
+
+        var secondBoreholeId = 1_009_069;
+        var boreholeWithOtherCustomIds = new Borehole
+        {
+            Id = secondBoreholeId,
+            BoreholeCodelists = new List<BoreholeCodelist>
+            {
+                new BoreholeCodelist
+                {
+                    BoreholeId = secondBoreholeId,
+                    CodelistId = 100000010,
+                    Value = "ID GeoDIN value",
+                },
+                new BoreholeCodelist
+                {
+                    BoreholeId = secondBoreholeId,
+                    CodelistId = 100000009,
+                    Value = "ID TopFels value",
+                },
+            },
+        };
+        using var initialContext = ContextFactory.CreateContext();
+        var copyController = GetTestController(initialContext);
+
+        initialContext.AddRange(boreholeWithCustomIds, boreholeWithOtherCustomIds);
+        await initialContext.SaveChangesAsync().ConfigureAwait(false);
+
+        using var downloadContext = ContextFactory.CreateContext();
+        var downLoadController = GetTestController(downloadContext);
+
+        var ids = new List<int> { firstBoreholeId, secondBoreholeId };
+
+        var result = await downLoadController.DownloadCsvAsync(ids) as FileContentResult;
+        Assert.IsNotNull(result);
+        Assert.AreEqual("text/csv", result.ContentType);
+        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
+
+        var records = GetRecordsFromFileContent(result);
+
+        var firstBorehole = records.Find(r => r.Id == firstBoreholeId.ToString());
+        Assert.IsNotNull(firstBorehole);
+        Assert.AreEqual("ID GeoDIN value", firstBorehole.IDGeODin);
+        Assert.AreEqual("ID Kernlager value", firstBorehole.IDKernlager);
+        Assert.AreEqual("", firstBorehole.IDTopFels);
+
+        var secondBorehole = records.Find(r => r.Id == secondBoreholeId.ToString());
+        Assert.IsNotNull(secondBorehole);
+        Assert.AreEqual("ID GeoDIN value", secondBorehole.IDGeODin);
+        Assert.AreEqual("", secondBorehole.IDKernlager);
+        Assert.AreEqual("ID TopFels value", secondBorehole.IDTopFels);
     }
 
     [TestMethod]
