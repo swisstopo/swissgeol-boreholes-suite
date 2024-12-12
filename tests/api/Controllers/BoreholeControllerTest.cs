@@ -51,19 +51,14 @@ public class BoreholeControllerTest
         if (testBoreholeWithIdentifiers != null)
         {
             cleanupContext.BoreholeCodelists.RemoveRange(testBoreholeWithIdentifiers.BoreholeCodelists);
-            await cleanupContext.SaveChangesAsync();
         }
 
         // This is necessary because the some tests work with multiple contexts and actually write to the database.
         var boreholesToDelete = cleanupContext.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
         cleanupContext.Boreholes.RemoveRange(boreholesToDelete);
+        await cleanupContext.SaveChangesAsync();
 
         await cleanupContext.DisposeAsync();
-    }
-
-    private async Task<List<Codelist>> GetCodelists(BdmsContext context, List<int> codelistIds)
-    {
-        return await context.Codelists.Where(c => codelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
     }
 
     [TestMethod]
@@ -359,7 +354,7 @@ public class BoreholeControllerTest
         using var verifyContext = ContextFactory.CreateContext();
         var readController = GetTestController(verifyContext);
 
-        var response = await readController.GetByIdAsync(boreholeId).ConfigureAwait(false);
+        var response = await readController.GetByIdAsync((int)copiedBoreholeId).ConfigureAwait(false);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Borehole copiedBorehole = (Borehole)okResult.Value!;
         Assert.IsNotNull(copiedBorehole);
