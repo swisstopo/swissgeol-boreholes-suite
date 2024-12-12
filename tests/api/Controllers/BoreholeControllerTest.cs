@@ -59,12 +59,6 @@ public class BoreholeControllerTest
             await cleanupContext.SaveChangesAsync();
         }
 
-        // This is necessary because the some tests work with multiple contexts and actually write to the database.
-        var boreholesToDelete = cleanupContext.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
-        cleanupContext.Boreholes.RemoveRange(boreholesToDelete);
-        cleanupContext.BoreholeCodelists.RemoveRange(cleanupContext.BoreholeCodelists.Where(bc => bc.BoreholeId > MaxBoreholeSeedId));
-        await cleanupContext.SaveChangesAsync().ConfigureAwait(false);
-
         await cleanupContext.DisposeAsync();
     }
 
@@ -698,18 +692,13 @@ public class BoreholeControllerTest
                 },
             },
         };
-        using var initialContext = ContextFactory.CreateContext();
-        var copyController = GetTestController(initialContext);
 
-        initialContext.AddRange(boreholeWithCustomIds, boreholeWithOtherCustomIds);
-        await initialContext.SaveChangesAsync().ConfigureAwait(false);
-
-        using var downloadContext = ContextFactory.CreateContext();
-        var downLoadController = GetTestController(downloadContext);
+        context.AddRange(boreholeWithCustomIds, boreholeWithOtherCustomIds);
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         var ids = new List<int> { firstBoreholeId, secondBoreholeId };
 
-        var result = await downLoadController.DownloadCsvAsync(ids) as FileContentResult;
+        var result = await controller.DownloadCsvAsync(ids) as FileContentResult;
         Assert.IsNotNull(result);
         Assert.AreEqual("text/csv", result.ContentType);
         Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
