@@ -233,9 +233,9 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            b.TotalDepthTvd = BoreholeGeometryController.GetTVDIfGeometryExists(b.TotalDepth, boreholeGeometry);
-            b.TopBedrockFreshTvd = BoreholeGeometryController.GetTVDIfGeometryExists(b.TopBedrockFreshMd, boreholeGeometry);
-            b.TopBedrockWeatheredTvd = BoreholeGeometryController.GetTVDIfGeometryExists(b.TopBedrockWeatheredMd, boreholeGeometry);
+            b.TotalDepthTvd = boreholeGeometry.GetTVDIfGeometryExists(b.TotalDepth);
+            b.TopBedrockFreshTvd = boreholeGeometry.GetTVDIfGeometryExists(b.TopBedrockFreshMd);
+            b.TopBedrockWeatheredTvd = boreholeGeometry.GetTVDIfGeometryExists(b.TopBedrockWeatheredMd);
 
             csvWriter.WriteField(b.Id);
             csvWriter.WriteField(b.OriginalName);
