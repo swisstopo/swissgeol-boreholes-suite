@@ -73,7 +73,7 @@ describe("Test for exporting boreholes.", () => {
       goToRouteAndAcceptTerms(`/${id}`);
     });
 
-    //add geometry to borehole and verify export tvd changed
+    // add geometry to borehole and verify export tvd changed
     getElementByDataCy("borehole-menu-item").click();
     startBoreholeEditing();
     setInput("totalDepth", 700);

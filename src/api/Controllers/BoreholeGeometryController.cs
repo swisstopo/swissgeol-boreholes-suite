@@ -119,10 +119,13 @@ public class BoreholeGeometryController : ControllerBase
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
 
         var tvd = GetTVDIfGeometryExists(depthMD, geometry);
-        if (tvd != null) return Ok(tvd);
+        if (tvd == null)
+        {
+            logger?.LogInformation($"Invalid input, could not calculate true vertical depth from measured depth of {depthMD}");
+            return Ok();
+        }
 
-        logger?.LogInformation($"Invalid input, could not calculate true vertical depth from measured depth of {depthMD}");
-        return Ok();
+        return Ok(tvd);
     }
 
     internal static double? GetTVDIfGeometryExists(double? depthMD, List<BoreholeGeometryElement> geometry)
