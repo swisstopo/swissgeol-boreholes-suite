@@ -200,10 +200,8 @@ public class UploadController : ControllerBase
             .Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY, b.LocationXLV03, b.LocationYLV03 })
             .ToList();
 
-        // Tuple list for boreholes from file with index
         var indexedBoreholesFromFile = boreholesFromFile.Select((value, index) => (value, index: index + 1)).ToList();
 
-        // Iterate over provided boreholes, validate them, and create error messages when necessary.
         foreach (var (borehole, index) in indexedBoreholesFromFile)
         {
             if (string.IsNullOrEmpty(borehole.OriginalName))
@@ -221,7 +219,7 @@ public class UploadController : ControllerBase
                 ModelState.AddModelError($"Row{index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
             }
 
-            // Check for duplicate entries in the uploaded file
+            // Check if any borehole with same coordinates (in tolerance) and same total depth is duplicated in file
             if (indexedBoreholesFromFile.Any(b =>
                 b.index != index &&
                 CompareValuesWithTolerance(b.value.TotalDepth, borehole.TotalDepth, 0) &&
@@ -231,7 +229,7 @@ public class UploadController : ControllerBase
                 ModelState.AddModelError($"Row{index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.");
             }
 
-            // Check against the database entries
+            // Check if borehole with same coordinates (in tolerance) and same total depth already exists in db.
             if (boreholesFromDb.Any(b =>
                 CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
                 (CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, borehole.LocationX, 2)) &&
@@ -240,10 +238,10 @@ public class UploadController : ControllerBase
                 ModelState.AddModelError($"Row{index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
             }
 
-            // Attachment checks
+            // Checks if each file name in the comma separated string is present in the list of the attachments.
             var attachmentFileNamesToLink = borehole.Attachments?
                 .Split(",")
-                .Select(s => s.Trim())
+                .Select(s => s.Replace(" ", "", StringComparison.OrdinalIgnoreCase))
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToList() ?? new List<string>();
 
