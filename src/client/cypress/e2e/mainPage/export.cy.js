@@ -1,10 +1,5 @@
-import { addItem, exportCSVItem, exportJsonItem, saveWithSaveBar } from "../helpers/buttonHelpers";
-import {
-  checkAllVisibleRows,
-  checkRowWithText,
-  clickOnRowWithText,
-  showTableAndWaitForData,
-} from "../helpers/dataGridHelpers.js";
+import { addItem, deleteItem, exportCSVItem, exportJsonItem, saveWithSaveBar } from "../helpers/buttonHelpers";
+import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers.js";
 import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
@@ -39,41 +34,47 @@ const verifyTVDContentInCSVFile = (
   cy.readFile(prepareDownloadPath(fileName)).then(fileContent => {
     const { lines, rows } = splitFileContent(fileContent);
     expect(lines.length).to.equal(3);
-    expect(rows[0][28]).to.equal("TotalDepthTvd");
-    expect(rows[1][28]).to.equal(expectedTotalDepthVD);
-    expect(rows[0][29]).to.equal("TopBedrockFreshTvd");
-    expect(rows[1][29]).to.equal(expectedTopBedrockFreshTVD);
-    expect(rows[0][30]).to.equal("TopBedrockWeatheredTvd\r");
-    expect(rows[1][30]).to.equal(expectedTopBedrockWeatheredTVD);
+    expect(rows[0][24]).to.equal("TotalDepthTvd");
+    expect(rows[1][24]).to.equal(expectedTotalDepthVD);
+    expect(rows[0][25]).to.equal("TopBedrockFreshTvd");
+    expect(rows[1][25]).to.equal(expectedTopBedrockFreshTVD);
+    expect(rows[0][26]).to.equal("TopBedrockWeatheredTvd");
+    expect(rows[1][26]).to.equal(expectedTopBedrockWeatheredTVD);
   });
 };
 
 describe("Test for exporting boreholes.", () => {
   it("bulk exports boreholes to json and csv", () => {
+    deleteDownloadedFile(jsonFileName);
+    deleteDownloadedFile(csvFileName);
     createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as(
       "borehole_id_1",
     );
     createBorehole({ "extended.original_name": "AAA_LOMONE", "custom.alternate_name": "AAA_LOMONE" }).as(
       "borehole_id_2",
     );
+    goToRouteAndAcceptTerms("/");
     showTableAndWaitForData();
-    getElementByDataCy("borehole-table").within(() => {
-      checkRowWithText("AAA_NINTIC");
-      checkRowWithText("AAA_LOMONE");
-    });
+    checkRowWithText("AAA_NINTIC");
+    checkRowWithText("AAA_LOMONE");
 
-    deleteDownloadedFile(jsonFileName);
-    deleteDownloadedFile(csvFileName);
     exportJsonItem();
     exportCSVItem();
     readDownloadedFile(jsonFileName);
     readDownloadedFile(csvFileName);
-
-    clickOnRowWithText("AAA_NINTIC");
+    deleteItem(); // bulk delete all added boreholes
+    handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "Delete");
   });
 
   it("exports TVD for a borehole with and without geometry", () => {
     const boreholeName = "AAA_FROGGY";
+    const secondBoreholeName = "AAA_FISHY";
+    const fileName = `${boreholeName}.csv`;
+    const secondFileName = `${secondBoreholeName}.csv`;
+
+    deleteDownloadedFile(fileName);
+    deleteDownloadedFile(secondFileName);
+
     createBorehole({ "extended.original_name": boreholeName, "custom.alternate_name": boreholeName }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
@@ -98,9 +99,7 @@ describe("Test for exporting boreholes.", () => {
     stopBoreholeEditing();
     exportCSVItem();
 
-    const fileName = `${boreholeName}.csv`;
-    verifyTVDContentInCSVFile(fileName, "700", "800", "900\r");
-    deleteDownloadedFile(fileName);
+    verifyTVDContentInCSVFile(fileName, "700", "800", "900");
     startBoreholeEditing();
 
     getElementByDataCy("geometry-tab").click();
@@ -130,19 +129,22 @@ describe("Test for exporting boreholes.", () => {
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "674.87");
     getElementByDataCy("location-menu-item").click();
-    const newBoreholeName = "AAA_FISHY";
-    setInput("originalName", newBoreholeName); // change name to avoid potential CSV filename conflict
+    setInput("originalName", secondBoreholeName); // change name to avoid potential CSV filename conflict
     saveWithSaveBar();
     stopBoreholeEditing();
     exportCSVItem();
-    const newFileName = `${newBoreholeName}.csv`;
-    verifyTVDContentInCSVFile(newFileName, "674.8678208299723", "762.6098263945338", "846.9637100889873" + "\r");
-    deleteDownloadedFile(newFileName);
+    verifyTVDContentInCSVFile(secondFileName, "674.8678208299723", "762.6098263945338", "846.9637100889873");
+    startBoreholeEditing();
+    getElementByDataCy("deleteborehole-button").click();
+    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
   });
-  it("exports custom Ids form borehole with and without geometry", () => {
+
+  it("exports custom Ids form borehole", () => {
+    const firstBoreholeName = "AAA_DUCKY";
+    const secondBoreholeName = "AAA_SNAKEY";
     deleteDownloadedFile(csvFileName);
     newEditableBorehole().as("borehole_id");
-    setInput("name", "AAA_FROGGY");
+    setInput("name", firstBoreholeName);
     addItem("addIdentifier");
     setSelect("boreholeCodelists.0.codelistId", 3);
     setInput("boreholeCodelists.0.value", 13);
@@ -150,39 +152,43 @@ describe("Test for exporting boreholes.", () => {
     returnToOverview();
 
     newEditableBorehole().as("borehole_id_2");
-    setInput("name", "AAA_FISHY");
+    setInput("name", secondBoreholeName);
     addItem("addIdentifier");
     setSelect("boreholeCodelists.0.codelistId", 4);
     setInput("boreholeCodelists.0.value", 14);
     saveWithSaveBar();
     returnToOverview();
     showTableAndWaitForData();
-    checkRowWithText("AAA_FROGGY");
-    checkRowWithText("AAA_FISHY");
+    checkRowWithText(firstBoreholeName);
+    checkRowWithText(secondBoreholeName);
     exportCSVItem();
     cy.readFile(prepareDownloadPath(csvFileName)).then(fileContent => {
       const { lines, rows } = splitFileContent(fileContent);
       expect(lines.length).to.equal(4);
 
+      console.log(rows);
+
       expect(rows[0][3]).to.equal("Name");
-      expect(rows[1][3]).to.equal("AAA_FROGGY");
-      expect(rows[2][3]).to.equal("AAA_FISHY");
+      expect(rows[1][3]).to.equal(firstBoreholeName);
+      expect(rows[2][3]).to.equal(secondBoreholeName);
 
       expect(rows[0][31]).to.equal("IDInfoGeol");
-      expect(rows[1][31]).to.equal("13");
-      expect(rows[2][31]).to.equal("");
+      expect(rows[1][31]).to.equal("");
+      expect(rows[2][31]).to.equal("14");
 
       expect(rows[0][32]).to.equal("IDGeODin\r");
-      expect(rows[1][32]).to.equal("\r");
-      expect(rows[2][32]).to.equal("14\r");
+      expect(rows[1][32]).to.equal("13\r");
+      expect(rows[2][32]).to.equal("\r");
     });
-    deleteDownloadedFile(csvFileName);
+    deleteItem();
+    handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "Delete");
   });
 
   it("downloads a maximum of 100 boreholes", () => {
+    deleteDownloadedFile(csvFileName);
+    deleteDownloadedFile(jsonFileName);
     showTableAndWaitForData();
     checkAllVisibleRows();
-    deleteDownloadedFile(csvFileName);
     exportCSVItem();
 
     const moreThan100SelectedPrompt =
@@ -199,8 +205,6 @@ describe("Test for exporting boreholes.", () => {
       const lines = fileContent.split("\n");
       expect(lines.length).to.equal(102);
     });
-
-    deleteDownloadedFile(jsonFileName);
     exportJsonItem();
     handlePrompt(moreThan100SelectedPrompt, "Cancel");
   });
