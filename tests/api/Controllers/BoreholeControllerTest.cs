@@ -530,7 +530,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyInvalidWorkgroupId()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         var result = await controller.CopyAsync(boreholeId, workgroupId: 0).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
     }
@@ -538,7 +538,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyMissingWorkgroupPermission()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         var result = await controller.CopyAsync(boreholeId, workgroupId: 2).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
     }
@@ -546,7 +546,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithUnknownUser()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
@@ -555,7 +555,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithUserNotSet()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         controller.ControllerContext.HttpContext.User = null;
         await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
         {
@@ -566,7 +566,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
