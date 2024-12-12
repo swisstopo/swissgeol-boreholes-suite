@@ -13,19 +13,18 @@ namespace BDMS.Controllers;
 public class BoreholeControllerTest
 {
     private const int DefaultWorkgroupId = 1;
+    private const int MaxBoreholeSeedId = 1_002_999;
     private int boreholeId;
 
     private BdmsContext context;
     private BoreholeController controller;
     private static int testBoreholeId = 1000068;
-    private static int maxBoreholeId;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
         controller = GetTestController(context);
-        maxBoreholeId = context.Boreholes.Max(b => b.Id);
     }
 
     private BoreholeController GetTestController(BdmsContext testContext)
@@ -55,8 +54,8 @@ public class BoreholeControllerTest
             await cleanupContext.SaveChangesAsync();
         }
 
-        // Remove all boreholes created during the test
-        var boreholesToDelete = cleanupContext.Boreholes.Where(b => b.Id > maxBoreholeId);
+        // This is necessary because the some tests work with multiple contexts and actually write to the database.
+        var boreholesToDelete = cleanupContext.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
         cleanupContext.Boreholes.RemoveRange(boreholesToDelete);
 
         await cleanupContext.DisposeAsync();
@@ -64,9 +63,7 @@ public class BoreholeControllerTest
 
     private async Task<List<Codelist>> GetCodelists(BdmsContext context, List<int> codelistIds)
     {
-        return await context.Codelists
-                    .Where(c => codelistIds.Contains(c.Id))
-                    .ToListAsync().ConfigureAwait(false);
+        return await context.Codelists.Where(c => codelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
     }
 
     [TestMethod]
@@ -100,54 +97,7 @@ public class BoreholeControllerTest
 
         LoadBoreholeWithIncludes();
 
-        var newBorehole = new Borehole
-        {
-            Id = id,
-            CreatedById = 4,
-            UpdatedById = 4,
-            Locked = null,
-            LockedById = null,
-            WorkgroupId = 1,
-            IsPublic = true,
-            TypeId = 20101003,
-            LocationX = 2600000.0,
-            PrecisionLocationX = 5,
-            LocationY = 1200000.0,
-            PrecisionLocationY = 5,
-            LocationXLV03 = 600000.0,
-            PrecisionLocationXLV03 = 5,
-            LocationYLV03 = 200000.0,
-            PrecisionLocationYLV03 = 5,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
-            ElevationZ = 450.5,
-            HrsId = 20106001,
-            TotalDepth = 100.0,
-            RestrictionId = 20111003,
-            RestrictionUntil = DateTime.UtcNow.AddYears(1),
-            NationalInterest = false,
-            OriginalName = "BH-257",
-            AlternateName = "Borehole 257",
-            LocationPrecisionId = 20113002,
-            ElevationPrecisionId = null,
-            ProjectName = "Project Alpha",
-            Country = "CH",
-            Canton = "ZH",
-            Municipality = "Zurich",
-            PurposeId = 22103002,
-            StatusId = 22104001,
-            QtDepthId = 22108005,
-            TopBedrockFreshMd = 10.5,
-            TopBedrockWeatheredMd = 8.0,
-            HasGroundwater = true,
-            Geometry = null,
-            Remarks = "Test borehole for project",
-            LithologyTopBedrockId = 15104934,
-            LithostratigraphyId = 15300259,
-            ChronostratigraphyId = 15001141,
-            ReferenceElevation = 500.0,
-            QtReferenceElevationId = 20114002,
-            ReferenceElevationTypeId = 20117003,
-        };
+        var newBorehole = GetBoreholeToAdd(id);
 
         var boreholeToEdit = context.Boreholes.Single(c => c.Id == id);
         Assert.AreEqual(1, boreholeToEdit.Stratigraphies.Count);
@@ -321,56 +271,9 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyBoreholeWithHydrotests()
     {
-        boreholeId = maxBoreholeId + 1;
+        boreholeId = MaxBoreholeSeedId + 1;
 
-        var newBorehole = new Borehole
-        {
-            Id = boreholeId,
-            CreatedById = 4,
-            UpdatedById = 4,
-            Locked = null,
-            LockedById = null,
-            WorkgroupId = 1,
-            IsPublic = true,
-            TypeId = 20101003,
-            LocationX = 2600000.0,
-            PrecisionLocationX = 5,
-            LocationY = 1200000.0,
-            PrecisionLocationY = 5,
-            LocationXLV03 = 600000.0,
-            PrecisionLocationXLV03 = 5,
-            LocationYLV03 = 200000.0,
-            PrecisionLocationYLV03 = 5,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
-            ElevationZ = 450.5,
-            HrsId = 20106001,
-            TotalDepth = 100.0,
-            RestrictionId = 20111003,
-            RestrictionUntil = DateTime.UtcNow.AddYears(1),
-            NationalInterest = false,
-            OriginalName = "BH-257",
-            AlternateName = "Borehole 257",
-            LocationPrecisionId = 20113002,
-            ElevationPrecisionId = null,
-            ProjectName = "Project Alpha",
-            Country = "CH",
-            Canton = "ZH",
-            Municipality = "Zurich",
-            PurposeId = 22103002,
-            StatusId = 22104001,
-            QtDepthId = 22108005,
-            TopBedrockFreshMd = 10.5,
-            TopBedrockWeatheredMd = 8.0,
-            HasGroundwater = true,
-            Geometry = null,
-            Remarks = "Test borehole for project",
-            LithologyTopBedrockId = 15104934,
-            LithostratigraphyId = 15300259,
-            ChronostratigraphyId = 15001141,
-            ReferenceElevation = 500.0,
-            QtReferenceElevationId = 20114002,
-            ReferenceElevationTypeId = 20117003,
-        };
+        var newBorehole = GetBoreholeToAdd(boreholeId);
 
         var fieldMeasurementResult = new FieldMeasurementResult
         {
@@ -637,6 +540,58 @@ public class BoreholeControllerTest
     private Borehole GetBorehole(int id)
     {
         return GetBoreholesWithIncludes(context.Boreholes).Single(b => b.Id == id);
+    }
+
+    private Borehole GetBoreholeToAdd(int id)
+    {
+        return new Borehole
+        {
+            Id = id,
+            CreatedById = 4,
+            UpdatedById = 4,
+            Locked = null,
+            LockedById = null,
+            WorkgroupId = 1,
+            IsPublic = true,
+            TypeId = 20101003,
+            LocationX = 2600000.0,
+            PrecisionLocationX = 5,
+            LocationY = 1200000.0,
+            PrecisionLocationY = 5,
+            LocationXLV03 = 600000.0,
+            PrecisionLocationXLV03 = 5,
+            LocationYLV03 = 200000.0,
+            PrecisionLocationYLV03 = 5,
+            OriginalReferenceSystem = ReferenceSystem.LV95,
+            ElevationZ = 450.5,
+            HrsId = 20106001,
+            TotalDepth = 100.0,
+            RestrictionId = 20111003,
+            RestrictionUntil = DateTime.UtcNow.AddYears(1),
+            NationalInterest = false,
+            OriginalName = "BH-257",
+            AlternateName = "Borehole 257",
+            LocationPrecisionId = 20113002,
+            ElevationPrecisionId = null,
+            ProjectName = "Project Alpha",
+            Country = "CH",
+            Canton = "ZH",
+            Municipality = "Zurich",
+            PurposeId = 22103002,
+            StatusId = 22104001,
+            QtDepthId = 22108005,
+            TopBedrockFreshMd = 10.5,
+            TopBedrockWeatheredMd = 8.0,
+            HasGroundwater = true,
+            Geometry = null,
+            Remarks = "Test borehole for project",
+            LithologyTopBedrockId = 15104934,
+            LithostratigraphyId = 15300259,
+            ChronostratigraphyId = 15001141,
+            ReferenceElevation = 500.0,
+            QtReferenceElevationId = 20114002,
+            ReferenceElevationTypeId = 20117003,
+        };
     }
 
     // Get the id of a borehole with certain conditions.
