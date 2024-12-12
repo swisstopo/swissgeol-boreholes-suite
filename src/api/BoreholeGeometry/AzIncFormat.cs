@@ -14,14 +14,14 @@ internal sealed class AzIncFormat : IBoreholeGeometryFormat
 
     public string Name => "Azimuth Inclination";
 
-    private Lazy<string> expectedCsvHeader = new(Helper.GetCSVHeader<Geometry>);
+    private Lazy<string> expectedCsvHeader = new(CSVConfigHelper.GetCSVHeader<Geometry>);
 
     public string CsvHeader => expectedCsvHeader.Value;
 
     public IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId)
     {
         using var reader = new StreamReader(file.OpenReadStream());
-        using var csv = new CsvReader(reader, Helper.CsvConfig);
+        using var csv = new CsvReader(reader, CSVConfigHelper.CsvConfig);
 
         var data = csv.GetRecords<Geometry>().ToList();
 
