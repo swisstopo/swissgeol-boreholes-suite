@@ -187,6 +187,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.ReferenceElevationType, _ => default!)
            .RuleFor(o => o.BoreholeCodelists, _ => new Collection<BoreholeCodelist>())
            .RuleFor(o => o.Codelists, _ => new Collection<Codelist>())
+           .RuleFor(o => o.Observations, _ => new Collection<Observation>())
            .RuleFor(o => o.Geometry, f =>
            {
                var point = new Point(f.Random.Int(2477750, 2830750), f.Random.Int(1066750, 1310750));
