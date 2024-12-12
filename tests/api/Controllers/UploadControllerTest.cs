@@ -588,11 +588,10 @@ Frank Place;2000000;1000000;borehole_attachment_1.pdf,borehole_attachment_2.pdf"
         ActionResultAssert.IsBadRequest(result);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
-        Assert.AreEqual(4, Regex.Matches(problemDetails.Detail!, "Header with name ").Count);
+        Assert.AreEqual(3, Regex.Matches(problemDetails.Detail!, "Header with name ").Count);
         StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_x'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_y'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'OriginalName'[0] was not found.");
-        StringAssert.Contains(problemDetails.Detail, "Header with name 'ImportId'[0] was not found.");
     }
 
     [TestMethod]

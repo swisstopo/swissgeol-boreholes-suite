@@ -200,56 +200,58 @@ public class UploadController : ControllerBase
             .Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY, b.LocationXLV03, b.LocationYLV03 })
             .ToList();
 
-        // Iterate over provided boreholes, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
-        foreach (var boreholeFromFile in boreholesFromFile.Select((value, index) => (value, index: index + 1)))
+        // Tuple list for boreholes from file with index
+        var indexedBoreholesFromFile = boreholesFromFile.Select((value, index) => (value, index: index + 1)).ToList();
+
+        // Iterate over provided boreholes, validate them, and create error messages when necessary.
+        foreach (var (borehole, index) in indexedBoreholesFromFile)
         {
-            if (string.IsNullOrEmpty(boreholeFromFile.value.OriginalName))
+            if (string.IsNullOrEmpty(borehole.OriginalName))
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
+                ModelState.AddModelError($"Row{index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
             }
 
-            if (boreholeFromFile.value.LocationX == null && boreholeFromFile.value.LocationXLV03 == null)
+            if (borehole.LocationX == null && borehole.LocationXLV03 == null)
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
+                ModelState.AddModelError($"Row{index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
             }
 
-            if (boreholeFromFile.value.LocationY == null && boreholeFromFile.value.LocationYLV03 == null)
+            if (borehole.LocationY == null && borehole.LocationYLV03 == null)
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
+                ModelState.AddModelError($"Row{index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
             }
 
-            // Check if any borehole with same coordinates (in tolerance) and same total depth is duplicated in file
-            if (boreholesFromFile.Any(b =>
-                b.ImportId != boreholeFromFile.value.ImportId &&
-                CompareValuesWithTolerance(b.TotalDepth, boreholeFromFile.value.TotalDepth, 0) &&
-                CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) &&
-                CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2)))
+            // Check for duplicate entries in the uploaded file
+            if (indexedBoreholesFromFile.Any(b =>
+                b.index != index &&
+                CompareValuesWithTolerance(b.value.TotalDepth, borehole.TotalDepth, 0) &&
+                CompareValuesWithTolerance(b.value.LocationX, borehole.LocationX, 2) &&
+                CompareValuesWithTolerance(b.value.LocationY, borehole.LocationY, 2)))
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.");
+                ModelState.AddModelError($"Row{index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.");
             }
 
-            // Check if borehole with same coordinates (in tolerance) and same total depth already exists in db.
+            // Check against the database entries
             if (boreholesFromDb.Any(b =>
-                CompareValuesWithTolerance(b.TotalDepth, boreholeFromFile.value.TotalDepth, 0) &&
-                (CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, boreholeFromFile.value.LocationX, 2)) &&
-                (CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, boreholeFromFile.value.LocationY, 2))))
+                CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
+                (CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, borehole.LocationX, 2)) &&
+                (CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, borehole.LocationY, 2))))
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
+                ModelState.AddModelError($"Row{index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
             }
 
-            // Checks if each file name in the comma separated string is present in the list of the attachments.
-            var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?
+            // Attachment checks
+            var attachmentFileNamesToLink = borehole.Attachments?
                 .Split(",")
-                .Select(s => s.Replace(" ", "", StringComparison.OrdinalIgnoreCase))
+                .Select(s => s.Trim())
                 .Where(s => !string.IsNullOrEmpty(s))
-                .ToList()
-                ?? new List<string>();
+                .ToList() ?? new List<string>();
 
             foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
             {
                 if (attachments?.Any(a => a.FileName.Equals(attachmentFileNameToLink, StringComparison.OrdinalIgnoreCase)) == false)
                 {
-                    ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Attachment file '{attachmentFileNameToLink}' not found.");
+                    ModelState.AddModelError($"Row{index}", $"Attachment file '{attachmentFileNameToLink}' not found.");
                 }
             }
         }
