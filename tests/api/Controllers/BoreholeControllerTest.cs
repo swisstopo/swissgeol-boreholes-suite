@@ -13,7 +13,6 @@ namespace BDMS.Controllers;
 public class BoreholeControllerTest
 {
     private const int DefaultWorkgroupId = 1;
-    private const int MaxBoreholeSeedId = 1_002_999;
     private int boreholeId;
 
     private BdmsContext context;
@@ -51,12 +50,8 @@ public class BoreholeControllerTest
         if (testBoreholeWithIdentifiers != null)
         {
             cleanupContext.BoreholeCodelists.RemoveRange(testBoreholeWithIdentifiers.BoreholeCodelists);
+            await cleanupContext.SaveChangesAsync();
         }
-
-        // This is necessary because the some tests work with multiple contexts and actually write to the database.
-        var boreholesToDelete = cleanupContext.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
-        cleanupContext.Boreholes.RemoveRange(boreholesToDelete);
-        await cleanupContext.SaveChangesAsync();
 
         await cleanupContext.DisposeAsync();
     }
@@ -92,7 +87,8 @@ public class BoreholeControllerTest
 
         LoadBoreholeWithIncludes();
 
-        var newBorehole = GetBoreholeToAdd(id);
+        var newBorehole = GetBoreholeToAdd();
+        newBorehole.Id = id;
 
         var boreholeToEdit = context.Boreholes.Single(c => c.Id == id);
         Assert.AreEqual(1, boreholeToEdit.Stratigraphies.Count);
@@ -266,9 +262,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyBoreholeWithHydrotests()
     {
-        boreholeId = MaxBoreholeSeedId + 10;
-
-        var newBorehole = GetBoreholeToAdd(boreholeId);
+        var newBorehole = GetBoreholeToAdd();
 
         var fieldMeasurementResult = new FieldMeasurementResult
         {
@@ -340,21 +334,15 @@ public class BoreholeControllerTest
 
         newBorehole.Observations = new List<Observation> { hydroTest, fieldMeasurement, groundwaterLevelMeasurement, waterIngress };
 
-        using var initialContext = ContextFactory.CreateContext();
-        var copyController = GetTestController(initialContext);
+        context.Add(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
-        initialContext.Add(newBorehole);
-        await initialContext.SaveChangesAsync().ConfigureAwait(false);
-
-        var result = await copyController.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
+        var result = await controller.CopyAsync(newBorehole.Id, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
         Assert.IsNotNull(copiedBoreholeId);
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
 
-        using var verifyContext = ContextFactory.CreateContext();
-        var readController = GetTestController(verifyContext);
-
-        var response = await readController.GetByIdAsync((int)copiedBoreholeId).ConfigureAwait(false);
+        var response = await controller.GetByIdAsync((int)copiedBoreholeId).ConfigureAwait(false);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Borehole copiedBorehole = (Borehole)okResult.Value!;
         Assert.IsNotNull(copiedBorehole);
@@ -538,11 +526,10 @@ public class BoreholeControllerTest
         return GetBoreholesWithIncludes(context.Boreholes).Single(b => b.Id == id);
     }
 
-    private Borehole GetBoreholeToAdd(int id)
+    private Borehole GetBoreholeToAdd()
     {
         return new Borehole
         {
-            Id = id,
             CreatedById = 4,
             UpdatedById = 4,
             Locked = null,
