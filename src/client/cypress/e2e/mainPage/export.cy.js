@@ -166,8 +166,6 @@ describe("Test for exporting boreholes.", () => {
       const { lines, rows } = splitFileContent(fileContent);
       expect(lines.length).to.equal(4);
 
-      console.log(rows);
-
       expect(rows[0][3]).to.equal("Name");
       expect(rows[1][3]).to.equal(firstBoreholeName);
       expect(rows[2][3]).to.equal(secondBoreholeName);
