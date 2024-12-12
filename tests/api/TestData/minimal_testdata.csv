@@ -1,7 +1,7 @@
-import_id;original_name;location_x;location_y
-1;Unit_Test_1;2000000;1000000
-2;Unit_Test_2;2000010;1000010
-3;Unit_Test_3;2000020;1000020
-4;Unit_Test_4;2000030;1000030
-5;Unit_Test_5;2000040;1000040
-6;Unit_Test_6;2000050;1000050
+original_name;location_x;location_y
+Unit_Test_1;2000000;1000000
+Unit_Test_2;2000010;1000010
+Unit_Test_3;2000020;1000020
+Unit_Test_4;2000030;1000030
+Unit_Test_5;2000040;1000040
+Unit_Test_6;2000050;1000050

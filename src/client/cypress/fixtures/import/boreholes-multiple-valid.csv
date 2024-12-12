@@ -1,5 +1,5 @@
-import_id;alternate_name;original_name;location_x;location_y;attachments;
-344;BH-1001;Wellington 1;2156784;1154321;borehole_attachment_1.pdf,borehole_attachment_2.zip;
-33;BH-1002;Wellington 2;2367999;1276543;
-2;BH-1003;Wellington 3;2189456;1334567;
-55;BH-1004;Wellington 4;2312345;1200987;
+alternate_name;original_name;location_x;location_y;attachments;
+BH-1001;Wellington 1;2156784;1154321;borehole_attachment_1.pdf,borehole_attachment_2.zip;
+BH-1002;Wellington 2;2367999;1276543;
+BH-1003;Wellington 3;2189456;1334567;
+BH-1004;Wellington 4;2312345;1200987;

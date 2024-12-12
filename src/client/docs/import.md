@@ -50,7 +50,6 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 
 | Feldname                    | Datentyp       | Pflichtfeld | Beschreibung                                                                          |
 | --------------------------- | -------------- | ----------- | ------------------------------------------------------------------------------------- |
-| import_id                   | Zahl           | Ja          | Zufällig gewählte Zahl. Wird nicht gepeichert. Muss in der Datei einzigartig sein     |
 | id_geodin_shortname         | Zahl           | Nein        | ID GeODin-Shortname                                                                   |
 | id_info_geol                | Zahl           | Nein        | ID InfoGeol                                                                           |
 | id_original                 | Zahl           | Nein        | ID Original                                                                           |
