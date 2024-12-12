@@ -200,8 +200,8 @@ public class UploadController : ControllerBase
             .Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY, b.LocationXLV03, b.LocationYLV03 })
             .ToList();
 
+        // Iterate over provided boreholes, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
         var indexedBoreholesFromFile = boreholesFromFile.Select((value, index) => (value, index: index + 1)).ToList();
-
         foreach (var (borehole, index) in indexedBoreholesFromFile)
         {
             if (string.IsNullOrEmpty(borehole.OriginalName))
