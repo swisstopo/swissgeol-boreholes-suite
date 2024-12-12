@@ -91,7 +91,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         var totalCount = await query.CountAsync().ConfigureAwait(false);
         var boreholes = await query.Skip(skip).Take(pageSize).ToListAsync().ConfigureAwait(false);
-
         var paginatedResponse = new PaginatedBoreholeResponse(totalCount, pageNumber, pageSize, MaxPageSize, boreholes);
 
         return Ok(paginatedResponse);
@@ -146,12 +145,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
 
-        if (borehole == null)
-        {
-            return NotFound();
-        }
-
-        await LoadObservationDetailsAsync(borehole).ConfigureAwait(false);
+        if (borehole == null) return NotFound();
 
         // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
         borehole.Id = 0;
@@ -319,51 +313,16 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .Include(b => b.Completions).ThenInclude(c => c.Instrumentations)
             .Include(b => b.Completions).ThenInclude(c => c.Backfills)
             .Include(b => b.Sections).ThenInclude(s => s.SectionElements)
-            .Include(b => b.Observations)
+            .Include(b => b.Observations).ThenInclude(o => (o as FieldMeasurement)!.FieldMeasurementResults)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestResults)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestEvaluationMethodCodes)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestFlowDirectionCodes)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestKindCodes)
             .Include(b => b.BoreholeCodelists)
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles)
             .Include(b => b.BoreholeGeometry)
             .Include(b => b.Workgroup)
             .Include(b => b.UpdatedBy);
-    }
-
-    private async Task LoadObservationDetailsAsync(Borehole borehole)
-    {
-        if (borehole.Observations != null)
-        {
-            var fieldMeasurements = borehole.Observations.OfType<FieldMeasurement>().ToList();
-            foreach (var fieldMeasurement in fieldMeasurements)
-            {
-                await Context.Entry(fieldMeasurement)
-                    .Collection(f => f.FieldMeasurementResults!)
-                    .LoadAsync()
-                    .ConfigureAwait(false);
-            }
-
-            var hydrotests = borehole.Observations.OfType<Hydrotest>().ToList();
-            foreach (var hydrotest in hydrotests)
-            {
-                await Context.Entry(hydrotest)
-                    .Collection(h => h.HydrotestResults!)
-                    .LoadAsync()
-                    .ConfigureAwait(false);
-
-                await Context.Entry(hydrotest)
-                    .Collection(h => h.HydrotestKindCodes!)
-                    .LoadAsync()
-                    .ConfigureAwait(false);
-
-                await Context.Entry(hydrotest)
-                    .Collection(h => h.HydrotestEvaluationMethodCodes!)
-                    .LoadAsync()
-                    .ConfigureAwait(false);
-
-                await Context.Entry(hydrotest)
-                    .Collection(h => h.HydrotestFlowDirectionCodes!)
-                    .LoadAsync()
-                    .ConfigureAwait(false);
-            }
-        }
     }
 }
