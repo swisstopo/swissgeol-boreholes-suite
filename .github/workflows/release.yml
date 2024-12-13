@@ -168,6 +168,7 @@ jobs:
   patch-changelog:
     runs-on: ubuntu-latest
     name: Patch CHANGELOG.md and update GitHub release notes
+    needs: retag-docker-image
 
     steps:
       - name: Checkout repository
