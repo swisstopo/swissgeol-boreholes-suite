@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.992 - 2024-12-13
+
 ### Added
 
 - WMTS Services are now supported as custom user layers.
