@@ -251,9 +251,6 @@ public class UploadController : ControllerBase
             return Problem("Error while importing borehole(s).");
         }
     }
-        {
-            return new List<int>();
-        }
 
     internal static int GetPrecision(IReaderRow row, string fieldName)
     {
@@ -329,6 +326,9 @@ public class UploadController : ControllerBase
         var boreholeFileNames = borehole.Attachments
             .Split(",")
             .Select(s => s.Trim())
+            .Where(s => !string.IsNullOrEmpty(s))
+            .ToList();
+
         foreach (var boreholeFileName in boreholeFileNames)
         {
             // Check if the name of any attached file matches the name of the borehole file
@@ -336,60 +336,6 @@ public class UploadController : ControllerBase
             {
                 AddValidationErrorToModelState(processingIndex, $"Attachment file '{boreholeFileName}' not found.", isJsonFile);
             }
-        }
-    }
-
-    private void ValidateLithologyImports(List<int> importIds, List<LithologyImport> lithologyImports)
-    {
-        // Iterate over provided lithology imports, validate them, and create error messages when necessary.
-        foreach (var lithology in lithologyImports.Select((value, index) => (value, index)))
-        {
-            if (lithology.value.ImportId == 0) AddValidationErrorToModelState(lithology.index, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "import_id"), false);
-
-            if (lithology.value.StratiImportId == 0) AddValidationErrorToModelState(lithology.index, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "strati_import_id"), false);
-
-            if (lithology.value.FromDepth == null) AddValidationErrorToModelState(lithology.index, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "from_depth"), false);
-
-            if (lithology.value.ToDepth == null) AddValidationErrorToModelState(lithology.index, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "to_depth"), false);
-
-            // Check if all import ids exist in the list of provided import ids (from borehole import file)
-            if (!importIds.Contains(lithology.value.ImportId)) AddValidationErrorToModelState(lithology.index, $"Borehole with {nameof(LithologyImport.ImportId)} '{lithology.value.ImportId}' not found.", false);
-            {
-            // Check if all multi code list values are numbers
-            try
-            {
-                ParseMultiValueCodeListIds(lithology.value);
-            }
-            catch
-            {
-                AddValidationErrorToModelState(lithology.index, $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.", false);
-            }
-        }
-
-        // Group lithology records by import id to get lithologies per borehole.
-        var boreholeGroups = lithologyImports.GroupBy(l => l.ImportId);
-
-        foreach (var boreholeLithologies in boreholeGroups)
-        {
-            // Group lithology records per borehole by strati import id to get lithologies per stratigraphy.
-            var stratiGroups = boreholeLithologies.GroupBy(bhoGroup => bhoGroup.StratiImportId);
-            foreach (var stratiGroup in stratiGroups)
-            {
-                // Check if all records with the same strati import id have the same strati name.
-                if (stratiGroup.Select(s => s.StratiName).Distinct().Count() > 1)
-                {
-                    ModelState.AddModelError($"import_id{stratiGroup.First().ImportId}", $"Lithology with {nameof(LithologyImport.StratiImportId)} '{stratiGroup.Key}' has various {nameof(LithologyImport.StratiName)}.");
-                }
-
-                // Check if all records with the same strati import id have the same strati date.
-                if (stratiGroup.Select(s => s.StratiDate).Distinct().Count() > 1)
-                {
-                    ModelState.AddModelError($"import_id{stratiGroup.First().ImportId}", $"Lithology with {nameof(LithologyImport.StratiImportId)} '{stratiGroup.Key}' has various {nameof(LithologyImport.StratiDate)}.");
-                }
-            }
-        }
-    }
-
         }
     }
 

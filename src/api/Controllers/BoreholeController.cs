@@ -150,7 +150,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         borehole.MarkAsNew();
         borehole.Completions?.MarkAsNew();
         borehole.Sections?.MarkAsNew();
-        borehole.Observations?.MarkAsNew();
 
         foreach (var stratigraphy in borehole.Stratigraphies)
         {
@@ -171,69 +170,17 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             stratigraphy.ChronostratigraphyLayers?.MarkAsNew();
             stratigraphy.LithostratigraphyLayers?.MarkAsNew();
         }
-            foreach (var lithologicalDescription in stratigraphy.LithologicalDescriptions)
-            {
-                lithologicalDescription.Id = 0;
-            }
-
-            foreach (var faciesDescription in stratigraphy.FaciesDescriptions)
-            {
-                faciesDescription.Id = 0;
-            }
-
-            foreach (var chronostratigraphy in stratigraphy.ChronostratigraphyLayers)
-            {
-                chronostratigraphy.Id = 0;
-            }
-
-            foreach (var lithostratigraphy in stratigraphy.LithostratigraphyLayers)
-            {
-                lithostratigraphy.Id = 0;
-            }
-        }
-
-        foreach (var completion in borehole.Completions)
-        {
-            completion.Id = 0;
-            foreach (var casing in completion.Casings)
-            {
-                casing.Id = 0;
-                foreach (var casingElement in casing.CasingElements)
-                {
-                    casingElement.Id = 0;
-                }
-            }
-
-            foreach (var instrumentation in completion.Instrumentations)
-            {
-                instrumentation.Id = 0;
-            }
-
-            foreach (var backfill in completion.Backfills)
-            {
-                backfill.Id = 0;
-            }
-        }
-
-        foreach (var section in borehole.Sections)
-        {
-            section.Id = 0;
-            foreach (var sectionElement in section.SectionElements)
-            {
-                sectionElement.Id = 0;
-            }
-        }
 
         foreach (var observation in borehole.Observations)
         {
-            observation.Id = 0;
+            observation.MarkAsNew();
             if (observation is FieldMeasurement fieldMeasurement)
             {
                 if (fieldMeasurement.FieldMeasurementResults != null)
                 {
                     foreach (var fieldMeasurementResult in fieldMeasurement.FieldMeasurementResults)
                     {
-                        fieldMeasurementResult.Id = 0;
+                        fieldMeasurementResult.MarkAsNew();
                     }
                 }
             }
@@ -244,7 +191,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
                 {
                     foreach (var hydrotestResult in hydrotest.HydrotestResults)
                     {
-                        hydrotestResult.Id = 0;
+                        hydrotestResult.MarkAsNew();
                     }
                 }
 
@@ -279,7 +226,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         foreach (var boreholeGeometry in borehole.BoreholeGeometry)
         {
-            boreholeGeometry.Id = 0;
+            boreholeGeometry.MarkAsNew();
         }
 
         borehole.UpdatedBy = null;
