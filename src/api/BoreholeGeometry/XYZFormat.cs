@@ -13,14 +13,14 @@ internal sealed class XYZFormat : IBoreholeGeometryFormat
 
     public string Name => "X Y Z";
 
-    private Lazy<string> expectedCsvHeader = new(Helper.GetCSVHeader<Geometry>);
+    private Lazy<string> expectedCsvHeader = new(CsvConfigHelper.GetCsvHeader<Geometry>);
 
     public string CsvHeader => expectedCsvHeader.Value;
 
     public IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId)
     {
         using var reader = new StreamReader(file.OpenReadStream());
-        using var csv = new CsvReader(reader, Helper.CsvConfig);
+        using var csv = new CsvReader(reader, CsvConfigHelper.CsvConfig);
 
         var data = csv.GetRecords<Geometry>();
         return ToBoreholeGeometry(data, boreholeId);
