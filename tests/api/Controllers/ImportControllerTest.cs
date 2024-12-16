@@ -16,16 +16,16 @@ namespace BDMS.Controllers;
 
 [DeploymentItem("TestData")]
 [TestClass]
-public class UploadControllerTest
+public class ImportControllerTest
 {
     private const int MaxBoreholeSeedId = 1002999;
     private const int MaxStratigraphySeedId = 6002999;
     private const int MaxLayerSeedId = 7029999;
 
     private BdmsContext context;
-    private UploadController controller;
+    private ImportController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
-    private Mock<ILogger<UploadController>> loggerMock;
+    private Mock<ILogger<ImportController>> loggerMock;
     private Mock<ILogger<LocationService>> loggerLocationServiceMock;
     private Mock<ILogger<CoordinateService>> loggerCoordinateServiceMock;
 
@@ -36,7 +36,7 @@ public class UploadControllerTest
 
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
-        loggerMock = new Mock<ILogger<UploadController>>();
+        loggerMock = new Mock<ILogger<ImportController>>();
 
         loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
         var locationService = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
@@ -56,7 +56,7 @@ public class UploadControllerTest
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, context.Users.FirstOrDefault().SubjectId) }));
         var boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, loggerBoreholeFileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
 
-        controller = new UploadController(context, loggerMock.Object, locationService, coordinateService, boreholeFileCloudService) { ControllerContext = GetControllerContextAdmin() };
+        controller = new ImportController(context, loggerMock.Object, locationService, coordinateService, boreholeFileCloudService) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -1137,13 +1137,13 @@ Frank Place;2000000;1000000;borehole_attachment_1.pdf,borehole_attachment_2.pdf"
     [TestMethod]
     public void CompareValueWithTolerance()
     {
-        Assert.AreEqual(true, UploadController.CompareValuesWithTolerance(null, null, 0));
-        Assert.AreEqual(true, UploadController.CompareValuesWithTolerance(2100000, 2099998, 2));
-        Assert.AreEqual(false, UploadController.CompareValuesWithTolerance(2100000, 2000098, 1.99));
-        Assert.AreEqual(false, UploadController.CompareValuesWithTolerance(2100002, 2000000, 1.99));
-        Assert.AreEqual(false, UploadController.CompareValuesWithTolerance(21000020, 2000000, 20));
-        Assert.AreEqual(false, UploadController.CompareValuesWithTolerance(null, 2000000, 0));
-        Assert.AreEqual(false, UploadController.CompareValuesWithTolerance(2000000, null, 2));
+        Assert.AreEqual(true, ImportController.CompareValuesWithTolerance(null, null, 0));
+        Assert.AreEqual(true, ImportController.CompareValuesWithTolerance(2100000, 2099998, 2));
+        Assert.AreEqual(false, ImportController.CompareValuesWithTolerance(2100000, 2000098, 1.99));
+        Assert.AreEqual(false, ImportController.CompareValuesWithTolerance(2100002, 2000000, 1.99));
+        Assert.AreEqual(false, ImportController.CompareValuesWithTolerance(21000020, 2000000, 20));
+        Assert.AreEqual(false, ImportController.CompareValuesWithTolerance(null, 2000000, 0));
+        Assert.AreEqual(false, ImportController.CompareValuesWithTolerance(2000000, null, 2));
     }
 
     [TestMethod]
