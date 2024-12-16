@@ -203,14 +203,12 @@ class DomainDropdown extends React.Component {
         ),
       })),
     );
-    if (readOnly) {
-      let selectedOption = options.find(option => option.value === selected);
-      return <Form.Input fluid readOnly value={selectedOption?.text || ""} />;
-    }
     return (
       <Form.Select
         data-cy="domain-dropdown"
         fluid
+        readOnly={readOnly}
+        style={{ pointerEvents: readOnly ? "none" : "auto" }}
         multiple={multiple}
         onChange={this.handleChange}
         options={options}

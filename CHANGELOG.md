@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.993 - 2024-12-13
+
 ### Added
 
 - WMTS Services are now supported as custom user layers.
@@ -25,6 +27,7 @@
 - Updated the layout of the borehole general tab.
 - Removed deduplication check when adding and detaching attachments.
 - When copying a borehole, attachments won't be copied.
+- Removed csv lithology import.
 
 ### Fixed
 
@@ -40,6 +43,9 @@
 - Filtering striae for `not specified` returned wrong results.
 - Filtering by `borehole status` did not work.
 - When saving with ctrl+s in the borehole sections, the form content was reset.
+- When copying a borehole, the nested collections of observations were not copied.
+- There was a bug when changing the order, transparency or visibility of custom WMS user layers.
+- The borehole status was not translated everywhere in the workflow panel.
 
 ## v2.1.870 - 2024-09-27
 

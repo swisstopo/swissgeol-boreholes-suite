@@ -38,45 +38,6 @@
     <None Update="TestData\borehole_attachment_with_wrong_extension.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\data_sets\import_litho_with_invalid_code_list_ids\borehole.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_with_invalid_code_list_ids\litho.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_with_multi_code_list_properties\borehole.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_with_multi_code_list_properties\litho.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_diff_in_strati_attributes_for_same_starti_id\borehole.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_diff_in_strati_attributes_for_same_starti_id\litho.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_import_id_not_present_in_borehole_file\borehole.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_import_id_not_present_in_borehole_file\litho.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_missing_required_headers\borehole.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_missing_required_headers\litho.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_missing_required_fields\borehole.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho_missing_required_fields\litho.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\data_sets\import_litho\litho.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="TestData\duplicateBoreholesInDbButDifferentWorkgroup.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

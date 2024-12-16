@@ -41,7 +41,7 @@ class StatusFilter extends Component {
           { name: "EDIT", translationKey: "statuseditor" },
           { name: "CONTROL", translationKey: "statuscontroller" },
           { name: "VALID", translationKey: "statusvalidator" },
-          { name: "PUBLIC", translationKey: "statuspublic" },
+          { name: "PUBLIC", translationKey: "statuspublisher" },
         ].map(role => (
           <Form.Field key={"sec-" + role.translationKey}>
             <Radio

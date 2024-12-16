@@ -117,31 +117,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         return Ok(borehole);
     }
 
-    private IQueryable<Borehole> GetBoreholesWithIncludes()
-    {
-        return Context.Boreholes.Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
-            .Include(b => b.Completions).ThenInclude(c => c.Casings).ThenInclude(c => c.CasingElements)
-            .Include(b => b.Completions).ThenInclude(c => c.Instrumentations)
-            .Include(b => b.Completions).ThenInclude(c => c.Backfills)
-            .Include(b => b.Sections).ThenInclude(s => s.SectionElements)
-            .Include(b => b.Observations)
-            .Include(b => b.BoreholeCodelists)
-            .Include(b => b.Workflows)
-            .Include(b => b.BoreholeFiles)
-            .Include(b => b.BoreholeGeometry)
-            .Include(b => b.Workgroup)
-            .Include(b => b.UpdatedBy);
-    }
-
     /// <summary>
     /// Asynchronously copies a <see cref="Borehole"/>.
     /// </summary>
@@ -170,36 +145,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
 
-        if (borehole == null)
-        {
-            return NotFound();
-        }
-
-        if (borehole.Observations != null)
-        {
-            // Include FieldMeasurementResults and HydrotestResults separately since Entity Framework does not support casting in an Include statement
-            var fieldMeasurements = borehole.Observations.OfType<FieldMeasurement>().ToList();
-           #pragma warning disable CS8603
-            // Cannot include null test for fieldMeasurementResults and hydrotestResults since they are not yet loaded
-            // if there are no fieldMeasurementResults of hydrotestResults the LoadAsync method will be called but have no effect
-            foreach (var fieldMeasurement in fieldMeasurements)
-            {
-                await Context.Entry(fieldMeasurement)
-                    .Collection(f => f.FieldMeasurementResults)
-                    .LoadAsync()
-                    .ConfigureAwait(false);
-            }
-
-            var hydrotests = borehole.Observations.OfType<Hydrotest>().ToList();
-            foreach (var hydrotest in hydrotests)
-            {
-                    await Context.Entry(hydrotest)
-                        .Collection(h => h.HydrotestResults)
-                        .LoadAsync()
-                        .ConfigureAwait(false);
-            }
-            #pragma warning restore CS8603
-        }
+        if (borehole == null) return NotFound();
 
         borehole.MarkAsNew();
         borehole.Completions?.MarkAsNew();
@@ -225,6 +171,108 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             stratigraphy.ChronostratigraphyLayers?.MarkAsNew();
             stratigraphy.LithostratigraphyLayers?.MarkAsNew();
         }
+            foreach (var lithologicalDescription in stratigraphy.LithologicalDescriptions)
+            {
+                lithologicalDescription.Id = 0;
+            }
+
+            foreach (var faciesDescription in stratigraphy.FaciesDescriptions)
+            {
+                faciesDescription.Id = 0;
+            }
+
+            foreach (var chronostratigraphy in stratigraphy.ChronostratigraphyLayers)
+            {
+                chronostratigraphy.Id = 0;
+            }
+
+            foreach (var lithostratigraphy in stratigraphy.LithostratigraphyLayers)
+            {
+                lithostratigraphy.Id = 0;
+            }
+        }
+
+        foreach (var completion in borehole.Completions)
+        {
+            completion.Id = 0;
+            foreach (var casing in completion.Casings)
+            {
+                casing.Id = 0;
+                foreach (var casingElement in casing.CasingElements)
+                {
+                    casingElement.Id = 0;
+                }
+            }
+
+            foreach (var instrumentation in completion.Instrumentations)
+            {
+                instrumentation.Id = 0;
+            }
+
+            foreach (var backfill in completion.Backfills)
+            {
+                backfill.Id = 0;
+            }
+        }
+
+        foreach (var section in borehole.Sections)
+        {
+            section.Id = 0;
+            foreach (var sectionElement in section.SectionElements)
+            {
+                sectionElement.Id = 0;
+            }
+        }
+
+        foreach (var observation in borehole.Observations)
+        {
+            observation.Id = 0;
+            if (observation is FieldMeasurement fieldMeasurement)
+            {
+                if (fieldMeasurement.FieldMeasurementResults != null)
+                {
+                    foreach (var fieldMeasurementResult in fieldMeasurement.FieldMeasurementResults)
+                    {
+                        fieldMeasurementResult.Id = 0;
+                    }
+                }
+            }
+
+            if (observation is Hydrotest hydrotest)
+            {
+                if (hydrotest.HydrotestResults != null)
+                {
+                    foreach (var hydrotestResult in hydrotest.HydrotestResults)
+                    {
+                        hydrotestResult.Id = 0;
+                    }
+                }
+
+                if (hydrotest.HydrotestKindCodes != null)
+                {
+                    foreach (var hydrotestKindCode in hydrotest.HydrotestKindCodes)
+                    {
+                        hydrotestKindCode.HydrotestId = 0;
+                    }
+                }
+
+                if (hydrotest.HydrotestEvaluationMethodCodes != null)
+                {
+                    foreach (var hydrotestEvaluationMethodCode in hydrotest.HydrotestEvaluationMethodCodes)
+                    {
+                        hydrotestEvaluationMethodCode.HydrotestId = 0;
+                    }
+                }
+
+                if (hydrotest.HydrotestFlowDirectionCodes != null)
+                {
+                    foreach (var hydrotestFlowDirectionCode in hydrotest.HydrotestFlowDirectionCodes)
+                    {
+                        hydrotestFlowDirectionCode.HydrotestId = 0;
+                    }
+                }
+            }
+        }
 
         // Do not copy borehole attachments
         borehole.BoreholeFiles.Clear();
@@ -243,6 +291,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id });
 
         borehole.OriginalName += " (Copy)";
+        borehole.AlternateName += " (Copy)";
 
         var entityEntry = await Context.AddAsync(borehole).ConfigureAwait(false);
         await Context.SaveChangesAsync().ConfigureAwait(false);
@@ -255,5 +304,34 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     {
         if (entity == null) return default;
         return await Task.FromResult<int?>(entity.Id).ConfigureAwait(false);
+    }
+
+    private IQueryable<Borehole> GetBoreholesWithIncludes()
+    {
+        return Context.Boreholes.Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
+            .Include(b => b.Completions).ThenInclude(c => c.Casings).ThenInclude(c => c.CasingElements)
+            .Include(b => b.Completions).ThenInclude(c => c.Instrumentations)
+            .Include(b => b.Completions).ThenInclude(c => c.Backfills)
+            .Include(b => b.Sections).ThenInclude(s => s.SectionElements)
+            .Include(b => b.Observations).ThenInclude(o => (o as FieldMeasurement)!.FieldMeasurementResults)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestResults)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestEvaluationMethodCodes)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestFlowDirectionCodes)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestKindCodes)
+            .Include(b => b.BoreholeCodelists)
+            .Include(b => b.Workflows)
+            .Include(b => b.BoreholeFiles)
+            .Include(b => b.BoreholeGeometry)
+            .Include(b => b.Workgroup)
+            .Include(b => b.UpdatedBy);
     }
 }

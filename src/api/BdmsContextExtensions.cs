@@ -202,6 +202,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.PrecisionLocationY, f => f.PickRandom(Enumerable.Range(0, 10)))
            .RuleFor(o => o.PrecisionLocationXLV03, f => f.PickRandom(Enumerable.Range(0, 10)))
            .RuleFor(o => o.PrecisionLocationYLV03, f => f.PickRandom(Enumerable.Range(0, 10)))
+           .RuleFor(o => o.Observations, _ => new Collection<Observation>())
            .FinishWith((f, o) => { o.AlternateName = o.OriginalName; });
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();

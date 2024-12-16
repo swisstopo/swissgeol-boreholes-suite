@@ -667,7 +667,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("minimal_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, attachments: null);
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -706,7 +706,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("precision_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, attachments: null);
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -761,7 +761,7 @@ public class UploadControllerTest
         var ninthAttachmentFile = GetFormFileByExistingFile("borehole_attachment_4.zip");
         var tenthAttachmentFile = GetFormFileByExistingFile("borehole_attachment_5.png");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstAttachmentFile, secondAttachmentFile, thirdAttachmentFile, fourthAttachmentFile, fifthAttachmentFile, sixthAttachmentFile, seventhAttachmentFile, eighthAttachmentFile, ninthAttachmentFile, tenthAttachmentFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, new List<IFormFile>() { firstAttachmentFile, secondAttachmentFile, thirdAttachmentFile, fourthAttachmentFile, fifthAttachmentFile, sixthAttachmentFile, seventhAttachmentFile, eighthAttachmentFile, ninthAttachmentFile, tenthAttachmentFile });
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -783,7 +783,7 @@ public class UploadControllerTest
         var firstAttachmentFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var secondAttachmentFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstAttachmentFile, secondAttachmentFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, new List<IFormFile>() { firstAttachmentFile, secondAttachmentFile });
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -802,7 +802,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -819,7 +819,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("special_chars_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -838,7 +838,7 @@ public class UploadControllerTest
     {
         var boreholeCsvFile = GetFormFileByExistingFile("no_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -860,7 +860,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv95_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -889,7 +889,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv03_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -918,7 +918,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv03_out_of_range_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -942,7 +942,7 @@ public class UploadControllerTest
     {
         var boreholeCsvFile = new FormFile(null, 0, 0, null, "non_existent_file.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -954,7 +954,7 @@ public class UploadControllerTest
     {
         var invalidFileTypeBoreholeFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "invalid_file_type.txt");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, invalidFileTypeBoreholeFile, lithologyFile: null, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, invalidFileTypeBoreholeFile, null);
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -973,7 +973,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -997,7 +997,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile(firstAttachmentFileName);
         var secondPdfFormFile = GetFormFileByExistingFile(secondAttachmentFileName);
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -1021,7 +1021,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -1042,7 +1042,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var whiteSpacePdf = GetFormFileByExistingFile("white space.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, whiteSpacePdf });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, whiteSpacePdf });
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -1107,26 +1107,6 @@ public class UploadControllerTest
                 "Field 'location_y' is required.",
             },
             problemDetails.Errors["Row3"]);
-    }
-
-    [TestMethod]
-    public async Task UploadLithologyMultipleRowsMissingRequiredFieldsShouldReturnError()
-    {
-        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho_missing_required_fields/borehole.csv");
-        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho_missing_required_fields/litho.csv");
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithoCsvFile);
-
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
-        Assert.AreEqual(3, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { "Field 'to_depth' is required." }, problemDetails.Errors["Row1"]);
-        CollectionAssert.AreEquivalent(new[] { "Field 'from_depth' is required." }, problemDetails.Errors["Row2"]);
-        CollectionAssert.AreEquivalent(new[] { "Field 'from_depth' is required." }, problemDetails.Errors["Row3"]);
     }
 
     [TestMethod]
@@ -1230,25 +1210,6 @@ public class UploadControllerTest
     }
 
     [TestMethod]
-    public async Task UploadLithologyWithInvalidCodeListIdsShouldSaveData()
-    {
-        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho_with_invalid_code_list_ids/borehole.csv");
-        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho_with_invalid_code_list_ids/litho.csv");
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: lithoCsvFile, attachments: null);
-
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
-        Assert.AreEqual(2, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.", }, problemDetails.Errors["Row1"]);
-        CollectionAssert.AreEquivalent(new[] { $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.", }, problemDetails.Errors["Row2"]);
-    }
-
-    [TestMethod]
     public async Task UploadDuplicateBoreholesInDbShouldReturnError()
     {
         // Create Boreholes with same LocationX, LocationY and TotalDepth as in provided csv and with the same WorkgroupId as provided
@@ -1346,7 +1307,7 @@ public class UploadControllerTest
 
         var attachment = new FormFile(stream, 0, stream.Length, "file", "dummy.txt");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null, new[] { attachment });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new[] { attachment });
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
