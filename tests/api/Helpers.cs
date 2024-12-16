@@ -189,4 +189,10 @@ internal static class Helpers
     {
         return await context.Codelists.Where(c => codelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
     }
+
+    internal static string ShouldBeNullMessage(this string propertyName)
+        => $"{propertyName} should be null.";
+
+    internal static string ShouldNotBeNullMessage(this string propertyName)
+        => $"{propertyName} should not be null.";
 }

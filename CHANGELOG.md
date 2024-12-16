@@ -13,6 +13,7 @@
 - Add JSON export for single and multiple boreholes.
 - The workgroup name is now displayed in the borehole location tab.
 - Added new API endpoint to retrieve all boreholes.
+- Add JSON import for boreholes.
 
 ### Changed
 
