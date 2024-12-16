@@ -120,88 +120,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         return Ok(borehole);
     }
 
-    private IQueryable<Borehole> GetBoreholesWithIncludes()
-    {
-        return Context.Boreholes.Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
-            .Include(b => b.Completions).ThenInclude(c => c.Casings).ThenInclude(c => c.CasingElements)
-            .Include(b => b.Completions).ThenInclude(c => c.Instrumentations)
-            .Include(b => b.Completions).ThenInclude(c => c.Backfills)
-            .Include(b => b.Sections).ThenInclude(s => s.SectionElements)
-            .Include(b => b.Observations)
-            .Include(b => b.BoreholeCodelists)
-            .Include(b => b.Workflows)
-            .Include(b => b.BoreholeFiles)
-            .Include(b => b.BoreholeGeometry)
-            .Include(b => b.Workgroup)
-            .Include(b => b.UpdatedBy);
-    }
-
-    /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
-    /// </summary>
-    /// <param name="ids">The list of IDs for the boreholes to be exported.</param>
-    /// <returns>A CSV file containing the details specified boreholes.</returns>
-    [HttpGet("export-csv")]
-    [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> DownloadCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
-    {
-        ids = ids.Take(MaxPageSize).ToList();
-        if (!ids.Any()) return BadRequest("The list of IDs must not be empty.");
-
-        var boreholes = await Context.Boreholes
-            .Where(borehole => ids.Contains(borehole.Id))
-            .Select(b => new
-            {
-                b.Id,
-                b.OriginalName,
-                b.ProjectName,
-                b.Name,
-                b.RestrictionId,
-                b.RestrictionUntil,
-                b.NationalInterest,
-                b.LocationX,
-                b.LocationY,
-                b.LocationPrecisionId,
-                b.ElevationZ,
-                b.ElevationPrecisionId,
-                b.ReferenceElevation,
-                b.ReferenceElevationTypeId,
-                b.ReferenceElevationPrecisionId,
-                b.HrsId,
-                b.TypeId,
-                b.PurposeId,
-                b.StatusId,
-                b.Remarks,
-                b.TotalDepth,
-                b.DepthPrecisionId,
-                b.TopBedrockFreshMd,
-                b.TopBedrockWeatheredMd,
-                b.HasGroundwater,
-                b.LithologyTopBedrockId,
-                b.ChronostratigraphyTopBedrockId,
-                b.LithostratigraphyTopBedrockId,
-            })
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        if (boreholes.Count == 0) return NotFound("No borehole(s) found for the provided id(s).");
-
-        using var stringWriter = new StringWriter();
-        using var csvWriter = new CsvWriter(stringWriter, CultureInfo.InvariantCulture);
-        await csvWriter.WriteRecordsAsync(boreholes).ConfigureAwait(false);
-
-        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", "boreholes_export.csv");
-    }
-
     /// <summary>
     /// Asynchronously copies a <see cref="Borehole"/>.
     /// </summary>
@@ -230,45 +148,18 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
 
-        if (borehole == null)
-        {
-            return NotFound();
-        }
+        if (borehole == null) return NotFound();
 
-        if (borehole.Observations != null)
-        {
-            // Include FieldMeasurementResults and HydrotestResults separately since Entity Framework does not support casting in an Include statement
-            var fieldMeasurements = borehole.Observations.OfType<FieldMeasurement>().ToList();
-#pragma warning disable CS8603
-            // Cannot include null test for fieldMeasurementResults and hydrotestResults since they are not yet loaded
-            // if there are no fieldMeasurementResults of hydrotestResults the LoadAsync method will be called but have no effect
-            foreach (var fieldMeasurement in fieldMeasurements)
-            {
-                await Context.Entry(fieldMeasurement)
-                    .Collection(f => f.FieldMeasurementResults)
-                    .LoadAsync()
-                    .ConfigureAwait(false);
-            }
+        borehole.MarkAsNew();
+        borehole.Completions?.MarkAsNew();
+        borehole.Sections?.MarkAsNew();
 
-            var hydrotests = borehole.Observations.OfType<Hydrotest>().ToList();
-            foreach (var hydrotest in hydrotests)
-            {
-                await Context.Entry(hydrotest)
-                    .Collection(h => h.HydrotestResults)
-                    .LoadAsync()
-                    .ConfigureAwait(false);
-            }
-#pragma warning restore CS8603
-        }
-
-        // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
-        borehole.Id = 0;
         foreach (var stratigraphy in borehole.Stratigraphies)
         {
-            stratigraphy.Id = 0;
+            stratigraphy.MarkAsNew();
             foreach (var layer in stratigraphy.Layers)
             {
-                layer.Id = 0;
+                layer.MarkAsNew();
                 layer.LayerColorCodes?.ResetLayerIds();
                 layer.LayerDebrisCodes?.ResetLayerIds();
                 layer.LayerGrainShapeCodes?.ResetLayerIds();
@@ -277,69 +168,22 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
                 layer.LayerUscs3Codes?.ResetLayerIds();
             }
 
-            foreach (var lithologicalDescription in stratigraphy.LithologicalDescriptions)
-            {
-                lithologicalDescription.Id = 0;
-            }
-
-            foreach (var faciesDescription in stratigraphy.FaciesDescriptions)
-            {
-                faciesDescription.Id = 0;
-            }
-
-            foreach (var chronostratigraphy in stratigraphy.ChronostratigraphyLayers)
-            {
-                chronostratigraphy.Id = 0;
-            }
-
-            foreach (var lithostratigraphy in stratigraphy.LithostratigraphyLayers)
-            {
-                lithostratigraphy.Id = 0;
-            }
-        }
-
-        foreach (var completion in borehole.Completions)
-        {
-            completion.Id = 0;
-            foreach (var casing in completion.Casings)
-            {
-                casing.Id = 0;
-                foreach (var casingElement in casing.CasingElements)
-                {
-                    casingElement.Id = 0;
-                }
-            }
-
-            foreach (var instrumentation in completion.Instrumentations)
-            {
-                instrumentation.Id = 0;
-            }
-
-            foreach (var backfill in completion.Backfills)
-            {
-                backfill.Id = 0;
-            }
-        }
-
-        foreach (var section in borehole.Sections)
-        {
-            section.Id = 0;
-            foreach (var sectionElement in section.SectionElements)
-            {
-                sectionElement.Id = 0;
-            }
+            stratigraphy.LithologicalDescriptions?.MarkAsNew();
+            stratigraphy.FaciesDescriptions?.MarkAsNew();
+            stratigraphy.ChronostratigraphyLayers?.MarkAsNew();
+            stratigraphy.LithostratigraphyLayers?.MarkAsNew();
         }
 
         foreach (var observation in borehole.Observations)
         {
-            observation.Id = 0;
+            observation.MarkAsNew();
             if (observation is FieldMeasurement fieldMeasurement)
             {
                 if (fieldMeasurement.FieldMeasurementResults != null)
                 {
                     foreach (var fieldMeasurementResult in fieldMeasurement.FieldMeasurementResults)
                     {
-                        fieldMeasurementResult.Id = 0;
+                        fieldMeasurementResult.MarkAsNew();
                     }
                 }
             }
@@ -350,7 +194,31 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
                 {
                     foreach (var hydrotestResult in hydrotest.HydrotestResults)
                     {
-                        hydrotestResult.Id = 0;
+                        hydrotestResult.MarkAsNew();
+                    }
+                }
+
+                if (hydrotest.HydrotestKindCodes != null)
+                {
+                    foreach (var hydrotestKindCode in hydrotest.HydrotestKindCodes)
+                    {
+                        hydrotestKindCode.HydrotestId = 0;
+                    }
+                }
+
+                if (hydrotest.HydrotestEvaluationMethodCodes != null)
+                {
+                    foreach (var hydrotestEvaluationMethodCode in hydrotest.HydrotestEvaluationMethodCodes)
+                    {
+                        hydrotestEvaluationMethodCode.HydrotestId = 0;
+                    }
+                }
+
+                if (hydrotest.HydrotestFlowDirectionCodes != null)
+                {
+                    foreach (var hydrotestFlowDirectionCode in hydrotest.HydrotestFlowDirectionCodes)
+                    {
+                        hydrotestFlowDirectionCode.HydrotestId = 0;
                     }
                 }
             }
@@ -361,7 +229,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         foreach (var boreholeGeometry in borehole.BoreholeGeometry)
         {
-            boreholeGeometry.Id = 0;
+            boreholeGeometry.MarkAsNew();
         }
 
         borehole.UpdatedBy = null;
@@ -373,6 +241,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id });
 
         borehole.OriginalName += " (Copy)";
+        borehole.AlternateName += " (Copy)";
 
         var entityEntry = await Context.AddAsync(borehole).ConfigureAwait(false);
         await Context.SaveChangesAsync().ConfigureAwait(false);
@@ -385,5 +254,34 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     {
         if (entity == null) return default;
         return await Task.FromResult<int?>(entity.Id).ConfigureAwait(false);
+    }
+
+    private IQueryable<Borehole> GetBoreholesWithIncludes()
+    {
+        return Context.Boreholes.Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
+            .Include(b => b.Completions).ThenInclude(c => c.Casings).ThenInclude(c => c.CasingElements)
+            .Include(b => b.Completions).ThenInclude(c => c.Instrumentations)
+            .Include(b => b.Completions).ThenInclude(c => c.Backfills)
+            .Include(b => b.Sections).ThenInclude(s => s.SectionElements)
+            .Include(b => b.Observations).ThenInclude(o => (o as FieldMeasurement)!.FieldMeasurementResults)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestResults)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestEvaluationMethodCodes)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestFlowDirectionCodes)
+            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestKindCodes)
+            .Include(b => b.BoreholeCodelists)
+            .Include(b => b.Workflows)
+            .Include(b => b.BoreholeFiles)
+            .Include(b => b.BoreholeGeometry)
+            .Include(b => b.Workgroup)
+            .Include(b => b.UpdatedBy);
     }
 }

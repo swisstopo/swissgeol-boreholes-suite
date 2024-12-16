@@ -181,4 +181,18 @@ internal static class Helpers
             .Include(l => l.LayerOrganicComponentCodes)
             .Include(l => l.OrganicComponentCodelists);
     }
+
+    /// <summary>
+    /// Get the codelists for the provided codelist ids.
+    /// </summary>
+    internal static async Task<List<Codelist>> GetCodelists(BdmsContext context, List<int> codelistIds)
+    {
+        return await context.Codelists.Where(c => codelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+    }
+
+    internal static string ShouldBeNullMessage(this string propertyName)
+        => $"{propertyName} should be null.";
+
+    internal static string ShouldNotBeNullMessage(this string propertyName)
+        => $"{propertyName} should not be null.";
 }

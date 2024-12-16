@@ -136,15 +136,15 @@ const MainSideNav = ({
                 setUpload(true);
               }}
             />
-            <NavButton
-              data-cy="layers-button"
-              icon={<Layers />}
-              label={t("usersMap")}
-              selected={isLayersPanelVisible}
-              onClick={handleToggleLayers}
-            />
           </>
         )}
+        <NavButton
+          data-cy="layers-button"
+          icon={<Layers />}
+          label={t("usersMap")}
+          selected={isLayersPanelVisible}
+          onClick={handleToggleLayers}
+        />
       </Stack>
       <Stack
         direction="column"

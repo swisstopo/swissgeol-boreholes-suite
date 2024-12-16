@@ -84,15 +84,15 @@ public class Completion : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Instrumentation"/>s associated with the <see cref="Completion"/>.
     /// </summary>
-    public ICollection<Instrumentation>? Instrumentations { get; }
+    public ICollection<Instrumentation>? Instrumentations { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Backfill"/>s associated with the <see cref="Completion"/>.
     /// </summary>
-    public ICollection<Backfill>? Backfills { get; }
+    public ICollection<Backfill>? Backfills { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Casing"/>s associated with the <see cref="Completion"/>.
     /// </summary>
-    public ICollection<Casing>? Casings { get; }
+    public ICollection<Casing>? Casings { get; set; }
 }

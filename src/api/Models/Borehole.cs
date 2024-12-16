@@ -358,17 +358,17 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s stratigraphies.
     /// </summary>
-    public ICollection<Stratigraphy>? Stratigraphies { get; }
+    public ICollection<Stratigraphy>? Stratigraphies { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s completions.
     /// </summary>
-    public ICollection<Completion>? Completions { get; }
+    public ICollection<Completion>? Completions { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s <see cref="Section"/>s.
     /// </summary>
-    public ICollection<Section>? Sections { get; }
+    public ICollection<Section>? Sections { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s <see cref="BoreholeGeometry"/>.
@@ -379,7 +379,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s observations.
     /// </summary>
-    public ICollection<Observation>? Observations { get; }
+    public ICollection<Observation>? Observations { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s workflows.
