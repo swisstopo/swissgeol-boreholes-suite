@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Text;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -131,7 +132,7 @@ public class BoreholeControllerTest
         Assert.AreEqual(newBorehole.RestrictionUntil.ToString(), updatedBorehole.RestrictionUntil.ToString());
         Assert.AreEqual(newBorehole.NationalInterest, updatedBorehole.NationalInterest);
         Assert.AreEqual(newBorehole.OriginalName, updatedBorehole.OriginalName);
-        Assert.AreEqual(newBorehole.AlternateName, updatedBorehole.AlternateName);
+        Assert.AreEqual(newBorehole.Name, updatedBorehole.Name);
         Assert.AreEqual(newBorehole.LocationPrecisionId, updatedBorehole.LocationPrecisionId);
         Assert.AreEqual(newBorehole.ElevationPrecisionId, updatedBorehole.ElevationPrecisionId);
         Assert.AreEqual(newBorehole.ProjectName, updatedBorehole.ProjectName);
@@ -140,16 +141,16 @@ public class BoreholeControllerTest
         Assert.AreEqual(newBorehole.Municipality, updatedBorehole.Municipality);
         Assert.AreEqual(newBorehole.PurposeId, updatedBorehole.PurposeId);
         Assert.AreEqual(newBorehole.StatusId, updatedBorehole.StatusId);
-        Assert.AreEqual(newBorehole.QtDepthId, updatedBorehole.QtDepthId);
+        Assert.AreEqual(newBorehole.DepthPrecisionId, updatedBorehole.DepthPrecisionId);
         Assert.AreEqual(newBorehole.TopBedrockFreshMd, updatedBorehole.TopBedrockFreshMd);
         Assert.AreEqual(newBorehole.TopBedrockWeatheredMd, updatedBorehole.TopBedrockWeatheredMd);
         Assert.AreEqual(newBorehole.HasGroundwater, updatedBorehole.HasGroundwater);
         Assert.AreEqual(newBorehole.Remarks, updatedBorehole.Remarks);
         Assert.AreEqual(newBorehole.LithologyTopBedrockId, updatedBorehole.LithologyTopBedrockId);
-        Assert.AreEqual(newBorehole.LithostratigraphyId, updatedBorehole.LithostratigraphyId);
-        Assert.AreEqual(newBorehole.ChronostratigraphyId, updatedBorehole.ChronostratigraphyId);
+        Assert.AreEqual(newBorehole.LithostratigraphyTopBedrockId, updatedBorehole.LithostratigraphyTopBedrockId);
+        Assert.AreEqual(newBorehole.ChronostratigraphyTopBedrockId, updatedBorehole.ChronostratigraphyTopBedrockId);
         Assert.AreEqual(newBorehole.ReferenceElevation, updatedBorehole.ReferenceElevation);
-        Assert.AreEqual(newBorehole.QtReferenceElevationId, updatedBorehole.QtReferenceElevationId);
+        Assert.AreEqual(newBorehole.ReferenceElevationPrecisionId, updatedBorehole.ReferenceElevationPrecisionId);
         Assert.AreEqual(newBorehole.ReferenceElevationTypeId, updatedBorehole.ReferenceElevationTypeId);
 
         // Stratigraphies and workflows remain unchanged
@@ -404,7 +405,7 @@ public class BoreholeControllerTest
         var copiedBorehole = GetBorehole((int)copiedBoreholeId);
 
         Assert.AreEqual($"{originalBorehole.OriginalName} (Copy)", copiedBorehole.OriginalName);
-        Assert.AreEqual($"{originalBorehole.AlternateName} (Copy)", copiedBorehole.AlternateName);
+        Assert.AreEqual($"{originalBorehole.Name} (Copy)", copiedBorehole.Name);
         Assert.AreEqual(originalBorehole.CreatedBy.SubjectId, copiedBorehole.CreatedBy.SubjectId);
         Assert.AreEqual(originalBorehole.UpdatedBy.SubjectId, copiedBorehole.UpdatedBy.SubjectId);
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
@@ -553,7 +554,7 @@ public class BoreholeControllerTest
             RestrictionUntil = DateTime.UtcNow.AddYears(1),
             NationalInterest = false,
             OriginalName = "BH-257",
-            AlternateName = "Borehole 257",
+            Name = "Borehole 257",
             LocationPrecisionId = 20113002,
             ElevationPrecisionId = null,
             ProjectName = "Project Alpha",
@@ -562,17 +563,17 @@ public class BoreholeControllerTest
             Municipality = "Zurich",
             PurposeId = 22103002,
             StatusId = 22104001,
-            QtDepthId = 22108005,
+            DepthPrecisionId = 22108005,
             TopBedrockFreshMd = 10.5,
             TopBedrockWeatheredMd = 8.0,
             HasGroundwater = true,
             Geometry = null,
             Remarks = "Test borehole for project",
             LithologyTopBedrockId = 15104934,
-            LithostratigraphyId = 15300259,
-            ChronostratigraphyId = 15001141,
+            LithostratigraphyTopBedrockId = 15300259,
+            ChronostratigraphyTopBedrockId = 15001141,
             ReferenceElevation = 500.0,
-            QtReferenceElevationId = 20114002,
+            ReferenceElevationPrecisionId = 20114002,
             ReferenceElevationTypeId = 20117003,
         };
     }
@@ -685,5 +686,60 @@ public class BoreholeControllerTest
         var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
         Assert.IsNotNull(copiedBoreholeId);
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvWithValidIdsReturnsFileResultWithMax100Boreholes()
+    {
+        var ids = Enumerable.Range(testBoreholeId, 120).ToList();
+
+        var result = await controller.DownloadCsvAsync(ids) as FileContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("text/csv", result.ContentType);
+        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
+        var csvData = Encoding.UTF8.GetString(result.FileContents);
+        var fileLength = csvData.Split('\n').Length;
+        var recordCount = fileLength - 2; // Remove header and last line break
+        Assert.IsTrue(recordCount <= 100);
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvWithInvalidIdsReturnsNotFound()
+    {
+        var ids = new List<int> { 8, 2, 11, 87 };
+
+        var result = await controller.DownloadCsvAsync(ids) as NotFoundObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("No borehole(s) found for the provided id(s).", result.Value);
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvWithPartiallyValidIdsReturnsFileForPartillyValidIds()
+    {
+        var ids = new List<int> { 9, 8, 0, testBoreholeId };
+
+        var result = await controller.DownloadCsvAsync(ids) as FileContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result);
+        Assert.AreEqual("text/csv", result.ContentType);
+        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
+        var csvData = Encoding.UTF8.GetString(result.FileContents);
+        var fileLength = csvData.Split('\n').Length;
+        var recordCount = fileLength - 2;
+        Assert.AreEqual(recordCount, 1);
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvEmptyIdsReturnsBadRequest()
+    {
+        var ids = new List<int>();
+
+        var result = await controller.DownloadCsvAsync(ids) as BadRequestObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("The list of IDs must not be empty.", result.Value);
     }
 }

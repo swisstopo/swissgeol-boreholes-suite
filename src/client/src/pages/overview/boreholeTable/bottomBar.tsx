@@ -20,7 +20,8 @@ interface BottomBarProps {
   search: { filter: string };
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
-  onExportMultiple: () => void;
+  onExportMultipleJson: () => void;
+  onExportMultipleCsv: () => void;
   workgroup: string;
   setWorkgroup: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -31,7 +32,8 @@ const BottomBar = ({
   onDeleteMultiple,
   search,
   onCopyBorehole,
-  onExportMultiple,
+  onExportMultipleJson,
+  onExportMultipleCsv,
   boreholes,
   workgroup,
   setWorkgroup,
@@ -115,7 +117,8 @@ const BottomBar = ({
             <CopyButton color="secondary" onClick={() => showCopyPromptForSelectedWorkgroup()} />
           )}
           <BulkEditButton label={"bulkEditing"} onClick={bulkEditSelected} />
-          <ExportButton label={"export"} onClick={onExportMultiple} />
+          <ExportButton label={"exportJson"} onClick={onExportMultipleJson} />
+          <ExportButton label={"exportCsv"} onClick={onExportMultipleCsv} />
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
       ) : (

@@ -23,7 +23,7 @@ export interface BoreholeV2 {
   hasGroundwater: boolean | null;
   topBedrockWeatheredMd: number;
   topBedrockFreshMd: number;
-  qtDepthId: number;
+  depthPrecisionId: number;
   totalDepth: number;
   purposeId: number;
   typeId: number;
@@ -47,7 +47,7 @@ export interface BoreholeV2 {
   municipality: string;
   country: string;
   canton: string;
-  alternateName: string;
+  name: string;
   originalName: string;
   projectName: number;
   restrictionId: number;
@@ -56,7 +56,7 @@ export interface BoreholeV2 {
   elevationZ: number | string; // Number with thousands separator then parsed to number
   elevationPrecisionId: number;
   referenceElevation: number | string; // Number with thousands separator then parsed to number
-  qtReferenceElevationId: number;
+  referenceElevationPrecisionId: number;
   referenceElevationTypeId: number;
   locationPrecisionId: number | null;
   hrsId: number;
@@ -83,4 +83,9 @@ export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupI
 export const getAllBoreholes = async (ids: number[] | GridRowSelectionModel, pageNumber: number, pageSize: number) => {
   const idsQuery = ids.map(id => `ids=${id}`).join("&");
   return await fetchApiV2(`borehole?${idsQuery}&pageNumber=${pageNumber}&pageSize=${pageSize}`, "GET");
+};
+
+export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel) => {
+  const idsQuery = boreholeIds.map(id => `ids=${id}`).join("&");
+  return await fetchApiV2(`borehole/export-csv?${idsQuery}`, "GET");
 };
