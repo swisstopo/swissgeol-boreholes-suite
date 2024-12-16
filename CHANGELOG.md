@@ -25,6 +25,7 @@
 - Removed deduplication check when adding and detaching attachments.
 - When copying a borehole, attachments won't be copied.
 - Removed csv lithology import.
+- Removed import id from csv import.
 
 ### Fixed
 
