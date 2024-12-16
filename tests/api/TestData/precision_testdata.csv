@@ -1,8 +1,8 @@
-import_id;original_name;location_x;location_y
-1;Unit_Test_1;2000000.123;1000000
-2;Unit_Test_2;2000010.12;1000010.1
-3;Unit_Test_3;2000020.1;1000020.12
-4;Unit_Test_4;20030;10030.123
-5;Unit_Test_5;20040.1;10040.1234
-6;Unit_Test_6;20050.12;10050.12345
-7;Unit_Test_7;20060.000;10060.0000
+original_name;location_x;location_y
+Unit_Test_1;2000000.123;1000000
+Unit_Test_2;2000010.12;1000010.1
+Unit_Test_3;2000020.1;1000020.12
+Unit_Test_4;20030;10030.123
+Unit_Test_5;20040.1;10040.1234
+Unit_Test_6;20050.12;10050.12345
+Unit_Test_7;20060.000;10060.0000

@@ -1,6 +1,6 @@
-import_id;alternate_name;original_name;location_x;location_y
-1;BH-1001;Wellington 1;
-2;BH-1002;Wellington 2;
-3;BH-1003;Wellington 3;2189456;1334567
-4;BH-1004;Wellington 4;2312345;1200987
-5;BH-1005;Wellington 5;2312345;1200987
+alternate_name;original_name;location_x;location_y
+BH-1001;Wellington 1;
+BH-1002;Wellington 2;
+BH-1003;Wellington 3;2189456;1334567
+BH-1004;Wellington 4;2312345;1200987
+BH-1005;Wellington 5;2312345;1200987

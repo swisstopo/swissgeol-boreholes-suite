@@ -838,7 +838,7 @@ public class UploadControllerTest
            .Returns(() => new HttpClient())
            .Verifiable();
 
-        var boreholeCsvFile = GetFormFileByContent(fileContent: "import_id;original_name;location_x;location_y\r\n123;Frank Place;2000000;1000000", fileName: "boreholes.csv");
+        var boreholeCsvFile = GetFormFileByContent(fileContent: "original_name;location_x;location_y\r\nFrank Place;2000000;1000000", fileName: "boreholes.csv");
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
@@ -860,8 +860,8 @@ public class UploadControllerTest
         var firstAttachmentFileName = "borehole_attachment_1.pdf";
         var secondAttachmentFileName = "borehole_attachment_2.pdf";
 
-        var pdfContent = @"import_id;original_name;location_x;location_y;attachments
-123;Frank Place;2000000;1000000;borehole_attachment_1.pdf,borehole_attachment_2.pdf";
+        var pdfContent = @"original_name;location_x;location_y;attachments
+Frank Place;2000000;1000000;borehole_attachment_1.pdf,borehole_attachment_2.pdf";
         var boreholeCsvFile = GetFormFileByContent(fileContent: pdfContent, fileName: "boreholes.csv");
         var firstPdfFormFile = GetFormFileByExistingFile(firstAttachmentFileName);
         var secondPdfFormFile = GetFormFileByExistingFile(secondAttachmentFileName);
@@ -990,11 +990,10 @@ public class UploadControllerTest
         ActionResultAssert.IsBadRequest(result);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
-        Assert.AreEqual(4, Regex.Matches(problemDetails.Detail!, "Header with name ").Count);
+        Assert.AreEqual(3, Regex.Matches(problemDetails.Detail!, "Header with name ").Count);
         StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_x'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_y'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'OriginalName'[0] was not found.");
-        StringAssert.Contains(problemDetails.Detail, "Header with name 'ImportId'[0] was not found.");
     }
 
     [TestMethod]

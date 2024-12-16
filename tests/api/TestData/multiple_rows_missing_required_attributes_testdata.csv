@@ -1,4 +1,4 @@
-import_id;original_name;location_x;location_y;
-12;Unit_Test_ Row 1;649258.3612564525;131551.85893587855
-7;Unit_Test_ Row 2;649258.3612564525;
-11;;;
+original_name;location_x;location_y;
+Unit_Test_ Row 1;649258.3612564525;131551.85893587855
+Unit_Test_ Row 2;649258.3612564525;
+;;

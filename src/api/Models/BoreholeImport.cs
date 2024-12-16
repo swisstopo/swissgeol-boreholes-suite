@@ -23,9 +23,4 @@ public class BoreholeImport : Borehole
     /// e.g. "borehole_1.pdf,borehole_2.pdf".
     /// </summary>
     public string Attachments { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="BoreholeImport"/>'s import id.
-    /// </summary>
-    public int ImportId { get; set; }
 }

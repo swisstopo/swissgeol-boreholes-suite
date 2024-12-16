@@ -1,2 +1,2 @@
-import_id;original_name;location_x;location_y;attachments
-123456;ACORNFLEA;0;0;attachment_1.pdf,attachment_2.txt,attachment_3.zip,attachment_4.jpg,attachment_5.csv,borehole_attachment_1.pdf,borehole_attachment_2.pdf,borehole_attachment_3.csv,borehole_attachment_4.zip,borehole_attachment_5.png
+original_name;location_x;location_y;attachments
+ACORNFLEA;0;0;attachment_1.pdf,attachment_2.txt,attachment_3.zip,attachment_4.jpg,attachment_5.csv,borehole_attachment_1.pdf,borehole_attachment_2.pdf,borehole_attachment_3.csv,borehole_attachment_4.zip,borehole_attachment_5.png

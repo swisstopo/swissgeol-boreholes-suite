@@ -66,7 +66,7 @@ const ImportModalContent = ({ setSelectedBoreholeAttachments, setSelectedFile, s
         <StackHalfWidth direction="column">
           {t("csvFormatExplanation")}
           {ExampleHeadings(
-            "import_id;id_geodin_shortname;id_info_geol;id_original;" +
+            "id_geodin_shortname;id_info_geol;id_original;" +
               "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
               "id_geodin;id_kernlager;original_name;project_name;name;" +
               "restriction_id;restriction_until;national_interest;location_x;location_y;" +
