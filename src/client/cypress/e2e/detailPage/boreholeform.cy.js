@@ -1,4 +1,4 @@
-import { exportCSVItem, exportJsonItem, saveWithSaveBar } from "../helpers/buttonHelpers";
+import { exportCSVItem, exportItem, exportJsonItem, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
@@ -248,7 +248,9 @@ describe("Test for the borehole form.", () => {
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
       ensureEditingDisabled();
+      exportItem();
       exportJsonItem();
+      exportItem();
       exportCSVItem();
     });
 

@@ -1,4 +1,4 @@
-import { exportCSVItem, exportJsonItem } from "../helpers/buttonHelpers";
+import { exportCSVItem, exportItem, exportJsonItem } from "../helpers/buttonHelpers";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers.js";
 import {
   createBorehole,
@@ -29,7 +29,9 @@ describe("Test for exporting boreholes.", () => {
 
     deleteDownloadedFile(jsonFileName);
     deleteDownloadedFile(csvFileName);
+    exportItem();
     exportJsonItem();
+    exportItem();
     exportCSVItem();
     readDownloadedFile(jsonFileName);
     readDownloadedFile(csvFileName);
@@ -40,14 +42,14 @@ describe("Test for exporting boreholes.", () => {
     showTableAndWaitForData();
     checkAllVisibleRows();
     deleteDownloadedFile(csvFileName);
-    exportCSVItem();
+    exportItem();
 
     const moreThan100SelectedPrompt =
       "You have selected more than 100 boreholes and a maximum of 100 boreholes can be exported. Do you want to continue?";
     handlePrompt(moreThan100SelectedPrompt, "Cancel");
-    cy.get("@borehole_export_csv").should("not.exist");
-    exportCSVItem();
+    exportItem();
     handlePrompt(moreThan100SelectedPrompt, "Export 100 boreholes");
+    exportCSVItem();
     cy.wait("@borehole_export_csv").its("response.statusCode").should("eq", 200);
     readDownloadedFile(csvFileName);
 
@@ -58,7 +60,5 @@ describe("Test for exporting boreholes.", () => {
     });
 
     deleteDownloadedFile(jsonFileName);
-    exportJsonItem();
-    handlePrompt(moreThan100SelectedPrompt, "Cancel");
   });
 });

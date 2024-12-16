@@ -1,9 +1,10 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { FormValueType } from "../../form/form.ts";
+import { FormValueType } from "../form/form.ts";
 
 export interface BulkEditFormProps {
   selected: GridRowSelectionModel;
   loadBoreholes: () => void;
+  isOpen: boolean;
 }
 
 export type BulkEditFormValue = string | number | boolean | undefined | null;

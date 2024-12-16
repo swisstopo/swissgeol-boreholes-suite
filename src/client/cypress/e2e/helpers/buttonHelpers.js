@@ -60,6 +60,15 @@ export const deleteItem = parent => {
 };
 
 /**
+ * Clicks on the Export button.
+ */
+export const exportItem = () => {
+  const selector = '[data-cy="export-button"]';
+  cy.get(selector).should("not.be.disabled");
+  cy.get(selector).click({ force: true });
+};
+
+/**
  * Clicks on the JSON-export button.
  */
 export const exportJsonItem = () => {
