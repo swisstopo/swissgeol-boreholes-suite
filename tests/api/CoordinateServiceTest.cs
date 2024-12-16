@@ -57,7 +57,7 @@ public class CoordinateServiceTest
             LocationXLV03 = 765875.1615463407,
             LocationYLV03 = 78390.10392298926,
             OriginalReferenceSystem = ReferenceSystem.LV95,
-            AlternateName = "Laurence.Padberg3",
+            Name = "Laurence.Padberg3",
         };
         context.Boreholes.Add(borehole);
         context.SaveChanges();
@@ -86,7 +86,7 @@ public class CoordinateServiceTest
             LocationXLV03 = 765875.1615463407,
             LocationYLV03 = 78390.10392298926,
             OriginalReferenceSystem = ReferenceSystem.LV95,
-            AlternateName = "Laurence.Padberg3",
+            Name = "Laurence.Padberg3",
         };
         context.Boreholes.Add(borehole);
         context.SaveChanges();
@@ -116,7 +116,7 @@ public class CoordinateServiceTest
             LocationXLV03 = 655269,
             LocationYLV03 = 297874,
             OriginalReferenceSystem = ReferenceSystem.LV03,
-            AlternateName = "Floyd29",
+            Name = "Floyd29",
         };
         context.Boreholes.Add(borehole);
         context.SaveChanges();
@@ -145,7 +145,7 @@ public class CoordinateServiceTest
             LocationXLV03 = null,
             LocationYLV03 = 224735.18581408318,
             OriginalReferenceSystem = ReferenceSystem.LV03,
-            AlternateName = "Brendan.Trantow38",
+            Name = "Brendan.Trantow38",
         };
         context.Boreholes.Add(borehole);
         context.SaveChanges();

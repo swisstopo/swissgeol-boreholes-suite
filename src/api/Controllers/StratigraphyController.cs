@@ -230,7 +230,7 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
                 StratigraphyId = stratigraphy.Id,
                 FromDepth = borehole.TopBedrockFreshMd.Value,
                 LithologyTopBedrockId = borehole.LithologyTopBedrockId,
-                LithostratigraphyId = borehole.LithostratigraphyId,
+                LithostratigraphyId = borehole.LithostratigraphyTopBedrockId,
                 IsLast = false,
             };
 

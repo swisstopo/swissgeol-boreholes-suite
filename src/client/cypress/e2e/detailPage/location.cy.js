@@ -68,28 +68,28 @@ describe("Tests for 'Location' edit page.", () => {
       cy.get('[data-cy="originalName-formInput"]').within(() => {
         cy.get("input").as("originalNameInput");
       });
-      cy.get('[data-cy="alternateName-formInput"]').within(() => {
-        cy.get("input").as("alternateNameInput");
+      cy.get('[data-cy="name-formInput"]').within(() => {
+        cy.get("input").as("nameInput");
       });
 
       cy.get("@originalNameInput").should("have.value", "PHOTOSQUIRREL");
-      cy.get("@alternateNameInput").should("have.value", "PHOTOSQUIRREL");
+      cy.get("@nameInput").should("have.value", "PHOTOSQUIRREL");
 
       startBoreholeEditing();
       // changing original name should also change alternate name
       cy.get("@originalNameInput").clear().type("PHOTOCAT");
       cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
-      cy.get("@alternateNameInput").should("have.value", "PHOTOCAT");
+      cy.get("@nameInput").should("have.value", "PHOTOCAT");
 
-      cy.get("@alternateNameInput").clear().type("PHOTOMOUSE");
+      cy.get("@nameInput").clear().type("PHOTOMOUSE");
       cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
-      cy.get("@alternateNameInput").should("have.value", "PHOTOMOUSE");
+      cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
 
-      cy.get("@alternateNameInput").clear();
+      cy.get("@nameInput").clear();
       saveWithSaveBar();
       // should be reset to original name if alternate name is empty
       cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
-      cy.get("@alternateNameInput").should("have.value", "PHOTOCAT");
+      cy.get("@nameInput").should("have.value", "PHOTOCAT");
     });
   });
 

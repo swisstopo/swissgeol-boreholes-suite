@@ -134,7 +134,7 @@ public class UploadControllerTest
         Assert.IsNull(borehole.RestrictionUntil, nameof(Borehole.RestrictionUntil).ShouldBeNullMessage());
         Assert.IsFalse(borehole.NationalInterest, nameof(Borehole.NationalInterest));
         Assert.AreEqual("PURPLETOLL", borehole.OriginalName, nameof(Borehole.OriginalName));
-        Assert.AreEqual("GREYGOAT", borehole.AlternateName, nameof(Borehole.AlternateName));
+        Assert.AreEqual("GREYGOAT", borehole.Name, nameof(Borehole.Name));
         Assert.IsNull(borehole.LocationPrecisionId, nameof(Borehole.LocationPrecisionId).ShouldBeNullMessage());
         Assert.IsNull(borehole.LocationPrecision, nameof(Borehole.LocationPrecision).ShouldBeNullMessage());
         Assert.AreEqual(20114002, borehole.ElevationPrecisionId, nameof(Borehole.ElevationPrecisionId));
@@ -147,21 +147,21 @@ public class UploadControllerTest
         Assert.IsNull(borehole.Purpose, nameof(Borehole.Purpose).ShouldBeNullMessage());
         Assert.AreEqual(22104006, borehole.StatusId, nameof(Borehole.StatusId));
         Assert.IsNull(borehole.Status, nameof(Borehole.Status).ShouldBeNullMessage());
-        Assert.AreEqual(22108003, borehole.QtDepthId, nameof(Borehole.QtDepthId));
-        Assert.IsNull(borehole.QtDepth, nameof(Borehole.QtDepth).ShouldBeNullMessage());
+        Assert.AreEqual(22108003, borehole.DepthPrecisionId, nameof(Borehole.DepthPrecisionId));
+        Assert.IsNull(borehole.DepthPrecision, nameof(Borehole.DepthPrecision).ShouldBeNullMessage());
         Assert.AreEqual(759.5479580385368, borehole.TopBedrockFreshMd, nameof(Borehole.TopBedrockFreshMd));
         Assert.AreEqual(1.338392690447342, borehole.TopBedrockWeatheredMd, nameof(Borehole.TopBedrockWeatheredMd));
         Assert.IsFalse(borehole.HasGroundwater, nameof(Borehole.HasGroundwater));
         Assert.AreEqual("This product works too well.", borehole.Remarks, nameof(Borehole.Remarks));
         Assert.AreEqual(15104543, borehole.LithologyTopBedrockId, nameof(Borehole.LithologyTopBedrockId));
         Assert.IsNull(borehole.LithologyTopBedrock, nameof(Borehole.LithologyTopBedrock).ShouldBeNullMessage());
-        Assert.AreEqual(15302037, borehole.LithostratigraphyId, nameof(Borehole.LithostratigraphyId));
-        Assert.IsNull(borehole.Lithostratigraphy, nameof(Borehole.Lithostratigraphy).ShouldBeNullMessage());
-        Assert.AreEqual(15001060, borehole.ChronostratigraphyId, nameof(Borehole.ChronostratigraphyId));
-        Assert.IsNull(borehole.Chronostratigraphy, nameof(Borehole.Chronostratigraphy).ShouldBeNullMessage());
+        Assert.AreEqual(15302037, borehole.LithostratigraphyTopBedrockId, nameof(Borehole.LithostratigraphyTopBedrockId));
+        Assert.IsNull(borehole.LithostratigraphyTopBedrock, nameof(Borehole.LithostratigraphyTopBedrock).ShouldBeNullMessage());
+        Assert.AreEqual(15001060, borehole.ChronostratigraphyTopBedrockId, nameof(Borehole.ChronostratigraphyTopBedrockId));
+        Assert.IsNull(borehole.ChronostratigraphyTopBedrock, nameof(Borehole.ChronostratigraphyTopBedrock).ShouldBeNullMessage());
         Assert.AreEqual(899.1648284248844, borehole.ReferenceElevation, nameof(Borehole.ReferenceElevation));
-        Assert.AreEqual(20114006, borehole.QtReferenceElevationId, nameof(Borehole.QtReferenceElevationId));
-        Assert.IsNull(borehole.QtReferenceElevation, nameof(Borehole.QtReferenceElevation).ShouldBeNullMessage());
+        Assert.AreEqual(20114006, borehole.ReferenceElevationPrecisionId, nameof(Borehole.ReferenceElevationPrecisionId));
+        Assert.IsNull(borehole.ReferenceElevationPrecision, nameof(Borehole.ReferenceElevationPrecision).ShouldBeNullMessage());
         Assert.AreEqual(20117005, borehole.ReferenceElevationTypeId, nameof(Borehole.ReferenceElevationTypeId));
         Assert.IsNull(borehole.ReferenceElevationType, nameof(Borehole.ReferenceElevationType).ShouldBeNullMessage());
 
@@ -498,7 +498,7 @@ public class UploadControllerTest
         // Assert imported values
         var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_6");
         Assert.AreEqual(1, borehole.WorkgroupId);
-        Assert.AreEqual("Unit_Test_6_a", borehole.AlternateName);
+        Assert.AreEqual("Unit_Test_6_a", borehole.Name);
         Assert.AreEqual(null, borehole.IsPublic);
         Assert.AreEqual(new DateTime(2024, 06, 15), borehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, borehole.TotalDepth);
@@ -545,7 +545,7 @@ public class UploadControllerTest
         // Assert imported values
         var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_2");
         Assert.AreEqual(1, borehole.WorkgroupId);
-        Assert.AreEqual(null, borehole.AlternateName);
+        Assert.AreEqual(null, borehole.Name);
         Assert.AreEqual(null, borehole.IsPublic);
         Assert.AreEqual(null, borehole.RestrictionUntil);
         Assert.AreEqual(null, borehole.TotalDepth);

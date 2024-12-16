@@ -1,10 +1,13 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Text;
 
 namespace BDMS.Controllers;
 
@@ -77,7 +80,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <param name="pageSize">The page size for pagination.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<PaginatedBoreholeResponse>> GetAllAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>? ids = null, [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1, [FromQuery] [Range(1, MaxPageSize)] int pageSize = 100)
+    public async Task<ActionResult<PaginatedBoreholeResponse>> GetAllAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>? ids = null, [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1, [FromQuery][Range(1, MaxPageSize)] int pageSize = 100)
     {
         pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
 
@@ -115,6 +118,63 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         return Ok(borehole);
+    }
+
+    /// <summary>
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
+    /// </summary>
+    /// <param name="ids">The list of IDs for the boreholes to be exported.</param>
+    /// <returns>A CSV file containing the details specified boreholes.</returns>
+    [HttpGet("export-csv")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> DownloadCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    {
+        ids = ids.Take(MaxPageSize).ToList();
+        if (!ids.Any()) return BadRequest("The list of IDs must not be empty.");
+
+        var boreholes = await Context.Boreholes
+            .Where(borehole => ids.Contains(borehole.Id))
+            .Select(b => new
+            {
+                b.Id,
+                b.OriginalName,
+                b.ProjectName,
+                b.Name,
+                b.RestrictionId,
+                b.RestrictionUntil,
+                b.NationalInterest,
+                b.LocationX,
+                b.LocationY,
+                b.LocationPrecisionId,
+                b.ElevationZ,
+                b.ElevationPrecisionId,
+                b.ReferenceElevation,
+                b.ReferenceElevationTypeId,
+                b.ReferenceElevationPrecisionId,
+                b.HrsId,
+                b.TypeId,
+                b.PurposeId,
+                b.StatusId,
+                b.Remarks,
+                b.TotalDepth,
+                b.DepthPrecisionId,
+                b.TopBedrockFreshMd,
+                b.TopBedrockWeatheredMd,
+                b.HasGroundwater,
+                b.LithologyTopBedrockId,
+                b.ChronostratigraphyTopBedrockId,
+                b.LithostratigraphyTopBedrockId,
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        if (boreholes.Count == 0) return NotFound("No borehole(s) found for the provided id(s).");
+
+        using var stringWriter = new StringWriter();
+        using var csvWriter = new CsvWriter(stringWriter, CultureInfo.InvariantCulture);
+        await csvWriter.WriteRecordsAsync(boreholes).ConfigureAwait(false);
+
+        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", "boreholes_export.csv");
     }
 
     /// <summary>
@@ -238,7 +298,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id });
 
         borehole.OriginalName += " (Copy)";
-        borehole.AlternateName += " (Copy)";
+        borehole.Name += " (Copy)";
 
         var entityEntry = await Context.AddAsync(borehole).ConfigureAwait(false);
         await Context.SaveChangesAsync().ConfigureAwait(false);
