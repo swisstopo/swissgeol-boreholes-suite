@@ -151,7 +151,7 @@ const DetailHeader = ({
           ) : (
             <>
               <ExportButton label="exportJson" onClick={handleJsonExport} />
-              <ExportButton label="exportCSV" onClick={handleCSVExport} />
+              <ExportButton label="exportCsv" onClick={handleCSVExport} />
               <EditButton onClick={startEditing} />
             </>
           ))}
