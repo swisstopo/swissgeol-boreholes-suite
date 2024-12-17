@@ -32,9 +32,9 @@ public class ExportController : ControllerBase
     /// </summary>
     /// <param name="ids">The list of IDs for the boreholes to be exported.</param>
     /// <returns>A CSV file containing the details of the specified boreholes.</returns>
-    [HttpGet("export-csv")]
+    [HttpGet("csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> DownloadCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    public async Task<IActionResult> ExportCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
         List<int> idList = ids.Take(MaxPageSize).ToList();
         if (idList.Count < 1) return BadRequest("The list of IDs must not be empty.");

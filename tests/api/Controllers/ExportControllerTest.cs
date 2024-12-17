@@ -19,6 +19,7 @@ public class ExportControllerTest
 {
     private BdmsContext context;
     private ExportController controller;
+    private BoreholeController boreholeController;
     private Mock<ILogger<ExportController>> loggerMock;
     private static int testBoreholeId = 1000068;
 
@@ -27,9 +28,13 @@ public class ExportControllerTest
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         loggerMock = new Mock<ILogger<ExportController>>();
-
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        boreholeController = new BoreholeController(context, new Mock<ILogger<BoreholeController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
         controller = new ExportController(context, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -38,7 +43,7 @@ public class ExportControllerTest
     {
         var ids = Enumerable.Range(testBoreholeId, 120).ToList();
 
-        var result = await controller.DownloadCsvAsync(ids) as FileContentResult;
+        var result = await controller.ExportCsvAsync(ids) as FileContentResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual("text/csv", result.ContentType);
@@ -64,7 +69,7 @@ public class ExportControllerTest
              .Take(3).Select(b => b.Id);
 
         var boreholeIds = await boreholeIdsWithoutGeometry.Concat(boreholeIdsWithGeometry).ToListAsync();
-        var result = await controller.DownloadCsvAsync(boreholeIds) as FileContentResult;
+        var result = await controller.ExportCsvAsync(boreholeIds) as FileContentResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual("text/csv", result.ContentType);
@@ -115,25 +120,32 @@ public class ExportControllerTest
     [TestMethod]
     public async Task DownloadCsvWithCustomIds()
     {
+        // These codelists are used to make the TestContext aware of the Codelists, so that they can be included in the download controller.
+        var codelistGeoDIN = new Codelist { Id = 100000010, En = "ID GeODin" };
+        var codelistKernlager = new Codelist { Id = 100000011, En = "ID Kernlager" };
+        var codelistTopFels = new Codelist { Id = 100000009, En = "ID TopFels" };
+
         var firstBoreholeId = 1_009_068;
         var boreholeWithCustomIds = new Borehole
         {
             Id = firstBoreholeId,
             BoreholeCodelists = new List<BoreholeCodelist>
+        {
+            new BoreholeCodelist
             {
-                new BoreholeCodelist
-                {
-                    BoreholeId = firstBoreholeId,
-                    CodelistId = 100000010,
-                    Value = "ID GeoDIN value",
-                },
-                new BoreholeCodelist
-                {
-                    BoreholeId = firstBoreholeId,
-                    CodelistId = 100000011,
-                    Value = "ID Kernlager value",
-                },
+                BoreholeId = firstBoreholeId,
+                CodelistId = codelistGeoDIN.Id,
+                Codelist = codelistGeoDIN,
+                Value = "ID GeoDIN value",
             },
+            new BoreholeCodelist
+            {
+                BoreholeId = firstBoreholeId,
+                CodelistId = codelistKernlager.Id,
+                Codelist = codelistKernlager,
+                Value = "ID Kernlager value",
+            },
+        },
         };
 
         var secondBoreholeId = 1_009_069;
@@ -141,27 +153,30 @@ public class ExportControllerTest
         {
             Id = secondBoreholeId,
             BoreholeCodelists = new List<BoreholeCodelist>
+        {
+            new BoreholeCodelist
             {
-                new BoreholeCodelist
-                {
-                    BoreholeId = secondBoreholeId,
-                    CodelistId = 100000010,
-                    Value = "ID GeoDIN value",
-                },
-                new BoreholeCodelist
-                {
-                    BoreholeId = secondBoreholeId,
-                    CodelistId = 100000009,
-                    Value = "ID TopFels value",
-                },
+                BoreholeId = secondBoreholeId,
+                CodelistId = codelistGeoDIN.Id,
+                Codelist = codelistGeoDIN,
+                Value = "ID GeoDIN value",
             },
+            new BoreholeCodelist
+            {
+                BoreholeId = secondBoreholeId,
+                CodelistId = codelistTopFels.Id,
+                Codelist = codelistTopFels,
+                Value = "ID TopFels value",
+            },
+        },
         };
 
-        context.AddRange(boreholeWithCustomIds, boreholeWithOtherCustomIds);
+        await boreholeController.CreateAsync(boreholeWithCustomIds).ConfigureAwait(false);
+        await boreholeController.CreateAsync(boreholeWithOtherCustomIds).ConfigureAwait(false);
 
         var ids = new List<int> { firstBoreholeId, secondBoreholeId };
 
-        var result = await controller.DownloadCsvAsync(ids) as FileContentResult;
+        var result = await controller.ExportCsvAsync(ids) as FileContentResult;
         Assert.IsNotNull(result);
         Assert.AreEqual("text/csv", result.ContentType);
         Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
@@ -186,7 +201,7 @@ public class ExportControllerTest
     {
         var ids = new List<int> { 8, 2, 11, 87 };
 
-        var result = await controller.DownloadCsvAsync(ids) as NotFoundObjectResult;
+        var result = await controller.ExportCsvAsync(ids) as NotFoundObjectResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual("No borehole(s) found for the provided id(s).", result.Value);
@@ -197,7 +212,7 @@ public class ExportControllerTest
     {
         var ids = new List<int> { 9, 8, 0, testBoreholeId };
 
-        var result = await controller.DownloadCsvAsync(ids) as FileContentResult;
+        var result = await controller.ExportCsvAsync(ids) as FileContentResult;
 
         Assert.IsNotNull(result);
         Assert.IsNotNull(result);
@@ -214,7 +229,7 @@ public class ExportControllerTest
     {
         var ids = new List<int>();
 
-        var result = await controller.DownloadCsvAsync(ids) as BadRequestObjectResult;
+        var result = await controller.ExportCsvAsync(ids) as BadRequestObjectResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual("The list of IDs must not be empty.", result.Value);
