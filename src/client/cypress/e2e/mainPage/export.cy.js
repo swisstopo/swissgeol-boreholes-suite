@@ -108,6 +108,7 @@ describe("Test for exporting boreholes.", () => {
     saveWithSaveBar();
 
     stopBoreholeEditing();
+    exportItem();
     exportCSVItem();
 
     verifyTVDContentInCSVFile(fileName, "700", "800", "900");
@@ -143,6 +144,7 @@ describe("Test for exporting boreholes.", () => {
     setInput("originalName", secondBoreholeName); // change name to avoid potential CSV filename conflict
     saveWithSaveBar();
     stopBoreholeEditing();
+    exportItem();
     exportCSVItem();
     verifyTVDContentInCSVFile(secondFileName, "674.8678208299723", "762.6098263945338", "846.9637100889873");
     startBoreholeEditing();
@@ -172,6 +174,7 @@ describe("Test for exporting boreholes.", () => {
     showTableAndWaitForData();
     checkRowWithText(firstBoreholeName);
     checkRowWithText(secondBoreholeName);
+    exportItem();
     exportCSVItem();
     cy.readFile(prepareDownloadPath(csvFileName)).then(fileContent => {
       const { lines, rows } = splitFileContent(fileContent);
@@ -206,6 +209,7 @@ describe("Test for exporting boreholes.", () => {
     handlePrompt(moreThan100SelectedPrompt, "Cancel");
     exportItem();
     handlePrompt(moreThan100SelectedPrompt, "Export 100 boreholes");
+    exportItem();
     exportCSVItem();
     cy.wait("@borehole_export_csv").its("response.statusCode").should("eq", 200);
     readDownloadedFile(csvFileName);
