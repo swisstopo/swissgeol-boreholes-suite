@@ -72,7 +72,7 @@ export const exportItem = () => {
  * Clicks on the JSON-export button.
  */
 export const exportJsonItem = () => {
-  const selector = '[data-cy="exportjson-button"]';
+  const selector = '[data-cy="json-button"]';
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
@@ -81,7 +81,7 @@ export const exportJsonItem = () => {
  * Clicks on the CSV-export button.
  */
 export const exportCSVItem = () => {
-  const selector = '[data-cy="exportcsv-button"]';
+  const selector = '[data-cy="csv-button"]';
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
