@@ -46,17 +46,17 @@ const ImportModalContent = ({ setSelectedFile }: ImportContentProps) => {
         <StackHalfWidth direction="column">
           {t("csvFormatExplanation")}
           {ExampleHeadings(
-            "id_geodin_shortname;id_info_geol;id_original;" +
-              "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
-              "id_geodin;id_kernlager;original_name;project_name;name;" +
-              "restriction_id;restriction_until;national_interest;location_x;location_y;" +
-              "location_precision;elevation_z;elevation_precision_id;" +
-              "reference_elevation;reference_elevation_type_id;" +
-              "qt_reference_elevation_id;hrs_id;type_id;purpose_id;" +
-              "status_id;remarks;total_depth;qt_depth_id;top_bedrock_fresh_md;" +
-              "top_bedrock_weathered_md;" +
-              "has_groundwater;lithology_top_bedrock_id;" +
-              "chronostratigraphy_id;lithostratigraphy_id;",
+            "IdOriginal;" +
+              "IdCanton;IdGeoQuat;IdGeoMol;IdGeoTherm;IdTopFels;" +
+              "IdGeodin;IdKernlager;OriginalName;ProjectName;Name;" +
+              "RestrictionId;RestrictionUntil;NationalInterest;LocationX;LocationY;" +
+              "LocationPrecision;ElevationZ;ElevationPrecisionId;" +
+              "ReferenceElevation;ReferenceElevationTypeId;" +
+              "QtReferenceElevationId;HrsId;TypeId;PurposeId;" +
+              "StatusId;Remarks;TotalDepth;QtDepthId;TopBedrockFreshMd;" +
+              "TopBedrockWeatheredMd;" +
+              "HasGroundwater;LithologyTopBedrockId;" +
+              "ChronostratigraphyId;LithostratigraphyId;",
           )}
         </StackHalfWidth>
         <FileDropzone
