@@ -440,16 +440,16 @@ public class ImportController : ControllerBase
                 var boreholeCodeLists = new List<BoreholeCodelist>();
                 new List<(string Name, int CodeListId)>
                 {
-                    ("id_geodin_shortname", 100000000),
-                    ("id_info_geol", 100000003),
-                    ("id_original", 100000004),
-                    ("id_canton", 100000005),
-                    ("id_geo_quat", 100000006),
-                    ("id_geo_mol", 100000007),
-                    ("id_geo_therm", 100000008),
-                    ("id_top_fels", 100000009),
-                    ("id_geodin", 100000010),
-                    ("id_kernlager", 100000011),
+                    ("IDGeODin-Shortname", 100000000),
+                    ("IDInfoGeol", 100000003),
+                    ("IDOriginal", 100000004),
+                    ("IDCanton", 100000005),
+                    ("IDGeoQuat", 100000006),
+                    ("IDGeoMol", 100000007),
+                    ("IDGeoTherm", 100000008),
+                    ("IDTopFels", 100000009),
+                    ("IDGeODin", 100000010),
+                    ("IDKernlager", 100000011),
                 }.ForEach(id =>
                 {
                     if (args.Row.HeaderRecord != null && args.Row.HeaderRecord.Any(h => h == id.Name))
