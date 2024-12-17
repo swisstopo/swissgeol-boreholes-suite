@@ -45,7 +45,6 @@ const MainSideNav = ({
   const [upload, setUpload] = useState<boolean>(false);
   const [validationErrorModal, setValidationErrorModal] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<Blob[] | null>(null);
-  const [selectedBoreholeAttachments, setSelectedBoreholeAttachments] = useState<Blob[] | null>(null);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   const filterContext = useContext(FilterContext);
 
@@ -177,10 +176,8 @@ const MainSideNav = ({
         setSelectedFile={setSelectedFile}
         setWorkgroup={setWorkgroupId}
         enabledWorkgroups={enabledWorkgroups}
-        setSelectedBoreholeAttachments={setSelectedBoreholeAttachments}
         workgroup={workgroupId}
         selectedFile={selectedFile}
-        selectedBoreholeAttachments={selectedBoreholeAttachments}
         modal={modal}
         upload={upload}
       />
