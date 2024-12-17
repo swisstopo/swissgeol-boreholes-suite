@@ -1,13 +1,9 @@
 ﻿using BDMS.Models;
 using CsvHelper;
-using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using System.Globalization;
 using System.Text;
 using static BDMS.Helpers;
 
@@ -17,9 +13,10 @@ namespace BDMS.Controllers;
 [TestClass]
 public class ExportControllerTest
 {
+    private const string TestCsvString = "text/csv";
+    private const string ExportFileName = "boreholes_export.csv";
     private BdmsContext context;
     private ExportController controller;
-    private Mock<ILogger<ExportController>> loggerMock;
     private static int testBoreholeId = 1000068;
 
     [TestInitialize]
@@ -28,8 +25,7 @@ public class ExportControllerTest
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
         context = ContextFactory.GetTestContext();
-        loggerMock = new Mock<ILogger<ExportController>>();
-        controller = new ExportController(context, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new ExportController(context) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestMethod]
@@ -40,8 +36,8 @@ public class ExportControllerTest
         var result = await controller.ExportCsvAsync(ids) as FileContentResult;
 
         Assert.IsNotNull(result);
-        Assert.AreEqual("text/csv", result.ContentType);
-        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
+        Assert.AreEqual(TestCsvString, result.ContentType);
+        Assert.AreEqual(ExportFileName, result.FileDownloadName);
         var csvData = Encoding.UTF8.GetString(result.FileContents);
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2; // Remove header and last line break
@@ -54,20 +50,20 @@ public class ExportControllerTest
         var boreholeQuery = context.Boreholes
              .Include(b => b.BoreholeGeometry);
 
-        var boreholeIdsWithoutGeometry = boreholeQuery
+        var boreholeIdsWithoutGeometry = await boreholeQuery
              .Where(b => b.BoreholeGeometry.Count < 2)
-             .Take(3).Select(b => b.Id);
+             .Take(3).Select(b => b.Id).ToListAsync();
 
-        var boreholeIdsWithGeometry = boreholeQuery
+        var boreholeIdsWithGeometry = await boreholeQuery
              .Where(b => b.BoreholeGeometry.Count > 1)
-             .Take(3).Select(b => b.Id);
+             .Take(3).Select(b => b.Id).ToListAsync();
 
-        var boreholeIds = await boreholeIdsWithoutGeometry.Concat(boreholeIdsWithGeometry).ToListAsync();
+        var boreholeIds = boreholeIdsWithoutGeometry.Concat(boreholeIdsWithGeometry);
         var result = await controller.ExportCsvAsync(boreholeIds) as FileContentResult;
 
         Assert.IsNotNull(result);
-        Assert.AreEqual("text/csv", result.ContentType);
-        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
+        Assert.AreEqual(TestCsvString, result.ContentType);
+        Assert.AreEqual(ExportFileName, result.FileDownloadName);
         var records = GetRecordsFromFileContent(result);
 
         foreach (var record in records)
@@ -79,14 +75,14 @@ public class ExportControllerTest
             var topBedrockWeatheredTvd = record.TopBedrockWeatheredTvd;
             var topBedrockWeatheredMd = record.TopBedrockWeatheredMd;
 
-            if (boreholeIdsWithoutGeometry.Select(b => b.ToString()).ToList().Contains(record.Id))
+            if (boreholeIdsWithoutGeometry.Contains(int.Parse(record.Id)))
             {
                 Assert.AreEqual(totalDepthMd, totalDepthTvd);
                 Assert.AreEqual(topBedrockFreshMd, topBedrockFreshTvd);
                 Assert.AreEqual(topBedrockWeatheredMd, topBedrockWeatheredTvd);
             }
 
-            if (boreholeIdsWithGeometry.Select(b => b.ToString()).ToList().Contains(record.Id))
+            if (boreholeIdsWithGeometry.Contains(int.Parse(record.Id)))
             {
                 Assert.AreNotEqual(totalDepthMd, totalDepthTvd);
                 Assert.AreNotEqual(topBedrockFreshMd, topBedrockFreshTvd);
@@ -114,6 +110,9 @@ public class ExportControllerTest
     [TestMethod]
     public async Task DownloadCsvWithCustomIds()
     {
+        string idGeoDinValue = "ID GeoDIN value";
+        string idTopFelsValue = "ID TopFels value";
+        string idKernlagerValue = "ID Kernlager value";
         var firstBoreholeId = 1_009_068;
         var boreholeWithCustomIds = new Borehole
         {
@@ -124,13 +123,13 @@ public class ExportControllerTest
             {
                 BoreholeId = firstBoreholeId,
                 CodelistId = 100000010,
-                Value = "ID GeoDIN value",
+                Value = idGeoDinValue,
             },
             new BoreholeCodelist
             {
                 BoreholeId = firstBoreholeId,
                 CodelistId = 100000011,
-                Value = "ID Kernlager value",
+                Value = idKernlagerValue,
             },
         },
         };
@@ -145,13 +144,13 @@ public class ExportControllerTest
             {
                 BoreholeId = secondBoreholeId,
                 CodelistId = 100000010,
-                Value = "ID GeoDIN value",
+                Value = idGeoDinValue,
             },
             new BoreholeCodelist
             {
                 BoreholeId = secondBoreholeId,
                 CodelistId = 100000009,
-                Value = "ID TopFels value",
+                Value = idTopFelsValue,
             },
         },
         };
@@ -163,22 +162,22 @@ public class ExportControllerTest
 
         var result = await controller.ExportCsvAsync(ids) as FileContentResult;
         Assert.IsNotNull(result);
-        Assert.AreEqual("text/csv", result.ContentType);
-        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
+        Assert.AreEqual(TestCsvString, result.ContentType);
+        Assert.AreEqual(ExportFileName, result.FileDownloadName);
 
         var records = GetRecordsFromFileContent(result);
 
         var firstBorehole = records.Find(r => r.Id == firstBoreholeId.ToString());
         Assert.IsNotNull(firstBorehole);
-        Assert.AreEqual("ID GeoDIN value", firstBorehole.IDGeODin);
-        Assert.AreEqual("ID Kernlager value", firstBorehole.IDKernlager);
+        Assert.AreEqual(idGeoDinValue, firstBorehole.IDGeODin);
+        Assert.AreEqual(idKernlagerValue, firstBorehole.IDKernlager);
         Assert.AreEqual("", firstBorehole.IDTopFels);
 
         var secondBorehole = records.Find(r => r.Id == secondBoreholeId.ToString());
         Assert.IsNotNull(secondBorehole);
-        Assert.AreEqual("ID GeoDIN value", secondBorehole.IDGeODin);
+        Assert.AreEqual(idGeoDinValue, secondBorehole.IDGeODin);
         Assert.AreEqual("", secondBorehole.IDKernlager);
-        Assert.AreEqual("ID TopFels value", secondBorehole.IDTopFels);
+        Assert.AreEqual(idTopFelsValue, secondBorehole.IDTopFels);
     }
 
     [TestMethod]
@@ -201,8 +200,8 @@ public class ExportControllerTest
 
         Assert.IsNotNull(result);
         Assert.IsNotNull(result);
-        Assert.AreEqual("text/csv", result.ContentType);
-        Assert.AreEqual("boreholes_export.csv", result.FileDownloadName);
+        Assert.AreEqual(TestCsvString, result.ContentType);
+        Assert.AreEqual(ExportFileName, result.FileDownloadName);
         var csvData = Encoding.UTF8.GetString(result.FileContents);
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2;

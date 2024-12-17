@@ -1,12 +1,10 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
-using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Text;
 
 namespace BDMS.Controllers;
@@ -19,12 +17,10 @@ public class ExportController : ControllerBase
     // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
     private const int MaxPageSize = 100;
     private readonly BdmsContext context;
-    private readonly ILogger logger;
 
-    public ExportController(BdmsContext context, ILogger<ExportController> logger)
+    public ExportController(BdmsContext context)
     {
         this.context = context;
-        this.logger = logger;
     }
 
     /// <summary>

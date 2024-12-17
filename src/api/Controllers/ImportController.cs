@@ -340,7 +340,7 @@ public class ImportController : ControllerBase
         return Math.Abs(firstValue.Value - secondValue.Value) <= tolerance;
     }
 
-    private List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
+    private static List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
     {
         using var reader = new StreamReader(file.OpenReadStream());
         using var csv = new CsvReader(reader, CsvConfigHelper.CsvReadConfig);
