@@ -14,7 +14,7 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class UploadController : ControllerBase
+public class ImportController : ControllerBase
 {
     private const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
     private readonly BdmsContext context;
@@ -35,7 +35,7 @@ public class UploadController : ControllerBase
 
     private static readonly JsonSerializerOptions jsonImportOptions = new() { PropertyNameCaseInsensitive = true };
 
-    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService)
+    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService)
     {
         this.context = context;
         this.logger = logger;
