@@ -28,7 +28,7 @@ public class ExportController : ControllerBase
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.export
     /// </summary>
     /// <param name="ids">The list of IDs for the boreholes to be exported.</param>
     /// <returns>A CSV file containing the details of the specified boreholes.</returns>
@@ -62,6 +62,8 @@ public class ExportController : ControllerBase
         csvWriter.WriteField(nameof(Borehole.NationalInterest));
         csvWriter.WriteField(nameof(Borehole.LocationX));
         csvWriter.WriteField(nameof(Borehole.LocationY));
+        csvWriter.WriteField(nameof(Borehole.LocationXLV03));
+        csvWriter.WriteField(nameof(Borehole.LocationYLV03));
         csvWriter.WriteField(nameof(Borehole.LocationPrecisionId));
         csvWriter.WriteField(nameof(Borehole.ElevationZ));
         csvWriter.WriteField(nameof(Borehole.ElevationPrecisionId));
@@ -123,6 +125,8 @@ public class ExportController : ControllerBase
             csvWriter.WriteField(b.NationalInterest);
             csvWriter.WriteField(b.LocationX);
             csvWriter.WriteField(b.LocationY);
+            csvWriter.WriteField(b.LocationXLV03);
+            csvWriter.WriteField(b.LocationYLV03);
             csvWriter.WriteField(b.LocationPrecisionId);
             csvWriter.WriteField(b.ElevationZ);
             csvWriter.WriteField(b.ElevationPrecisionId);
