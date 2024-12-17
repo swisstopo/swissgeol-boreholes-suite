@@ -307,6 +307,7 @@
   "maxValue": "Valeur maximale",
   "member": "Membre",
   "messageDiscardUnsavedChanges": "Il y a des modifications non enregistrées. Voulez-vous annuler toutes les modifications?",
+  "messageUnsavedChangesAtExport": "Il y a des modifications non enregistrées. Voulez-vous exporter le forage sans enregistrer?",
   "meter": "Mètres",
   "minValue": "Valeur minimale",
   "minute": "minute",

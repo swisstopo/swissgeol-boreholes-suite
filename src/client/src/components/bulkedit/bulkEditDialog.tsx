@@ -7,6 +7,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -15,20 +16,20 @@ import {
   Typography,
 } from "@mui/material";
 import { ChevronDownIcon, RotateCcw } from "lucide-react";
-import { patchBoreholes } from "../../../api-lib";
-import { ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { theme } from "../../../AppTheme.ts";
-import WorkgroupSelect from "../../../pages/overview/sidePanelContent/commons/workgroupSelect.tsx";
-import { AlertContext } from "../../alert/alertContext.tsx";
-import { CancelButton, SaveButton } from "../../buttons/buttons";
-import { FormValueType } from "../../form/form.ts";
-import { FormBooleanSelect } from "../../form/formBooleanSelect.tsx";
-import { FormDomainSelect } from "../../form/formDomainSelect.tsx";
-import { FormInput } from "../../form/formInput.tsx";
-import { StackFullWidth } from "../../styledComponents.ts";
+import { patchBoreholes } from "../../api-lib";
+import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
+import { theme } from "../../AppTheme.ts";
+import WorkgroupSelect from "../../pages/overview/sidePanelContent/commons/workgroupSelect.tsx";
+import { AlertContext } from "../alert/alertContext.tsx";
+import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
+import { FormValueType } from "../form/form.ts";
+import { FormBooleanSelect } from "../form/formBooleanSelect.tsx";
+import { FormDomainSelect } from "../form/formDomainSelect.tsx";
+import { FormInput } from "../form/formInput.tsx";
+import { StackFullWidth } from "../styledComponents.ts";
 import { BulkEditFormField, BulkEditFormProps, BulkEditFormValue } from "./BulkEditFormProps.ts";
 
-export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => {
+export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditFormProps) => {
   const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[string, BulkEditFormValue]>>([]);
   const [workgroupId, setWorkgroupId] = useState<string>("");
   const { showAlert } = useContext(AlertContext);
@@ -200,68 +201,82 @@ export const BulkEditForm = ({ selected, loadBoreholes }: BulkEditFormProps) => 
   );
 
   return (
-    <Stack sx={{ height: "100%" }}>
-      <DialogTitle>
-        <Typography variant="h1">{t("bulkEditing")}</Typography>
-      </DialogTitle>
-      <DialogContent
-        sx={{
-          overflowY: "auto",
-          flexGrow: 1,
-        }}>
-        <Box sx={{ mt: 3 }}>
-          <FormProvider {...formMethods}>
-            {bulkEditFormFields.map(field => {
-              if (field.type != FormValueType.Workgroup || enabledWorkgroups.length > 1) {
-                return (
-                  <Accordion key={field.fieldName} data-cy={"bulk-edit-accordion"} sx={{ minHeight: theme.spacing(6) }}>
-                    <AccordionSummary
-                      expandIcon={<ChevronDownIcon />}
-                      sx={{
-                        pl: 1,
-                        "& .MuiAccordionSummary-content": {
-                          m: 0,
-                        },
-                      }}>
-                      <Stack direction="row" alignItems="center">
-                        <IconButton
-                          size="small"
-                          data-cy="bulk-edit-reset-button"
-                          sx={{
-                            visibility: fieldsToUpdate.map(f => f[0]).includes(field.api ?? field.fieldName)
-                              ? "visible"
-                              : "hidden",
-                            mr: 1,
-                          }}
-                          onClick={e => {
-                            e.stopPropagation();
-                            undoChange(field);
-                          }}>
-                          <RotateCcw fontSize="small" color={theme.palette.primary.main} />
-                        </IconButton>
-                        <Typography variant="h6" sx={{ color: "black" }}>
-                          {t(field.fieldName)}
-                        </Typography>
-                      </Stack>
-                    </AccordionSummary>
-                    <AccordionDetails sx={{ pl: 5, pr: 3, mt: -4 }}>
-                      <StackFullWidth>
-                        <>{renderInput(field)}</>
-                      </StackFullWidth>
-                    </AccordionDetails>
-                  </Accordion>
-                );
-              }
-            })}
-          </FormProvider>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Stack direction="row" justifyContent="flex-end" spacing={2}>
-          <CancelButton onClick={unselectBoreholes} />
-          <SaveButton variant="contained" disabled={fieldsToUpdate.length === 0} onClick={save} />
-        </Stack>
-      </DialogActions>
-    </Stack>
+    <Dialog
+      fullWidth
+      maxWidth="sm"
+      open={isOpen}
+      PaperProps={{
+        sx: {
+          overflow: "hidden",
+          height: "90vh",
+        },
+      }}>
+      <Stack sx={{ height: "100%" }}>
+        <DialogTitle>
+          <Typography variant="h1">{t("bulkEditing")}</Typography>
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            overflowY: "auto",
+            flexGrow: 1,
+          }}>
+          <Box sx={{ mt: 3 }}>
+            <FormProvider {...formMethods}>
+              {bulkEditFormFields.map(field => {
+                if (field.type != FormValueType.Workgroup || enabledWorkgroups.length > 1) {
+                  return (
+                    <Accordion
+                      key={field.fieldName}
+                      data-cy={"bulk-edit-accordion"}
+                      sx={{ minHeight: theme.spacing(6) }}>
+                      <AccordionSummary
+                        expandIcon={<ChevronDownIcon />}
+                        sx={{
+                          pl: 1,
+                          "& .MuiAccordionSummary-content": {
+                            m: 0,
+                          },
+                        }}>
+                        <Stack direction="row" alignItems="center">
+                          <IconButton
+                            size="small"
+                            data-cy="bulk-edit-reset-button"
+                            sx={{
+                              visibility: fieldsToUpdate.map(f => f[0]).includes(field.api ?? field.fieldName)
+                                ? "visible"
+                                : "hidden",
+                              mr: 1,
+                            }}
+                            onClick={e => {
+                              e.stopPropagation();
+                              undoChange(field);
+                            }}>
+                            <RotateCcw fontSize="small" color={theme.palette.primary.main} />
+                          </IconButton>
+                          <Typography variant="h6" sx={{ color: "black" }}>
+                            {t(field.fieldName)}
+                          </Typography>
+                        </Stack>
+                      </AccordionSummary>
+                      <AccordionDetails sx={{ pl: 5, pr: 3, mt: -4 }}>
+                        <StackFullWidth>
+                          <>{renderInput(field)}</>
+                        </StackFullWidth>
+                      </AccordionDetails>
+                    </Accordion>
+                  );
+                }
+              })}
+            </FormProvider>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Stack direction="row" justifyContent="flex-end" spacing={2}>
+            <CancelButton onClick={unselectBoreholes} />
+            <SaveButton variant="contained" disabled={fieldsToUpdate.length === 0} onClick={save} />
+          </Stack>
+        </DialogActions>
+      </Stack>
+    </Dialog>
   );
 };

@@ -1,11 +1,12 @@
 import React, { useCallback, useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Dialog, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { loadEditingBoreholes } from "../../../api-lib";
 import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { BulkEditForm } from "../../../components/legacyComponents/bulkedit/bulkEditForm.js";
+import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
+import { ExportDialog } from "../../../components/export/exportDialog.tsx";
 import MapComponent from "../../../components/map/mapComponent.jsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { OverViewContext } from "../overViewContext.tsx";
@@ -19,6 +20,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
   const [rowToHighlight, setRowToHighlight] = useState<number | null>(null);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
+  const [isExporting, setIsExporting] = useState(false);
   const history = useHistory();
   const {
     filterPolygon,
@@ -73,30 +75,26 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       sx={{
         flex: "1 1.5 100%",
       }}>
-      <Dialog
-        fullWidth
-        maxWidth="sm"
-        open={Array.isArray(editorStore.mselected)}
-        PaperProps={{
-          sx: {
-            overflow: "hidden",
-            height: "90vh",
-          },
-        }}>
-        <BulkEditForm
-          loadBoreholes={() => {
-            loadBoreholes(
-              boreholes.page,
-              boreholes.limit,
-              search.filter,
-              boreholes.orderby,
-              boreholes.direction,
-              featureIds,
-            );
-          }}
-          selected={selectionModel}
-        />
-      </Dialog>
+      <BulkEditDialog
+        isOpen={Array.isArray(editorStore.mselected)}
+        loadBoreholes={() => {
+          loadBoreholes(
+            boreholes.page,
+            boreholes.limit,
+            search.filter,
+            boreholes.orderby,
+            boreholes.direction,
+            featureIds,
+          );
+        }}
+        selected={selectionModel}
+      />
+      <ExportDialog
+        isExporting={isExporting}
+        setIsExporting={setIsExporting}
+        selectionModel={selectionModel}
+        fileName={`bulkexport_${new Date().toISOString().split("T")[0]}`}
+      />
       <MapComponent
         searchState={{
           ...search,
@@ -123,7 +121,6 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         setFeatureIds={setFeatureIds}
         displayErrorMessage={displayErrorMessage}
       />
-
       <BottomBarContainer
         boreholes={boreholes}
         loadEditingBoreholes={loadBoreholes}
@@ -133,6 +130,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         setSelectionModel={setSelectionModel}
         rowToHighlight={rowToHighlight}
         setHover={setHover}
+        setIsExporting={setIsExporting}
       />
     </Stack>
   );
