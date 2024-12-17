@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { ArrowDownToLine, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -20,10 +20,9 @@ interface BottomBarProps {
   search: { filter: string };
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
-  onExportMultipleJson: () => void;
-  onExportMultipleCsv: () => void;
   workgroup: string;
   setWorkgroup: React.Dispatch<React.SetStateAction<string>>;
+  setIsExporting: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const BottomBar = ({
@@ -32,11 +31,10 @@ const BottomBar = ({
   onDeleteMultiple,
   search,
   onCopyBorehole,
-  onExportMultipleJson,
-  onExportMultipleCsv,
   boreholes,
   workgroup,
   setWorkgroup,
+  setIsExporting,
 }: BottomBarProps) => {
   const { t } = useTranslation();
   const { showPrompt, promptIsOpen } = useContext(PromptContext);
@@ -83,6 +81,30 @@ const BottomBar = ({
     multipleSelected(selectionModel, search.filter);
   }
 
+  const showPromptExportMoreThan100 = (callback: () => void) => {
+    showPrompt(t("bulkExportMoreThan100"), [
+      {
+        label: t("cancel"),
+      },
+      {
+        label: t("export100Boreholes"),
+        icon: <ArrowDownToLine />,
+        variant: "contained",
+        action: callback,
+      },
+    ]);
+  };
+
+  const onExportMultiple = async () => {
+    if (selectionModel.length > 100) {
+      showPromptExportMoreThan100(() => {
+        setIsExporting(true);
+      });
+    } else {
+      setIsExporting(true);
+    }
+  };
+
   return (
     <Stack
       direction="row"
@@ -117,8 +139,7 @@ const BottomBar = ({
             <CopyButton color="secondary" onClick={() => showCopyPromptForSelectedWorkgroup()} />
           )}
           <BulkEditButton label={"bulkEditing"} onClick={bulkEditSelected} />
-          <ExportButton label={"exportJson"} onClick={onExportMultipleJson} />
-          <ExportButton label={"exportCsv"} onClick={onExportMultipleCsv} />
+          <ExportButton label={"export"} onClick={() => onExportMultiple()} />
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
       ) : (

@@ -1,11 +1,11 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
-import { Check, Trash2, X } from "lucide-react";
+import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
-import { BoreholeV2, exportCSVBorehole } from "../../api/borehole.ts";
+import { BoreholeV2 } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import {
   DeleteButton,
@@ -14,10 +14,10 @@ import {
   ExportButton,
   ReturnButton,
 } from "../../components/buttons/buttons.tsx";
+import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
-import { downloadData } from "../../utils.ts";
 import { useFormDirty } from "./useFormDirty.tsx";
 
 interface DetailHeaderProps {
@@ -35,6 +35,7 @@ const DetailHeader = ({
   triggerReset,
   borehole,
 }: DetailHeaderProps) => {
+  const [isExporting, setIsExporting] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -80,22 +81,25 @@ const DetailHeader = ({
     ]);
   };
 
+  const startExportWithUnsavedChanges = () => {
+    showPrompt(t("messageUnsavedChangesAtExport"), [
+      {
+        label: t("cancel"),
+        icon: <X />,
+        variant: "outlined",
+      },
+      {
+        label: t("export"),
+        icon: <ArrowDownToLine />,
+        variant: "contained",
+        action: () => setIsExporting(true),
+      },
+    ]);
+  };
+
   const handleDelete = async () => {
     await deleteBorehole(borehole.id);
     history.push("/");
-  };
-
-  const getFileName = (name: string) => {
-    return name.replace(/\s/g, "_");
-  };
-  const handleJsonExport = () => {
-    const jsonString = JSON.stringify([borehole], null, 2);
-    downloadData(jsonString, getFileName(borehole.name), "application/json");
-  };
-
-  const handleCSVExport = async () => {
-    const csvData = await exportCSVBorehole([borehole.id]);
-    downloadData(csvData, getFileName(borehole.name), "text/csv");
   };
 
   return (
@@ -125,37 +129,46 @@ const DetailHeader = ({
         />
       </Stack>
       <Stack direction="row" data-cy="detail-header" gap={2}>
-        {editableByCurrentUser &&
-          (editingEnabled ? (
-            <>
-              <DeleteButton
-                label="deleteBorehole"
-                onClick={() =>
-                  showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
-                    {
-                      label: t("cancel"),
-                    },
-                    {
-                      label: t("delete"),
-                      icon: <Trash2 />,
-                      variant: "contained",
-                      action: () => {
-                        handleDelete();
+        {editableByCurrentUser && (
+          <>
+            <ExportButton
+              label="export"
+              onClick={isFormDirty ? startExportWithUnsavedChanges : () => setIsExporting(true)}
+            />
+            {editingEnabled ? (
+              <>
+                <DeleteButton
+                  label="deleteBorehole"
+                  onClick={() =>
+                    showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
+                      {
+                        label: t("cancel"),
                       },
-                    },
-                  ])
-                }
-              />
-              <EndEditButton onClick={isFormDirty ? stopEditingWithUnsavedChanges : stopEditing} />
-            </>
-          ) : (
-            <>
-              <ExportButton label="exportJson" onClick={handleJsonExport} />
-              <ExportButton label="exportCsv" onClick={handleCSVExport} />
+                      {
+                        label: t("delete"),
+                        icon: <Trash2 />,
+                        variant: "contained",
+                        action: () => {
+                          handleDelete();
+                        },
+                      },
+                    ])
+                  }
+                />
+                <EndEditButton onClick={isFormDirty ? stopEditingWithUnsavedChanges : stopEditing} />
+              </>
+            ) : (
               <EditButton onClick={startEditing} />
-            </>
-          ))}
+            )}
+          </>
+        )}
       </Stack>
+      <ExportDialog
+        isExporting={isExporting}
+        setIsExporting={setIsExporting}
+        selectionModel={[borehole.id]}
+        fileName={borehole.name?.replace(/\s/g, "_") ?? "export"}
+      />
     </DetailHeaderStack>
   );
 };
