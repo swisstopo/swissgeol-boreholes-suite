@@ -381,8 +381,6 @@ public class ImportController : ControllerBase
 
     private sealed class CsvImportBoreholeMap : ClassMap<BoreholeImport>
     {
-        private readonly CultureInfo swissCulture = new("de-CH");
-
         public CsvImportBoreholeMap()
         {
             AutoMap(CsvConfigHelper.CsvReadConfig);
