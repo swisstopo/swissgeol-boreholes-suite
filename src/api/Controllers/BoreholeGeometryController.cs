@@ -118,28 +118,13 @@ public class BoreholeGeometryController : ControllerBase
     {
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
 
-        if (geometry.Count < 2)
+        var tvd = geometry.GetTVDIfGeometryExists(depthMD);
+        if (tvd == null)
         {
-            if (depthMD >= 0)
-            {
-                // Return the depthMD unchanged as if the borehole is perfectly vertical and infinitely long.
-                return Ok(depthMD);
-            }
-        }
-        else
-        {
-            try
-            {
-                return Ok(geometry.GetDepthTVD(depthMD));
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-             // Exception is ignored so that the action returns an empty response in case the input was invalid.
-            }
+            logger?.LogInformation($"Invalid input, could not calculate true vertical depth from measured depth of {depthMD}");
         }
 
-        logger?.LogInformation($"Invalid input, could not calculate true vertical depth from measured depth of {depthMD}");
-        return Ok();
+        return Ok(tvd);
     }
 
     private async Task<List<BoreholeGeometryElement>> GetBoreholeGeometry(int boreholeId)

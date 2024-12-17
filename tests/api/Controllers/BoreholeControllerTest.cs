@@ -643,7 +643,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyInvalidWorkgroupId()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         var result = await controller.CopyAsync(boreholeId, workgroupId: 0).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
     }
@@ -651,7 +651,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyMissingWorkgroupPermission()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         var result = await controller.CopyAsync(boreholeId, workgroupId: 2).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
     }
@@ -659,7 +659,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithUnknownUser()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
@@ -668,7 +668,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithUserNotSet()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         controller.ControllerContext.HttpContext.User = null;
         await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
         {
@@ -679,7 +679,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        boreholeId = testBoreholeId;
         controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
@@ -701,7 +701,7 @@ public class BoreholeControllerTest
         var csvData = Encoding.UTF8.GetString(result.FileContents);
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2; // Remove header and last line break
-        Assert.IsTrue(recordCount <= 100);
+        Assert.AreEqual(100, recordCount);
     }
 
     [TestMethod]

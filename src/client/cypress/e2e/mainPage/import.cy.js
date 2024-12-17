@@ -42,9 +42,6 @@ describe("Test for importing boreholes.", () => {
       });
     });
 
-    // Intercept upload request
-    cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
-
     // Import boreholes and attachments
     cy.get('[data-cy="import-button"]').click();
     cy.wait("@borehole-upload");
@@ -75,9 +72,6 @@ describe("Test for importing boreholes.", () => {
           });
         });
       });
-
-    cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
-
     cy.get('[data-cy="import-button"]').click();
 
     cy.wait("@borehole-upload");
