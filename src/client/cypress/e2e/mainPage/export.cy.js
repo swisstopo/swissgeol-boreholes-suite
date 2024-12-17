@@ -1,4 +1,11 @@
-import { deleteItem, exportCSVItem, exportItem, exportJsonItem } from "../helpers/buttonHelpers";
+import {
+  addItem,
+  deleteItem,
+  exportCSVItem,
+  exportItem,
+  exportJsonItem,
+  saveWithSaveBar,
+} from "../helpers/buttonHelpers";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers.js";
 import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
 import {
