@@ -19,7 +19,6 @@ public class ExportControllerTest
 {
     private BdmsContext context;
     private ExportController controller;
-    private BoreholeController boreholeController;
     private Mock<ILogger<ExportController>> loggerMock;
     private static int testBoreholeId = 1000068;
 
@@ -30,11 +29,6 @@ public class ExportControllerTest
 
         context = ContextFactory.GetTestContext();
         loggerMock = new Mock<ILogger<ExportController>>();
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(false);
-        boreholeController = new BoreholeController(context, new Mock<ILogger<BoreholeController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
         controller = new ExportController(context, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -120,11 +114,6 @@ public class ExportControllerTest
     [TestMethod]
     public async Task DownloadCsvWithCustomIds()
     {
-        // These codelists are used to make the TestContext aware of the Codelists, so that they can be included in the download controller.
-        var codelistGeoDIN = new Codelist { Id = 100000010, En = "ID GeODin" };
-        var codelistKernlager = new Codelist { Id = 100000011, En = "ID Kernlager" };
-        var codelistTopFels = new Codelist { Id = 100000009, En = "ID TopFels" };
-
         var firstBoreholeId = 1_009_068;
         var boreholeWithCustomIds = new Borehole
         {
@@ -134,15 +123,13 @@ public class ExportControllerTest
             new BoreholeCodelist
             {
                 BoreholeId = firstBoreholeId,
-                CodelistId = codelistGeoDIN.Id,
-                Codelist = codelistGeoDIN,
+                CodelistId = 100000010,
                 Value = "ID GeoDIN value",
             },
             new BoreholeCodelist
             {
                 BoreholeId = firstBoreholeId,
-                CodelistId = codelistKernlager.Id,
-                Codelist = codelistKernlager,
+                CodelistId = 100000011,
                 Value = "ID Kernlager value",
             },
         },
@@ -157,22 +144,20 @@ public class ExportControllerTest
             new BoreholeCodelist
             {
                 BoreholeId = secondBoreholeId,
-                CodelistId = codelistGeoDIN.Id,
-                Codelist = codelistGeoDIN,
+                CodelistId = 100000010,
                 Value = "ID GeoDIN value",
             },
             new BoreholeCodelist
             {
                 BoreholeId = secondBoreholeId,
-                CodelistId = codelistTopFels.Id,
-                Codelist = codelistTopFels,
+                CodelistId = 100000009,
                 Value = "ID TopFels value",
             },
         },
         };
 
-        await boreholeController.CreateAsync(boreholeWithCustomIds).ConfigureAwait(false);
-        await boreholeController.CreateAsync(boreholeWithOtherCustomIds).ConfigureAwait(false);
+        context.Boreholes.AddRange(boreholeWithCustomIds, boreholeWithOtherCustomIds);
+        await context.SaveChangesAsync();
 
         var ids = new List<int> { firstBoreholeId, secondBoreholeId };
 
