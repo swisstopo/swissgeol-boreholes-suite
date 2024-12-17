@@ -122,7 +122,6 @@ public class BoreholeGeometryController : ControllerBase
         if (tvd == null)
         {
             logger?.LogInformation($"Invalid input, could not calculate true vertical depth from measured depth of {depthMD}");
-            return Ok();
         }
 
         return Ok(tvd);

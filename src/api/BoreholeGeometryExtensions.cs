@@ -26,7 +26,6 @@ public static class BoreholeGeometryExtensions
         {
             try
             {
-                // Assuming GetDepthTVD is another extension method or a suitable method of List<BoreholeGeometryElement>
                 return geometry.GetDepthTVD(depthMD.Value);
             }
             catch (ArgumentOutOfRangeException)
