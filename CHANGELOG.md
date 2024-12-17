@@ -30,7 +30,7 @@
 - Removed csv lithology import.
 - Removed import id from csv import.
 - Removed attachments from csv import.
-- Updated recommended csv headers for borehole import to camel case e.g.`OriginalName` (snake case e.g.`original_name` is still supported).
+- Updated recommended csv headers for borehole import to camel case e.g.`OriginalName` (snake case e.g.`original_name` is still supported for all properties except for custom identifiers).
 
 ### Fixed
 
