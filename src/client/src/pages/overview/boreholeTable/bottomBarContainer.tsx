@@ -1,12 +1,10 @@
 import React, { useCallback, useContext, useLayoutEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import { deleteBoreholes } from "../../../api-lib";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { copyBorehole } from "../../../api/borehole.ts";
-import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { BoreholeTable } from "./boreholeTable.tsx";
@@ -45,10 +43,8 @@ const BottomBarContainer = ({
 }: BottomBarContainerProps) => {
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const history = useHistory();
-  const { t } = useTranslation();
   const { featureIds } = useContext(FilterContext);
   const { bottomDrawerOpen } = useContext(OverViewContext);
-  const { showPrompt } = useContext(PromptContext);
   const [workgroupId, setWorkgroupId] = useState<string>(user.data.workgroups[0]?.id);
   const [isBusy, setIsBusy] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
