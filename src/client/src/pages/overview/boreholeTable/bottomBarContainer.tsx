@@ -97,8 +97,6 @@ const BottomBarContainer = ({
         multipleSelected={multipleSelected}
         onCopyBorehole={onCopyBorehole}
         onDeleteMultiple={onDeleteMultiple}
-        // onExportMultipleJson={() => onExportMultiple(handleExportMultipleJson)}
-        // onExportMultipleCsv={() => onExportMultiple(handleExportMultipleCsv)}
         search={search}
         boreholes={boreholes}
         workgroup={workgroupId}
