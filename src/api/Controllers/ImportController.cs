@@ -385,13 +385,7 @@ public class ImportController : ControllerBase
 
         public CsvImportBoreholeMap()
         {
-            var config = new CsvConfiguration(swissCulture)
-            {
-                IgnoreReferences = true,
-                PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
-            };
-
-            AutoMap(config);
+            AutoMap(CsvConfigHelper.CsvReadConfig);
 
             // Define all optional properties of Borehole (ef navigation properties do not need to be defined as optional).
             Map(m => m.CreatedById).Optional();

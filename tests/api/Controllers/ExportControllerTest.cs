@@ -22,8 +22,6 @@ public class ExportControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
-
         context = ContextFactory.GetTestContext();
         controller = new ExportController(context) { ControllerContext = GetControllerContextAdmin() };
     }
