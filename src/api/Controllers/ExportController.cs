@@ -28,7 +28,7 @@ public class ExportController : ControllerBase
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.export
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The list of IDs for the boreholes to be exported.</param>
     /// <returns>A CSV file containing the details of the specified boreholes.</returns>
