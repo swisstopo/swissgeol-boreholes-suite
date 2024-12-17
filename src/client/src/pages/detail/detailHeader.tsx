@@ -158,9 +158,7 @@ const DetailHeader = ({
                 <EndEditButton onClick={isFormDirty ? stopEditingWithUnsavedChanges : stopEditing} />
               </>
             ) : (
-              <>
-                <EditButton onClick={startEditing} />
-              </>
+              <EditButton onClick={startEditing} />
             )}
           </>
         )}
