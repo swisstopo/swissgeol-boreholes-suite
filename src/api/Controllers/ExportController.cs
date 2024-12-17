@@ -160,7 +160,7 @@ public class ExportController : ControllerBase
         return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", "boreholes_export.csv");
     }
 
-    private IEnumerable<BoreholeCodelist> GetBoreholeCodelists(Borehole borehole)
+    private static IEnumerable<BoreholeCodelist> GetBoreholeCodelists(Borehole borehole)
     {
         return borehole.BoreholeCodelists ?? Enumerable.Empty<BoreholeCodelist>();
     }
