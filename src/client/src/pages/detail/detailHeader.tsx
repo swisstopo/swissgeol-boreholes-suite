@@ -169,7 +169,7 @@ const DetailHeader = ({
         isExporting={isExporting}
         setIsExporting={setIsExporting}
         selectionModel={[borehole.id]}
-        fileName={borehole.name.replace(/\s/g, "_")}
+        fileName={borehole.name?.replace(/\s/g, "_") ?? "export"}
       />
     </DetailHeaderStack>
   );

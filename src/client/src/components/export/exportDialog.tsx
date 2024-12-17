@@ -23,7 +23,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
 
   const exportCsv = async () => {
     const csvData = await exportCSVBorehole(selectionModel.slice(0, 100));
-    downloadData(csvData, `${fileName}.json`, "text/csv");
+    downloadData(csvData, `${fileName}.csv`, "text/csv");
     setIsExporting(false);
   };
 
