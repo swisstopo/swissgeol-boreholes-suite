@@ -6,7 +6,12 @@ import {
   exportJsonItem,
   saveWithSaveBar,
 } from "../helpers/buttonHelpers";
-import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers.js";
+import {
+  checkAllVisibleRows,
+  checkRowWithText,
+  clickOnRowWithText,
+  showTableAndWaitForData,
+} from "../helpers/dataGridHelpers.js";
 import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
@@ -221,5 +226,98 @@ describe("Test for exporting boreholes.", () => {
     });
 
     deleteDownloadedFile(jsonFileName);
+  });
+
+  it("exports a single borehole as csv and json", () => {
+    const boreholeName = "AAA_HIPPOPOTHAMUS";
+    createBorehole({
+      "extended.original_name": boreholeName,
+      "custom.alternate_name": boreholeName,
+    }).as("borehole_id");
+
+    deleteDownloadedFile(`${boreholeName}.json`);
+    deleteDownloadedFile(`${boreholeName}.csv`);
+
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}`);
+      getElementByDataCy("edit-button").should("exist");
+      getElementByDataCy("editingstop-button").should("not.exist");
+      exportItem();
+      exportJsonItem();
+      exportItem();
+      exportCSVItem();
+    });
+
+    readDownloadedFile(`${boreholeName}.json`);
+    readDownloadedFile(`${boreholeName}.csv`);
+  });
+
+  it("exports and reimports a borehole using csv", () => {
+    const boreholeName = "AAA_WALRUS";
+    createBorehole({
+      "extended.original_name": boreholeName,
+      "custom.alternate_name": boreholeName,
+    }).as("borehole_id");
+
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}`);
+      startBoreholeEditing();
+
+      // set two custom identifiers
+      addItem("addIdentifier");
+      setSelect("boreholeCodelists.0.codelistId", 1);
+      setInput("boreholeCodelists.0.value", "w1");
+
+      addItem("addIdentifier");
+      setSelect("boreholeCodelists.1.codelistId", 2);
+      setInput("boreholeCodelists.1.value", "w2");
+
+      // add coordinates
+      cy.get('[data-cy="locationX-formCoordinate"] input').type("2646000 ");
+      cy.get('[data-cy="locationY-formCoordinate"] input').type("1247000 ");
+      cy.wait("@location");
+      cy.wait(4000);
+      saveWithSaveBar();
+
+      exportItem();
+      exportCSVItem();
+
+      const downloadedFilePath = prepareDownloadPath(`${boreholeName}.csv`);
+      cy.readFile(downloadedFilePath).should("exist");
+
+      returnToOverview();
+      showTableAndWaitForData();
+      checkRowWithText(boreholeName);
+      deleteItem();
+      handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
+      getElementByDataCy("import-borehole-button").click();
+      cy.contains(boreholeName).should("not.exist");
+
+      cy.readFile(downloadedFilePath, "utf-8").then(fileContent => {
+        // Create a DataTransfer and a File from the downloaded content
+        const boreholeFile = new DataTransfer();
+        const file = new File([fileContent], "AAA_WALRUS.csv", {
+          type: "text/csv",
+        });
+        boreholeFile.items.add(file);
+
+        cy.get('[data-cy="import-boreholeFile-input"]').within(() => {
+          cy.get("input[type=file]", { force: true }).then(input => {
+            input[0].files = boreholeFile.files; // Attach the file
+            input[0].dispatchEvent(new Event("change", { bubbles: true }));
+          });
+        });
+
+        cy.get('[data-cy="import-button"]').click();
+        cy.wait("@borehole-upload");
+
+        clickOnRowWithText(boreholeName);
+        evaluateInput("name", boreholeName);
+        evaluateInput("boreholeCodelists.1.value", "w1");
+        evaluateInput("boreholeCodelists.0.value", "w2");
+        cy.get('[data-cy="locationX-formCoordinate"] input').should("have.value", `2'646'000`);
+        cy.get('[data-cy="locationY-formCoordinate"] input').should("have.value", `1'247'000`);
+      });
+    });
   });
 });
