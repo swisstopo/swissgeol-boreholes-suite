@@ -307,6 +307,7 @@
   "maxValue": "Maximalwert",
   "member": "Member",
   "messageDiscardUnsavedChanges": "Es gibt ungespeicherte Änderungen. Möchten Sie alle Änderungen verwerfen?",
+  "messageUnsavedChangesAtExport": "Es gibt ungespeicherte Änderungen. Möchten Sie das Bohrloch ohne Speichern exportieren?",
   "meter": "Meter",
   "minValue": "Minimalwert",
   "minute": "Minute",

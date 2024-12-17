@@ -307,6 +307,7 @@
   "maxValue": "Valore massimo",
   "member": "Membro",
   "messageDiscardUnsavedChanges": "Sono presenti modifiche non salvate. Si desidera annullare tutte le modifiche?",
+  "messageUnsavedChangesAtExport": "Ci sono modifiche non salvate. Si desidera esportare la perforazione senza salvare?",
   "meter": "Metri",
   "minValue": "Valore minimo",
   "minute": "minuto",

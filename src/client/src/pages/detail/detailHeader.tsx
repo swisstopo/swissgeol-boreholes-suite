@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
-import { Check, Trash2, X } from "lucide-react";
+import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
@@ -81,6 +81,22 @@ const DetailHeader = ({
     ]);
   };
 
+  const startExportWithUnsavedChanges = () => {
+    showPrompt(t("messageUnsavedChangesAtExport"), [
+      {
+        label: t("cancel"),
+        icon: <X />,
+        variant: "outlined",
+      },
+      {
+        label: t("export"),
+        icon: <ArrowDownToLine />,
+        variant: "contained",
+        action: () => setIsExporting(true),
+      },
+    ]);
+  };
+
   const handleDelete = async () => {
     await deleteBorehole(borehole.id);
     history.push("/");
@@ -113,35 +129,41 @@ const DetailHeader = ({
         />
       </Stack>
       <Stack direction="row" data-cy="detail-header" gap={2}>
-        {editableByCurrentUser &&
-          (editingEnabled ? (
-            <>
-              <DeleteButton
-                label="deleteBorehole"
-                onClick={() =>
-                  showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
-                    {
-                      label: t("cancel"),
-                    },
-                    {
-                      label: t("delete"),
-                      icon: <Trash2 />,
-                      variant: "contained",
-                      action: () => {
-                        handleDelete();
+        {editableByCurrentUser && (
+          <>
+            <ExportButton
+              label="export"
+              onClick={isFormDirty ? startExportWithUnsavedChanges : () => setIsExporting(true)}
+            />
+            {editingEnabled ? (
+              <>
+                <DeleteButton
+                  label="deleteBorehole"
+                  onClick={() =>
+                    showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
+                      {
+                        label: t("cancel"),
                       },
-                    },
-                  ])
-                }
-              />
-              <EndEditButton onClick={isFormDirty ? stopEditingWithUnsavedChanges : stopEditing} />
-            </>
-          ) : (
-            <>
-              <ExportButton label="export" onClick={() => setIsExporting(true)} />
-              <EditButton onClick={startEditing} />
-            </>
-          ))}
+                      {
+                        label: t("delete"),
+                        icon: <Trash2 />,
+                        variant: "contained",
+                        action: () => {
+                          handleDelete();
+                        },
+                      },
+                    ])
+                  }
+                />
+                <EndEditButton onClick={isFormDirty ? stopEditingWithUnsavedChanges : stopEditing} />
+              </>
+            ) : (
+              <>
+                <EditButton onClick={startEditing} />
+              </>
+            )}
+          </>
+        )}
       </Stack>
       <ExportDialog
         isExporting={isExporting}

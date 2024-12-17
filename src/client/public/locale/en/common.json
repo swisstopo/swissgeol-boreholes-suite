@@ -307,6 +307,7 @@
   "maxValue": "Maximum",
   "member": "Member",
   "messageDiscardUnsavedChanges": "There are unsaved changes. Do you want to discard all changes?",
+  "messageUnsavedChangesAtExport": "There are unsaved changes. Do you want to export the borehole without saving?",
   "meter": "Meter",
   "minValue": "Minimum",
   "minute": "minute",
