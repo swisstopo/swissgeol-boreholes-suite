@@ -34,12 +34,12 @@ const verifyTVDContentInCSVFile = (
   cy.readFile(prepareDownloadPath(fileName)).then(fileContent => {
     const { lines, rows } = splitFileContent(fileContent);
     expect(lines.length).to.equal(3);
-    expect(rows[0][24]).to.equal("TotalDepthTvd");
-    expect(rows[1][24]).to.equal(expectedTotalDepthVD);
-    expect(rows[0][25]).to.equal("TopBedrockFreshTvd");
-    expect(rows[1][25]).to.equal(expectedTopBedrockFreshTVD);
-    expect(rows[0][26]).to.equal("TopBedrockWeatheredTvd");
-    expect(rows[1][26]).to.equal(expectedTopBedrockWeatheredTVD);
+    expect(rows[0][26]).to.equal("TotalDepthTvd");
+    expect(rows[1][26]).to.equal(expectedTotalDepthVD);
+    expect(rows[0][27]).to.equal("TopBedrockFreshTvd");
+    expect(rows[1][27]).to.equal(expectedTopBedrockFreshTVD);
+    expect(rows[0][28]).to.equal("TopBedrockWeatheredTvd");
+    expect(rows[1][28]).to.equal(expectedTopBedrockWeatheredTVD);
   });
 };
 
@@ -170,13 +170,13 @@ describe("Test for exporting boreholes.", () => {
       expect(rows[1][3]).to.equal(firstBoreholeName);
       expect(rows[2][3]).to.equal(secondBoreholeName);
 
-      expect(rows[0][31]).to.equal("IDInfoGeol");
-      expect(rows[1][31]).to.equal("");
-      expect(rows[2][31]).to.equal("14");
+      expect(rows[0][33]).to.equal("IDInfoGeol");
+      expect(rows[1][33]).to.equal("");
+      expect(rows[2][33]).to.equal("14");
 
-      expect(rows[0][32]).to.equal("IDGeODin\r");
-      expect(rows[1][32]).to.equal("13\r");
-      expect(rows[2][32]).to.equal("\r");
+      expect(rows[0][34]).to.equal("IDGeODin\r");
+      expect(rows[1][34]).to.equal("13\r");
+      expect(rows[2][34]).to.equal("\r");
     });
     deleteItem();
     handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "Delete");
