@@ -67,6 +67,11 @@ export interface BoreholeV2 {
 
 export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
 
+export const exportJsonBoreholes = async (ids: number[] | GridRowSelectionModel) => {
+  const idsQuery = ids.map(id => `ids=${id}`).join("&");
+  return await fetchApiV2(`borehole/json?${idsQuery}`, "GET");
+};
+
 export const updateBorehole = async (borehole: BoreholeV2) => {
   return await fetchApiV2("borehole", "PUT", borehole);
 };

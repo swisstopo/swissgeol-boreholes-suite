@@ -8,6 +8,8 @@ using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Controllers;
 
@@ -118,6 +120,38 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         return Ok(borehole);
+    }
+
+    /// <summary>
+    /// Asynchronously gets all <see cref="Borehole"/> records filtered by ids. Additional data is included in the response.
+    /// </summary>
+    /// <param name="ids">The required list of borehole ids to filter by.</param>
+    [HttpGet("json")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult> ExportJsonAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    {
+        if (ids == null || !ids.Any())
+        {
+            return BadRequest("The list of IDs must not be empty.");
+        }
+
+        var boreholes = await GetBoreholesWithIncludes().AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+
+        // Create a new JsonSerializerOptions for this specific endpoint
+        var options = new JsonSerializerOptions()
+        {
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            WriteIndented = true,
+        };
+
+        // Add the default converters from the global configuration
+        options.Converters.Add(new DateOnlyJsonConverter());
+        options.Converters.Add(new LTreeJsonConverter());
+
+        // Add special converter for the 'Observations' collection
+        options.Converters.Add(new ObservationConverter());
+
+        return new JsonResult(boreholes, options);
     }
 
     /// <summary>
