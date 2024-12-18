@@ -53,7 +53,7 @@ public class ObservationConverter : JsonConverter<Observation>
                 JsonSerializer.Serialize(writer, observation, options);
                 break;
             default:
-                throw new NotSupportedException($"Observation type '{value.GetType().Name}' is not supported");
+                throw new NotSupportedException($"Observation type is not supported");
         }
     }
 }
