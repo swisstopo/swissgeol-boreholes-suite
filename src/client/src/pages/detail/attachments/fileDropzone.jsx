@@ -11,9 +11,11 @@ import { theme } from "../../../AppTheme.ts";
  * @param {Object} props - The component props.
  * @param {Function} props.onHandleFileChange - A callback function to handle file changes. The function receives the files array as an argument.
  * @param {string} props.defaultText - The default text to display in the dropzone.
+ * @param {string} props.disabledText - The text to display in the dropzone when disabled.
  * @param {number} props.maxFilesToSelectAtOnce - The maximum number of files that can be selected at once.
  * @param {number} props.maxFilesToUpload - The maximum number of files that can be uploaded.
  * @param {boolean} props.restrictAcceptedFileTypeToCsv - Whether to restrict accepted file types to CSV.
+ * @param {boolean} props.restrictAcceptedFileTypeToJson - Whether to restrict accepted file types to JSON.
  * @param {boolean} props.isDisabled - Whether the dropzone is disabled.
  * @param {string} props.dataCy - The data-cy attribute for testing.
  * @returns {JSX.Element} The rendered FileDropzone component.
@@ -22,9 +24,11 @@ export const FileDropzone = props => {
   const {
     onHandleFileChange,
     defaultText,
+    disabledText,
     maxFilesToSelectAtOnce,
     maxFilesToUpload,
     restrictAcceptedFileTypeToCsv,
+    restrictAcceptedFileTypeToJson,
     isDisabled,
     dataCy,
   } = props;
@@ -33,7 +37,7 @@ export const FileDropzone = props => {
   const [dropZoneText, setDropZoneText] = useState(null);
   const [dropZoneTextColor, setDropZoneTextColor] = useState(null);
   const defaultDropzoneTextColor = isDisabled ? "#9f9f9f" : "#2185d0";
-  const initialDropzoneText = isDisabled ? t("dropZoneChooseBoreholeFilesFirst") : t(defaultText);
+  const initialDropzoneText = isDisabled ? t(disabledText) : t(defaultText);
 
   useEffect(() => {
     setDropZoneText(initialDropzoneText);
@@ -113,7 +117,10 @@ export const FileDropzone = props => {
     onDropAccepted,
     maxFiles: maxFilesToSelectAtOnce || Infinity,
     maxSize: 209715200,
-    accept: restrictAcceptedFileTypeToCsv ? { "text/csv": [".csv"] } : "*",
+    accept: {
+      ...(restrictAcceptedFileTypeToCsv && { "text/csv": [".csv"] }),
+      ...(restrictAcceptedFileTypeToJson && { "application/json": [".json"] }),
+    },
     noClick: isDisabled,
     noKeyboard: isDisabled,
   });
