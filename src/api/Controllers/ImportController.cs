@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Controllers;
 
@@ -33,7 +34,12 @@ public class ImportController : ControllerBase
         MissingFieldFound = null,
     };
 
-    private static readonly JsonSerializerOptions jsonImportOptions = new() { PropertyNameCaseInsensitive = true };
+    private static readonly JsonSerializerOptions jsonImportOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter() },
+    };
 
     public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService)
     {
@@ -96,8 +102,12 @@ public class ImportController : ControllerBase
             foreach (var borehole in boreholes)
             {
                 borehole.MarkAsNew();
+                borehole.Workgroup = null;
                 borehole.WorkgroupId = workgroupId;
+                borehole.LockedBy = null;
                 borehole.LockedById = null;
+                borehole.UpdatedBy = null;
+                borehole.CreatedBy = null;
 
                 borehole.Stratigraphies?.MarkAsNew();
                 borehole.Completions?.MarkAsNew();
@@ -106,7 +116,7 @@ public class ImportController : ControllerBase
 
                 // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
                 borehole.Workflows.Clear();
-                borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
+                borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
             }
 
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
