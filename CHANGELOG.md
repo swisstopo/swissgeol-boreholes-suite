@@ -47,6 +47,7 @@
 - When copying a borehole, the nested collections of observations were not copied.
 - There was a bug when changing the order, transparency or visibility of custom WMS user layers.
 - The borehole status was not translated everywhere in the workflow panel.
+- Observations were not included in exported borehole JSON files.
 
 ## v2.1.870 - 2024-09-27
 
