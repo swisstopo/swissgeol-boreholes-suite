@@ -157,7 +157,7 @@ const HydrotestInput = props => {
     data = prepareCasingDataForSubmit(data);
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
-    data.type = ObservationType.fieldMeasurement;
+    data.type = ObservationType.hydrotest;
     data.boreholeId = parentId;
 
     if (Array.isArray(data.testKindId)) {
