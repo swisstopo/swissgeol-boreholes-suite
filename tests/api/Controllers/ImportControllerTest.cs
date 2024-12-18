@@ -23,7 +23,6 @@ public class ImportControllerTest
     private const int MaxLayerSeedId = 7029999;
 
     private BdmsContext context;
-    private BoreholeController boreholeController;
     private ImportController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
     private Mock<ILogger<ImportController>> loggerMock;
@@ -57,11 +56,6 @@ public class ImportControllerTest
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, context.Users.FirstOrDefault().SubjectId) }));
         var boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, loggerBoreholeFileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
 
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(false);
-        boreholeController = new BoreholeController(context, new Mock<ILogger<BoreholeController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
         controller = new ImportController(context, loggerMock.Object, locationService, coordinateService, boreholeFileCloudService) { ControllerContext = GetControllerContextAdmin() };
     }
 
