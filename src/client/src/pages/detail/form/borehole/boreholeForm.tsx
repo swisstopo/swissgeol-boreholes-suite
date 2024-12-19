@@ -33,8 +33,8 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
       topBedrockFreshMd: borehole.topBedrockFreshMd,
       topBedrockWeatheredMd: borehole.topBedrockWeatheredMd,
       lithologyTopBedrockId: borehole.lithologyTopBedrockId,
-      lithostratigraphyId: borehole.lithostratigraphyId,
-      chronostratigraphyId: borehole.chronostratigraphyId,
+      lithostratigraphyTopBedrockId: borehole.lithostratigraphyTopBedrockId,
+      chronostratigraphyTopBedrockId: borehole.chronostratigraphyTopBedrockId,
       hasGroundwater: borehole.hasGroundwater === true ? 1 : borehole.hasGroundwater === false ? 0 : 2,
       remarks: borehole.remarks,
     },
@@ -175,11 +175,11 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   selected={borehole.lithologyTopBedrockId}
                 />
                 <FormDomainSelect
-                  fieldName={"lithostratigraphyId"}
+                  fieldName={"lithostratigraphyTopBedrockId"}
                   label={"lithostratigraphy_top_bedrock"}
                   schemaName={"custom.lithostratigraphy_top_bedrock"}
                   readonly={!editingEnabled}
-                  selected={borehole.lithostratigraphyId}
+                  selected={borehole.lithostratigraphyTopBedrockId}
                 />
               </FormContainer>
               <FormContainer direction="row">
@@ -188,7 +188,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   label={"chronostratigraphy_top_bedrock"}
                   schemaName={"custom.chronostratigraphy_top_bedrock"}
                   readonly={!editingEnabled}
-                  selected={borehole.chronostratigraphyId}
+                  selected={borehole.chronostratigraphyTopBedrockId}
                 />
                 <FormBooleanSelect
                   canReset={false}

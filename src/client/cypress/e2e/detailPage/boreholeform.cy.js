@@ -92,8 +92,8 @@ describe("Test for the borehole form.", () => {
       setSelect("depthPrecisionId", 1);
       setSelect("statusId", 1);
       setSelect("lithologyTopBedrockId", 1);
-      setSelect("lithostratigraphyId", 1);
-      setSelect("chronostratigraphyId", 1);
+      setSelect("lithostratigraphyTopBedrockId", 1);
+      setSelect("chronostratigraphyTopBedrockId", 1);
       setSelect("hasGroundwater", 1);
 
       setInput("totalDepth", 700);
