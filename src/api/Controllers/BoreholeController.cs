@@ -130,10 +130,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult> ExportJsonAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        if (ids == null || !ids.Any())
-        {
-            return BadRequest("The list of IDs must not be empty.");
-        }
+        if (ids == null || !ids.Any()) return BadRequest("The list of IDs must not be empty.");
 
         var boreholes = await GetBoreholesWithIncludes().AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
 

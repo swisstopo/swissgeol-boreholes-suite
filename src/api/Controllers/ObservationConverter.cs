@@ -4,6 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace BDMS.Controllers;
 
+/// <summary>
+/// Serializes and deserializes <see cref="Observation"/> objects based on their ObservationType.
+/// </summary>
 public class ObservationConverter : JsonConverter<Observation>
 {
     private static readonly JsonSerializerOptions observationDefaultOptions = new JsonSerializerOptions
@@ -12,6 +15,7 @@ public class ObservationConverter : JsonConverter<Observation>
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
     };
 
+    /// <inheritdoc/>
     public override Observation? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         using JsonDocument doc = JsonDocument.ParseValue(ref reader);
@@ -30,6 +34,7 @@ public class ObservationConverter : JsonConverter<Observation>
         };
     }
 
+    /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, Observation value, JsonSerializerOptions options)
     {
         switch (value)
@@ -53,7 +58,7 @@ public class ObservationConverter : JsonConverter<Observation>
                 JsonSerializer.Serialize(writer, observation, options);
                 break;
             default:
-                throw new NotSupportedException($"Observation type is not supported");
+                throw new NotSupportedException("Observation type is not supported");
         }
     }
 }
