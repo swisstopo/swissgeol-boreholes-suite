@@ -2,7 +2,7 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
 import { User, Workgroup } from "./apiInterfaces.ts";
-import { fetchApiV2, upload } from "./fetchApiV2";
+import { download, fetchApiV2, upload } from "./fetchApiV2";
 
 export interface BasicIdentifier {
   boreholeId: number;
@@ -65,6 +65,8 @@ export interface BoreholeV2 {
   updatedBy: User;
 }
 
+const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");
+
 export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
 
 export const exportJsonBoreholes = async (ids: number[] | GridRowSelectionModel) => {
@@ -90,11 +92,13 @@ export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupI
 };
 
 export const getAllBoreholes = async (ids: number[] | GridRowSelectionModel, pageNumber: number, pageSize: number) => {
-  const idsQuery = ids.map(id => `ids=${id}`).join("&");
-  return await fetchApiV2(`borehole?${idsQuery}&pageNumber=${pageNumber}&pageSize=${pageSize}`, "GET");
+  return await fetchApiV2(`borehole?${getIdQuery(ids)}&pageNumber=${pageNumber}&pageSize=${pageSize}`, "GET");
 };
 
 export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel) => {
-  const idsQuery = boreholeIds.map(id => `ids=${id}`).join("&");
-  return await fetchApiV2(`export/csv?${idsQuery}`, "GET");
+  return await fetchApiV2(`export/csv?${getIdQuery(boreholeIds)}`, "GET");
+};
+
+export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | GridRowSelectionModel) => {
+  return await download(`export/zip?${getIdQuery(boreholeIds)}`);
 };

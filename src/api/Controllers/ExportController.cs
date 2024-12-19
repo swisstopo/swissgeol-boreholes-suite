@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace BDMS.Controllers;
@@ -19,6 +21,7 @@ public class ExportController : ControllerBase
     // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
     private const int MaxPageSize = 100;
     private readonly BdmsContext context;
+    private readonly BoreholeFileCloudService boreholeFileCloudService;
 
     private static readonly JsonSerializerOptions jsonExportOptions = new()
     {
@@ -27,9 +30,10 @@ public class ExportController : ControllerBase
         Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter() },
     };
 
-    public ExportController(BdmsContext context)
+    public ExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService)
     {
         this.context = context;
+        this.boreholeFileCloudService = boreholeFileCloudService;
     }
 
     /// <summary>
@@ -182,6 +186,66 @@ public class ExportController : ControllerBase
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
         return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", "boreholes_export.csv");
+    }
+
+    /// <summary>
+    /// Asynchronously gets all <see cref="Borehole"/> records filtered by ids including all attachments.
+    /// </summary>
+    /// <param name="ids">The required list of borehole ids to filter by.</param>
+    /// <returns>A ZIP-file including the borehole data as .json and all corresponding attachments.</returns>
+    [HttpGet("zip")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    {
+        if (ids == null || !ids.Any()) return BadRequest("The list of IDs must not be empty.");
+
+        try
+        {
+            var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+            var files = await context.BoreholeFiles.Include(f => f.File).Where(f => ids.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
+            var fileName = $"boreholes_with_attachments_{DateTime.UtcNow:yyyyMMddHHmmss}";
+
+            if (ids.Count() == 1)
+            {
+                fileName = boreholes.Single().Name;
+            }
+
+            var json = JsonSerializer.Serialize(boreholes, jsonExportOptions);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    // Add JSON file with borehole data
+                    var jsonEntry = archive.CreateEntry($"{fileName}.json", CompressionLevel.Fastest);
+                    using (var entryStream = jsonEntry.Open())
+                    using (var textWriter = new StreamWriter(entryStream))
+                    {
+                        textWriter.Write(json);
+                    }
+
+                    // Add each attachment
+                    foreach (var file in files)
+                    {
+                        if (file.File.NameUuid != null)
+                        {
+                            var fileBytes = await boreholeFileCloudService.GetObject(file.File.NameUuid).ConfigureAwait(false);
+                            var zipEntry = archive.CreateEntry(file.File.Name, CompressionLevel.Fastest);
+                            using (var zipEntryStream = zipEntry.Open())
+                            {
+                                await zipEntryStream.WriteAsync(fileBytes, 0, fileBytes.Length).ConfigureAwait(false);
+                            }
+                        }
+                    }
+                }
+
+                return File(memoryStream.ToArray(), "application/zip", fileName);
+            }
+        }
+        catch (Exception ex)
+        {
+            return Problem("An error occurred while preparing the download.");
+        }
     }
 
     private static IEnumerable<BoreholeCodelist> GetBoreholeCodelists(Borehole borehole)

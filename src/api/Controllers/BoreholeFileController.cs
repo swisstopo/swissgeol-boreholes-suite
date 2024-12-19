@@ -3,7 +3,9 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO.Compression;
 using System.Net;
 
 namespace BDMS.Controllers;

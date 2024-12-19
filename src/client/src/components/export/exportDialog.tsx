@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { exportCSVBorehole, exportJsonBoreholes } from "../../api/borehole.ts";
+import { exportCSVBorehole, exportJsonBoreholes, exportJsonWithAttachmentsBorehole } from "../../api/borehole.ts";
 import { downloadData } from "../../utils.ts";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
 
@@ -27,6 +27,11 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
     setIsExporting(false);
   };
 
+  const exportJsonWithAttachments = async () => {
+    await exportJsonWithAttachmentsBorehole(selectionModel.slice(0, 100));
+    setIsExporting(false);
+  };
+
   return (
     <Dialog open={isExporting}>
       <Stack sx={{ minWidth: "326px" }}>
@@ -36,6 +41,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
         <DialogContent>
           <Stack gap={1} sx={{ mt: 3 }}>
             <ExportButton label={"JSON"} onClick={exportJson} />
+            <ExportButton label={"ZIP"} onClick={exportJsonWithAttachments} />
             <ExportButton label={"CSV"} onClick={exportCsv} />
           </Stack>
         </DialogContent>

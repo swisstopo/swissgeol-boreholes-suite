@@ -98,17 +98,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
               role={undefined}
               variant="outlined"
               tabIndex={-1}
-              endIcon={<UploadIcon />}
-              sx={{
-                paddingLeft: "12px",
-                paddingRight: "12px",
-                paddingBottom: "8px",
-                paddingTop: "8px",
-                whiteSpace: "nowrap",
-                borderRadius: "2px",
-                fontWeight: 500,
-                minWidth: "auto",
-              }}>
+              endIcon={<UploadIcon />}>
               {t("upload")}
               <Input
                 type="file"

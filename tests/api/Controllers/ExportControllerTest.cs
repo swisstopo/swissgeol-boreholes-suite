@@ -1,10 +1,19 @@
-﻿using BDMS.Models;
+﻿using Amazon.S3;
+using BDMS.Models;
 using CsvHelper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System.IO;
+using System.IO.Compression;
+using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -16,14 +25,52 @@ public class ExportControllerTest
     private const string TestCsvString = "text/csv";
     private const string ExportFileName = "boreholes_export.csv";
     private BdmsContext context;
+    private BoreholeFileCloudService boreholeFileCloudService;
     private ExportController controller;
+    private User adminUser;
     private static int testBoreholeId = 1000068;
 
     [TestInitialize]
     public void TestInitialize()
     {
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+
         context = ContextFactory.GetTestContext();
-        controller = new ExportController(context) { ControllerContext = GetControllerContextAdmin() };
+        adminUser = context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
+        var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
+        contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
+
+        var s3ClientMock = new AmazonS3Client(
+            configuration["S3:ACCESS_KEY"],
+            configuration["S3:SECRET_KEY"],
+            new AmazonS3Config
+            {
+                ServiceURL = configuration["S3:ENDPOINT"],
+                ForcePathStyle = true,
+                UseHttp = configuration["S3:SECURE"] == "0",
+            });
+
+        var boreholeFileCloudServiceLoggerMock = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
+        boreholeFileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+        boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, boreholeFileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);
+
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+
+        boreholeLockServiceMock
+            .Setup(x => x.IsUserLackingPermissions(It.IsAny<int?>(), "sub_viewer"))
+            .ReturnsAsync(true);
+
+        boreholeLockServiceMock
+            .Setup(x => x.IsUserLackingPermissions(It.IsAny<int?>(), "sub_admin"))
+            .ReturnsAsync(false);
+
+        var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
+        boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+        controller = new ExportController(context, boreholeFileCloudService) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestMethod]
@@ -109,6 +156,56 @@ public class ExportControllerTest
         Assert.IsNotNull(jsonResult.Value);
         List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
         Assert.AreEqual(1, boreholes.Count);
+    }
+
+    [TestMethod]
+    public async Task ExportJsonWithAttachments()
+    {
+        var newBorehole = GetBoreholeToAdd();
+        context.Add(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Add pdf attachment
+        var fileName = $"{Guid.NewGuid()}.pdf";
+        var content = Guid.NewGuid().ToString();
+        var fileBytes = Encoding.UTF8.GetBytes(content);
+        var formFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, fileName) { Headers = new HeaderDictionary(), ContentType = "application/pdf" };
+        var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBorehole(formFile, newBorehole.Id).ConfigureAwait(false);
+        context.BoreholeFiles.Add(boreholeFile);
+
+        var result = await controller.ExportJsonWithAttachmentsAsync(new List<int>() { newBorehole.Id }).ConfigureAwait(false);
+
+        var fileResult = result as FileContentResult;
+        Assert.IsNotNull(fileResult);
+        Assert.AreEqual("application/zip", fileResult.ContentType);
+        Assert.AreEqual("Borehole 257", fileResult.FileDownloadName);
+
+        // Extract the files from the returned ZIP stream
+        using (var zipStream = new MemoryStream(fileResult.FileContents))
+        using (var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read))
+        {
+            var jsonFile = zipArchive.Entries.FirstOrDefault(entry => entry.FullName.EndsWith(".json"));
+            var pdfFile = zipArchive.Entries.FirstOrDefault(entry => entry.FullName.EndsWith(".pdf"));
+
+            Assert.IsNotNull(jsonFile, "The ZIP file does not contain a JSON file.");
+            Assert.IsNotNull(pdfFile, "The ZIP file does not contain a PDF file.");
+
+            JsonSerializerOptions jsonImportOptions = new()
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            };
+
+            using (var jsonStream = jsonFile.Open())
+            {
+                var boreholes = await JsonSerializer.DeserializeAsync<List<Borehole>>(jsonStream, jsonImportOptions).ConfigureAwait(false);
+                var borehole = boreholes.Single();
+
+                // Check some properties of deserialized borehole
+                Assert.AreEqual("Test borehole for project", borehole.Remarks);
+                Assert.AreEqual("Borehole 257", borehole.Name);
+                Assert.AreEqual("Project Alpha", borehole.ProjectName);
+            }
+        }
     }
 
     [TestMethod]
