@@ -99,7 +99,7 @@ const ImportModal = ({
         </Header>
       </Segment>
       <Modal.Content>
-        <ImportModalContent setSelectedFile={setSelectedFile} setFileType={setFileType} />
+        <ImportModalContent setSelectedFile={setSelectedFile} setFileType={setFileType} fileType={fileType} />
         <h3>{capitalizeFirstLetter(t("workgroup"))}</h3>
         <WorkgroupSelect workgroupId={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroupId={setWorkgroup} />
       </Modal.Content>

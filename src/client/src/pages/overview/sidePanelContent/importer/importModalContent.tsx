@@ -26,23 +26,21 @@ const ExampleHeadings = (headings: string) => {
 const ImportModalContent = ({
   setSelectedFile,
   setFileType,
+  fileType,
 }: ImportContentProps & { setFileType: (type: string) => void }) => {
   const { t } = useTranslation();
 
-  const handleBoreholeFileChange = useCallback(
-    (boreholeFileFromDropzone: Blob[]) => {
-      setSelectedFile(boreholeFileFromDropzone);
-      setFileType("csv");
+  const handleCsvFileChange = useCallback(
+    (csvFileFromDropzone: Blob[]) => {
+      setSelectedFile(csvFileFromDropzone);
     },
-    [setSelectedFile, setFileType],
+    [setSelectedFile],
   );
-
   const handleJsonFileChange = useCallback(
     (jsonFileFromDropzone: Blob[]) => {
       setSelectedFile(jsonFileFromDropzone);
-      setFileType("json");
     },
-    [setSelectedFile, setFileType],
+    [setSelectedFile],
   );
 
   return (
@@ -80,13 +78,14 @@ const ImportModalContent = ({
           )}
         </StackHalfWidth>
         <FileDropzone
-          onHandleFileChange={handleBoreholeFileChange}
+          onHandleFileChange={handleCsvFileChange}
           defaultText={"dropZoneBoreholeCsvText"}
           acceptedFileTypes={["text/csv"]}
           maxFilesToSelectAtOnce={1}
           maxFilesToUpload={1}
-          isDisabled={false}
+          isDisabled={fileType === "json"}
           dataCy={"import-boreholeFile-input"}
+          setFileType={setFileType}
         />
       </Stack>
       <h3>{capitalizeFirstLetter(t("JSON"))}</h3>
@@ -98,8 +97,9 @@ const ImportModalContent = ({
           acceptedFileTypes={["application/json"]}
           maxFilesToSelectAtOnce={1}
           maxFilesToUpload={1}
-          isDisabled={false}
+          isDisabled={fileType === "csv"}
           dataCy={"import-jsonFile-input"}
+          setFileType={setFileType}
         />
       </Stack>
     </>
