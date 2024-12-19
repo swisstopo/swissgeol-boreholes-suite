@@ -10,6 +10,8 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using OSGeo.OGR;
+using MaxRev.Gdal.Core;
 
 namespace BDMS.Controllers;
 
@@ -150,6 +152,82 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         // Add special converter for the 'Observations' collection
         options.Converters.Add(new ObservationConverter());
+
+        try
+        {
+            var features = boreholes.Select(borehole =>
+            {
+
+                var feature = new
+                {
+                    type = "Feature",
+                    geometry = new
+                    {
+                        type = "Point",
+                        crs = new
+                        {
+                            type = "name",
+                            properties = new
+                            {
+                                name = "EPSG:2056",
+                            },
+                        },
+                        coordinates = new[]
+                        {
+                            borehole.LocationX,
+                            borehole.LocationY,
+                        },
+                    },
+                    properties = borehole,
+                };
+                return feature;
+            }).ToList();
+
+            var geojson = new
+            {
+                type = "FeatureCollection",
+                crs = new
+                {
+                    type = "name",
+                    properties = new
+                    {
+                        name = "EPSG:2056",
+                    },
+                },
+                features,
+            };
+
+            var geojsonFile = "bulkexport_test.geojson";
+            await System.IO.File.WriteAllTextAsync(geojsonFile, JsonSerializer.Serialize(geojson, options)).ConfigureAwait(false);
+
+            GdalBase.ConfigureAll();
+            Ogr.RegisterAll();
+            Ogr.UseExceptions();
+
+            var geojsonDataSource = Ogr.Open(geojsonFile, 1);
+            if (geojsonDataSource == null)
+            {
+                throw new InvalidOperationException("Could not open input datasource.");
+            }
+
+            var gpkgFilePath = geojsonFile.Replace(".geojson", ".gpkg", StringComparison.InvariantCulture);
+            if (Directory.Exists(gpkgFilePath))
+            {
+                Directory.Delete(gpkgFilePath, true);
+            }
+
+            var openFileGdbDriver = Ogr.GetDriverByName("GPKG");
+            var gpkgDataSource = openFileGdbDriver.CreateDataSource(gpkgFilePath, null);
+
+            gpkgDataSource.CopyLayer(geojsonDataSource.GetLayerByIndex(0), "boreholes", null);
+
+            geojsonDataSource.Dispose();
+            gpkgDataSource.Dispose();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e.Message);
+        }
 
         return new JsonResult(boreholes, options);
     }
