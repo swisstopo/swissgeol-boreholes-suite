@@ -80,7 +80,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 
 ### Koordinaten
 
-Koordinaten können in LV95 und LV03 importiert werden, das Räumliche Bezugssystem wird aus den Koordinaten erkannt und abgespeichert.
+Koordinaten können in LV95 und LV03 importiert werden, das räumliche Bezugssystem wird aus den Koordinaten erkannt und abgespeichert.
 
 ## Validierung
 
