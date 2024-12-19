@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Changed 
+- Removed attachments from csv import.
+- Updated recommended csv headers for borehole import to camel case e.g. `OriginalName` (snake case e.g. `original_name` is still supported for all properties except for custom identifiers).
+- Changed order of `Top Bedrock (fresh)` and `Top Bedrock (weathered)` fields in borehole form.
+
+### Fixed
+
+- Observations were not included in exported borehole JSON file.
+
 ## v2.1.993 - 2024-12-13
 
 ### Added
@@ -47,7 +56,6 @@
 - When copying a borehole, the nested collections of observations were not copied.
 - There was a bug when changing the order, transparency or visibility of custom WMS user layers.
 - The borehole status was not translated everywhere in the workflow panel.
-- Observations were not included in exported borehole JSON files.
 
 ## v2.1.870 - 2024-09-27
 

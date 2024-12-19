@@ -1,5 +1,6 @@
 ﻿using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
@@ -349,6 +350,24 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// </summary>
     [Column("reference_elevation_type_id_cli")]
     public int? ReferenceElevationTypeId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s true vertical total depth.
+    /// </summary>
+    [NotMapped]
+    public double? TotalDepthTvd { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s true vertical top bedrock fresh depth.
+    /// </summary>
+    [NotMapped]
+    public double? TopBedrockFreshTvd { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s true vertical top bedrock weathered depth.
+    /// </summary>
+    [NotMapped]
+    public double? TopBedrockWeatheredTvd { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation type.

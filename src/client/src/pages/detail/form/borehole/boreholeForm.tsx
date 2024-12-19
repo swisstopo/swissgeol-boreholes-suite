@@ -140,20 +140,6 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
               </FormContainer>
               <FormContainer direction="row">
                 <FormInput
-                  fieldName={"topBedrockFreshMd"}
-                  label={"top_bedrock_fresh_md"}
-                  value={borehole?.topBedrockFreshMd || ""}
-                  withThousandSeparator={true}
-                  readonly={!editingEnabled}
-                />
-                <FormInputDisplayOnly
-                  label={"top_bedrock_fresh_tvd"}
-                  value={topBedrockFreshTVD}
-                  withThousandSeparator={true}
-                />
-              </FormContainer>
-              <FormContainer direction="row">
-                <FormInput
                   fieldName={"topBedrockWeatheredMd"}
                   label={"top_bedrock_weathered_md"}
                   value={borehole?.topBedrockWeatheredMd || ""}
@@ -163,6 +149,20 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                 <FormInputDisplayOnly
                   label={"top_bedrock_weathered_tvd"}
                   value={topBedrockWeatheredTVD}
+                  withThousandSeparator={true}
+                />
+              </FormContainer>
+              <FormContainer direction="row">
+                <FormInput
+                  fieldName={"topBedrockFreshMd"}
+                  label={"top_bedrock_fresh_md"}
+                  value={borehole?.topBedrockFreshMd || ""}
+                  withThousandSeparator={true}
+                  readonly={!editingEnabled}
+                />
+                <FormInputDisplayOnly
+                  label={"top_bedrock_fresh_tvd"}
+                  value={topBedrockFreshTVD}
                   withThousandSeparator={true}
                 />
               </FormContainer>

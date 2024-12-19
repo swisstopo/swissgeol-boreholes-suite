@@ -26,13 +26,6 @@ public class ImportController : ControllerBase
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
-    private readonly CsvConfiguration csvConfig = new(new CultureInfo("de-CH"))
-    {
-        Delimiter = ";",
-        IgnoreReferences = true,
-        PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
-        MissingFieldFound = null,
-    };
 
     private static readonly JsonSerializerOptions jsonImportOptions = new()
     {
@@ -134,13 +127,12 @@ public class ImportController : ControllerBase
     /// </summary>
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
     /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole csv records that were uploaded.</param>
-    /// <param name="attachments">The list of <see cref="IFormFile"/> containing the borehole attachments referred in <paramref name="boreholesFile"/>.</param>
     /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IList<IFormFile>? attachments = null)
+    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile)
     {
         // Increase max allowed errors to be able to return more validation errors at once.
         ModelState.MaxAllowedErrors = 1000;
@@ -154,14 +146,8 @@ public class ImportController : ControllerBase
             // Checks if the provided boreholes file is a CSV file.
             if (!FileTypeChecker.IsCsv(boreholesFile)) return BadRequest("Invalid file type for borehole csv.");
 
-            // Checks if any of the provided attachments has a whitespace in its file name.
-            if (attachments?.Any(a => a.FileName.Any(char.IsWhiteSpace)) == true) return BadRequest("One or more file name(s) contain a whitespace.");
-
-            // Checks if any of the provided attachments exceeds the maximum file size.
-            if (attachments?.Any(a => a.Length > MaxFileSize) == true) return BadRequest($"One or more attachment exceed maximum file size of {MaxFileSize / 1024 / 1024} Mb.");
-
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
-            ValidateBoreholeImports(workgroupId, boreholeImports, false, attachments);
+            ValidateBoreholeImports(workgroupId, boreholeImports, false);
 
             // If any validation error occured, return a bad request.
             if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
@@ -233,21 +219,6 @@ public class ImportController : ControllerBase
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
             var result = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
 
-            // Add attachments to borehole.
-            if (attachments != null)
-            {
-                var boreholeImportsWithAttachments = boreholeImports.Where(x => x.Attachments?.Length > 0).ToList();
-                foreach (var boreholeImport in boreholeImportsWithAttachments)
-                {
-                    var attachmentFileNames = boreholeImport.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList();
-                    var attachmentFiles = attachments.Where(x => attachmentFileNames != null && attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
-                    foreach (var attachmentFile in attachmentFiles)
-                    {
-                        await boreholeFileCloudService.UploadFileAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
-                    }
-                }
-            }
-
             await transaction.CommitAsync().ConfigureAwait(false);
             return result;
         }
@@ -276,20 +247,19 @@ public class ImportController : ControllerBase
         return 0;
     }
 
-    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, bool isJsonFile, IList<IFormFile>? attachments = null)
+    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, bool isJsonFile)
     {
         foreach (var borehole in boreholesFromFile.Select((value, index) => (value, index)))
         {
-            ValidateBorehole(borehole.value, boreholesFromFile, workgroupId, borehole.index, isJsonFile, attachments);
+            ValidateBorehole(borehole.value, boreholesFromFile, workgroupId, borehole.index, isJsonFile);
         }
     }
 
-    private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int boreholeIndex, bool isJsonFile, IList<IFormFile>? attachments)
+    private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int boreholeIndex, bool isJsonFile)
     {
         ValidateRequiredFields(borehole, boreholeIndex, isJsonFile);
         ValidateDuplicateInFile(borehole, boreholesFromFile, boreholeIndex, isJsonFile);
         ValidateDuplicateInDb(borehole, workgroupId, boreholeIndex, isJsonFile);
-        ValidateAttachments(borehole, attachments, boreholeIndex, isJsonFile);
     }
 
     private void ValidateRequiredFields(BoreholeImport borehole, int processingIndex, bool isJsonFile)
@@ -329,26 +299,6 @@ public class ImportController : ControllerBase
         }
     }
 
-    private void ValidateAttachments(BoreholeImport borehole, IList<IFormFile>? attachments, int processingIndex, bool isJsonFile)
-    {
-        if (attachments == null || string.IsNullOrEmpty(borehole.Attachments)) return;
-
-        var boreholeFileNames = borehole.Attachments
-            .Split(",")
-            .Select(s => s.Trim())
-            .Where(s => !string.IsNullOrEmpty(s))
-            .ToList();
-
-        foreach (var boreholeFileName in boreholeFileNames)
-        {
-            // Check if the name of any attached file matches the name of the borehole file
-            if (!attachments.Any(a => a.FileName.Equals(boreholeFileName, StringComparison.OrdinalIgnoreCase)))
-            {
-                AddValidationErrorToModelState(processingIndex, $"Attachment file '{boreholeFileName}' not found.", isJsonFile);
-            }
-        }
-    }
-
     internal static bool CompareValuesWithTolerance(double? firstValue, double? secondValue, double tolerance)
     {
         if (firstValue == null && secondValue == null) return true;
@@ -357,10 +307,10 @@ public class ImportController : ControllerBase
         return Math.Abs(firstValue.Value - secondValue.Value) <= tolerance;
     }
 
-    private List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
+    private static List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
     {
         using var reader = new StreamReader(file.OpenReadStream());
-        using var csv = new CsvReader(reader, csvConfig);
+        using var csv = new CsvReader(reader, CsvConfigHelper.CsvReadConfig);
 
         csv.Context.RegisterClassMap(new CsvImportBoreholeMap());
 
@@ -398,17 +348,9 @@ public class ImportController : ControllerBase
 
     private sealed class CsvImportBoreholeMap : ClassMap<BoreholeImport>
     {
-        private readonly CultureInfo swissCulture = new("de-CH");
-
         public CsvImportBoreholeMap()
         {
-            var config = new CsvConfiguration(swissCulture)
-            {
-                IgnoreReferences = true,
-                PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
-            };
-
-            AutoMap(config);
+            AutoMap(CsvConfigHelper.CsvReadConfig);
 
             // Define all optional properties of Borehole (ef navigation properties do not need to be defined as optional).
             Map(m => m.CreatedById).Optional();
@@ -455,6 +397,9 @@ public class ImportController : ControllerBase
             Map(b => b.Canton).Ignore();
             Map(b => b.Country).Ignore();
             Map(m => m.Id).Ignore();
+            Map(m => m.TotalDepthTvd).Ignore();
+            Map(m => m.TopBedrockFreshTvd).Ignore();
+            Map(m => m.TopBedrockWeatheredTvd).Ignore();
 
             // Define additional mapping logic
             Map(m => m.BoreholeCodelists).Convert(args =>
@@ -462,16 +407,16 @@ public class ImportController : ControllerBase
                 var boreholeCodeLists = new List<BoreholeCodelist>();
                 new List<(string Name, int CodeListId)>
                 {
-                    ("id_geodin_shortname", 100000000),
-                    ("id_info_geol", 100000003),
-                    ("id_original", 100000004),
-                    ("id_canton", 100000005),
-                    ("id_geo_quat", 100000006),
-                    ("id_geo_mol", 100000007),
-                    ("id_geo_therm", 100000008),
-                    ("id_top_fels", 100000009),
-                    ("id_geodin", 100000010),
-                    ("id_kernlager", 100000011),
+                    ("IDGeODin-Shortname", 100000000),
+                    ("IDInfoGeol", 100000003),
+                    ("IDOriginal", 100000004),
+                    ("IDCanton", 100000005),
+                    ("IDGeoQuat", 100000006),
+                    ("IDGeoMol", 100000007),
+                    ("IDGeoTherm", 100000008),
+                    ("IDTopFels", 100000009),
+                    ("IDGeODin", 100000010),
+                    ("IDKernlager", 100000011),
                 }.ForEach(id =>
                 {
                     if (args.Row.HeaderRecord != null && args.Row.HeaderRecord.Any(h => h == id.Name))

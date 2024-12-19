@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, Grid, Stack } from "@mui/material";
 import { fetchApiV2 } from "../../../../api/fetchApiV2";
@@ -17,6 +17,8 @@ interface LocationSegmentProps extends LocationBaseProps {
 }
 
 const LocationSegment = ({ borehole, editingEnabled, labelingPanelOpen, formMethods }: LocationSegmentProps) => {
+  const [currentLV95X, setCurrentLV95X] = useState(borehole.locationX ? Number(borehole.locationX) : null);
+  const [currentLV95Y, setCurrentLV95Y] = useState(borehole.locationY ? Number(borehole.locationY) : null);
   const transformCoordinates = useCallback(async (referenceSystem: string, x: number, y: number) => {
     let apiUrl;
     if (referenceSystem === referenceSystems.LV95.name) {
@@ -70,12 +72,18 @@ const LocationSegment = ({ borehole, editingEnabled, labelingPanelOpen, formMeth
       if (!response) return; // Ensure response is valid
 
       const maxPrecision = Math.max(XPrecision, YPrecision);
-      const transformedX = parseFloat(response.easting).toFixed(maxPrecision);
-      const transformedY = parseFloat(response.northing).toFixed(maxPrecision);
+      const transformedX = parseFloat(response.easting);
+      const transformedY = parseFloat(response.northing);
 
-      const location = await fetchApiV2(`location/identify?east=${X}&north=${Y}`, "GET");
+      const XLV95 = sourceSystem === ReferenceSystemKey.LV95 ? X : transformedX;
+      const YLV95 = sourceSystem === ReferenceSystemKey.LV95 ? Y : transformedY;
+
+      setCurrentLV95X(XLV95);
+      setCurrentLV95Y(YLV95);
+
+      const location = await fetchApiV2(`location/identify?east=${XLV95}&north=${YLV95}`, "GET");
       setValuesForCountryCantonMunicipality(location);
-      setValuesForReferenceSystem(targetSystem, transformedX, transformedY);
+      setValuesForReferenceSystem(targetSystem, transformedX.toFixed(maxPrecision), transformedY.toFixed(maxPrecision));
     },
     [setValuesForCountryCantonMunicipality, setValuesForReferenceSystem, transformCoordinates],
   );
@@ -130,8 +138,8 @@ const LocationSegment = ({ borehole, editingEnabled, labelingPanelOpen, formMeth
                 }}
                 id={borehole.id}
                 isEditable={editingEnabled}
-                x={borehole.locationX ? Number(borehole.locationX) : null}
-                y={borehole.locationY ? Number(borehole.locationY) : null}
+                x={currentLV95X}
+                y={currentLV95Y}
               />
             </FormSegmentBox>
           </Grid>
