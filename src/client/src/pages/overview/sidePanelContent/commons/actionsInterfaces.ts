@@ -22,7 +22,6 @@ export interface NewBoreholeProps extends WorkgroupSelectProps {
 
 export interface ImportContentProps {
   setSelectedFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
-  fileType: string | null;
 }
 
 export interface ImportModalProps extends ImportContentProps {

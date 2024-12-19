@@ -27,7 +27,7 @@ const ImportModalContent = ({
   setSelectedFile,
   setFileType,
   fileType,
-}: ImportContentProps & { setFileType: (type: string) => void }) => {
+}: ImportContentProps & { setFileType: (type: string) => void } & { fileType: string | null }) => {
   const { t } = useTranslation();
 
   const handleCsvFileChange = useCallback(
