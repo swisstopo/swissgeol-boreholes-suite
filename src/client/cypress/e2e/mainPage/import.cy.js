@@ -21,7 +21,7 @@ describe("Test for importing boreholes.", () => {
       });
     });
 
-    // Import boreholes and attachments
+    // Import boreholes
     cy.get('[data-cy="import-button"]').click();
     cy.wait("@borehole-upload");
 
