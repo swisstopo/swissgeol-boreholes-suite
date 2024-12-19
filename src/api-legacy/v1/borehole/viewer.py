@@ -40,6 +40,7 @@ class BoreholeViewerHandler(Viewer):
                         if requested_orderby is not None and requested_orderby != current_orderby:
                             await (PatchSetting(conn)).execute(
                                 self.user['id'],
+                                self.user['username'],
                                 'boreholetable.orderby',
                                 requested_orderby
                             )
@@ -52,6 +53,7 @@ class BoreholeViewerHandler(Viewer):
                         if requested_direction is not None and requested_direction != current_direction:
                             await (PatchSetting(conn)).execute(
                                 self.user['id'],
+                                self.user['username'],
                                 'boreholetable.direction',
                                 requested_direction
                             )

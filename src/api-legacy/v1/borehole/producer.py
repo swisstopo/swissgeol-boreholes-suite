@@ -196,6 +196,7 @@ class BoreholeProducerHandler(Producer):
                     ):
                         await (PatchSetting(conn)).execute(
                             self.user['id'],
+                            self.user['username'],
                             'eboreholetable.orderby',
                             request['orderby']
                         )
@@ -213,6 +214,7 @@ class BoreholeProducerHandler(Producer):
                     ):
                         await (PatchSetting(conn)).execute(
                             self.user['id'],
+                            self.user['username'],
                             'eboreholetable.direction',
                             request['direction']
                         )
