@@ -97,7 +97,16 @@ export const FileDropzone = props => {
         }
       }
     },
-    [defaultDropzoneTextColor, defaultText, files.length, maxFilesToUpload, showErrorMsg, t],
+    [
+      defaultDropzoneTextColor,
+      defaultText,
+      files.length,
+      maxFilesToUpload,
+      showErrorMsg,
+      t,
+      acceptedFileTypes,
+      setFileType,
+    ],
   );
 
   // Is called when an accepted file is removed.
