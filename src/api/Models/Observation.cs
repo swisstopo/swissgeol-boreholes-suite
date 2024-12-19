@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -107,6 +108,7 @@ public class Observation : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s borehole.
     /// </summary>
+    [JsonIgnore]
     public Borehole? Borehole { get; set; }
 
     /// <inheritdoc />

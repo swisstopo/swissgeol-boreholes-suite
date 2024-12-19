@@ -114,7 +114,7 @@ const GeometryImport = ({ boreholeId }) => {
                     <FileDropzone
                       onHandleFileChange={field.onChange}
                       defaultText={"dropZoneGeometryText"}
-                      restrictAcceptedFileTypeToCsv={true}
+                      acceptedFileTypes={["text/csv"]}
                       maxFilesToSelectAtOnce={1}
                       maxFilesToUpload={1}
                       isDisabled={false}

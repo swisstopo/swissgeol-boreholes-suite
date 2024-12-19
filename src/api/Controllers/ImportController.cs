@@ -47,29 +47,29 @@ public class ImportController : ControllerBase
     /// Receives an uploaded JSON file to import one or several <see cref="Borehole"/>(s).
     /// </summary>
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
-    /// <param name="file">The <see cref="IFormFile"/> containing the borehole JSON records that were uploaded.</param>
+    /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole JSON records that were uploaded.</param>
     /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
     [HttpPost("json")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile file)
+    public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile boreholesFile)
     {
         // Increase max allowed errors to be able to return more validation errors at once.
         ModelState.MaxAllowedErrors = 1000;
 
         logger.LogInformation("Import boreholes json to workgroup with id <{WorkgroupId}>", workgroupId);
 
-        if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
+        if (boreholesFile == null || boreholesFile.Length == 0) return BadRequest("No file uploaded.");
 
-        if (!FileTypeChecker.IsJson(file)) return BadRequest("Invalid file type for borehole JSON.");
+        if (!FileTypeChecker.IsJson(boreholesFile)) return BadRequest("Invalid file type for borehole JSON.");
 
         try
         {
             List<BoreholeImport>? boreholes;
             try
             {
-                using var stream = file.OpenReadStream();
+                using var stream = boreholesFile.OpenReadStream();
                 boreholes = await JsonSerializer.DeserializeAsync<List<BoreholeImport>>(stream, jsonImportOptions).ConfigureAwait(false);
             }
             catch (JsonException ex)

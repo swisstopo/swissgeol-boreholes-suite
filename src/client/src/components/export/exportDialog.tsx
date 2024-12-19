@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { exportCSVBorehole, getAllBoreholes } from "../../api/borehole.ts";
+import { exportCSVBorehole, exportJsonBoreholes } from "../../api/borehole.ts";
 import { downloadData } from "../../utils.ts";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
 
@@ -15,8 +15,8 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
   const { t } = useTranslation();
 
   const exportJson = async () => {
-    const paginatedResponse = await getAllBoreholes(selectionModel, 1, selectionModel.length);
-    const jsonString = JSON.stringify(paginatedResponse.boreholes, null, 2);
+    const exportJsonResponse = await exportJsonBoreholes(selectionModel);
+    const jsonString = JSON.stringify(exportJsonResponse);
     downloadData(jsonString, `${fileName}.json`, "application/json");
     setIsExporting(false);
   };
