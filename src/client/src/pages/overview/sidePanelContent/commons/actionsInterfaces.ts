@@ -21,15 +21,12 @@ export interface NewBoreholeProps extends WorkgroupSelectProps {
 }
 
 export interface ImportContentProps {
-  setSelectedBoreholeAttachments: React.Dispatch<React.SetStateAction<Blob[] | null>>;
-  selectedFile: Blob[] | null;
   setSelectedFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
 }
 
 export interface ImportModalProps extends ImportContentProps {
   modal: boolean;
   creating: boolean;
-  selectedBoreholeAttachments: Blob[] | null;
   selectedFile: Blob[] | null;
   upload: boolean;
   workgroup: string;

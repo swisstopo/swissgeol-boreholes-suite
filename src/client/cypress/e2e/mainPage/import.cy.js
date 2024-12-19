@@ -21,28 +21,7 @@ describe("Test for importing boreholes.", () => {
       });
     });
 
-    // Select borehole attachments
-    let attachmentFileList = new DataTransfer();
-    getImportFileFromFixtures("borehole_attachment_1.pdf", "utf-8").then(fileContent => {
-      const file = new File([fileContent], "borehole_attachment_1.pdf", {
-        type: "application/pdf",
-      });
-      attachmentFileList.items.add(file);
-    });
-    getImportFileFromFixtures("borehole_attachment_2.zip", "utf-8").then(fileContent => {
-      const file = new File([fileContent], "borehole_attachment_2.zip", {
-        type: "application/zip",
-      });
-      attachmentFileList.items.add(file);
-    });
-    cy.get('[data-cy="import-boreholeFile-attachments-input"]').within(() => {
-      cy.get("input[type=file]", { force: true }).then(input => {
-        input[0].files = attachmentFileList.files;
-        input[0].dispatchEvent(new Event("change", { bubbles: true }));
-      });
-    });
-
-    // Import boreholes and attachments
+    // Import boreholes
     cy.get('[data-cy="import-button"]').click();
     cy.wait("@borehole-upload");
 
