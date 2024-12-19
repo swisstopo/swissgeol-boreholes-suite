@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Controllers;
 
@@ -18,9 +20,31 @@ public class ExportController : ControllerBase
     private const int MaxPageSize = 100;
     private readonly BdmsContext context;
 
+    private static readonly JsonSerializerOptions jsonExportOptions = new()
+    {
+        WriteIndented = true,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter() },
+    };
+
     public ExportController(BdmsContext context)
     {
         this.context = context;
+    }
+
+    /// <summary>
+    /// Asynchronously gets all <see cref="Borehole"/> records filtered by ids. Additional data is included in the response.
+    /// </summary>
+    /// <param name="ids">The required list of borehole ids to filter by.</param>
+    [HttpGet("json")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult> ExportJsonAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    {
+        if (ids == null || !ids.Any()) return BadRequest("The list of IDs must not be empty.");
+
+        var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+
+        return new JsonResult(boreholes, jsonExportOptions);
     }
 
     /// <summary>

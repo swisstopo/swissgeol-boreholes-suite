@@ -1,13 +1,10 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
-using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Text;
 
 namespace BDMS.Controllers;
 
@@ -85,7 +82,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
 
         var skip = (pageNumber - 1) * pageSize;
-        var query = GetBoreholesWithIncludes().AsNoTracking();
+        var query = Context.Boreholes.GetAllWithIncludes().AsNoTracking();
 
         if (ids != null && ids.Any())
         {
@@ -107,7 +104,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Borehole>> GetByIdAsync(int id)
     {
-        var borehole = await GetBoreholesWithIncludes()
+        var borehole = await Context.Boreholes.GetAllWithIncludes()
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);
@@ -143,7 +140,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return Unauthorized();
         }
 
-        var borehole = await GetBoreholesWithIncludes()
+        var borehole = await Context.Boreholes.GetAllWithIncludes()
             .AsNoTracking()
             .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
@@ -254,34 +251,5 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     {
         if (entity == null) return default;
         return await Task.FromResult<int?>(entity.Id).ConfigureAwait(false);
-    }
-
-    private IQueryable<Borehole> GetBoreholesWithIncludes()
-    {
-        return Context.Boreholes.Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
-            .Include(b => b.Completions).ThenInclude(c => c.Casings).ThenInclude(c => c.CasingElements)
-            .Include(b => b.Completions).ThenInclude(c => c.Instrumentations)
-            .Include(b => b.Completions).ThenInclude(c => c.Backfills)
-            .Include(b => b.Sections).ThenInclude(s => s.SectionElements)
-            .Include(b => b.Observations).ThenInclude(o => (o as FieldMeasurement)!.FieldMeasurementResults)
-            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestResults)
-            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestEvaluationMethodCodes)
-            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestFlowDirectionCodes)
-            .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestKindCodes)
-            .Include(b => b.BoreholeCodelists)
-            .Include(b => b.Workflows)
-            .Include(b => b.BoreholeFiles)
-            .Include(b => b.BoreholeGeometry)
-            .Include(b => b.Workgroup)
-            .Include(b => b.UpdatedBy);
     }
 }

@@ -27,6 +27,91 @@ public class ExportControllerTest
     }
 
     [TestMethod]
+    public async Task ExportJson()
+    {
+        var newBorehole = GetBoreholeToAdd();
+
+        var fieldMeasurementResult = new FieldMeasurementResult
+        {
+            ParameterId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).FirstAsync().ConfigureAwait(false)).Id,
+            SampleTypeId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).FirstAsync().ConfigureAwait(false)).Id,
+            Value = 10.0,
+        };
+
+        var fieldMeasurement = new FieldMeasurement
+        {
+            Borehole = newBorehole,
+            StartTime = new DateTime(2021, 01, 01, 01, 01, 01, DateTimeKind.Utc),
+            EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
+            Type = ObservationType.FieldMeasurement,
+            Comment = "Field measurement observation for testing",
+            FieldMeasurementResults = new List<FieldMeasurementResult> { fieldMeasurementResult },
+        };
+
+        var groundwaterLevelMeasurement = new GroundwaterLevelMeasurement
+        {
+            Borehole = newBorehole,
+            StartTime = new DateTime(2021, 01, 01, 01, 01, 01, DateTimeKind.Utc),
+            EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
+            Type = ObservationType.GroundwaterLevelMeasurement,
+            Comment = "Groundwater level measurement observation for testing",
+            LevelM = 10.0,
+            LevelMasl = 11.0,
+            KindId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).FirstAsync().ConfigureAwait(false)).Id,
+        };
+
+        var waterIngress = new WaterIngress
+        {
+            Borehole = newBorehole,
+            IsOpenBorehole = true,
+            Type = ObservationType.WaterIngress,
+            Comment = "Water ingress observation for testing",
+            QuantityId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).FirstAsync().ConfigureAwait(false)).Id,
+            ConditionsId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).FirstAsync().ConfigureAwait(false)).Id,
+        };
+
+        var hydroTestResult = new HydrotestResult
+        {
+            ParameterId = 15203191,
+            Value = 10.0,
+            MaxValue = 15.0,
+            MinValue = 5.0,
+        };
+
+        var kindCodelistIds = await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Take(2).Select(c => c.Id).ToListAsync().ConfigureAwait(false);
+        var flowDirectionCodelistIds = await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).Take(2).Select(c => c.Id).ToListAsync().ConfigureAwait(false);
+        var evaluationMethodCodelistIds = await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).Take(2).Select(c => c.Id).ToListAsync().ConfigureAwait(false);
+
+        var kindCodelists = await GetCodelists(context, kindCodelistIds).ConfigureAwait(false);
+        var flowDirectionCodelists = await GetCodelists(context, flowDirectionCodelistIds).ConfigureAwait(false);
+        var evaluationMethodCodelists = await GetCodelists(context, evaluationMethodCodelistIds).ConfigureAwait(false);
+
+        var hydroTest = new Hydrotest
+        {
+            Borehole = newBorehole,
+            StartTime = new DateTime(2021, 01, 01, 01, 01, 01, DateTimeKind.Utc),
+            EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
+            Type = ObservationType.Hydrotest,
+            Comment = "Hydrotest observation for testing",
+            HydrotestResults = new List<HydrotestResult>() { hydroTestResult },
+            HydrotestFlowDirectionCodes = new List<HydrotestFlowDirectionCode> { new() { CodelistId = flowDirectionCodelists[0].Id }, new() { CodelistId = flowDirectionCodelists[1].Id } },
+            HydrotestKindCodes = new List<HydrotestKindCode> { new() { CodelistId = kindCodelists[0].Id }, new() { CodelistId = kindCodelists[1].Id } },
+            HydrotestEvaluationMethodCodes = new List<HydrotestEvaluationMethodCode> { new() { CodelistId = evaluationMethodCodelists[0].Id }, new() { CodelistId = evaluationMethodCodelists[1].Id } },
+        };
+
+        newBorehole.Observations = new List<Observation> { hydroTest, fieldMeasurement, groundwaterLevelMeasurement, waterIngress };
+
+        context.Add(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var response = await controller.ExportJsonAsync(new List<int>() { newBorehole.Id }).ConfigureAwait(false);
+        JsonResult jsonResult = (JsonResult)response!;
+        Assert.IsNotNull(jsonResult.Value);
+        List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
+        Assert.AreEqual(1, boreholes.Count);
+    }
+
+    [TestMethod]
     public async Task DownloadCsvWithValidIdsReturnsFileResultWithMax100Boreholes()
     {
         var ids = Enumerable.Range(testBoreholeId, 120).ToList();
@@ -223,5 +308,56 @@ public class ExportControllerTest
         var reader = new StreamReader(memoryStream);
         var csv = new CsvReader(reader, CsvConfigHelper.CsvWriteConfig);
         return csv.GetRecords<dynamic>().ToList();
+    }
+
+    private Borehole GetBoreholeToAdd()
+    {
+        return new Borehole
+        {
+            CreatedById = 4,
+            UpdatedById = 4,
+            Locked = null,
+            LockedById = null,
+            WorkgroupId = 1,
+            IsPublic = true,
+            TypeId = 20101003,
+            LocationX = 2600000.0,
+            PrecisionLocationX = 5,
+            LocationY = 1200000.0,
+            PrecisionLocationY = 5,
+            LocationXLV03 = 600000.0,
+            PrecisionLocationXLV03 = 5,
+            LocationYLV03 = 200000.0,
+            PrecisionLocationYLV03 = 5,
+            OriginalReferenceSystem = ReferenceSystem.LV95,
+            ElevationZ = 450.5,
+            HrsId = 20106001,
+            TotalDepth = 100.0,
+            RestrictionId = 20111003,
+            RestrictionUntil = DateTime.UtcNow.AddYears(1),
+            NationalInterest = false,
+            OriginalName = "BH-257",
+            Name = "Borehole 257",
+            LocationPrecisionId = 20113002,
+            ElevationPrecisionId = null,
+            ProjectName = "Project Alpha",
+            Country = "CH",
+            Canton = "ZH",
+            Municipality = "Zurich",
+            PurposeId = 22103002,
+            StatusId = 22104001,
+            DepthPrecisionId = 22108005,
+            TopBedrockFreshMd = 10.5,
+            TopBedrockWeatheredMd = 8.0,
+            HasGroundwater = true,
+            Geometry = null,
+            Remarks = "Test borehole for project",
+            LithologyTopBedrockId = 15104934,
+            LithostratigraphyTopBedrockId = 15300259,
+            ChronostratigraphyTopBedrockId = 15001141,
+            ReferenceElevation = 500.0,
+            ReferenceElevationPrecisionId = 20114002,
+            ReferenceElevationTypeId = 20117003,
+        };
     }
 }

@@ -96,7 +96,6 @@ public class ImportControllerTest
         var boreholeJsonFile = GetFormFileByExistingFile("json_import_valid.json");
 
         ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
-
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(2, okResult.Value);
@@ -398,13 +397,15 @@ public class ImportControllerTest
         Assert.AreEqual(22109020, sectionElement.DrillingMudSubtypeId, nameof(sectionElement.DrillingMudSubtypeId));
 
         // Assert borehole's observations
-        Assert.AreEqual(2, borehole.Observations.Count, nameof(borehole.Observations.Count));
+        Assert.AreEqual(6, borehole.Observations.Count, nameof(borehole.Observations.Count));
+
+        // Assert observation ObservationType.None (0)
         var observation = borehole.Observations.First(x => x.FromDepthM == 1900.0);
         Assert.IsNotNull(observation.Created, nameof(observation.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(observation.CreatedById, nameof(observation.CreatedById).ShouldNotBeNullMessage());
         Assert.IsNotNull(observation.Updated, nameof(observation.Updated).ShouldNotBeNullMessage());
         Assert.IsNotNull(observation.UpdatedById, nameof(observation.UpdatedById).ShouldNotBeNullMessage());
-        Assert.AreEqual((ObservationType)2, observation.Type, nameof(observation.Type));
+        Assert.AreEqual((ObservationType)0, observation.Type, nameof(observation.Type));
         Assert.AreEqual(DateTime.Parse("2021-10-05T17:41:48.389173Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), observation.StartTime, nameof(observation.StartTime));
         Assert.AreEqual(DateTime.Parse("2021-09-21T20:42:21.785577Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), observation.EndTime, nameof(observation.EndTime));
         Assert.AreEqual(1380.508568643829, observation.Duration, nameof(observation.Duration));
@@ -418,6 +419,34 @@ public class ImportControllerTest
         Assert.AreEqual(15203156, observation.ReliabilityId, nameof(observation.ReliabilityId));
         Assert.IsNull(observation.Reliability, nameof(observation.Reliability).ShouldBeNullMessage());
         Assert.IsNotNull(observation.Borehole, nameof(observation.Borehole).ShouldNotBeNullMessage());
+
+        // Assert observation ObservationType.Wateringress (1)
+        var waterIngress = (WaterIngress)borehole.Observations.First(x => x.Type == ObservationType.WaterIngress);
+        Assert.IsNotNull(waterIngress.ConditionsId, nameof(waterIngress.ConditionsId).ShouldNotBeNullMessage());
+        Assert.AreNotEqual(0, waterIngress.ConditionsId, nameof(waterIngress.ConditionsId));
+        Assert.IsNotNull(waterIngress.QuantityId, nameof(waterIngress.QuantityId).ShouldNotBeNullMessage());
+        Assert.AreNotEqual(0, waterIngress.QuantityId, nameof(waterIngress.QuantityId));
+
+        // Assert observation ObservationType.GroundwaterLevelMeasurement (2)
+        var groundwaterLevelMeasurement = (GroundwaterLevelMeasurement)borehole.Observations.First(x => x.Type == ObservationType.GroundwaterLevelMeasurement);
+        Assert.IsNotNull(groundwaterLevelMeasurement.KindId, nameof(groundwaterLevelMeasurement.KindId).ShouldNotBeNullMessage());
+        Assert.AreNotEqual(0, groundwaterLevelMeasurement.KindId, nameof(groundwaterLevelMeasurement.KindId));
+
+        // Assert observation ObservationType.Hydrotest (3)
+        var hydrotest = (Hydrotest)borehole.Observations.First(x => x.Type == ObservationType.Hydrotest);
+        Assert.IsNotNull(hydrotest.KindCodelistIds, nameof(hydrotest.KindCodelistIds).ShouldNotBeNullMessage());
+        Assert.AreNotEqual(0, hydrotest.KindCodelistIds.Count, nameof(hydrotest.KindCodelistIds));
+        Assert.IsNotNull(hydrotest.FlowDirectionCodelistIds, nameof(hydrotest.FlowDirectionCodelistIds).ShouldNotBeNullMessage());
+        Assert.AreNotEqual(0, hydrotest.FlowDirectionCodelistIds.Count, nameof(hydrotest.FlowDirectionCodelistIds));
+        Assert.IsNotNull(hydrotest.EvaluationMethodCodelistIds, nameof(hydrotest.EvaluationMethodCodelistIds).ShouldNotBeNullMessage());
+        Assert.AreNotEqual(0, hydrotest.EvaluationMethodCodelistIds.Count, nameof(hydrotest.EvaluationMethodCodelistIds));
+        Assert.IsNotNull(hydrotest.HydrotestResults, nameof(hydrotest.HydrotestResults).ShouldNotBeNullMessage());
+        Assert.AreNotEqual(0, hydrotest.HydrotestResults.Count, nameof(hydrotest.HydrotestResults));
+
+        // Assert observation ObservationType.FieldMeasurement (4)
+        var fieldMeasurement = (FieldMeasurement)borehole.Observations.First(x => x.Type == ObservationType.FieldMeasurement);
+        Assert.IsNotNull(fieldMeasurement.FieldMeasurementResults, nameof(fieldMeasurement.FieldMeasurementResults).ShouldNotBeNullMessage());
+        Assert.AreNotEqual(0, fieldMeasurement.FieldMeasurementResults.Count, nameof(fieldMeasurement.FieldMeasurementResults));
 
         // Assert borehole's workflows
         Assert.AreEqual(1, borehole.Workflows.Count, nameof(borehole.Workflows.Count));
