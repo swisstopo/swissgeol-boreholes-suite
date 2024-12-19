@@ -65,7 +65,6 @@ public class ExportController : ControllerBase
         var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         var features = boreholes.Select(borehole =>
         {
-
             var feature = new
             {
                 type = "Feature",
