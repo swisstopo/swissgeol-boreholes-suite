@@ -95,7 +95,7 @@ const ImportModalContent = ({
         <FileDropzone
           onHandleFileChange={handleJsonFileChange}
           defaultText={"dropZoneBoreholeJsonText"}
-          acceptedFileTypes={["text/csv", "application/json"]}
+          acceptedFileTypes={["application/json"]}
           maxFilesToSelectAtOnce={1}
           maxFilesToUpload={1}
           isDisabled={false}
