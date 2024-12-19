@@ -3,6 +3,7 @@ import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/
 import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -102,14 +103,18 @@ describe("Test for the borehole form.", () => {
       setInput("remarks", "This is a test remark");
 
       // navigate away is blocked before saving
-      cy.get('[data-cy="location-menu-item"]').click();
+      getElementByDataCy("location-menu-item").click();
 
       const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
       handlePrompt(messageUnsavedChanges, "cancel");
 
       saveWithSaveBar();
-      cy.get('[data-cy="location-menu-item"]').click();
+      getElementByDataCy("location-menu-item").click();
       cy.contains("Boreholes.swissgeol.ch ID");
+
+      getElementByDataCy("borehole-menu-item");
+      evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh");
+      evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic");
     });
   });
 
