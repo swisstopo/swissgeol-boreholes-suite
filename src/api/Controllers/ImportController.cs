@@ -25,13 +25,6 @@ public class ImportController : ControllerBase
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
-    private readonly CsvConfiguration csvConfig = new(new CultureInfo("de-CH"))
-    {
-        Delimiter = ";",
-        IgnoreReferences = true,
-        PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
-        MissingFieldFound = null,
-    };
 
     private static readonly JsonSerializerOptions jsonImportOptions = new() { PropertyNameCaseInsensitive = true };
 
@@ -347,10 +340,10 @@ public class ImportController : ControllerBase
         return Math.Abs(firstValue.Value - secondValue.Value) <= tolerance;
     }
 
-    private List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
+    private static List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
     {
         using var reader = new StreamReader(file.OpenReadStream());
-        using var csv = new CsvReader(reader, csvConfig);
+        using var csv = new CsvReader(reader, CsvConfigHelper.CsvReadConfig);
 
         csv.Context.RegisterClassMap(new CsvImportBoreholeMap());
 
@@ -388,17 +381,9 @@ public class ImportController : ControllerBase
 
     private sealed class CsvImportBoreholeMap : ClassMap<BoreholeImport>
     {
-        private readonly CultureInfo swissCulture = new("de-CH");
-
         public CsvImportBoreholeMap()
         {
-            var config = new CsvConfiguration(swissCulture)
-            {
-                IgnoreReferences = true,
-                PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
-            };
-
-            AutoMap(config);
+            AutoMap(CsvConfigHelper.CsvReadConfig);
 
             // Define all optional properties of Borehole (ef navigation properties do not need to be defined as optional).
             Map(m => m.CreatedById).Optional();
@@ -445,6 +430,9 @@ public class ImportController : ControllerBase
             Map(b => b.Canton).Ignore();
             Map(b => b.Country).Ignore();
             Map(m => m.Id).Ignore();
+            Map(m => m.TotalDepthTvd).Ignore();
+            Map(m => m.TopBedrockFreshTvd).Ignore();
+            Map(m => m.TopBedrockWeatheredTvd).Ignore();
 
             // Define additional mapping logic
             Map(m => m.BoreholeCodelists).Convert(args =>
