@@ -196,4 +196,44 @@ describe("Tests for editing coordinates of a borehole.", () => {
     checkDecimalPlaces("@LV03X-input", 5);
     checkDecimalPlaces("@LV03Y-input", 5);
   });
+
+  it("updates canton and municipality when changing coordinates", () => {
+    // Type coordinates for Samaden in LV95
+    cy.get("@LV95X-input").type("2789000");
+    cy.get("@LV95Y-input").type("1155000");
+    cy.wait("@location");
+    cy.wait(4000);
+
+    cy.get("@country").should("have.value", "Schweiz");
+    cy.get("@canton").should("have.value", "Graubünden");
+    cy.get("@municipality").should("have.value", "Samaden");
+
+    // Type coordinates for Unterentfelden in LV95
+    cy.get("@LV95X-input").clear().type("2646000");
+    cy.get("@LV95Y-input").clear().type("1247000");
+
+    cy.get("@country").should("have.value", "Schweiz");
+    cy.get("@canton").should("have.value", "Aargau");
+    cy.get("@municipality").should("have.value", "Unterentfelden");
+
+    // switch reference system to LV03
+    setSelect("originalReferenceSystem", 1);
+    handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "Confirm");
+
+    // Type coordinates for Samaden in LV03
+    cy.get("@LV03X-input").clear().type("789000");
+    cy.get("@LV03Y-input").clear().type("155000");
+
+    cy.get("@country").should("have.value", "Schweiz");
+    cy.get("@canton").should("have.value", "Graubünden");
+    cy.get("@municipality").should("have.value", "Samaden");
+
+    // Type coordinates for Unterentfelden in LV03
+    cy.get("@LV03X-input").clear().type("646000");
+    cy.get("@LV03Y-input").clear().type("247000");
+
+    cy.get("@country").should("have.value", "Schweiz");
+    cy.get("@canton").should("have.value", "Aargau");
+    cy.get("@municipality").should("have.value", "Unterentfelden");
+  });
 });
