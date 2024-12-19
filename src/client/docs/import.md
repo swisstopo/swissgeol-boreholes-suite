@@ -40,16 +40,16 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 
 | Feldname                      | Datentyp       | Pflichtfeld | Beschreibung                                                                          |
 | ---------------------------   | -------------- | ----------- | ------------------------------------------------------------------------------------- |
-| IdGeodinShortname             | Zahl           | Nein        | ID GeODin-Shortname                                                                   |
-| IdInfoGeol                    | Zahl           | Nein        | ID InfoGeol                                                                           |
-| IdOriginal                    | Zahl           | Nein        | ID Original                                                                           |
-| IdCanton                      | Zahl           | Nein        | ID Kanton                                                                             |
-| IdGeoQuat                     | Zahl           | Nein        | ID GeoQuat                                                                            |
-| IdGeoMol                      | Zahl           | Nein        | ID GeoMol                                                                             |
-| IdGeoTherm                    | Zahl           | Nein        | ID GeoTherm                                                                           |
-| IdTopFels                     | Zahl           | Nein        | ID TopFels                                                                            |
-| IdGeodin                      | Zahl           | Nein        | ID GeODin                                                                             |
-| IdKernlager                   | Zahl           | Nein        | ID Kernlager                                                                          |
+| IDGeODin-Shortname            | Zahl           | Nein        | ID GeODin-Shortname                                                                   |
+| IDInfoGeol                    | Zahl           | Nein        | ID InfoGeol                                                                           |
+| IDOriginal                    | Zahl           | Nein        | ID Original                                                                           |
+| IDCanton                      | Zahl           | Nein        | ID Kanton                                                                             |
+| IDGeoQuat                     | Zahl           | Nein        | ID GeoQuat                                                                            |
+| IDGeoMol                      | Zahl           | Nein        | ID GeoMol                                                                             |
+| IDGeoTherm                    | Zahl           | Nein        | ID GeoTherm                                                                           |
+| IDTopFels                     | Zahl           | Nein        | ID TopFels                                                                            |
+| IDGeODin                      | Zahl           | Nein        | ID GeODin                                                                             |
+| IDKernlager                   | Zahl           | Nein        | ID Kernlager                                                                          |
 | OriginalName                  | Text           | Ja          | Originalname                                                                          |
 | ProjectName                   | Text           | Nein        | Projektname                                                                           |
 | Name                          | Text           | Nein        | Name                                                                                  |
