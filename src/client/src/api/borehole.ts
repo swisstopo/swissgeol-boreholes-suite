@@ -69,7 +69,7 @@ export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/
 
 export const exportJsonBoreholes = async (ids: number[] | GridRowSelectionModel) => {
   const idsQuery = ids.map(id => `ids=${id}`).join("&");
-  return await fetchApiV2(`borehole/json?${idsQuery}`, "GET");
+  return await fetchApiV2(`export/json?${idsQuery}`, "GET");
 };
 
 export const updateBorehole = async (borehole: BoreholeV2) => {
@@ -77,8 +77,12 @@ export const updateBorehole = async (borehole: BoreholeV2) => {
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-export const importBoreholes = async (workgroupId: string, combinedFormData: any) => {
+export const importBoreholesCsv = async (workgroupId: string, combinedFormData: any) => {
   return await upload(`import?workgroupId=${workgroupId}`, "POST", combinedFormData);
+};
+
+export const importBoreholesJson = async (workgroupId: string, combinedFormData: any) => {
+  return await upload(`import/json?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
 export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: string | null) => {
