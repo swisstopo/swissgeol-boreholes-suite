@@ -36,8 +36,7 @@ public class ExportController : ControllerBase
         if (idList.Count < 1) return BadRequest("The list of IDs must not be empty.");
 
         var boreholes = await context.Boreholes
-            .Include(b => b.BoreholeCodelists)
-            .ThenInclude(bc => bc.Codelist)
+            .Include(b => b.BoreholeCodelists).ThenInclude(bc => bc.Codelist)
             .Where(borehole => idList.Contains(borehole.Id))
             .OrderBy(b => idList.IndexOf(b.Id))
             .ToListAsync()
@@ -85,7 +84,7 @@ public class ExportController : ControllerBase
 
         // Write dynamic headers for each distinct custom Id
         var customIdHeaders = boreholes
-            .SelectMany(b => b.BoreholeCodelists ?? Enumerable.Empty<BoreholeCodelist>())
+            .SelectMany(b => GetBoreholeCodelists(b))
             .Select(bc => new { bc.CodelistId, bc.Codelist?.En })
             .Distinct()
             .OrderBy(x => x.CodelistId)
@@ -149,7 +148,7 @@ public class ExportController : ControllerBase
             // Write dynamic fields for custom Ids
             foreach (var header in customIdHeaders)
             {
-                var codelistValue = (b.BoreholeCodelists ?? Enumerable.Empty<BoreholeCodelist>()).FirstOrDefault(bc => bc.CodelistId == header.CodelistId)?.Value;
+                var codelistValue = GetBoreholeCodelists(b).FirstOrDefault(bc => bc.CodelistId == header.CodelistId)?.Value;
                 csvWriter.WriteField(codelistValue ?? "");
             }
 
@@ -159,5 +158,10 @@ public class ExportController : ControllerBase
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
         return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", "boreholes_export.csv");
+    }
+
+    private static IEnumerable<BoreholeCodelist> GetBoreholeCodelists(Borehole borehole)
+    {
+        return borehole.BoreholeCodelists ?? Enumerable.Empty<BoreholeCodelist>();
     }
 }
