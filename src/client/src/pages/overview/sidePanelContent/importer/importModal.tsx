@@ -16,8 +16,6 @@ const ImportModal = ({
   setErrorsResponse,
   setValidationErrorModal,
   selectedFile,
-  selectedBoreholeAttachments,
-  setSelectedBoreholeAttachments,
   setSelectedFile,
   modal,
   creating,
@@ -35,12 +33,6 @@ const ImportModal = ({
       selectedFile.forEach((boreholeFile: string | Blob) => {
         combinedFormData.append("boreholesFile", boreholeFile);
       });
-
-      if (selectedBoreholeAttachments !== null) {
-        selectedBoreholeAttachments.forEach((attachment: string | Blob) => {
-          combinedFormData.append("attachments", attachment);
-        });
-      }
     }
     importBoreholes(workgroup, combinedFormData).then(response => {
       setCreating(false);
@@ -97,11 +89,7 @@ const ImportModal = ({
         </Header>
       </Segment>
       <Modal.Content>
-        <ImportModalContent
-          setSelectedBoreholeAttachments={setSelectedBoreholeAttachments}
-          setSelectedFile={setSelectedFile}
-          selectedFile={selectedFile}
-        />
+        <ImportModalContent setSelectedFile={setSelectedFile} />
         <h3>{capitalizeFirstLetter(t("workgroup"))}</h3>
         <WorkgroupSelect workgroupId={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroupId={setWorkgroup} />
       </Modal.Content>
