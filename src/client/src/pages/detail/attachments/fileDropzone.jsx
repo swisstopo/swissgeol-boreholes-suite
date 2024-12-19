@@ -88,12 +88,14 @@ export const FileDropzone = props => {
         setDropZoneTextColor(defaultDropzoneTextColor);
         setDropZoneText(t(defaultText));
         setFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
-        // set filetype depending on acceptedFileTypes. if contains csv
-        if (acceptedFileTypes.includes("text/csv")) {
-          setFileType("csv");
-        }
-        if (acceptedFileTypes.includes("application/json")) {
-          setFileType("json");
+
+        if (setFileType) {
+          if (acceptedFileTypes.includes("text/csv")) {
+            setFileType("csv");
+          }
+          if (acceptedFileTypes.includes("application/json")) {
+            setFileType("json");
+          }
         }
       }
     },
@@ -112,7 +114,9 @@ export const FileDropzone = props => {
   // Is called when an accepted file is removed.
   const removeFile = fileToRemove => {
     setFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
-    setFileType(null);
+    if (setFileType) {
+      setFileType(null);
+    }
   };
 
   // Is called when the selected/dropped files are rejected
