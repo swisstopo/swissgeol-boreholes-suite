@@ -22,6 +22,7 @@ class SettingHandler(Viewer):
 
                 exe = None
                 request['user_id'] = self.user['id']
+                request['username'] = self.user['username']
 
                 if action == 'GET':
                     return {

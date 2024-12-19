@@ -9,7 +9,7 @@ import json
 
 class PatchSetting(Action):
 
-    async def execute(self, user_id, tree, value, key=None):
+    async def execute(self, user_id, username, tree, value, key=None):
 
         # Check if tree parameter is a List
         if isinstance(tree, list):
@@ -17,7 +17,7 @@ class PatchSetting(Action):
 
             # for each element in the list call the execute method
             for element in tree:
-                result = await self.execute(user_id, element, value, key)
+                result = await self.execute(user_id, username, element, value, key)
 
             return result
 
@@ -144,12 +144,13 @@ class PatchSetting(Action):
 
                         tmp = tmp[pathList[idx]]
 
-                await self.conn.execute("""
-                    UPDATE bdms.users
-                    SET
-                        settings_usr = $1
-                    WHERE id_usr = $2
-                """, json.dumps(setting), user_id)
+                if username is not 'Anonymous':
+                    await self.conn.execute("""
+                        UPDATE bdms.users
+                        SET
+                            settings_usr = $1
+                        WHERE id_usr = $2
+                    """, json.dumps(setting), user_id)
 
                 return {
                     "data": setting
