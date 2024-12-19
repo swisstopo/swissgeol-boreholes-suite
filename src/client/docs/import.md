@@ -56,8 +56,8 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | RestrictionId                 | ID (Codeliste) | Nein        | Beschränkung                                                                          |
 | RestrictionUntil              | Datum          | Nein        | Ablaufdatum der Beschränkung                                                          |
 | NationalInterest              | True/False     | Nein        | Nationales Interesse                                                                  |
-| LocationX                     | Dezimalzahl    | Ja          | Koordinate Ost LV95                                                                   |
-| LocationY                     | Dezimalzahl    | Ja          | Koordinate Nord LV95                                                                  |
+| LocationX                     | Dezimalzahl    | Ja          | Koordinate Ost in LV95 oder LV03                                                      |
+| LocationY                     | Dezimalzahl    | Ja          | Koordinate Nord in LV95 oder LV03                                                     |
 | LocationPrecisionId           | ID (Codeliste) | Nein        | +/- Koordinaten [m]                                                                   |
 | ElevationZ                    | Dezimalzahl    | Nein        | Terrainhöhe [m ü.M.]                                                                  |
 | ElevationPrecisionId          | ID (Codeliste) | Nein        | +/- Terrainhöhe [m]                                                                   |
@@ -77,6 +77,10 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | LithologyTopBedrockId         | ID (Codeliste) | Nein        | Lithologie Top Fels                                                                   |
 | ChronostratigraphyTopBedrockId| ID (Codeliste) | Nein        | Chronostratigraphie Top Fels                                                          |
 | LithostratigraphyTopBedrockId | ID (Codeliste) | Nein        | Lithostratigraphie Top Fels                                                           |
+
+### Koordinaten
+
+Koordinaten können in LV95 oder LV03 importiert werden, das räumliche Bezugssystem wird aus den Koordinaten erkannt und abgespeichert.
 
 ## Validierung
 
