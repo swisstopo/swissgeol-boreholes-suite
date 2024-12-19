@@ -1,7 +1,7 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Header, Icon, Modal, Segment } from "semantic-ui-react";
-import { importBoreholes } from "../../../../api/borehole.ts";
+import { importBoreholesCsv, importBoreholesJson } from "../../../../api/borehole.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { capitalizeFirstLetter } from "../../../../utils.ts";
@@ -26,42 +26,74 @@ const ImportModal = ({
 }: ImportModalProps) => {
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
+  const [fileType, setFileType] = useState<string | null>(null); // Track file type
 
   const handleBoreholeImport = () => {
     const combinedFormData = new FormData();
     if (selectedFile !== null) {
-      selectedFile.forEach((boreholeFile: string | Blob) => {
-        combinedFormData.append("boreholesFile", boreholeFile);
+      selectedFile.forEach((file: string | Blob) => {
+        combinedFormData.append("boreholesFile", file);
       });
     }
-    importBoreholes(workgroup, combinedFormData).then(response => {
-      setCreating(false);
-      setModal(false);
-      setUpload(false);
-      (async () => {
-        if (response.ok) {
-          showAlert(`${await response.text()} ${t("boreholesImported")}.`, "success");
-          refresh();
-        } else {
-          const responseBody = await response.json();
-          if (response.status === 400) {
-            if (responseBody.errors) {
-              // If response is of type ValidationProblemDetails, open validation error modal.
-              setErrorsResponse(responseBody);
-              setValidationErrorModal(true);
-              refresh();
-            } else {
-              // If response is of type ProblemDetails, show error message.
-              showAlert(responseBody.detail, "error");
-            }
-          } else if (response.status === 504) {
-            showAlert(t("boreholesImportLongRunning"), "error");
+    if (fileType == "csv") {
+      importBoreholesCsv(workgroup, combinedFormData).then(response => {
+        setCreating(false);
+        setModal(false);
+        setUpload(false);
+        (async () => {
+          if (response.ok) {
+            showAlert(`${await response.text()} ${t("boreholesImported")}.`, "success");
+            refresh();
           } else {
-            showAlert(t("boreholesImportError"), "error");
+            const responseBody = await response.json();
+            if (response.status === 400) {
+              if (responseBody.errors) {
+                // If response is of type ValidationProblemDetails, open validation error modal.
+                setErrorsResponse(responseBody);
+                setValidationErrorModal(true);
+                refresh();
+              } else {
+                // If response is of type ProblemDetails, show error message.
+                showAlert(responseBody.detail, "error");
+              }
+            } else if (response.status === 504) {
+              showAlert(t("boreholesImportLongRunning"), "error");
+            } else {
+              showAlert(t("boreholesImportError"), "error");
+            }
           }
-        }
-      })();
-    });
+        })();
+      });
+    } else {
+      importBoreholesJson(workgroup, combinedFormData).then(response => {
+        setCreating(false);
+        setModal(false);
+        setUpload(false);
+        (async () => {
+          if (response.ok) {
+            showAlert(`${await response.text()} ${t("boreholesImported")}.`, "success");
+            refresh();
+          } else {
+            const responseBody = await response.json();
+            if (response.status === 400) {
+              if (responseBody.errors) {
+                // If response is of type ValidationProblemDetails, open validation error modal.
+                setErrorsResponse(responseBody);
+                setValidationErrorModal(true);
+                refresh();
+              } else {
+                // If response is of type ProblemDetails, show error message.
+                showAlert(responseBody.detail, "error");
+              }
+            } else if (response.status === 504) {
+              showAlert(t("boreholesImportLongRunning"), "error");
+            } else {
+              showAlert(t("boreholesImportError"), "error");
+            }
+          }
+        })();
+      });
+    }
   };
 
   const handleFormSubmit = async () => {
@@ -89,7 +121,7 @@ const ImportModal = ({
         </Header>
       </Segment>
       <Modal.Content>
-        <ImportModalContent setSelectedFile={setSelectedFile} />
+        <ImportModalContent setSelectedFile={setSelectedFile} setFileType={setFileType} />
         <h3>{capitalizeFirstLetter(t("workgroup"))}</h3>
         <WorkgroupSelect workgroupId={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroupId={setWorkgroup} />
       </Modal.Content>

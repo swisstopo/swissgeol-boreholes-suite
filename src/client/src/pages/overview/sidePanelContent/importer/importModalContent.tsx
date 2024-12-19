@@ -23,14 +23,26 @@ const ExampleHeadings = (headings: string) => {
   );
 };
 
-const ImportModalContent = ({ setSelectedFile }: ImportContentProps) => {
+const ImportModalContent = ({
+  setSelectedFile,
+  setFileType,
+}: ImportContentProps & { setFileType: (type: string) => void }) => {
   const { t } = useTranslation();
 
   const handleBoreholeFileChange = useCallback(
     (boreholeFileFromDropzone: Blob[]) => {
       setSelectedFile(boreholeFileFromDropzone);
+      setFileType("csv");
     },
-    [setSelectedFile],
+    [setSelectedFile, setFileType],
+  );
+
+  const handleJsonFileChange = useCallback(
+    (jsonFileFromDropzone: Blob[]) => {
+      setSelectedFile(jsonFileFromDropzone);
+      setFileType("json");
+    },
+    [setSelectedFile, setFileType],
   );
 
   return (
@@ -41,7 +53,15 @@ const ImportModalContent = ({ setSelectedFile }: ImportContentProps) => {
           <Downloadlink style={{ marginLeft: "0.2em" }} caption="Codelist" onDownload={downloadCodelistCsv} />
         </Box>
       </p>
-      <h3>{capitalizeFirstLetter(t("boreholes"))}</h3>
+      <h3>{capitalizeFirstLetter(t("importBoreholes"))}</h3>
+      <Box
+        style={{
+          borderBottom: "0.2em solid",
+          borderColor: "black",
+          marginTop: "1em",
+        }}
+      />
+      <h3>{capitalizeFirstLetter(t("CSV"))}</h3>
       <Stack direction="row" alignItems="flex-start">
         <StackHalfWidth direction="column">
           {t("csvFormatExplanation")}
@@ -61,12 +81,25 @@ const ImportModalContent = ({ setSelectedFile }: ImportContentProps) => {
         </StackHalfWidth>
         <FileDropzone
           onHandleFileChange={handleBoreholeFileChange}
-          defaultText={"dropZoneBoreholesText"}
-          restrictAcceptedFileTypeToCsv={true}
+          defaultText={"dropZoneBoreholeCsvText"}
+          acceptedFileTypes={["text/csv"]}
           maxFilesToSelectAtOnce={1}
           maxFilesToUpload={1}
           isDisabled={false}
           dataCy={"import-boreholeFile-input"}
+        />
+      </Stack>
+      <h3>{capitalizeFirstLetter(t("JSON"))}</h3>
+      <Stack direction="row" alignItems="flex-start">
+        <StackHalfWidth direction="column"></StackHalfWidth>
+        <FileDropzone
+          onHandleFileChange={handleJsonFileChange}
+          defaultText={"dropZoneBoreholeJsonText"}
+          acceptedFileTypes={["text/csv", "application/json"]}
+          maxFilesToSelectAtOnce={1}
+          maxFilesToUpload={1}
+          isDisabled={false}
+          dataCy={"import-jsonFile-input"}
         />
       </Stack>
     </>
