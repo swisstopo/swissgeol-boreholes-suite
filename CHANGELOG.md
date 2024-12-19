@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed 
+- Removed attachments from csv import.
+- Updated recommended csv headers for borehole import to camel case e.g. `OriginalName` (snake case e.g. `original_name` is still supported for all properties except for custom identifiers).
+
 ## v2.1.993 - 2024-12-13
 
 ### Added
@@ -29,8 +33,6 @@
 - When copying a borehole, attachments won't be copied.
 - Removed csv lithology import.
 - Removed import id from csv import.
-- Removed attachments from csv import.
-- Updated recommended csv headers for borehole import to camel case e.g.`OriginalName` (snake case e.g.`original_name` is still supported for all properties except for custom identifiers).
 
 ### Fixed
 
