@@ -98,7 +98,7 @@ const DescriptionInput = props => {
         variant="outlined"
         size="small"
         label={t("description_quality")}
-        defaultValue={item.descriptionQualityId || ""}
+        defaultValue={item.descriptionQualityId ?? ""}
         data-cy="qt-decription-select"
         InputLabelProps={{ shrink: true }}
         onChange={e => {

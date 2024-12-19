@@ -74,7 +74,7 @@ const IdentifierSegment = ({ borehole, editingEnabled, formMethods }: Identifier
                 fieldName={`boreholeCodelists.${index}.value`}
                 readonly={!editingEnabled}
                 label="borehole_identifier_value"
-                value={field.value || ""}
+                value={field.value}
                 type={FormValueType.Text}
               />
             </Grid>

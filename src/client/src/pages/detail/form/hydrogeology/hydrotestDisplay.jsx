@@ -51,7 +51,7 @@ const HydrotestDisplay = props => {
                   minWidth: "200px",
                 }}
                 data-cy={`hydrotestResult.${index}.parameter-formDisplay`}>
-                {domains?.data?.find(d => d.id === result.parameterId)?.[i18n.language] || ""}
+                {domains?.data?.find(d => d.id === result.parameterId)?.[i18n.language] ?? ""}
               </TableCell>
               <TableCell sx={styles} data-cy={`hydrotestResult.${index}.value-formDisplay`}>
                 {result?.value && (

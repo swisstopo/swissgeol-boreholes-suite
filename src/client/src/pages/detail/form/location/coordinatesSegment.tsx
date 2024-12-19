@@ -44,8 +44,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   // --- Utility functions ---
   const updateFormValues = useCallback(
     (refSystem: string, locationX: number | null, locationY: number | null, precisionX: number, precisionY: number) => {
-      const locationXString = (locationX && locationX?.toFixed(precisionX)) || "";
-      const locationYString = (locationY && locationY?.toFixed(precisionY)) || "";
+      const locationXString = (locationX && locationX?.toFixed(precisionX)) ?? "";
+      const locationYString = (locationY && locationY?.toFixed(precisionY)) ?? "";
       setValuesForReferenceSystem(refSystem, locationXString, locationYString);
     },
     [setValuesForReferenceSystem],

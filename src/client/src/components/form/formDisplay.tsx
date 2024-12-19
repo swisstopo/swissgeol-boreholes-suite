@@ -67,7 +67,7 @@ export const FormDisplay: FC<FormDisplayProps> = ({ prefix, label, value, type, 
         ...sx,
       }}>
       <Typography variant="subtitle2">{t(label)}</Typography>
-      <Typography marginBottom={"1em"} variant="subtitle1" data-cy={(prefix || "") + label + "-formDisplay"}>
+      <Typography marginBottom={"1em"} variant="subtitle1" data-cy={(prefix ?? "") + label + "-formDisplay"}>
         {formatValue(value)}
       </Typography>
     </Stack>

@@ -27,7 +27,7 @@ const FieldMeasurementDisplay = props => {
         renderBody={(result, index, styles) => (
           <>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.sampleType-formDisplay`}>
-              {domains?.data?.find(d => d.id === result.sampleTypeId)?.[i18n.language] || ""}
+              {domains?.data?.find(d => d.id === result.sampleTypeId)?.[i18n.language] ?? ""}
             </TableCell>
             <TableCell
               component="th"
@@ -44,7 +44,7 @@ const FieldMeasurementDisplay = props => {
                 minWidth: "200px",
               }}
               data-cy={`fieldMeasurementResult.${index}.parameter-formDisplay`}>
-              {domains?.data?.find(d => d.id === result.parameterId)?.[i18n.language] || ""}
+              {domains?.data?.find(d => d.id === result.parameterId)?.[i18n.language] ?? ""}
             </TableCell>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.value-formDisplay`}>
               {result?.value && (
