@@ -144,7 +144,7 @@ class PatchSetting(Action):
 
                         tmp = tmp[pathList[idx]]
 
-                if username is not 'Anonymous':
+                if username != 'Anonymous':
                     await self.conn.execute("""
                         UPDATE bdms.users
                         SET
