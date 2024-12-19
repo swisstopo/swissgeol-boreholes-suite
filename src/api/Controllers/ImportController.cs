@@ -117,13 +117,12 @@ public class ImportController : ControllerBase
     /// </summary>
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
     /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole csv records that were uploaded.</param>
-    /// <param name="attachments">The list of <see cref="IFormFile"/> containing the borehole attachments referred in <paramref name="boreholesFile"/>.</param>
     /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IList<IFormFile>? attachments = null)
+    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile)
     {
         // Increase max allowed errors to be able to return more validation errors at once.
         ModelState.MaxAllowedErrors = 1000;
@@ -137,14 +136,8 @@ public class ImportController : ControllerBase
             // Checks if the provided boreholes file is a CSV file.
             if (!FileTypeChecker.IsCsv(boreholesFile)) return BadRequest("Invalid file type for borehole csv.");
 
-            // Checks if any of the provided attachments has a whitespace in its file name.
-            if (attachments?.Any(a => a.FileName.Any(char.IsWhiteSpace)) == true) return BadRequest("One or more file name(s) contain a whitespace.");
-
-            // Checks if any of the provided attachments exceeds the maximum file size.
-            if (attachments?.Any(a => a.Length > MaxFileSize) == true) return BadRequest($"One or more attachment exceed maximum file size of {MaxFileSize / 1024 / 1024} Mb.");
-
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
-            ValidateBoreholeImports(workgroupId, boreholeImports, false, attachments);
+            ValidateBoreholeImports(workgroupId, boreholeImports, false);
 
             // If any validation error occured, return a bad request.
             if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
@@ -216,21 +209,6 @@ public class ImportController : ControllerBase
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
             var result = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
 
-            // Add attachments to borehole.
-            if (attachments != null)
-            {
-                var boreholeImportsWithAttachments = boreholeImports.Where(x => x.Attachments?.Length > 0).ToList();
-                foreach (var boreholeImport in boreholeImportsWithAttachments)
-                {
-                    var attachmentFileNames = boreholeImport.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList();
-                    var attachmentFiles = attachments.Where(x => attachmentFileNames != null && attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
-                    foreach (var attachmentFile in attachmentFiles)
-                    {
-                        await boreholeFileCloudService.UploadFileAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
-                    }
-                }
-            }
-
             await transaction.CommitAsync().ConfigureAwait(false);
             return result;
         }
@@ -259,20 +237,19 @@ public class ImportController : ControllerBase
         return 0;
     }
 
-    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, bool isJsonFile, IList<IFormFile>? attachments = null)
+    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, bool isJsonFile)
     {
         foreach (var borehole in boreholesFromFile.Select((value, index) => (value, index)))
         {
-            ValidateBorehole(borehole.value, boreholesFromFile, workgroupId, borehole.index, isJsonFile, attachments);
+            ValidateBorehole(borehole.value, boreholesFromFile, workgroupId, borehole.index, isJsonFile);
         }
     }
 
-    private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int boreholeIndex, bool isJsonFile, IList<IFormFile>? attachments)
+    private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int boreholeIndex, bool isJsonFile)
     {
         ValidateRequiredFields(borehole, boreholeIndex, isJsonFile);
         ValidateDuplicateInFile(borehole, boreholesFromFile, boreholeIndex, isJsonFile);
         ValidateDuplicateInDb(borehole, workgroupId, boreholeIndex, isJsonFile);
-        ValidateAttachments(borehole, attachments, boreholeIndex, isJsonFile);
     }
 
     private void ValidateRequiredFields(BoreholeImport borehole, int processingIndex, bool isJsonFile)
@@ -309,26 +286,6 @@ public class ImportController : ControllerBase
             (CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, borehole.LocationY, 2))))
         {
             AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", isJsonFile);
-        }
-    }
-
-    private void ValidateAttachments(BoreholeImport borehole, IList<IFormFile>? attachments, int processingIndex, bool isJsonFile)
-    {
-        if (attachments == null || string.IsNullOrEmpty(borehole.Attachments)) return;
-
-        var boreholeFileNames = borehole.Attachments
-            .Split(",")
-            .Select(s => s.Trim())
-            .Where(s => !string.IsNullOrEmpty(s))
-            .ToList();
-
-        foreach (var boreholeFileName in boreholeFileNames)
-        {
-            // Check if the name of any attached file matches the name of the borehole file
-            if (!attachments.Any(a => a.FileName.Equals(boreholeFileName, StringComparison.OrdinalIgnoreCase)))
-            {
-                AddValidationErrorToModelState(processingIndex, $"Attachment file '{boreholeFileName}' not found.", isJsonFile);
-            }
         }
     }
 
