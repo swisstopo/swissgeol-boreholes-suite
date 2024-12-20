@@ -10,6 +10,7 @@
 ### Fixed
 
 - Observations were not included in exported borehole JSON file.
+- Fixed bug where values of 0 were not displayed in numeric input fields.
 
 ## v2.1.993 - 2024-12-13
 
