@@ -52,6 +52,10 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
 
   const fetchDepthTVD = useCallback(
     async (fieldValue: number | null) => {
+      // check if fieldValue is effectively zero
+      if (fieldValue !== null && Math.abs(fieldValue) === 0) {
+        return fieldValue;
+      }
       if (!fieldValue) return null;
       const getDepthTVD = async (depthMD: number | null) => {
         if (depthMD == null) {

@@ -3,6 +3,7 @@ import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/
 import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -209,6 +210,34 @@ describe("Test for the borehole form.", () => {
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
       expect(location.hash).to.eq("#geometry");
+    });
+  });
+
+  it("displays 0 in input fields", () => {
+    // create borehole with 0 in all numeric inputs
+    createBorehole({
+      "extended.original_name": "AAA_RINO",
+      "custom.alternate_name": "AAA_RINO",
+      total_depth: 0,
+      "extended.top_bedrock_fresh_md": 0.0,
+      "custom.top_bedrock_weathered_md": 0.0,
+      elevation_z: 0,
+      reference_elevation: 0.0,
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}/location`);
+      evaluateInput("elevationZ", "0");
+      evaluateInput("referenceElevation", "0");
+
+      getElementByDataCy("borehole-menu-item").click();
+
+      evaluateInput("totalDepth", "0");
+      evaluateInput("topBedrockWeatheredMd", "0");
+      evaluateInput("topBedrockFreshMd", "0");
+
+      evaluateInput("total_depth_tvd", "0");
+      evaluateInput("top_bedrock_fresh_tvd", "0");
+      evaluateInput("top_bedrock_weathered_tvd", "0");
     });
   });
 
