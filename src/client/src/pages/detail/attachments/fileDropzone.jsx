@@ -16,7 +16,7 @@ import { theme } from "../../../AppTheme.ts";
  * @param {Array<string>} props.acceptedFileTypes - The list of accepted file types.
  * @param {boolean} props.isDisabled - Whether the dropzone is disabled.
  * @param {string} props.dataCy - The data-cy attribute for testing.
- * @param {Function} props.setFileType - A callback function to set the file type.
+ * @param {Function} props.setFileType - A react SetStateAction to set the file type.
  * @returns {JSX.Element} The rendered FileDropzone component.
  */
 export const FileDropzone = props => {
