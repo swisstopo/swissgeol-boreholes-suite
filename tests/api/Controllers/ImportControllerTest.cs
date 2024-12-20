@@ -513,6 +513,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadShouldSaveDataToDatabaseAsync()
     {
+        // Add new borehole identifier to test dynamic ID import.
         context.Codelists.Add(new Codelist { Id = TestCodelistId, Schema = "borehole_identifier", Code = "new code", En = "Random New Id", Conf = null });
         await context.SaveChangesAsync();
 

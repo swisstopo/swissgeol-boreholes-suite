@@ -359,7 +359,6 @@ public class ImportController : ControllerBase
 
         public CsvImportBoreholeMap(List<Codelist> codelists)
         {
-            this.codelists = codelists;
             AutoMap(CsvConfigHelper.CsvReadConfig);
 
             // Define all optional properties of Borehole (ef navigation properties do not need to be defined as optional).
