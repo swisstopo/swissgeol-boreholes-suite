@@ -59,7 +59,7 @@ const ImportModalContent = ({ setSelectedFile, setFileType, fileType }: ImportMo
           marginTop: "1em",
         }}
       />
-      <h3>{capitalizeFirstLetter(t("CSV"))}</h3>
+      <h3>{capitalizeFirstLetter("CSV")}</h3>
       <Stack direction="row" alignItems="flex-start">
         <StackHalfWidth direction="column">
           {t("csvFormatExplanation")}
@@ -88,7 +88,7 @@ const ImportModalContent = ({ setSelectedFile, setFileType, fileType }: ImportMo
           setFileType={setFileType}
         />
       </Stack>
-      <h3>{capitalizeFirstLetter(t("JSON"))}</h3>
+      <h3>{capitalizeFirstLetter("JSON")}</h3>
       <Stack direction="row" alignItems="flex-start">
         <StackHalfWidth direction="column"></StackHalfWidth>
         <FileDropzone
