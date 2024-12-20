@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack } from "@mui/material/";
 import { downloadCodelistCsv } from "../../../../api/fetchApiV2.js";
@@ -6,8 +6,12 @@ import { StackHalfWidth } from "../../../../components/styledComponents.ts";
 import { capitalizeFirstLetter } from "../../../../utils.ts";
 import Downloadlink from "../../../detail/attachments/downloadlink.jsx";
 import { FileDropzone } from "../../../detail/attachments/fileDropzone.jsx";
-import { ImportContentProps } from "../commons/actionsInterfaces.js";
 
+interface ImportModalContentProps {
+  setSelectedFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
+  setFileType: (type: string) => void;
+  fileType: string;
+}
 const ExampleHeadings = (headings: string) => {
   return (
     <Box
@@ -23,12 +27,18 @@ const ExampleHeadings = (headings: string) => {
   );
 };
 
-const ImportModalContent = ({ setSelectedFile }: ImportContentProps) => {
+const ImportModalContent = ({ setSelectedFile, setFileType, fileType }: ImportModalContentProps) => {
   const { t } = useTranslation();
 
-  const handleBoreholeFileChange = useCallback(
-    (boreholeFileFromDropzone: Blob[]) => {
-      setSelectedFile(boreholeFileFromDropzone);
+  const handleCsvFileChange = useCallback(
+    (csvFileFromDropzone: Blob[]) => {
+      setSelectedFile(csvFileFromDropzone);
+    },
+    [setSelectedFile],
+  );
+  const handleJsonFileChange = useCallback(
+    (jsonFileFromDropzone: Blob[]) => {
+      setSelectedFile(jsonFileFromDropzone);
     },
     [setSelectedFile],
   );
@@ -41,7 +51,15 @@ const ImportModalContent = ({ setSelectedFile }: ImportContentProps) => {
           <Downloadlink style={{ marginLeft: "0.2em" }} caption="Codelist" onDownload={downloadCodelistCsv} />
         </Box>
       </p>
-      <h3>{capitalizeFirstLetter(t("boreholes"))}</h3>
+      <h3>{capitalizeFirstLetter(t("importBoreholes"))}</h3>
+      <Box
+        style={{
+          borderBottom: "0.2em solid",
+          borderColor: "black",
+          marginTop: "1em",
+        }}
+      />
+      <h3>{"CSV"}</h3>
       <Stack direction="row" alignItems="flex-start">
         <StackHalfWidth direction="column">
           {t("csvFormatExplanation")}
@@ -60,13 +78,28 @@ const ImportModalContent = ({ setSelectedFile }: ImportContentProps) => {
           )}
         </StackHalfWidth>
         <FileDropzone
-          onHandleFileChange={handleBoreholeFileChange}
-          defaultText={"dropZoneBoreholesText"}
-          restrictAcceptedFileTypeToCsv={true}
+          onHandleFileChange={handleCsvFileChange}
+          defaultText={"dropZoneBoreholeCsvText"}
+          acceptedFileTypes={["text/csv"]}
           maxFilesToSelectAtOnce={1}
           maxFilesToUpload={1}
-          isDisabled={false}
+          isDisabled={fileType === "json"}
           dataCy={"import-boreholeFile-input"}
+          setFileType={setFileType}
+        />
+      </Stack>
+      <h3>{"JSON"}</h3>
+      <Stack direction="row" alignItems="flex-start">
+        <StackHalfWidth direction="column"></StackHalfWidth>
+        <FileDropzone
+          onHandleFileChange={handleJsonFileChange}
+          defaultText={"dropZoneBoreholeJsonText"}
+          acceptedFileTypes={["application/json"]}
+          maxFilesToSelectAtOnce={1}
+          maxFilesToUpload={1}
+          isDisabled={fileType === "csv"}
+          dataCy={"import-jsonFile-input"}
+          setFileType={setFileType}
         />
       </Stack>
     </>
