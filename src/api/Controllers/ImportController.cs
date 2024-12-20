@@ -355,8 +355,6 @@ public class ImportController : ControllerBase
 
     private sealed class CsvImportBoreholeMap : ClassMap<BoreholeImport>
     {
-        private readonly List<Codelist> codelists;
-
         public CsvImportBoreholeMap(List<Codelist> codelists)
         {
             AutoMap(CsvConfigHelper.CsvReadConfig);
