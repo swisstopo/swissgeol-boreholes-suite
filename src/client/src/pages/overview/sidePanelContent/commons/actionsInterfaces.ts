@@ -20,11 +20,7 @@ export interface NewBoreholeProps extends WorkgroupSelectProps {
   toggleDrawer: (open: boolean) => void;
 }
 
-export interface ImportContentProps {
-  setSelectedFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
-}
-
-export interface ImportModalProps extends ImportContentProps {
+export interface ImportModalProps {
   modal: boolean;
   creating: boolean;
   selectedFile: Blob[] | null;

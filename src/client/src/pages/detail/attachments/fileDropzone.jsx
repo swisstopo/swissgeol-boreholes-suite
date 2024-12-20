@@ -13,9 +13,10 @@ import { theme } from "../../../AppTheme.ts";
  * @param {string} props.defaultText - The default text to display in the dropzone.
  * @param {number} props.maxFilesToSelectAtOnce - The maximum number of files that can be selected at once.
  * @param {number} props.maxFilesToUpload - The maximum number of files that can be uploaded.
- * @param {boolean} props.restrictAcceptedFileTypeToCsv - Whether to restrict accepted file types to CSV.
+ * @param {Array<string>} props.acceptedFileTypes - The list of accepted file types.
  * @param {boolean} props.isDisabled - Whether the dropzone is disabled.
  * @param {string} props.dataCy - The data-cy attribute for testing.
+ * @param {Function} props.setFileType - A react SetStateAction to set the file type.
  * @returns {JSX.Element} The rendered FileDropzone component.
  */
 export const FileDropzone = props => {
@@ -24,21 +25,20 @@ export const FileDropzone = props => {
     defaultText,
     maxFilesToSelectAtOnce,
     maxFilesToUpload,
-    restrictAcceptedFileTypeToCsv,
+    acceptedFileTypes,
     isDisabled,
     dataCy,
+    setFileType,
   } = props;
   const { t } = useTranslation();
   const [files, setFiles] = useState([]);
-  const [dropZoneText, setDropZoneText] = useState(null);
+  const [dropZoneText, setDropZoneText] = useState(t(defaultText));
   const [dropZoneTextColor, setDropZoneTextColor] = useState(null);
   const defaultDropzoneTextColor = isDisabled ? "#9f9f9f" : "#2185d0";
-  const initialDropzoneText = isDisabled ? t("dropZoneChooseBoreholeFilesFirst") : t(defaultText);
 
   useEffect(() => {
-    setDropZoneText(initialDropzoneText);
     setDropZoneTextColor(defaultDropzoneTextColor);
-  }, [defaultDropzoneTextColor, initialDropzoneText]);
+  }, [defaultDropzoneTextColor]);
 
   // Set the color of the dropzone text to red and display an error message
   const showErrorMsg = useCallback(
@@ -88,17 +88,38 @@ export const FileDropzone = props => {
         setDropZoneTextColor(defaultDropzoneTextColor);
         setDropZoneText(t(defaultText));
         setFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
+
+        if (setFileType) {
+          if (acceptedFileTypes.includes("text/csv")) {
+            setFileType("csv");
+          }
+          if (acceptedFileTypes.includes("application/json")) {
+            setFileType("json");
+          }
+        }
       }
     },
-    [defaultDropzoneTextColor, defaultText, files.length, maxFilesToUpload, showErrorMsg, t],
+    [
+      defaultDropzoneTextColor,
+      defaultText,
+      files.length,
+      maxFilesToUpload,
+      showErrorMsg,
+      t,
+      acceptedFileTypes,
+      setFileType,
+    ],
   );
 
-  // Is called when a accepted file is removed.
+  // Is called when an accepted file is removed.
   const removeFile = fileToRemove => {
     setFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
+    if (setFileType) {
+      setFileType("");
+    }
   };
 
-  // IS called when the selected/dropped files are rejected
+  // Is called when the selected/dropped files are rejected
   const onDropRejected = useCallback(
     fileRejections => {
       const errorCode = fileRejections[0].errors[0].code;
@@ -113,7 +134,13 @@ export const FileDropzone = props => {
     onDropAccepted,
     maxFiles: maxFilesToSelectAtOnce || Infinity,
     maxSize: 209715200,
-    accept: restrictAcceptedFileTypeToCsv ? { "text/csv": [".csv"] } : "*",
+    accept:
+      acceptedFileTypes.length > 0
+        ? acceptedFileTypes.reduce((acc, type) => {
+            acc[type] = [];
+            return acc;
+          }, {})
+        : "*",
     noClick: isDisabled,
     noKeyboard: isDisabled,
   });

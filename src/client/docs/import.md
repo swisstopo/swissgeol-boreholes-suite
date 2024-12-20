@@ -1,8 +1,8 @@
 # Bohrdaten importieren
 
-Mit der Import-Funktion können geologische Bohrdaten aus einer CSV-Datei importiert werden.
+Mit der Import-Funktion können geologische Bohrdaten via CSV oder JSON Dateien importiert werden.
 
-## Anleitung
+## Anleitung CSV-Import
 
 ### Schritt 1: CSV-Datei vorbereiten
 
@@ -34,7 +34,7 @@ Die CSV-Datei muss den folgenden Anforderungen und dem Format entsprechen, damit
 - Die Werte in den Spalten müssen den erwarteten Datentypen entsprechen (z.B. numerisch für Tiefe, Text für Namen, etc.).
 
 
-## Bohrloch Datei Format
+## Bohrloch Datei CSV Format
 
 Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format vorliegen. Die erste Zeile wird als Spaltentitel/Spaltenname interpretiert, die restlichen Zeilen als Daten.
 
@@ -84,7 +84,7 @@ Koordinaten können in LV95 oder LV03 importiert werden, das räumliche Bezugssy
 
 ## Validierung
 
-### Fehlende Werte
+### CSV-Import: Fehlende Werte
 
 Für jeden bereitgestellten Header CSV-Datei muss für jede Zeile ein entsprechender Wert angegeben werden, oder leer gelassen werden.
 
@@ -94,6 +94,48 @@ Beim Importprozess der Bohrdaten wird eine Duplikatsvalidierung durchgeführt, u
 Duplikate werden nur innerhalb einer Arbeitsgruppe erkannt. Die Duplikaterkennung erfolgt anhand der Koordinaten mit einer Toleranz von +/- 2 Metern und der Gesamttiefe des Bohrlochs.
 
 
-## Generelles
+## Anmerkungen
+
+Es ist wichtig zu beachten, dass der Import beim ersten Fehler abgebrochen wird und keine teilweisen Importe stattfinden. Entweder werden alle Daten importiert, oder es findet kein Import statt. Der Import unterstützt keine Updates von bestehenden Daten.
+
+
+## Anleitung JSON-Import
+
+### Schritt 1: JSON-Datei vorbereiten
+
+Zunächst sollte die JSON-Datei den Anforderungen und dem Format entsprechen, wie im Abschnitt [Format und Anforderungen an die JSON-Datei](#format-und-anforderungen-an-die-json-datei) beschrieben.
+
+### Schritt 2: Navigieren zum Import-Bereich
+
+1. In der Webapplikation anmelden.
+2. Unten links auf die Schaltfläche _Importieren_ klicken.
+
+### Schritt 3: Bohrloch JSON-Datei selektieren
+
+1. Schaltfläche _Datei auswählen_ anklicken und die vorbereitete JSON-Datei auswählen.
+2. Unter _Arbeitsgruppe_ die Arbeitsgruppe auswählen, in welche die Bohrdaten importiert werden sollen (neue Arbeitsgruppen können nur als "Admin-User" erstellt werden).
+
+### Schritt 4: Dateien hochladen
+
+1. Import-Prozess mit einem Klick auf _Importieren_ starten.
+2. Warten, bis der Upload abgeschlossen ist und die Daten in der Anwendung verfügbar sind.
+
+## Format und Anforderungen an die JSON-Datei
+
+Die JSON-Datei muss den folgenden Anforderungen entsprechen, damit sie erfolgreich in die Webapplikation importiert werden kann:
+
+- Die Datei muss im JSON-Format vorliegen.
+- Die Datei muss im UTF-8-Format gespeichert sein.
+- Die JSON-Datei muss ein Array von Objekten enthalten. Jedes Objekt entspricht einem Bohrloch. Auch ein einzelnes Bohrloch muss als Array von einem Objekt definiert werden.
+- Die JSON-Datei eines Bohrlochexports kann als valide Vorlage für den Import betrachtet werden.
+
+## Validierung
+
+### Duplikate
+
+Beim Importprozess der Bohrdaten wird eine Duplikatsvalidierung durchgeführt, um sicherzustellen, dass kein Bohrloch mehrmals in der Datei vorhanden ist oder bereits in der Datenbank existiert.
+Duplikate werden nur innerhalb einer Arbeitsgruppe erkannt. Die Duplikaterkennung erfolgt anhand der Koordinaten mit einer Toleranz von +/- 2 Metern und der Gesamttiefe des Bohrlochs.
+
+## Anmerkungen
 
 Es ist wichtig zu beachten, dass der Import beim ersten Fehler abgebrochen wird und keine teilweisen Importe stattfinden. Entweder werden alle Daten importiert, oder es findet kein Import statt. Der Import unterstützt keine Updates von bestehenden Daten.
