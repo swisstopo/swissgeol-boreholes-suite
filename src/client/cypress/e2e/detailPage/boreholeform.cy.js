@@ -3,6 +3,7 @@ import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/
 import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -92,8 +93,8 @@ describe("Test for the borehole form.", () => {
       setSelect("depthPrecisionId", 1);
       setSelect("statusId", 1);
       setSelect("lithologyTopBedrockId", 1);
-      setSelect("lithostratigraphyId", 1);
-      setSelect("chronostratigraphyId", 1);
+      setSelect("lithostratigraphyTopBedrockId", 1);
+      setSelect("chronostratigraphyTopBedrockId", 1);
       setSelect("hasGroundwater", 1);
 
       setInput("totalDepth", 700);
@@ -102,14 +103,19 @@ describe("Test for the borehole form.", () => {
       setInput("remarks", "This is a test remark");
 
       // navigate away is blocked before saving
-      cy.get('[data-cy="location-menu-item"]').click();
+      getElementByDataCy("location-menu-item").click();
 
       const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
       handlePrompt(messageUnsavedChanges, "cancel");
 
       saveWithSaveBar();
-      cy.get('[data-cy="location-menu-item"]').click();
+      getElementByDataCy("location-menu-item").click();
       cy.contains("Boreholes.swissgeol.ch ID");
+      getElementByDataCy("borehole-menu-item").click();
+      evaluateSelect("lithostratigraphyTopBedrockId", "15300583");
+      evaluateSelect("chronostratigraphyTopBedrockId", "15001001");
+      cy.contains("Bodensee-Nagelfluh").should("exist");
+      cy.contains("Phanerozoic").should("exist");
     });
   });
 
