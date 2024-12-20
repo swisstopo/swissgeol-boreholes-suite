@@ -184,7 +184,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
               </FormContainer>
               <FormContainer direction="row">
                 <FormDomainSelect
-                  fieldName={"chronostratigraphyId"}
+                  fieldName={"chronostratigraphyTopBedrockId"}
                   label={"chronostratigraphy_top_bedrock"}
                   schemaName={"custom.chronostratigraphy_top_bedrock"}
                   readonly={!editingEnabled}
