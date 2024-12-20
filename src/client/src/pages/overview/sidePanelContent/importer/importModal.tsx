@@ -76,6 +76,7 @@ const ImportModal = ({
 
   const handleFormSubmit = async () => {
     setCreating(true);
+    setFileType("");
     handleBoreholeImport();
   };
 
@@ -85,6 +86,7 @@ const ImportModal = ({
       key="sb-em-5"
       onClose={() => {
         setModal(false);
+        setFileType("");
       }}
       open={modal}
       size="large">
