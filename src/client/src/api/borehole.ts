@@ -18,8 +18,8 @@ export interface Identifier extends BasicIdentifier {
 
 export interface BoreholeV2 {
   lithologyTopBedrockId: number;
-  lithostratigraphyId: number;
-  chronostratigraphyId: number;
+  lithostratigraphyTopBedrockId: number;
+  chronostratigraphyTopBedrockId: number;
   hasGroundwater: boolean | null;
   topBedrockWeatheredMd: number;
   topBedrockFreshMd: number;

@@ -23,8 +23,8 @@ export interface BoreholeFormInputs {
   topBedrockFreshMd: number | null;
   topBedrockWeatheredMd: number | null;
   lithologyTopBedrockId: number;
-  lithostratigraphyId: number;
-  chronostratigraphyId: number;
+  lithostratigraphyTopBedrockId: number;
+  chronostratigraphyTopBedrockId: number;
   hasGroundwater: boolean | number | null;
   remarks: string;
 }

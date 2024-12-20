@@ -74,7 +74,7 @@ const ImportModalContent = ({ setSelectedFile, setFileType, fileType }: ImportMo
               "StatusId;Remarks;TotalDepth;QtDepthId;TopBedrockFreshMd;" +
               "TopBedrockWeatheredMd;" +
               "HasGroundwater;LithologyTopBedrockId;" +
-              "ChronostratigraphyId;LithostratigraphyId;",
+              "ChronostratigraphyTopBedrockId;LithostratigraphyTopBedrockId;",
           )}
         </StackHalfWidth>
         <FileDropzone
