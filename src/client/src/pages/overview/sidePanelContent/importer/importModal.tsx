@@ -26,7 +26,7 @@ const ImportModal = ({
 }: ImportModalProps) => {
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
-  const [fileType, setFileType] = useState<string | null>(null); // Track file type
+  const [fileType, setFileType] = useState<string>(""); // Track file type
 
   const handleImportResponse = async (response: Response) => {
     setCreating(false);

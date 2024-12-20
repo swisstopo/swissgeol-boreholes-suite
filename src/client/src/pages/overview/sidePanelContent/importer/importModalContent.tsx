@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack } from "@mui/material/";
 import { downloadCodelistCsv } from "../../../../api/fetchApiV2.js";
@@ -6,8 +6,12 @@ import { StackHalfWidth } from "../../../../components/styledComponents.ts";
 import { capitalizeFirstLetter } from "../../../../utils.ts";
 import Downloadlink from "../../../detail/attachments/downloadlink.jsx";
 import { FileDropzone } from "../../../detail/attachments/fileDropzone.jsx";
-import { ImportContentProps } from "../commons/actionsInterfaces.js";
 
+interface ImportModalContentProps {
+  setSelectedFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
+  setFileType: (type: string) => void;
+  fileType: string;
+}
 const ExampleHeadings = (headings: string) => {
   return (
     <Box
@@ -23,11 +27,7 @@ const ExampleHeadings = (headings: string) => {
   );
 };
 
-const ImportModalContent = ({
-  setSelectedFile,
-  setFileType,
-  fileType,
-}: ImportContentProps & { setFileType: (type: string) => void } & { fileType: string | null }) => {
+const ImportModalContent = ({ setSelectedFile, setFileType, fileType }: ImportModalContentProps) => {
   const { t } = useTranslation();
 
   const handleCsvFileChange = useCallback(

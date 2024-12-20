@@ -115,7 +115,7 @@ export const FileDropzone = props => {
   const removeFile = fileToRemove => {
     setFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
     if (setFileType) {
-      setFileType(null);
+      setFileType("");
     }
   };
 
