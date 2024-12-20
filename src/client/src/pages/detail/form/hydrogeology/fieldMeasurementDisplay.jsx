@@ -3,6 +3,7 @@ import { TableCell } from "@mui/material";
 import { deleteFieldMeasurement, useDomains } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
+import { parameterTableHeaderStyles } from "../../../../components/form/formResultTableDisplayStyles";
 import ObservationDisplay from "./observationDisplay.tsx";
 import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 
@@ -34,14 +35,7 @@ const FieldMeasurementDisplay = props => {
               scope="row"
               sx={{
                 ...styles,
-                "& .MuiFormControl-root": {
-                  minWidth: "100%",
-                  maxWidth: "100%",
-                },
-                pr: "3px",
-                pl: "3px",
-                maxWidth: "200px",
-                minWidth: "200px",
+                ...parameterTableHeaderStyles,
               }}
               data-cy={`fieldMeasurementResult.${index}.parameter-formDisplay`}>
               {domains?.data?.find(d => d.id === result.parameterId)?.[i18n.language] ?? ""}
