@@ -82,7 +82,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("statusId", "22104001");
   });
 
-  it("Fills all inputs on borehole tab and saves", () => {
+  it.only("Fills all inputs on borehole tab and saves", () => {
     createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/borehole`);
@@ -111,10 +111,11 @@ describe("Test for the borehole form.", () => {
       saveWithSaveBar();
       getElementByDataCy("location-menu-item").click();
       cy.contains("Boreholes.swissgeol.ch ID");
-
-      getElementByDataCy("borehole-menu-item");
-      evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh");
-      evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic");
+      getElementByDataCy("borehole-menu-item").click();
+      evaluateSelect("lithostratigraphyTopBedrockId", "15300583");
+      evaluateSelect("chronostratigraphyTopBedrockId", "15001001");
+      cy.contains("Bodensee-Nagelfluh").should("exist");
+      cy.contains("Phanerozoic").should("exist");
     });
   });
 
