@@ -146,7 +146,14 @@ public class ImportController : ControllerBase
             // Checks if the provided boreholes file is a CSV file.
             if (!FileTypeChecker.IsCsv(boreholesFile)) return BadRequest("Invalid file type for borehole csv.");
 
-            var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
+            // The identifier codelists are used to dynamically map imported identifiers to codelists.
+            var identifierCodelists = await context.Codelists
+                .Where(c => c.Schema == "borehole_identifier")
+                .AsNoTracking()
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            var boreholeImports = ReadBoreholesFromCsv(boreholesFile, identifierCodelists);
             ValidateBoreholeImports(workgroupId, boreholeImports, false);
 
             // If any validation error occured, return a bad request.
@@ -307,12 +314,12 @@ public class ImportController : ControllerBase
         return Math.Abs(firstValue.Value - secondValue.Value) <= tolerance;
     }
 
-    private static List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
+    private static List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file, List<Codelist> identifierCodelists)
     {
         using var reader = new StreamReader(file.OpenReadStream());
         using var csv = new CsvReader(reader, CsvConfigHelper.CsvReadConfig);
 
-        csv.Context.RegisterClassMap(new CsvImportBoreholeMap());
+        csv.Context.RegisterClassMap(new CsvImportBoreholeMap(identifierCodelists));
 
         return csv.GetRecords<BoreholeImport>().ToList();
     }
@@ -348,8 +355,11 @@ public class ImportController : ControllerBase
 
     private sealed class CsvImportBoreholeMap : ClassMap<BoreholeImport>
     {
-        public CsvImportBoreholeMap()
+        private readonly List<Codelist> codelists;
+
+        public CsvImportBoreholeMap(List<Codelist> codelists)
         {
+            this.codelists = codelists;
             AutoMap(CsvConfigHelper.CsvReadConfig);
 
             // Define all optional properties of Borehole (ef navigation properties do not need to be defined as optional).
@@ -401,37 +411,31 @@ public class ImportController : ControllerBase
             Map(m => m.TopBedrockFreshTvd).Ignore();
             Map(m => m.TopBedrockWeatheredTvd).Ignore();
 
-            // Define additional mapping logic
             Map(m => m.BoreholeCodelists).Convert(args =>
             {
                 var boreholeCodeLists = new List<BoreholeCodelist>();
-                new List<(string Name, int CodeListId)>
+
+                foreach (var header in args.Row.HeaderRecord ?? Array.Empty<string>())
                 {
-                    ("IDGeODin-Shortname", 100000000),
-                    ("IDInfoGeol", 100000003),
-                    ("IDOriginal", 100000004),
-                    ("IDCanton", 100000005),
-                    ("IDGeoQuat", 100000006),
-                    ("IDGeoMol", 100000007),
-                    ("IDGeoTherm", 100000008),
-                    ("IDTopFels", 100000009),
-                    ("IDGeODin", 100000010),
-                    ("IDKernlager", 100000011),
-                }.ForEach(id =>
-                {
-                    if (args.Row.HeaderRecord != null && args.Row.HeaderRecord.Any(h => h == id.Name))
+                    // Find the corresponding codelist by comparing the header with Codelist.En, ignoring whitespace
+                    var codelist = codelists.FirstOrDefault(cl => string.Equals(
+                        cl.En.Replace(" ", string.Empty, StringComparison.OrdinalIgnoreCase),
+                        header.Replace(" ", string.Empty, StringComparison.OrdinalIgnoreCase),
+                        StringComparison.OrdinalIgnoreCase));
+
+                    if (codelist != null)
                     {
-                        var value = args.Row.GetField<string?>(id.Name);
+                        var value = args.Row.GetField<string?>(header);
                         if (!string.IsNullOrEmpty(value))
                         {
                             boreholeCodeLists.Add(new BoreholeCodelist
                             {
-                                CodelistId = id.CodeListId,
+                                CodelistId = codelist.Id,
                                 Value = value,
                             });
                         }
                     }
-                });
+                }
 
                 return boreholeCodeLists;
             });

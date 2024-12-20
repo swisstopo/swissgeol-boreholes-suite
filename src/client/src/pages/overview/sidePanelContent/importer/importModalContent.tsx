@@ -64,9 +64,7 @@ const ImportModalContent = ({ setSelectedFile, setFileType, fileType }: ImportMo
         <StackHalfWidth direction="column">
           {t("csvFormatExplanation")}
           {ExampleHeadings(
-            "IdOriginal;" +
-              "IdCanton;IdGeoQuat;IdGeoMol;IdGeoTherm;IdTopFels;" +
-              "IdGeodin;IdKernlager;OriginalName;ProjectName;Name;" +
+            "OriginalName;ProjectName;Name;" +
               "RestrictionId;RestrictionUntil;NationalInterest;LocationX;LocationY;" +
               "LocationPrecision;ElevationZ;ElevationPrecisionId;" +
               "ReferenceElevation;ReferenceElevationTypeId;" +

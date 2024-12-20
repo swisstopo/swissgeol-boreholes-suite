@@ -21,6 +21,7 @@ public class ImportControllerTest
     private const int MaxBoreholeSeedId = 1002999;
     private const int MaxStratigraphySeedId = 6002999;
     private const int MaxLayerSeedId = 7029999;
+    private const int TestCodelistId = 955253;
 
     private BdmsContext context;
     private ImportController controller;
@@ -71,6 +72,7 @@ public class ImportControllerTest
         context.Workflows.RemoveRange(addedWorkflows);
         context.Stratigraphies.RemoveRange(addedStratigraphies);
         context.Layers.RemoveRange(addedLayers);
+        context.Codelists.RemoveRange(context.Codelists.Where(c => c.Id == TestCodelistId));
         context.SaveChanges();
 
         await context.DisposeAsync();
@@ -511,6 +513,9 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadShouldSaveDataToDatabaseAsync()
     {
+        context.Codelists.Add(new Codelist { Id = TestCodelistId, Schema = "borehole_identifier", Code = "new code", En = "Random New Id", Conf = null });
+        await context.SaveChangesAsync();
+
         httpClientFactoryMock
             .Setup(cf => cf.CreateClient(It.IsAny<string>()))
             .Returns(() => new HttpClient())
@@ -532,9 +537,10 @@ public class ImportControllerTest
         Assert.AreEqual(new DateTime(2024, 06, 15), borehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, borehole.TotalDepth);
         Assert.AreEqual("Projekt 6", borehole.ProjectName);
-        Assert.AreEqual(4, borehole.BoreholeCodelists.Count);
+        Assert.AreEqual(5, borehole.BoreholeCodelists.Count);
         Assert.AreEqual("Id_16", borehole.BoreholeCodelists.Single(x => x.CodelistId == 100000003).Value);
         Assert.AreEqual("AUTOSTEED", borehole.BoreholeCodelists.Single(x => x.CodelistId == 100000011).Value);
+        Assert.AreEqual("121314", borehole.BoreholeCodelists.Single(x => x.CodelistId == TestCodelistId).Value);
         Assert.AreEqual("Bern", borehole.Canton);
         Assert.AreEqual("Schweiz", borehole.Country);
         Assert.AreEqual("Thun", borehole.Municipality);
