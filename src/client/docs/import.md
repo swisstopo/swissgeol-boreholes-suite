@@ -40,16 +40,6 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 
 | Feldname                      | Datentyp       | Pflichtfeld | Beschreibung                                                                          |
 | ---------------------------   | -------------- | ----------- | ------------------------------------------------------------------------------------- |
-| IDGeODin-Shortname            | Zahl           | Nein        | ID GeODin-Shortname                                                                   |
-| IDInfoGeol                    | Zahl           | Nein        | ID InfoGeol                                                                           |
-| IDOriginal                    | Zahl           | Nein        | ID Original                                                                           |
-| IDCanton                      | Zahl           | Nein        | ID Kanton                                                                             |
-| IDGeoQuat                     | Zahl           | Nein        | ID GeoQuat                                                                            |
-| IDGeoMol                      | Zahl           | Nein        | ID GeoMol                                                                             |
-| IDGeoTherm                    | Zahl           | Nein        | ID GeoTherm                                                                           |
-| IDTopFels                     | Zahl           | Nein        | ID TopFels                                                                            |
-| IDGeODin                      | Zahl           | Nein        | ID GeODin                                                                             |
-| IDKernlager                   | Zahl           | Nein        | ID Kernlager                                                                          |
 | OriginalName                  | Text           | Ja          | Originalname                                                                          |
 | ProjectName                   | Text           | Nein        | Projektname                                                                           |
 | Name                          | Text           | Nein        | Name                                                                                  |
@@ -77,6 +67,10 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | LithologyTopBedrockId         | ID (Codeliste) | Nein        | Lithologie Top Fels                                                                   |
 | ChronostratigraphyTopBedrockId| ID (Codeliste) | Nein        | Chronostratigraphie Top Fels                                                          |
 | LithostratigraphyTopBedrockId | ID (Codeliste) | Nein        | Lithostratigraphie Top Fels                                                           |
+
+### Ids
+Es können zusätzliche IDs importiert werden. Die dafür zu verwendenden Spaltenüberschriften sind dynamisch und können von Umgebung zu Umgebung variieren. 
+Um die korrekten Spaltenüberschriften zu erhalten, kann eine Bohrung mit einer entsprechenden ID als CSV-Datei exportiert werden.
 
 ### Koordinaten
 

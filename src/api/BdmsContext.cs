@@ -282,6 +282,7 @@ public class BdmsContext : DbContext
 
         modelBuilder.Entity<Codelist>().Ignore(c => c.Layers);
         modelBuilder.Entity<Codelist>().Ignore(c => c.Hydrotests);
+        modelBuilder.Entity<Codelist>().Property(b => b.Conf).HasColumnType("json");
 
         modelBuilder.Entity<WaterIngress>().ToTable("water_ingress").HasBaseType<Observation>();
 
