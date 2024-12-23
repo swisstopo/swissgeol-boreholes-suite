@@ -103,7 +103,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
               InputProps={{ readOnly: readonly, disabled: disabled }}
               required={required || false}
               sx={{ ...sx }}
-              className={`${readonly ? "readonly" : ""} ${className || ""}`}
+              className={`${readonly ? "readonly" : ""} ${className ?? ""}`}
               label={t(label)}
               {...register(fieldName, {
                 required: required || false,
@@ -135,7 +135,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
               required={required || false}
               error={getFormFieldError(fieldName, formState.errors)}
               sx={{ ...sx }}
-              className={`${readonly ? "readonly" : ""} ${className || ""}`}
+              className={`${readonly ? "readonly" : ""} ${className ?? ""}`}
               label={t(label)}
               {...register(fieldName, {
                 required: required || false,

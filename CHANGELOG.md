@@ -10,6 +10,7 @@
 ### Fixed
 
 - Observations were not included in exported borehole JSON file.
+- Fixed bug where values of 0 were not displayed in numeric input fields.
 - Fixed bug where `Lithostratigraphhy Top Bedrock` and `Chronostratigraphhy Top Bedrock` were not displayed in form after updating them and navigating away.
 
 ## v2.1.993 - 2024-12-13

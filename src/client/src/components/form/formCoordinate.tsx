@@ -62,7 +62,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
       required={required || false}
       error={!className?.includes("ai") && !disabled && getFormFieldError(fieldName, formState.errors)}
       sx={{ ...sx }}
-      className={`${readonly ? "readonly" : ""} ${className || ""}`}
+      className={`${readonly ? "readonly" : ""} ${className ?? ""}`}
       label={t(`location_${direction.toLowerCase()}_${referenceSystem}`)}
       {...register(fieldName, {
         required: required || false,

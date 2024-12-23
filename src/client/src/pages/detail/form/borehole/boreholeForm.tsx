@@ -52,6 +52,10 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
 
   const fetchDepthTVD = useCallback(
     async (fieldValue: number | null) => {
+      // check if fieldValue is effectively zero
+      if (fieldValue !== null && Math.abs(fieldValue) === 0) {
+        return fieldValue;
+      }
       if (!fieldValue) return null;
       const getDepthTVD = async (depthMD: number | null) => {
         if (depthMD == null) {
@@ -124,7 +128,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   <FormInput
                     fieldName={"totalDepth"}
                     label={"totaldepth"}
-                    value={borehole?.totalDepth || ""}
+                    value={borehole?.totalDepth}
                     withThousandSeparator={true}
                     readonly={!editingEnabled}
                   />
@@ -142,7 +146,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                 <FormInput
                   fieldName={"topBedrockWeatheredMd"}
                   label={"top_bedrock_weathered_md"}
-                  value={borehole?.topBedrockWeatheredMd || ""}
+                  value={borehole?.topBedrockWeatheredMd}
                   withThousandSeparator={true}
                   readonly={!editingEnabled}
                 />
@@ -156,7 +160,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                 <FormInput
                   fieldName={"topBedrockFreshMd"}
                   label={"top_bedrock_fresh_md"}
-                  value={borehole?.topBedrockFreshMd || ""}
+                  value={borehole?.topBedrockFreshMd}
                   withThousandSeparator={true}
                   readonly={!editingEnabled}
                 />
@@ -202,7 +206,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                 fieldName={"remarks"}
                 multiline={true}
                 label={"remarks"}
-                value={borehole?.remarks || ""}
+                value={borehole?.remarks}
                 readonly={!editingEnabled}
               />
             </FormContainer>
