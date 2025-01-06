@@ -6,7 +6,7 @@
 - Removed attachments from csv import.
 - Updated recommended csv headers for borehole import to camel case e.g. `OriginalName` (snake case e.g. `original_name` is still supported for all properties except for custom identifiers).
 - Changed order of `Top Bedrock (fresh)` and `Top Bedrock (weathered)` fields in borehole form.
-- When importing custom IDs with CSV the headers are now dynamically mapped to the `borehole_identifier` codelists in the database.
+- When importing custom IDs with CSV, the headers are now dynamically mapped to the `borehole_identifier` codelists in the database.
 
 ### Fixed
 
