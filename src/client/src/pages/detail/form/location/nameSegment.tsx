@@ -30,7 +30,7 @@ const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps
               <FormInput
                 fieldName={"originalName"}
                 label={"original_name"}
-                value={borehole?.originalName || ""}
+                value={borehole?.originalName}
                 readonly={!editingEnabled}
               />
               <TextField
@@ -39,21 +39,16 @@ const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps
                 }}
                 className="readonly"
                 label={t("workgroup")}
-                value={borehole?.workgroup?.name || ""}
+                value={borehole?.workgroup?.name}
               />
             </FormContainer>
           )}
           <FormContainer direction="row">
-            <FormInput
-              fieldName={"name"}
-              label={"alternate_name"}
-              readonly={!editingEnabled}
-              value={borehole?.name || ""}
-            />
+            <FormInput fieldName={"name"} label={"alternate_name"} readonly={!editingEnabled} value={borehole?.name} />
             <FormInput
               fieldName={"projectName"}
               label={"project_name"}
-              value={borehole?.projectName || ""}
+              value={borehole?.projectName}
               readonly={!editingEnabled}
             />
           </FormContainer>

@@ -57,7 +57,7 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
         onClick={handleClick}
         startIcon={startIcon}
         endIcon={anchorEl ? <ChevronUp /> : <ChevronDown />}
-        className={`${isOpen ? "Mui-active" : ""} ${className || ""}`}
+        className={`${isOpen ? "Mui-active" : ""} ${className ?? ""}`}
         data-cy={`${fieldName}-button-select`}
         sx={{ ...sx }}>
         {selectedItem?.value}

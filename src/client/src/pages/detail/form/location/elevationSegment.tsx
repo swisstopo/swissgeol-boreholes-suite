@@ -23,7 +23,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, editingEnabled,
             fieldName={"elevationZ"}
             label={"elevation_z"}
             value={borehole.elevationZ}
-            controlledValue={formMethods.watch("elevationZ") || ""}
+            controlledValue={formMethods.watch("elevationZ") ?? ""}
             withThousandSeparator={true}
             readonly={!editingEnabled}
           />
@@ -39,7 +39,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, editingEnabled,
           <FormInput
             fieldName={"referenceElevation"}
             label={"reference_elevation"}
-            value={borehole?.referenceElevation || ""}
+            value={borehole?.referenceElevation}
             withThousandSeparator={true}
             readonly={!editingEnabled}
           />

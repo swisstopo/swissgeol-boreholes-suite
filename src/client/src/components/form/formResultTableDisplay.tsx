@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { FieldMeasurementResult } from "../../pages/detail/form/hydrogeology/FieldMeasurementInterface.ts";
 import { HydrotestResult } from "../../pages/detail/form/hydrogeology/HydrotestInterface.ts";
+import { tableCellStyles, tableHeaderStyles } from "./formResultTableDisplayStyles.ts";
 
 interface FormResultTableDisplayProps {
   title: string;
@@ -22,16 +23,6 @@ export const FormResultTableDisplay: React.FC<FormResultTableDisplayProps> = ({
   renderHeader,
 }) => {
   const { t } = useTranslation();
-
-  const tableCellStyles: React.CSSProperties = {
-    width: "20%",
-    maxWidth: "20%",
-  };
-
-  const tableHeaderStyles: React.CSSProperties = {
-    width: "20%",
-    maxWidth: "20%",
-  };
 
   return (
     <>
