@@ -92,6 +92,12 @@ public class ImportController : ControllerBase
                 .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
                 .ConfigureAwait(false);
 
+            var hydrotestCodelists = context.Codelists
+                .Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema
+                        || c.Schema == HydrogeologySchemas.FlowdirectionSchema
+                        || c.Schema == HydrogeologySchemas.EvaluationMethodSchema)
+                .ToList();
+
             foreach (var borehole in boreholes)
             {
                 borehole.MarkAsNew();
@@ -107,6 +113,18 @@ public class ImportController : ControllerBase
                 borehole.Sections?.MarkAsNew();
                 borehole.Observations?.MarkAsNew();
 
+                // Map Hydrotest codelists to Hydrotest objects.
+                var hydroTests = borehole.Observations?
+                    .Where(x => x.Type == ObservationType.Hydrotest)
+                    .OfType<Hydrotest>();
+
+                foreach (var hydroTest in hydroTests)
+                {
+                    hydroTest.KindCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.KindCodelistIds!);
+                    hydroTest.FlowDirectionCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.FlowDirectionCodelistIds!);
+                    hydroTest.EvaluationMethodCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.EvaluationMethodCodelistIds!);
+                }
+
                 // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
                 borehole.Workflows.Clear();
                 borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
@@ -120,6 +138,13 @@ public class ImportController : ControllerBase
             logger.LogError(ex, "Error while importing borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
             return Problem("Error while importing borehole(s) via json file.");
         }
+    }
+
+    private List<Codelist> GetCodelists(List<Codelist> codeLists, List<int> codelistIds)
+    {
+        return codeLists
+            .Where(c => codelistIds.Contains(c.Id))
+            .ToList();
     }
 
     /// <summary>
