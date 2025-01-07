@@ -4,6 +4,7 @@ using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
 using System.Text;
@@ -21,6 +22,7 @@ public class ExportController : ControllerBase
     // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
     private const int MaxPageSize = 100;
     private readonly BdmsContext context;
+    private readonly ILogger logger;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
 
     private static readonly JsonSerializerOptions jsonExportOptions = new()
@@ -30,9 +32,10 @@ public class ExportController : ControllerBase
         Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter() },
     };
 
-    public ExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService)
+    public ExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService, ILogger<ExportController> logger)
     {
         this.context = context;
+        this.logger = logger;
         this.boreholeFileCloudService = boreholeFileCloudService;
     }
 
@@ -189,7 +192,7 @@ public class ExportController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets all <see cref="Borehole"/> records filtered by ids including all attachments.
+    /// Asynchronously gets all <see cref="Borehole"/> with attachments filtered by ids.
     /// </summary>
     /// <param name="ids">The required list of borehole ids to filter by.</param>
     /// <returns>A ZIP-file including the borehole data as .json and all corresponding attachments.</returns>
@@ -197,7 +200,8 @@ public class ExportController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        if (ids == null || !ids.Any()) return BadRequest("The list of IDs must not be empty.");
+        var idCount = ids.Count();
+        if (ids == null || idCount < 1) return BadRequest("The list of IDs must not be empty.");
 
         try
         {
@@ -205,46 +209,42 @@ public class ExportController : ControllerBase
             var files = await context.BoreholeFiles.Include(f => f.File).Where(f => ids.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
             var fileName = $"boreholes_with_attachments_{DateTime.UtcNow:yyyyMMddHHmmss}";
 
-            if (ids.Count() == 1)
+            if (idCount == 1)
             {
                 fileName = boreholes.Single().Name;
             }
 
             var json = JsonSerializer.Serialize(boreholes, jsonExportOptions);
 
-            using (var memoryStream = new MemoryStream())
+            using var memoryStream = new MemoryStream();
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
             {
-                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                // Add JSON file with borehole data
+                var jsonEntry = archive.CreateEntry($"{fileName}.json", CompressionLevel.Fastest);
+                using (var entryStream = jsonEntry.Open())
+                using (var textWriter = new StreamWriter(entryStream))
                 {
-                    // Add JSON file with borehole data
-                    var jsonEntry = archive.CreateEntry($"{fileName}.json", CompressionLevel.Fastest);
-                    using (var entryStream = jsonEntry.Open())
-                    using (var textWriter = new StreamWriter(entryStream))
-                    {
-                        textWriter.Write(json);
-                    }
-
-                    // Add each attachment
-                    foreach (var file in files)
-                    {
-                        if (file.File.NameUuid != null)
-                        {
-                            var fileBytes = await boreholeFileCloudService.GetObject(file.File.NameUuid).ConfigureAwait(false);
-                            var zipEntry = archive.CreateEntry(file.File.Name, CompressionLevel.Fastest);
-                            using (var zipEntryStream = zipEntry.Open())
-                            {
-                                await zipEntryStream.WriteAsync(fileBytes, 0, fileBytes.Length).ConfigureAwait(false);
-                            }
-                        }
-                    }
+                    await textWriter.WriteAsync(json).ConfigureAwait(false);
                 }
 
-                return File(memoryStream.ToArray(), "application/zip", fileName);
+                foreach (var file in files)
+                {
+                    if (file.File.NameUuid != null)
+                    {
+                        var fileBytes = await boreholeFileCloudService.GetObject(file.File.NameUuid).ConfigureAwait(false);
+                        var zipEntry = archive.CreateEntry(file.File.Name, CompressionLevel.Fastest);
+                        using var zipEntryStream = zipEntry.Open();
+                        await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
+                    }
+                }
             }
+
+            return File(memoryStream.ToArray(), "application/zip", fileName);
         }
         catch (Exception ex)
         {
-            return Problem("An error occurred while preparing the download.");
+            logger.LogError("Failed to prepare ZIP File: {Exception}", ex);
+            return Problem("An error occurred while preparing the ZIP File.");
         }
     }
 

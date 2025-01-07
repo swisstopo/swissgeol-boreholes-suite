@@ -24,11 +24,15 @@ public class ExportControllerTest
 {
     private const string TestCsvString = "text/csv";
     private const string ExportFileName = "boreholes_export.csv";
+    private const int TestBoreholeId = 1000068;
     private BdmsContext context;
     private BoreholeFileCloudService boreholeFileCloudService;
     private ExportController controller;
     private User adminUser;
-    private static int testBoreholeId = 1000068;
+    private static readonly JsonSerializerOptions jsonImportOptions = new()
+    {
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+    };
 
     [TestInitialize]
     public void TestInitialize()
@@ -39,7 +43,7 @@ public class ExportControllerTest
         adminUser = context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
-        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId)]));
 
         var s3ClientMock = new AmazonS3Client(
             configuration["S3:ACCESS_KEY"],
@@ -70,8 +74,11 @@ public class ExportControllerTest
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        controller = new ExportController(context, boreholeFileCloudService) { ControllerContext = GetControllerContextAdmin() };
+
+        var loggerMock = new Mock<ILogger<ExportController>>();
+        controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
+#pragma warning disable SA1010
 
     [TestMethod]
     public async Task ExportJson()
@@ -92,7 +99,7 @@ public class ExportControllerTest
             EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
             Type = ObservationType.FieldMeasurement,
             Comment = "Field measurement observation for testing",
-            FieldMeasurementResults = new List<FieldMeasurementResult> { fieldMeasurementResult },
+            FieldMeasurementResults = [fieldMeasurementResult],
         };
 
         var groundwaterLevelMeasurement = new GroundwaterLevelMeasurement
@@ -140,23 +147,25 @@ public class ExportControllerTest
             EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
             Type = ObservationType.Hydrotest,
             Comment = "Hydrotest observation for testing",
-            HydrotestResults = new List<HydrotestResult>() { hydroTestResult },
-            HydrotestFlowDirectionCodes = new List<HydrotestFlowDirectionCode> { new() { CodelistId = flowDirectionCodelists[0].Id }, new() { CodelistId = flowDirectionCodelists[1].Id } },
-            HydrotestKindCodes = new List<HydrotestKindCode> { new() { CodelistId = kindCodelists[0].Id }, new() { CodelistId = kindCodelists[1].Id } },
-            HydrotestEvaluationMethodCodes = new List<HydrotestEvaluationMethodCode> { new() { CodelistId = evaluationMethodCodelists[0].Id }, new() { CodelistId = evaluationMethodCodelists[1].Id } },
+            HydrotestResults = [hydroTestResult],
+            HydrotestFlowDirectionCodes = [new() { CodelistId = flowDirectionCodelists[0].Id }, new() { CodelistId = flowDirectionCodelists[1].Id }],
+            HydrotestKindCodes = [new() { CodelistId = kindCodelists[0].Id }, new() { CodelistId = kindCodelists[1].Id }],
+            HydrotestEvaluationMethodCodes = [new() { CodelistId = evaluationMethodCodelists[0].Id }, new() { CodelistId = evaluationMethodCodelists[1].Id }],
         };
 
-        newBorehole.Observations = new List<Observation> { hydroTest, fieldMeasurement, groundwaterLevelMeasurement, waterIngress };
+        newBorehole.Observations = [hydroTest, fieldMeasurement, groundwaterLevelMeasurement, waterIngress];
 
         context.Add(newBorehole);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var response = await controller.ExportJsonAsync(new List<int>() { newBorehole.Id }).ConfigureAwait(false);
+        var response = await controller.ExportJsonAsync([newBorehole.Id]).ConfigureAwait(false);
         JsonResult jsonResult = (JsonResult)response!;
         Assert.IsNotNull(jsonResult.Value);
         List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
         Assert.AreEqual(1, boreholes.Count);
     }
+
+#pragma warning restore SA1010
 
     [TestMethod]
     public async Task ExportJsonWithAttachments()
@@ -173,7 +182,7 @@ public class ExportControllerTest
         var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBorehole(formFile, newBorehole.Id).ConfigureAwait(false);
         context.BoreholeFiles.Add(boreholeFile);
 
-        var result = await controller.ExportJsonWithAttachmentsAsync(new List<int>() { newBorehole.Id }).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id]).ConfigureAwait(false);
 
         var fileResult = result as FileContentResult;
         Assert.IsNotNull(fileResult);
@@ -181,37 +190,29 @@ public class ExportControllerTest
         Assert.AreEqual("Borehole 257", fileResult.FileDownloadName);
 
         // Extract the files from the returned ZIP stream
-        using (var zipStream = new MemoryStream(fileResult.FileContents))
-        using (var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read))
-        {
-            var jsonFile = zipArchive.Entries.FirstOrDefault(entry => entry.FullName.EndsWith(".json"));
-            var pdfFile = zipArchive.Entries.FirstOrDefault(entry => entry.FullName.EndsWith(".pdf"));
+        using var zipStream = new MemoryStream(fileResult.FileContents);
+        using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
 
-            Assert.IsNotNull(jsonFile, "The ZIP file does not contain a JSON file.");
-            Assert.IsNotNull(pdfFile, "The ZIP file does not contain a PDF file.");
+        var jsonFile = zipArchive.Entries.FirstOrDefault(entry => entry.FullName.EndsWith(".json"));
+        var pdfFile = zipArchive.Entries.FirstOrDefault(entry => entry.FullName.EndsWith(".pdf"));
 
-            JsonSerializerOptions jsonImportOptions = new()
-            {
-                ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            };
+        Assert.IsNotNull(jsonFile, "The ZIP file does not contain a JSON file.");
+        Assert.IsNotNull(pdfFile, "The ZIP file does not contain a PDF file.");
 
-            using (var jsonStream = jsonFile.Open())
-            {
-                var boreholes = await JsonSerializer.DeserializeAsync<List<Borehole>>(jsonStream, jsonImportOptions).ConfigureAwait(false);
-                var borehole = boreholes.Single();
+        using var jsonStream = jsonFile.Open();
+        var boreholes = await JsonSerializer.DeserializeAsync<List<Borehole>>(jsonStream, jsonImportOptions).ConfigureAwait(false);
+        var borehole = boreholes.Single();
 
-                // Check some properties of deserialized borehole
-                Assert.AreEqual("Test borehole for project", borehole.Remarks);
-                Assert.AreEqual("Borehole 257", borehole.Name);
-                Assert.AreEqual("Project Alpha", borehole.ProjectName);
-            }
-        }
+        // Check some properties of deserialized borehole
+        Assert.AreEqual("Test borehole for project", borehole.Remarks);
+        Assert.AreEqual("Borehole 257", borehole.Name);
+        Assert.AreEqual("Project Alpha", borehole.ProjectName);
     }
 
     [TestMethod]
     public async Task DownloadCsvWithValidIdsReturnsFileResultWithMax100Boreholes()
     {
-        var ids = Enumerable.Range(testBoreholeId, 120).ToList();
+        var ids = Enumerable.Range(TestBoreholeId, 120).ToList();
 
         var result = await controller.ExportCsvAsync(ids) as FileContentResult;
 
@@ -297,42 +298,42 @@ public class ExportControllerTest
         var boreholeWithCustomIds = new Borehole
         {
             Id = firstBoreholeId,
-            BoreholeCodelists = new List<BoreholeCodelist>
-        {
-            new BoreholeCodelist
+            BoreholeCodelists =
+        [
+            new()
             {
                 BoreholeId = firstBoreholeId,
                 CodelistId = 100000010,
                 Value = idGeoDinValue,
             },
-            new BoreholeCodelist
+            new()
             {
                 BoreholeId = firstBoreholeId,
                 CodelistId = 100000011,
                 Value = idKernlagerValue,
             },
-        },
+        ],
         };
 
         var secondBoreholeId = 1_009_069;
         var boreholeWithOtherCustomIds = new Borehole
         {
             Id = secondBoreholeId,
-            BoreholeCodelists = new List<BoreholeCodelist>
-        {
-            new BoreholeCodelist
+            BoreholeCodelists =
+        [
+            new()
             {
                 BoreholeId = secondBoreholeId,
                 CodelistId = 100000010,
                 Value = idGeoDinValue,
             },
-            new BoreholeCodelist
+            new()
             {
                 BoreholeId = secondBoreholeId,
                 CodelistId = 100000009,
                 Value = idTopFelsValue,
             },
-        },
+        ],
         };
 
         context.Boreholes.AddRange(boreholeWithCustomIds, boreholeWithOtherCustomIds);
@@ -374,7 +375,7 @@ public class ExportControllerTest
     [TestMethod]
     public async Task DownloadCsvWithPartiallyValidIdsReturnsFileForPartillyValidIds()
     {
-        var ids = new List<int> { 9, 8, 0, testBoreholeId };
+        var ids = new List<int> { 9, 8, 0, TestBoreholeId };
 
         var result = await controller.ExportCsvAsync(ids) as FileContentResult;
 
