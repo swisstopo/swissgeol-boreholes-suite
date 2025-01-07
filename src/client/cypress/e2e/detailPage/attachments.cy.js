@@ -19,11 +19,6 @@ describe("Tests for 'Attachments' edit page.", () => {
       // navigate to attachments tab
       cy.get('[data-cy="attachments-menu-item"]').click();
 
-      // intercept get all Attachments for borehole request
-      cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
-      // intercept upload file request
-      cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as("upload-files");
-
       // create file "LOUDSPATULA.pdf" for input
       cy.get("input[type=file]").selectFile(
         {
@@ -75,9 +70,6 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get("tbody").children().contains("td", "text/plain");
       cy.get("tbody").children().contains("td", "application/pdf");
 
-      // intercept download file request
-      cy.intercept("/api/v2/boreholefile/download?boreholeFileId=**").as("download-file");
-
       // Ensure file does not exist in download folder before download. If so, delete it.
       deleteDownloadedFile("IRATETRINITY_2.pdf");
 
@@ -87,9 +79,6 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // Check if the file is present in download folder.
       readDownloadedFile("IRATETRINITY_2.pdf");
-
-      // intercept delete file request
-      cy.intercept("/api/v2/boreholefile/detachFile?boreholeId=**&boreholeFileId=**").as("delete-file");
 
       // delete attachments
       cy.get('[data-cy="attachments-detach-button"]').children().first().click();

@@ -111,6 +111,11 @@ export const interceptApiCalls = () => {
   cy.intercept("https://api3.geo.admin.ch/rest/services/height*").as("height");
 
   cy.intercept("/api/v2/import*").as("borehole-upload");
+
+  cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
+  cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as("upload-files");
+  cy.intercept("/api/v2/boreholefile/download?boreholeFileId=**").as("download-file");
+  cy.intercept("/api/v2/boreholefile/detachFile?boreholeId=**&boreholeFileId=**").as("delete-file");
 };
 
 /**
