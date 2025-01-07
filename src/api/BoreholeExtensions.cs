@@ -29,6 +29,7 @@ public static class BoreholeExtensions
             .Include(b => b.BoreholeCodelists)
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
+            .Include(b => b.Files)
             .Include(b => b.BoreholeGeometry)
             .Include(b => b.Workgroup)
             .Include(b => b.UpdatedBy);

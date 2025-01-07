@@ -235,7 +235,7 @@ public class ExportController : ControllerBase
                 foreach (var file in files)
                 {
                     var fileBytes = await boreholeFileCloudService.GetObject(file.File.NameUuid!).ConfigureAwait(false);
-                    var zipEntry = archive.CreateEntry($"{file.BoreholeId}_{file.File.Name}", CompressionLevel.Fastest);
+                    var zipEntry = archive.CreateEntry($"{file.File.NameUuid}_{file.File.Name}", CompressionLevel.Fastest);
                     using var zipEntryStream = zipEntry.Open();
                     await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
                 }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Globalization;
+using System.IO.Compression;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using static BDMS.Helpers;
@@ -472,6 +473,86 @@ public class ImportControllerTest
         Assert.IsNotNull(workflow.Borehole, nameof(workflow.Borehole).ShouldNotBeNullMessage());
         Assert.AreEqual(borehole.CreatedById, workflow.UserId);
         Assert.AreEqual(borehole.CreatedById, workflow.UserId);
+    }
+
+    [TestMethod]
+    public async Task UploadZipShouldSaveDatasetFromJsonInsideAsync()
+    {
+        // Create a ZIP archive
+        var boreholeZipFile = await GetZipFileFromExistingFileAsync("json_import_valid.json");
+
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeZipFile);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(2, okResult.Value);
+    }
+
+    [TestMethod]
+    public async Task UploadZipWithInvalidJsonReturnValidationErrorsAsync()
+    {
+        // Create a ZIP archive with Json file containing duplicates
+        FormFile boreholeZipFile = await GetZipFileFromExistingFileAsync("json_import_duplicated_by_location.json");
+
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeZipFile);
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        ActionResultAssert.IsBadRequest(result);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(2, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole0"]);
+        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole1"]);
+    }
+
+    [TestMethod]
+    public async Task UploadZipWithoutJsonReturnsBadRequestAsync()
+    {
+        // Create a ZIP archive without a JSON file
+        var boreholeZipFile = await GetZipFileFromExistingFileAsync("borehole_and_location_data.csv");
+
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeZipFile);
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        ActionResultAssert.IsBadRequest(result);
+        Assert.AreEqual("ZIP file does not contain a JSON file.", result.Value);
+    }
+
+    [TestMethod]
+    public async Task UploadZipWithoutAttachmensButFilesDefinedInJsonReturnsProblemDetailsAsync()
+    {
+        var zipPath = "borehole_export_with_missing_files.zip";
+        var boreholeZipFile = GetFormFileByExistingFile(zipPath);
+
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeZipFile);
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        ActionResultAssert.IsBadRequest(result);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(2, problemDetails.Errors.Count);
+        Assert.AreEqual("Attachment with the name <7397a759-9160-48d4-8ffb-7fe1ed42e8fd.png_Screenshot 2024-12-10 145252.png> is referenced in JSON file but was not not found in ZIP archive.", problemDetails.Errors["Borehole0"][0]);
+    }
+
+    [TestMethod]
+    public async Task UploadZipShouldSaveDatasetAndAttachmentsAsync()
+    {
+        var zipPath = "boreholes_with_attachments.zip";
+        var boreholeZipFile = GetFormFileByExistingFile(zipPath);
+
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeZipFile);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(2, okResult.Value);
+        var uploadedBoreholesWithAttachment = GetBoreholesWithIncludes(context.Boreholes).Where(b => b.OriginalName.StartsWith("Carmen Catnip")).ToList();
+        Assert.AreEqual(uploadedBoreholesWithAttachment.SelectMany(b => b.Files!).Count(), 3);
+
+        var firstBoreholes = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Cheese");
+        var secondBoreholes = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Fondue");
+        Assert.AreEqual(firstBoreholes.Files.Count(), 2);
+        Assert.AreEqual(secondBoreholes.Files.Single().Name, "logos.png");
     }
 
     [TestMethod]
@@ -1040,5 +1121,29 @@ public class ImportControllerTest
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
         Assert.AreEqual("POINT (2000000 1000000)", borehole.Geometry.ToString());
+    }
+
+    private static async Task<FormFile> GetZipFileFromExistingFileAsync(string fileName)
+    {
+        var zipPath = "archive.zip";
+
+        using (var memoryStream = new MemoryStream())
+        {
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                var csvFile = archive.CreateEntry(fileName);
+
+                using (var entryStream = csvFile.Open())
+                using (var fileStream = System.IO.File.OpenRead(fileName))
+                {
+                    await fileStream.CopyToAsync(entryStream);
+                }
+            }
+
+            await System.IO.File.WriteAllBytesAsync(zipPath, memoryStream.ToArray());
+        }
+
+        var boreholeZipFile = GetFormFileByExistingFile(zipPath);
+        return boreholeZipFile;
     }
 }

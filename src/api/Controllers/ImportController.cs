@@ -4,9 +4,11 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO.Converters;
 using System.Globalization;
+using System.IO.Compression;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -43,6 +45,7 @@ public class ImportController : ControllerBase
 
     /// <summary>
     /// Receives an uploaded JSON file to import one or several <see cref="Borehole"/>(s).
+    /// The JSON file can be contained in a ZIP file which additionally contains attachments.
     /// </summary>
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
     /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole JSON records that were uploaded.</param>
@@ -55,18 +58,31 @@ public class ImportController : ControllerBase
     {
         // Increase max allowed errors to be able to return more validation errors at once.
         ModelState.MaxAllowedErrors = 1000;
-
         logger.LogInformation("Import boreholes json to workgroup with id <{WorkgroupId}>", workgroupId);
 
-        if (!ValidateFile(boreholesFile, FileTypeChecker.IsJson)) return BadRequest("Invalid or empty file uploaded.");
+        if (!ValidateFile(boreholesFile, FileTypeChecker.IsJson) && !ValidateFile(boreholesFile, FileTypeChecker.IsZip)) return BadRequest("Invalid or empty file uploaded.");
 
         try
         {
             List<BoreholeImport>? boreholes;
+
             try
             {
-                using var stream = boreholesFile.OpenReadStream();
-                boreholes = await JsonSerializer.DeserializeAsync<List<BoreholeImport>>(stream, jsonImportOptions).ConfigureAwait(false);
+                if (FileTypeChecker.IsZip(boreholesFile))
+                {
+                    using var zipStream = boreholesFile.OpenReadStream();
+                    using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+                    var jsonFile = zipArchive.Entries.FirstOrDefault(e => e.FullName.EndsWith(".json", StringComparison.OrdinalIgnoreCase));
+                    if (jsonFile == null) return BadRequest("ZIP file does not contain a JSON file.");
+
+                    using var jsonStream = jsonFile.Open();
+                    boreholes = await JsonSerializer.DeserializeAsync<List<BoreholeImport>>(jsonStream, jsonImportOptions).ConfigureAwait(false);
+                }
+                else
+                {
+                    using var stream = boreholesFile.OpenReadStream();
+                    boreholes = await JsonSerializer.DeserializeAsync<List<BoreholeImport>>(stream, jsonImportOptions).ConfigureAwait(false);
+                }
             }
             catch (JsonException ex)
             {
@@ -108,9 +124,25 @@ public class ImportController : ControllerBase
 
                 // Set the geometry's SRID to LV95 (EPSG:2056)
                 if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
+
+                if (borehole.Files != null)
+                {
+                    foreach (var file in borehole.Files)
+                    {
+                        file.MarkAsNew();
+                    }
+                }
             }
 
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+
+            // Upload attachments using the uploaded boreholes with new borehole Ids
+            await UploadAttachments(boreholesFile, boreholes).ConfigureAwait(false);
+
+            // If any problem occured while uploading the attachments, return a bad request.
+            if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+
             return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -118,6 +150,64 @@ public class ImportController : ControllerBase
             logger.LogError(ex, "Error while importing borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
             return Problem("Error while importing borehole(s) via json file.");
         }
+    }
+
+    private async Task UploadAttachments(IFormFile boreholesFile, List<BoreholeImport> boreholes)
+    {
+        foreach (var borehole in boreholes.Select((value, index) => (value, index)))
+        {
+            // Upload attachments to cloud storage
+            if (borehole.value.Files != null && borehole.value.Files.Count > 0)
+            {
+                using var zipStream = boreholesFile.OpenReadStream();
+                using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+                var filesToProcess = borehole.value.Files.ToList(); // save a copy of the files to keep the file information during processing.
+                foreach (var boreholeFile in filesToProcess)
+                {
+                    var fileName = $"{boreholeFile.NameUuid}_{boreholeFile.Name}";
+                    var attachment = zipArchive.Entries.FirstOrDefault(e => e.FullName == fileName);
+                    if (attachment == null)
+                    {
+                        logger.LogInformation("Attachment <{FileName}> not found in zip file.", fileName);
+                        AddValidationErrorToModelState(borehole.index, string.Format(CultureInfo.InvariantCulture, $"Attachment with the name <{fileName}> is referenced in JSON file but was not not found in ZIP archive.", "attachment"), true);
+                        continue;
+                    }
+
+                    using var memoryStream = new MemoryStream();
+                    using (var entryStream = attachment.Open())
+                    {
+                        await entryStream.CopyToAsync(memoryStream).ConfigureAwait(false);
+                    }
+
+                    memoryStream.Position = 0;
+                    var formFile = new FormFile(memoryStream, 0, memoryStream.Length, boreholeFile.Name, boreholeFile.Name)
+                    {
+                        Headers = new HeaderDictionary(),
+                        ContentType = GetContentType(attachment.Name),
+                    };
+
+                    // remove original file information from borehole object
+                    borehole.value.Files.Remove(boreholeFile);
+
+                    try
+                    {
+                        var uploadedFile = await boreholeFileCloudService.UploadFileAndLinkToBorehole(formFile, borehole.value.Id).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "An error occurred while uploading the file: {FileName}", formFile.FileName);
+                        AddValidationErrorToModelState(borehole.index, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), true);
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+
+    private string GetContentType(string fileName)
+    {
+        var mimeType = MimeTypes.GetMimeType(Path.GetExtension(fileName));
+        return string.IsNullOrEmpty(mimeType) ? "application/octet-stream" : mimeType;
     }
 
     /// <summary>

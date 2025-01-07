@@ -1,6 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <None Remove="TestData\borehole_export_with_missing_files.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="TestData\borehole_export_with_missing_files.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.7.304.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
   </ItemGroup>
@@ -9,6 +19,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="TestData\boreholes_not_all_have_attachments.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\boreholes_with_attachments.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\borehole_attachment_3.csv">

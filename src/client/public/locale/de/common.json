@@ -44,7 +44,7 @@
   "borehole_technical_id": "ID boreholes.swissgeol.ch",
   "borehole_type": "Bohrtyp",
   "boreholes": "Bohrungen",
-  "boreholesImportError": "Es konnten keine Bohrungen importiert werden! Bitte stellen Sie sicher, dass die hochgeladene CSV-UTF8-Datei das korrekte Format hat.",
+  "boreholesImportError": "Es konnten keine Bohrungen importiert werden! Bitte stellen Sie sicher, dass die hochgeladene das korrekte Format und den korrekten Inhalt hat.",
   "boreholesImportLongRunning": "Der Import läuft im Hintergrund weiter, dies kann einige Minuten dauern. Nach Abschluss werden die Bohrungen in der Liste sichtbar.",
   "boreholesImported": "Bohrungen wurden importiert",
   "boreholestatus": "Bohrungsstatus",
