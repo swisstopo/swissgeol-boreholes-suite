@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added ZIP export with JSON and attachments for single and multiple boreholes.
+
 ### Changed 
 - Removed attachments from csv import.
 - Updated recommended csv headers for borehole import to camel case e.g. `OriginalName` (snake case e.g. `original_name` is still supported for all properties except for custom identifiers).
