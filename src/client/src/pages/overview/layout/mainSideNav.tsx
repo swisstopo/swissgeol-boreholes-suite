@@ -77,6 +77,11 @@ const MainSideNav = ({
     setSideDrawerContent(DrawerContentTypes.CustomLayers);
   };
 
+  const handleToggleUpload = () => {
+    handleDrawer(DrawerContentTypes.Import);
+    setSideDrawerContent(DrawerContentTypes.Import);
+  };
+
   const handleDrawer = (buttonName: DrawerContentTypes) => {
     if (sideDrawerContent === buttonName) {
       toggleDrawer(!drawerOpen);
@@ -88,6 +93,8 @@ const MainSideNav = ({
   const isFilterPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Filters;
   const isAddPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.NewBorehole;
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
+  const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
+  const editingDisabled = user.data.roles.indexOf("EDIT") === -1;
   const activeFilterCount = filterContext.activeFilterLength + (filterContext.filterPolygon === null ? 0 : 1);
 
   return (
@@ -121,19 +128,16 @@ const MainSideNav = ({
               icon={<Plus />}
               label={t("add")}
               selected={isAddPanelVisible}
-              disabled={user.data.roles.indexOf("EDIT") === -1}
+              disabled={editingDisabled}
               onClick={handleToggleAdd}
             />
             <NavButton
               data-cy="import-borehole-button"
               icon={<UploadIcon />}
               label={t("upload")}
-              disabled={user.data.roles.indexOf("EDIT") === -1}
-              onClick={() => {
-                toggleDrawer(false);
-                setModal(true);
-                setUpload(true);
-              }}
+              disabled={editingDisabled}
+              selected={isUploadPanelVisible}
+              onClick={handleToggleUpload}
             />
           </>
         )}

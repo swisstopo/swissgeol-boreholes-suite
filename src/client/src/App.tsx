@@ -16,7 +16,7 @@ import { AppBox } from "./components/styledComponents.ts";
 import { DetailPage } from "./pages/detail/detailPage.tsx";
 import { LabelingProvider } from "./pages/detail/labeling/labelingContext.tsx";
 import { OverviewProvider } from "./pages/overview/overViewContext.tsx";
-import OverviewPage from "./pages/overview/overviewPage";
+import { OverviewPage } from "./pages/overview/overviewPage.tsx";
 import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext.tsx";
 import { DataLoader } from "./pages/settings/dataLoader";
 import SettingsPage from "./pages/settings/settingsPage";
@@ -77,14 +77,7 @@ class App extends React.Component {
                                     </LabelingProvider>
                                   )}
                                 />
-                                <Route
-                                  render={props => {
-                                    return <OverviewPage {...props} />;
-                                  }}
-                                  exact={false}
-                                  key={2}
-                                  path={"/"}
-                                />
+                                <Route component={OverviewPage} exact={false} key={2} path={"/"} />
                                 <Route
                                   component={() => (
                                     <Redirect
