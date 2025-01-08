@@ -106,6 +106,7 @@ public class ImportController : ControllerBase
                 borehole.Completions?.MarkAsNew();
                 borehole.Sections?.MarkAsNew();
                 borehole.Observations?.MarkAsNew();
+                borehole.BoreholeGeometry?.MarkAsNew();
 
                 // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
                 borehole.Workflows.Clear();

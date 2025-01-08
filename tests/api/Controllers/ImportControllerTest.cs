@@ -168,6 +168,15 @@ public class ImportControllerTest
         Assert.IsNotNull(borehole.Geometry, nameof(Borehole.Geometry).ShouldNotBeNullMessage());
         Assert.AreEqual(2056, borehole.Geometry.SRID, nameof(Borehole.Geometry.SRID));
 
+        // Asser Borehole geometry
+        Assert.AreEqual(2, borehole.BoreholeGeometry.Count, nameof(borehole.BoreholeGeometry.Count));
+        var borheoleGeometry = borehole.BoreholeGeometry.First(x => x.MD == 10);
+        Assert.AreEqual(-0.13453418496717173, borheoleGeometry.X, nameof(borheoleGeometry.X));
+        Assert.AreEqual(356436.1434696717173, borheoleGeometry.Y, nameof(borheoleGeometry.Y));
+        Assert.AreEqual(-0.156717173, borheoleGeometry.Z, nameof(borheoleGeometry.Z));
+        Assert.AreEqual(0, borheoleGeometry.HAZI, nameof(borheoleGeometry.HAZI));
+        Assert.AreEqual(0.1468618496717173, borheoleGeometry.DEVI, nameof(borheoleGeometry.DEVI));
+
         // Assert stratigraphy's lithological descriptions
         Assert.AreEqual(2, borehole.Stratigraphies.Count, nameof(borehole.Stratigraphies.Count));
         var stratigraphy = borehole.Stratigraphies.First();
