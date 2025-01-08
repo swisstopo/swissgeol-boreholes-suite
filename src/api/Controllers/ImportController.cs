@@ -113,16 +113,16 @@ public class ImportController : ControllerBase
                 borehole.Sections?.MarkAsNew();
                 borehole.Observations?.MarkAsNew();
 
-                // Map Hydrotest codelists to Hydrotest objects.
-                var hydroTests = borehole.Observations?
-                    .Where(x => x.Type == ObservationType.Hydrotest)
-                    .OfType<Hydrotest>();
-
-                foreach (var hydroTest in hydroTests)
+                // Process Hydrotest Observations
+                var hydroTests = borehole.Observations?.OfType<Hydrotest>().ToList();
+                if (hydroTests != null)
                 {
-                    hydroTest.KindCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.KindCodelistIds!);
-                    hydroTest.FlowDirectionCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.FlowDirectionCodelistIds!);
-                    hydroTest.EvaluationMethodCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.EvaluationMethodCodelistIds!);
+                    foreach (var hydroTest in hydroTests)
+                    {
+                        hydroTest.KindCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.KindCodelistIds!);
+                        hydroTest.FlowDirectionCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.FlowDirectionCodelistIds!);
+                        hydroTest.EvaluationMethodCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.EvaluationMethodCodelistIds!);
+                    }
                 }
 
                 // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
