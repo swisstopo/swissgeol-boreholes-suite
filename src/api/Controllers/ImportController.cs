@@ -110,6 +110,8 @@ public class ImportController : ControllerBase
                 // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
                 borehole.Workflows.Clear();
                 borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
+
+                if (borehole.Geometry != null) borehole.Geometry.SRID = 2056;
             }
 
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);

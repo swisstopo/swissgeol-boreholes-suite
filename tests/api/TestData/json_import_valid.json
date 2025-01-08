@@ -87,6 +87,10 @@
     "topBedrockFreshMd": 759.5479580385368,
     "topBedrockWeatheredMd": 1.338392690447342,
     "hasGroundwater": false,
+    "Geometry": {
+      "type": "Point",
+      "coordinates": [ 2762322, 1152293 ]
+    },
     "remarks": "This product works too well.",
     "lithologyTopBedrockId": 15104543,
     "lithologyTopBedrock": null,

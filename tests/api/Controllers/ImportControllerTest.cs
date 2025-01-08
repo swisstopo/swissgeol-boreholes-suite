@@ -165,6 +165,8 @@ public class ImportControllerTest
         Assert.IsNull(borehole.ReferenceElevationPrecision, nameof(Borehole.ReferenceElevationPrecision).ShouldBeNullMessage());
         Assert.AreEqual(20117005, borehole.ReferenceElevationTypeId, nameof(Borehole.ReferenceElevationTypeId));
         Assert.IsNull(borehole.ReferenceElevationType, nameof(Borehole.ReferenceElevationType).ShouldBeNullMessage());
+        Assert.IsNotNull(borehole.Geometry, nameof(Borehole.Geometry).ShouldNotBeNullMessage());
+        Assert.AreEqual(2056, borehole.Geometry.SRID, nameof(Borehole.Geometry.SRID));
 
         // Assert stratigraphy's lithological descriptions
         Assert.AreEqual(2, borehole.Stratigraphies.Count, nameof(borehole.Stratigraphies.Count));
