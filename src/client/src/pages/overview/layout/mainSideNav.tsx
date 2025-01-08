@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -13,7 +13,6 @@ import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.tsx";
-import ImportModal from "../sidePanelContent/importer/importModal.tsx";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
@@ -24,37 +23,32 @@ export interface MainSideNavProps {
   setEnabledWorkgroups: React.Dispatch<React.SetStateAction<Workgroup[]>>;
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
   sideDrawerContent: DrawerContentTypes;
+  errorsResponse: ErrorResponse | null;
+  validationErrorModal: boolean;
+  setValidationErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MainSideNav = ({
   toggleDrawer,
   drawerOpen,
-  workgroupId,
   setWorkgroupId,
-  enabledWorkgroups,
   setEnabledWorkgroups,
   setSideDrawerContent,
   sideDrawerContent,
+  errorsResponse,
+  validationErrorModal,
+  setValidationErrorModal,
 }: MainSideNavProps) => {
   const history = useHistory();
   const menuRef = useRef(null);
   const { t } = useTranslation();
   const auth = useAuth();
-  const [creating, setCreating] = useState<boolean>(false);
-  const [modal, setModal] = useState<boolean>(false);
-  const [upload, setUpload] = useState<boolean>(false);
-  const [validationErrorModal, setValidationErrorModal] = useState<boolean>(false);
-  const [selectedFile, setSelectedFile] = useState<Blob[] | null>(null);
-  const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   const filterContext = useContext(FilterContext);
 
   // Redux state
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   // Redux actions
   const dispatch = useDispatch();
-  const refresh = () => {
-    dispatch({ type: "SEARCH_EDITOR_FILTER_REFRESH" });
-  };
 
   useEffect(() => {
     const wgs = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
@@ -169,22 +163,6 @@ const MainSideNav = ({
           />
         )}
       </Stack>
-      <ImportModal
-        creating={creating}
-        setCreating={setCreating}
-        setModal={setModal}
-        setUpload={setUpload}
-        setErrorsResponse={setErrorsResponse}
-        setValidationErrorModal={setValidationErrorModal}
-        refresh={refresh}
-        setSelectedFile={setSelectedFile}
-        setWorkgroup={setWorkgroupId}
-        enabledWorkgroups={enabledWorkgroups}
-        workgroup={workgroupId}
-        selectedFile={selectedFile}
-        modal={modal}
-        upload={upload}
-      />
       <ImportErrorModal
         setValidationErrorModal={setValidationErrorModal}
         validationErrorModal={validationErrorModal}

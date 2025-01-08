@@ -7,6 +7,7 @@ import MainSideNav from "./layout/mainSideNav.tsx";
 import { MapView } from "./layout/mapView.tsx";
 import { SideDrawer } from "./layout/sideDrawer.tsx";
 import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
+import { ErrorResponse } from "./sidePanelContent/commons/actionsInterfaces.ts";
 import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
 import FilterComponent from "./sidePanelContent/filter/filterComponent.jsx";
 import ImportPanel from "./sidePanelContent/importPanel.tsx";
@@ -18,6 +19,9 @@ export const OverviewPage = () => {
   const [workgroupId, setWorkgroupId] = useState("");
   const [enabledWorkgroups, setEnabledWorkgroups] = useState<Workgroup[]>([]);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
+  const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
+  const [validationErrorModal, setValidationErrorModal] = useState<boolean>(false);
+
   const { showAlert } = useContext(AlertContext);
 
   const toggleSideDrawer = (open: boolean) => {
@@ -41,6 +45,8 @@ export const OverviewPage = () => {
         workgroupId={workgroupId}
         setWorkgroupId={setWorkgroupId}
         enabledWorkgroups={enabledWorkgroups}
+        setErrorsResponse={setErrorsResponse}
+        setValidationErrorModal={setValidationErrorModal}
       />
     ),
   };
@@ -62,6 +68,9 @@ export const OverviewPage = () => {
           drawerOpen={sideDrawerOpen}
           setSideDrawerContent={setSideDrawerContent}
           sideDrawerContent={sideDrawerContent}
+          errorsResponse={errorsResponse}
+          validationErrorModal={validationErrorModal}
+          setValidationErrorModal={setValidationErrorModal}
         />
       </SidebarBox>
       <SideDrawer drawerOpen={sideDrawerOpen} drawerContent={sideDrawerComponentMap[sideDrawerContent]} />

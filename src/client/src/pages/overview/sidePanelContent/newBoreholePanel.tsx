@@ -1,7 +1,8 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Button, Stack } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { createBorehole } from "../../../api-lib";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { SideDrawerHeader } from "../layout/sideDrawerHeader.tsx";
@@ -10,8 +11,10 @@ import WorkgroupSelect from "./commons/workgroupSelect.tsx";
 
 const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, toggleDrawer }: NewBoreholeProps) => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
+
   const handleBoreholeCreate = () => {
     // @ts-expect-error : The createBorehole function is not typed
     createBorehole(parseInt(workgroupId))
@@ -30,23 +33,23 @@ const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, togg
   };
 
   return (
-    <>
+    <Stack direction="column" height={"100%"}>
       <SideDrawerHeader title={t("newBorehole")} toggleDrawer={toggleDrawer} />
-      <Stack direction="column" spacing={3}>
+      <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
         <WorkgroupSelect
           workgroupId={workgroupId}
           enabledWorkgroups={enabledWorkgroups}
           setWorkgroupId={setWorkgroupId}
         />
-        <Button
-          variant="outlined"
-          data-cy={"create-button"}
-          disabled={enabledWorkgroups?.length === 0}
-          onClick={handleBoreholeCreate}>
-          {t("create")}
-        </Button>
-      </Stack>
-    </>
+      </Box>
+      <Button
+        variant="contained"
+        data-cy={"create-button"}
+        disabled={enabledWorkgroups?.length === 0}
+        onClick={handleBoreholeCreate}>
+        {t("create")}
+      </Button>
+    </Stack>
   );
 };
 
