@@ -92,11 +92,11 @@ public class ImportController : ControllerBase
                 .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
                 .ConfigureAwait(false);
 
-            var hydrotestCodelists = context.Codelists
+            var hydrotestCodelists = await context.Codelists
                 .Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema
                         || c.Schema == HydrogeologySchemas.FlowdirectionSchema
                         || c.Schema == HydrogeologySchemas.EvaluationMethodSchema)
-                .ToList();
+                .ToListAsync().ConfigureAwait(false);
 
             foreach (var borehole in boreholes)
             {
@@ -138,13 +138,6 @@ public class ImportController : ControllerBase
             logger.LogError(ex, "Error while importing borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
             return Problem("Error while importing borehole(s) via json file.");
         }
-    }
-
-    private List<Codelist> GetCodelists(List<Codelist> codeLists, List<int> codelistIds)
-    {
-        return codeLists
-            .Where(c => codelistIds.Contains(c.Id))
-            .ToList();
     }
 
     /// <summary>
@@ -263,6 +256,13 @@ public class ImportController : ControllerBase
             logger.LogError(ex, "Error while importing borehole(s) to workgroup with id <{WorkgroupId}>.", workgroupId);
             return Problem("Error while importing borehole(s).");
         }
+    }
+
+    private static List<Codelist> GetCodelists(List<Codelist> codeLists, List<int> codelistIds)
+    {
+        return codeLists
+            .Where(c => codelistIds.Contains(c.Id))
+            .ToList();
     }
 
     internal static int GetPrecision(IReaderRow row, string fieldName)
