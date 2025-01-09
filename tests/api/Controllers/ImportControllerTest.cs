@@ -794,7 +794,7 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("No borehole csv file uploaded.", badRequestResult.Value);
+        Assert.AreEqual("Invalid or empty file uploaded.", badRequestResult.Value);
     }
 
     [TestMethod]
@@ -829,7 +829,7 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("No borehole csv file uploaded.", badRequestResult.Value);
+        Assert.AreEqual("Invalid or empty file uploaded.", badRequestResult.Value);
     }
 
     [TestMethod]
