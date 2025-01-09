@@ -234,7 +234,7 @@ public class ImportController : ControllerBase
         }
     }
 
-    private bool ValidateFile(IFormFile file, Func<IFormFile, bool> fileValidationFunc)
+    private static bool ValidateFile(IFormFile file, Func<IFormFile, bool> fileValidationFunc)
     {
         if (file == null || file.Length == 0) return false;
         return fileValidationFunc(file);
@@ -265,7 +265,7 @@ public class ImportController : ControllerBase
             .ConfigureAwait(false);
     }
 
-    private void MapHydrotestCodelists(BoreholeImport borehole, List<Codelist> hydrotestCodelists)
+    private static void MapHydrotestCodelists(BoreholeImport borehole, List<Codelist> hydrotestCodelists)
     {
         var hydroTests = borehole.Observations?.OfType<Hydrotest>().ToList();
         if (hydroTests == null) return;
