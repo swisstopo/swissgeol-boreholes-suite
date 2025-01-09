@@ -33,7 +33,7 @@ public class LocationService
     /// <param name="north">The north coordinate of the location.</param>
     /// <param name="srid">The id of the reference system. </param>
     /// <returns>The <see cref="LocationInfo"/> corresponding to the supplied coordinates.</returns>
-    public async Task<LocationInfo> IdentifyAsync(double east, double north, int srid = 2056)
+    public async Task<LocationInfo> IdentifyAsync(double east, double north, int srid = SpatialReferenceConstants.SridLv95)
     {
         using var httpClient = httpClientFactory.CreateClient(nameof(LocationService));
 

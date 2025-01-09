@@ -4,6 +4,7 @@ using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.IO.Converters;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json;
@@ -24,7 +25,7 @@ public class ExportController : ControllerBase
     {
         WriteIndented = true,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter() },
+        Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
     };
 
     public ExportController(BdmsContext context)

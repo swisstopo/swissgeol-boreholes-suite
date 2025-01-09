@@ -87,6 +87,10 @@
     "topBedrockFreshMd": 759.5479580385368,
     "topBedrockWeatheredMd": 1.338392690447342,
     "hasGroundwater": false,
+    "Geometry": {
+      "type": "Point",
+      "coordinates": [ 2762322, 1152293 ]
+    },
     "remarks": "This product works too well.",
     "lithologyTopBedrockId": 15104543,
     "lithologyTopBedrock": null,
@@ -1123,6 +1127,24 @@
             "updated": "2021-04-14T18:38:07.287685Z"
           }
         ]
+      }
+    ],
+    "BoreholeGeometry": [
+      {
+        "MD": 0,
+        "X": 0,
+        "Y": 0,
+        "Z": 0,
+        "HAZI": null,
+        "DEVI": null
+      },
+      {
+        "MD": 10,
+        "X": -0.13453418496717173,
+        "Y": 356436.1434696717173,
+        "Z": -0.156717173,
+        "HAZI": 0,
+        "DEVI": 0.1468618496717173
       }
     ],
     "observations": [
