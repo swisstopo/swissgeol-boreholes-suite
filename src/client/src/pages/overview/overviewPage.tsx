@@ -20,7 +20,7 @@ export const OverviewPage = () => {
   const [enabledWorkgroups, setEnabledWorkgroups] = useState<Workgroup[]>([]);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
-  const [validationErrorModal, setValidationErrorModal] = useState<boolean>(false);
+  const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
 
   const { showAlert } = useContext(AlertContext);
 
@@ -46,7 +46,7 @@ export const OverviewPage = () => {
         setWorkgroupId={setWorkgroupId}
         enabledWorkgroups={enabledWorkgroups}
         setErrorsResponse={setErrorsResponse}
-        setValidationErrorModal={setValidationErrorModal}
+        setValidationErrorModal={setErrorDialogOpen}
       />
     ),
   };
@@ -69,8 +69,8 @@ export const OverviewPage = () => {
           setSideDrawerContent={setSideDrawerContent}
           sideDrawerContent={sideDrawerContent}
           errorsResponse={errorsResponse}
-          validationErrorModal={validationErrorModal}
-          setValidationErrorModal={setValidationErrorModal}
+          errorDialogOpen={errorDialogOpen}
+          setErrorDialogOpen={setErrorDialogOpen}
         />
       </SidebarBox>
       <SideDrawer drawerOpen={sideDrawerOpen} drawerContent={sideDrawerComponentMap[sideDrawerContent]} />

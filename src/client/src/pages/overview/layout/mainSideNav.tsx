@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Badge, Stack } from "@mui/material";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
@@ -12,7 +12,7 @@ import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
-import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.tsx";
+import { ImportErrorDialog } from "../sidePanelContent/importer/importErrorDialog.tsx";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
@@ -24,8 +24,8 @@ export interface MainSideNavProps {
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
   sideDrawerContent: DrawerContentTypes;
   errorsResponse: ErrorResponse | null;
-  validationErrorModal: boolean;
-  setValidationErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  errorDialogOpen: boolean;
+  setErrorDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MainSideNav = ({
@@ -36,8 +36,8 @@ const MainSideNav = ({
   setSideDrawerContent,
   sideDrawerContent,
   errorsResponse,
-  validationErrorModal,
-  setValidationErrorModal,
+  errorDialogOpen,
+  setErrorDialogOpen,
 }: MainSideNavProps) => {
   const history = useHistory();
   const menuRef = useRef(null);
@@ -45,10 +45,7 @@ const MainSideNav = ({
   const auth = useAuth();
   const filterContext = useContext(FilterContext);
 
-  // Redux state
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  // Redux actions
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const wgs = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
@@ -163,11 +160,7 @@ const MainSideNav = ({
           />
         )}
       </Stack>
-      <ImportErrorModal
-        setValidationErrorModal={setValidationErrorModal}
-        validationErrorModal={validationErrorModal}
-        errorResponse={errorsResponse}
-      />
+      <ImportErrorDialog open={errorDialogOpen} setOpen={setErrorDialogOpen} errorResponse={errorsResponse} />
     </Stack>
   );
 };

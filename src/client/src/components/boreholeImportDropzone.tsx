@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { MouseEvent, useState } from "react";
 import { Accept, FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
-import { File as FileIcon, Trash2 } from "lucide-react";
+import { CircleX, File as FileIcon, Trash2 } from "lucide-react";
 import UploadIcon from "../assets/icons/upload.svg?react";
 import { theme } from "../AppTheme.ts";
 
 interface FileDropzoneProps {
   file: File | null;
   setFile: React.Dispatch<React.SetStateAction<File | null>>;
-  onHandleFileChange: (file: File | null) => void;
   defaultText: string;
   maxFilesToSelectAtOnce: number;
   maxFilesToUpload: number;
@@ -19,7 +18,6 @@ interface FileDropzoneProps {
 export const BoreholeImportDropzone = ({
   file,
   setFile,
-  onHandleFileChange,
   maxFilesToSelectAtOnce,
   acceptedFileTypes,
 }: FileDropzoneProps) => {
@@ -27,7 +25,6 @@ export const BoreholeImportDropzone = ({
   const defaultDropzoneTextColor = theme.palette.primary.main;
   const [dropzoneErrorText, setDropzoneErrorText] = useState("");
 
-  // Set the color of the dropzone text to red and display an error message
   const showErrorMsg = (errorCode: string) => {
     switch (errorCode) {
       case "file-invalid-type":
@@ -47,11 +44,6 @@ export const BoreholeImportDropzone = ({
     }
   };
 
-  // Is called when the files array changes. This is used to update the file list in the parent component.
-  useEffect(() => {
-    onHandleFileChange(file);
-  }, [file, onHandleFileChange]);
-
   const onDropAccepted = (acceptedFiles: File[]) => {
     setDropzoneErrorText("");
     setFile(acceptedFiles[0]);
@@ -61,13 +53,17 @@ export const BoreholeImportDropzone = ({
     setFile(null);
   };
 
-  // Is called when the selected/dropped files are rejected
+  const resetDropzone = (e: MouseEvent) => {
+    e.stopPropagation();
+    setFile(null);
+    setDropzoneErrorText("");
+  };
+
   const onDropRejected = (fileRejections: FileRejection[]) => {
     const errorCode = fileRejections[0].errors[0].code;
     showErrorMsg(errorCode);
   };
 
-  // Create the dropzone
   const { getRootProps, getInputProps } = useDropzone({
     onDropRejected,
     onDropAccepted,
@@ -80,23 +76,13 @@ export const BoreholeImportDropzone = ({
   });
 
   const dropZoneStyles = {
-    flex: 1,
-    display: "flex",
     padding: "15px",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    minHeight: "15vh",
-    maxWidth: "95vw",
-    fontSize: "20px",
     borderWidth: "2px",
     borderRadius: "5px",
+    minHeight: "200px",
     borderColor: defaultDropzoneTextColor,
     borderStyle: "dashed",
-    backgroundColor: theme.palette.background.lightgrey,
     color: defaultDropzoneTextColor,
-    outline: "none",
-    transition: "border 0.24s ease-in-out",
   };
 
   const DropZoneInfoTypography = (text: string) => (
@@ -127,8 +113,12 @@ export const BoreholeImportDropzone = ({
               <UploadIcon />
               <Typography variant="h6">{t("dataImport")}</Typography>
             </Stack>
-            {dropzoneErrorText && DropZoneErrorTypography(dropzoneErrorText)}
-
+            {dropzoneErrorText && (
+              <Stack alignItems={"center"} gap={1}>
+                {DropZoneErrorTypography(dropzoneErrorText)}
+                <CircleX color={theme.palette.error.main} onClick={resetDropzone} />
+              </Stack>
+            )}
             {!dropzoneErrorText && (
               <Stack alignItems={"center"}>
                 {DropZoneInfoTypography(t("clickOrDragAndDrop"))}
@@ -138,8 +128,7 @@ export const BoreholeImportDropzone = ({
               </Stack>
             )}
           </Box>
-
-          <input {...getInputProps()} aria-label="import-boreholeFile-input" />
+          <input {...getInputProps()} />
         </Box>
       )}
       {file && (

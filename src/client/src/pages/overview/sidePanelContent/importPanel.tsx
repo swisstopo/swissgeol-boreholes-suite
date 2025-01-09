@@ -30,9 +30,6 @@ const ImportPanel = ({
   const refresh = () => {
     dispatch({ type: "SEARCH_EDITOR_FILTER_REFRESH" });
   };
-  const handleFileChange = () => {
-    console.log("file change");
-  };
 
   const getFileExtension = (file: File | null) => {
     if (file) {
@@ -99,7 +96,6 @@ const ImportPanel = ({
           <BoreholeImportDropzone
             file={file}
             setFile={setFile}
-            onHandleFileChange={handleFileChange}
             defaultText={"dropZoneBoreholeJsonText"}
             acceptedFileTypes={["application/json", "text/csv"]}
             maxFilesToSelectAtOnce={1}
