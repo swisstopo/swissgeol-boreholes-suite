@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Box, Button, Stack } from "@mui/material";
 import { createBorehole } from "../../../api-lib";
@@ -11,7 +10,6 @@ import WorkgroupSelect from "./commons/workgroupSelect.tsx";
 
 const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, toggleDrawer }: NewBoreholeProps) => {
   const history = useHistory();
-  const dispatch = useDispatch();
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
 
