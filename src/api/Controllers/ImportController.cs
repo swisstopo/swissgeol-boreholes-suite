@@ -92,6 +92,12 @@ public class ImportController : ControllerBase
                 .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
                 .ConfigureAwait(false);
 
+            var hydrotestCodelists = await context.Codelists
+                .Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema
+                        || c.Schema == HydrogeologySchemas.FlowdirectionSchema
+                        || c.Schema == HydrogeologySchemas.EvaluationMethodSchema)
+                .ToListAsync().ConfigureAwait(false);
+
             foreach (var borehole in boreholes)
             {
                 borehole.MarkAsNew();
@@ -107,6 +113,18 @@ public class ImportController : ControllerBase
                 borehole.Sections?.MarkAsNew();
                 borehole.Observations?.MarkAsNew();
                 borehole.BoreholeGeometry?.MarkAsNew();
+
+                // Process Hydrotest Observations
+                var hydroTests = borehole.Observations?.OfType<Hydrotest>().ToList();
+                if (hydroTests != null)
+                {
+                    foreach (var hydroTest in hydroTests)
+                    {
+                        hydroTest.KindCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.KindCodelistIds!);
+                        hydroTest.FlowDirectionCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.FlowDirectionCodelistIds!);
+                        hydroTest.EvaluationMethodCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.EvaluationMethodCodelistIds!);
+                    }
+                }
 
                 // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
                 borehole.Workflows.Clear();
@@ -241,6 +259,13 @@ public class ImportController : ControllerBase
             logger.LogError(ex, "Error while importing borehole(s) to workgroup with id <{WorkgroupId}>.", workgroupId);
             return Problem("Error while importing borehole(s).");
         }
+    }
+
+    private static List<Codelist> GetCodelists(List<Codelist> codeLists, List<int> codelistIds)
+    {
+        return codeLists
+            .Where(c => codelistIds.Contains(c.Id))
+            .ToList();
     }
 
     internal static int GetPrecision(IReaderRow row, string fieldName)
