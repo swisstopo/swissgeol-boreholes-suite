@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Badge, Stack } from "@mui/material";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
@@ -12,49 +12,38 @@ import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
-import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.tsx";
-import ImportModal from "../sidePanelContent/importer/importModal.tsx";
+import { ImportErrorDialog } from "../sidePanelContent/importer/importErrorDialog.tsx";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
   drawerOpen: boolean;
-  workgroupId: string;
   setWorkgroupId: React.Dispatch<React.SetStateAction<string>>;
-  enabledWorkgroups: Workgroup[];
   setEnabledWorkgroups: React.Dispatch<React.SetStateAction<Workgroup[]>>;
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
   sideDrawerContent: DrawerContentTypes;
+  errorsResponse: ErrorResponse | null;
+  errorDialogOpen: boolean;
+  setErrorDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MainSideNav = ({
   toggleDrawer,
   drawerOpen,
-  workgroupId,
   setWorkgroupId,
-  enabledWorkgroups,
   setEnabledWorkgroups,
   setSideDrawerContent,
   sideDrawerContent,
+  errorsResponse,
+  errorDialogOpen,
+  setErrorDialogOpen,
 }: MainSideNavProps) => {
   const history = useHistory();
   const menuRef = useRef(null);
   const { t } = useTranslation();
   const auth = useAuth();
-  const [creating, setCreating] = useState<boolean>(false);
-  const [modal, setModal] = useState<boolean>(false);
-  const [upload, setUpload] = useState<boolean>(false);
-  const [validationErrorModal, setValidationErrorModal] = useState<boolean>(false);
-  const [selectedFile, setSelectedFile] = useState<Blob[] | null>(null);
-  const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   const filterContext = useContext(FilterContext);
 
-  // Redux state
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  // Redux actions
-  const dispatch = useDispatch();
-  const refresh = () => {
-    dispatch({ type: "SEARCH_EDITOR_FILTER_REFRESH" });
-  };
 
   useEffect(() => {
     const wgs = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
@@ -77,6 +66,11 @@ const MainSideNav = ({
     setSideDrawerContent(DrawerContentTypes.CustomLayers);
   };
 
+  const handleToggleUpload = () => {
+    handleDrawer(DrawerContentTypes.Import);
+    setSideDrawerContent(DrawerContentTypes.Import);
+  };
+
   const handleDrawer = (buttonName: DrawerContentTypes) => {
     if (sideDrawerContent === buttonName) {
       toggleDrawer(!drawerOpen);
@@ -88,6 +82,8 @@ const MainSideNav = ({
   const isFilterPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Filters;
   const isAddPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.NewBorehole;
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
+  const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
+  const editingDisabled = user.data.roles.indexOf("EDIT") === -1;
   const activeFilterCount = filterContext.activeFilterLength + (filterContext.filterPolygon === null ? 0 : 1);
 
   return (
@@ -121,19 +117,16 @@ const MainSideNav = ({
               icon={<Plus />}
               label={t("add")}
               selected={isAddPanelVisible}
-              disabled={user.data.roles.indexOf("EDIT") === -1}
+              disabled={editingDisabled}
               onClick={handleToggleAdd}
             />
             <NavButton
               data-cy="import-borehole-button"
               icon={<UploadIcon />}
               label={t("upload")}
-              disabled={user.data.roles.indexOf("EDIT") === -1}
-              onClick={() => {
-                toggleDrawer(false);
-                setModal(true);
-                setUpload(true);
-              }}
+              disabled={editingDisabled}
+              selected={isUploadPanelVisible}
+              onClick={handleToggleUpload}
             />
           </>
         )}
@@ -165,27 +158,7 @@ const MainSideNav = ({
           />
         )}
       </Stack>
-      <ImportModal
-        creating={creating}
-        setCreating={setCreating}
-        setModal={setModal}
-        setUpload={setUpload}
-        setErrorsResponse={setErrorsResponse}
-        setValidationErrorModal={setValidationErrorModal}
-        refresh={refresh}
-        setSelectedFile={setSelectedFile}
-        setWorkgroup={setWorkgroupId}
-        enabledWorkgroups={enabledWorkgroups}
-        workgroup={workgroupId}
-        selectedFile={selectedFile}
-        modal={modal}
-        upload={upload}
-      />
-      <ImportErrorModal
-        setValidationErrorModal={setValidationErrorModal}
-        validationErrorModal={validationErrorModal}
-        errorResponse={errorsResponse}
-      />
+      <ImportErrorDialog open={errorDialogOpen} setOpen={setErrorDialogOpen} errorResponse={errorsResponse} />
     </Stack>
   );
 };
