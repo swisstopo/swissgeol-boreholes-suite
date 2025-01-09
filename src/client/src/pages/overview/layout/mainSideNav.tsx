@@ -17,9 +17,7 @@ import { ImportErrorDialog } from "../sidePanelContent/importer/importErrorDialo
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
   drawerOpen: boolean;
-  workgroupId: string;
   setWorkgroupId: React.Dispatch<React.SetStateAction<string>>;
-  enabledWorkgroups: Workgroup[];
   setEnabledWorkgroups: React.Dispatch<React.SetStateAction<Workgroup[]>>;
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
   sideDrawerContent: DrawerContentTypes;

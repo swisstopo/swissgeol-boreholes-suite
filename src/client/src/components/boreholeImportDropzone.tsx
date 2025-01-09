@@ -12,6 +12,12 @@ interface BoreholeImportDropzoneProps {
   acceptedFileTypes: string[];
 }
 
+const DropZoneTypography = ({ text, color }: { text: string; color?: string }) => (
+  <Typography variant="h6" sx={{ textAlign: "center" }} color={color ?? theme.palette.action.disabled}>
+    {text}
+  </Typography>
+);
+
 export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: BoreholeImportDropzoneProps) => {
   const { t } = useTranslation();
   const [dropzoneErrorText, setDropzoneErrorText] = useState("");
@@ -73,18 +79,6 @@ export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: Bor
     color: theme.palette.primary.main,
   };
 
-  const DropZoneInfoTypography = (text: string) => (
-    <Typography variant="h6" sx={{ textAlign: "center" }} color={theme.palette.action.disabled}>
-      {text}
-    </Typography>
-  );
-
-  const DropZoneErrorTypography = (text: string) => (
-    <Typography variant="h6" sx={{ textAlign: "center" }} color={theme.palette.error.main}>
-      {text}
-    </Typography>
-  );
-
   return (
     <>
       {!file && (
@@ -100,20 +94,20 @@ export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: Bor
           <Box>
             <Stack gap={1} direction={"row"} p={1} justifyContent={"center"}>
               <UploadIcon />
-              <Typography variant="h6">{t("dataImport")}</Typography>
+              <Typography variant="h6">{t("dataImport")}</Typography>main
             </Stack>
             {dropzoneErrorText && (
               <Stack alignItems={"center"} gap={1}>
-                {DropZoneErrorTypography(dropzoneErrorText)}
+                <DropZoneTypography text={dropzoneErrorText} color={theme.palette.error.main} />
                 <CircleX color={theme.palette.error.main} onClick={resetDropzone} />
               </Stack>
             )}
             {!dropzoneErrorText && (
               <Stack alignItems={"center"}>
-                {DropZoneInfoTypography(t("clickOrDragAndDrop"))}
-                {DropZoneInfoTypography(t("allowedFormats") + ": JSON, CSV")}
-                {DropZoneInfoTypography(t("fileLimit1File200Mb"))}
-                {DropZoneInfoTypography(t("needHelpSeeDocumentation"))}
+                <DropZoneTypography text={t("clickOrDragAndDrop")} />
+                <DropZoneTypography text={t("allowedFormats") + ": JSON, CSV"} />
+                <DropZoneTypography text={t("fileLimit1File200Mb")} />
+                <DropZoneTypography text={t("needHelpSeeDocumentation")} />
               </Stack>
             )}
           </Box>
