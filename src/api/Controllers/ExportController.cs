@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO.Converters;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -244,7 +245,7 @@ public class ExportController : ControllerBase
         }
         catch (Exception ex)
         {
-            logger.LogError($"Failed to prepare ZIP file: {ex}");
+            logger.LogError("Failed to prepare ZIP file: {Exception}.", ex);
             return Problem("An error occurred while preparing the ZIP File.");
         }
     }
