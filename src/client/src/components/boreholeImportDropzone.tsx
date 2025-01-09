@@ -14,7 +14,6 @@ interface BoreholeImportDropzoneProps {
 
 export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: BoreholeImportDropzoneProps) => {
   const { t } = useTranslation();
-  const defaultDropzoneTextColor = theme.palette.primary.main;
   const [dropzoneErrorText, setDropzoneErrorText] = useState("");
 
   const showErrorMsg = (errorCode: string) => {
@@ -27,9 +26,6 @@ export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: Bor
         break;
       case "file-too-large":
         setDropzoneErrorText(t("dropZoneFileToLarge"));
-        break;
-      case "max-upload-reached":
-        setDropzoneErrorText(t("dropZoneMaxFilesToUploadReached") + " (max additional: 1)");
         break;
       default:
         setDropzoneErrorText(t("dropZoneDefaultErrorMsg"));
@@ -72,9 +68,9 @@ export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: Bor
     borderWidth: "2px",
     borderRadius: "5px",
     minHeight: "200px",
-    borderColor: defaultDropzoneTextColor,
+    borderColor: theme.palette.primary.main,
     borderStyle: "dashed",
-    color: defaultDropzoneTextColor,
+    color: theme.palette.primary.main,
   };
 
   const DropZoneInfoTypography = (text: string) => (

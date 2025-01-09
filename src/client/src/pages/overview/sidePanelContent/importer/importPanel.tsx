@@ -33,10 +33,9 @@ const ImportPanel = ({
 
   const getFileExtension = (file: File | null) => {
     if (file) {
-      const name = file.name;
-      const lastDot = name.lastIndexOf(".");
+      const lastDot = file.name.lastIndexOf(".");
       if (lastDot > 0) {
-        return name.substring(lastDot + 1);
+        return file.name.substring(lastDot + 1);
       }
     }
     return "";
