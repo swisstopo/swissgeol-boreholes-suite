@@ -36,7 +36,7 @@ export const ImportErrorDialog = ({ open, setOpen, errorResponse }: ImportErrorD
             <Box>
               {/* In case of API response type ProblemDetails */}
               {errorResponse?.detail
-                .split("\n")
+                ?.split("\n")
                 .filter((subString: string) => subString.includes("was not found"))
                 .map((item: string, i: number) => <li key={item + i}>{item}</li>)}
               {/* In case of API response type ValidationProblemDetails */}
