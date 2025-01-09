@@ -94,7 +94,7 @@ export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: Bor
           <Box>
             <Stack gap={1} direction={"row"} p={1} justifyContent={"center"}>
               <UploadIcon />
-              <Typography variant="h6">{t("dataImport")}</Typography>main
+              <Typography variant="h6">{t("dataImport")}</Typography>
             </Stack>
             {dropzoneErrorText && (
               <Stack alignItems={"center"} gap={1}>
