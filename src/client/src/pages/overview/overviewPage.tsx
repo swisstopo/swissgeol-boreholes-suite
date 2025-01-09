@@ -60,9 +60,7 @@ export const OverviewPage = () => {
     <LayoutBox>
       <SidebarBox>
         <MainSideNav
-          workgroupId={workgroupId}
           setWorkgroupId={setWorkgroupId}
-          enabledWorkgroups={enabledWorkgroups}
           setEnabledWorkgroups={setEnabledWorkgroups}
           toggleDrawer={toggleSideDrawer}
           drawerOpen={sideDrawerOpen}
