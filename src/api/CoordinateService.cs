@@ -69,7 +69,7 @@ public class CoordinateService
         setDestinationLocationY(Math.Round(double.Parse(jsonResult.GetProperty("northing").GetString()!, CultureInfo.InvariantCulture), originalDecimalPlaces, MidpointRounding.AwayFromZero));
 
         // Update geometry (using LV95 coordinates)
-        borehole.Geometry = new Point(borehole.LocationX!.Value, borehole.LocationY!.Value) { SRID = 2056 };
+        borehole.Geometry = new Point(borehole.LocationX!.Value, borehole.LocationY!.Value) { SRID = SpatialReferenceConstants.SridLv95 };
 
         return true;
     }

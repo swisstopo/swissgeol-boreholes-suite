@@ -14,10 +14,6 @@ public class LocationController : Controller
     private readonly ILogger<LocationController> logger;
     private readonly LocationService locationService;
 
-    // Spatial reference identifier (SRID)
-    private readonly int sridLv95 = 2056;
-    private readonly int sridLv03 = 21781;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LocationController"/> class.
     /// </summary>
@@ -60,7 +56,7 @@ public class LocationController : Controller
                 // Use origin spatial reference system
                 var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
                 var locationY = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
-                var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? sridLv95 : sridLv03;
+                var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? SpatialReferenceConstants.SridLv95 : SpatialReferenceConstants.SridLv03;
 
                 // Skip empty ones
                 if (locationX == null || locationY == null) continue;
@@ -104,6 +100,6 @@ public class LocationController : Controller
     /// <returns>The <see cref="LocationInfo"/> corresponding to the supplied coordinates.</returns>
     [HttpGet("identify")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public Task<LocationInfo> IdentifyAsync([Required] double east, [Required] double north, int srid = 2056)
+    public Task<LocationInfo> IdentifyAsync([Required] double east, [Required] double north, int srid = SpatialReferenceConstants.SridLv95)
         => locationService.IdentifyAsync(east, north, srid);
 }
