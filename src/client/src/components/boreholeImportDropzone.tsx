@@ -99,6 +99,18 @@ export const BoreholeImportDropzone = ({
     transition: "border 0.24s ease-in-out",
   };
 
+  const DropZoneInfoTypography = (text: string) => (
+    <Typography variant="h6" sx={{ textAlign: "center" }} color={theme.palette.action.disabled}>
+      {text}
+    </Typography>
+  );
+
+  const DropZoneErrorTypography = (text: string) => (
+    <Typography variant="h6" sx={{ textAlign: "center" }} color={theme.palette.error.main}>
+      {text}
+    </Typography>
+  );
+
   return (
     <>
       {!file && (
@@ -110,29 +122,23 @@ export const BoreholeImportDropzone = ({
             e.preventDefault();
             e.dataTransfer.dropEffect = "copy";
           }}>
-          {dropzoneErrorText && <Typography color="red">{dropzoneErrorText}</Typography>}
-          {!dropzoneErrorText && (
-            <Box>
-              <Stack gap={1} direction={"row"} p={1}>
-                <UploadIcon />
-                <Typography variant="h6">{t("dataimport")}</Typography>
-              </Stack>
+          <Box>
+            <Stack gap={1} direction={"row"} p={1} justifyContent={"center"}>
+              <UploadIcon />
+              <Typography variant="h6">{t("dataImport")}</Typography>
+            </Stack>
+            {dropzoneErrorText && DropZoneErrorTypography(dropzoneErrorText)}
+
+            {!dropzoneErrorText && (
               <Stack alignItems={"center"}>
-                <Typography variant="h6" color={theme.palette.action.disabled}>
-                  {t("clickOrDragAndDrop")}
-                </Typography>
-                <Typography variant="h6" color={theme.palette.action.disabled}>
-                  {t("allowedFormate")}
-                </Typography>
-                <Typography variant="h6" color={theme.palette.action.disabled}>
-                  {t("fileLimit")}
-                </Typography>
-                <Typography variant="h6" color={theme.palette.action.disabled}>
-                  {t("dropzoneHelp")}
-                </Typography>
+                {DropZoneInfoTypography(t("clickOrDragAndDrop"))}
+                {DropZoneInfoTypography(t("allowedFormats") + ": JSON, CSV")}
+                {DropZoneInfoTypography(t("fileLimit1File200Mb"))}
+                {DropZoneInfoTypography(t("needHelpSeeDocumentation"))}
               </Stack>
-            </Box>
-          )}
+            )}
+          </Box>
+
           <input {...getInputProps()} aria-label="import-boreholeFile-input" />
         </Box>
       )}
