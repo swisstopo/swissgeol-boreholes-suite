@@ -187,7 +187,7 @@ public class ExportControllerTest
         var fileResult = result as FileContentResult;
         Assert.IsNotNull(fileResult);
         Assert.AreEqual("application/zip", fileResult.ContentType);
-        Assert.AreEqual("Borehole 257", fileResult.FileDownloadName);
+        Assert.AreEqual("Borehole 257", fileResult.FileDownloadName[0..12]);
 
         // Extract the files from the returned ZIP stream
         using var zipStream = new MemoryStream(fileResult.FileContents);
@@ -207,6 +207,24 @@ public class ExportControllerTest
         Assert.AreEqual("Test borehole for project", borehole.Remarks);
         Assert.AreEqual("Borehole 257", borehole.Name);
         Assert.AreEqual("Project Alpha", borehole.ProjectName);
+    }
+
+    [TestMethod]
+    public async Task ExportJsonEmptyIdsReturnsBadRequest()
+    {
+        var result = await controller.ExportJsonAsync([]).ConfigureAwait(false);
+        var badRequestResult = result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
+    }
+
+    [TestMethod]
+    public async Task ExportWithAttachmentsEmptyIdsReturnsBadRequest()
+            {
+        var result = await controller.ExportJsonWithAttachmentsAsync([]).ConfigureAwait(false);
+        var badRequestResult = result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
     }
 
     [TestMethod]

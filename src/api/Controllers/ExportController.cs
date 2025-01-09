@@ -21,6 +21,7 @@ public class ExportController : ControllerBase
     // Limit the maximum number of items per request to 100.
     // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
     private const int MaxPageSize = 100;
+    private const string ExportFileName = "boreholes_export";
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
@@ -188,7 +189,7 @@ public class ExportController : ControllerBase
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", "boreholes_export.csv");
+        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", $"{ExportFileName}{DateTime.UtcNow:yyyyMMddHHmmss}.csv");
     }
 
     /// <summary>
@@ -200,16 +201,20 @@ public class ExportController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        var idCount = ids.Count();
-        if (ids == null || idCount < 1) return BadRequest("The list of IDs must not be empty.");
+        var idList = ids?.ToList() ?? [];
+        if (idList.Count < 1)
+        {
+            return BadRequest("The list of IDs must not be empty.");
+        }
 
         try
         {
-            var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
-            var files = await context.BoreholeFiles.Include(f => f.File).Where(f => ids.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
-            var fileName = $"boreholes_with_attachments_{DateTime.UtcNow:yyyyMMddHHmmss}";
+            var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+            var files = await context.BoreholeFiles.Include(f => f.File).AsNoTracking().Where(f => idList.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
+            var fileName = $"{ExportFileName}";
 
-            if (idCount == 1)
+            // If only one borehole is exported, use its name as the file name
+            if (idList.Count == 1)
             {
                 fileName = boreholes.Single().Name;
             }
@@ -229,21 +234,18 @@ public class ExportController : ControllerBase
 
                 foreach (var file in files)
                 {
-                    if (file.File.NameUuid != null)
-                    {
-                        var fileBytes = await boreholeFileCloudService.GetObject(file.File.NameUuid).ConfigureAwait(false);
-                        var zipEntry = archive.CreateEntry($"{file.BoreholeId}_{file.File.Name}", CompressionLevel.Fastest);
-                        using var zipEntryStream = zipEntry.Open();
-                        await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
-                    }
+                    var fileBytes = await boreholeFileCloudService.GetObject(file.File.NameUuid!).ConfigureAwait(false);
+                    var zipEntry = archive.CreateEntry($"{file.BoreholeId}_{file.File.Name}", CompressionLevel.Fastest);
+                    using var zipEntryStream = zipEntry.Open();
+                    await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
                 }
             }
 
-            return File(memoryStream.ToArray(), "application/zip", fileName);
+            return File(memoryStream.ToArray(), "application/zip", $"{fileName}{DateTime.UtcNow:yyyyMMddHHmmss}" );
         }
         catch (Exception ex)
         {
-            logger.LogError("Failed to prepare ZIP file.", ex);
+            logger.LogError($"Failed to prepare ZIP file: {ex}");
             return Problem("An error occurred while preparing the ZIP File.");
         }
     }
