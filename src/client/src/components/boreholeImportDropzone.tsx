@@ -6,21 +6,13 @@ import { CircleX, File as FileIcon, Trash2 } from "lucide-react";
 import UploadIcon from "../assets/icons/upload.svg?react";
 import { theme } from "../AppTheme.ts";
 
-interface FileDropzoneProps {
+interface BoreholeImportDropzoneProps {
   file: File | null;
   setFile: React.Dispatch<React.SetStateAction<File | null>>;
-  defaultText: string;
-  maxFilesToSelectAtOnce: number;
-  maxFilesToUpload: number;
   acceptedFileTypes: string[];
 }
 
-export const BoreholeImportDropzone = ({
-  file,
-  setFile,
-  maxFilesToSelectAtOnce,
-  acceptedFileTypes,
-}: FileDropzoneProps) => {
+export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: BoreholeImportDropzoneProps) => {
   const { t } = useTranslation();
   const defaultDropzoneTextColor = theme.palette.primary.main;
   const [dropzoneErrorText, setDropzoneErrorText] = useState("");
@@ -67,7 +59,7 @@ export const BoreholeImportDropzone = ({
   const { getRootProps, getInputProps } = useDropzone({
     onDropRejected,
     onDropAccepted,
-    maxFiles: maxFilesToSelectAtOnce || Infinity,
+    maxFiles: 1,
     maxSize: 209715200,
     accept: acceptedFileTypes.reduce((acc, type) => {
       acc[type] = [];

@@ -2,16 +2,16 @@ import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Box, Button, Stack } from "@mui/material";
-import { importBoreholesCsv, importBoreholesJson } from "../../../api/borehole.ts";
-import { AlertContext } from "../../../components/alert/alertContext.tsx";
-import { BoreholeImportDropzone } from "../../../components/boreholeImportDropzone.tsx";
-import { SideDrawerHeader } from "../layout/sideDrawerHeader.tsx";
-import { ErrorResponse, NewBoreholeProps } from "./commons/actionsInterfaces.ts";
-import WorkgroupSelect from "./commons/workgroupSelect.tsx";
+import { importBoreholesCsv, importBoreholesJson } from "../../../../api/borehole.ts";
+import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import { BoreholeImportDropzone } from "../../../../components/boreholeImportDropzone.tsx";
+import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
+import { ErrorResponse, NewBoreholeProps } from "../commons/actionsInterfaces.ts";
+import WorkgroupSelect from "../commons/workgroupSelect.tsx";
 
 interface ImportPanelProps extends NewBoreholeProps {
   setErrorsResponse: React.Dispatch<React.SetStateAction<ErrorResponse | null>>;
-  setValidationErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const ImportPanel = ({
   workgroupId,
@@ -19,7 +19,7 @@ const ImportPanel = ({
   setWorkgroupId,
   toggleDrawer,
   setErrorsResponse,
-  setValidationErrorModal,
+  setErrorDialogOpen,
 }: ImportPanelProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -53,7 +53,7 @@ const ImportPanel = ({
         if (responseBody.errors) {
           // If response is of type ValidationProblemDetails, open validation error modal.
           setErrorsResponse(responseBody);
-          setValidationErrorModal(true);
+          setErrorDialogOpen(true);
         } else {
           // If response is of type ProblemDetails, show error message.
           showAlert(responseBody.detail, "error");
@@ -92,15 +92,7 @@ const ImportPanel = ({
             enabledWorkgroups={enabledWorkgroups}
             setWorkgroupId={setWorkgroupId}
           />
-
-          <BoreholeImportDropzone
-            file={file}
-            setFile={setFile}
-            defaultText={"dropZoneBoreholeJsonText"}
-            acceptedFileTypes={["application/json", "text/csv"]}
-            maxFilesToSelectAtOnce={1}
-            maxFilesToUpload={1}
-          />
+          <BoreholeImportDropzone file={file} setFile={setFile} acceptedFileTypes={["application/json", "text/csv"]} />
         </Stack>
       </Box>
       <Button

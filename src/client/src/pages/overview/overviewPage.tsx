@@ -10,7 +10,7 @@ import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
 import { ErrorResponse } from "./sidePanelContent/commons/actionsInterfaces.ts";
 import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
 import FilterComponent from "./sidePanelContent/filter/filterComponent.jsx";
-import ImportPanel from "./sidePanelContent/importPanel.tsx";
+import ImportPanel from "./sidePanelContent/importer/importPanel.tsx";
 import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 
 export const OverviewPage = () => {
@@ -46,7 +46,7 @@ export const OverviewPage = () => {
         setWorkgroupId={setWorkgroupId}
         enabledWorkgroups={enabledWorkgroups}
         setErrorsResponse={setErrorsResponse}
-        setValidationErrorModal={setErrorDialogOpen}
+        setErrorDialogOpen={setErrorDialogOpen}
       />
     ),
   };
