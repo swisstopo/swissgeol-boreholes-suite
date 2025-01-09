@@ -210,7 +210,7 @@ public class ExportController : ControllerBase
         {
             var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
             var files = await context.BoreholeFiles.Include(f => f.File).AsNoTracking().Where(f => idList.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
-            var fileName = $"{ExportFileName}";
+            var fileName = $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}";
 
             // If only one borehole is exported, use its name as the file name
             if (idList.Count == 1)
@@ -240,7 +240,7 @@ public class ExportController : ControllerBase
                 }
             }
 
-            return File(memoryStream.ToArray(), "application/zip", $"{fileName}_{DateTime.UtcNow:yyyyMMddHHmmss}");
+            return File(memoryStream.ToArray(), "application/zip", $"{fileName}");
         }
         catch (Exception ex)
         {
