@@ -2,10 +2,10 @@
 using BDMS.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
-using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.IO.Converters;
 using System.Globalization;
 using System.Net;
 using System.Text.Json;
@@ -23,15 +23,13 @@ public class ImportController : ControllerBase
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
-    private readonly int sridLv95 = 2056;
-    private readonly int sridLv03 = 21781;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
 
     private static readonly JsonSerializerOptions jsonImportOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter() },
+        Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
     };
 
     public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService)
@@ -60,9 +58,7 @@ public class ImportController : ControllerBase
 
         logger.LogInformation("Import boreholes json to workgroup with id <{WorkgroupId}>", workgroupId);
 
-        if (boreholesFile == null || boreholesFile.Length == 0) return BadRequest("No file uploaded.");
-
-        if (!FileTypeChecker.IsJson(boreholesFile)) return BadRequest("Invalid file type for borehole JSON.");
+        if (!ValidateFile(boreholesFile, FileTypeChecker.IsJson)) return BadRequest("Invalid or empty file uploaded.");
 
         try
         {
@@ -85,12 +81,8 @@ public class ImportController : ControllerBase
             // If any validation error occured, return a bad request.
             if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
 
-            var subjectId = HttpContext.GetUserSubjectId();
-
-            var user = await context.Users
-                .AsNoTracking()
-                .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-                .ConfigureAwait(false);
+            var user = await GetUserAsync().ConfigureAwait(false);
+            var hydrotestCodelists = await GetHydrotestCodelistsAsync().ConfigureAwait(false);
 
             foreach (var borehole in boreholes)
             {
@@ -106,10 +98,16 @@ public class ImportController : ControllerBase
                 borehole.Completions?.MarkAsNew();
                 borehole.Sections?.MarkAsNew();
                 borehole.Observations?.MarkAsNew();
+                borehole.BoreholeGeometry?.MarkAsNew();
+
+                MapHydrotestCodelists(borehole, hydrotestCodelists);
 
                 // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
                 borehole.Workflows.Clear();
                 borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
+
+                // Set the geometry's SRID to LV95 (EPSG:2056)
+                if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
             }
 
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
@@ -140,11 +138,7 @@ public class ImportController : ControllerBase
         logger.LogInformation("Import borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
         try
         {
-            // Checks if the boreholes file is provided and not empty.
-            if (boreholesFile == null || boreholesFile.Length == 0) return BadRequest("No borehole csv file uploaded.");
-
-            // Checks if the provided boreholes file is a CSV file.
-            if (!FileTypeChecker.IsCsv(boreholesFile)) return BadRequest("Invalid file type for borehole csv.");
+            if (!ValidateFile(boreholesFile, FileTypeChecker.IsCsv)) return BadRequest("Invalid or empty file uploaded.");
 
             // The identifier codelists are used to dynamically map imported identifiers to codelists.
             var identifierCodelists = await context.Codelists
@@ -240,6 +234,50 @@ public class ImportController : ControllerBase
         }
     }
 
+    private static bool ValidateFile(IFormFile file, Func<IFormFile, bool> fileValidationFunc)
+    {
+        if (file == null || file.Length == 0) return false;
+        return fileValidationFunc(file);
+    }
+
+    private static List<Codelist> GetCodelists(List<Codelist> codeLists, List<int> codelistIds)
+    {
+        return codeLists
+            .Where(c => codelistIds.Contains(c.Id))
+            .ToList();
+    }
+
+    private async Task<User?> GetUserAsync()
+    {
+        var subjectId = HttpContext.GetUserSubjectId();
+        return await context.Users.AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
+            .ConfigureAwait(false);
+    }
+
+    private async Task<List<Codelist>> GetHydrotestCodelistsAsync()
+    {
+        return await context.Codelists
+            .Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema
+                     || c.Schema == HydrogeologySchemas.FlowdirectionSchema
+                     || c.Schema == HydrogeologySchemas.EvaluationMethodSchema)
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
+
+    private static void MapHydrotestCodelists(BoreholeImport borehole, List<Codelist> hydrotestCodelists)
+    {
+        var hydroTests = borehole.Observations?.OfType<Hydrotest>().ToList();
+        if (hydroTests == null) return;
+
+        foreach (var hydroTest in hydroTests)
+        {
+            hydroTest.KindCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.KindCodelistIds!);
+            hydroTest.FlowDirectionCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.FlowDirectionCodelistIds!);
+            hydroTest.EvaluationMethodCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.EvaluationMethodCodelistIds!);
+        }
+    }
+
     internal static int GetPrecision(IReaderRow row, string fieldName)
     {
         if (row.HeaderRecord != null && row.HeaderRecord.Any(h => h == fieldName))
@@ -329,7 +367,7 @@ public class ImportController : ControllerBase
         // Use origin spatial reference system
         var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
         var locationY = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
-        var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? sridLv95 : sridLv03;
+        var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? SpatialReferenceConstants.SridLv95 : SpatialReferenceConstants.SridLv03;
 
         if (locationX == null || locationY == null) return;
 

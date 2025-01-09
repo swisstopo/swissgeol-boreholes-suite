@@ -4,12 +4,11 @@ using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
+using NetTopologySuite.IO.Converters;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace BDMS.Controllers;
@@ -30,7 +29,7 @@ public class ExportController : ControllerBase
     {
         WriteIndented = true,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter() },
+        Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
     };
 
     public ExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService, ILogger<ExportController> logger)

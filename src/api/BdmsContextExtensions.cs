@@ -194,7 +194,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Geometry, f =>
            {
                var point = new Point(f.Random.Int(2477750, 2830750), f.Random.Int(1066750, 1310750));
-               point.SRID = 2056;
+               point.SRID = SpatialReferenceConstants.SridLv95;
                return point.OrNull(f, .05f);
            })
            .RuleFor(o => o.NationalInterest, f => borehole_ids % 10 == 9)
@@ -206,6 +206,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TopBedrockFreshTvd, _ => null)
            .RuleFor(o => o.TopBedrockWeatheredTvd, _ => null)
            .RuleFor(o => o.Observations, _ => new Collection<Observation>())
+           .RuleFor(o => o.BoreholeGeometry, _ => new Collection<BoreholeGeometryElement>())
            .FinishWith((f, o) => { o.Name = o.OriginalName; });
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();

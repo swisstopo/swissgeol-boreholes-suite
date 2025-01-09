@@ -286,7 +286,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s geometry.
     /// </summary>
     [Column("geom_bho")]
-    [JsonIgnore]
     public Point? Geometry { get; set; }
 
     /// <summary>
@@ -392,8 +391,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s <see cref="BoreholeGeometry"/>.
     /// </summary>
-    [JsonIgnore]
-    public IList<BoreholeGeometryElement>? BoreholeGeometry { get; }
+    public IList<BoreholeGeometryElement>? BoreholeGeometry { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s observations.

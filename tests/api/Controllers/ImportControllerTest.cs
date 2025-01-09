@@ -165,6 +165,17 @@ public class ImportControllerTest
         Assert.IsNull(borehole.ReferenceElevationPrecision, nameof(Borehole.ReferenceElevationPrecision).ShouldBeNullMessage());
         Assert.AreEqual(20117005, borehole.ReferenceElevationTypeId, nameof(Borehole.ReferenceElevationTypeId));
         Assert.IsNull(borehole.ReferenceElevationType, nameof(Borehole.ReferenceElevationType).ShouldBeNullMessage());
+        Assert.IsNotNull(borehole.Geometry, nameof(Borehole.Geometry).ShouldNotBeNullMessage());
+        Assert.AreEqual(2056, borehole.Geometry.SRID, nameof(Borehole.Geometry.SRID));
+
+        // Assert borehole geometry
+        Assert.AreEqual(2, borehole.BoreholeGeometry.Count, nameof(borehole.BoreholeGeometry.Count));
+        var borheoleGeometry = borehole.BoreholeGeometry.First(x => x.MD == 10);
+        Assert.AreEqual(-0.13453418496717173, borheoleGeometry.X, nameof(borheoleGeometry.X));
+        Assert.AreEqual(356436.1434696717173, borheoleGeometry.Y, nameof(borheoleGeometry.Y));
+        Assert.AreEqual(-0.156717173, borheoleGeometry.Z, nameof(borheoleGeometry.Z));
+        Assert.AreEqual(0, borheoleGeometry.HAZI, nameof(borheoleGeometry.HAZI));
+        Assert.AreEqual(0.1468618496717173, borheoleGeometry.DEVI, nameof(borheoleGeometry.DEVI));
 
         // Assert stratigraphy's lithological descriptions
         Assert.AreEqual(2, borehole.Stratigraphies.Count, nameof(borehole.Stratigraphies.Count));
@@ -472,7 +483,7 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("Invalid file type for borehole JSON.", badRequestResult.Value);
+        Assert.AreEqual("Invalid or empty file uploaded.", badRequestResult.Value);
     }
 
     [TestMethod]
@@ -783,7 +794,7 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("No borehole csv file uploaded.", badRequestResult.Value);
+        Assert.AreEqual("Invalid or empty file uploaded.", badRequestResult.Value);
     }
 
     [TestMethod]
@@ -795,7 +806,7 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("Invalid file type for borehole csv.", badRequestResult.Value);
+        Assert.AreEqual("Invalid or empty file uploaded.", badRequestResult.Value);
     }
 
     [TestMethod]
@@ -818,7 +829,7 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("No borehole csv file uploaded.", badRequestResult.Value);
+        Assert.AreEqual("Invalid or empty file uploaded.", badRequestResult.Value);
     }
 
     [TestMethod]
