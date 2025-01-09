@@ -23,8 +23,6 @@ public class ImportController : ControllerBase
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
-    private readonly int sridLv95 = 2056;
-    private readonly int sridLv03 = 21781;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
 
     private static readonly JsonSerializerOptions jsonImportOptions = new()
@@ -130,7 +128,8 @@ public class ImportController : ControllerBase
                 borehole.Workflows.Clear();
                 borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
 
-                if (borehole.Geometry != null) borehole.Geometry.SRID = 2056;
+                // Set the geometry's SRID to LV95 (EPSG:2056)
+                if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
             }
 
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
@@ -357,7 +356,7 @@ public class ImportController : ControllerBase
         // Use origin spatial reference system
         var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
         var locationY = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
-        var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? sridLv95 : sridLv03;
+        var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? SpatialReferenceConstants.SridLv95 : SpatialReferenceConstants.SridLv03;
 
         if (locationX == null || locationY == null) return;
 

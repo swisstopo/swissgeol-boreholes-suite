@@ -168,7 +168,7 @@ public class ImportControllerTest
         Assert.IsNotNull(borehole.Geometry, nameof(Borehole.Geometry).ShouldNotBeNullMessage());
         Assert.AreEqual(2056, borehole.Geometry.SRID, nameof(Borehole.Geometry.SRID));
 
-        // Asser Borehole geometry
+        // Assert borehole geometry
         Assert.AreEqual(2, borehole.BoreholeGeometry.Count, nameof(borehole.BoreholeGeometry.Count));
         var borheoleGeometry = borehole.BoreholeGeometry.First(x => x.MD == 10);
         Assert.AreEqual(-0.13453418496717173, borheoleGeometry.X, nameof(borheoleGeometry.X));
