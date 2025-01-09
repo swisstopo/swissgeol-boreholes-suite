@@ -226,10 +226,10 @@ public class ExportController : ControllerBase
             {
                 // Add JSON file with borehole data
                 var jsonEntry = archive.CreateEntry($"{fileName}.json", CompressionLevel.Fastest);
-                using (var entryStream = jsonEntry.Open())
+                using var entryStream = jsonEntry.Open();
                 using (var textWriter = new StreamWriter(entryStream))
                 {
-                    await textWriter.WriteAsync(json).ConfigureAwait(false);
+                   await textWriter.WriteAsync(json).ConfigureAwait(false);
                 }
 
                 foreach (var file in files)
