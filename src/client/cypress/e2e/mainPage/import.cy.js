@@ -55,7 +55,7 @@ describe("Test for importing boreholes.", () => {
 
     cy.wait("@borehole-upload");
 
-    cy.get('[data-cy="borehole-import-error-modal-content"]')
+    cy.get('[data-cy="borehole-import-dialog"]')
       .should("not.contain", "Row0")
       .should("contain", "Row1")
       .should("contain", "Field 'location_x' is required.")

@@ -31,7 +31,7 @@ export const ImportErrorDialog = ({ open, setOpen, errorResponse }: ImportErrorD
             </Typography>
           </Stack>
         </DialogHeaderContainer>
-        <DialogMainContent>
+        <DialogMainContent data-cy="borehole-import-dialog">
           {errorResponse && (
             <Box>
               {/* In case of API response type ProblemDetails */}
