@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Security.Claims;
@@ -18,6 +19,7 @@ using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
+[SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010:Opening square brackets should be spaced correctly", Justification = "False positive for collection initializers.")]
 [DeploymentItem("TestData")]
 [TestClass]
 public class ExportControllerTest
@@ -78,7 +80,6 @@ public class ExportControllerTest
         var loggerMock = new Mock<ILogger<ExportController>>();
         controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
-#pragma warning disable SA1010
 
     [TestMethod]
     public async Task ExportJson()
@@ -164,8 +165,6 @@ public class ExportControllerTest
         List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
         Assert.AreEqual(1, boreholes.Count);
     }
-
-#pragma warning restore SA1010
 
     [TestMethod]
     public async Task ExportJsonWithAttachments()
