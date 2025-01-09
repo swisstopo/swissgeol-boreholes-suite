@@ -243,7 +243,7 @@ public class ExportController : ControllerBase
         }
         catch (Exception ex)
         {
-            logger.LogError("Failed to prepare ZIP File: {Exception}", ex);
+            logger.LogError("Failed to prepare ZIP file.", ex);
             return Problem("An error occurred while preparing the ZIP File.");
         }
     }
