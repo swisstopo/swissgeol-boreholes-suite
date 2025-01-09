@@ -56,9 +56,9 @@ public class ExportController : ControllerBase
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of ids.
     /// </summary>
-    /// <param name="ids">The list of IDs for the boreholes to be exported.</param>
+    /// <param name="ids">The list of ids for the boreholes to be exported.</param>
     /// <returns>A CSV file containing the details of the specified boreholes.</returns>
     [HttpGet("csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
@@ -189,14 +189,14 @@ public class ExportController : ControllerBase
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", $"{ExportFileName}{DateTime.UtcNow:yyyyMMddHHmmss}.csv");
+        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv");
     }
 
     /// <summary>
     /// Asynchronously gets all <see cref="Borehole"/> with attachments filtered by ids.
     /// </summary>
     /// <param name="ids">The required list of borehole ids to filter by.</param>
-    /// <returns>A ZIP-file including the borehole data as .json and all corresponding attachments.</returns>
+    /// <returns>A ZIP file including the borehole data as JSON and all corresponding attachments.</returns>
     [HttpGet("zip")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
@@ -241,7 +241,7 @@ public class ExportController : ControllerBase
                 }
             }
 
-            return File(memoryStream.ToArray(), "application/zip", $"{fileName}{DateTime.UtcNow:yyyyMMddHHmmss}" );
+            return File(memoryStream.ToArray(), "application/zip", $"{fileName}_{DateTime.UtcNow:yyyyMMddHHmmss}");
         }
         catch (Exception ex)
         {

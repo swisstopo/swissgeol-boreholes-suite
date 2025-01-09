@@ -23,7 +23,7 @@ namespace BDMS.Controllers;
 public class ExportControllerTest
 {
     private const string TestCsvString = "text/csv";
-    private const string ExportFileName = "boreholes_export.csv";
+    private const string ExportFileName = "boreholes_export";
     private const int TestBoreholeId = 1000068;
     private BdmsContext context;
     private BoreholeFileCloudService boreholeFileCloudService;
@@ -236,7 +236,7 @@ public class ExportControllerTest
 
         Assert.IsNotNull(result);
         Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName);
+        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
         var csvData = Encoding.UTF8.GetString(result.FileContents);
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2; // Remove header and last line break
@@ -262,7 +262,7 @@ public class ExportControllerTest
 
         Assert.IsNotNull(result);
         Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName);
+        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
         var records = GetRecordsFromFileContent(result);
 
         foreach (var record in records)
@@ -362,7 +362,7 @@ public class ExportControllerTest
         var result = await controller.ExportCsvAsync(ids) as FileContentResult;
         Assert.IsNotNull(result);
         Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName);
+        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
 
         var records = GetRecordsFromFileContent(result);
 
@@ -400,7 +400,7 @@ public class ExportControllerTest
         Assert.IsNotNull(result);
         Assert.IsNotNull(result);
         Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName);
+        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
         var csvData = Encoding.UTF8.GetString(result.FileContents);
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2;
