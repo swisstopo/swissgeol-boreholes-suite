@@ -156,7 +156,6 @@ public class ImportController : ControllerBase
     {
         foreach (var borehole in boreholes.Select((value, index) => (value, index)))
         {
-            // Upload attachments to cloud storage
             if (borehole.value.Files != null && borehole.value.Files.Count > 0)
             {
                 using var zipStream = boreholesFile.OpenReadStream();
@@ -186,7 +185,7 @@ public class ImportController : ControllerBase
                         ContentType = GetContentType(attachment.Name),
                     };
 
-                    // remove original file information from borehole object
+                    // Remove original file information from borehole object
                     borehole.value.Files.Remove(boreholeFile);
 
                     try
