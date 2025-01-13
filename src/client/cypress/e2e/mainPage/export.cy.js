@@ -4,6 +4,7 @@ import {
   exportCSVItem,
   exportItem,
   exportJsonItem,
+  exportZipItem,
   saveWithSaveBar,
 } from "../helpers/buttonHelpers";
 import {
@@ -250,6 +251,36 @@ describe("Test for exporting boreholes.", () => {
 
     readDownloadedFile(`${boreholeName}.json`);
     readDownloadedFile(`${boreholeName}.csv`);
+  });
+
+  it("exports a single borehole with attachment as zip file", () => {
+    const boreholeName = "COLDWATER";
+    createBorehole({
+      "extended.original_name": boreholeName,
+      "custom.alternate_name": boreholeName,
+    }).as("borehole_id");
+
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}/attachments`);
+      startBoreholeEditing();
+
+      cy.get("input[type=file]").selectFile(
+        {
+          contents: Cypress.Buffer.from(Math.random().toString()),
+          fileName: "FREEZINGCOLD.txt",
+          mimeType: "text/plain",
+        },
+        { force: true },
+      );
+
+      getElementByDataCy("attachments-upload-button").should("be.visible").click();
+      cy.wait(["@upload-files", "@getAllAttachments"]);
+
+      exportItem();
+      exportZipItem();
+    });
+
+    readDownloadedFile(`${boreholeName}.zip`);
   });
 
   it("exports and reimports a borehole using csv", () => {

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO.Converters;
 using System.ComponentModel.DataAnnotations;
+using System.IO.Compression;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -19,7 +21,10 @@ public class ExportController : ControllerBase
     // Limit the maximum number of items per request to 100.
     // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
     private const int MaxPageSize = 100;
+    private const string ExportFileName = "boreholes_export";
     private readonly BdmsContext context;
+    private readonly ILogger logger;
+    private readonly BoreholeFileCloudService boreholeFileCloudService;
 
     private static readonly JsonSerializerOptions jsonExportOptions = new()
     {
@@ -28,9 +33,11 @@ public class ExportController : ControllerBase
         Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
     };
 
-    public ExportController(BdmsContext context)
+    public ExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService, ILogger<ExportController> logger)
     {
         this.context = context;
+        this.logger = logger;
+        this.boreholeFileCloudService = boreholeFileCloudService;
     }
 
     /// <summary>
@@ -49,9 +56,9 @@ public class ExportController : ControllerBase
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of ids.
     /// </summary>
-    /// <param name="ids">The list of IDs for the boreholes to be exported.</param>
+    /// <param name="ids">The list of ids for the boreholes to be exported.</param>
     /// <returns>A CSV file containing the details of the specified boreholes.</returns>
     [HttpGet("csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
@@ -182,7 +189,65 @@ public class ExportController : ControllerBase
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", "boreholes_export.csv");
+        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv");
+    }
+
+    /// <summary>
+    /// Asynchronously gets all <see cref="Borehole"/> with attachments filtered by ids.
+    /// </summary>
+    /// <param name="ids">The required list of borehole ids to filter by.</param>
+    /// <returns>A ZIP file including the borehole data as JSON and all corresponding attachments.</returns>
+    [HttpGet("zip")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    {
+        var idList = ids?.ToList() ?? [];
+        if (idList.Count < 1)
+        {
+            return BadRequest("The list of IDs must not be empty.");
+        }
+
+        try
+        {
+            var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+            var files = await context.BoreholeFiles.Include(f => f.File).AsNoTracking().Where(f => idList.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
+            var fileName = $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}";
+
+            // If only one borehole is exported, use its name as the file name
+            if (idList.Count == 1)
+            {
+                fileName = boreholes.Single().Name;
+            }
+
+            var json = JsonSerializer.Serialize(boreholes, jsonExportOptions);
+
+            using var memoryStream = new MemoryStream();
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                // Add JSON file with borehole data
+                var jsonEntry = archive.CreateEntry($"{fileName}.json", CompressionLevel.Fastest);
+                using var entryStream = jsonEntry.Open();
+                using (var textWriter = new StreamWriter(entryStream))
+                {
+                   await textWriter.WriteAsync(json).ConfigureAwait(false);
+                }
+
+                foreach (var file in files)
+                {
+                    var fileBytes = await boreholeFileCloudService.GetObject(file.File.NameUuid!).ConfigureAwait(false);
+                    var zipEntry = archive.CreateEntry($"{file.BoreholeId}_{file.File.Name}", CompressionLevel.Fastest);
+                    using var zipEntryStream = zipEntry.Open();
+                    await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
+                }
+            }
+
+            return File(memoryStream.ToArray(), "application/zip", $"{fileName}");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to prepare ZIP file.");
+            return Problem("An error occurred while preparing the ZIP file.");
+        }
     }
 
     private static IEnumerable<BoreholeCodelist> GetBoreholeCodelists(Borehole borehole)
