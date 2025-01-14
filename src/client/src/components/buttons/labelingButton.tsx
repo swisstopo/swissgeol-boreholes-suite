@@ -1,7 +1,11 @@
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ButtonProps, IconButton, Tooltip } from "@mui/material";
-import { ChevronDown, ChevronRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import SidebarDown from "../../assets/icons/sidebarDown.svg?react";
+import SidebarLeft from "../../assets/icons/sidebarLeft.svg?react";
+import SidebarRight from "../../assets/icons/sidebarRight.svg?react";
+import SidebarUp from "../../assets/icons/sidebarUp.svg?react";
 
 export const LabelingButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
@@ -30,12 +34,27 @@ export const LabelingToggleButton = forwardRef<HTMLButtonElement, LabelingToggle
   const { panelOpen, panelPosition, ...defaultProps } = props;
   const { t } = useTranslation();
 
+  const iconMap = {
+    right: {
+      true: <SidebarRight />,
+      false: <SidebarLeft />,
+    },
+    bottom: {
+      true: <SidebarDown />,
+      false: <SidebarUp />,
+    },
+  };
+
+  const getIcon = () => {
+    return iconMap[panelPosition][panelOpen ? "true" : "false"];
+  };
+
   return (
     <Tooltip title={t("dataExtraction")}>
       <IconButton
         ref={ref}
         {...defaultProps}
-        color="ai"
+        color={"primary"}
         sx={{
           position: "absolute",
           zIndex: 1000,
@@ -46,7 +65,7 @@ export const LabelingToggleButton = forwardRef<HTMLButtonElement, LabelingToggle
           bottom: panelPosition === "bottom" ? "0" : undefined,
         }}
         data-cy="labeling-toggle-button">
-        {panelOpen ? panelPosition === "right" ? <ChevronRight /> : <ChevronDown /> : <Sparkles />}
+        {getIcon()}
       </IconButton>
     </Tooltip>
   );
