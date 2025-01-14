@@ -12,6 +12,7 @@
 - Changed order of `Top Bedrock (fresh)` and `Top Bedrock (weathered)` fields in borehole form.
 - When importing custom IDs with CSV, the headers are now dynamically mapped to the `borehole_identifier` codelists in the database.
 - Moved borehole import to side drawer and adapted UI design.
+- Years greater than 9999 can no longer be used in date inputs.
 
 ### Fixed
 

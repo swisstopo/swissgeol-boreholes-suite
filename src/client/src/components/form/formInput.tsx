@@ -44,11 +44,13 @@ export const FormInput: FC<FormInputProps> = ({
 }) => {
   const { t } = useTranslation();
   const { formState, register, setValue } = useFormContext();
+  const isDateTimeInput = type === FormValueType.DateTime;
+  const isDateInput = type === FormValueType.Date;
 
   const getDefaultValue = (value: string | number | Date | undefined) => {
     if (value == undefined) {
       return "";
-    } else if (type === FormValueType.DateTime) {
+    } else if (isDateTimeInput) {
       // re-format from 'YYYY-MM-DDTHH:mm:ss.sssZ' to 'YYYY-MM-DDTHH:mm'.
       return (value as string).slice(0, 16);
     } else {
@@ -73,7 +75,7 @@ export const FormInput: FC<FormInputProps> = ({
           if (value === "") {
             return true;
           }
-          if (type === FormValueType.Date || type === FormValueType.DateTime) {
+          if (isDateInput || isDateTimeInput) {
             const date = new Date(value);
             return isValid(date) && date.getFullYear() > 1800 && date.getFullYear() < 3000;
           }
@@ -93,6 +95,8 @@ export const FormInput: FC<FormInputProps> = ({
       InputProps={{
         ...inputProps /* eslint-disable  @typescript-eslint/no-explicit-any */,
         ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),
+        ...(isDateTimeInput && { inputProps: { max: "9999-01-01T00:00" } }),
+        ...(isDateInput && { inputProps: { max: "9999-01-01" } }),
         readOnly: readonly,
         disabled: disabled,
       }}
