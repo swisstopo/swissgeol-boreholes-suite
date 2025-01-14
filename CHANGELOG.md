@@ -20,6 +20,7 @@
 - Fixed bug where `Lithostratigraphhy Top Bedrock` and `Chronostratigraphhy Top Bedrock` were not displayed in form after updating them and navigating away.
 - Ensure all hydrotest codelist values are imported.
 - JSON export/import did not handle borehole geometry and location geometry correctly.
+- JSON import did not handle casing references of observations, backfills and instrumentations correctly.
 
 ## v2.1.993 - 2024-12-13
 
