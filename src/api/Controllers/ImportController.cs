@@ -109,6 +109,8 @@ public class ImportController : ControllerBase
                 borehole.LockedById = null;
                 borehole.UpdatedBy = null;
                 borehole.CreatedBy = null;
+                borehole.CreatedById = user.Id;
+                borehole.UpdatedById = user.Id;
 
                 borehole.Stratigraphies?.MarkAsNew();
                 borehole.Completions?.MarkAsNew();
@@ -125,11 +127,12 @@ public class ImportController : ControllerBase
                 // Set the geometry's SRID to LV95 (EPSG:2056)
                 if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
 
-                if (borehole.Files != null)
+                if (borehole.Files != null) borehole.Files.Clear();
+                if (borehole.BoreholeFiles != null)
                 {
-                    foreach (var file in borehole.Files)
+                    foreach (var file in borehole.BoreholeFiles)
                     {
-                        file.MarkAsNew();
+                        file.File.MarkAsNew();
                     }
                 }
             }
@@ -138,7 +141,10 @@ public class ImportController : ControllerBase
             await context.SaveChangesAsync().ConfigureAwait(false);
 
             // Upload attachments using the uploaded boreholes with new borehole Ids
-            await UploadAttachments(boreholesFile, boreholes).ConfigureAwait(false);
+            if (boreholes.Any(b => b.BoreholeFiles?.Any(f => f.File != null) == true))
+            {
+                await UploadAttachments(boreholesFile, boreholes).ConfigureAwait(false);
+            }
 
             // If any problem occurred while uploading the attachments, return a bad request.
             if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
@@ -156,14 +162,14 @@ public class ImportController : ControllerBase
     {
         foreach (var borehole in boreholes.Select((value, index) => (value, index)))
         {
-            if (borehole.value.Files != null && borehole.value.Files.Count > 0)
+            if (borehole.value.BoreholeFiles != null && borehole.value.BoreholeFiles.Count > 0)
             {
                 using var zipStream = boreholesFile.OpenReadStream();
                 using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-                var filesToProcess = borehole.value.Files.ToList(); // save a copy of the files to keep the file information during processing.
+                var filesToProcess = borehole.value.BoreholeFiles.ToList(); // save a copy of the files to keep the file information during processing.
                 foreach (var boreholeFile in filesToProcess)
                 {
-                    var fileName = $"{boreholeFile.NameUuid}_{boreholeFile.Name}";
+                    var fileName = $"{boreholeFile.File.NameUuid}_{boreholeFile.File.Name}";
                     var attachment = zipArchive.Entries.FirstOrDefault(e => e.FullName == fileName);
                     if (attachment == null)
                     {
@@ -179,14 +185,14 @@ public class ImportController : ControllerBase
                     }
 
                     memoryStream.Position = 0;
-                    var formFile = new FormFile(memoryStream, 0, memoryStream.Length, boreholeFile.Name, boreholeFile.Name)
+                    var formFile = new FormFile(memoryStream, 0, memoryStream.Length, boreholeFile.File.Name, boreholeFile.File.Name)
                     {
                         Headers = new HeaderDictionary(),
                         ContentType = GetContentType(attachment.Name),
                     };
 
                     // Remove original file information from borehole object
-                    borehole.value.Files.Remove(boreholeFile);
+                    borehole.value.BoreholeFiles.Remove(boreholeFile);
 
                     try
                     {

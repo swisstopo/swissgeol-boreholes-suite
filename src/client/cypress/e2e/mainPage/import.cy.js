@@ -81,9 +81,8 @@ describe("Test for importing boreholes.", () => {
       .should("contain", "Borehole with same Coordinates (+/- 2m) and same TotalDepth is provided multiple times.");
   });
 
-  it.only("exports and reimports boreholes with attachments", () => {
+  it("exports and reimports boreholes with attachments", () => {
     // add two boreholes with attachments
-
     const boreholeName = "COLDWATERDRINK";
     const boreholeName2 = "COLDWATERBATH";
     createBorehole({

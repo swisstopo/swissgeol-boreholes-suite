@@ -406,12 +406,12 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="File"/>s attached to the <see cref="Borehole"/>.
     /// </summary>
-    public ICollection<File>? Files { get; set; }
+    public ICollection<File>? Files { get; }
 
     /// <summary>
     /// Gets the <see cref="BoreholeFile"/> join table entities.
     /// </summary>
-    public ICollection<BoreholeFile>? BoreholeFiles { get; }
+    public ICollection<BoreholeFile>? BoreholeFiles { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Codelist"/>s used by the <see cref="Borehole"/> to store multiple id types.
