@@ -140,7 +140,7 @@ public class ImportController : ControllerBase
             // Upload attachments using the uploaded boreholes with new borehole Ids
             await UploadAttachments(boreholesFile, boreholes).ConfigureAwait(false);
 
-            // If any problem occured while uploading the attachments, return a bad request.
+            // If any problem occurred while uploading the attachments, return a bad request.
             if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
 
             return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
