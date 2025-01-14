@@ -9,7 +9,7 @@ internal static class ICasingReferenceExtensions
     {
         if (casingReference == null) return;
 
-        casingReference.Casing = null; // Reset the reference first
+        casingReference.Casing = null;
         if (casingReference.CasingId.HasValue)
         {
             if (casings.TryGetValue(casingReference.CasingId.Value, out var casing))
