@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a Instrumentation entity in the database.
 /// </summary>
 [Table("instrumentation")]
-public class Instrumentation : IChangeTracking, IIdentifyable
+public class Instrumentation : IChangeTracking, IIdentifyable, ICasingReference
 {
     /// <inheritdoc />
     [Column("id")]

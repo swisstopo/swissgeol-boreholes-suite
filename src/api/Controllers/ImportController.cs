@@ -94,6 +94,8 @@ public class ImportController : ControllerBase
                 borehole.UpdatedBy = null;
                 borehole.CreatedBy = null;
 
+                MapCasingReferences(borehole);
+
                 borehole.Stratigraphies?.MarkAsNew();
                 borehole.Completions?.MarkAsNew();
                 borehole.Sections?.MarkAsNew();
@@ -265,6 +267,20 @@ public class ImportController : ControllerBase
             .ConfigureAwait(false);
     }
 
+    private static void MapCasingReferences(BoreholeImport borehole)
+    {
+        var casings = borehole.Completions?.SelectMany(c => c.Casings ?? Enumerable.Empty<Casing>()).ToDictionary(c => c.Id);
+        if (casings == null) return;
+
+        borehole.Observations?.MapCasings(casings);
+
+        foreach (var completion in borehole.Completions)
+        {
+            completion.Instrumentations?.MapCasings(casings);
+            completion.Backfills?.MapCasings(casings);
+        }
+    }
+
     private static void MapHydrotestCodelists(BoreholeImport borehole, List<Codelist> hydrotestCodelists)
     {
         var hydroTests = borehole.Observations?.OfType<Hydrotest>().ToList();
@@ -305,6 +321,7 @@ public class ImportController : ControllerBase
         ValidateRequiredFields(borehole, boreholeIndex, isJsonFile);
         ValidateDuplicateInFile(borehole, boreholesFromFile, boreholeIndex, isJsonFile);
         ValidateDuplicateInDb(borehole, workgroupId, boreholeIndex, isJsonFile);
+        ValidateCasingReferences(borehole, boreholeIndex);
     }
 
     private void ValidateRequiredFields(BoreholeImport borehole, int processingIndex, bool isJsonFile)
@@ -342,6 +359,24 @@ public class ImportController : ControllerBase
         {
             AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", isJsonFile);
         }
+    }
+
+    private void ValidateCasingReferences(BoreholeImport borehole, int processingIndex)
+    {
+        // Get all casing Ids from the borehole's completions
+        var casingIds = borehole.Completions?
+            .SelectMany(c => c.Casings ?? Enumerable.Empty<Casing>())
+            .Select(c => c.Id)
+            .ToHashSet() ?? new HashSet<int>();
+
+        // Aggregate all CasingId references from Observations, Instrumentations, and Backfills
+        var casingReferenceIdsInBorehole = new HashSet<int>(borehole.Observations?.Where(o => o.CasingId.HasValue).Select(o => o.CasingId!.Value) ?? []);
+        casingReferenceIdsInBorehole.UnionWith(borehole.Completions?.SelectMany(c => c.Instrumentations ?? Enumerable.Empty<Instrumentation>()).Where(i => i.CasingId.HasValue).Select(i => i.CasingId!.Value) ?? []);
+        casingReferenceIdsInBorehole.UnionWith(borehole.Completions?.SelectMany(c => c.Backfills ?? Enumerable.Empty<Backfill>()).Where(b => b.CasingId.HasValue).Select(b => b.CasingId!.Value) ?? []);
+
+        // Check if any referenced CasingId is not found in the casingIds set
+        var invalidReferences = casingReferenceIdsInBorehole.Except(casingIds).ToList();
+        if (invalidReferences != null && invalidReferences.Count > 0) AddValidationErrorToModelState(processingIndex, $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", true);
     }
 
     internal static bool CompareValuesWithTolerance(double? firstValue, double? secondValue, double tolerance)
