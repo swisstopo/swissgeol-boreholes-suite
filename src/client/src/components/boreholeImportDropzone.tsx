@@ -119,7 +119,9 @@ export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: Bor
           <Typography variant="h5">{t("uploadedFile")} </Typography>
           <Stack direction={"row"} gap={1} p={2} sx={{ backgroundColor: theme.palette.background.default }}>
             <FileIcon />
-            <Typography variant={"body1"}> {file.name}</Typography>
+            <Typography variant={"body1"} sx={{ wordWrap: "break-word", maxWidth: 230 }}>
+              {file.name}
+            </Typography>
             <Trash2 color={theme.palette.primary.main} onClick={() => removeFile()} />
           </Stack>
         </>
