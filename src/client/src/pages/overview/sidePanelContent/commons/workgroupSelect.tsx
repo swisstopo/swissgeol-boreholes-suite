@@ -28,7 +28,7 @@ const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx, h
     }));
 
   return (
-    <WorkgroupBox sx={{ backgroundColor: theme.palette.background.default, ...sx }}>
+    <WorkgroupBox sx={sx}>
       <FormControl variant="outlined" sx={{ width: "100%" }}>
         {!hideLabel && <InputLabel id="workgroup-label">{t("workgroup")}</InputLabel>}
         <Select
