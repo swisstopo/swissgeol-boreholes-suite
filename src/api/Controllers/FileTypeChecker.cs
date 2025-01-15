@@ -23,7 +23,7 @@ public static class FileTypeChecker
     /// Checks if the <paramref name="file"/> is a ZIP file.
     /// </summary>
     /// <param name="file">The file to check the type for.</param>
-    /// <returns><c>true</c> if the <paramref name="file"/> is a JSON file; <c>false</c> otherwise.</returns>
+    /// <returns><c>true</c> if the <paramref name="file"/> is a ZIP file; <c>false</c> otherwise.</returns>
     public static bool IsZip(IFormFile file) => HasCorrectFileExtension(file, ".zip");
 
     /// <summary>
