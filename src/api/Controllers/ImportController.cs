@@ -200,7 +200,6 @@ public class ImportController : ControllerBase
                     {
                         logger.LogError(ex, "An error occurred while uploading the file: {FileName}", formFile.FileName);
                         AddValidationErrorToModelState(borehole.index, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), true);
-                        continue;
                     }
                 }
             }
