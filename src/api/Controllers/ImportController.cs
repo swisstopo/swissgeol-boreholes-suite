@@ -191,7 +191,7 @@ public class ImportController : ControllerBase
 
                     memoryStream.Position = 0;
 
-                   var formFile = new FormFile(memoryStream, 0, memoryStream.Length, boreholeFile.File.Name, boreholeFile.File.Name)
+                    var formFile = new FormFile(memoryStream, 0, memoryStream.Length, boreholeFile.File.Name, boreholeFile.File.Name)
                     {
                         Headers = new HeaderDictionary(),
                         ContentType = GetContentType(attachment.Name),
