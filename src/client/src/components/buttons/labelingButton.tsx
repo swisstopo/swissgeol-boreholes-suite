@@ -36,17 +36,17 @@ export const LabelingToggleButton = forwardRef<HTMLButtonElement, LabelingToggle
 
   const iconMap = {
     right: {
-      true: <SidebarRight />,
-      false: <SidebarLeft />,
+      open: <SidebarRight />,
+      closed: <SidebarLeft />,
     },
     bottom: {
-      true: <SidebarDown />,
-      false: <SidebarUp />,
+      open: <SidebarDown />,
+      closed: <SidebarUp />,
     },
   };
 
   const getIcon = () => {
-    return iconMap[panelPosition][panelOpen ? "true" : "false"];
+    return iconMap[panelPosition][panelOpen ? "open" : "closed"];
   };
 
   return (
