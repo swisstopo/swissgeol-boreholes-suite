@@ -546,12 +546,12 @@ public class ImportControllerTest
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(2, okResult.Value);
-        var uploadedBoreholesWithAttachment = GetBoreholesWithIncludes(context.Boreholes).Where(b => b.OriginalName.StartsWith("Carmen Catnip")).ToList();
+        var uploadedBoreholesWithAttachment = await GetBoreholesWithIncludes(context.Boreholes).Where(b => b.OriginalName.StartsWith("Carmen Catnip")).ToListAsync();
         Assert.AreEqual(uploadedBoreholesWithAttachment.SelectMany(b => b.Files!).Count(), 3);
 
         var firstBoreholes = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Cheese");
         var secondBoreholes = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Fondue");
-        Assert.AreEqual(firstBoreholes.Files.Count(), 2);
+        Assert.AreEqual(firstBoreholes.Files.Count, 2);
         Assert.AreEqual(secondBoreholes.Files.Single().Name, "logos.png");
     }
 
