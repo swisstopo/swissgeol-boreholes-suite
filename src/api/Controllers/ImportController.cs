@@ -194,7 +194,7 @@ public class ImportController : ControllerBase
 
                     try
                     {
-                        var uploadedFile = await boreholeFileCloudService.UploadFileAndLinkToBorehole(formFile, borehole.value.Id).ConfigureAwait(false);
+                        await boreholeFileCloudService.UploadFileAndLinkToBorehole(formFile, borehole.value.Id).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
