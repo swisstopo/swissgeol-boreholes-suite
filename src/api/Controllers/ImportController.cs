@@ -371,8 +371,14 @@ public class ImportController : ControllerBase
 
         // Aggregate all CasingId references from Observations, Instrumentations, and Backfills
         var casingReferenceIdsInBorehole = new HashSet<int>(borehole.Observations?.Where(o => o.CasingId.HasValue).Select(o => o.CasingId!.Value) ?? []);
-        casingReferenceIdsInBorehole.UnionWith(borehole.Completions?.SelectMany(c => c.Instrumentations ?? Enumerable.Empty<Instrumentation>()).Where(i => i.CasingId.HasValue).Select(i => i.CasingId!.Value) ?? []);
-        casingReferenceIdsInBorehole.UnionWith(borehole.Completions?.SelectMany(c => c.Backfills ?? Enumerable.Empty<Backfill>()).Where(b => b.CasingId.HasValue).Select(b => b.CasingId!.Value) ?? []);
+        casingReferenceIdsInBorehole
+            .UnionWith(borehole.Completions?.SelectMany(c => c.Instrumentations ?? Enumerable.Empty<Instrumentation>())
+            .Where(i => i.CasingId.HasValue)
+            .Select(i => i.CasingId!.Value) ?? []);
+        casingReferenceIdsInBorehole
+            .UnionWith(borehole.Completions?.SelectMany(c => c.Backfills ?? Enumerable.Empty<Backfill>())
+            .Where(b => b.CasingId.HasValue)
+            .Select(b => b.CasingId!.Value) ?? []);
 
         // Check if any referenced CasingId is not found in the casingIds set
         var invalidReferences = casingReferenceIdsInBorehole.Except(casingIds).ToList();
