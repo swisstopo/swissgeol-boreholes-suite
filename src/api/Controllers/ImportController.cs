@@ -206,7 +206,7 @@ public class ImportController : ControllerBase
         }
     }
 
-    private string GetContentType(string fileName)
+    private static string GetContentType(string fileName)
     {
         var mimeType = MimeTypes.GetMimeType(Path.GetExtension(fileName));
         return string.IsNullOrEmpty(mimeType) ? "application/octet-stream" : mimeType;
