@@ -184,18 +184,7 @@ public class ImportController : ControllerBase
                     }
 
                     using var memoryStream = new MemoryStream();
-                    using (var entryStream = attachment.Open())
-                    {
-                        await entryStream.CopyToAsync(memoryStream).ConfigureAwait(false);
-                    }
-
-                    memoryStream.Position = 0;
-
-                    var formFile = new FormFile(memoryStream, 0, memoryStream.Length, boreholeFile.File.Name, boreholeFile.File.Name)
-                    {
-                        Headers = new HeaderDictionary(),
-                        ContentType = GetContentType(attachment.Name),
-                    };
+                    FormFile formFile = await CreateFormFileFromAttachment(boreholeFile, attachment, memoryStream).ConfigureAwait(false);
 
                     // Remove original file information from borehole object
                     borehole.value.BoreholeFiles.Remove(boreholeFile);
@@ -212,6 +201,23 @@ public class ImportController : ControllerBase
                 }
             }
         }
+    }
+
+    private static async Task<FormFile> CreateFormFileFromAttachment(BoreholeFile? boreholeFile, ZipArchiveEntry? attachment, MemoryStream memoryStream)
+    {
+        using (var entryStream = attachment.Open())
+        {
+            await entryStream.CopyToAsync(memoryStream).ConfigureAwait(false);
+        }
+
+        memoryStream.Position = 0;
+
+        var formFile = new FormFile(memoryStream, 0, memoryStream.Length, boreholeFile.File.Name, boreholeFile.File.Name)
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = GetContentType(attachment.Name),
+        };
+        return formFile;
     }
 
     private static string GetContentType(string fileName)
