@@ -376,7 +376,7 @@ public class ImportController : ControllerBase
 
         // Check if any referenced CasingId is not found in the casingIds set
         var invalidReferences = casingReferenceIdsInBorehole.Except(casingIds).ToList();
-        if (invalidReferences != null && invalidReferences.Count > 0) AddValidationErrorToModelState(processingIndex, $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", true);
+        if (invalidReferences.Count > 0) AddValidationErrorToModelState(processingIndex, $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", true);
     }
 
     internal static bool CompareValuesWithTolerance(double? firstValue, double? secondValue, double tolerance)
