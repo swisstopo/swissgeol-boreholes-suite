@@ -91,7 +91,11 @@ const ImportPanel = ({
             enabledWorkgroups={enabledWorkgroups}
             setWorkgroupId={setWorkgroupId}
           />
-          <BoreholeImportDropzone file={file} setFile={setFile} acceptedFileTypes={["application/json", "text/csv"]} />
+          <BoreholeImportDropzone
+            file={file}
+            setFile={setFile}
+            acceptedFileTypes={["application/json", "text/csv", ".zip"]}
+          />
         </Stack>
       </Box>
       <Button

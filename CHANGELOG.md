@@ -5,6 +5,7 @@
 ### Added
 
 - Added ZIP export with JSON and attachments for single and multiple boreholes.
+- Added functionality to import borehole attachments inside a ZIP file.
 
 ### Changed 
 - Removed attachments from csv import.
