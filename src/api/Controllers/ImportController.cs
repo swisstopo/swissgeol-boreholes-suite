@@ -159,12 +159,13 @@ public class ImportController : ControllerBase
     {
         if (boreholes.Count < 1) return;
 
+        using var zipStream = boreholesFile.OpenReadStream();
+        using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+
         foreach (var borehole in boreholes.Select((value, index) => (value, index)))
         {
             if (borehole.value.BoreholeFiles != null && borehole.value.BoreholeFiles.Count > 0)
             {
-                using var zipStream = boreholesFile.OpenReadStream();
-                using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
                 var filesToProcess = borehole.value.BoreholeFiles.ToList(); // save a copy of the files to keep the file information during processing.
                 foreach (var boreholeFile in filesToProcess)
                 {
@@ -178,12 +179,10 @@ public class ImportController : ControllerBase
                     }
 
                     using var memoryStream = new MemoryStream();
-                    using (var entryStream = attachment.Open())
-                    {
-                        await entryStream.CopyToAsync(memoryStream).ConfigureAwait(false);
-                    }
-
+                    using var entryStream = attachment.Open();
+                    await entryStream.CopyToAsync(memoryStream).ConfigureAwait(false);
                     memoryStream.Position = 0;
+
                     var formFile = new FormFile(memoryStream, 0, memoryStream.Length, boreholeFile.File.Name, boreholeFile.File.Name)
                     {
                         Headers = new HeaderDictionary(),
