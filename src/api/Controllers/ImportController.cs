@@ -141,10 +141,7 @@ public class ImportController : ControllerBase
             await context.SaveChangesAsync().ConfigureAwait(false);
 
             // Upload attachments using the uploaded boreholes with new borehole Ids
-            if (boreholes.Any(b => b.BoreholeFiles?.Any(f => f.File != null) == true))
-            {
-                await UploadAttachments(boreholesFile, boreholes).ConfigureAwait(false);
-            }
+            await UploadAttachments(boreholesFile, boreholes).ConfigureAwait(false);
 
             // If any problem occurred while uploading the attachments, return a bad request.
             if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
@@ -160,6 +157,8 @@ public class ImportController : ControllerBase
 
     private async Task UploadAttachments(IFormFile boreholesFile, List<BoreholeImport> boreholes)
     {
+        if (boreholes.Count < 1) return;
+
         foreach (var borehole in boreholes.Select((value, index) => (value, index)))
         {
             if (borehole.value.BoreholeFiles != null && borehole.value.BoreholeFiles.Count > 0)
