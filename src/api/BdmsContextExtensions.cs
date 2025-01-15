@@ -208,6 +208,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Observations, _ => new Collection<Observation>())
            .RuleFor(o => o.BoreholeGeometry, _ => new Collection<BoreholeGeometryElement>())
            .RuleFor(o => o.BoreholeFiles, _ => new Collection<BoreholeFile>())
+           .RuleFor(o => o.Files, _ => new Collection<Models.File>())
            .FinishWith((f, o) => { o.Name = o.OriginalName; });
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
