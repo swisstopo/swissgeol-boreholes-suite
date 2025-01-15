@@ -17,6 +17,34 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
+const addMinimalAttachment = (boreholeIdentifier, fileName) => {
+  cy.get(boreholeIdentifier).then(id => {
+    goToRouteAndAcceptTerms(`/${id}/attachments`);
+    startBoreholeEditing();
+
+    cy.get("input[type=file]").selectFile(
+      {
+        contents: Cypress.Buffer.from(Math.random().toString()),
+        fileName: fileName,
+        mimeType: "text/plain",
+      },
+      { force: true },
+    );
+
+    getElementByDataCy("attachments-upload-button").should("be.visible").click();
+    cy.wait(["@upload-files", "@getAllAttachments"]);
+    stopBoreholeEditing();
+  });
+};
+
+const dropFileIntoImportDropzone = boreholeFile => {
+  getElementByDataCy("import-boreholeFile-input").within(() => {
+    cy.get("input[type=file]", { force: true }).then(input => {
+      input[0].files = boreholeFile.files;
+      input[0].dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  });
+};
 describe("Test for importing boreholes.", () => {
   it("Successfully imports multiple boreholes.", () => {
     loginAsAdmin();
@@ -30,13 +58,7 @@ describe("Test for importing boreholes.", () => {
       });
       boreholeFile.items.add(file);
     });
-
-    getElementByDataCy("import-boreholeFile-input").within(() => {
-      cy.get("input[type=file]", { force: true }).then(input => {
-        input[0].files = boreholeFile.files;
-        input[0].dispatchEvent(new Event("change", { bubbles: true }));
-      });
-    });
+    dropFileIntoImportDropzone(boreholeFile);
 
     // Import boreholes
     getElementByDataCy("import-button").click();
@@ -61,12 +83,7 @@ describe("Test for importing boreholes.", () => {
         return boreholeFile;
       })
       .then(boreholeFile => {
-        getElementByDataCy("import-boreholeFile-input").within(() => {
-          cy.get("input[type=file]", { force: true }).then(input => {
-            input[0].files = boreholeFile.files;
-            input[0].dispatchEvent(new Event("change", { bubbles: true }));
-          });
-        });
+        dropFileIntoImportDropzone(boreholeFile);
       });
     getElementByDataCy("import-button").click();
 
@@ -99,51 +116,9 @@ describe("Test for importing boreholes.", () => {
       location_y: 400,
     }).as("borehole_id2");
 
-    cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/attachments`);
-      startBoreholeEditing();
-
-      cy.get("input[type=file]").selectFile(
-        {
-          contents: Cypress.Buffer.from(Math.random().toString()),
-          fileName: "FREEZINGCOLD.txt",
-          mimeType: "text/plain",
-        },
-        { force: true },
-      );
-
-      getElementByDataCy("attachments-upload-button").should("be.visible").click();
-      cy.wait(["@upload-files", "@getAllAttachments"]);
-      stopBoreholeEditing();
-    });
-
-    cy.get("@borehole_id2").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/attachments`);
-      startBoreholeEditing();
-      cy.get("input[type=file]").selectFile(
-        {
-          contents: Cypress.Buffer.from(Math.random().toString()),
-          fileName: "NICEANDCOOL.txt",
-          mimeType: "text/plain",
-        },
-        { force: true },
-      );
-
-      getElementByDataCy("attachments-upload-button").should("be.visible").click();
-      cy.wait(["@upload-files", "@getAllAttachments"]);
-      cy.get("input[type=file]").selectFile(
-        {
-          contents: Cypress.Buffer.from(Math.random().toString()),
-          fileName: "BREWINGHOT.txt",
-          mimeType: "text/plain",
-        },
-        { force: true },
-      );
-
-      getElementByDataCy("attachments-upload-button").should("be.visible").click();
-      cy.wait(["@upload-files", "@getAllAttachments"]);
-      stopBoreholeEditing();
-    });
+    addMinimalAttachment("@borehole_id", "FREEZINGCOLD.txt");
+    addMinimalAttachment("@borehole_id2", "NICEANDCOOL.txt");
+    addMinimalAttachment("@borehole_id2", "BREWINGHOT.txt");
 
     returnToOverview();
     getElementByDataCy("show-filter-button").click();
@@ -173,12 +148,7 @@ describe("Test for importing boreholes.", () => {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(fileToReupload);
       getElementByDataCy("import-borehole-button").click();
-      getElementByDataCy("import-boreholeFile-input").within(() => {
-        cy.get('input[type="file"]', { force: true }).then(input => {
-          input[0].files = dataTransfer.files;
-          input[0].dispatchEvent(new Event("change", { bubbles: true }));
-        });
-      });
+      dropFileIntoImportDropzone(dataTransfer);
       getElementByDataCy("import-button").click();
       getElementByDataCy("boreholes-number-preview").should("have.text", "2");
       verifyRowContains("COLDWATERBATH", 0);
