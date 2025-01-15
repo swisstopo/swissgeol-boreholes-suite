@@ -19,7 +19,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       // navigate to attachments tab
       cy.get('[data-cy="attachments-menu-item"]').click();
 
-      // create file "LOUDSPATULA.pdf" for input
+      // create file "LOUDSPATULA.txt" for input
       cy.get("input[type=file]").selectFile(
         {
           contents: Cypress.Buffer.from(Math.random().toString()),
@@ -70,8 +70,24 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get("tbody").children().contains("td", "text/plain");
       cy.get("tbody").children().contains("td", "application/pdf");
 
-      // Ensure file does not exist in download folder before download. If so, delete it.
+      // Upload and verify file "WHITE   SPACE.pdf" to test file names with white spaces.
+      cy.get("input[type=file]").selectFile(
+        {
+          contents: Cypress.Buffer.from(fileContent),
+          fileName: "WHITE   SPACE.pdf",
+          mimeType: "application/pdf",
+        },
+        { force: true },
+      );
+      cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
+      cy.wait(["@upload-files", "@getAllAttachments"]);
+      cy.get("tbody").children().should("have.length", 3);
+      cy.get("tbody").children().contains("td", "text/plain");
+      cy.get("tbody").children().contains("td", "application/pdf");
+
+      // Ensure files does not exist in download folder before download. If so, delete them.
       deleteDownloadedFile("IRATETRINITY_2.pdf");
+      deleteDownloadedFile("WHITE   SPACE.pdf");
 
       // Download recently uploaded file
       cy.get("tbody").children().contains("span", "IRATETRINITY_2.pdf").click();
@@ -80,7 +96,16 @@ describe("Tests for 'Attachments' edit page.", () => {
       // Check if the file is present in download folder.
       readDownloadedFile("IRATETRINITY_2.pdf");
 
+      // Download recently uploaded file
+      cy.get("tbody").children().contains("span", "WHITE   SPACE.pdf").click();
+      cy.wait("@download-file");
+
+      // Check if the file is present in download folder.
+      readDownloadedFile("WHITE   SPACE.pdf");
+
       // delete attachments
+      cy.get('[data-cy="attachments-detach-button"]').children().first().click();
+      cy.wait(["@delete-file", "@getAllAttachments"]);
       cy.get('[data-cy="attachments-detach-button"]').children().first().click();
       cy.wait(["@delete-file", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 2);
