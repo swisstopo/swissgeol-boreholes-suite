@@ -103,13 +103,16 @@ public class ImportController : ControllerBase
             MarkBoreholeContentAsNew(workgroupId, boreholes, user, hydrotestCodelists);
 
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-            await context.SaveChangesAsync().ConfigureAwait(false);
 
-            // Upload attachments using the uploaded boreholes with new borehole Ids
-            await UploadAttachments(boreholesFile, boreholes).ConfigureAwait(false);
+            if (FileTypeChecker.IsZip(boreholesFile))
+            {
+                // Save boreholes then upload attachments using the newly created borehole Ids
+                await context.SaveChangesAsync().ConfigureAwait(false);
+                await UploadAttachments(boreholesFile, boreholes).ConfigureAwait(false);
 
-            // If any problem occurred while uploading the attachments, return a bad request.
-            if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+                // If any problem occurred while uploading the attachments, return a bad request.
+                if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+            }
 
             return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
         }
