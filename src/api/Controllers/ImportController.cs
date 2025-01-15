@@ -192,17 +192,22 @@ public class ImportController : ControllerBase
                     // Remove original file information from borehole object
                     borehole.value.BoreholeFiles.Remove(boreholeFile);
 
-                    try
-                    {
-                        await boreholeFileCloudService.UploadFileAndLinkToBorehole(formFile, borehole.value.Id).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.LogError(ex, "An error occurred while uploading the file: {FileName}", formFile.FileName);
-                        AddValidationErrorToModelState(borehole.index, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), true);
-                    }
+                    await UploadFormFileAsync(borehole.value, borehole.index, fileName, formFile).ConfigureAwait(false);
                 }
             }
+        }
+    }
+
+    private async Task UploadFormFileAsync(BoreholeImport borehole, int boreholeIndex, string fileName, FormFile formFile)
+    {
+        try
+        {
+            await boreholeFileCloudService.UploadFileAndLinkToBorehole(formFile, borehole.Id).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while uploading the file: {FileName}", formFile.FileName);
+            AddValidationErrorToModelState(boreholeIndex, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), true);
         }
     }
 
