@@ -9,34 +9,22 @@ i18n
   .use(LanguageDetector)
   .init({
     detection: {
-      order: ["cookie", "htmlTag"], //, 'navigator'],
-
-      // keys or params to lookup language from
+      order: ["querystring", "cookie", "localStorage", "sessionStorage", "navigator", "htmlTag"],
+      lookupQuerystring: "lng",
       lookupCookie: "i18next",
-
-      // cache user language on
-      caches: ["cookie"],
-
-      // optional set cookie options, reference:[MDN Set-Cookie docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie)
-      // cookieOptions: { path: '/', sameSite: 'strict' }
+      lookupLocalStorage: "i18nextLng",
+      lookupSessionStorage: "i18nextLng",
+      caches: ["localStorage"],
     },
     backend: {
       loadPath: `/locale/{{lng}}/{{ns}}.json`,
-      allowMultiLoading: false,
       queryStringParams: { v: "1.0.0" },
     },
     react: {
       useSuspense: false,
     },
-    // fallbackLng: "en",
-    // lng: "en", // if set, the languagedetector won't work
-    // fallbackLng: {
-    //   'en': ['en-US'],
-    //   'default': ['en']
-    // },
-    supportedLngs: ["en", "it", "de", "fr"],
-    // preload: ['en'],
-    whitelist: ["en", "it", "de", "fr"],
+    fallbackLng: "en",
+    supportedLngs: ["de", "en", "fr", "it"],
     ns: ["common"],
     defaultNS: "common",
     interpolation: {

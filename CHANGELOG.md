@@ -12,6 +12,8 @@
 - Changed order of `Top Bedrock (fresh)` and `Top Bedrock (weathered)` fields in borehole form.
 - When importing custom IDs with CSV, the headers are now dynamically mapped to the `borehole_identifier` codelists in the database.
 - Moved borehole import to side drawer and adapted UI design.
+- Years greater than 9999 can no longer be used in date inputs.
+- The application language is now determined by the browser language if it is any of the supported languages.
 
 ### Fixed
 
@@ -21,6 +23,7 @@
 - Ensure all hydrotest codelist values are imported.
 - JSON export/import did not handle borehole geometry and location geometry correctly.
 - JSON import did not handle casing references of observations, backfills and instrumentations correctly.
+- In some cases, the color of the workflow badge did not match the publication status.
 
 ## v2.1.993 - 2024-12-13
 

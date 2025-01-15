@@ -397,8 +397,6 @@ class WorkflowForm extends React.Component {
                                       )}
                                     </Button>
                                     <Modal
-                                      // basic
-                                      closeIcon
                                       onClose={() => {
                                         this.setState({
                                           modal: 0,
@@ -504,8 +502,6 @@ class WorkflowForm extends React.Component {
             // Modals
           }
           <Modal
-            // basic
-            closeIcon
             onClose={() => {
               this.setState({
                 modalRestart: false,
@@ -519,7 +515,7 @@ class WorkflowForm extends React.Component {
             </Modal.Content>
             <Modal.Actions>
               <Button
-                sx={{ width: "100px" }}
+                sx={{ width: "100px", mr: 1 }}
                 data-cy="workflow_dialog_confirm_restart"
                 variant="contained"
                 onClick={() => {

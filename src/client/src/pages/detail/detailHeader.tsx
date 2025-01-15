@@ -102,6 +102,10 @@ const DetailHeader = ({
     history.push("/");
   };
 
+  // get unfinished or latest workflow
+  const workflows = borehole?.workflows.sort((a, b) => new Date(b.finished).getTime() - new Date(a.finished).getTime());
+  const currentWorkflow = workflows?.find(workflow => workflow.finished == null) || workflows[0];
+
   return (
     <DetailHeaderStack direction="row" alignItems="center">
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"}>
@@ -121,12 +125,14 @@ const DetailHeader = ({
             </Typography>
           )}
         </Stack>
-        <Chip
-          sx={{ marginLeft: "18px" }}
-          label={t(`status${borehole?.workflows[borehole?.workflows.length - 1]?.role.toLowerCase()}`)}
-          color={borehole?.workflows[borehole?.workflows.length - 1]?.finished != null ? "success" : "warning"}
-          icon={borehole?.workflows[borehole?.workflows.length - 1]?.finished != null ? <Check /> : <div />}
-        />
+        {workflows && (
+          <Chip
+            sx={{ marginLeft: "18px" }}
+            label={t(`status${currentWorkflow.role.toLowerCase()}`)}
+            color={currentWorkflow.finished != null ? "success" : "warning"}
+            icon={currentWorkflow.finished != null ? <Check /> : <div />}
+          />
+        )}
       </Stack>
       <Stack direction="row" data-cy="detail-header" gap={2}>
         {editableByCurrentUser && (
