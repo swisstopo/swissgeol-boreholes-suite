@@ -87,6 +87,10 @@ export const importBoreholesJson = async (workgroupId: string, combinedFormData:
   return await upload(`import/json?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
+export const importBoreholesZip = async (workgroupId: string, combinedFormData: any) => {
+  return await upload(`import/zip?workgroupId=${workgroupId}`, "POST", combinedFormData);
+};
+
 export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: string | null) => {
   return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
