@@ -113,6 +113,7 @@ public class ExportController : ControllerBase
         csvWriter.WriteField(nameof(Borehole.LithologyTopBedrockId));
         csvWriter.WriteField(nameof(Borehole.ChronostratigraphyTopBedrockId));
         csvWriter.WriteField(nameof(Borehole.LithostratigraphyTopBedrockId));
+        csvWriter.WriteField(nameof(Borehole.TopBedrockIntersected));
 
         // Write dynamic headers for each distinct custom Id
         var customIdHeaders = boreholes
@@ -176,6 +177,7 @@ public class ExportController : ControllerBase
             csvWriter.WriteField(b.LithologyTopBedrockId);
             csvWriter.WriteField(b.ChronostratigraphyTopBedrockId);
             csvWriter.WriteField(b.LithostratigraphyTopBedrockId);
+            csvWriter.WriteField(b.TopBedrockIntersected);
 
             // Write dynamic fields for custom Ids
             foreach (var header in customIdHeaders)

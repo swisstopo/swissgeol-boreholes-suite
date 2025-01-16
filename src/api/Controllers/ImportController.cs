@@ -477,6 +477,7 @@ public class ImportController : ControllerBase
             Map(m => m.LocationYLV03).Optional();
             Map(m => m.OriginalReferenceSystem).Optional();
             Map(m => m.Attachments).Optional();
+            Map(m => m.TopBedrockIntersected).Optional();
 
             // Define properties to ignore
             Map(b => b.Municipality).Ignore();
