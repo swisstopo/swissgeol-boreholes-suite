@@ -1,13 +1,14 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
+using MaxRev.Gdal.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO.Converters;
+using OSGeo.OGR;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -56,7 +57,100 @@ public class ExportController : ControllerBase
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of ids.
+    /// Asynchronously gets all <see cref="Borehole"/> records filtered by ids. Additional data is included in the response.
+    /// </summary>
+    /// <param name="ids">The required list of borehole ids to filter by.</param>
+    [HttpGet("geopackage")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult> ExportGeoPackageAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    {
+        if (ids == null || !ids.Any()) return BadRequest("The list of IDs must not be empty.");
+
+        var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        var features = boreholes.Select(borehole =>
+        {
+            var feature = new
+            {
+                type = "Feature",
+                geometry = new
+                {
+                    type = "Point",
+                    crs = new
+                    {
+                        type = "name",
+                        properties = new
+                        {
+                            name = "EPSG:2056",
+                        },
+                    },
+                    coordinates = new[]
+                    {
+                        borehole.LocationX,
+                        borehole.LocationY,
+                    },
+                },
+                properties = borehole,
+            };
+            return feature;
+        }).ToList();
+
+        var geojson = new
+        {
+            type = "FeatureCollection",
+            crs = new
+            {
+                type = "name",
+                properties = new
+                {
+                    name = "EPSG:2056",
+                },
+            },
+            features,
+        };
+
+        try
+        {
+            var tempGeoJsonFilePath = Path.Combine(Path.GetTempPath(), $"temp_geojson_{Guid.NewGuid()}.geojson");
+            await System.IO.File.WriteAllTextAsync(tempGeoJsonFilePath, JsonSerializer.Serialize(geojson, jsonExportOptions)).ConfigureAwait(false);
+
+            GdalBase.ConfigureAll();
+            Ogr.RegisterAll();
+            Ogr.UseExceptions();
+
+            // Create a temporary file for GeoPackage
+            var tempGpkgFilePath = Path.Combine(Path.GetTempPath(), $"temp_gpkg_{Guid.NewGuid()}.gpkg");
+            var openFileGdbDriver = Ogr.GetDriverByName("GPKG");
+
+            // Write GeoPackage to temporary file
+            using (var gpkgDataSource = openFileGdbDriver.CreateDataSource(tempGpkgFilePath, null))
+            {
+                using var geojsonDataSource = Ogr.Open(tempGeoJsonFilePath, 1);
+
+                if (geojsonDataSource == null)
+                {
+                    throw new InvalidOperationException("Could not open input GeoJSON datasource.");
+                }
+
+                gpkgDataSource.CopyLayer(geojsonDataSource.GetLayerByIndex(0), "boreholes", null);
+            }
+
+            // Read GeoPackage into memory
+            var gpkgBytes = await System.IO.File.ReadAllBytesAsync(tempGpkgFilePath).ConfigureAwait(false);
+
+            // Cleanup temporary file
+            System.IO.File.Delete(tempGpkgFilePath);
+
+            // Return GeoPackage as a downloadable file
+            return File(gpkgBytes, "application/geopackage+sqlite", $"boreholes_{DateTime.Now:yyyyMMdd}.gpkg");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error exporting GeoPackage: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The list of ids for the boreholes to be exported.</param>
     /// <returns>A CSV file containing the details of the specified boreholes.</returns>
