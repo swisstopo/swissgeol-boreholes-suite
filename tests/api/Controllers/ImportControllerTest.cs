@@ -90,7 +90,7 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("The provided file is not an array of boreholes or is not a valid JSON format.", badRequestResult.Value);
+        Assert.AreEqual("The provided file is not an array of boreholes or is not in a valid JSON format.", badRequestResult.Value);
     }
 
     [TestMethod]
