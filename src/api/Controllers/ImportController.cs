@@ -211,8 +211,10 @@ public class ImportController : ControllerBase
             return ValidationProblem();
 
         ActionResult<int> result = await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
+        if (!ModelState.IsValid)
+            return ValidationProblem();
 
-        await UploadAttachmentsAsync(boreholesFile, boreholes).ConfigureAwait(false);
+        await UploadAttachmentsAsync(zipArchive, boreholes).ConfigureAwait(false);
         return !ModelState.IsValid ? ValidationProblem() : result;
     }
 
@@ -292,12 +294,9 @@ public class ImportController : ControllerBase
         }
     }
 
-    private async Task UploadAttachmentsAsync(IFormFile boreholesFile, List<BoreholeImport> boreholes)
+    private async Task UploadAttachmentsAsync(ZipArchive zipArchive, List<BoreholeImport> boreholes)
     {
         if (boreholes.Count < 1) return;
-
-        using var zipStream = boreholesFile.OpenReadStream();
-        using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
 
         foreach (var borehole in boreholes.Select((value, index) => (value, index)))
         {
@@ -365,18 +364,19 @@ public class ImportController : ControllerBase
 
     private void ValidateAttachmentsPresent(IEnumerable<string> attachmentsInZip, List<BoreholeImport> boreholesFromFile)
     {
+        // Files are exported with the original name and the UUID as a prefix to make them unique while preserving the original name
         var referencedAttachments = boreholesFromFile
             .Select(b => b.BoreholeFiles)
             .Where(bf => bf != null)
             .SelectMany(bf => bf!)
             .Select(bf => bf.File.NameUuid + "_" + bf.File.Name);
 
-        var missingAttachments = referencedAttachments.Except(attachmentsInZip).ToArray();
-        if (missingAttachments.Length > 0)
+        var missingAttachments = referencedAttachments.Except(attachmentsInZip).ToList();
+        if (missingAttachments.Count > 0)
         {
-            foreach (var missingAttachment in missingAttachments.Select((value, index) => (value, index)))
+            foreach (var missingAttachment in missingAttachments)
             {
-                AddValidationErrorToModelState(missingAttachment.index, $"Attachment with the name <{missingAttachment.value}> is referenced in JSON file but was not not found in ZIP archive.", ValidationErrorType.Attachment);
+                AddValidationErrorToModelState(missingAttachments.IndexOf(missingAttachment), $"Attachment with the name <{missingAttachment}> is referenced in JSON file but was not not found in ZIP archive.", ValidationErrorType.Attachment);
             }
         }
     }
@@ -561,15 +561,11 @@ public class ImportController : ControllerBase
         }
     }
 
-    private enum ValidationErrorType
-    {
-        Json,
-        Csv,
-        Attachment,
-    }
-
     private void AddValidationErrorToModelState(int boreholeIndex, string errorMessage, ValidationErrorType errorType)
     {
+        // Use 'Borehole' as prefix and zero based index for json files. E.g. 'Borehole0'
+        // Use 'Row' as prefix and one based index for csv files. E.g. 'Row1'.
+        // Use 'Attachment' as prefix and one based index for attachments. E.g. 'Attachment1'
         string prefix = errorType switch
         {
             ValidationErrorType.Json => "Borehole",
@@ -578,7 +574,7 @@ public class ImportController : ControllerBase
             _ => throw new ArgumentOutOfRangeException(nameof(errorType), errorType, null),
         };
 
-        int index = errorType == ValidationErrorType.Csv ? boreholeIndex + 1 : boreholeIndex;
+        int index = errorType == ValidationErrorType.Json ? boreholeIndex : boreholeIndex + 1;
         ModelState.AddModelError($"{prefix}{index}", errorMessage);
     }
 

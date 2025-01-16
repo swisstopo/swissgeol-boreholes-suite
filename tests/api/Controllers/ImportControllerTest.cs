@@ -533,9 +533,9 @@ public class ImportControllerTest
 
         ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(3, problemDetails.Errors.Count);
-        CollectionAssert.AreEquivalent(new[] { "Attachment with the name <7397a759-9160-48d4-8ffb-7fe1ed42e8fd.png_Screenshot 2024-12-10 145252.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment0"]);
-        CollectionAssert.AreEquivalent(new[] { "Attachment with the name <76ba90dc-76f7-43aa-9ff7-053de65f6e74.png_Screenshot 2024-12-20 084417.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment1"]);
-        CollectionAssert.AreEquivalent(new[] { "Attachment with the name <ab0dc122-e0fe-4fa5-bbf7-348c94cec0c2.png_logos.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment2"]);
+        CollectionAssert.AreEquivalent(new[] { "Attachment with the name <7397a759-9160-48d4-8ffb-7fe1ed42e8fd.png_Screenshot 2024-12-10 145252.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment1"]);
+        CollectionAssert.AreEquivalent(new[] { "Attachment with the name <76ba90dc-76f7-43aa-9ff7-053de65f6e74.png_Screenshot 2024-12-20 084417.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment2"]);
+        CollectionAssert.AreEquivalent(new[] { "Attachment with the name <ab0dc122-e0fe-4fa5-bbf7-348c94cec0c2.png_logos.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment3"]);
     }
 
     [TestMethod]
