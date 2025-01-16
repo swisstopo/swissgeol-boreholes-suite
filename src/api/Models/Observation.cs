@@ -8,7 +8,7 @@ namespace BDMS.Models;
 /// Represents an observation in the boring process.
 /// </summary>
 [Table("observation")]
-public class Observation : IChangeTracking, IIdentifyable
+public class Observation : IChangeTracking, IIdentifyable, ICasingReference
 {
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s id.

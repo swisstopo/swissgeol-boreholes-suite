@@ -311,6 +311,15 @@ public class ImportControllerTest
         Assert.AreEqual("Ratione ut non in recusandae labore.", completion.Notes, nameof(completion.Notes));
         Assert.AreEqual(DateOnly.Parse("2021-01-24", CultureInfo.InvariantCulture), completion.AbandonDate, nameof(completion.AbandonDate));
 
+        // Assert casing ids of instrumentations, backfills and observations
+        var casingIds = borehole.Completions.Where(c => c.Casings != null).SelectMany(c => c.Casings!).Select(c => c.Id).ToList();
+        var instrumentationCasingIds = borehole.Completions.Where(c => c.Instrumentations != null).SelectMany(c => c.Instrumentations!).Where(i => i.CasingId.HasValue).Select(i => (int)i.CasingId).ToList();
+        var backfillCasingIds = borehole.Completions.Where(c => c.Backfills != null).SelectMany(c => c.Backfills!).Where(i => i.CasingId.HasValue).Select(i => (int)i.CasingId).ToList();
+        var observationCasingIds = borehole.Observations.Where(i => i.CasingId.HasValue).Select(i => (int)i.CasingId).ToList();
+        Assert.IsTrue(instrumentationCasingIds.All(c => casingIds.Contains(c)), $"{nameof(instrumentationCasingIds)} in {nameof(casingIds)}");
+        Assert.IsTrue(backfillCasingIds.All(c => casingIds.Contains(c)), $"{nameof(backfillCasingIds)} in {nameof(casingIds)}");
+        Assert.IsTrue(observationCasingIds.All(c => casingIds.Contains(c)), $"{nameof(observationCasingIds)} in {nameof(casingIds)}");
+
         // Assert completion's instrumentations
         Assert.AreEqual(1, completion.Instrumentations.Count, nameof(completion.Instrumentations.Count));
         var instrumentation = completion.Instrumentations.First();
@@ -327,7 +336,6 @@ public class ImportControllerTest
         Assert.AreEqual(25000213, instrumentation.StatusId, nameof(instrumentation.StatusId));
         Assert.IsNull(instrumentation.Status, nameof(instrumentation.Status).ShouldBeNullMessage());
         Assert.IsFalse(instrumentation.IsOpenBorehole, nameof(instrumentation.IsOpenBorehole));
-        Assert.AreEqual(17000312, instrumentation.CasingId, nameof(instrumentation.CasingId));
         Assert.IsNotNull(instrumentation.Casing, nameof(instrumentation.Casing).ShouldNotBeNullMessage());
         Assert.AreEqual("copy Field bandwidth Burg", instrumentation.Notes, nameof(instrumentation.Notes));
 
@@ -346,7 +354,6 @@ public class ImportControllerTest
         Assert.AreEqual(25000306, backfill.MaterialId, nameof(backfill.MaterialId));
         Assert.IsNull(backfill.Material, nameof(backfill.Material).ShouldBeNullMessage());
         Assert.IsFalse(backfill.IsOpenBorehole, nameof(backfill.IsOpenBorehole));
-        Assert.AreEqual(17000011, backfill.CasingId, nameof(backfill.CasingId));
         Assert.IsNotNull(backfill.Casing, nameof(backfill.Casing).ShouldNotBeNullMessage());
         Assert.AreEqual("Licensed Plastic Soap Managed withdrawal Tools & Industrial", backfill.Notes, nameof(backfill.Notes));
 
@@ -567,6 +574,25 @@ public class ImportControllerTest
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
         Assert.AreEqual("Invalid or empty JSON file uploaded.", badRequestResult.Value);
+    }
+
+    [TestMethod]
+    public async Task UploadJsonWithInvalidCasingIdsShouldReturnError()
+    {
+        var boreholeJsonFile = GetFormFileByExistingFile("json_import_invalid_casing_ids.json");
+
+        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        ActionResultAssert.IsBadRequest(result);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(3, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[] { $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", }, problemDetails.Errors["Borehole0"]);
+        CollectionAssert.AreEquivalent(new[] { $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", }, problemDetails.Errors["Borehole1"]);
+        CollectionAssert.AreEquivalent(new[] { $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", }, problemDetails.Errors["Borehole2"]);
     }
 
     [TestMethod]

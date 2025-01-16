@@ -1,0 +1,246 @@
+[
+  {
+    "id": 2000001,
+    "createdById": 2,
+    "created": "2022-01-12T10:15:30.000Z",
+    "updated": "2022-01-15T12:00:00.000Z",
+    "updatedById": 3,
+    "lockedById": 4,
+    "workgroupId": 2,
+    "isPublic": false,
+    "locationX": 2800000,
+    "precisionLocationX": 5,
+    "locationY": 1350000,
+    "precisionLocationY": 5,
+    "elevationZ": 3200.0,
+    "totalDepth": 600.0,
+    "originalName": "INSTRUMENTATION_BOREHOLE",
+    "name": "BOREHOLE_A",
+    "hasGroundwater": true,
+    "Geometry": {
+      "type": "Point",
+      "coordinates": [ 2800000, 1350000 ]
+    },
+    "completions": [
+      {
+        "id": 14000001,
+        "boreholeId": 2000001,
+        "isPrimary": true,
+        "name": "Completion A",
+        "casings": [
+          {
+            "id": 10,
+            "completionId": 14000039,
+            "completion": null,
+            "name": "Rustic",
+            "dateStart": "2021-03-24",
+            "dateFinish": "2021-12-12",
+            "notes": "matrices Managed withdrawal Tools & Industrial"
+          }
+        ],
+        "instrumentations": [
+          {
+            "id": 15000001,
+            "completionId": 14000001,
+            "fromDepth": 50,
+            "toDepth": 100,
+            "name": "Instrumentation A",
+            "casingId": 0,
+            "notes": "Instrumentation details for borehole with casing ID 0."
+          },
+          {
+            "id": 15000002,
+            "completionId": 14000001,
+            "fromDepth": 50,
+            "toDepth": 100,
+            "name": "Instrumentation A",
+            "casingId": null
+          }
+        ],
+        "backfills": []
+      }
+    ],
+    "observations": []
+  },
+  {
+    "id": 2000002,
+    "createdById": 5,
+    "created": "2023-03-05T08:30:45.000Z",
+    "updated": "2023-03-07T11:45:00.000Z",
+    "updatedById": 6,
+    "lockedById": 7,
+    "workgroupId": 3,
+    "isPublic": true,
+    "locationX": 2850000,
+    "precisionLocationX": 6,
+    "locationY": 1400000,
+    "precisionLocationY": 6,
+    "elevationZ": 3100.0,
+    "totalDepth": 700.0,
+    "originalName": "BACKFILLS_BOREHOLE",
+    "name": "BOREHOLE_B",
+    "hasGroundwater": false,
+    "Geometry": {
+      "type": "Point",
+      "coordinates": [ 2850000, 1400000 ]
+    },
+    "completions": [
+      {
+        "id": 14000002,
+        "boreholeId": 2000002,
+        "isPrimary": false,
+        "name": "Completion B",
+        "casings": [
+          {
+            "id": 10,
+            "completionId": 14000039,
+            "completion": null,
+            "name": "Rustic",
+            "dateStart": "2021-03-24",
+            "dateFinish": "2021-12-12",
+            "notes": "matrices Managed withdrawal Tools & Industrial"
+          }
+        ],
+        "backfills": [
+          {
+            "id": 16000001,
+            "completionId": 14000002,
+            "fromDepth": 30,
+            "toDepth": 60,
+            "casingId": 0,
+            "notes": "Backfill details for borehole with casing ID 0."
+          },
+          {
+            "id": 16000002,
+            "completionId": 14000002,
+            "fromDepth": 30,
+            "toDepth": 60,
+            "casingId": null
+          }
+        ],
+        "instrumentations": [],
+        "observations": []
+      }
+    ],
+    "observations": []
+  },
+  {
+    "id": 2000003,
+    "createdById": 8,
+    "created": "2024-04-10T09:45:20.000Z",
+    "updated": "2024-04-12T13:15:10.000Z",
+    "updatedById": 9,
+    "lockedById": 10,
+    "workgroupId": 4,
+    "isPublic": true,
+    "locationX": 2900000,
+    "precisionLocationX": 7,
+    "locationY": 1450000,
+    "precisionLocationY": 7,
+    "elevationZ": 3000.0,
+    "totalDepth": 800.0,
+    "originalName": "OBSERVATIONS_BOREHOLE",
+    "name": "BOREHOLE_C",
+    "hasGroundwater": true,
+    "Geometry": {
+      "type": "Point",
+      "coordinates": [ 2900000, 1450000 ]
+    },
+    "completions": [
+      {
+        "id": 14000003,
+        "boreholeId": 2000003,
+        "isPrimary": true,
+        "name": "Completion C",
+        "casings": [
+          {
+            "id": 10,
+            "completionId": 14000039,
+            "completion": null,
+            "name": "Rustic",
+            "dateStart": "2021-03-24",
+            "dateFinish": "2021-12-12",
+            "notes": "matrices Managed withdrawal Tools & Industrial"
+          }
+        ],
+        "instrumentations": [],
+        "backfills": []
+      }
+    ],
+    "observations": [
+      {
+        "id": 12000001,
+        "fromDepthM": 100,
+        "toDepthM": 200,
+        "casingId": 0,
+        "comment": "Observation details for borehole with casing ID 0."
+      },
+      {
+        "id": 12000002,
+        "fromDepthM": 100,
+        "toDepthM": 200,
+        "casingId": null
+      }
+    ]
+  },
+  {
+    "id": 2000004,
+    "createdById": 11,
+    "created": "2025-01-01T10:00:00.000Z",
+    "updated": "2025-01-03T14:30:00.000Z",
+    "updatedById": 12,
+    "lockedById": 13,
+    "workgroupId": 5,
+    "isPublic": false,
+    "locationX": 2950000,
+    "precisionLocationX": 5,
+    "locationY": 1500000,
+    "precisionLocationY": 5,
+    "elevationZ": 2900.0,
+    "totalDepth": 900.0,
+    "originalName": "NO_COMPLETIONS_BOREHOLE",
+    "name": "BOREHOLE_D",
+    "hasGroundwater": false,
+    "Geometry": {
+      "type": "Point",
+      "coordinates": [ 2950000, 1500000 ]
+    },
+    "completions": [],
+    "observations": []
+  },
+  {
+    "id": 2000005,
+    "createdById": 14,
+    "created": "2025-02-10T08:45:30.000Z",
+    "updated": "2025-02-12T11:15:00.000Z",
+    "updatedById": 15,
+    "lockedById": 16,
+    "workgroupId": 6,
+    "isPublic": true,
+    "locationX": 3000000,
+    "precisionLocationX": 6,
+    "locationY": 1550000,
+    "precisionLocationY": 6,
+    "elevationZ": 2800.0,
+    "totalDepth": 950.0,
+    "originalName": "NO_CASINGS_BOREHOLE",
+    "name": "BOREHOLE_E",
+    "hasGroundwater": true,
+    "Geometry": {
+      "type": "Point",
+      "coordinates": [ 3000000, 1550000 ]
+    },
+    "completions": [
+      {
+        "id": 14000005,
+        "boreholeId": 2000005,
+        "isPrimary": false,
+        "name": "Completion E",
+        "casings": [],
+        "instrumentations": [],
+        "backfills": []
+      }
+    ],
+    "observations": []
+  }
+]

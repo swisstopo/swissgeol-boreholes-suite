@@ -76,6 +76,9 @@
     <None Update="TestData\json_import_duplicated_by_location.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\json_import_invalid_casing_ids.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\json_import_single.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
