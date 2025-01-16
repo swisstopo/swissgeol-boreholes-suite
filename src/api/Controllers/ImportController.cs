@@ -310,7 +310,7 @@ public class ImportController : ControllerBase
                     var attachment = zipArchive.Entries.FirstOrDefault(e => e.FullName == fileName);
 
                     using var memoryStream = new MemoryStream();
-                    FormFile formFile = await CreateFormFileFromAttachment(fileToProcess, attachment, memoryStream).ConfigureAwait(false);
+                    FormFile formFile = await CreateFormFileFromAttachmentAsync(fileToProcess, attachment, memoryStream).ConfigureAwait(false);
 
                     // Remove original file information from borehole object
                     borehole.value.BoreholeFiles.Remove(fileToProcess);
@@ -330,11 +330,11 @@ public class ImportController : ControllerBase
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred while uploading the file: {FileName}", formFile.FileName);
-            AddValidationErrorToModelState(boreholeIndex, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), ValidationErrorType.Json);
+            AddValidationErrorToModelState(boreholeIndex, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), ValidationErrorType.Attachment);
         }
     }
 
-    private static async Task<FormFile> CreateFormFileFromAttachment(BoreholeFile? boreholeFile, ZipArchiveEntry? attachment, MemoryStream memoryStream)
+    private static async Task<FormFile> CreateFormFileFromAttachmentAsync(BoreholeFile? boreholeFile, ZipArchiveEntry? attachment, MemoryStream memoryStream)
     {
         using (var entryStream = attachment.Open())
         {
