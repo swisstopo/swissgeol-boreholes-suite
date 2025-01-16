@@ -502,11 +502,8 @@ public class ImportControllerTest
         FormFile boreholeZipFile = await GetZipFileFromExistingFileAsync("json_import_duplicated_by_location.json");
 
         ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
 
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole0"]);
@@ -533,11 +530,8 @@ public class ImportControllerTest
         var boreholeZipFile = GetFormFileByExistingFile(zipPath);
 
         ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
 
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(3, problemDetails.Errors.Count);
         CollectionAssert.AreEquivalent(new[] { "Attachment with the name <7397a759-9160-48d4-8ffb-7fe1ed42e8fd.png_Screenshot 2024-12-10 145252.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment0"]);
         CollectionAssert.AreEquivalent(new[] { "Attachment with the name <76ba90dc-76f7-43aa-9ff7-053de65f6e74.png_Screenshot 2024-12-20 084417.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment1"]);
@@ -583,11 +577,7 @@ public class ImportControllerTest
 
         ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(3, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[] { $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", }, problemDetails.Errors["Borehole0"]);
@@ -602,11 +592,7 @@ public class ImportControllerTest
 
         ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole0"]);
@@ -620,11 +606,7 @@ public class ImportControllerTest
 
         ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(1, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Borehole0"]);
@@ -797,11 +779,7 @@ public class ImportControllerTest
 
         ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
 
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(1, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[] { "Field 'location_x' is required.", "Field 'location_y' is required." }, problemDetails.Errors["Row1"]);
@@ -960,11 +938,7 @@ public class ImportControllerTest
 
         ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
 
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[] { "Field 'location_y' is required." }, problemDetails.Errors["Row2"]);
@@ -976,6 +950,15 @@ public class ImportControllerTest
                 "Field 'location_y' is required.",
             },
             problemDetails.Errors["Row3"]);
+    }
+
+    private static ValidationProblemDetails GetProblemDetailsFromResponse(ActionResult<int> response)
+    {
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        Assert.IsInstanceOfType(result.Value, typeof(ValidationProblemDetails));
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        return problemDetails;
     }
 
     [TestMethod]
@@ -1003,11 +986,7 @@ public class ImportControllerTest
 
         ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
 
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Row1"]);
@@ -1050,11 +1029,7 @@ public class ImportControllerTest
 
         ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
 
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(3, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row1"]);
@@ -1107,11 +1082,7 @@ public class ImportControllerTest
 
         ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
 
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(1000, problemDetails.Errors.Count);
     }
 

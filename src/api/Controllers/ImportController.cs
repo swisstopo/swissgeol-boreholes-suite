@@ -73,7 +73,7 @@ public class ImportController : ControllerBase
             ValidateBoreholeImports(workgroupId, boreholeImports, ValidationErrorType.Csv);
 
             // If any validation error occured, return a bad request.
-            if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+            if (!ModelState.IsValid) return ValidationProblem();
 
             var subjectId = HttpContext.GetUserSubjectId();
 
@@ -208,12 +208,12 @@ public class ImportController : ControllerBase
         var attachmentNames = zipArchive.Entries.Where(e => e.FullName != jsonFile.FullName).Select(e => e.FullName);
         ValidateAttachmentsPresent(attachmentNames, boreholes);
         if (!ModelState.IsValid)
-            return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+            return ValidationProblem();
 
         ActionResult<int> result = await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
 
         await UploadAttachmentsAsync(boreholesFile, boreholes).ConfigureAwait(false);
-        return !ModelState.IsValid ? ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest) : result;
+        return !ModelState.IsValid ? ValidationProblem() : result;
     }
 
     private void InitializeImport(int workgroupId, string fileType)
@@ -240,7 +240,7 @@ public class ImportController : ControllerBase
     {
         ValidateBoreholeImports(workgroupId, boreholes, ValidationErrorType.Json);
         if (!ModelState.IsValid)
-            return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+            return ValidationProblem();
 
         await MarkBoreholeContentAsNew(workgroupId, boreholes).ConfigureAwait(false);
         await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
