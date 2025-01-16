@@ -80,7 +80,7 @@ export const updateBorehole = async (borehole: BoreholeV2) => {
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 export const importBoreholesCsv = async (workgroupId: string, combinedFormData: any) => {
-  return await upload(`import?workgroupId=${workgroupId}`, "POST", combinedFormData);
+  return await upload(`import/csv?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
 export const importBoreholesJson = async (workgroupId: string, combinedFormData: any) => {
