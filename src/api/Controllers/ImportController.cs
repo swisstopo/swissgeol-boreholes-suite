@@ -220,7 +220,7 @@ public class ImportController : ControllerBase
     {
         // Increase max allowed errors to be able to return more validation errors at once.
         ModelState.MaxAllowedErrors = 1000;
-        logger.LogInformation("Import boreholes to workgroup with id <{WorkgroupId}> via <{FileType>}", workgroupId, fileType);
+        logger.LogInformation("Import boreholes to workgroup with id <{WorkgroupId}> via <{FileType}>", workgroupId, fileType);
     }
 
     private async Task<List<BoreholeImport>?> DeserializeBoreholeDataAsync(Stream stream)
