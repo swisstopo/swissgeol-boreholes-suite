@@ -2,29 +2,28 @@
 
 #nullable disable
 
-namespace BDMS.Migrations
+namespace BDMS.Migrations;
+
+/// <inheritdoc />
+public partial class AddTopBedrockIntersected : Migration
 {
     /// <inheritdoc />
-    public partial class AddTopBedrockIntersected : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<bool>(
-                name: "top_bedrock_intersected",
-                schema: "bdms",
-                table: "borehole",
-                type: "boolean",
-                nullable: true);
-        }
+        migrationBuilder.AddColumn<bool>(
+            name: "top_bedrock_intersected",
+            schema: "bdms",
+            table: "borehole",
+            type: "boolean",
+            nullable: true);
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "top_bedrock_intersected",
-                schema: "bdms",
-                table: "borehole");
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropColumn(
+            name: "top_bedrock_intersected",
+            schema: "bdms",
+            table: "borehole");
     }
 }
