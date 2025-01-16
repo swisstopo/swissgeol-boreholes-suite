@@ -40,9 +40,9 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
         </DialogTitle>
         <DialogContent>
           <Stack gap={1} sx={{ mt: 3 }}>
-            <ExportButton label={"JSON"} onClick={exportJson} />
-            <ExportButton label={"ZIP"} onClick={exportJsonWithAttachments} />
             <ExportButton label={"CSV"} onClick={exportCsv} />
+            <ExportButton label={"JSON"} onClick={exportJson} />
+            <ExportButton label={"JSON + PDF"} onClick={exportJsonWithAttachments} />
           </Stack>
         </DialogContent>
         <DialogActions>
