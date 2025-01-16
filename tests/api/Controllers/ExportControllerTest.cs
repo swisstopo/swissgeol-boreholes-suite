@@ -78,7 +78,21 @@ public class ExportControllerTest
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
         var loggerMock = new Mock<ILogger<ExportController>>();
+
         controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
+    }
+
+    [TestMethod]
+    public async Task ExportGeopackage()
+    {
+        var id = 1_000_257;
+
+        var response = await controller.ExportGeoPackageAsync(new List<int>() { id }).ConfigureAwait(false);
+        FileContentResult fileContentResult = (FileContentResult)response!;
+        Assert.IsNotNull(fileContentResult);
+        Assert.AreEqual("application/geopackage+sqlite", fileContentResult.ContentType);
+        Assert.AreEqual($"boreholes_{DateTime.Now:yyyyMMdd}.gpkg", fileContentResult.FileDownloadName);
+        Assert.IsTrue(fileContentResult.FileContents.Length > 0);
     }
 
     [TestMethod]
