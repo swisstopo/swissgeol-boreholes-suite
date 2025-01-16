@@ -27,4 +27,5 @@ export interface BoreholeFormInputs {
   chronostratigraphyTopBedrockId: number;
   hasGroundwater: boolean | number | null;
   remarks: string;
+  topBedrockIntersected: boolean | number | null;
 }

@@ -36,6 +36,8 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
       lithostratigraphyTopBedrockId: borehole.lithostratigraphyTopBedrockId,
       chronostratigraphyTopBedrockId: borehole.chronostratigraphyTopBedrockId,
       hasGroundwater: borehole.hasGroundwater === true ? 1 : borehole.hasGroundwater === false ? 0 : 2,
+      topBedrockIntersected:
+        borehole.topBedrockIntersected === true ? 1 : borehole.topBedrockIntersected === false ? 0 : 2,
       remarks: borehole.remarks,
     },
   });
@@ -168,6 +170,15 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   label={"top_bedrock_fresh_tvd"}
                   value={topBedrockFreshTVD}
                   withThousandSeparator={true}
+                />
+              </FormContainer>
+              <FormContainer direction="row">
+                <FormBooleanSelect
+                  canReset={false}
+                  readonly={!editingEnabled}
+                  fieldName={"topBedrockIntersected"}
+                  label="topBedrockIntersected"
+                  selected={borehole.topBedrockIntersected}
                 />
               </FormContainer>
               <FormContainer direction="row">
