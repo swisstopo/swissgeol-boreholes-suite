@@ -3,6 +3,7 @@
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class DataMigrationTopBedrockIntersected : Migration
@@ -15,3 +16,4 @@ public partial class DataMigrationTopBedrockIntersected : Migration
                 UPDATE bdms.borehole SET top_bedrock_intersected = false WHERE lithology_top_bedrock_id_cli = 15104769;");
     }
 }
+#pragma warning restore CA1505
