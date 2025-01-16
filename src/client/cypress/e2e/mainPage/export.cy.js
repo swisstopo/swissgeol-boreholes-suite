@@ -190,13 +190,13 @@ describe("Test for exporting boreholes.", () => {
       expect(rows[1][3]).to.equal(firstBoreholeName);
       expect(rows[2][3]).to.equal(secondBoreholeName);
 
-      expect(rows[0][33]).to.equal("IDInfoGeol");
-      expect(rows[1][33]).to.equal("");
-      expect(rows[2][33]).to.equal("14");
+      expect(rows[0][34]).to.equal("IDInfoGeol");
+      expect(rows[1][34]).to.equal("");
+      expect(rows[2][34]).to.equal("14");
 
-      expect(rows[0][34]).to.equal("IDGeODin\r");
-      expect(rows[1][34]).to.equal("13\r");
-      expect(rows[2][34]).to.equal("\r");
+      expect(rows[0][35]).to.equal("IDGeODin\r");
+      expect(rows[1][35]).to.equal("13\r");
+      expect(rows[2][35]).to.equal("\r");
     });
     deleteItem();
     handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "Delete");
