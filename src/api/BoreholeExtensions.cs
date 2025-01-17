@@ -33,4 +33,16 @@ public static class BoreholeExtensions
             .Include(b => b.Workgroup)
             .Include(b => b.UpdatedBy);
     }
+
+    public static void SetTvdValues(this Borehole borehole, Dictionary<int, List<BoreholeGeometryElement>> boreholeGeometries)
+    {
+        if (boreholeGeometries.TryGetValue(borehole.Id, out var boreholeGeometry))
+        {
+            borehole.TotalDepthTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TotalDepth);
+            borehole.TopBedrockFreshTvd = boreholeGeometry!.GetTVDIfGeometryExists(borehole.TopBedrockFreshMd);
+            borehole.TopBedrockWeatheredTvd = boreholeGeometry!.GetTVDIfGeometryExists(borehole.TopBedrockWeatheredMd);
+        }
+
+        return;
+    }
 }

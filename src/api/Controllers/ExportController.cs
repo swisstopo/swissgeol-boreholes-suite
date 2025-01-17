@@ -69,22 +69,12 @@ public class ExportController : ControllerBase
         var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         var boreholeIds = boreholes.Select(b => b.Id).ToList();
 
-        var boreholeGeometries = await context.BoreholeGeometry
-                .AsNoTracking()
-                .Where(g => boreholeIds.Contains(g.BoreholeId))
-                .GroupBy(g => g.BoreholeId)
-                .ToDictionaryAsync(group => group.Key, group => group.ToList())
-                .ConfigureAwait(false);
+        var boreholeGeometries = await GetBoreholeGeometries(boreholeIds).ConfigureAwait(false);
 
         List<object> features = new();
         foreach (var borehole in boreholes)
         {
-            if (boreholeGeometries.TryGetValue(borehole.Id, out var boreholeGeometry))
-            {
-                borehole.TotalDepthTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TotalDepth);
-                borehole.TopBedrockFreshTvd = boreholeGeometry!.GetTVDIfGeometryExists(borehole.TopBedrockFreshMd);
-                borehole.TopBedrockWeatheredTvd = boreholeGeometry!.GetTVDIfGeometryExists(borehole.TopBedrockWeatheredMd);
-            }
+            borehole.SetTvdValues(boreholeGeometries);
 
             var feature = new
             {
@@ -186,6 +176,7 @@ public class ExportController : ControllerBase
             .ConfigureAwait(false);
 
         if (boreholes.Count == 0) return NotFound("No borehole(s) found for the provided id(s).");
+        var boreholeIds = boreholes.Select(b => b.Id).ToList();
 
         using var stringWriter = new StringWriter();
         using var csvWriter = new CsvWriter(stringWriter, CsvConfigHelper.CsvWriteConfig);
@@ -241,18 +232,12 @@ public class ExportController : ControllerBase
         // Move to the next line
         await csvWriter.NextRecordAsync().ConfigureAwait(false);
 
+        var boreholeGeometries = await GetBoreholeGeometries(boreholeIds).ConfigureAwait(false);
+
         // Write data for standard fields
         foreach (var b in boreholes)
         {
-            var boreholeGeometry = await context.BoreholeGeometry
-                .AsNoTracking()
-                .Where(g => g.BoreholeId == b.Id)
-                .ToListAsync()
-                .ConfigureAwait(false);
-
-            b.TotalDepthTvd = boreholeGeometry.GetTVDIfGeometryExists(b.TotalDepth);
-            b.TopBedrockFreshTvd = boreholeGeometry.GetTVDIfGeometryExists(b.TopBedrockFreshMd);
-            b.TopBedrockWeatheredTvd = boreholeGeometry.GetTVDIfGeometryExists(b.TopBedrockWeatheredMd);
+            b.SetTvdValues(boreholeGeometries);
 
             csvWriter.WriteField(b.Id);
             csvWriter.WriteField(b.OriginalName);
@@ -340,7 +325,7 @@ public class ExportController : ControllerBase
                 using var entryStream = jsonEntry.Open();
                 using (var textWriter = new StreamWriter(entryStream))
                 {
-                   await textWriter.WriteAsync(json).ConfigureAwait(false);
+                    await textWriter.WriteAsync(json).ConfigureAwait(false);
                 }
 
                 foreach (var file in files.Select(f => f.File))
@@ -366,5 +351,15 @@ public class ExportController : ControllerBase
     private static IEnumerable<BoreholeCodelist> GetBoreholeCodelists(Borehole borehole)
     {
         return borehole.BoreholeCodelists ?? Enumerable.Empty<BoreholeCodelist>();
+    }
+
+    private async Task<Dictionary<int, List<BoreholeGeometryElement>>> GetBoreholeGeometries(List<int> boreholeIds)
+    {
+        return await context.BoreholeGeometry
+            .AsNoTracking()
+            .Where(g => boreholeIds.Contains(g.BoreholeId))
+            .GroupBy(g => g.BoreholeId)
+            .ToDictionaryAsync(group => group.Key, group => group.ToList())
+            .ConfigureAwait(false);
     }
 }
