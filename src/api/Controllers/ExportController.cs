@@ -67,8 +67,25 @@ public class ExportController : ControllerBase
         if (ids == null || !ids.Any()) return BadRequest("The list of IDs must not be empty.");
 
         var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
-        var features = boreholes.Select(borehole =>
+        var boreholeIds = boreholes.Select(b => b.Id).ToList();
+
+        var boreholeGeometries = await context.BoreholeGeometry
+                .AsNoTracking()
+                .Where(g => boreholeIds.Contains(g.BoreholeId))
+                .GroupBy(g => g.BoreholeId)
+                .ToDictionaryAsync(group => group.Key, group => group.ToList())
+                .ConfigureAwait(false);
+
+        List<object> features = new();
+        foreach (var borehole in boreholes)
         {
+            if (boreholeGeometries.TryGetValue(borehole.Id, out var boreholeGeometry))
+            {
+                borehole.TotalDepthTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TotalDepth);
+                borehole.TopBedrockFreshTvd = boreholeGeometry!.GetTVDIfGeometryExists(borehole.TopBedrockFreshMd);
+                borehole.TopBedrockWeatheredTvd = boreholeGeometry!.GetTVDIfGeometryExists(borehole.TopBedrockWeatheredMd);
+            }
+
             var feature = new
             {
                 type = "Feature",
@@ -91,8 +108,8 @@ public class ExportController : ControllerBase
                 },
                 properties = borehole,
             };
-            return feature;
-        }).ToList();
+            features.Add(feature);
+        }
 
         var geojson = new
         {
