@@ -5,6 +5,10 @@ export function capitalizeFirstLetter(text: string) {
 
 export const downloadData = (dataString: string, fileName: string, type: string) => {
   const blob = new Blob([dataString], { type: type });
+  downloadDataFromBlob(blob, fileName);
+};
+
+export const downloadDataFromBlob = (blob: Blob, fileName: string) => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;

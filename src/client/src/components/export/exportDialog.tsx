@@ -1,8 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { exportCSVBorehole, exportJsonBoreholes, exportJsonWithAttachmentsBorehole } from "../../api/borehole.ts";
-import { downloadData } from "../../utils.ts";
+import {
+  exportCSVBorehole,
+  exportGeoPackageBoreholes,
+  exportJsonBoreholes,
+  exportJsonWithAttachmentsBorehole,
+} from "../../api/borehole.ts";
+import { downloadData, downloadDataFromBlob } from "../../utils.ts";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
 
 interface ExportDialogProps {
@@ -32,6 +37,12 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
     setIsExporting(false);
   };
 
+  const exportGeoPackage = async () => {
+    const blob = await exportGeoPackageBoreholes(selectionModel.slice(0, 100));
+    downloadDataFromBlob(blob, `${fileName}.gpkg`);
+    setIsExporting(false);
+  };
+
   return (
     <Dialog open={isExporting}>
       <Stack sx={{ minWidth: "326px" }}>
@@ -43,6 +54,8 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
             <ExportButton label={"CSV"} onClick={exportCsv} />
             <ExportButton label={"JSON"} onClick={exportJson} />
             <ExportButton label={"JSON + PDF"} onClick={exportJsonWithAttachments} />
+            <ExportButton label={"ZIP"} onClick={exportJsonWithAttachments} />
+            <ExportButton label={"GEOPACKAGE"} onClick={exportGeoPackage} />
           </Stack>
         </DialogContent>
         <DialogActions>

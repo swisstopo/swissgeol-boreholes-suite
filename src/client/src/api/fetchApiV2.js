@@ -32,8 +32,10 @@ export async function fetchApiV2(url, method, payload = null) {
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
       return await response.json();
+    } else if (contentType.indexOf("application/geopackage+sqlite") !== -1 || contentType.indexOf("application/octet-stream") !== -1) {
+      return await response.blob(); // Binary response
     } else {
-      return await response.text();
+      return await response.text(); // Fallback for plain text
     }
   } else {
     return response.text().then(text => alert(text));
