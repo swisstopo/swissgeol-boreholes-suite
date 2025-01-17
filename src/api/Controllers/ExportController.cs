@@ -232,10 +232,12 @@ public class ExportController : ControllerBase
                    await textWriter.WriteAsync(json).ConfigureAwait(false);
                 }
 
-                foreach (var file in files)
+                foreach (var file in files.Select(f => f.File))
                 {
-                    var fileBytes = await boreholeFileCloudService.GetObject(file.File.NameUuid!).ConfigureAwait(false);
-                    var zipEntry = archive.CreateEntry($"{file.BoreholeId}_{file.File.Name}", CompressionLevel.Fastest);
+                    var fileBytes = await boreholeFileCloudService.GetObject(file.NameUuid!).ConfigureAwait(false);
+
+                    // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name
+                    var zipEntry = archive.CreateEntry($"{file.NameUuid}_{file.Name}", CompressionLevel.Fastest);
                     using var zipEntryStream = zipEntry.Open();
                     await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
                 }
