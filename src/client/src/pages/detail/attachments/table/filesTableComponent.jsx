@@ -53,7 +53,7 @@ const FilesTableComponent = props => {
                 </Table.Cell>
               )}
               <Table.Cell>
-                <DownloadLink caption={boreholeFile.file.name} onDownload={() => downloadFile(boreholeFile.fileId)} />
+                <DownloadLink caption={boreholeFile.file?.name} onDownload={() => downloadFile(boreholeFile.fileId)} />
               </Table.Cell>
               <Table.Cell>
                 {props.unlocked === true ? (
@@ -83,7 +83,7 @@ const FilesTableComponent = props => {
                   style={{
                     color: "#787878",
                   }}>
-                  {boreholeFile.user.name}
+                  {boreholeFile.user?.name}
                 </span>
               </Table.Cell>
               {props.unlocked === true ? (

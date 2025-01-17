@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Box, Button, Stack } from "@mui/material";
-import { importBoreholesCsv, importBoreholesJson } from "../../../../api/borehole.ts";
+import { importBoreholesCsv, importBoreholesJson, importBoreholesZip } from "../../../../api/borehole.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { BoreholeImportDropzone } from "../../../../components/boreholeImportDropzone.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
@@ -74,8 +74,13 @@ const ImportPanel = ({
       importBoreholesCsv(workgroupId, combinedFormData).then(response => {
         handleImportResponse(response);
       });
-    } else {
+    }
+    if (getFileExtension(file) === "json") {
       importBoreholesJson(workgroupId, combinedFormData).then(response => {
+        handleImportResponse(response);
+      });
+    } else {
+      importBoreholesZip(workgroupId, combinedFormData).then(response => {
         handleImportResponse(response);
       });
     }
@@ -91,7 +96,11 @@ const ImportPanel = ({
             enabledWorkgroups={enabledWorkgroups}
             setWorkgroupId={setWorkgroupId}
           />
-          <BoreholeImportDropzone file={file} setFile={setFile} acceptedFileTypes={["application/json", "text/csv"]} />
+          <BoreholeImportDropzone
+            file={file}
+            setFile={setFile}
+            acceptedFileTypes={["application/json", "text/csv", ".zip"]}
+          />
         </Stack>
       </Box>
       <Button
