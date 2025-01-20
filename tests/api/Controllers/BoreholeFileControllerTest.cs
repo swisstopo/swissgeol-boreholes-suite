@@ -356,11 +356,11 @@ public class BoreholeFileControllerTest
         var fileUuid = file.File.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
-        await boreholeFileCloudService.UploadObject(image1, $"dataextraction/{fileUuid}-1.png");
+        await boreholeFileCloudService.UploadObject(image1.OpenReadStream(), $"dataextraction/{fileUuid}-1.png", image1.ContentType);
         var image2 = GetFormFileByExistingFile("labeling_attachment-2.png");
-        await boreholeFileCloudService.UploadObject(image2, $"dataextraction/{fileUuid}-2.png");
+        await boreholeFileCloudService.UploadObject(image2.OpenReadStream(), $"dataextraction/{fileUuid}-2.png", image2.ContentType);
         var image3 = GetFormFileByExistingFile("labeling_attachment-3.png");
-        await boreholeFileCloudService.UploadObject(image3, $"dataextraction/{fileUuid}-3.png");
+        await boreholeFileCloudService.UploadObject(image3.OpenReadStream(), $"dataextraction/{fileUuid}-3.png", image3.ContentType);
 
         // Test
         var result = await controller.GetDataExtractionFileInfo(file.FileId, 1);
@@ -436,7 +436,7 @@ public class BoreholeFileControllerTest
         var fileUuid = file.File.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
-        await boreholeFileCloudService.UploadObject(image1, $"dataextraction/{fileUuid}-1.png");
+        await boreholeFileCloudService.UploadObject(image1.OpenReadStream(), $"dataextraction/{fileUuid}-1.png", image1.ContentType);
 
         // Test
         var response = await controller.GetDataExtractionImage($"{fileUuid}-1.png");
