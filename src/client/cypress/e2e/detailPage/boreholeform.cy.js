@@ -39,7 +39,7 @@ describe("Test for the borehole form.", () => {
     isDisabled("restrictionUntil", true);
     setSelect("restrictionId", 3);
     isDisabled("restrictionUntil", false);
-    setSelect("nationalInterest", 2);
+    setBooleanSelect("nationalInterest", null); // not specified
     setSelect("originalReferenceSystem", 0);
     setSelect("locationPrecisionId", 2);
     setSelect("elevationPrecisionId", 2);
@@ -103,8 +103,8 @@ describe("Test for the borehole form.", () => {
       setSelect("lithologyTopBedrockId", 1);
       setSelect("lithostratigraphyTopBedrockId", 1);
       setSelect("chronostratigraphyTopBedrockId", 1);
-      setSelect("hasGroundwater", 1);
-      setSelect("topBedrockIntersected", 0);
+      setBooleanSelect("hasGroundwater", true);
+      setBooleanSelect("topBedrockIntersected", false);
 
       setInput("totalDepth", 700);
       setInput("topBedrockFreshMd", 0.60224);
@@ -128,7 +128,7 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it("Updates TVD Values when depth values change in boreholeform", () => {
+  it("Updates topbedrock intersected when top bedrock values change", () => {
     createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/borehole`);
@@ -162,14 +162,15 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it("Updates topbedrock intersected when top bedrock values change boreholeform", () => {
+  it("Updates TVD Values when depth values change in boreholeform", () => {
     createBorehole({ "extended.original_name": "AAA_Penguin", "custom.alternate_name": "AAA_Penguin" }).as(
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
-      evaluateInput("topBedrockIntersected", "No");
+      evaluateBooleanSelect("topBedrockIntersected", null);
+      setInput("totalDepth", 700);
       setInput("topBedrockFreshMd", 0.60224);
       setInput("topBedrockWeatheredMd", 78945100);
 
@@ -186,7 +187,7 @@ describe("Test for the borehole form.", () => {
 
       returnToOverview();
       showTableAndWaitForData();
-      clickOnRowWithText("AAA_Ferret");
+      clickOnRowWithText("AAA_Penguin");
       cy.get('[data-cy="borehole-menu-item"]').click();
       evaluateInput("totalDepth", "700");
       evaluateInput("topBedrockFreshMd", "0.60224");
