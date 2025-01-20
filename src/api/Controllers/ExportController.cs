@@ -63,7 +63,7 @@ public class ExportController : ControllerBase
     /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a GeoPackage file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The required list of borehole ids to filter by.</param>
-    [HttpGet("geopackage")]
+    [HttpGet("gpkg")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult> ExportGeoPackageAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {

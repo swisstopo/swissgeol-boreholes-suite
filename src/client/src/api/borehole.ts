@@ -69,14 +69,12 @@ const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids
 
 export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
 
-export const exportJsonBoreholes = async (ids: number[] | GridRowSelectionModel) => {
-  const idsQuery = ids.map(id => `ids=${id}`).join("&");
-  return await fetchApiV2(`export/json?${idsQuery}`, "GET");
+export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelectionModel) => {
+  return await fetchApiV2(`export/json?${getIdQuery(boreholeIds)}`, "GET");
 };
 
-export const exportGeoPackageBoreholes = async (ids: number[] | GridRowSelectionModel) => {
-  const idsQuery = ids.map(id => `ids=${id}`).join("&");
-  return await fetchApiV2(`export/geoPackage?${idsQuery}`, "GET");
+export const exportGeoPackageBoreholes = async (boreholeIds: number[] | GridRowSelectionModel) => {
+  return await fetchApiV2(`export/gpkg?${getIdQuery(boreholeIds)}`, "GET");
 };
 
 export const updateBorehole = async (borehole: BoreholeV2) => {
