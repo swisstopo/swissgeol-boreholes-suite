@@ -164,14 +164,21 @@ export const setBooleanSelect = (fieldName, option, expected, parent) => {
 };
 
 /**
- * Evaluates the state of a select form element.
+ * Evaluates the state of a boolean select form element.
  * @param {string} fieldName The name of the select field.
- * @param {boolean?} expectedValue The expected value of the select (true, false, null)
+ * @param {boolean?} expectedBoolean The expected value of the select (true, false, null)
  * @param {string} parent (optional) The parent of the form element.
  */
-export const evaluateBooleanSelect = (fieldName, expectedValue, parent) => {
-  const expectedString = expectedValue === true ? "1" : expectedValue === false ? "0" : "2";
-  evaluateSelect(fieldName, expectedString, parent);
+export const evaluateBooleanSelect = (fieldName, expectedBoolean, parent) => {
+  const expectedInputString = expectedBoolean === true ? "1" : expectedBoolean === false ? "0" : "2";
+  const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
+  cy.get(selector).then($input => {
+    const actualInputString = $input.val();
+    const actualBoolean = actualInputString === "1" ? true : actualInputString === "0" ? false : null;
+    expect(actualInputString, `Expected ${fieldName} to have value ${expectedBoolean} but got ${actualBoolean}`).to.eq(
+      expectedInputString,
+    );
+  });
 };
 
 /**
@@ -182,11 +189,12 @@ export const evaluateBooleanSelect = (fieldName, expectedValue, parent) => {
  */
 export const evaluateSelect = (fieldName, expectedValue, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
-  cy.get(selector)
-    .filter((k, input) => {
-      return input.value === expectedValue;
-    })
-    .should("have.length", 1);
+  cy.get(selector).then($input => {
+    const actualValue = $input.val();
+    expect(actualValue, `Expected ${fieldName} to have value ${expectedValue} but got ${actualValue}`).to.eq(
+      expectedValue,
+    );
+  });
 };
 
 /**
