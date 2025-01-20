@@ -69,50 +69,50 @@ public class ExportController : ControllerBase
     {
         if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
-        var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
-        if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
-
-        var boreholeGeometries = await GetBoreholeGeometries(idList).ConfigureAwait(false);
-
-        foreach (var borehole in boreholes)
-        {
-            borehole.SetTvdValues(boreholeGeometries);
-        }
-
-        // Create the GeoJSON features for each borehole
-        var features = boreholes.Select(borehole =>
-        {
-            return new
-            {
-                type = "Feature",
-                geometry = new
-                {
-                    type = "Point",
-                    crs = new
-                    {
-                        type = "name",
-                        properties = new { name = "EPSG:2056" },
-                    },
-                    coordinates = new[] { borehole.LocationX, borehole.LocationY },
-                },
-                properties = borehole,
-            };
-        }).ToList();
-
-        // Create the GeoJSON feature collection for each GeoJSON feature
-        var geojson = new
-        {
-            type = "FeatureCollection",
-            crs = new
-            {
-                type = "name",
-                properties = new { name = "EPSG:2056" },
-            },
-            features,
-        };
-
         try
         {
+            var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+            if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
+
+            var boreholeGeometries = await GetBoreholeGeometries(idList).ConfigureAwait(false);
+
+            foreach (var borehole in boreholes)
+            {
+                borehole.SetTvdValues(boreholeGeometries);
+            }
+
+            // Create the GeoJSON features for each borehole
+            var features = boreholes.Select(borehole =>
+            {
+                return new
+                {
+                    type = "Feature",
+                    geometry = new
+                    {
+                        type = "Point",
+                        crs = new
+                        {
+                            type = "name",
+                            properties = new { name = "EPSG:2056" },
+                        },
+                        coordinates = new[] { borehole.LocationX, borehole.LocationY },
+                    },
+                    properties = borehole,
+                };
+            }).ToList();
+
+            // Create the GeoJSON feature collection for each GeoJSON feature
+            var geojson = new
+            {
+                type = "FeatureCollection",
+                crs = new
+                {
+                    type = "name",
+                    properties = new { name = "EPSG:2056" },
+                },
+                features,
+            };
+
             var tempGeoJsonFilePath = Path.Combine(Path.GetTempPath(), $"temp_geojson_{Guid.NewGuid()}.geojson");
             await System.IO.File.WriteAllTextAsync(tempGeoJsonFilePath, JsonSerializer.Serialize(geojson, jsonExportOptions)).ConfigureAwait(false);
 
@@ -148,7 +148,8 @@ public class ExportController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Error exporting GeoPackage: {ex.Message}");
+            logger.LogError(ex, "Failed to prepare GPKG file.");
+            return Problem("An error occurred while preparing the GPKG file.");
         }
     }
 
