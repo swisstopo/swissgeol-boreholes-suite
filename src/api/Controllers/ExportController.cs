@@ -144,7 +144,7 @@ public class ExportController : ControllerBase
             System.IO.File.Delete(tempGpkgFilePath);
 
             // Return GeoPackage as a downloadable file
-            return File(gpkgBytes, "application/geopackage+sqlite", $"boreholes_{DateTime.Now:yyyyMMdd}.gpkg");
+            return File(gpkgBytes, "application/geopackage+sqlite", $"{ExportFileName}_{DateTime.Now:yyyyMMdd}.gpkg");
         }
         catch (Exception ex)
         {
