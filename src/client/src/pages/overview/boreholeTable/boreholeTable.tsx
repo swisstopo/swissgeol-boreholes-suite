@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Box } from "@mui/system";
 import {
@@ -20,7 +19,7 @@ import {
 } from "@mui/x-data-grid";
 import { LockKeyhole } from "lucide-react";
 import _ from "lodash";
-import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../../api/fetchApiV2";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
@@ -63,8 +62,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const hasLoaded = useRef(false);
   const rowCountRef = useRef(boreholes?.length || 0);
   const scrollPositionRef = useRef(tableScrollPosition);
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  const userIsEditor = user.data.roles.includes("EDIT");
   const [filteredIds, setFilteredIds] = useState<number[]>([]);
 
   // This useEffect makes sure that the table selection model is only updated when the
@@ -370,7 +367,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       localeText={muiLocales[i18n.language]}
       disableColumnSelector
       disableColumnFilter
-      checkboxSelection={userIsEditor}
+      checkboxSelection={true}
       isRowSelectable={(params: GridRowParams) => params.row.lock === null}
       disableRowSelectionOnClick
       rowSelectionModel={selectionModel}
