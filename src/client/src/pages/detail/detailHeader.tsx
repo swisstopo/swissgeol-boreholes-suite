@@ -135,12 +135,12 @@ const DetailHeader = ({
         )}
       </Stack>
       <Stack direction="row" data-cy="detail-header" gap={2}>
+        <ExportButton
+          label="export"
+          onClick={isFormDirty ? startExportWithUnsavedChanges : () => setIsExporting(true)}
+        />
         {editableByCurrentUser && (
           <>
-            <ExportButton
-              label="export"
-              onClick={isFormDirty ? startExportWithUnsavedChanges : () => setIsExporting(true)}
-            />
             {editingEnabled ? (
               <>
                 <DeleteButton

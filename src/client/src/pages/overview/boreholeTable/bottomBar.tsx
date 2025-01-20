@@ -7,6 +7,7 @@ import { ArrowDownToLine, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
 import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
+import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
@@ -40,6 +41,8 @@ const BottomBar = ({
   const { showPrompt, promptIsOpen } = useContext(PromptContext);
   const { bottomDrawerOpen, setBottomDrawerOpen } = useContext(OverViewContext);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
+  const userIsEditor = user.data.roles.includes("EDIT");
+  const auth = useAuth();
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
   const [currentWorkgroup, setCurrentWorkgroup] = useState<string>("");
   const enabledWorkgroups = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
@@ -105,6 +108,8 @@ const BottomBar = ({
     }
   };
 
+  const showAllTableActions = !auth.anonymousModeEnabled && userIsEditor;
+
   return (
     <Stack
       direction="row"
@@ -118,27 +123,29 @@ const BottomBar = ({
       }}>
       {selectionModel.length > 0 ? (
         <Stack direction="row" spacing={1} alignItems="center">
-          <DeleteButton
-            label="delete"
-            color="secondary"
-            onClick={() =>
-              showPrompt(t("deleteBoreholesMessage", { count: selectionModel.length }), [
-                {
-                  label: t("cancel"),
-                },
-                {
-                  label: t("delete"),
-                  icon: <Trash2 />,
-                  variant: "contained",
-                  action: onDeleteMultiple,
-                },
-              ])
-            }
-          />
-          {selectionModel.length === 1 && (
+          {showAllTableActions && (
+            <DeleteButton
+              label="delete"
+              color="secondary"
+              onClick={() =>
+                showPrompt(t("deleteBoreholesMessage", { count: selectionModel.length }), [
+                  {
+                    label: t("cancel"),
+                  },
+                  {
+                    label: t("delete"),
+                    icon: <Trash2 />,
+                    variant: "contained",
+                    action: onDeleteMultiple,
+                  },
+                ])
+              }
+            />
+          )}
+          {selectionModel.length === 1 && showAllTableActions && (
             <CopyButton color="secondary" onClick={() => showCopyPromptForSelectedWorkgroup()} />
           )}
-          <BulkEditButton label={"bulkEditing"} onClick={bulkEditSelected} />
+          {showAllTableActions && <BulkEditButton label={"bulkEditing"} onClick={bulkEditSelected} />}
           <ExportButton label={"export"} onClick={() => onExportMultiple()} />
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
