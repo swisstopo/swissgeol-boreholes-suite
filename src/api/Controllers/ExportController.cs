@@ -356,7 +356,7 @@ public class ExportController : ControllerBase
             .ConfigureAwait(false);
     }
 
-    private bool ValidateIds(IEnumerable<int> ids, out List<int> idList)
+    private static bool ValidateIds(IEnumerable<int> ids, out List<int> idList)
     {
         idList = ids?.ToList() ?? [];
 
