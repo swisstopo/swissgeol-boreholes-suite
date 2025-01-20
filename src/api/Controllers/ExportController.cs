@@ -71,12 +71,15 @@ public class ExportController : ControllerBase
 
         var boreholeGeometries = await GetBoreholeGeometries(boreholeIds).ConfigureAwait(false);
 
-        List<object> features = new();
         foreach (var borehole in boreholes)
         {
             borehole.SetTvdValues(boreholeGeometries);
+        }
 
-            var feature = new
+        // Create the GeoJSON features for each borehole
+        var features = boreholes.Select(borehole =>
+        {
+            return new
             {
                 type = "Feature",
                 geometry = new
@@ -85,32 +88,22 @@ public class ExportController : ControllerBase
                     crs = new
                     {
                         type = "name",
-                        properties = new
-                        {
-                            name = "EPSG:2056",
-                        },
+                        properties = new { name = "EPSG:2056" },
                     },
-                    coordinates = new[]
-                    {
-                        borehole.LocationX,
-                        borehole.LocationY,
-                    },
+                    coordinates = new[] { borehole.LocationX, borehole.LocationY },
                 },
                 properties = borehole,
             };
-            features.Add(feature);
-        }
+        }).ToList();
 
+        // Create the GeoJSON feature collection for each GeoJSON feature
         var geojson = new
         {
             type = "FeatureCollection",
             crs = new
             {
                 type = "name",
-                properties = new
-                {
-                    name = "EPSG:2056",
-                },
+                properties = new { name = "EPSG:2056" },
             },
             features,
         };
