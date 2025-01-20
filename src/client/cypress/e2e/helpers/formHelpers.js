@@ -152,6 +152,29 @@ export const setSelect = (fieldName, index, expected, parent) => {
 };
 
 /**
+ * Sets the value for a select form element.
+ * @param {string} fieldName The name of the select field.
+ * @param {boolean?} option The option to select (true, false, not specified)
+ * @param {number} expected The expected number of options in the dropdown.
+ * @param {string} parent (optional) The parent of the form element.
+ */
+export const setBooleanSelect = (fieldName, option, expected, parent) => {
+  const listIndex = option === true ? 0 : option === false ? 1 : 2; //order of options in dropdown list is Yes, No, Not Specified
+  setSelect(fieldName, listIndex, expected, parent);
+};
+
+/**
+ * Evaluates the state of a select form element.
+ * @param {string} fieldName The name of the select field.
+ * @param {boolean?} expectedValue The expected value of the select (true, false, null)
+ * @param {string} parent (optional) The parent of the form element.
+ */
+export const evaluateBooleanSelect = (fieldName, expectedValue, parent) => {
+  const expectedString = expectedValue === true ? "1" : expectedValue === false ? "0" : "2";
+  evaluateSelect(fieldName, expectedString, parent);
+};
+
+/**
  * Evaluates the state of a select form element.
  * @param {string} fieldName The name of the select field.
  * @param {string} expectedValue The expected value of the select.
