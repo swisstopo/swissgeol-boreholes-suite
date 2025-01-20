@@ -90,7 +90,7 @@ public class ExportControllerTest
         FileContentResult fileContentResult = (FileContentResult)response!;
         Assert.IsNotNull(fileContentResult);
         Assert.AreEqual("application/geopackage+sqlite", fileContentResult.ContentType);
-        Assert.AreEqual($"boreholes_{DateTime.Now:yyyyMMdd}.gpkg", fileContentResult.FileDownloadName);
+        Assert.AreEqual($"boreholes_export_{DateTime.Now:yyyyMMdd}.gpkg", fileContentResult.FileDownloadName);
         Assert.IsTrue(fileContentResult.FileContents.Length > 0);
     }
 
