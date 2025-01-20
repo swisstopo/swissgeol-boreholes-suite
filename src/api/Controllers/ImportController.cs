@@ -307,6 +307,11 @@ public class ImportController : ControllerBase
                 {
                     var fileName = $"{fileToProcess.File.NameUuid}_{fileToProcess.File.Name}";
                     var attachment = zipArchive.Entries.FirstOrDefault(e => e.FullName == fileName);
+                    if (attachment == null)
+                    {
+                        AddValidationErrorToModelState(borehole.index, $"Attachment with the name <{fileName}> is referenced in JSON file but was not not found in ZIP archive.", ValidationErrorType.Attachment);
+                        continue;
+                    }
 
                     using var memoryStream = new MemoryStream();
                     await attachment.Open().CopyToAsync(memoryStream).ConfigureAwait(false);
