@@ -44,7 +44,7 @@
   "borehole_technical_id": "ID boreholes.swissgeol.ch",
   "borehole_type": "Tipologia di perforazione",
   "boreholes": "Perforazioni",
-  "boreholesImportError": "Nessuna perforazione poteva essere importato! Assicurati che il file CSV-UTF8 caricato sia nel formato corretto.",
+  "boreholesImportError": "Nessuna perforazione poteva essere importato! Assicurati che il file caricato abbia il formato e il contenuto corretti.",
   "boreholesImportLongRunning": "L'import sta eseguendo in background. Questo processo potrebbe richiedere alcuni minuti. Una volta completato, le perforazioni saranno visibili nell'elenco.",
   "boreholesImported": "perforazioni Tre pozzi sono stati importati",
   "boreholestatus": "Stato della perforazione",

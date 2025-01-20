@@ -4,6 +4,17 @@
 
 ### Added
 
+- Added functionality to import borehole attachments inside a ZIP file.
+
+### Changed 
+
+- Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
+
+
+## v2.1.1025 - 2025-01-17
+
+### Added
+
 - Added ZIP export with JSON and attachments for single and multiple boreholes.
 
 ### Changed 
