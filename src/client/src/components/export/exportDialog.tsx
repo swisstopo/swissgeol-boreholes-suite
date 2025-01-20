@@ -55,7 +55,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
             <ExportButton label={"JSON"} onClick={exportJson} />
             <ExportButton label={"JSON + PDF"} onClick={exportJsonWithAttachments} />
             <ExportButton label={"ZIP"} onClick={exportJsonWithAttachments} />
-            <ExportButton label={"GEOPACKAGE"} onClick={exportGeoPackage} />
+            <ExportButton label={"GPKG"} onClick={exportGeoPackage} />
           </Stack>
         </DialogContent>
         <DialogActions>
