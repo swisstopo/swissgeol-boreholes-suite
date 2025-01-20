@@ -42,7 +42,7 @@ public class ExportController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets all <see cref="Borehole"/> records filtered by ids. Additional data is included in the response.
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a JSON file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The required list of borehole ids to filter by.</param>
     [HttpGet("json")]
@@ -57,7 +57,7 @@ public class ExportController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets all <see cref="Borehole"/> records filtered by ids. Additional data is included in the response.
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a GeoPackage file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The required list of borehole ids to filter by.</param>
     [HttpGet("geopackage")]
