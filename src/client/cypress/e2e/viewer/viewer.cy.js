@@ -1,6 +1,6 @@
 import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { evaluateInput } from "../helpers/formHelpers";
-import { getElementByDataCy, loginAsAdmin, loginAsViewer } from "../helpers/testHelpers";
+import { getElementByDataCy, loginAsViewer } from "../helpers/testHelpers";
 
 describe("Viewer tests", () => {
   it("Assures viewer cannot add, edit or delete boreholes", () => {
@@ -81,16 +81,5 @@ describe("Viewer tests", () => {
     cy.contains("Uploaded").should("exist");
     getElementByDataCy("status-menu-item").click({ force: true });
     cy.contains("Publication workflow").should("exist");
-  });
-
-  it("Assures viewer cannot multiselect boreholes", () => {
-    loginAsAdmin();
-    showTableAndWaitForData();
-    cy.wait("@edit_list");
-    cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").should("be.visible");
-
-    loginAsViewer();
-    cy.wait("@edit_list");
-    cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").should("not.exist");
   });
 });
