@@ -77,8 +77,6 @@ public class BdmsContextTest
         AssertWorkgroupRole(DefaultWorkgroupId, Role.Publisher, publisher);
     }
 
-    [TestMethod]
-
     private static void AssertWorkgroupRole(int workgroupId, Role role, User user) =>
         Assert.IsNotNull(user.WorkgroupRoles.SingleOrDefault(w => w.WorkgroupId == workgroupId && w.Role == role));
 }
