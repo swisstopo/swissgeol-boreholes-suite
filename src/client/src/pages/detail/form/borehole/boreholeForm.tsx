@@ -129,6 +129,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                     fieldName={"totalDepth"}
                     label={"totaldepth"}
                     value={borehole?.totalDepth}
+                    controlledValue={totalDepth ?? ""}
                     withThousandSeparator={true}
                     readonly={!editingEnabled}
                   />
@@ -147,6 +148,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   fieldName={"topBedrockWeatheredMd"}
                   label={"top_bedrock_weathered_md"}
                   value={borehole?.topBedrockWeatheredMd}
+                  controlledValue={topBedrockWeatheredMd ?? ""}
                   withThousandSeparator={true}
                   readonly={!editingEnabled}
                 />
@@ -161,6 +163,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   fieldName={"topBedrockFreshMd"}
                   label={"top_bedrock_fresh_md"}
                   value={borehole?.topBedrockFreshMd}
+                  controlledValue={topBedrockFreshMd ?? ""}
                   withThousandSeparator={true}
                   readonly={!editingEnabled}
                 />

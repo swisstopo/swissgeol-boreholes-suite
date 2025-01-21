@@ -35,7 +35,7 @@ export const FormInput: FC<FormInputProps> = ({
   multiline,
   rows,
   value, // default value passed to the Textfield component
-  controlledValue, // value to be controlled with react-hook-form state
+  controlledValue, // value to be controlled with react-hook-form state, it is needed to correctly reset values with thousands separator
   sx,
   className,
   inputProps,
