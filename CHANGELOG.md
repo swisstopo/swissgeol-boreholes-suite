@@ -10,6 +10,9 @@
 
 - Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
 
+### Fixed
+
+- Workgroup reset in the bulk edit form had to be clicked twice to take effect. 
 
 ## v2.1.1025 - 2025-01-17
 
