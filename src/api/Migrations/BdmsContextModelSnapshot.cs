@@ -269,10 +269,6 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("top_bedrock_fresh_md");
 
-                    b.Property<bool?>("TopBedrockIntersected")
-                        .HasColumnType("boolean")
-                        .HasColumnName("top_bedrock_intersected");
-
                     b.Property<double?>("TopBedrockWeatheredMd")
                         .HasColumnType("double precision")
                         .HasColumnName("top_bedrock_weathered_md");
