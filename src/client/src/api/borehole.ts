@@ -79,19 +79,19 @@ export const updateBorehole = async (borehole: BoreholeV2) => {
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-export const importBoreholesCsv = async (workgroupId: string, combinedFormData: any) => {
+export const importBoreholesCsv = async (workgroupId: number | null, combinedFormData: any) => {
   return await upload(`import/csv?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-export const importBoreholesJson = async (workgroupId: string, combinedFormData: any) => {
+export const importBoreholesJson = async (workgroupId: number | null, combinedFormData: any) => {
   return await upload(`import/json?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-export const importBoreholesZip = async (workgroupId: string, combinedFormData: any) => {
+export const importBoreholesZip = async (workgroupId: number | null, combinedFormData: any) => {
   return await upload(`import/zip?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: string | null) => {
+export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
   return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
 
