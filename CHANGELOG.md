@@ -10,6 +10,9 @@
 
 - Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
 
+### Fixed
+
+- Numeric inputs on the borehole tab were not correctly reset.
 
 ## v2.1.1025 - 2025-01-17
 
