@@ -16,6 +16,12 @@ public class BdmsContextTest
     public void TestCleanup() => context.Dispose();
 
     [TestMethod]
+    public void HasNoPendingModelChanges()
+    {
+        var hasPendingModelChanges = context.Database.HasPendingModelChanges();
+        Assert.IsFalse(hasPendingModelChanges, "There are pending model changes.");
+    }
+
     public void CanFetchUsersFromDatabase()
     {
         const int DefaultWorkgroupId = 1;
