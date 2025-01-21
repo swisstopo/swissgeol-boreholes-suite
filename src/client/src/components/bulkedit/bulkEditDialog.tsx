@@ -84,7 +84,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
   const formMethods = useForm({
     mode: "all",
     defaultValues: bulkEditFormFields.reduce<Record<string, string>>((acc, field) => {
-      const key = field.api || field.fieldName;
+      const key = field.api ?? field.fieldName;
       acc[key] = "";
       return acc;
     }, {}),
