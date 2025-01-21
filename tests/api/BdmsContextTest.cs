@@ -16,6 +16,12 @@ public class BdmsContextTest
     public void TestCleanup() => context.Dispose();
 
     [TestMethod]
+    public void HasNoPendingModelChanges()
+    {
+        var hasPendingModelChanges = context.Database.HasPendingModelChanges();
+        Assert.IsFalse(hasPendingModelChanges, "There are pending model changes.");
+    }
+
     public void CanFetchUsersFromDatabase()
     {
         const int DefaultWorkgroupId = 1;
@@ -70,6 +76,8 @@ public class BdmsContextTest
         Assert.AreEqual(1, publisher.WorkgroupRoles.Count());
         AssertWorkgroupRole(DefaultWorkgroupId, Role.Publisher, publisher);
     }
+
+    [TestMethod]
 
     private static void AssertWorkgroupRole(int workgroupId, Role role, User user) =>
         Assert.IsNotNull(user.WorkgroupRoles.SingleOrDefault(w => w.WorkgroupId == workgroupId && w.Role == role));
