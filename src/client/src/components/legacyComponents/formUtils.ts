@@ -82,6 +82,7 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   data.locationXLV03 = parseValueIfNotNull(data?.locationXLV03);
   data.locationYLV03 = parseValueIfNotNull(data?.locationYLV03);
   data.boreholeCodelists = getCompleteCodelists(data.boreholeCodelists);
+  data.boreholeFiles = null;
   return data;
 };
 
@@ -100,6 +101,7 @@ export const prepareBoreholeDataForSubmit = (formInputs: BoreholeFormInputs) => 
   data.hasGroundwater = data?.hasGroundwater === 1 ? true : data?.hasGroundwater === 0 ? false : null;
   data.topBedrockIntersected =
     data?.topBedrockIntersected === 1 ? true : data?.topBedrockIntersected === 0 ? false : null;
+  data.boreholeFiles = null;
 
   return data;
 };
