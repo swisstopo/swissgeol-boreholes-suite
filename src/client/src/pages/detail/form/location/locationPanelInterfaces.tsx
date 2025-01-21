@@ -33,12 +33,16 @@ interface LocationFormBaseInputs {
   locationPrecisionId: number | null;
 }
 
+export interface BoreholeFile {
+  fileId: number;
+}
 export interface LocationFormInputs extends LocationFormBaseInputs {
   locationXLV03: string;
   locationYLV03: string;
   locationY: string;
   locationX: string;
   boreholeCodelists: Identifier[];
+  boreholeFiles: BoreholeFile[] | null;
 }
 
 export interface LocationFormSubmission extends LocationFormBaseInputs {
@@ -52,4 +56,5 @@ export interface LocationFormSubmission extends LocationFormBaseInputs {
   locationY: string | number | null;
   locationX: string | number | null;
   codelists?: Codelist[];
+  boreholeFiles: BoreholeFile[] | null;
 }
