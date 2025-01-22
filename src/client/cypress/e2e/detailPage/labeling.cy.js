@@ -228,6 +228,7 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
     cy.wait(1000);
     drawBox(400, 60, 600, 220);
+    cy.wait("@location");
     evaluateSelect("originalReferenceSystem", "20104002");
     evaluateCoordinate("locationXLV03", "646'465.97");
     hasError("locationXLV03", false);

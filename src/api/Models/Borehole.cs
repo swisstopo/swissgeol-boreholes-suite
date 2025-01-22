@@ -369,6 +369,12 @@ public class Borehole : IChangeTracking, IIdentifyable
     public double? TopBedrockWeatheredTvd { get; set; }
 
     /// <summary>
+    /// Gets or sets whether <see cref="Borehole"/>'s top bedrock was intersected.
+    /// </summary>
+    [Column("top_bedrock_intersected")]
+    public bool? TopBedrockIntersected { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation type.
     /// </summary>
     public Codelist? ReferenceElevationType { get; set; }
