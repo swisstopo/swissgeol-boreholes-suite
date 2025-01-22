@@ -142,6 +142,7 @@ public class ExportController : ControllerBase
 
             // Cleanup temporary file
             System.IO.File.Delete(tempGpkgFilePath);
+            System.IO.File.Delete(tempGeoJsonFilePath);
 
             // Return GeoPackage as a downloadable file
             return File(gpkgBytes, "application/geopackage+sqlite", $"{ExportFileName}_{DateTime.Now:yyyyMMdd}.gpkg");
