@@ -3,14 +3,9 @@ import { useSelector } from "react-redux";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
-import {
-  exportCSVBorehole,
-  exportGeoPackageBoreholes,
-  exportJsonBoreholes,
-  exportJsonWithAttachmentsBorehole,
-} from "../../api/borehole.ts";
+import { exportCSVBorehole, exportJsonBoreholes, exportJsonWithAttachmentsBorehole } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
-import { downloadData, downloadDataFromBlob } from "../../utils.ts";
+import { downloadData } from "../../utils.ts";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
 
 interface ExportDialogProps {
@@ -43,12 +38,6 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
     setIsExporting(false);
   };
 
-  const exportGeoPackage = async () => {
-    const blob = await exportGeoPackageBoreholes(selectionModel.slice(0, 100));
-    downloadDataFromBlob(blob, `${fileName}.gpkg`);
-    setIsExporting(false);
-  };
-
   return (
     <Dialog open={isExporting}>
       <Stack sx={{ minWidth: "326px" }}>
@@ -60,7 +49,6 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
             <ExportButton label={"CSV"} onClick={exportCsv} />
             <ExportButton label={"JSON"} onClick={exportJson} />
             {canExportAttachments && <ExportButton label={"JSON + PDF"} onClick={exportJsonWithAttachments} />}
-            <ExportButton label={"GPKG"} onClick={exportGeoPackage} />
           </Stack>
         </DialogContent>
         <DialogActions>
