@@ -352,8 +352,7 @@ public class ExportController : ControllerBase
     /// </summary>
     /// <param name="boreholeIds"></param>
     /// <returns>A dictionary of borehole geometries keyed by borehole ID.</returns>
-    private async Task<Dictionary<int, List<BoreholeGeometryElement>>> GetBoreholeGeometriesAsync
-        (List<int> boreholeIds)
+    private async Task<Dictionary<int, List<BoreholeGeometryElement>>> GetBoreholeGeometriesAsync(List<int> boreholeIds)
     {
         return await context.BoreholeGeometry
             .AsNoTracking()
