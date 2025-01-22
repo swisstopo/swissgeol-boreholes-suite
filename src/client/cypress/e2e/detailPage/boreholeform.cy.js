@@ -1,6 +1,14 @@
 import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
-import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
+import {
+  evaluateBooleanSelect,
+  evaluateInput,
+  evaluateSelect,
+  isDisabled,
+  setBooleanSelect,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 import {
   createBorehole,
   getElementByDataCy,
@@ -31,7 +39,7 @@ describe("Test for the borehole form.", () => {
     isDisabled("restrictionUntil", true);
     setSelect("restrictionId", 3);
     isDisabled("restrictionUntil", false);
-    setSelect("nationalInterest", 2);
+    setBooleanSelect("nationalInterest", null); // not specified
     setSelect("originalReferenceSystem", 0);
     setSelect("locationPrecisionId", 2);
     setSelect("elevationPrecisionId", 2);
@@ -95,7 +103,8 @@ describe("Test for the borehole form.", () => {
       setSelect("lithologyTopBedrockId", 1);
       setSelect("lithostratigraphyTopBedrockId", 1);
       setSelect("chronostratigraphyTopBedrockId", 1);
-      setSelect("hasGroundwater", 1);
+      setBooleanSelect("hasGroundwater", true);
+      setBooleanSelect("topBedrockIntersected", false);
 
       setInput("totalDepth", 700);
       setInput("topBedrockFreshMd", 0.60224);
@@ -119,11 +128,48 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it("Updates TVD Values when depth values change in boreholeform", () => {
+  it("Updates topbedrock intersected when top bedrock values change", () => {
     createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
+
+      // updated top bedrock intersected when top bedrock values change
+      evaluateBooleanSelect("topBedrockIntersected", null); // not specified
+      setInput("topBedrockFreshMd", 897);
+      evaluateBooleanSelect("topBedrockIntersected", true);
+      setInput("topBedrockFreshMd", " ");
+      evaluateBooleanSelect("topBedrockIntersected", null);
+      setInput("topBedrockWeatheredMd", 564);
+      evaluateBooleanSelect("topBedrockIntersected", true);
+      saveWithSaveBar();
+
+      // navigate away and return
+      getElementByDataCy("location-menu-item").click();
+      getElementByDataCy("borehole-menu-item").click();
+      evaluateBooleanSelect("topBedrockIntersected", true);
+
+      // can save value for top bedrock intersected which does not correspond to automatically set values
+      setBooleanSelect("topBedrockIntersected", false);
+      saveWithSaveBar();
+      // navigate away and return
+      getElementByDataCy("location-menu-item").click();
+      getElementByDataCy("borehole-menu-item").click();
+      evaluateBooleanSelect("topBedrockIntersected", false);
+      evaluateInput("topBedrockFreshMd", "");
+      evaluateInput("topBedrockFreshMd", "");
+      evaluateInput("topBedrockWeatheredMd", "564");
+    });
+  });
+
+  it("Updates TVD Values when depth values change in boreholeform", () => {
+    createBorehole({ "extended.original_name": "AAA_Penguin", "custom.alternate_name": "AAA_Penguin" }).as(
+      "borehole_id",
+    );
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      startBoreholeEditing();
+      evaluateBooleanSelect("topBedrockIntersected", null);
       setInput("totalDepth", 700);
       setInput("topBedrockFreshMd", 0.60224);
       setInput("topBedrockWeatheredMd", 78945100);
@@ -141,7 +187,7 @@ describe("Test for the borehole form.", () => {
 
       returnToOverview();
       showTableAndWaitForData();
-      clickOnRowWithText("AAA_Ferret");
+      clickOnRowWithText("AAA_Penguin");
       cy.get('[data-cy="borehole-menu-item"]').click();
       evaluateInput("totalDepth", "700");
       evaluateInput("topBedrockFreshMd", "0.60224");
@@ -179,7 +225,7 @@ describe("Test for the borehole form.", () => {
     evaluateInput("name", "Zena Mraz");
     evaluateInput("projectName", "Ergonomic heuristic installation");
     evaluateSelect("restrictionId", "");
-    evaluateSelect("nationalInterest", "1"); // Yes
+    evaluateBooleanSelect("nationalInterest", true);
     evaluateSelect("originalReferenceSystem", "20104002"); // LV03
     evaluateSelect("locationPrecisionId", "20113007"); // not specified
 

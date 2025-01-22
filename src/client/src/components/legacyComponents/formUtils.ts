@@ -99,6 +99,8 @@ export const prepareBoreholeDataForSubmit = (formInputs: BoreholeFormInputs) => 
   data.topBedrockFreshMd = parseValueIfNotNull(data?.topBedrockFreshMd);
   data.topBedrockWeatheredMd = parseValueIfNotNull(data?.topBedrockWeatheredMd);
   data.hasGroundwater = data?.hasGroundwater === 1 ? true : data?.hasGroundwater === 0 ? false : null;
+  data.topBedrockIntersected =
+    data?.topBedrockIntersected === 1 ? true : data?.topBedrockIntersected === 0 ? false : null;
   data.boreholeFiles = null;
 
   return data;
