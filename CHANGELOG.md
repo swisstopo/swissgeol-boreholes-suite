@@ -10,6 +10,7 @@
 ### Changed 
 
 - Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
+- Removed all asterisks from required form fields.
 
 ### Fixed
 
