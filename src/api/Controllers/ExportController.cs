@@ -359,7 +359,6 @@ public class ExportController : ControllerBase
     private static bool ValidateIds(IEnumerable<int> ids, out List<int> idList)
     {
         idList = ids?.ToList() ?? [];
-
         if (idList.Count < 1) return false;
 
         return true;
