@@ -90,7 +90,7 @@ export const exportCSVItem = () => {
  * Clicks on the ZIP-export button.
  */
 export const exportZipItem = () => {
-  const selector = '[data-cy="zip-button"]';
+  const selector = '[data-cy="json + pdf-button"]';
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };

@@ -1,4 +1,5 @@
 import { BoreholeV2 } from "../../../../api/borehole.ts";
+import { BoreholeFile } from "../location/locationPanelInterfaces.tsx";
 
 export interface BoreholeGeneralProps {
   borehole: BoreholeV2;
@@ -27,4 +28,6 @@ export interface BoreholeFormInputs {
   chronostratigraphyTopBedrockId: number;
   hasGroundwater: boolean | number | null;
   remarks: string;
+  topBedrockIntersected: boolean | number | null;
+  boreholeFiles: BoreholeFile[] | null;
 }

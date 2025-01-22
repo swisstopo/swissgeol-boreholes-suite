@@ -1,7 +1,10 @@
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
+import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { exportCSVBorehole, exportJsonBoreholes, exportJsonWithAttachmentsBorehole } from "../../api/borehole.ts";
+import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { downloadData } from "../../utils.ts";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
 
@@ -13,6 +16,9 @@ interface ExportDialogProps {
 }
 export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, fileName }: ExportDialogProps) => {
   const { t } = useTranslation();
+  const auth = useAuth();
+  const user: User = useSelector((state: ReduxRootState) => state.core_user);
+  const canExportAttachments = !auth.anonymousModeEnabled && user.data.roles.includes("EDIT");
 
   const exportJson = async () => {
     const exportJsonResponse = await exportJsonBoreholes(selectionModel);
@@ -40,9 +46,9 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
         </DialogTitle>
         <DialogContent>
           <Stack gap={1} sx={{ mt: 3 }}>
-            <ExportButton label={"JSON"} onClick={exportJson} />
-            <ExportButton label={"ZIP"} onClick={exportJsonWithAttachments} />
             <ExportButton label={"CSV"} onClick={exportCsv} />
+            <ExportButton label={"JSON"} onClick={exportJson} />
+            {canExportAttachments && <ExportButton label={"JSON + PDF"} onClick={exportJsonWithAttachments} />}
           </Stack>
         </DialogContent>
         <DialogActions>

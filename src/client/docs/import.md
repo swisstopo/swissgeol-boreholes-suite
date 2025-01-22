@@ -123,6 +123,11 @@ Die JSON-Datei muss den folgenden Anforderungen entsprechen, damit sie erfolgrei
 - Die JSON-Datei muss ein Array von Objekten enthalten. Jedes Objekt entspricht einem Bohrloch. Auch ein einzelnes Bohrloch muss als Array von einem Objekt definiert werden.
 - Die JSON-Datei eines Bohrlochexports kann als valide Vorlage für den Import betrachtet werden.
 
+## Anleitung ZIP-Import
+
+Der ZIP-Import ermöglicht es neben den Bohrlochdaten auch zugehörige Anhänge (z.B. Bilder, PDFs) zu importieren. Die Bohrlochdaten müssen in einer im ZIP-Archiv enthaltenen JSON-Datei vorliegen (siehe auch [Format und Anforderungen an die JSON-Datei](#format-und-anforderungen-an-die-json-datei)).
+Alle Anhänge im ZIP-Archiv müssen in der JSON-Datei referenziert werden. Mit dem Export-Feature können die Bohrlochdaten und Anhänge in einem ZIP-Archiv exportiert werden, welches die Anforderungen für den Import erfüllt.
+
 ## Validierung
 
 ### Duplikate

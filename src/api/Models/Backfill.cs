@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a Backfill entity in the database.
 /// </summary>
 [Table("backfill")]
-public class Backfill : IChangeTracking, IIdentifyable
+public class Backfill : IChangeTracking, IIdentifyable, ICasingReference
 {
     /// <inheritdoc />
     [Column("id")]

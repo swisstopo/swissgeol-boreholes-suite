@@ -1,12 +1,15 @@
-﻿using BDMS.Authentication;
+﻿using Amazon.Runtime;
+using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO.Converters;
 using System.Globalization;
+using System.IO.Compression;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -42,104 +45,23 @@ public class ImportController : ControllerBase
     }
 
     /// <summary>
-    /// Receives an uploaded JSON file to import one or several <see cref="Borehole"/>(s).
-    /// </summary>
-    /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
-    /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole JSON records that were uploaded.</param>
-    /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
-    [HttpPost("json")]
-    [Authorize(Policy = PolicyNames.Viewer)]
-    [RequestSizeLimit(int.MaxValue)]
-    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile boreholesFile)
-    {
-        // Increase max allowed errors to be able to return more validation errors at once.
-        ModelState.MaxAllowedErrors = 1000;
-
-        logger.LogInformation("Import boreholes json to workgroup with id <{WorkgroupId}>", workgroupId);
-
-        if (!ValidateFile(boreholesFile, FileTypeChecker.IsJson)) return BadRequest("Invalid or empty file uploaded.");
-
-        try
-        {
-            List<BoreholeImport>? boreholes;
-            try
-            {
-                using var stream = boreholesFile.OpenReadStream();
-                boreholes = await JsonSerializer.DeserializeAsync<List<BoreholeImport>>(stream, jsonImportOptions).ConfigureAwait(false);
-            }
-            catch (JsonException ex)
-            {
-                logger.LogError(ex, "Error while deserializing borehole json file.");
-                return BadRequest("The provided file is not an array of boreholes or is not a valid JSON format.");
-            }
-
-            if (boreholes == null || boreholes.Count == 0) return BadRequest("No boreholes found in file.");
-
-            ValidateBoreholeImports(workgroupId, boreholes, true);
-
-            // If any validation error occured, return a bad request.
-            if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
-
-            var user = await GetUserAsync().ConfigureAwait(false);
-            var hydrotestCodelists = await GetHydrotestCodelistsAsync().ConfigureAwait(false);
-
-            foreach (var borehole in boreholes)
-            {
-                borehole.MarkAsNew();
-                borehole.Workgroup = null;
-                borehole.WorkgroupId = workgroupId;
-                borehole.LockedBy = null;
-                borehole.LockedById = null;
-                borehole.UpdatedBy = null;
-                borehole.CreatedBy = null;
-
-                borehole.Stratigraphies?.MarkAsNew();
-                borehole.Completions?.MarkAsNew();
-                borehole.Sections?.MarkAsNew();
-                borehole.Observations?.MarkAsNew();
-                borehole.BoreholeGeometry?.MarkAsNew();
-
-                MapHydrotestCodelists(borehole, hydrotestCodelists);
-
-                // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
-                borehole.Workflows.Clear();
-                borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
-
-                // Set the geometry's SRID to LV95 (EPSG:2056)
-                if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
-            }
-
-            await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-            return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error while importing borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
-            return Problem("Error while importing borehole(s) via json file.");
-        }
-    }
-
-    /// <summary>
     /// Receives an uploaded csv file to import one or several <see cref="Borehole"/>(s).
     /// </summary>
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
     /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole csv records that were uploaded.</param>
     /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
-    [HttpPost]
+    [HttpPost("csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile)
+    public async Task<ActionResult<int>> UploadCsvFileAsync(int workgroupId, IFormFile boreholesFile)
     {
-        // Increase max allowed errors to be able to return more validation errors at once.
-        ModelState.MaxAllowedErrors = 1000;
+        InitializeImport(workgroupId, "CSV");
+        if (!ValidateFile(boreholesFile, FileTypeChecker.IsCsv))
+            return BadRequest("Invalid or empty CSV file uploaded.");
 
-        logger.LogInformation("Import borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
         try
         {
-            if (!ValidateFile(boreholesFile, FileTypeChecker.IsCsv)) return BadRequest("Invalid or empty file uploaded.");
-
             // The identifier codelists are used to dynamically map imported identifiers to codelists.
             var identifierCodelists = await context.Codelists
                 .Where(c => c.Schema == "borehole_identifier")
@@ -148,10 +70,10 @@ public class ImportController : ControllerBase
                 .ConfigureAwait(false);
 
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile, identifierCodelists);
-            ValidateBoreholeImports(workgroupId, boreholeImports, false);
+            ValidateBoreholeImports(workgroupId, boreholeImports, ValidationErrorType.Csv);
 
             // If any validation error occured, return a bad request.
-            if (!ModelState.IsValid) return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+            if (!ModelState.IsValid) return ValidationProblem();
 
             var subjectId = HttpContext.GetUserSubjectId();
 
@@ -234,10 +156,229 @@ public class ImportController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Receives an uploaded JSON file to import one or several <see cref="Borehole"/>(s).
+    /// </summary>
+    /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
+    /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole JSON records that were uploaded.</param>
+    /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
+    [HttpPost("json")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(int.MaxValue)]
+    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile boreholesFile)
+    {
+        InitializeImport(workgroupId, "JSON");
+        if (!ValidateFile(boreholesFile, FileTypeChecker.IsJson))
+            return BadRequest("Invalid or empty JSON file uploaded.");
+
+        var boreholes = await DeserializeBoreholeDataAsync(boreholesFile.OpenReadStream()).ConfigureAwait(false);
+        if (boreholes == null) return BadRequest("The provided file is not an array of boreholes or is not in a valid JSON format.");
+
+        return await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Receives an uploaded ZIP file to import one or several <see cref="Borehole"/>(s).
+    /// The ZIP file can additionally contain attachments.
+    /// </summary>
+    /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
+    /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole records and attachments that were uploaded.</param>
+    /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
+    [HttpPost("zip")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(int.MaxValue)]
+    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    public async Task<ActionResult<int>> UploadZipFileAsync(int workgroupId, IFormFile boreholesFile)
+    {
+        InitializeImport(workgroupId, "ZIP");
+        if (!ValidateFile(boreholesFile, FileTypeChecker.IsZip))
+            return BadRequest("Invalid or empty ZIP file uploaded.");
+
+        var zipStream = boreholesFile.OpenReadStream();
+        using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        var jsonFile = zipArchive.Entries.FirstOrDefault(e => e.FullName.EndsWith(".json", StringComparison.OrdinalIgnoreCase));
+        if (jsonFile == null)
+            return BadRequest("ZIP file does not contain a JSON file.");
+
+        var boreholes = await DeserializeBoreholeDataAsync(jsonFile.Open()).ConfigureAwait(false);
+        if (boreholes == null)
+            return BadRequest("The provided file is not an array of boreholes or is not a valid JSON format.");
+
+        var attachmentNames = zipArchive.Entries.Where(e => e.FullName != jsonFile.FullName).Select(e => e.FullName);
+        ValidateAttachmentsPresent(attachmentNames, boreholes);
+        if (!ModelState.IsValid)
+            return ValidationProblem();
+
+        ActionResult<int> result = await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
+        if (!ModelState.IsValid)
+            return ValidationProblem();
+
+        await UploadAttachmentsAsync(zipArchive, boreholes).ConfigureAwait(false);
+        return !ModelState.IsValid ? ValidationProblem() : result;
+    }
+
+    private void InitializeImport(int workgroupId, string fileType)
+    {
+        // Increase max allowed errors to be able to return more validation errors at once.
+        ModelState.MaxAllowedErrors = 1000;
+        logger.LogInformation("Import boreholes to workgroup with id <{WorkgroupId}> via <{FileType}>", workgroupId, fileType);
+    }
+
+    private async Task<List<BoreholeImport>?> DeserializeBoreholeDataAsync(Stream stream)
+    {
+        try
+        {
+            return await JsonSerializer.DeserializeAsync<List<BoreholeImport>>(stream, jsonImportOptions).ConfigureAwait(false);
+        }
+        catch (JsonException ex)
+        {
+            logger.LogError(ex, "Error while deserializing borehole json file.");
+            return null;
+        }
+    }
+
+    private async Task<ActionResult<int>> ProcessAndSaveBoreholesAsync(int workgroupId, List<BoreholeImport> boreholes)
+    {
+        ValidateBoreholeImports(workgroupId, boreholes, ValidationErrorType.Json);
+        if (!ModelState.IsValid)
+            return ValidationProblem();
+
+        await MarkBoreholeContentAsNew(workgroupId, boreholes).ConfigureAwait(false);
+        await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
+        return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
+    }
+
+    private async Task MarkBoreholeContentAsNew(int workgroupId, List<BoreholeImport>? boreholes)
+    {
+        var user = await GetUserAsync().ConfigureAwait(false);
+        var hydrotestCodelists = await GetHydrotestCodelistsAsync().ConfigureAwait(false);
+
+        foreach (var borehole in boreholes)
+        {
+            borehole.MarkAsNew();
+            borehole.Workgroup = null;
+            borehole.WorkgroupId = workgroupId;
+            borehole.LockedBy = null;
+            borehole.LockedById = null;
+            borehole.UpdatedBy = null;
+            borehole.CreatedBy = null;
+            borehole.CreatedById = user.Id;
+            borehole.UpdatedById = user.Id;
+
+            MapCasingReferences(borehole);
+
+            borehole.Stratigraphies?.MarkAsNew();
+            borehole.Completions?.MarkAsNew();
+            borehole.Sections?.MarkAsNew();
+            borehole.Observations?.MarkAsNew();
+            borehole.BoreholeGeometry?.MarkAsNew();
+
+            MapHydrotestCodelists(borehole, hydrotestCodelists);
+
+            // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
+            borehole.Workflows.Clear();
+            borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
+
+            // Set the geometry's SRID to LV95 (EPSG:2056)
+            if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
+
+            if (borehole.Files != null) borehole.Files.Clear();
+            if (borehole.BoreholeFiles != null)
+            {
+                foreach (var file in borehole.BoreholeFiles)
+                {
+                    file.File.MarkAsNew();
+                }
+            }
+        }
+    }
+
+    private async Task UploadAttachmentsAsync(ZipArchive zipArchive, List<BoreholeImport> boreholes)
+    {
+        if (boreholes.Count < 1) return;
+
+        foreach (var borehole in boreholes.Select((value, index) => (value, index)))
+        {
+            if (borehole.value.BoreholeFiles != null && borehole.value.BoreholeFiles.Count > 0)
+            {
+                var filesToProcess = borehole.value.BoreholeFiles.ToList(); // save a copy of the files to keep the file information during processing.
+                foreach (var fileToProcess in filesToProcess)
+                {
+                    var fileName = $"{fileToProcess.File.NameUuid}_{fileToProcess.File.Name}";
+                    var attachment = zipArchive.Entries.FirstOrDefault(e => e.FullName == fileName);
+
+                    using var memoryStream = new MemoryStream();
+                    FormFile formFile = await CreateFormFileFromAttachmentAsync(fileToProcess, attachment, memoryStream).ConfigureAwait(false);
+
+                    // Remove original file information from borehole object
+                    borehole.value.BoreholeFiles.Remove(fileToProcess);
+
+                    await UploadFormFileAsync(borehole.value, borehole.index, fileName, formFile).ConfigureAwait(false);
+                }
+            }
+        }
+    }
+
+    private async Task UploadFormFileAsync(BoreholeImport borehole, int boreholeIndex, string fileName, FormFile formFile)
+    {
+        try
+        {
+            await boreholeFileCloudService.UploadFileAndLinkToBorehole(formFile, borehole.Id).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while uploading the file: {FileName}", formFile.FileName);
+            AddValidationErrorToModelState(boreholeIndex, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), ValidationErrorType.Attachment);
+        }
+    }
+
+    private static async Task<FormFile> CreateFormFileFromAttachmentAsync(BoreholeFile? boreholeFile, ZipArchiveEntry? attachment, MemoryStream memoryStream)
+    {
+        using (var entryStream = attachment.Open())
+        {
+            await entryStream.CopyToAsync(memoryStream).ConfigureAwait(false);
+        }
+
+        memoryStream.Position = 0;
+
+        var formFile = new FormFile(memoryStream, 0, memoryStream.Length, boreholeFile.File.Name, boreholeFile.File.Name)
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = GetContentType(attachment.Name),
+        };
+        return formFile;
+    }
+
+    private static string GetContentType(string fileName)
+    {
+        var mimeType = MimeTypes.GetMimeType(Path.GetExtension(fileName));
+        return string.IsNullOrEmpty(mimeType) ? "application/octet-stream" : mimeType;
+    }
+
     private static bool ValidateFile(IFormFile file, Func<IFormFile, bool> fileValidationFunc)
     {
         if (file == null || file.Length == 0) return false;
         return fileValidationFunc(file);
+    }
+
+    private void ValidateAttachmentsPresent(IEnumerable<string> attachmentsInZip, List<BoreholeImport> boreholesFromFile)
+    {
+        // Files are exported with the original name and the UUID as a prefix to make them unique while preserving the original name
+        var referencedAttachments = boreholesFromFile
+            .Select(b => b.BoreholeFiles)
+            .Where(bf => bf != null)
+            .SelectMany(bf => bf!)
+            .Select(bf => bf.File.NameUuid + "_" + bf.File.Name);
+
+        var missingAttachments = referencedAttachments.Except(attachmentsInZip).ToList();
+        if (missingAttachments.Count > 0)
+        {
+            foreach (var missingAttachment in missingAttachments)
+            {
+                AddValidationErrorToModelState(missingAttachments.IndexOf(missingAttachment), $"Attachment with the name <{missingAttachment}> is referenced in JSON file but was not not found in ZIP archive.", ValidationErrorType.Attachment);
+            }
+        }
     }
 
     private static List<Codelist> GetCodelists(List<Codelist> codeLists, List<int> codelistIds)
@@ -278,6 +419,20 @@ public class ImportController : ControllerBase
         }
     }
 
+    private static void MapCasingReferences(BoreholeImport borehole)
+    {
+        var casings = borehole.Completions?.SelectMany(c => c.Casings ?? Enumerable.Empty<Casing>()).ToDictionary(c => c.Id);
+        if (casings == null) return;
+
+        borehole.Observations?.MapCasings(casings);
+
+        foreach (var completion in borehole.Completions)
+        {
+            completion.Instrumentations?.MapCasings(casings);
+            completion.Backfills?.MapCasings(casings);
+        }
+    }
+
     internal static int GetPrecision(IReaderRow row, string fieldName)
     {
         if (row.HeaderRecord != null && row.HeaderRecord.Any(h => h == fieldName))
@@ -292,42 +447,41 @@ public class ImportController : ControllerBase
         return 0;
     }
 
-    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, bool isJsonFile)
+    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, ValidationErrorType errorType)
     {
         foreach (var borehole in boreholesFromFile.Select((value, index) => (value, index)))
         {
-            ValidateBorehole(borehole.value, boreholesFromFile, workgroupId, borehole.index, isJsonFile);
+            ValidateBorehole(borehole.value, boreholesFromFile, workgroupId, borehole.index, errorType);
         }
     }
 
-    private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int boreholeIndex, bool isJsonFile)
+    private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int boreholeIndex, ValidationErrorType errorType)
     {
-        ValidateRequiredFields(borehole, boreholeIndex, isJsonFile);
-        ValidateDuplicateInFile(borehole, boreholesFromFile, boreholeIndex, isJsonFile);
-        ValidateDuplicateInDb(borehole, workgroupId, boreholeIndex, isJsonFile);
+        ValidateRequiredFields(borehole, boreholeIndex, errorType);
+        ValidateDuplicateInFile(borehole, boreholesFromFile, boreholeIndex, errorType);
+        ValidateDuplicateInDb(borehole, workgroupId, boreholeIndex, errorType);
+        ValidateCasingReferences(borehole, boreholeIndex);
     }
 
-    private void ValidateRequiredFields(BoreholeImport borehole, int processingIndex, bool isJsonFile)
+    private void ValidateRequiredFields(BoreholeImport borehole, int processingIndex, ValidationErrorType errorType)
     {
-        if (string.IsNullOrEmpty(borehole.OriginalName)) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"), isJsonFile);
-
-        if (borehole.LocationX == null && borehole.LocationXLV03 == null) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"), isJsonFile);
-
-        if (borehole.LocationY == null && borehole.LocationYLV03 == null) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"), isJsonFile);
+        if (string.IsNullOrEmpty(borehole.OriginalName)) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"), errorType);
+        if (borehole.LocationX == null && borehole.LocationXLV03 == null) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"), errorType);
+        if (borehole.LocationY == null && borehole.LocationYLV03 == null) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"), errorType);
     }
 
-    private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, bool isJsonFile)
+    private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, ValidationErrorType errorType)
     {
         if (boreholesFromFile.Count(b =>
             CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
             CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) &&
             CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2)) > 1)
         {
-            AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", isJsonFile);
+            AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", errorType);
         }
     }
 
-    private void ValidateDuplicateInDb(BoreholeImport borehole, int workgroupId, int processingIndex, bool isJsonFile)
+    private void ValidateDuplicateInDb(BoreholeImport borehole, int workgroupId, int processingIndex, ValidationErrorType errorType)
     {
         var boreholesFromDb = context.Boreholes
             .Where(b => b.WorkgroupId == workgroupId)
@@ -340,8 +494,32 @@ public class ImportController : ControllerBase
             (CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, borehole.LocationX, 2)) &&
             (CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, borehole.LocationY, 2))))
         {
-            AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", isJsonFile);
+            AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", errorType);
         }
+    }
+
+    private void ValidateCasingReferences(BoreholeImport borehole, int processingIndex)
+    {
+        // Get all casing Ids from the borehole's completions
+        var casingIds = borehole.Completions?
+            .SelectMany(c => c.Casings ?? Enumerable.Empty<Casing>())
+            .Select(c => c.Id)
+            .ToHashSet() ?? new HashSet<int>();
+
+        // Aggregate all CasingId references from Observations, Instrumentations, and Backfills
+        var casingReferenceIdsInBorehole = new HashSet<int>(borehole.Observations?.Where(o => o.CasingId.HasValue).Select(o => o.CasingId!.Value) ?? []);
+        casingReferenceIdsInBorehole
+            .UnionWith(borehole.Completions?.SelectMany(c => c.Instrumentations ?? Enumerable.Empty<Instrumentation>())
+            .Where(i => i.CasingId.HasValue)
+            .Select(i => i.CasingId!.Value) ?? []);
+        casingReferenceIdsInBorehole
+            .UnionWith(borehole.Completions?.SelectMany(c => c.Backfills ?? Enumerable.Empty<Backfill>())
+            .Where(b => b.CasingId.HasValue)
+            .Select(b => b.CasingId!.Value) ?? []);
+
+        // Check if any referenced CasingId is not found in the casingIds set
+        var invalidReferences = casingReferenceIdsInBorehole.Except(casingIds).ToList();
+        if (invalidReferences.Count > 0) AddValidationErrorToModelState(processingIndex, $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", ValidationErrorType.Json);
     }
 
     internal static bool CompareValuesWithTolerance(double? firstValue, double? secondValue, double tolerance)
@@ -383,12 +561,21 @@ public class ImportController : ControllerBase
         }
     }
 
-    private void AddValidationErrorToModelState(int boreholeIndex, string errorMessage, bool isJsonFile)
+    private void AddValidationErrorToModelState(int boreholeIndex, string errorMessage, ValidationErrorType errorType)
     {
-        // Use 'Borehole' as prefix and zero based index for json files, 'Row' as prefix and one based index for csv files. E.g. 'Borehole0' or 'Row1'.
-        var fileTypeBasedPrefix = isJsonFile ? "Borehole" : "Row";
-        boreholeIndex = isJsonFile ? boreholeIndex : boreholeIndex + 1;
-        ModelState.AddModelError($"{fileTypeBasedPrefix}{boreholeIndex}", errorMessage);
+        // Use 'Borehole' as prefix and zero based index for json files. E.g. 'Borehole0'
+        // Use 'Row' as prefix and one based index for csv files. E.g. 'Row1'.
+        // Use 'Attachment' as prefix and one based index for attachments. E.g. 'Attachment1'
+        string prefix = errorType switch
+        {
+            ValidationErrorType.Json => "Borehole",
+            ValidationErrorType.Csv => "Row",
+            ValidationErrorType.Attachment => "Attachment",
+            _ => throw new ArgumentOutOfRangeException(nameof(errorType), errorType, null),
+        };
+
+        int index = errorType == ValidationErrorType.Json ? boreholeIndex : boreholeIndex + 1;
+        ModelState.AddModelError($"{prefix}{index}", errorMessage);
     }
 
     private sealed class CsvImportBoreholeMap : ClassMap<BoreholeImport>
@@ -436,6 +623,7 @@ public class ImportController : ControllerBase
             Map(m => m.LocationYLV03).Optional();
             Map(m => m.OriginalReferenceSystem).Optional();
             Map(m => m.Attachments).Optional();
+            Map(m => m.TopBedrockIntersected).Optional();
 
             // Define properties to ignore
             Map(b => b.Municipality).Ignore();

@@ -4,6 +4,17 @@
 
 ### Added
 
+- Added functionality to import borehole attachments inside a ZIP file.
+
+### Changed 
+
+- Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
+
+
+## v2.1.1025 - 2025-01-17
+
+### Added
+
 - Added ZIP export with JSON and attachments for single and multiple boreholes.
 
 ### Changed 
@@ -14,6 +25,7 @@
 - Moved borehole import to side drawer and adapted UI design.
 - Years greater than 9999 can no longer be used in date inputs.
 - The application language is now determined by the browser language if it is any of the supported languages.
+- Changed the icon for opening the labeling area.
 
 ### Fixed
 
@@ -22,6 +34,7 @@
 - Fixed bug where `Lithostratigraphhy Top Bedrock` and `Chronostratigraphhy Top Bedrock` were not displayed in form after updating them and navigating away.
 - Ensure all hydrotest codelist values are imported.
 - JSON export/import did not handle borehole geometry and location geometry correctly.
+- JSON import did not handle casing references of observations, backfills and instrumentations correctly.
 - In some cases, the color of the workflow badge did not match the publication status.
 
 ## v2.1.993 - 2024-12-13
