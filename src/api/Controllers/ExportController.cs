@@ -74,7 +74,7 @@ public class ExportController : ControllerBase
             var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
             if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
-            var boreholeGeometries = await GetBoreholeGeometries(idList).ConfigureAwait(false);
+            var boreholeGeometries = await GetBoreholeGeometriesAsync(idList).ConfigureAwait(false);
 
             foreach (var borehole in boreholes)
             {
@@ -227,7 +227,7 @@ public class ExportController : ControllerBase
         // Move to the next line
         await csvWriter.NextRecordAsync().ConfigureAwait(false);
 
-        var boreholeGeometries = await GetBoreholeGeometries(idList).ConfigureAwait(false);
+        var boreholeGeometries = await GetBoreholeGeometriesAsync(idList).ConfigureAwait(false);
 
         // Write data for standard fields
         foreach (var b in boreholes)
@@ -346,7 +346,13 @@ public class ExportController : ControllerBase
         return borehole.BoreholeCodelists ?? Enumerable.Empty<BoreholeCodelist>();
     }
 
-    private async Task<Dictionary<int, List<BoreholeGeometryElement>>> GetBoreholeGeometries(List<int> boreholeIds)
+    /// <summary>
+    /// Fetches borehole geometries for the provided borehole IDs.
+    /// </summary>
+    /// <param name="boreholeIds"></param>
+    /// <returns>A dictionary of borehole geometries keyed by borehole ID.</returns>
+    private async Task<Dictionary<int, List<BoreholeGeometryElement>>> GetBoreholeGeometriesAsync
+        (List<int> boreholeIds)
     {
         return await context.BoreholeGeometry
             .AsNoTracking()
