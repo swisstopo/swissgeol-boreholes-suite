@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { useHistory } from "react-router-dom";
 import { Divider, IconButton } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
@@ -11,13 +12,25 @@ import { DataCardContext } from "../../../../components/dataCard/dataCardContext
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useFormDirtyStore } from "../../formDirtyStore.ts";
+import { useBlockNavigation } from "../../useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../useSaveOnCtrlS";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
+  const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
   const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
+  const { handleBlockedNavigation } = useBlockNavigation();
+  const history = useHistory();
+
+  // Block navigation if form is dirty
+  history.block(nextLocation => {
+    console.log(isFormDirty);
+    if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
+      return false;
+    }
+  });
 
   const sectionElementDefaults = {
     fromDepth: null,
@@ -77,6 +90,7 @@ const SectionInput = ({ item, parentId }) => {
     data = prepareFormDataForSubmit(data);
     if (item.id === 0) {
       addSection(data).then(() => {
+        formMethods.reset();
         triggerReload();
       });
     } else {
@@ -84,6 +98,7 @@ const SectionInput = ({ item, parentId }) => {
         ...item,
         ...data,
       }).then(() => {
+        formMethods.reset();
         triggerReload();
       });
     }
