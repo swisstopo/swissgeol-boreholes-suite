@@ -154,7 +154,7 @@ describe("Section crud tests", () => {
     evaluateInput("totalDepth", "7");
   });
 
-  it.only("blocks navigation when there are unsaved changes", () => {
+  it("blocks navigation when there are unsaved changes", () => {
     addItem("addSection");
     cy.wait("@codelist_GET");
     setInput("name", "AA_CAPYBARA");
