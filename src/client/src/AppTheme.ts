@@ -432,6 +432,7 @@ export const theme = createTheme({
     MuiInputLabel: {
       defaultProps: {
         shrink: true,
+        required: false,
       },
       styleOverrides: {
         root: {
