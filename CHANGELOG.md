@@ -13,6 +13,7 @@
 ### Fixed
 
 - Workgroup reset in the bulk edit form had to be clicked twice to take effect. 
+- Numeric inputs on the borehole tab were not correctly reset.
 
 ## v2.1.1025 - 2025-01-17
 
