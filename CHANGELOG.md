@@ -9,7 +9,7 @@
 ### Changed 
 
 - Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
-
+- Display an error message to the user when attachment files could not be fetched from cloud storage during export.
 
 ## v2.1.1025 - 2025-01-17
 
