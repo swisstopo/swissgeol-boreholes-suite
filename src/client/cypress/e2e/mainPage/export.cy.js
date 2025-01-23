@@ -10,6 +10,7 @@ import {
 import {
   checkAllVisibleRows,
   checkRowWithText,
+  checkTwoFirstRows,
   clickOnRowWithText,
   showTableAndWaitForData,
 } from "../helpers/dataGridHelpers.js";
@@ -281,6 +282,25 @@ describe("Test for exporting boreholes.", () => {
     });
 
     readDownloadedFile(`${boreholeName}.zip`);
+  });
+
+  it.only("displays an error message when file was not found on S3 store", () => {
+    showTableAndWaitForData();
+    checkTwoFirstRows();
+    exportItem();
+
+    // Fake Api error as returned from API
+    cy.intercept("GET", "/api/v2/export/zip?**", {
+      statusCode: 500,
+      body: {
+        title: "NoSuchKey",
+        status: 500,
+        detail: "The file was not found in the cloud storage.",
+      },
+    }).as("exportZipError");
+
+    exportZipItem();
+    cy.get(".MuiAlert-message").contains("At least one attachment could not be found in cloud storage.");
   });
 
   it("exports and reimports a borehole using csv", () => {

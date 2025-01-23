@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Amazon.S3;
+using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
@@ -246,6 +247,16 @@ public class ExportController : ControllerBase
             }
 
             return File(memoryStream.ToArray(), "application/zip", $"{fileName}");
+        }
+        catch (AmazonS3Exception ex)
+        {
+            logger.LogError(ex, "Amazon S3 Store threw an exception.");
+            if (ex.ErrorCode == "NoSuchKey")
+            {
+                return Problem(detail: "The file was not found in the cloud storage.", title: ex.ErrorCode);
+            }
+
+            throw;
         }
         catch (Exception ex)
         {

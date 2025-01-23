@@ -209,12 +209,40 @@ public class ExportControllerTest
     }
 
     [TestMethod]
+    public async Task ExportJsonWithAttachmementsButFileDoesNotExist()
+    {
+        var newBorehole = GetBoreholeToAdd();
+
+        context.Add(newBorehole);
+
+        // Save first to get boreholeId
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var fileWithoutAttachments = new BoreholeFile
+        {
+            BoreholeId = newBorehole.Id,
+            File = new Models.File() { Name = "file.pdf", NameUuid = $"{Guid.NewGuid}.pdf", Type = "pdf" },
+        };
+
+        // Add file to context but not to S3 store
+        context.Add(fileWithoutAttachments);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id]).ConfigureAwait(false);
+
+        Assert.IsInstanceOfType(result, typeof(ObjectResult));
+        ObjectResult objectResult = (ObjectResult)result;
+        ProblemDetails problemDetails = (ProblemDetails)objectResult.Value!;
+        StringAssert.StartsWith(problemDetails.Detail, "The file was not found in the cloud storage.");
+    }
+
+    [TestMethod]
     public async Task ExportJsonEmptyIdsReturnsBadRequest()
     {
         var result = await controller.ExportJsonAsync([]).ConfigureAwait(false);
         var badRequestResult = result as BadRequestObjectResult;
         Assert.IsNotNull(badRequestResult);
-        Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
+        Assert.AreEqual("The file was not found in the cloud storage.", badRequestResult.Value);
     }
 
     [TestMethod]
