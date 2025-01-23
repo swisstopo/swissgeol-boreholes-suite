@@ -5,6 +5,7 @@
 ### Added
 
 - Added functionality to import borehole attachments inside a ZIP file.
+- Added field `Top bedrock intersected` to borehole form.
 
 ### Changed 
 
