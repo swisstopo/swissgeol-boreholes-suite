@@ -152,6 +152,36 @@ export const setSelect = (fieldName, index, expected, parent) => {
 };
 
 /**
+ * Sets the value for a select form element.
+ * @param {string} fieldName The name of the select field.
+ * @param {boolean?} option The option to select (true, false, not specified)
+ * @param {number} expected The expected number of options in the dropdown.
+ * @param {string} parent (optional) The parent of the form element.
+ */
+export const setBooleanSelect = (fieldName, option, expected, parent) => {
+  const listIndex = option === true ? 0 : option === false ? 1 : 2; //order of options in dropdown list is Yes, No, Not Specified
+  setSelect(fieldName, listIndex, expected, parent);
+};
+
+/**
+ * Evaluates the state of a boolean select form element.
+ * @param {string} fieldName The name of the select field.
+ * @param {boolean?} expectedBoolean The expected value of the select (true, false, null)
+ * @param {string} parent (optional) The parent of the form element.
+ */
+export const evaluateBooleanSelect = (fieldName, expectedBoolean, parent) => {
+  const expectedInputString = expectedBoolean === true ? "1" : expectedBoolean === false ? "0" : "2";
+  const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
+  cy.get(selector).then($input => {
+    const actualInputString = $input.val();
+    const actualBoolean = actualInputString === "1" ? true : actualInputString === "0" ? false : null;
+    expect(actualInputString, `Expected ${fieldName} to have value ${expectedBoolean} but got ${actualBoolean}`).to.eq(
+      expectedInputString,
+    );
+  });
+};
+
+/**
  * Evaluates the state of a select form element.
  * @param {string} fieldName The name of the select field.
  * @param {string} expectedValue The expected value of the select.
@@ -159,11 +189,12 @@ export const setSelect = (fieldName, index, expected, parent) => {
  */
 export const evaluateSelect = (fieldName, expectedValue, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
-  cy.get(selector)
-    .filter((k, input) => {
-      return input.value === expectedValue;
-    })
-    .should("have.length", 1);
+  cy.get(selector).then($input => {
+    const actualValue = $input.val();
+    expect(actualValue, `Expected ${fieldName} to have value ${expectedValue} but got ${actualValue}`).to.eq(
+      expectedValue,
+    );
+  });
 };
 
 /**

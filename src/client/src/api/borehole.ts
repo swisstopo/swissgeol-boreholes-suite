@@ -23,6 +23,7 @@ export interface BoreholeV2 {
   hasGroundwater: boolean | null;
   topBedrockWeatheredMd: number;
   topBedrockFreshMd: number;
+  topBedrockIntersected: boolean | null;
   depthPrecisionId: number;
   totalDepth: number;
   purposeId: number;

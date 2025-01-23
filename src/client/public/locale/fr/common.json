@@ -458,6 +458,7 @@
   "todepth_to": "De la profondeur [m MD] (à)",
   "todiameter": "jusqu'au diamètre",
   "toelevation": "jusqu'à l'altitude",
+  "topBedrockIntersected": "Toit du rocher atteint",
   "topView": "Vue en plan",
   "top_bedrock_fresh_md": "Toit du rocher (sain) [m MD]",
   "top_bedrock_fresh_md_from": "Toit du rocher (sain) [m MD] (de)",
