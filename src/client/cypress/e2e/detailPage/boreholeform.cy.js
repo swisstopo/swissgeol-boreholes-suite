@@ -1,9 +1,10 @@
-import { saveWithSaveBar } from "../helpers/buttonHelpers";
+import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import {
   evaluateBooleanSelect,
   evaluateInput,
   evaluateSelect,
+  evaluateTextarea,
   isDisabled,
   setBooleanSelect,
   setInput,
@@ -289,6 +290,78 @@ describe("Test for the borehole form.", () => {
       evaluateInput("total_depth_tvd", "0");
       evaluateInput("top_bedrock_fresh_tvd", "0");
       evaluateInput("top_bedrock_weathered_tvd", "0");
+    });
+  });
+
+  it("Resets borehole form values on reset button click", () => {
+    createBorehole({ "extended.original_name": "AAA_EEL", "custom.alternate_name": "AAA_EEL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      startBoreholeEditing();
+      setInput("totalDepth", 1234);
+      setInput("topBedrockFreshMd", 5678);
+      setInput("topBedrockWeatheredMd", 9101);
+      setSelect("purposeId", 1);
+      setSelect("typeId", 1);
+      setSelect("depthPrecisionId", 1);
+      setSelect("statusId", 1);
+      setSelect("lithologyTopBedrockId", 1);
+      setSelect("lithostratigraphyTopBedrockId", 1);
+      setSelect("chronostratigraphyTopBedrockId", 1);
+      setInput("remarks", "New remark");
+
+      saveWithSaveBar();
+
+      evaluateInput("totalDepth", "1'234");
+      evaluateInput("topBedrockFreshMd", "5'678");
+      evaluateInput("topBedrockWeatheredMd", "9'101");
+      evaluateSelect("purposeId", "22103001");
+      evaluateSelect("typeId", "20101001");
+      evaluateSelect("depthPrecisionId", "22108001");
+      evaluateSelect("statusId", "22104001");
+      evaluateSelect("lithologyTopBedrockId", "15104449");
+      evaluateSelect("lithostratigraphyTopBedrockId", "15300583");
+      evaluateSelect("chronostratigraphyTopBedrockId", "15001001");
+      evaluateTextarea("remarks", "New remark");
+
+      // update values
+      setInput("totalDepth", 100);
+      setInput("topBedrockFreshMd", 100);
+      setInput("topBedrockWeatheredMd", 100);
+      setSelect("purposeId", 2);
+      setSelect("typeId", 2);
+      setSelect("depthPrecisionId", 2);
+      setSelect("statusId", 2);
+      setSelect("lithologyTopBedrockId", 2);
+      setSelect("lithostratigraphyTopBedrockId", 2);
+      setSelect("chronostratigraphyTopBedrockId", 2);
+      setInput("remarks", "Updated remark");
+
+      evaluateInput("totalDepth", "100");
+      evaluateInput("topBedrockFreshMd", "100");
+      evaluateInput("topBedrockWeatheredMd", "100");
+      evaluateSelect("purposeId", "22103002");
+      evaluateSelect("typeId", "30000307");
+      evaluateSelect("depthPrecisionId", "22108002");
+      evaluateSelect("statusId", "22104002");
+      evaluateSelect("lithologyTopBedrockId", "15104450");
+      evaluateSelect("lithostratigraphyTopBedrockId", "15300495");
+      evaluateSelect("chronostratigraphyTopBedrockId", "15001002");
+      evaluateTextarea("remarks", "Updated remark");
+
+      discardChanges();
+
+      evaluateInput("totalDepth", "1'234");
+      evaluateInput("topBedrockFreshMd", "5'678");
+      evaluateInput("topBedrockWeatheredMd", "9'101");
+      evaluateSelect("purposeId", "22103001");
+      evaluateSelect("typeId", "20101001");
+      evaluateSelect("depthPrecisionId", "22108001");
+      evaluateSelect("statusId", "22104001");
+      evaluateSelect("lithologyTopBedrockId", "15104449");
+      evaluateSelect("lithostratigraphyTopBedrockId", "15300583");
+      evaluateSelect("chronostratigraphyTopBedrockId", "15001001");
+      evaluateTextarea("remarks", "New remark");
     });
   });
 

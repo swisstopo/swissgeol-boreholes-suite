@@ -60,9 +60,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, editingEnabled,
             selected={borehole.referenceElevationTypeId}
           />
           <TextField
-            InputProps={{
-              readOnly: true,
-            }}
+            InputProps={{ readOnly: true }}
             className="readonly"
             label={t("height_reference_system")}
             value={domains?.find((d: Codelist) => d.id === borehole.hrsId)?.en}

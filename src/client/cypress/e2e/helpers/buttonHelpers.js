@@ -18,6 +18,15 @@ export const saveForm = parent => {
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
+/**
+ * Clicks on the discard button.
+ * @param {string} parent (optional) The parent of the button.
+ */
+export const discardChanges = parent => {
+  const selector = createBaseSelector(parent) + '[data-cy="discardchanges-button"]';
+  cy.get(selector).should("not.be.disabled");
+  cy.get(selector).click({ force: true });
+};
 
 /**
  * Clicks on the edit button.
