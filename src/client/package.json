@@ -68,7 +68,8 @@
     "redux-thunk": "^2.4.2",
     "semantic-ui-css": "github:Semantic-Org/Semantic-UI-CSS",
     "semantic-ui-react": "^2.1.4",
-    "styled-components": "^6.1.1"
+    "styled-components": "^6.1.1",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.24.7",

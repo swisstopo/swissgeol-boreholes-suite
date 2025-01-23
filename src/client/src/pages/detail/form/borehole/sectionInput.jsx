@@ -10,14 +10,14 @@ import { DataCardButtonContainer } from "../../../../components/dataCard/dataCar
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { useFormDirty } from "../../useFormDirty";
+import { useFormDirtyStore } from "../../formDirtyStore.ts";
 import { useSaveOnCtrlS } from "../../useSaveOnCtrlS";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
-  const { setIsFormDirty } = useFormDirty();
+  const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
 
   const sectionElementDefaults = {
     fromDepth: null,

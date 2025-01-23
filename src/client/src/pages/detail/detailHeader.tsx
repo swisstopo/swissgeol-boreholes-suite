@@ -18,7 +18,7 @@ import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
-import { useFormDirty } from "./useFormDirty.tsx";
+import { useFormDirtyStore } from "./formDirtyStore.ts";
 
 interface DetailHeaderProps {
   editingEnabled: boolean;
@@ -40,7 +40,7 @@ const DetailHeader = ({
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
-  const { isFormDirty } = useFormDirty();
+  const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
   const auth = useAuth();
 
   const toggleEditing = (editing: boolean) => {
