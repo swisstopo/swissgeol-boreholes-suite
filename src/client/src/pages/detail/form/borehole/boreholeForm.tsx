@@ -191,8 +191,9 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   withThousandSeparator={true}
                 />
               </FormContainer>
-              <FormContainer direction="row">
+              <FormContainer direction="row" width="50%">
                 <FormBooleanSelect
+                  sx={{ mr: 1 }}
                   canReset={false}
                   readonly={!editingEnabled}
                   fieldName={"topBedrockIntersected"}
