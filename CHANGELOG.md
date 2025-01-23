@@ -5,11 +5,16 @@
 ### Added
 
 - Added functionality to import borehole attachments inside a ZIP file.
+- Added field `Top bedrock intersected` to borehole form.
 
 ### Changed 
 
 - Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
 - Display an error message to the user when attachment files could not be fetched from cloud storage during export.
+
+### Fixed
+
+- Numeric inputs on the borehole tab were not correctly reset.
 
 ## v2.1.1025 - 2025-01-17
 
