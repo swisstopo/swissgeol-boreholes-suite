@@ -256,7 +256,7 @@ public class ExportController : ControllerBase
                 return Problem(detail: "The file was not found in the cloud storage.", title: ex.ErrorCode);
             }
 
-            throw;
+            return Problem("An error occurred while fetching a file from the cloud storage.");
         }
         catch (Exception ex)
         {
