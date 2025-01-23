@@ -11,6 +11,9 @@
 - Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
 - Removed all asterisks from required form fields.
 
+### Fixed
+
+- Numeric inputs on the borehole tab were not correctly reset.
 
 ## v2.1.1025 - 2025-01-17
 

@@ -23,7 +23,7 @@ Zunächst sollte die CSV-Datei den Anforderungen und dem Format entsprechen, wie
 1. Import-Prozess mit einem Klick auf _Importieren_ starten.
 2. Warten, bis der Upload abgeschlossen ist und die Daten in der Anwendung verfügbar sind.
 
-## Format und Anforderungen an die CSV-Dateien
+## Format und Anforderungen an die CSV-Datei
 
 Die CSV-Datei muss den folgenden Anforderungen und dem Format entsprechen, damit sie erfolgreich in die Webapplikation importiert werden kann:
 
