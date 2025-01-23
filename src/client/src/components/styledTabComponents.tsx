@@ -18,7 +18,12 @@ export const BdmsTabs = styled(Tabs)({
   },
 });
 
-export const BdmsTab = styled(props => <Tab disableRipple {...props} />)(() => ({
+interface BdmsTabProps {
+  label: string;
+  key: string;
+  "data-cy": string;
+}
+export const BdmsTab = styled((props: BdmsTabProps) => <Tab disableRipple {...props} />)(() => ({
   fontSize: "16px",
   fontWeight: "400",
   paddingTop: `${theme.spacing(2)}`,
