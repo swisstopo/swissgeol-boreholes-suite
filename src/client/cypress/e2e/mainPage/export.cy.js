@@ -284,7 +284,7 @@ describe("Test for exporting boreholes.", () => {
     readDownloadedFile(`${boreholeName}.zip`);
   });
 
-  it.only("displays an error message when file was not found on S3 store", () => {
+  it("displays an error message when file was not found on S3 store", () => {
     showTableAndWaitForData();
     checkTwoFirstRows();
     exportItem();
