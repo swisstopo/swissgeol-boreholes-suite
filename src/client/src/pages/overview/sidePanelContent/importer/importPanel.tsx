@@ -4,10 +4,10 @@ import { useDispatch } from "react-redux";
 import { Box, Button, Stack } from "@mui/material";
 import { importBoreholesCsv, importBoreholesJson, importBoreholesZip } from "../../../../api/borehole.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import { BoreholeImportDropzone } from "../../../../components/boreholeImportDropzone.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import { ErrorResponse, NewBoreholeProps } from "../commons/actionsInterfaces.ts";
 import WorkgroupSelect from "../commons/workgroupSelect.tsx";
+import { BoreholeImportDropzone } from "./boreholeImportDropzone.tsx";
 
 interface ImportPanelProps extends NewBoreholeProps {
   setErrorsResponse: React.Dispatch<React.SetStateAction<ErrorResponse | null>>;
