@@ -242,7 +242,7 @@ public class ExportControllerTest
         var result = await controller.ExportJsonAsync([]).ConfigureAwait(false);
         var badRequestResult = result as BadRequestObjectResult;
         Assert.IsNotNull(badRequestResult);
-        Assert.AreEqual("The file was not found in the cloud storage.", badRequestResult.Value);
+        Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
     }
 
     [TestMethod]
