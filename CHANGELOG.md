@@ -15,6 +15,7 @@
 ### Fixed
 
 - Numeric inputs on the borehole tab were not correctly reset.
+- When navigating away from the sections tab with unsaved changes, no warning prompt was displayed.
 
 ## v2.1.1025 - 2025-01-17
 
