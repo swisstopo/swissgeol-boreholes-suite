@@ -1,13 +1,15 @@
+import { useParams } from "react-router-dom";
 import { getHydrotests } from "../../../../api/fetchApiV2.js";
 import DataCards from "../../../../components/dataCard/dataCards.jsx";
 import { sortByDepth } from "../sorter.jsx";
 import HydrotestDisplay from "./hydrotestDisplay";
 import HydrotestInput from "./hydrotestInput";
 
-const Hydrotest = ({ isEditable, boreholeId }) => {
+const Hydrotest = () => {
+  const { id: boreholeId } = useParams();
+
   return (
     <DataCards
-      isEditable={isEditable}
       parentId={boreholeId}
       getData={getHydrotests}
       cyLabel="hydrotest"

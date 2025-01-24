@@ -17,8 +17,8 @@ import {
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import { ObservationType } from "./Observation.ts";
 import ObservationInput from "./observationInput.tsx";
-import { ObservationType } from "./observationType";
 import { getHydrotestParameterUnits } from "./parameterUnits";
 
 const HydrotestInput = props => {
@@ -217,7 +217,7 @@ const HydrotestInput = props => {
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
           <FormContainer>
-            <ObservationInput observation={item} boreholeId={parentId} />
+            <ObservationInput observation={item} />
             <FormContainer direction="row">
               <FormDomainMultiSelect
                 fieldName="testKindId"

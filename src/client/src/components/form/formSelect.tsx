@@ -1,8 +1,9 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { MenuItem, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
+import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { getFormFieldError } from "./form";
 
 export interface FormSelectProps {
@@ -46,6 +47,8 @@ export const FormSelect: FC<FormSelectProps> = ({
 }) => {
   const { t } = useTranslation();
   const { control } = useFormContext();
+  const { editingEnabled } = useContext(DetailContext);
+  const isReadOnly = readonly || !editingEnabled;
 
   const menuItems: FormSelectMenuItem[] = [];
   if (!required && canReset) {
@@ -82,7 +85,7 @@ export const FormSelect: FC<FormSelectProps> = ({
           required={required ?? false}
           error={getFormFieldError(fieldName, formState.errors)}
           sx={{ ...sx }}
-          className={`${readonly ? "readonly" : ""} ${className ?? ""}`}
+          className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
           label={t(label)}
           name={field.name}
           onChange={field.onChange}
@@ -91,7 +94,7 @@ export const FormSelect: FC<FormSelectProps> = ({
           value={field.value ?? ""}
           disabled={disabled ?? false}
           data-cy={fieldName + "-formSelect"}
-          InputProps={{ readOnly: readonly, disabled: disabled }}>
+          InputProps={{ readOnly: isReadOnly, disabled: disabled }}>
           {menuItems.map(item => (
             <MenuItem key={item.key} value={item.value as number}>
               {item.italic ? <em>{item.label}</em> : item.label}

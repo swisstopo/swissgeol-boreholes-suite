@@ -14,7 +14,7 @@ import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { UseFormWithSaveBar } from "../useFormWithSaveBar.ts";
 import { BoreholeDetailProps, BoreholeFormInputs } from "./boreholePanelInterfaces.ts";
 
-export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: BoreholeDetailProps, ref) => {
+export const BoreholeForm = forwardRef(({ borehole, onSubmit }: BoreholeDetailProps, ref) => {
   const [totalDepthTVD, setTotalDepthTVD] = useState<number | null>(null);
   const [topBedrockFreshTVD, setTopBedrockFreshTVD] = useState<number | null>(null);
   const [topBedrockWeatheredTVD, setTopBedrockWeatheredTVD] = useState<number | null>(null);
@@ -123,21 +123,18 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   fieldName={"typeId"}
                   label={"borehole_type"}
                   schemaName={"borehole_type"}
-                  readonly={!editingEnabled}
                   selected={borehole.typeId}
                 />
                 <FormDomainSelect
                   fieldName={"purposeId"}
                   label={"purpose"}
                   schemaName={"extended.purpose"}
-                  readonly={!editingEnabled}
                   selected={borehole.purposeId}
                 />
                 <FormDomainSelect
                   fieldName={"statusId"}
                   label={"boreholestatus"}
                   schemaName={"extended.status"}
-                  readonly={!editingEnabled}
                   selected={borehole.statusId}
                 />
               </FormContainer>
@@ -149,13 +146,11 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                     value={borehole?.totalDepth}
                     controlledValue={totalDepth ?? ""}
                     withThousandSeparator={true}
-                    readonly={!editingEnabled}
                   />
                   <FormDomainSelect
                     fieldName={"depthPrecisionId"}
                     label={"qt_depth"}
                     schemaName={"depth_precision"}
-                    readonly={!editingEnabled}
                     selected={borehole.depthPrecisionId}
                   />
                   <FormInputDisplayOnly label={"total_depth_tvd"} value={totalDepthTVD} withThousandSeparator={true} />
@@ -168,7 +163,6 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   value={borehole?.topBedrockWeatheredMd}
                   controlledValue={topBedrockWeatheredMd ?? ""}
                   withThousandSeparator={true}
-                  readonly={!editingEnabled}
                 />
                 <FormInputDisplayOnly
                   label={"top_bedrock_weathered_tvd"}
@@ -183,7 +177,6 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   value={borehole?.topBedrockFreshMd}
                   controlledValue={topBedrockFreshMd ?? ""}
                   withThousandSeparator={true}
-                  readonly={!editingEnabled}
                 />
                 <FormInputDisplayOnly
                   label={"top_bedrock_fresh_tvd"}
@@ -195,7 +188,6 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                 <FormBooleanSelect
                   sx={{ mr: 1 }}
                   canReset={false}
-                  readonly={!editingEnabled}
                   fieldName={"topBedrockIntersected"}
                   label="topBedrockIntersected"
                   selected={borehole.topBedrockIntersected}
@@ -206,14 +198,12 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   fieldName={"lithologyTopBedrockId"}
                   label={"lithology_top_bedrock"}
                   schemaName={"custom.lithology_top_bedrock"}
-                  readonly={!editingEnabled}
                   selected={borehole.lithologyTopBedrockId}
                 />
                 <FormDomainSelect
                   fieldName={"lithostratigraphyTopBedrockId"}
                   label={"lithostratigraphy_top_bedrock"}
                   schemaName={"custom.lithostratigraphy_top_bedrock"}
-                  readonly={!editingEnabled}
                   selected={borehole.lithostratigraphyTopBedrockId}
                 />
               </FormContainer>
@@ -222,24 +212,16 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   fieldName={"chronostratigraphyTopBedrockId"}
                   label={"chronostratigraphy_top_bedrock"}
                   schemaName={"custom.chronostratigraphy_top_bedrock"}
-                  readonly={!editingEnabled}
                   selected={borehole.chronostratigraphyTopBedrockId}
                 />
                 <FormBooleanSelect
                   canReset={false}
-                  readonly={!editingEnabled}
                   fieldName={"hasGroundwater"}
                   label="groundwater"
                   selected={borehole.hasGroundwater}
                 />
               </FormContainer>
-              <FormInput
-                fieldName={"remarks"}
-                multiline={true}
-                label={"remarks"}
-                value={borehole?.remarks}
-                readonly={!editingEnabled}
-              />
+              <FormInput fieldName={"remarks"} multiline={true} label={"remarks"} value={borehole?.remarks} />
             </FormContainer>
           </FormSegmentBox>
         </form>

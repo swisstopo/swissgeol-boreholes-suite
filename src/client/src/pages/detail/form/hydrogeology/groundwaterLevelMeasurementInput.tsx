@@ -4,9 +4,8 @@ import { FormContainer, FormInput, FormValueType } from "../../../../components/
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { GroundwaterLevelMeasurementInputProps, GwlmFormData } from "./Observation.ts";
+import { GroundwaterLevelMeasurementInputProps, GwlmFormData, ObservationType } from "./Observation.ts";
 import ObservationInput from "./observationInput.tsx";
-import { ObservationType } from "./observationType";
 
 const GroundwaterLevelMeasurementInput = ({ item, parentId }: GroundwaterLevelMeasurementInputProps) => {
   const prepareFormDataForSubmit = (data: GwlmFormData) => {
@@ -34,7 +33,7 @@ const GroundwaterLevelMeasurementInput = ({ item, parentId }: GroundwaterLevelMe
       updateData={updateGroundwaterLevelMeasurement}
       promptLabel="groundwaterLevelMeasurement"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
-      <ObservationInput observation={item} boreholeId={parentId} showDepthInputs={false} />
+      <ObservationInput observation={item} showDepthInputs={false} />
       <FormContainer direction="row" sx={{ paddingTop: "10px" }}>
         <FormDomainSelect
           fieldName="kindId"

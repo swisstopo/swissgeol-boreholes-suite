@@ -15,14 +15,15 @@ import { DataCardExternalContext } from "../../../../components/dataCard/dataCar
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
+import { DetailContext } from "../../detailContext.tsx";
 import CompletionContent from "./completionContent.jsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";
 import CompletionHeaderInput from "./completionHeaderInput.jsx";
 
-const Completion = props => {
-  const { isEditable } = props;
+const Completion = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { showPrompt } = useContext(PromptContext);
+  const { editingEnabled } = useContext(DetailContext);
   const { boreholeId, completionId } = useParams();
   const history = useHistory();
   const location = useLocation();
@@ -304,11 +305,11 @@ const Completion = props => {
   }, [completions, completionId]);
 
   useEffect(() => {
-    if (!isEditable) {
+    if (!editingEnabled) {
       setState({ ...state, editing: false });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditable]);
+  }, [editingEnabled]);
 
   return (
     <>
@@ -327,7 +328,7 @@ const Completion = props => {
                   );
                 })}
             </BdmsTabs>
-            {isEditable && (
+            {editingEnabled && (
               <AddButton
                 label="addCompletion"
                 disabled={state.selected?.id === 0}
@@ -354,7 +355,6 @@ const Completion = props => {
                 ) : (
                   <CompletionHeaderDisplay
                     completion={state.selected}
-                    isEditable={isEditable}
                     setEditing={shouldEdit => setState({ ...state, editing: shouldEdit })}
                     copyCompletion={copySelectedCompletion}
                     deleteCompletion={deleteSelectedCompletion}
@@ -374,7 +374,7 @@ const Completion = props => {
               <Typography variant="fullPageMessage">{t("msgCompletionEmpty")}</Typography>
             </Stack>
           ) : (
-            state.selected?.id > 0 && <CompletionContent completion={state.selected} isEditable={isEditable} />
+            state.selected?.id > 0 && <CompletionContent completion={state.selected} editingEnabled={editingEnabled} />
           )}
         </Stack>
       </FullPage>

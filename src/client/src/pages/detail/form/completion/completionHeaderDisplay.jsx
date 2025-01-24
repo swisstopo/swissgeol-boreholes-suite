@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { IconButton, Stack } from "@mui/material";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { CopyButton, DeleteButton, EditButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
+import { DetailContext } from "../../detailContext.tsx";
 
-const CompletionHeaderDisplay = props => {
-  const { completion, isEditable, setEditing, copyCompletion, deleteCompletion } = props;
+const CompletionHeaderDisplay = ({ completion, setEditing, copyCompletion, deleteCompletion }) => {
   const [expanded, setExpanded] = useState(false);
+  const { editingEnabled } = useContext(DetailContext);
   const toggleHeader = () => {
     setExpanded(!expanded);
   };
@@ -33,7 +34,7 @@ const CompletionHeaderDisplay = props => {
                 sx={{ flex: "0 0 400px" }}
               />
             </FormContainer>
-            {isEditable && (
+            {editingEnabled && (
               <DataCardButtonContainer>
                 <CopyButton
                   onClick={e => {

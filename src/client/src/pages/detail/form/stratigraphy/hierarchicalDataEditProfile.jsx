@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AddCircle, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useDomainSchema } from "../../../../api/fetchApiV2.js";
+import { DetailContext } from "../../detailContext.tsx";
 import LayerCard from "./layerCard.jsx";
 import LayerGap from "./layerGap.jsx";
 import NavigationChild from "./navigationChild.jsx";
@@ -32,7 +33,6 @@ const HierarchicalDataEditProfile = ({
   dataProperty, // string that specifies the property of the layer object that contains the data
   titel, // The titel, displayed in the header
   selectedStratigraphyID,
-  isEditable,
   sx,
   navState,
   setNavState,
@@ -42,6 +42,7 @@ const HierarchicalDataEditProfile = ({
   const [id] = useState(Math.random().toString(36).substring(2, 10));
   const [options, setOptions] = useState(null);
   const [header, setHeader] = useState(headerLabels.map(h => ({ title: h, isVisible: true })));
+  const { editingEnabled } = useContext(DetailContext);
 
   const { data: schemaData } = useDomainSchema(domainSchemaName);
 
@@ -85,7 +86,6 @@ const HierarchicalDataEditProfile = ({
             key={-index}
             previousLayer={layers[index - 1]}
             nextLayer={layers[index]}
-            isEditable={isEditable}
             height={(layers[index].fromDepth - previousLayerToDepth) * navState.pixelPerMeter}
           />,
         );
@@ -101,7 +101,6 @@ const HierarchicalDataEditProfile = ({
           minFromDepth={previousLayerToDepth}
           maxToDepth={nextLayerFromDepth}
           header={header}
-          isEditable={isEditable}
           height={(layer.toDepth - layer.fromDepth) * navState.pixelPerMeter}
         />,
       );
@@ -112,7 +111,7 @@ const HierarchicalDataEditProfile = ({
     <Box>
       <Stack direction="row" sx={{ alignItems: "center", padding: "1em" }}>
         <Typography>{titel}</Typography>
-        {isEditable && (
+        {editingEnabled && (
           <IconButton
             aria-label={t("add")}
             onClick={() => {

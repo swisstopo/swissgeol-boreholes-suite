@@ -1,13 +1,13 @@
+import { FC } from "react";
 import { deleteWaterIngress } from "../../../../api/fetchApiV2";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
+import { WaterIngress } from "./Observation.ts";
 import ObservationDisplay from "./observationDisplay.tsx";
 
-const WaterIngressDisplay = props => {
-  const { item, isEditable } = props;
-
+const WaterIngressDisplay: FC<{ item: WaterIngress }> = ({ item }) => {
   return (
-    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteWaterIngress}>
+    <DataDisplayCard item={item} deleteData={deleteWaterIngress}>
       <ObservationDisplay observation={item} />
       <FormContainer direction="row">
         <FormDisplay label="quantity" value={item?.quantity} type={FormValueType.Domain} />

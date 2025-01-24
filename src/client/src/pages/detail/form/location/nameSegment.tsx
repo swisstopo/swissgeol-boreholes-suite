@@ -10,7 +10,7 @@ import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces
 interface NameSegmentProps extends LocationBaseProps {
   formMethods: UseFormReturn<LocationFormInputs>;
 }
-const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps) => {
+const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
   const auth = useAuth();
   const originalName = formMethods.watch("originalName");
   const { dirtyFields, isDirty } = formMethods.formState;
@@ -27,12 +27,7 @@ const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps
         <FormContainer>
           {!auth.anonymousModeEnabled && (
             <FormContainer direction="row">
-              <FormInput
-                fieldName={"originalName"}
-                label={"original_name"}
-                value={borehole?.originalName}
-                readonly={!editingEnabled}
-              />
+              <FormInput fieldName={"originalName"} label={"original_name"} value={borehole?.originalName} />
               <TextField
                 InputProps={{
                   readOnly: true,
@@ -44,13 +39,8 @@ const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps
             </FormContainer>
           )}
           <FormContainer direction="row">
-            <FormInput fieldName={"name"} label={"alternate_name"} readonly={!editingEnabled} value={borehole?.name} />
-            <FormInput
-              fieldName={"projectName"}
-              label={"project_name"}
-              value={borehole?.projectName}
-              readonly={!editingEnabled}
-            />
+            <FormInput fieldName={"name"} label={"alternate_name"} value={borehole?.name} />
+            <FormInput fieldName={"projectName"} label={"project_name"} value={borehole?.projectName} />
           </FormContainer>
         </FormContainer>
       </FormSegmentBox>

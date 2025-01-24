@@ -3,11 +3,11 @@ import { deleteSection, useDomains } from "../../../../api/fetchApiV2.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 
-const SectionDisplay = ({ item, isEditable }) => {
+const SectionDisplay = ({ item }) => {
   const domains = useDomains();
 
   return (
-    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteSection}>
+    <DataDisplayCard item={item} deleteData={deleteSection}>
       <FormDisplay label="section_name" value={item?.name} />
 
       {item?.sectionElements

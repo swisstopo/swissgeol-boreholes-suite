@@ -6,14 +6,14 @@ import { FormContainer, FormDisplay, FormValueType } from "../../../../component
 import { extractCasingDepth } from "./casingUtils";
 
 const CasingDisplay = props => {
-  const { item, isEditable } = props;
+  const { item } = props;
   const { t, i18n } = useTranslation();
   const domains = useDomains();
 
   var depth = extractCasingDepth(item);
 
   return (
-    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteCasing}>
+    <DataDisplayCard item={item} deleteData={deleteCasing}>
       <FormDisplay label="name" value={item?.name} />
       <FormContainer direction="row">
         <FormDisplay label="fromdepth" value={depth.min} type={FormValueType.Number} />

@@ -1,27 +1,23 @@
 import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import { Box, Button, Input } from "@mui/material";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
 import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 import { FileResponse } from "../../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import { DetailContext } from "../../detailContext.tsx";
 import FilesTableComponent from "./filesTableComponent";
 
-export interface EditorBoreholeFilesTable2Props {
-  id: number;
-  unlocked: boolean;
-}
-
-const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
-  id,
-  unlocked,
-}: EditorBoreholeFilesTable2Props) => {
+const EditorBoreholeFilesTable: FC = () => {
   const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
+  const { id } = useParams<{ id: string }>();
   const [files, setFiles] = useState<FileResponse[]>([]);
   const [patchQueued, setPatchQueued] = useState<NodeJS.Timeout | string | number | undefined>();
   const { showAlert } = useContext(AlertContext);
+  const { editingEnabled } = useContext(DetailContext);
 
   useEffect(() => {
     loadFiles();
@@ -30,7 +26,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
 
   const loadFiles = async () => {
     if (id) {
-      getFiles<FileResponse>(id).then(setFiles);
+      getFiles<FileResponse>(parseInt(id)).then(setFiles);
     }
   };
 
@@ -38,7 +34,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
     if (e.target?.files && e.target?.files.length > 0) {
       const file = e.target?.files[0];
 
-      await uploadFile(id, file)
+      await uploadFile(parseInt(id), file)
         .then(() => loadFiles())
         .catch(error => {
           showAlert(t(error.message), "error");
@@ -89,7 +85,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
         backgroundColor: theme.palette.background.default,
         border: `1px solid ${theme.palette.boxShadow}`,
       }}>
-      {unlocked && (
+      {editingEnabled && (
         <Box sx={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
           <form ref={formRef}>
             <Button
@@ -130,7 +126,6 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
         id={id}
         patchFile={patch}
         reload={loadFiles}
-        unlocked={unlocked}
       />
     </Box>
   ) : (

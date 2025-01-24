@@ -13,6 +13,7 @@ import HeaderComponent from "./components/header/headerComponent.tsx";
 import { Prompt } from "./components/prompt/prompt.tsx";
 import { PromptProvider } from "./components/prompt/promptContext.tsx";
 import { AppBox } from "./components/styledComponents.ts";
+import { DetailProvider } from "./pages/detail/detailContext.tsx";
 import { DetailPage } from "./pages/detail/detailPage.tsx";
 import { LabelingProvider } from "./pages/detail/labeling/labelingContext.tsx";
 import { OverviewProvider } from "./pages/overview/overViewContext.tsx";
@@ -73,7 +74,9 @@ class App extends React.Component {
                                   path={"/:id"}
                                   render={() => (
                                     <LabelingProvider>
-                                      <DetailPage />
+                                      <DetailProvider>
+                                        <DetailPage />
+                                      </DetailProvider>
                                     </LabelingProvider>
                                   )}
                                 />
