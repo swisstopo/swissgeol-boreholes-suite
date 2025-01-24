@@ -277,7 +277,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                   fieldName={"originalReferenceSystem"}
                   label="spatial_reference_system"
                   selected={borehole.originalReferenceSystem}
-                  readonly={!editingEnabled}
                   className={isCoordinateExtraction ? "ai" : ""}
                   onUpdate={resetCoordinatesOnReferenceSystemChange}
                   values={Object.entries(referenceSystems).map(([, value]) => ({
@@ -293,7 +292,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       direction={Direction.X}
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
-                      readonly={!editingEnabled}
                       className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.watch(referenceSystems.LV95.fieldName.X)}
                     />
@@ -303,7 +301,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       direction={Direction.Y}
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV95.code}
-                      readonly={!editingEnabled}
                       className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.watch(referenceSystems.LV95.fieldName.Y)}
                     />
@@ -315,7 +312,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       direction={Direction.X}
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
-                      readonly={!editingEnabled}
                       className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.watch(referenceSystems.LV03.fieldName.X)}
                     />
@@ -325,7 +321,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                       direction={Direction.Y}
                       onUpdate={onCoordinateChange}
                       disabled={currentReferenceSystem !== referenceSystems.LV03.code}
-                      readonly={!editingEnabled}
                       className={isCoordinateExtraction ? "ai" : ""}
                       value={formMethods.watch(referenceSystems.LV03.fieldName.Y)}
                     />
@@ -335,7 +330,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                   fieldName={"locationPrecisionId"}
                   label="location_precision"
                   schemaName={"location_precision"}
-                  readonly={!editingEnabled}
                   selected={borehole.locationPrecisionId}
                 />
               </FormContainer>

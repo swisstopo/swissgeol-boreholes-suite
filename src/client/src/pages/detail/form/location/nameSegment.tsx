@@ -1,11 +1,10 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, TextField } from "@mui/material";
 import { t } from "i18next";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
 import { FormContainer, FormInput } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { DetailContext } from "../../detailContext.tsx";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 interface NameSegmentProps extends LocationBaseProps {
@@ -13,7 +12,6 @@ interface NameSegmentProps extends LocationBaseProps {
 }
 const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
   const auth = useAuth();
-  const { editingEnabled } = useContext(DetailContext);
   const originalName = formMethods.watch("originalName");
   const { dirtyFields, isDirty } = formMethods.formState;
 
@@ -29,12 +27,7 @@ const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
         <FormContainer>
           {!auth.anonymousModeEnabled && (
             <FormContainer direction="row">
-              <FormInput
-                fieldName={"originalName"}
-                label={"original_name"}
-                value={borehole?.originalName}
-                readonly={!editingEnabled}
-              />
+              <FormInput fieldName={"originalName"} label={"original_name"} value={borehole?.originalName} />
               <TextField
                 InputProps={{
                   readOnly: true,
@@ -46,13 +39,8 @@ const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
             </FormContainer>
           )}
           <FormContainer direction="row">
-            <FormInput fieldName={"name"} label={"alternate_name"} readonly={!editingEnabled} value={borehole?.name} />
-            <FormInput
-              fieldName={"projectName"}
-              label={"project_name"}
-              value={borehole?.projectName}
-              readonly={!editingEnabled}
-            />
+            <FormInput fieldName={"name"} label={"alternate_name"} value={borehole?.name} />
+            <FormInput fieldName={"projectName"} label={"project_name"} value={borehole?.projectName} />
           </FormContainer>
         </FormContainer>
       </FormSegmentBox>

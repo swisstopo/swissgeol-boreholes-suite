@@ -21,9 +21,7 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
   const [restrictionUntilEnabled, setRestrictionUntilEnabled] = useState<boolean>(
     borehole.restrictionId === restrictionUntilCode,
   );
-
   const { editingEnabled } = useContext(DetailContext);
-
   const { dirtyFields } = formMethods.formState;
   const restriction = formMethods.watch("restrictionId");
 
@@ -47,7 +45,6 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
             fieldName={"restrictionId"}
             label={"restriction"}
             schemaName={"restriction"}
-            readonly={!editingEnabled}
             selected={borehole.restrictionId}
           />
           <FormInput
@@ -60,7 +57,6 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
           />
           <FormBooleanSelect
             canReset={false}
-            readonly={!editingEnabled}
             fieldName={"nationalInterest"}
             label="national_interest"
             selected={borehole.nationalInterest}

@@ -1,4 +1,4 @@
-import { FC, useContext } from "react";
+import { FC } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { TextField } from "@mui/material/";
 import { t } from "i18next";
@@ -6,7 +6,6 @@ import { useDomains } from "../../../../api/fetchApiV2";
 import { FormContainer, FormDomainSelect, FormInput } from "../../../../components/form/form.ts";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
-import { DetailContext } from "../../detailContext.tsx";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 interface ElevationSegmentProps extends LocationBaseProps {
@@ -15,7 +14,6 @@ interface ElevationSegmentProps extends LocationBaseProps {
 
 const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) => {
   const { data: domains } = useDomains();
-  const { editingEnabled } = useContext(DetailContext);
 
   return (
     <FormSegmentBox>
@@ -27,13 +25,11 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) 
             value={borehole.elevationZ}
             controlledValue={formMethods.watch("elevationZ") ?? ""}
             withThousandSeparator={true}
-            readonly={!editingEnabled}
           />
           <FormDomainSelect
             fieldName={"elevationPrecisionId"}
             label={"elevation_precision"}
             schemaName={"elevation_precision"}
-            readonly={!editingEnabled}
             selected={borehole.elevationPrecisionId}
           />
         </FormContainer>
@@ -43,12 +39,10 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) 
             label={"reference_elevation"}
             value={borehole?.referenceElevation}
             withThousandSeparator={true}
-            readonly={!editingEnabled}
           />
           <FormDomainSelect
             fieldName={"referenceElevationPrecisionId"}
             label={"reference_elevation_qt"}
-            readonly={!editingEnabled}
             schemaName={"elevation_precision"}
             selected={borehole.referenceElevationPrecisionId}
           />
@@ -57,7 +51,6 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) 
           <FormDomainSelect
             fieldName={"referenceElevationTypeId"}
             label={"reference_elevation_type"}
-            readonly={!editingEnabled}
             schemaName={"reference_elevation_type"}
             selected={borehole.referenceElevationTypeId}
           />

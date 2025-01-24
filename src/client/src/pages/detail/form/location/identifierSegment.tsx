@@ -60,7 +60,6 @@ const IdentifierSegment = ({ borehole, formMethods }: IdentifierSegmentProps) =>
                 fieldName={`boreholeCodelists.${index}.codelistId`}
                 label="borehole_identifier"
                 selected={field.codelistId}
-                readonly={!editingEnabled}
                 onUpdate={e => {
                   if (fields.some(field => field.codelistId === e)) {
                     showAlert(t("msgIdentifierAlreadyUsed"), "error");
@@ -73,7 +72,6 @@ const IdentifierSegment = ({ borehole, formMethods }: IdentifierSegmentProps) =>
             <Grid item xs={5} sx={{ display: "flex" }}>
               <FormInput
                 fieldName={`boreholeCodelists.${index}.value`}
-                readonly={!editingEnabled}
                 label="borehole_identifier_value"
                 value={field.value}
                 type={FormValueType.Text}

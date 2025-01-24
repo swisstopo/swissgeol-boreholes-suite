@@ -12,7 +12,6 @@ export const DetailContext = createContext<DetailContextProps>({
 
 export const DetailProvider: FC<PropsWithChildren> = ({ children }) => {
   const [editingEnabled, setEditingEnabled] = useState<boolean>(false);
-  // TODO add borehole ID or use params
   return (
     <DetailContext.Provider
       value={{
