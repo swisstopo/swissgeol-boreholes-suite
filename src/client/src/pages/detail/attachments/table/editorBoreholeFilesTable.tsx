@@ -1,5 +1,6 @@
 import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import { Box, Button, Input } from "@mui/material";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
 import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
@@ -9,9 +10,10 @@ import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { DetailContext } from "../../detailContext.tsx";
 import FilesTableComponent from "./filesTableComponent";
 
-const EditorBoreholeFilesTable: FC<{ id: number }> = ({ id }) => {
+const EditorBoreholeFilesTable: FC = () => {
   const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
+  const { id } = useParams<{ id: string }>();
   const [files, setFiles] = useState<FileResponse[]>([]);
   const [patchQueued, setPatchQueued] = useState<NodeJS.Timeout | string | number | undefined>();
   const { showAlert } = useContext(AlertContext);
@@ -24,7 +26,7 @@ const EditorBoreholeFilesTable: FC<{ id: number }> = ({ id }) => {
 
   const loadFiles = async () => {
     if (id) {
-      getFiles<FileResponse>(id).then(setFiles);
+      getFiles<FileResponse>(parseInt(id)).then(setFiles);
     }
   };
 
@@ -32,7 +34,7 @@ const EditorBoreholeFilesTable: FC<{ id: number }> = ({ id }) => {
     if (e.target?.files && e.target?.files.length > 0) {
       const file = e.target?.files[0];
 
-      await uploadFile(id, file)
+      await uploadFile(parseInt(id), file)
         .then(() => loadFiles())
         .catch(error => {
           showAlert(t(error.message), "error");

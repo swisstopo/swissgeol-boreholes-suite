@@ -10,7 +10,6 @@ export interface BoreholeDetailProps extends BoreholeGeneralProps {
 }
 
 export interface BoreholePanelProps extends BoreholeGeneralProps {
-  boreholeId: string;
   onSubmit: (data: BoreholeFormInputs) => void;
 }
 

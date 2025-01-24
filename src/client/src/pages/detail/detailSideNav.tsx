@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
@@ -10,9 +10,10 @@ import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { capitalizeFirstLetter } from "../../utils";
 
-export const DetailSideNav = ({ id }: { id: string }) => {
+export const DetailSideNav = () => {
   const [stratigraphyIsVisible, setStratigraphyIsVisible] = useState(false);
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
+  const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const { t } = useTranslation();
   const auth = useAuth();

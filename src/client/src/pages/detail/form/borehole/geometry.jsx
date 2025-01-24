@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import { Card, CardActions, CardContent, CircularProgress, Grid, Typography } from "@mui/material/";
 import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2.js";
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
@@ -15,13 +16,13 @@ import GeometryTable from "./geometryTable.jsx";
  *
  * @component
  * @param {Object} props - The component props.
- * @param {string} props.boreholeId - The ID of the borehole.
  * @param {number} props.measuredDepth - The measured depth to show a perfectly vertical geometry if no geometry is set.
  * @returns {JSX.Element} The rendered Geometry component.
  */
-const Geometry = ({ boreholeId, measuredDepth }) => {
+const Geometry = ({ measuredDepth }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(DetailContext);
+  const { id: boreholeId } = useParams();
   const { data } = useBoreholeGeometry(boreholeId);
   const {
     delete: { mutate: deleteBoreholeGeometry, isLoading: isDeletingBoreholeGeometry },

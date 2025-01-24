@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import { Typography } from "@mui/material";
 import { DetailContext } from "../../../detailContext.tsx";
 import LithologyViewProfile from "../lithologyViewProfile.jsx";
@@ -11,7 +12,8 @@ import StratigraphySelection from "../stratigraphySelection.jsx";
 import LithostratigraphyEditProfile from "./lithostratigraphyEditProfile.jsx";
 import LithostratigraphyViewProfile from "./lithostratigraphyViewProfile.jsx";
 
-const LithostratigraphyPanel = ({ id: selectedBoreholeId }) => {
+const LithostratigraphyPanel = () => {
+  const { id: selectedBoreholeId } = useParams();
   const { t } = useTranslation();
   const { editingEnabled } = useContext(DetailContext);
 

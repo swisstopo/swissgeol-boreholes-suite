@@ -33,9 +33,7 @@ export const DetailPage: FC = () => {
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
   const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
   const dispatch = useDispatch();
-  const { id } = useParams<{
-    id: string;
-  }>();
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     getBoreholeById(parseInt(id, 10)).then(b => {
@@ -134,7 +132,7 @@ export const DetailPage: FC = () => {
         <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} triggerReset={triggerReset} />
         <LayoutBox>
           <SidebarBox>
-            <DetailSideNav id={id} />
+            <DetailSideNav />
           </SidebarBox>
           <Stack width="100%" direction="column">
             <Box
@@ -167,7 +165,7 @@ export const DetailPage: FC = () => {
                   panelOpen={panelOpen}
                 />
               </MainContentBox>
-              {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}
+              {editingEnabled && panelOpen && <LabelingPanel />}
             </Box>
             {editingEnabled && shouldShowSaveBar && (
               <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} />

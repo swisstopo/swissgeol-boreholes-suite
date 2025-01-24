@@ -1,3 +1,5 @@
+import { FC } from "react";
+import { useParams } from "react-router-dom";
 import { getGroundwaterLevelMeasurements } from "../../../../api/fetchApiV2.js";
 import DataCards from "../../../../components/dataCard/dataCards.jsx";
 import { sortByDepth } from "../sorter.jsx";
@@ -5,7 +7,9 @@ import GroundwaterLevelMeasurementDisplay from "./groundwaterLevelMeasurementDis
 import GroundwaterLevelMeasurementInput from "./groundwaterLevelMeasurementInput";
 import { GroundwaterLevelMeasurementDisplayProps, GroundwaterLevelMeasurementInputProps } from "./Observation.ts";
 
-const GroundwaterLevelMeasurement = ({ boreholeId }: { boreholeId: number }) => {
+const GroundwaterLevelMeasurement: FC = () => {
+  const { id: boreholeId } = useParams<{ id: string }>();
+
   return (
     <DataCards
       parentId={boreholeId}

@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import { Typography } from "@mui/material";
 import { DetailContext } from "../../../detailContext.tsx";
 import LithologyViewProfile from "../lithologyViewProfile.jsx";
@@ -11,7 +12,8 @@ import Scale from "../scale.jsx";
 import StratigraphySelection from "../stratigraphySelection.jsx";
 import ChronostratigraphyEditProfile from "./chronostratigraphyEditProfile.jsx";
 
-const ChronostratigraphyPanel = ({ id: selectedBoreholeId }) => {
+const ChronostratigraphyPanel = () => {
+  const { id: selectedBoreholeId } = useParams();
   const { t } = useTranslation();
   const { editingEnabled } = useContext(DetailContext);
 
