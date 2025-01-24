@@ -4,10 +4,9 @@ import { sortByDepth } from "../sorter.jsx";
 import FieldMeasurementDisplay from "./fieldMeasurementDisplay.jsx";
 import FieldMeasurementInput from "./fieldMeasurementInput.jsx";
 
-const FieldMeasurement = ({ isEditable, boreholeId }) => {
+const FieldMeasurement = ({ boreholeId }) => {
   return (
     <DataCards
-      isEditable={isEditable}
       parentId={boreholeId}
       getData={getFieldMeasurements}
       cyLabel="fieldMeasurement"

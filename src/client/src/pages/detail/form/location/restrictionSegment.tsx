@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
 import {
@@ -9,6 +9,7 @@ import {
   FormValueType,
 } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
+import { DetailContext } from "../../detailContext.tsx";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 interface RestrictionSegmentProps extends LocationBaseProps {
@@ -16,10 +17,12 @@ interface RestrictionSegmentProps extends LocationBaseProps {
 }
 const restrictionUntilCode = 20111003;
 
-const RestrictionSegment = ({ borehole, editingEnabled, formMethods }: RestrictionSegmentProps) => {
+const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) => {
   const [restrictionUntilEnabled, setRestrictionUntilEnabled] = useState<boolean>(
     borehole.restrictionId === restrictionUntilCode,
   );
+
+  const { editingEnabled } = useContext(DetailContext);
 
   const { dirtyFields } = formMethods.formState;
   const restriction = formMethods.watch("restrictionId");

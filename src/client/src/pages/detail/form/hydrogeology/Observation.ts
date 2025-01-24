@@ -44,3 +44,8 @@ export interface GwlmFormData {
   reliabilityId: number | string | null;
   reliability?: object;
 }
+
+export interface WaterIngress extends Observation {
+  quantityId: number;
+  conditionsId: number | null;
+}

@@ -58,6 +58,8 @@ export const FormInput: FC<FormInputProps> = ({
     }
   };
 
+  // TODO base readonly on editing enabled
+
   return (
     <TextField
       required={required || false}

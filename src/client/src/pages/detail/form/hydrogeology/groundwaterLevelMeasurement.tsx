@@ -5,10 +5,9 @@ import GroundwaterLevelMeasurementDisplay from "./groundwaterLevelMeasurementDis
 import GroundwaterLevelMeasurementInput from "./groundwaterLevelMeasurementInput";
 import { GroundwaterLevelMeasurementDisplayProps, GroundwaterLevelMeasurementInputProps } from "./Observation.ts";
 
-const GroundwaterLevelMeasurement = ({ isEditable, boreholeId }: { isEditable: boolean; boreholeId: number }) => {
+const GroundwaterLevelMeasurement = ({ boreholeId }: { boreholeId: number }) => {
   return (
     <DataCards
-      isEditable={isEditable}
       parentId={boreholeId}
       getData={getGroundwaterLevelMeasurements}
       cyLabel="groundwaterLevelMeasurement"

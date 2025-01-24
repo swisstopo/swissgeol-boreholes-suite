@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { TextField } from "@mui/material/";
 import { t } from "i18next";
@@ -6,14 +6,16 @@ import { useDomains } from "../../../../api/fetchApiV2";
 import { FormContainer, FormDomainSelect, FormInput } from "../../../../components/form/form.ts";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
+import { DetailContext } from "../../detailContext.tsx";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 interface ElevationSegmentProps extends LocationBaseProps {
   formMethods: UseFormReturn<LocationFormInputs>;
 }
 
-const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, editingEnabled, formMethods }) => {
+const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) => {
   const { data: domains } = useDomains();
+  const { editingEnabled } = useContext(DetailContext);
 
   return (
     <FormSegmentBox>

@@ -8,13 +8,14 @@ import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
+import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
 import Completion from "./form/completion/completion.jsx";
 import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement.tsx";
 import Hydrotest from "./form/hydrogeology/hydrotest.jsx";
-import WaterIngress from "./form/hydrogeology/waterIngress.jsx";
+import WaterIngress from "./form/hydrogeology/waterIngress.js";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
 import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx";
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
@@ -23,7 +24,6 @@ import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithos
 import WorkflowForm from "./form/workflow/workflowForm.jsx";
 
 interface DetailPageContentProps {
-  editingEnabled: boolean;
   editableByCurrentUser: boolean;
   locationPanelRef: RefObject<{ submit: () => void; reset: () => void }>;
   boreholePanelRef: RefObject<{ submit: () => void; reset: () => void }>;
@@ -37,7 +37,6 @@ type DetailPageParams = {
 };
 
 export const DetailPageContent = ({
-  editingEnabled,
   editableByCurrentUser,
   locationPanelRef,
   boreholePanelRef,
@@ -48,6 +47,7 @@ export const DetailPageContent = ({
 }: DetailPageContentProps) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
+  const { editingEnabled } = useContext<DetailContextProps>(DetailContext);
   const { id } = useParams<DetailPageParams>();
   const legacyBorehole = useSelector((state: ReduxRootState) => state.core_borehole);
 
@@ -96,7 +96,6 @@ export const DetailPageContent = ({
               render={() => (
                 <LocationPanel
                   ref={locationPanelRef}
-                  editingEnabled={editingEnabled}
                   onSubmit={onLocationFormSubmit}
                   borehole={borehole}
                   labelingPanelOpen={panelOpen}
@@ -111,7 +110,6 @@ export const DetailPageContent = ({
                   ref={boreholePanelRef}
                   boreholeId={id}
                   borehole={borehole}
-                  editingEnabled={editingEnabled}
                   onSubmit={onBoreholeFormSubmit}
                 />
               )}
@@ -120,12 +118,12 @@ export const DetailPageContent = ({
             <Route
               exact
               path={"/:id/stratigraphy/chronostratigraphy"}
-              render={() => <ChronostratigraphyPanel id={id} isEditable={editingEnabled} />}
+              render={() => <ChronostratigraphyPanel id={id} />}
             />
             <Route
               exact
               path={"/:id/stratigraphy/lithostratigraphy"}
-              render={() => <LithostratigraphyPanel id={id} isEditable={editingEnabled} />}
+              render={() => <LithostratigraphyPanel id={id} />}
             />
             <Route
               path={"/:id/stratigraphy"}
@@ -139,30 +137,26 @@ export const DetailPageContent = ({
                 );
               }}
             />
-            <Route
-              exact
-              path={"/:id/attachments"}
-              render={() => <EditorBoreholeFilesTable id={parseInt(id, 10)} unlocked={editingEnabled} />}
-            />
+            <Route exact path={"/:id/attachments"} render={() => <EditorBoreholeFilesTable id={parseInt(id, 10)} />} />
             <Route
               exact
               path={"/:id/hydrogeology/wateringress"}
-              render={() => <WaterIngress isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
+              render={() => <WaterIngress boreholeId={parseInt(id, 10)} />}
             />
             <Route
               exact
               path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
-              render={() => <GroundwaterLevelMeasurement isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
+              render={() => <GroundwaterLevelMeasurement boreholeId={parseInt(id, 10)} />}
             />
             <Route
               exact
               path={"/:id/hydrogeology/fieldmeasurement"}
-              render={() => <FieldMeasurement isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
+              render={() => <FieldMeasurement boreholeId={parseInt(id, 10)} />}
             />
             <Route
               exact
               path={"/:id/hydrogeology/hydrotest"}
-              render={() => <Hydrotest isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
+              render={() => <Hydrotest boreholeId={parseInt(id, 10)} />}
             />
             <Route
               path={"/:id/hydrogeology"}
@@ -176,11 +170,8 @@ export const DetailPageContent = ({
                 );
               }}
             />
-            <Route
-              path={"/:boreholeId/completion/:completionId"}
-              render={() => <Completion isEditable={editingEnabled} />}
-            />
-            <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={editingEnabled} />} />
+            <Route path={"/:boreholeId/completion/:completionId"} render={() => <Completion />} />
+            <Route path={"/:boreholeId/completion"} render={() => <Completion />} />
             <Route exact path={"/:id/status"} render={() => <WorkflowForm id={parseInt(id, 10)} />} />
             <Route
               path={"/:id"}

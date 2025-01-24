@@ -3,10 +3,9 @@ import DataCards from "../../../../components/dataCard/dataCards.jsx";
 import SectionDisplay from "./sectionDisplay.jsx";
 import SectionInput from "./sectionInput.jsx";
 
-const Sections = ({ isEditable, boreholeId }) => {
+const Sections = ({ boreholeId }) => {
   return (
     <DataCards
-      isEditable={isEditable}
       parentId={boreholeId}
       getData={getSectionsByBoreholeId}
       cyLabel="section"

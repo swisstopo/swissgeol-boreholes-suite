@@ -4,10 +4,9 @@ import { sortByDepth } from "../sorter.jsx";
 import HydrotestDisplay from "./hydrotestDisplay";
 import HydrotestInput from "./hydrotestInput";
 
-const Hydrotest = ({ isEditable, boreholeId }) => {
+const Hydrotest = ({ boreholeId }) => {
   return (
     <DataCards
-      isEditable={isEditable}
       parentId={boreholeId}
       getData={getHydrotests}
       cyLabel="hydrotest"

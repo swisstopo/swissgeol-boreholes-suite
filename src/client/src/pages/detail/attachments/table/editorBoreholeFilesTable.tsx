@@ -6,22 +6,16 @@ import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/fi
 import { FileResponse } from "../../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import { DetailContext } from "../../detailContext.tsx";
 import FilesTableComponent from "./filesTableComponent";
 
-export interface EditorBoreholeFilesTable2Props {
-  id: number;
-  unlocked: boolean;
-}
-
-const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
-  id,
-  unlocked,
-}: EditorBoreholeFilesTable2Props) => {
+const EditorBoreholeFilesTable: FC<{ id: number }> = ({ id }) => {
   const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
   const [files, setFiles] = useState<FileResponse[]>([]);
   const [patchQueued, setPatchQueued] = useState<NodeJS.Timeout | string | number | undefined>();
   const { showAlert } = useContext(AlertContext);
+  const { editingEnabled } = useContext(DetailContext);
 
   useEffect(() => {
     loadFiles();
@@ -89,7 +83,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
         backgroundColor: theme.palette.background.default,
         border: `1px solid ${theme.palette.boxShadow}`,
       }}>
-      {unlocked && (
+      {editingEnabled && (
         <Box sx={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
           <form ref={formRef}>
             <Button
@@ -130,7 +124,6 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
         id={id}
         patchFile={patch}
         reload={loadFiles}
-        unlocked={unlocked}
       />
     </Box>
   ) : (

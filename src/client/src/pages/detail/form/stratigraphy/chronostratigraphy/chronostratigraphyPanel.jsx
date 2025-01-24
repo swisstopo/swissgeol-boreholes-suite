@@ -1,5 +1,7 @@
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
+import { DetailContext } from "../../../detailContext.tsx";
 import LithologyViewProfile from "../lithologyViewProfile.jsx";
 import LithostratigraphyViewProfile from "../lithostratigraphy/lithostratigraphyViewProfile.jsx";
 import NavigationChild from "../navigationChild.jsx";
@@ -9,13 +11,14 @@ import Scale from "../scale.jsx";
 import StratigraphySelection from "../stratigraphySelection.jsx";
 import ChronostratigraphyEditProfile from "./chronostratigraphyEditProfile.jsx";
 
-const ChronostratigraphyPanel = ({ id: selectedBoreholeId, isEditable }) => {
+const ChronostratigraphyPanel = ({ id: selectedBoreholeId }) => {
   const { t } = useTranslation();
+  const { editingEnabled } = useContext(DetailContext);
 
   return (
     <StratigraphySelection
       id={selectedBoreholeId}
-      noStratigraphiesMessageKey={isEditable ? "msgChronostratigraphyEmptyEditing" : "msgChronostratigraphyEmpty"}
+      noStratigraphiesMessageKey={editingEnabled ? "msgChronostratigraphyEmptyEditing" : "msgChronostratigraphyEmpty"}
       renderItem={stratigraphyId => (
         <NavigationContainer
           sx={{ gap: "0.5em" }}
@@ -68,7 +71,6 @@ const ChronostratigraphyPanel = ({ id: selectedBoreholeId, isEditable }) => {
                 </NavigationChild>
                 <ChronostratigraphyEditProfile
                   selectedStratigraphyID={stratigraphyId}
-                  isEditable={isEditable}
                   navState={navState}
                   setNavState={setNavState}
                 />

@@ -3,7 +3,6 @@ import { BoreholeV2, Identifier } from "../../../../api/borehole.ts";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 
 export interface LocationBaseProps {
-  editingEnabled: boolean;
   borehole: BoreholeV2;
 }
 

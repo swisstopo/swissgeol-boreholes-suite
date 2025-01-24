@@ -8,17 +8,18 @@ import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FormDomainSelect, FormInput, FormValueType } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
+import { DetailContext } from "../../detailContext.tsx";
 import { LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 interface IdentifierSegmentProps {
   borehole: BoreholeV2;
-  editingEnabled: boolean;
   formMethods: UseFormReturn<LocationFormInputs>;
 }
 
-const IdentifierSegment = ({ borehole, editingEnabled, formMethods }: IdentifierSegmentProps) => {
+const IdentifierSegment = ({ borehole, formMethods }: IdentifierSegmentProps) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
+  const { editingEnabled } = useContext(DetailContext);
 
   const { fields, append, remove } = useFieldArray<LocationFormInputs, "boreholeCodelists">({
     name: "boreholeCodelists",

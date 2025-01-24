@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useState } from "react";
+import { forwardRef, useCallback, useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.js";
@@ -11,13 +11,15 @@ import {
 } from "../../../../components/form/form.ts";
 import { parseFloatWithThousandsSeparator } from "../../../../components/legacyComponents/formUtils.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
+import { DetailContext } from "../../detailContext.tsx";
 import { UseFormWithSaveBar } from "../useFormWithSaveBar.ts";
 import { BoreholeDetailProps, BoreholeFormInputs } from "./boreholePanelInterfaces.ts";
 
-export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: BoreholeDetailProps, ref) => {
+export const BoreholeForm = forwardRef(({ borehole, onSubmit }: BoreholeDetailProps, ref) => {
   const [totalDepthTVD, setTotalDepthTVD] = useState<number | null>(null);
   const [topBedrockFreshTVD, setTopBedrockFreshTVD] = useState<number | null>(null);
   const [topBedrockWeatheredTVD, setTopBedrockWeatheredTVD] = useState<number | null>(null);
+  const { editingEnabled } = useContext(DetailContext);
   const roundTvdValue = (value: number | null) => {
     return value ? Math.round(value * 100) / 100 : null;
   };

@@ -1,17 +1,19 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, TextField } from "@mui/material";
 import { t } from "i18next";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
 import { FormContainer, FormInput } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
+import { DetailContext } from "../../detailContext.tsx";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 interface NameSegmentProps extends LocationBaseProps {
   formMethods: UseFormReturn<LocationFormInputs>;
 }
-const NameSegment = ({ borehole, editingEnabled, formMethods }: NameSegmentProps) => {
+const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
   const auth = useAuth();
+  const { editingEnabled } = useContext(DetailContext);
   const originalName = formMethods.watch("originalName");
   const { dirtyFields, isDirty } = formMethods.formState;
 

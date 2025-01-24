@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
@@ -11,6 +11,7 @@ import {
   prepareLocationDataForSubmit,
 } from "../../components/legacyComponents/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import { DetailContext, DetailContextProps, DetailProvider } from "./detailContext.tsx";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
@@ -22,7 +23,6 @@ import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
 
 export const DetailPage: FC = () => {
-  const [editingEnabled, setEditingEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
   const [borehole, setBorehole] = useState<BoreholeV2 | null>(null);
@@ -31,6 +31,7 @@ export const DetailPage: FC = () => {
   const workflowStatus = useSelector((state: ReduxRootState) => state.core_workflow);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
+  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
   const dispatch = useDispatch();
   const { id } = useParams<{
     id: string;
@@ -41,7 +42,7 @@ export const DetailPage: FC = () => {
       setBorehole(b);
       setEditingEnabled(b.locked !== null && b.lockedById === user.data.id);
     });
-  }, [id, user.data.id, workflowStatus]);
+  }, [id, setEditingEnabled, user.data.id, workflowStatus]);
 
   const loadOrCreate = useCallback(
     (id: string) => {
@@ -92,7 +93,7 @@ export const DetailPage: FC = () => {
 
   useEffect(() => {
     setEditingEnabled(legacyBorehole?.data?.lock !== null);
-  }, [legacyBorehole.data.lock]);
+  }, [legacyBorehole?.data?.lock, setEditingEnabled]);
 
   useEffect(() => {
     if (!editingEnabled) {
@@ -128,55 +129,52 @@ export const DetailPage: FC = () => {
     (location.pathname.endsWith("/borehole") && location.hash === "#general");
 
   return (
-    <FormDirtyProvider>
-      <DetailHeader
-        borehole={borehole}
-        editingEnabled={editingEnabled}
-        setEditingEnabled={setEditingEnabled}
-        editableByCurrentUser={editableByCurrentUser}
-        triggerReset={triggerReset}
-      />
-      <LayoutBox>
-        <SidebarBox>
-          <DetailSideNav id={id} />
-        </SidebarBox>
-        <Stack width="100%" direction="column">
-          <Box
-            sx={{
-              display: "flex",
-              flexGrow: 1,
-              overflow: "auto",
-              flexDirection: panelPosition === "right" ? "row" : "column",
-              width: "100%",
-            }}>
-            <MainContentBox
+    <DetailProvider>
+      <FormDirtyProvider>
+        <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} triggerReset={triggerReset} />
+        <LayoutBox>
+          <SidebarBox>
+            <DetailSideNav id={id} />
+          </SidebarBox>
+          <Stack width="100%" direction="column">
+            <Box
               sx={{
-                width: panelOpen && panelPosition === "right" ? "50%" : "100%",
-                height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+                display: "flex",
+                flexGrow: 1,
+                overflow: "auto",
+                flexDirection: panelPosition === "right" ? "row" : "column",
+                width: "100%",
               }}>
-              {editingEnabled && (
-                <LabelingToggleButton
+              <MainContentBox
+                sx={{
+                  width: panelOpen && panelPosition === "right" ? "50%" : "100%",
+                  height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+                }}>
+                {editingEnabled && (
+                  <LabelingToggleButton
+                    panelOpen={panelOpen}
+                    panelPosition={panelPosition}
+                    onClick={() => togglePanel()}
+                  />
+                )}
+                <DetailPageContent
+                  editableByCurrentUser={editableByCurrentUser}
+                  locationPanelRef={locationPanelRef}
+                  onLocationFormSubmit={onLocationFormSubmit}
+                  boreholePanelRef={boreholePanelRef}
+                  onBoreholeFormSubmit={onBoreholeFormSubmit}
+                  borehole={borehole}
                   panelOpen={panelOpen}
-                  panelPosition={panelPosition}
-                  onClick={() => togglePanel()}
                 />
-              )}
-              <DetailPageContent
-                editingEnabled={editingEnabled}
-                editableByCurrentUser={editableByCurrentUser}
-                locationPanelRef={locationPanelRef}
-                onLocationFormSubmit={onLocationFormSubmit}
-                boreholePanelRef={boreholePanelRef}
-                onBoreholeFormSubmit={onBoreholeFormSubmit}
-                borehole={borehole}
-                panelOpen={panelOpen}
-              />
-            </MainContentBox>
-            {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}
-          </Box>
-          {editingEnabled && shouldShowSaveBar && <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} />}
-        </Stack>
-      </LayoutBox>
-    </FormDirtyProvider>
+              </MainContentBox>
+              {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}
+            </Box>
+            {editingEnabled && shouldShowSaveBar && (
+              <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} />
+            )}
+          </Stack>
+        </LayoutBox>
+      </FormDirtyProvider>
+    </DetailProvider>
   );
 };

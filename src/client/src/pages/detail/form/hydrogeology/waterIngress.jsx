@@ -4,10 +4,9 @@ import { sortByDepth } from "../sorter.jsx";
 import WaterIngressDisplay from "./waterIngressDisplay.jsx";
 import WaterIngressInput from "./waterIngressInput";
 
-const WaterIngress = ({ isEditable, boreholeId }) => {
+const WaterIngress = ({ boreholeId }) => {
   return (
     <DataCards
-      isEditable={isEditable}
       parentId={boreholeId}
       getData={getWaterIngress}
       cyLabel="waterIngress"

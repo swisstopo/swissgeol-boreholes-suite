@@ -10,6 +10,7 @@ import {
 } from "../../../../components/legacyComponents/formUtils.js";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
+import { DetailContext } from "../../detailContext.tsx";
 import { Coordinate, ExtractionState, useLabelingContext } from "../../labeling/labelingInterfaces";
 import { boundingBox, referenceSystems } from "./coordinateSegmentConstants";
 import {
@@ -25,7 +26,6 @@ import { LocationFormInputs } from "./locationPanelInterfaces.tsx";
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   borehole,
-  editingEnabled,
   formMethods,
   setValuesForReferenceSystem,
   setValuesForCountryCantonMunicipality,
@@ -33,6 +33,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 }) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
+  const { editingEnabled } = useContext(DetailContext);
   const { extractionObject, setExtractionObject, setExtractionState, extractionState } = useLabelingContext();
 
   // --- State variables ---

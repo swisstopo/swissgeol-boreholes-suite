@@ -18,28 +18,22 @@ import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
+import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import { useFormDirty } from "./useFormDirty.tsx";
 
 interface DetailHeaderProps {
-  editingEnabled: boolean;
-  setEditingEnabled: (editingEnabled: boolean) => void;
   editableByCurrentUser: boolean;
   borehole: BoreholeV2;
   triggerReset: () => void;
 }
 
-const DetailHeader = ({
-  editingEnabled,
-  setEditingEnabled,
-  editableByCurrentUser,
-  triggerReset,
-  borehole,
-}: DetailHeaderProps) => {
+const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
+  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
   const { isFormDirty } = useFormDirty();
   const auth = useAuth();
 
