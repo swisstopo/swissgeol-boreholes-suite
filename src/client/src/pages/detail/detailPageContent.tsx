@@ -15,7 +15,7 @@ import Completion from "./form/completion/completion.jsx";
 import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement.tsx";
 import Hydrotest from "./form/hydrogeology/hydrotest.jsx";
-import WaterIngress from "./form/hydrogeology/waterIngress.js";
+import WaterIngress from "./form/hydrogeology/waterIngress.tsx";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
 import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx";
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";

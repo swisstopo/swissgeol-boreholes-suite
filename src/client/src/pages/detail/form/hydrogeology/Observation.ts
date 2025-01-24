@@ -1,4 +1,14 @@
+import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
+
+export enum ObservationType {
+  waterIngress = 1,
+  groundwaterLevelMeasurement = 2,
+  hydrotest = 3,
+  fieldMeasurement = 4,
+}
+
 export interface Observation {
+  boreholeId: number;
   comment: string;
   casingId: number;
   isOpenBorehole: boolean;
@@ -10,6 +20,7 @@ export interface Observation {
   fromDepthM: number;
   reliabilityId: number | null;
   reliability: string; // domain name
+  type: ObservationType;
 }
 
 export interface ObservationInputProps {
@@ -42,10 +53,23 @@ export interface GwlmFormData {
   endTime: string | null;
   startTime: string | null;
   reliabilityId: number | string | null;
-  reliability?: object;
+  reliability?: Codelist;
+}
+
+export interface WaterIngressFormData {
+  reliabilityId: string | null;
+  reliability?: Codelist;
+  conditionsId: string | null;
+  conditions?: Codelist;
+  type: ObservationType;
+  startTime: string;
+  endTime: string;
+  boreholeId: number;
 }
 
 export interface WaterIngress extends Observation {
   quantityId: number;
+  quantity: Codelist;
   conditionsId: number | null;
+  conditions: Codelist;
 }
