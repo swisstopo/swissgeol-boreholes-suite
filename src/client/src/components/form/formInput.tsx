@@ -48,7 +48,6 @@ export const FormInput: FC<FormInputProps> = ({
   const { formState, register, setValue } = useFormContext();
   const isDateTimeInput = type === FormValueType.DateTime;
   const isDateInput = type === FormValueType.Date;
-
   const isReadOnly = readonly || !editingEnabled;
 
   const getDefaultValue = (value: string | number | Date | undefined) => {
@@ -61,8 +60,6 @@ export const FormInput: FC<FormInputProps> = ({
       return value;
     }
   };
-
-  // TODO base readonly on editing enabled
 
   return (
     <TextField

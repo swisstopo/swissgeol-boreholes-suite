@@ -48,7 +48,6 @@ export const FormSelect: FC<FormSelectProps> = ({
   const { t } = useTranslation();
   const { control } = useFormContext();
   const { editingEnabled } = useContext(DetailContext);
-
   const isReadOnly = readonly || !editingEnabled;
 
   const menuItems: FormSelectMenuItem[] = [];
