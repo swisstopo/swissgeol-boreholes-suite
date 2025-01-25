@@ -11,7 +11,7 @@ import {
   prepareLocationDataForSubmit,
 } from "../../components/legacyComponents/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
-import { DetailContext, DetailContextProps, DetailProvider } from "./detailContext.tsx";
+import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
@@ -127,52 +127,48 @@ export const DetailPage: FC = () => {
     (location.pathname.endsWith("/borehole") && location.hash === "#general");
 
   return (
-    <DetailProvider>
-      <FormDirtyProvider>
-        <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} triggerReset={triggerReset} />
-        <LayoutBox>
-          <SidebarBox>
-            <DetailSideNav />
-          </SidebarBox>
-          <Stack width="100%" direction="column">
-            <Box
+    <FormDirtyProvider>
+      <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} triggerReset={triggerReset} />
+      <LayoutBox>
+        <SidebarBox>
+          <DetailSideNav />
+        </SidebarBox>
+        <Stack width="100%" direction="column">
+          <Box
+            sx={{
+              display: "flex",
+              flexGrow: 1,
+              overflow: "auto",
+              flexDirection: panelPosition === "right" ? "row" : "column",
+              width: "100%",
+            }}>
+            <MainContentBox
               sx={{
-                display: "flex",
-                flexGrow: 1,
-                overflow: "auto",
-                flexDirection: panelPosition === "right" ? "row" : "column",
-                width: "100%",
+                width: panelOpen && panelPosition === "right" ? "50%" : "100%",
+                height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
               }}>
-              <MainContentBox
-                sx={{
-                  width: panelOpen && panelPosition === "right" ? "50%" : "100%",
-                  height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
-                }}>
-                {editingEnabled && (
-                  <LabelingToggleButton
-                    panelOpen={panelOpen}
-                    panelPosition={panelPosition}
-                    onClick={() => togglePanel()}
-                  />
-                )}
-                <DetailPageContent
-                  editableByCurrentUser={editableByCurrentUser}
-                  locationPanelRef={locationPanelRef}
-                  onLocationFormSubmit={onLocationFormSubmit}
-                  boreholePanelRef={boreholePanelRef}
-                  onBoreholeFormSubmit={onBoreholeFormSubmit}
-                  borehole={borehole}
+              {editingEnabled && (
+                <LabelingToggleButton
                   panelOpen={panelOpen}
+                  panelPosition={panelPosition}
+                  onClick={() => togglePanel()}
                 />
-              </MainContentBox>
-              {editingEnabled && panelOpen && <LabelingPanel />}
-            </Box>
-            {editingEnabled && shouldShowSaveBar && (
-              <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} />
-            )}
-          </Stack>
-        </LayoutBox>
-      </FormDirtyProvider>
-    </DetailProvider>
+              )}
+              <DetailPageContent
+                editableByCurrentUser={editableByCurrentUser}
+                locationPanelRef={locationPanelRef}
+                onLocationFormSubmit={onLocationFormSubmit}
+                boreholePanelRef={boreholePanelRef}
+                onBoreholeFormSubmit={onBoreholeFormSubmit}
+                borehole={borehole}
+                panelOpen={panelOpen}
+              />
+            </MainContentBox>
+            {editingEnabled && panelOpen && <LabelingPanel />}
+          </Box>
+          {editingEnabled && shouldShowSaveBar && <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} />}
+        </Stack>
+      </LayoutBox>
+    </FormDirtyProvider>
   );
 };
