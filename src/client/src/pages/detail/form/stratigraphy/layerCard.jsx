@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ClickAwayListener } from "@mui/base";
 import { Close, Delete, Edit } from "@mui/icons-material";
@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { DetailContext } from "../../detailContext.tsx";
 
 const State = Object.freeze({
   EDITING: Symbol("Editing"),
@@ -30,7 +31,6 @@ const LayerCard = ({
   maxToDepth, // number: maximal allowed toDepth
   header, // Array<{title, isVisible}>: header object with titles and visibility
   options, // options array for every level of the hierarchy
-  isEditable, // boolean: specifies if values can be edited
   height, // height of the layerCard in pixels
 }) => {
   const { t } = useTranslation();
@@ -41,6 +41,7 @@ const LayerCard = ({
   const [toDepth, setToDepth] = useState(null);
   const [selection, setSelection] = useState(null);
   const [cardState, setCardState] = useState(null);
+  const { editingEnabled } = useContext(DetailContext);
 
   const minPixelHeightForDepthLabels = 65;
 
@@ -50,10 +51,10 @@ const LayerCard = ({
       if (prevState === State.DELETED) {
         return prevState;
       } else {
-        return isEditable ? State.EDITABLE : State.DISPLAY;
+        return editingEnabled ? State.EDITABLE : State.DISPLAY;
       }
     });
-  }, [isEditable]);
+  }, [editingEnabled]);
 
   // create selection array from the path of the selected codelist
   // one element for each header
