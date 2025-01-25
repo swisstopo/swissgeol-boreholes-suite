@@ -154,6 +154,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
         return (
           <FormDomainSelect
             canReset={false}
+            readonly={false}
             fieldName={field.api ?? field.fieldName}
             label=""
             schemaName={field?.domain ?? field.api ?? field.fieldName}
@@ -168,6 +169,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
         return (
           <FormBooleanSelect
             canReset={false}
+            readonly={false}
             fieldName={field.api ?? field.fieldName}
             label=""
             onUpdate={e => {
@@ -191,6 +193,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
           fieldName={field.api ?? field.fieldName}
           label=""
           type={field.type}
+          readonly={false}
           onUpdate={e => {
             onFieldValueChange(field, e);
           }}

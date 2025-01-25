@@ -58,7 +58,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
   const { t } = useTranslation();
   const { formState, register } = useFormContext();
   const { editingEnabled } = useContext(DetailContext);
-  const isReadOnly = readonly || !editingEnabled;
+  const isReadOnly = readonly != undefined ? readonly : !editingEnabled;
 
   return (
     <TextField
