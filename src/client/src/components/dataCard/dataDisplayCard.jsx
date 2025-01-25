@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Trash2 } from "lucide-react";
-import { DetailContext } from "../../pages/detail/detailContext.js";
+import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
 import { FormContainer } from "../form/form";
 import { PromptContext } from "../prompt/promptContext.tsx";

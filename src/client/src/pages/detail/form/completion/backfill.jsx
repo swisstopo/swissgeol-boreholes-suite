@@ -4,10 +4,9 @@ import { sortByDepth } from "../sorter.jsx";
 import BackfillDisplay from "./backfillDisplay.jsx";
 import BackfillInput from "./backfillInput.jsx";
 
-const Backfill = ({ isEditable, completionId }) => {
+const Backfill = ({ completionId }) => {
   return (
     <DataCards
-      isEditable={isEditable}
       parentId={completionId}
       getData={getBackfills}
       cyLabel="backfill"

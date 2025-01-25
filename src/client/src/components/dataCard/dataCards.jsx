@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
+import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { AddButton } from "../buttons/buttons.tsx";
 import { FullPage, FullPageCentered } from "../styledComponents.ts";
 import { DataCard, DataCardButtonContainer, DataCardContainer, DataCardItem } from "./dataCard";
@@ -36,7 +37,7 @@ export const DataCards = props => {
   const { displayedCards, selectedCard, addCard, selectCard, shouldReload, setLoadedCards } =
     useContext(DataCardContext);
   const { switchToCard } = useContext(DataCardSwitchContext);
-  const { editingEnabled } = useContext(DataCardContext);
+  const { editingEnabled } = useContext(DetailContext);
 
   const loadData = () => {
     setIsLoadingData(true);

@@ -13,7 +13,7 @@ const CompletionContentTabBox = props => {
 };
 export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBox);
 
-const CompletionContent = ({ completion, isEditable }) => {
+const CompletionContent = ({ completion, editingEnabled }) => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const history = useHistory();
   const location = useLocation();
@@ -66,11 +66,11 @@ const CompletionContent = ({ completion, isEditable }) => {
 
   const renderTabContent = useCallback(() => {
     return (
-      (activeIndex === 0 && <Casing completionId={completion.id} isEditable={isEditable} />) ||
-      (activeIndex === 1 && <Instrumentation completionId={completion.id} isEditable={isEditable} />) ||
-      (activeIndex === 2 && <Backfill completionId={completion.id} isEditable={isEditable} />)
+      (activeIndex === 0 && <Casing completionId={completion.id} editingEnabled={editingEnabled} />) ||
+      (activeIndex === 1 && <Instrumentation completionId={completion.id} editingEnabled={editingEnabled} />) ||
+      (activeIndex === 2 && <Backfill completionId={completion.id} editingEnabled={editingEnabled} />)
     );
-  }, [activeIndex, completion.id, isEditable]);
+  }, [activeIndex, completion.id, editingEnabled]);
 
   return (
     <Stack direction="column" flex="1 0 0">

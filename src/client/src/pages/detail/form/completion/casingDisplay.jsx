@@ -6,7 +6,7 @@ import { FormContainer, FormDisplay, FormValueType } from "../../../../component
 import { extractCasingDepth } from "./casingUtils";
 
 const CasingDisplay = props => {
-  const { item, isEditable } = props;
+  const { item } = props;
   const { t, i18n } = useTranslation();
   const domains = useDomains();
 

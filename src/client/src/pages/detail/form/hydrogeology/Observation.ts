@@ -42,7 +42,6 @@ export interface GroundwaterLevelMeasurementInputProps {
 
 export interface GroundwaterLevelMeasurementDisplayProps {
   item: GroundwaterLevelMeasurement;
-  isEditable: boolean;
 }
 
 export interface GwlmFormData {
