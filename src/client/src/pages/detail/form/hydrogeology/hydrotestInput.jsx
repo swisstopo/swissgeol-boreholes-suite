@@ -217,7 +217,7 @@ const HydrotestInput = props => {
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
           <FormContainer>
-            <ObservationInput observation={item} boreholeId={parentId} />
+            <ObservationInput observation={item} />
             <FormContainer direction="row">
               <FormDomainMultiSelect
                 fieldName="testKindId"

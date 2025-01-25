@@ -25,7 +25,6 @@ export interface Observation {
 
 export interface ObservationInputProps {
   observation: Observation;
-  boreholeId: number;
   showDepthInputs?: boolean;
 }
 

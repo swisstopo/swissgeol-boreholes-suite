@@ -32,7 +32,7 @@ const WaterIngressInput: FC<{ item: WaterIngress; parentId: number }> = ({ item,
       updateData={updateWaterIngress}
       promptLabel="waterIngress"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
-      <ObservationInput observation={item} boreholeId={parentId} />
+      <ObservationInput observation={item} />
       <FormContainer direction="row" sx={{ paddingTop: "10px" }}>
         <FormDomainSelect
           fieldName="quantityId"

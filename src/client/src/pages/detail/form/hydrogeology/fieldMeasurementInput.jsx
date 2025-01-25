@@ -137,7 +137,7 @@ const FieldMeasurementInput = props => {
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
           <FormContainer>
-            <ObservationInput observation={item} boreholeId={parentId} />
+            <ObservationInput observation={item} />
             <Box
               sx={{
                 paddingBottom: "8.5px",

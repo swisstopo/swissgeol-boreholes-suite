@@ -13,7 +13,7 @@ const CasingDisplay = props => {
   var depth = extractCasingDepth(item);
 
   return (
-    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteCasing}>
+    <DataDisplayCard item={item} deleteData={deleteCasing}>
       <FormDisplay label="name" value={item?.name} />
       <FormContainer direction="row">
         <FormDisplay label="fromdepth" value={depth.min} type={FormValueType.Number} />

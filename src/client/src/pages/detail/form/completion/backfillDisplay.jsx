@@ -4,11 +4,11 @@ import { FormContainer, FormDisplay, FormValueType } from "../../../../component
 import { useGetCasingName } from "./casingUtils";
 
 const BackfillDisplay = props => {
-  const { item, isEditable } = props;
+  const { item } = props;
   const { getCasingNameWithCompletion } = useGetCasingName();
 
   return (
-    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteBackfill}>
+    <DataDisplayCard item={item} deleteData={deleteBackfill}>
       <FormContainer direction="row">
         <FormDisplay label="fromdepth" value={item?.fromDepth} />
         <FormDisplay label="todepth" value={item?.toDepth} />

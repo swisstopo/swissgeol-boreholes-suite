@@ -9,12 +9,12 @@ import ObservationDisplay from "./observationDisplay.tsx";
 import { getHydrotestParameterUnits } from "./parameterUnits";
 
 const HydrotestDisplay = props => {
-  const { item, isEditable } = props;
+  const { item } = props;
   const { t, i18n } = useTranslation();
   const domains = useDomains();
 
   return (
-    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteHydrotest}>
+    <DataDisplayCard item={item} deleteData={deleteHydrotest}>
       <ObservationDisplay observation={item} />
       <FormContainer direction="row">
         <FormDisplay label="hydrotestKind" value={item?.kindCodelists} type={FormValueType.Domain} />

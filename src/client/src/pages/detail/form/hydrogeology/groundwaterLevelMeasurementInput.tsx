@@ -33,7 +33,7 @@ const GroundwaterLevelMeasurementInput = ({ item, parentId }: GroundwaterLevelMe
       updateData={updateGroundwaterLevelMeasurement}
       promptLabel="groundwaterLevelMeasurement"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
-      <ObservationInput observation={item} boreholeId={parentId} showDepthInputs={false} />
+      <ObservationInput observation={item} showDepthInputs={false} />
       <FormContainer direction="row" sx={{ paddingTop: "10px" }}>
         <FormDomainSelect
           fieldName="kindId"
