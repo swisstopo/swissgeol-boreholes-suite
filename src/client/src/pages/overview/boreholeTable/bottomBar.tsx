@@ -21,8 +21,8 @@ interface BottomBarProps {
   search: { filter: string };
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
-  workgroup: string;
-  setWorkgroup: React.Dispatch<React.SetStateAction<string>>;
+  workgroup: number | null;
+  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
   setIsExporting: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -44,7 +44,7 @@ const BottomBar = ({
   const userIsEditor = user.data.roles.includes("EDIT");
   const auth = useAuth();
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
-  const [currentWorkgroup, setCurrentWorkgroup] = useState<string>("");
+  const [currentWorkgroup, setCurrentWorkgroup] = useState<number | null>(null);
   const enabledWorkgroups = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
 
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
