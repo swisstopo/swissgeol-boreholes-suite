@@ -5,10 +5,10 @@ import { Box, Button, Link, Stack } from "@mui/material";
 import { importBoreholesCsv, importBoreholesJson, importBoreholesZip } from "../../../../api/borehole.ts";
 import { downloadCodelistCsv } from "../../../../api/fetchApiV2";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import { BoreholeImportDropzone } from "../../../../components/boreholeImportDropzone.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import { ErrorResponse, NewBoreholeProps } from "../commons/actionsInterfaces.ts";
 import WorkgroupSelect from "../commons/workgroupSelect.tsx";
+import { BoreholeImportDropzone } from "./boreholeImportDropzone.tsx";
 
 interface ImportPanelProps extends NewBoreholeProps {
   setErrorsResponse: React.Dispatch<React.SetStateAction<ErrorResponse | null>>;

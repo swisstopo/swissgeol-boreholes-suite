@@ -476,6 +476,17 @@ export const theme = createTheme({
         },
       },
     },
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          margin: "0px !important",
+          overflow: "visible !important",
+        },
+        scroller: {
+          overflow: "visible !important",
+        },
+      },
+    },
     MuiBadge: {
       styleOverrides: {
         badge: {
