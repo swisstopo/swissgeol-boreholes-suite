@@ -16,7 +16,7 @@ const WaterIngress: FC = () => {
       getData={getWaterIngress}
       cyLabel="waterIngress"
       addLabel="addWaterIngress"
-      emptyLabel="msgWaterIngressesEmpty"
+      emptyLabel="msgWateringressEmpty"
       renderInput={(props: { item: WaterIngressType; parentId: number }) => <WaterIngressInput {...props} />}
       renderDisplay={(props: { item: WaterIngressType }) => <WaterIngressDisplay {...props} />}
       sortDisplayed={(a: object, b: object) => {
