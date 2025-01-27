@@ -14,9 +14,9 @@ import ImportPanel from "./sidePanelContent/importer/importPanel.tsx";
 import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 
 export const OverviewPage = () => {
-  const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
+  const [sideDrawerOpen, setSideDrawerOpen] = useState<boolean>(false);
   const location = useLocation();
-  const [workgroupId, setWorkgroupId] = useState("");
+  const [workgroupId, setWorkgroupId] = useState<number | null>(null);
   const [enabledWorkgroups, setEnabledWorkgroups] = useState<Workgroup[]>([]);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
