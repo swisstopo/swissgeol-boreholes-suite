@@ -89,7 +89,7 @@
   "created_date_from": "Creation Date (from)",
   "created_date_to": "Creation Date (to)",
   "creationdate": "Creation date",
-  "csvCodeListReferenceExplanation": "The following list can be used as a reference for the different codes:",
+  "csvCodeListReferenceExplanation": "Download code references",
   "csvFormat": "CSV-UTF8 format",
   "csvFormatExplanation": "The CSV-UTF8 file should contain the following column headings",
   "csvOptionalExplanation": "Column headings in square brackets are optional",
