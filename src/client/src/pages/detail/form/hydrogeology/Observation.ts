@@ -60,8 +60,8 @@ export interface WaterIngressFormData {
   conditionsId: string | null;
   conditions?: Codelist;
   type: ObservationType;
-  startTime: string;
-  endTime: string;
+  startTime: string | null;
+  endTime: string | null;
   boreholeId: number;
 }
 

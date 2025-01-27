@@ -11,8 +11,9 @@ import ObservationInput from "./observationInput.tsx";
 const WaterIngressInput: FC<{ item: WaterIngress; parentId: number }> = ({ item, parentId }) => {
   const prepareFormDataForSubmit = (data: WaterIngressFormData) => {
     data = prepareCasingDataForSubmit(data);
-    data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = "");
-    data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = "");
+    console.log(data);
+    data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
+    data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     data.type = ObservationType.waterIngress;
     data.boreholeId = parentId;
     if (data.conditionsId === "") {
