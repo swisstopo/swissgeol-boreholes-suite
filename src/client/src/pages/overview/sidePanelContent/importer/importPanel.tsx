@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Button, Link, Stack } from "@mui/material";
 import { importBoreholesCsv, importBoreholesJson, importBoreholesZip } from "../../../../api/borehole.ts";
+import { downloadCodelistCsv } from "../../../../api/fetchApiV2";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { BoreholeImportDropzone } from "../../../../components/boreholeImportDropzone.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
@@ -101,6 +102,11 @@ const ImportPanel = ({
             setFile={setFile}
             acceptedFileTypes={["application/json", "text/csv", ".zip"]}
           />
+          <Box>
+            <Link sx={{ cursor: "pointer" }} variant="subtitle1" onClick={downloadCodelistCsv}>
+              {t("csvCodeListReferenceExplanation")}
+            </Link>
+          </Box>
         </Stack>
       </Box>
       <Button

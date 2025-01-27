@@ -11,6 +11,7 @@
 
 - Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
 - Removed all asterisks from required form fields.
+- Reincluded download link for codelist references in the import panel.
 
 ### Fixed
 
