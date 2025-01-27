@@ -128,6 +128,7 @@ declare module "@mui/material/styles" {
     MuiInputLabel: object;
     MuiOutlinedInput: object;
     MuiTab: object;
+    MuiTabs: object;
     MuiBadge: object;
     MuiDialogTitle: object;
     MuiDialogActions: object;
@@ -150,6 +151,7 @@ declare module "@mui/material/styles" {
     MuiInputLabel: object;
     MuiOutlinedInput: object;
     MuiTab: object;
+    MuiTabs: object;
     MuiBadge: object;
     MuiDialogTitle: object;
     MuiDialogActions: object;

@@ -14,7 +14,7 @@ import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
-import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
+import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.tsx";
 import { DetailContext } from "../../detailContext.tsx";
 import CompletionContent from "./completionContent.jsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";

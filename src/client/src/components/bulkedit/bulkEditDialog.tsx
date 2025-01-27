@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,13 +16,13 @@ import {
   Typography,
 } from "@mui/material";
 import { ChevronDownIcon, RotateCcw } from "lucide-react";
+import { DevTool } from "../../../hookformDevtools.ts";
 import { patchBoreholes } from "../../api-lib";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
-import WorkgroupSelect from "../../pages/overview/sidePanelContent/commons/workgroupSelect.tsx";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
-import { FormValueType } from "../form/form.ts";
+import { FormSelect, FormValueType } from "../form/form.ts";
 import { FormBooleanSelect } from "../form/formBooleanSelect.tsx";
 import { FormDomainSelect } from "../form/formDomainSelect.tsx";
 import { FormInput } from "../form/formInput.tsx";
@@ -31,24 +31,8 @@ import { BulkEditFormField, BulkEditFormProps, BulkEditFormValue } from "./BulkE
 
 export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditFormProps) => {
   const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[string, BulkEditFormValue]>>([]);
-  const [workgroupId, setWorkgroupId] = useState<string>("");
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
-
-  const formMethods = useForm({
-    mode: "all",
-  });
-
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  const enabledWorkgroups = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
-
-  const dispatch = useDispatch();
-  const unselectBoreholes = () => {
-    dispatch({
-      type: "EDITOR_MULTIPLE_SELECTED",
-      selection: null,
-    });
-  };
 
   // This data structure is needed because of discrepancies between translation keys (fieldName), field names in legacy Api (api) and codelist names (domain).
   const bulkEditFormFields: BulkEditFormField[] = useMemo(
@@ -97,6 +81,26 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
     [],
   );
 
+  const formMethods = useForm({
+    mode: "all",
+    defaultValues: bulkEditFormFields.reduce<Record<string, string>>((acc, field) => {
+      const key = field.api ?? field.fieldName;
+      acc[key] = "";
+      return acc;
+    }, {}),
+  });
+
+  const user: User = useSelector((state: ReduxRootState) => state.core_user);
+  const enabledWorkgroups = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
+
+  const dispatch = useDispatch();
+  const unselectBoreholes = () => {
+    dispatch({
+      type: "EDITOR_MULTIPLE_SELECTED",
+      selection: null,
+    });
+  };
+
   const onFieldValueChange = useCallback(
     (field: BulkEditFormField, newValue: BulkEditFormValue) => {
       const fieldName = field.api ?? field.fieldName;
@@ -118,23 +122,23 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
     [fieldsToUpdate],
   );
 
-  useEffect(() => {
-    if (workgroupId) {
-      onFieldValueChange(bulkEditFormFields.find(f => f.type === FormValueType.Workgroup)!, workgroupId);
-    }
-  }, [bulkEditFormFields, onFieldValueChange, workgroupId]);
-
   const undoChange = (field: BulkEditFormField) => {
     const fieldName = field.api ?? field.fieldName;
     const entryIndex = fieldsToUpdate.findIndex(([key]) => key === fieldName);
     if (entryIndex !== -1) {
       setFieldsToUpdate([...fieldsToUpdate.filter(f => f[0] !== fieldName)]);
-      if (fieldName === "workgroup") {
-        setWorkgroupId("");
-      } else {
-        formMethods.resetField(fieldName);
-      }
+      formMethods.resetField(fieldName);
     }
+  };
+
+  const resetFormState = () => {
+    setFieldsToUpdate([]);
+    formMethods.reset();
+  };
+
+  const cancelBulkEdit = () => {
+    resetFormState();
+    unselectBoreholes();
   };
 
   const save = async () => {
@@ -145,6 +149,8 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
     } catch (error) {
       //@ts-expect-error unknown error type
       showAlert(`${t("errorBulkEditing")} ${error?.message ?? error}`, "error");
+    } finally {
+      resetFormState();
     }
   };
 
@@ -180,11 +186,19 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
       }
       if (field.fieldName === FormValueType.Workgroup) {
         return (
-          <WorkgroupSelect
-            workgroupId={workgroupId}
-            enabledWorkgroups={enabledWorkgroups}
-            setWorkgroupId={setWorkgroupId}
-            hideLabel={true}
+          <FormSelect
+            canReset={false}
+            fieldName={"workgroup"}
+            label=""
+            values={enabledWorkgroups
+              .filter(w => w.roles.includes("EDIT"))
+              .map(wg => ({
+                key: wg.id,
+                name: wg.workgroup,
+              }))}
+            onUpdate={e => {
+              onFieldValueChange(field, e);
+            }}
           />
         );
       }
@@ -200,7 +214,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
         />
       );
     },
-    [onFieldValueChange, workgroupId, enabledWorkgroups],
+    [onFieldValueChange, enabledWorkgroups],
   );
 
   return (
@@ -225,6 +239,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
           }}>
           <Box sx={{ mt: 3 }}>
             <FormProvider {...formMethods}>
+              <DevTool control={formMethods.control} placement="top-left" />
               {bulkEditFormFields.map(field => {
                 if (field.type != FormValueType.Workgroup || enabledWorkgroups.length > 1) {
                   return (
@@ -275,7 +290,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
         </DialogContent>
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
-            <CancelButton onClick={unselectBoreholes} />
+            <CancelButton onClick={cancelBulkEdit} />
             <SaveButton variant="contained" disabled={fieldsToUpdate.length === 0} onClick={save} />
           </Stack>
         </DialogActions>

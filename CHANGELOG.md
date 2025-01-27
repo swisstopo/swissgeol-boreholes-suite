@@ -11,9 +11,12 @@
 
 - Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
 - Removed all asterisks from required form fields.
+- Updated the UI design of the tabs component.
+- Reincluded download link for codelist references in the import panel.
 
 ### Fixed
 
+- Workgroup reset in the bulk edit form had to be clicked twice to take effect. 
 - Numeric inputs on the borehole tab were not correctly reset.
 
 ## v2.1.1025 - 2025-01-17

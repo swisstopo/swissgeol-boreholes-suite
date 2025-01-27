@@ -1,5 +1,6 @@
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { Card } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.js";
 import {
@@ -112,7 +113,7 @@ export const BoreholeForm = forwardRef(({ borehole, onSubmit }: BoreholeDetailPr
   }, [fetchDepthTVD, topBedrockWeatheredMd]);
 
   return (
-    <>
+    <Card>
       <DevTool control={formMethods.control} placement="top-right" />
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(onSubmit)}>
@@ -226,6 +227,6 @@ export const BoreholeForm = forwardRef(({ borehole, onSubmit }: BoreholeDetailPr
           </FormSegmentBox>
         </form>
       </FormProvider>
-    </>
+    </Card>
   );
 });

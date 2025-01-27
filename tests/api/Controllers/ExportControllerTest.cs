@@ -177,8 +177,7 @@ public class ExportControllerTest
         var fileName = $"{Guid.NewGuid()}.pdf";
         var content = Guid.NewGuid().ToString();
         var fileBytes = Encoding.UTF8.GetBytes(content);
-        var formFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, fileName) { Headers = new HeaderDictionary(), ContentType = "application/pdf" };
-        var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBorehole(formFile, newBorehole.Id).ConfigureAwait(false);
+        var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(new MemoryStream(fileBytes), fileName, "application/pdf", newBorehole.Id).ConfigureAwait(false);
         context.BoreholeFiles.Add(boreholeFile);
 
         var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id]).ConfigureAwait(false);

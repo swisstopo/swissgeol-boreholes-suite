@@ -1,7 +1,7 @@
 import { forwardRef, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
-import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
+import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.js";
 import { BoreholeForm } from "./boreholeForm.tsx";
 import { BoreholePanelProps } from "./boreholePanelInterfaces";
 import Geometry from "./geometry.jsx";

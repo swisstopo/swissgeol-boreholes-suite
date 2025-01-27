@@ -3,8 +3,8 @@ import { Accept, FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
 import { CircleX, File as FileIcon, Trash2 } from "lucide-react";
-import UploadIcon from "../assets/icons/upload.svg?react";
-import { theme } from "../AppTheme.ts";
+import UploadIcon from "../../../../assets/icons/upload.svg?react";
+import { theme } from "../../../../AppTheme.ts";
 
 interface BoreholeImportDropzoneProps {
   file: File | null;
