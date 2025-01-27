@@ -88,7 +88,7 @@
   "created_date_from": "Data di creazione (da)",
   "created_date_to": "Data di creazione (a)",
   "creationdate": "Data di creazione",
-  "csvCodeListReferenceExplanation": "La seguente lista può essere utilizzata come riferimento per i diversi codici:",
+  "csvCodeListReferenceExplanation": "Scarica il riferimento dei codici",
   "csvFormat": "Formato CSV-UTF8",
   "csvFormatExplanation": "Il file CSV-UTF8 deve contenere le seguenti intestazioni di colonna",
   "csvOptionalExplanation": "Le intestazioni di colonna tra parentesi quadre sono facoltative",
