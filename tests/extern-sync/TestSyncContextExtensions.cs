@@ -16,13 +16,13 @@ internal static class TestSyncContextExtensions
     {
         var (source, target) = (syncContext.Source, syncContext.Target);
 
-        source.Users.Add(new User { Id = 1, FirstName = "John", LastName = "Doe", Name = "John Doe", SubjectId = "doe123" });
-        source.Users.Add(new User { Id = 2, FirstName = "Jane", LastName = "Doe", Name = "Jane Doe", SubjectId = "doe456" });
-        source.Users.Add(new User { Id = 3, FirstName = "Alice", LastName = "Smith", Name = "Alice Smith", SubjectId = "smith789" });
-        source.Users.Add(new User { Id = 4, FirstName = "Bob", LastName = "Smith", Name = "Bob Smith", SubjectId = "smith101" });
+        source.Users.Add(new User { Id = 1, FirstName = "John", LastName = "Doe", Name = "John Doe", SubjectId = "doe123", Email = "john@example.com" });
+        source.Users.Add(new User { Id = 2, FirstName = "Jane", LastName = "Doe", Name = "Jane Doe", SubjectId = "doe456", Email = "jane@example.com" });
+        source.Users.Add(new User { Id = 3, FirstName = "Alice", LastName = "Smith", Name = "Alice Smith", SubjectId = "smith789", Email = "alice@example.com" });
+        source.Users.Add(new User { Id = 4, FirstName = "Bob", LastName = "Smith", Name = "Bob Smith", SubjectId = "smith101", Email = "bob@example.com" });
         await source.SaveChangesAsync().ConfigureAwait(false);
 
-        target.Users.Add(new User { Id = 1, FirstName = "Charlie", LastName = "Brown", Name = "Charlie Brown", SubjectId = "brown123" });
+        target.Users.Add(new User { Id = 1, FirstName = "Charlie", LastName = "Brown", Name = "Charlie Brown", SubjectId = "brown123", Email = "charlie@example.com" });
         await target.SaveChangesAsync().ConfigureAwait(false);
     }
 
