@@ -1,8 +1,8 @@
 import { ForwardedRef, useCallback, useEffect, useImperativeHandle } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import { useFormDirtyStore } from "../formDirtyStore.ts";
 import { useBlockNavigation } from "../useBlockNavigation.tsx";
-import { useFormDirty } from "../useFormDirty.tsx";
 import { useSaveOnCtrlS } from "../useSaveOnCtrlS.ts";
 
 interface UseFormWithSaveBarProps<T extends FieldValues> {
@@ -20,7 +20,7 @@ export function UseFormWithSaveBar<T extends FieldValues>({
 }: UseFormWithSaveBarProps<T>) {
   const history = useHistory();
   const { handleBlockedNavigation } = useBlockNavigation();
-  const { setIsFormDirty } = useFormDirty();
+  const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
 
   // Block navigation if form is dirty
   history.block(nextLocation => {
