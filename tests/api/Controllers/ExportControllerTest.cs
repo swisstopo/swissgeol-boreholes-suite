@@ -233,7 +233,7 @@ public class ExportControllerTest
         Assert.IsInstanceOfType(result, typeof(ObjectResult));
         ObjectResult objectResult = (ObjectResult)result;
         ProblemDetails problemDetails = (ProblemDetails)objectResult.Value!;
-        StringAssert.StartsWith(problemDetails.Detail, "The file was not found in the cloud storage.");
+        StringAssert.StartsWith(problemDetails.Detail, "An error occurred while fetching a file from the cloud storage.");
     }
 
     [TestMethod]
