@@ -53,7 +53,7 @@ export async function upload(url, method, payload) {
 export async function download(url) {
   const response = await fetchApiV2Base(url, "GET", null);
   if (!response.ok) {
-    throw new ApiError(response.statusText, response.status);
+    throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
   }
 
   const fileName =
