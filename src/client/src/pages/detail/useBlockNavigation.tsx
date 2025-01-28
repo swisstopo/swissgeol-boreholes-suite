@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
-import { useFormDirty } from "./useFormDirty.tsx";
+import { useFormDirtyStore } from "./formDirtyStore.ts";
 
 interface UseBlockNavigationResult {
   handleBlockedNavigation: (nextLocation: string) => boolean;
@@ -12,7 +12,7 @@ interface UseBlockNavigationResult {
 export const useBlockNavigation = (): UseBlockNavigationResult => {
   const [nextLocation, setNextLocation] = useState<string | null>(null);
   const [confirmedNavigation, setConfirmedNavigation] = useState(false);
-  const { isFormDirty } = useFormDirty();
+  const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
   const { showPrompt } = useContext(PromptContext);
   const { t } = useTranslation();
   const history = useHistory();
