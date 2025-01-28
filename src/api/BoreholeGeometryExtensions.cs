@@ -12,7 +12,7 @@ public static class BoreholeGeometryExtensions
     /// <param name="geometry">The list of <see cref="BoreholeGeometryElement"/> representing the borehole's path geometry.</param>
     /// <param name="depthMD">The measured depth (MD) at which to calculate the TVD.</param>
     /// <returns>The TVD at <paramref name="depthMD"/> if the geometry exists; otherwise <see langword="null"/>.</returns>
-    internal static double? GetTVDIfGeometryExists(this List<BoreholeGeometryElement> geometry, double? depthMD)
+    internal static double? GetTVDIfGeometryExists(this List<BoreholeGeometryElement>? geometry, double? depthMD)
     {
         if (geometry == null || geometry.Count < 2)
         {

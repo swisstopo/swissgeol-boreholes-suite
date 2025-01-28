@@ -5,7 +5,7 @@ import { Box, Stack } from "@mui/material";
 import { CircleCheck, CircleX } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 import { DeleteButton, SaveButton } from "../../components/buttons/buttons.tsx";
-import { useFormDirty } from "./useFormDirty.tsx";
+import { useFormDirtyStore } from "./formDirtyStore.ts";
 
 interface SaveBarProps {
   triggerSubmit: () => void;
@@ -15,7 +15,7 @@ export const SaveBar = ({ triggerSubmit, triggerReset }: SaveBarProps) => {
   const [showSaveFeedback, setShowSaveFeedback] = useState(false);
   const { t } = useTranslation();
   const location = useLocation();
-  const { isFormDirty } = useFormDirty();
+  const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
 
   useEffect(() => {
     setShowSaveFeedback(false);

@@ -1,6 +1,12 @@
 import { addItem, deleteItem, saveForm, saveWithSaveBar, startEditing } from "../helpers/buttonHelpers";
 import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
-import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  getElementByDataCy,
+  handlePrompt,
+  loginAsAdmin,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
 
 describe("Section crud tests", () => {
   beforeEach(() => {
@@ -13,11 +19,12 @@ describe("Section crud tests", () => {
 
     // start editing session
     startBoreholeEditing();
+
+    cy.wait(30);
   });
 
   it("adds, edits and deletes sections", () => {
     // create section
-    cy.wait(30);
     addItem("addSection");
     cy.wait("@codelist_GET");
     cy.get('[data-cy="sectionElements.0.delete"]').should("be.disabled");
@@ -103,7 +110,6 @@ describe("Section crud tests", () => {
   });
 
   it("saves section with ctrl s without resetting content", () => {
-    cy.wait(30);
     // add section and save with ctrl s
     addItem("addSection");
     cy.wait("@codelist_GET");
@@ -148,8 +154,49 @@ describe("Section crud tests", () => {
     evaluateInput("totalDepth", "7");
   });
 
+  it("blocks navigation when there are unsaved changes", () => {
+    addItem("addSection");
+    cy.wait("@codelist_GET");
+    setInput("name", "AA_CAPYBARA");
+    getElementByDataCy("geometry-tab").click();
+    const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
+    handlePrompt(messageUnsavedChanges, "cancel");
+    cy.location().should(location => {
+      expect(location.hash).to.eq("#sections");
+    });
+    getElementByDataCy("geometry-tab").click();
+    handlePrompt(messageUnsavedChanges, "discard changes");
+    cy.location().should(location => {
+      expect(location.hash).to.eq("#geometry");
+    });
+
+    getElementByDataCy("sections-tab").click();
+
+    // section was not saved
+    cy.contains("No sections available");
+
+    addItem("addSection");
+    cy.wait("@codelist_GET");
+    setInput("name", "AA_CAPYBARA");
+    setInput("sectionElements.0.fromDepth", "0");
+    setInput("sectionElements.0.toDepth", "1");
+    saveForm();
+    cy.wait("@section_POST");
+    cy.wait(100);
+    getElementByDataCy("geometry-tab").click();
+    cy.location().should(location => {
+      expect(location.hash).to.eq("#geometry");
+    });
+    getElementByDataCy("sections-tab").click();
+    cy.location().should(location => {
+      expect(location.hash).to.eq("#sections");
+    });
+
+    // section was saved
+    cy.contains("AA_CAPYBARA");
+  });
+
   it("changes drillingMudSubtype select options based on drillingMudType", () => {
-    cy.wait(30);
     addItem("addSection");
     cy.wait("@codelist_GET");
     setInput("name", "A");

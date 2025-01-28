@@ -432,6 +432,7 @@ export const theme = createTheme({
     MuiInputLabel: {
       defaultProps: {
         shrink: true,
+        required: false,
       },
       styleOverrides: {
         root: {
@@ -472,6 +473,17 @@ export const theme = createTheme({
           fontWeight: "bold",
           textTransform: "none",
           fontSize: "16px",
+        },
+      },
+    },
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          margin: "0px !important",
+          overflow: "visible !important",
+        },
+        scroller: {
+          overflow: "visible !important",
         },
       },
     },

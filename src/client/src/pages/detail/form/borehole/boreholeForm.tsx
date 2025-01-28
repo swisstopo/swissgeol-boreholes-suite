@@ -1,5 +1,6 @@
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { Card } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.js";
 import {
@@ -112,7 +113,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
   }, [fetchDepthTVD, topBedrockWeatheredMd]);
 
   return (
-    <>
+    <Card>
       <DevTool control={formMethods.control} placement="top-right" />
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(onSubmit)}>
@@ -147,6 +148,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                     fieldName={"totalDepth"}
                     label={"totaldepth"}
                     value={borehole?.totalDepth}
+                    controlledValue={totalDepth ?? ""}
                     withThousandSeparator={true}
                     readonly={!editingEnabled}
                   />
@@ -165,6 +167,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   fieldName={"topBedrockWeatheredMd"}
                   label={"top_bedrock_weathered_md"}
                   value={borehole?.topBedrockWeatheredMd}
+                  controlledValue={topBedrockWeatheredMd ?? ""}
                   withThousandSeparator={true}
                   readonly={!editingEnabled}
                 />
@@ -179,6 +182,7 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   fieldName={"topBedrockFreshMd"}
                   label={"top_bedrock_fresh_md"}
                   value={borehole?.topBedrockFreshMd}
+                  controlledValue={topBedrockFreshMd ?? ""}
                   withThousandSeparator={true}
                   readonly={!editingEnabled}
                 />
@@ -188,8 +192,9 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
                   withThousandSeparator={true}
                 />
               </FormContainer>
-              <FormContainer direction="row">
+              <FormContainer direction="row" width="50%">
                 <FormBooleanSelect
+                  sx={{ mr: 1 }}
                   canReset={false}
                   readonly={!editingEnabled}
                   fieldName={"topBedrockIntersected"}
@@ -240,6 +245,6 @@ export const BoreholeForm = forwardRef(({ borehole, editingEnabled, onSubmit }: 
           </FormSegmentBox>
         </form>
       </FormProvider>
-    </>
+    </Card>
   );
 });

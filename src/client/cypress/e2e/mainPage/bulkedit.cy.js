@@ -1,4 +1,5 @@
 import adminUser from "../../fixtures/adminUser.json";
+import { saveForm } from "../helpers/buttonHelpers.js";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
 import { createBorehole, goToRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
@@ -109,10 +110,37 @@ describe("Test the borehole bulk edit feature.", () => {
       cy.get('li[role="option"]').last().click();
     });
 
-    // save
-    cy.contains("button", "Save").click();
+    saveForm();
     cy.wait("@edit_multipatch").its("response.body.success").should("eq", true);
     cy.wait("@edit_list");
+
+    // check if form was reset after saving
+    startBulkEditing();
+    cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
+
+    cy.get("input[type=text]")
+      .should("have.length", 1)
+      .each($input => {
+        cy.wrap($input).scrollIntoView().should("have.value", "");
+      });
+
+    cy.get('input[type="date"]')
+      .should("have.length", 1)
+      .each($input => {
+        cy.wrap($input).scrollIntoView().should("have.value", "");
+      });
+
+    cy.get("input[type=number]")
+      .should("have.length", 3)
+      .each($input => {
+        cy.wrap($input).scrollIntoView().should("have.value", "");
+      });
+
+    cy.get("input.MuiSelect-nativeInput")
+      .should("have.length", 14)
+      .each($input => {
+        cy.wrap($input).scrollIntoView().should("have.value", "");
+      });
   });
 
   it("can reset bulkedit fields", () => {
