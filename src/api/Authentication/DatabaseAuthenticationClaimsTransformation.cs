@@ -46,7 +46,7 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         return principal;
     }
 
-    private async Task<User?> CreateOrUpdateUser(ClaimsPrincipal principal)
+    internal async Task<User?> CreateOrUpdateUser(ClaimsPrincipal principal)
     {
         var subjectId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         if (subjectId is null)
@@ -56,6 +56,15 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         user.FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? user.FirstName;
         user.LastName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? user.LastName;
         user.Name = $"{user.FirstName[0]}. {user.LastName}";
+
+        var emailClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+        var emailVerifiedClaim = principal.Claims.FirstOrDefault(c => c.Type == "email_verified");
+
+        if (emailClaim == null || emailVerifiedClaim == null || emailVerifiedClaim.Value != "true")
+            throw new InvalidOperationException("The email claim or the email_verified claim is missing or the email is not verified.");
+
+        user.Email = emailClaim.Value;
+
         dbContext.Update(user);
 
         try
