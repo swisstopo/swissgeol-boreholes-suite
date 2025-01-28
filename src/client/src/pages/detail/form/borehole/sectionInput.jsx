@@ -19,14 +19,12 @@ const SectionInput = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
-  const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
   const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
   const { handleBlockedNavigation } = useBlockNavigation();
   const history = useHistory();
 
   // Block navigation if form is dirty
   history.block(nextLocation => {
-    console.log(isFormDirty);
     if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
       return false;
     }
