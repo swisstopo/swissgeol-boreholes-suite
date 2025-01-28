@@ -35,7 +35,7 @@ SET admin_usr = false,
     firstname = 'Anonymous',
     lastname = 'Anonymous',
     disabled_usr = NOW(),
-    email = 'Anonymous@example.com'
+    email = 'anonymous@example.com'
 WHERE username <> 'Anonymous';
 
 -- Purge attachments
