@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
-import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.jsx";
+import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.tsx";
 import Backfill from "./backfill.jsx";
 import Casing from "./casing.jsx";
 import Instrumentation from "./instrumentation.jsx";

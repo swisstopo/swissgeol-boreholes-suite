@@ -9,10 +9,9 @@ export interface ErrorResponse {
 }
 
 export interface WorkgroupSelectProps {
-  workgroupId: string;
+  workgroupId: number | null;
   enabledWorkgroups: Workgroup[];
-  setWorkgroupId: React.Dispatch<React.SetStateAction<string>>;
-  hideLabel?: boolean;
+  setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
   sx?: SxProps;
 }
 

@@ -1,15 +1,18 @@
+import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material/";
+import { Box } from "@mui/material/";
 import { styled } from "@mui/material/styles";
 import { theme } from "../../../../AppTheme.ts";
+import { FormContainer, FormSelect } from "../../../../components/form/form.ts";
 import { WorkgroupSelectProps } from "./actionsInterfaces.ts";
 
 const WorkgroupBox = styled(Box)({
   paddingTop: theme.spacing(2),
 });
 
-const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx, hideLabel }: WorkgroupSelectProps) => {
+const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx }: WorkgroupSelectProps) => {
   const { t } = useTranslation();
+  const formMethods = useForm();
 
   if (!enabledWorkgroups || enabledWorkgroups.length === 0) {
     return <WorkgroupBox>{t("disabled")}</WorkgroupBox>;
@@ -23,29 +26,22 @@ const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx, h
     .filter(w => w.roles.includes("EDIT"))
     .map(wg => ({
       key: wg.id,
-      text: wg.workgroup,
-      value: wg.id,
+      name: wg.workgroup,
     }));
 
   return (
     <WorkgroupBox sx={sx}>
-      <FormControl variant="outlined" sx={{ width: "100%" }}>
-        {!hideLabel && <InputLabel id="workgroup-label">{t("workgroup")}</InputLabel>}
-        <Select
-          size="small"
-          label={t("workgroup")}
-          labelId="workgroup-label"
-          data-cy="workgroup-formSelect"
-          value={workgroupId}
-          onChange={e => setWorkgroupId(e.target.value as string)}
-          renderValue={selected => options.find(o => o.value === selected)?.text ?? ""}>
-          {options.map(o => (
-            <MenuItem key={o.key} value={o.value}>
-              {o.text}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <FormProvider {...formMethods}>
+        <FormContainer>
+          <FormSelect
+            fieldName={"workgroup"}
+            label={"workgroup"}
+            selected={workgroupId}
+            values={options}
+            onUpdate={value => setWorkgroupId((value as number) ?? null)}
+          />
+        </FormContainer>
+      </FormProvider>
     </WorkgroupBox>
   );
 };

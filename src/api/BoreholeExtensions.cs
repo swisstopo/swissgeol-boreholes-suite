@@ -33,4 +33,18 @@ public static class BoreholeExtensions
             .Include(b => b.Workgroup)
             .Include(b => b.UpdatedBy);
     }
+
+    /// <summary>
+    /// Updates the borehole's TVD properties based on the provided borehole geometries.
+    /// </summary>
+    /// <param name="borehole">The borehole object to update.</param>
+    /// <param name="boreholeGeometries">A dictionary mapping borehole IDs to their respective geometry elements.</param>
+    public static void SetTvdValues(this Borehole borehole, Dictionary<int, List<BoreholeGeometryElement>> boreholeGeometries)
+    {
+        boreholeGeometries.TryGetValue(borehole.Id, out var boreholeGeometry);
+
+        borehole.TotalDepthTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TotalDepth);
+        borehole.TopBedrockFreshTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TopBedrockFreshMd);
+        borehole.TopBedrockWeatheredTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TopBedrockWeatheredMd);
+    }
 }

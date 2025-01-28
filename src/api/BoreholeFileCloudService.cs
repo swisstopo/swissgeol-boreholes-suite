@@ -31,9 +31,11 @@ public class BoreholeFileCloudService
     /// <summary>
     /// Uploads a file to the cloud storage and links it to the borehole.
     /// </summary>
-    /// <param name="formFile">The file to upload and link to the <see cref="Borehole"/>.</param>
-    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded <paramref name="formFile"/> to.</param>
-    public async Task<BoreholeFile> UploadFileAndLinkToBorehole(IFormFile formFile, int boreholeId)
+    /// <param name="fileStream">The file stream for the file to upload and link to the <see cref="Borehole"/>.</param>
+    /// <param name="fileName">The name of the file to upload.</param>
+    /// <param name="contentType">The content type of the file.</param>
+    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded file to.</param>
+    public async Task<BoreholeFile> UploadFileAndLinkToBoreholeAsync(Stream fileStream, string fileName, string contentType, int boreholeId)
     {
         // Use transaction to ensure data is only stored to db if the file upload was sucessful. Only create a transaction if there is not already one from the calling method.
         using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;
@@ -49,10 +51,10 @@ public class BoreholeFileCloudService
             if (user == null || subjectId == null) throw new InvalidOperationException($"No user with subject_id <{subjectId}> found.");
 
             // Register the new file in the boreholes database.
-            var fileExtension = Path.GetExtension(formFile.FileName);
+            var fileExtension = Path.GetExtension(fileName);
             var fileNameGuid = $"{Guid.NewGuid()}{fileExtension}";
 
-            var file = new Models.File { Name = formFile.FileName, NameUuid = fileNameGuid, Type = formFile.ContentType };
+            var file = new Models.File { Name = fileName, NameUuid = fileNameGuid, Type = contentType };
 
             await context.Files.AddAsync(file).ConfigureAwait(false);
             await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
@@ -60,11 +62,11 @@ public class BoreholeFileCloudService
             var fileId = file.Id;
 
             // Upload the file to the cloud storage.
-            await UploadObject(formFile, fileNameGuid).ConfigureAwait(false);
+            await UploadObject(fileStream, fileNameGuid, contentType).ConfigureAwait(false);
 
             // If file is already linked to the borehole, throw an exception.
             if (await context.BoreholeFiles.AnyAsync(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId).ConfigureAwait(false))
-                throw new InvalidOperationException($"File <{formFile.FileName}> is already attached to borehole with Id <{boreholeId}>.");
+                throw new InvalidOperationException($"File <{fileName}> is already attached to borehole with Id <{boreholeId}>.");
 
             // Link file to the borehole.
             var boreholeFile = new BoreholeFile { FileId = fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.UtcNow };
@@ -77,7 +79,7 @@ public class BoreholeFileCloudService
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error attaching file <{FileName}> to borehole with Id <{BoreholeId}>.", formFile.FileName, boreholeId);
+            logger.LogError(ex, "Error attaching file <{FileName}> to borehole with Id <{BoreholeId}>.", fileName, boreholeId);
             throw;
         }
     }
@@ -85,14 +87,20 @@ public class BoreholeFileCloudService
     /// <summary>
     /// Uploads a file to the cloud storage.
     /// </summary>
-    /// <param name="file">The file to upload.</param>
+    /// <param name="fileStream">The file stream to upload.</param>
     /// <param name="objectName">The name of the file in the storage.</param>
-    internal async Task UploadObject(IFormFile file, string objectName)
+    /// <param name="contentType">The content type of the file.</param>
+    internal async Task UploadObject(Stream fileStream, string objectName, string contentType)
     {
         try
         {
-            // Upload file
-            var putObjectRequest = new PutObjectRequest { BucketName = bucketName, Key = objectName, InputStream = file.OpenReadStream(), ContentType = file.ContentType };
+            var putObjectRequest = new PutObjectRequest
+            {
+                BucketName = bucketName,
+                Key = objectName,
+                InputStream = fileStream,
+                ContentType = contentType,
+            };
             await s3Client.PutObjectAsync(putObjectRequest).ConfigureAwait(false);
         }
         catch (AmazonS3Exception ex)
