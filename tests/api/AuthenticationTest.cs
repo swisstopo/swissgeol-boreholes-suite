@@ -37,7 +37,7 @@ public class AuthenticationTest
         context.Users.Add(user);
         await context.SaveChangesAsync();
 
-        var claims = new List<Claim>{ new Claim(ClaimTypes.NameIdentifier, "12345") };
+        var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "12345") };
 
         if (email != null)
             claims.Add(new Claim(ClaimTypes.Email, email));
@@ -46,7 +46,6 @@ public class AuthenticationTest
 
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));
         var transformation = new DatabaseAuthenticationClaimsTransformation(context);
-
 
         await Assert.ThrowsExceptionAsync<InvalidOperationException>(
             () => transformation.CreateOrUpdateUser(principal));
