@@ -2,30 +2,29 @@
 
 #nullable disable
 
-namespace BDMS.Migrations
+namespace BDMS.Migrations;
+
+/// <inheritdoc />
+public partial class AddUserEmail : Migration
 {
     /// <inheritdoc />
-    public partial class AddUserEmail : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<string>(
-                name: "email",
-                schema: "bdms",
-                table: "users",
-                type: "text",
-                nullable: false,
-                defaultValue: "example@example.com");
-        }
+        migrationBuilder.AddColumn<string>(
+            name: "email",
+            schema: "bdms",
+            table: "users",
+            type: "text",
+            nullable: false,
+            defaultValue: "example@example.com");
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "email",
-                schema: "bdms",
-                table: "users");
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropColumn(
+            name: "email",
+            schema: "bdms",
+            table: "users");
     }
 }
