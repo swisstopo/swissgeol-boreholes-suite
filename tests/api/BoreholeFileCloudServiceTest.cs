@@ -63,7 +63,7 @@ public class BoreholeFileCloudServiceTest
         var firstPdfFormFile = GetFormFileByContent(content, fileName);
 
         // Upload file
-        await boreholeFileUploadService.UploadFileAndLinkToBorehole(firstPdfFormFile, minBoreholeId);
+        await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(firstPdfFormFile.OpenReadStream(), firstPdfFormFile.FileName, firstPdfFormFile.ContentType, minBoreholeId).ConfigureAwait(false);
 
         // Get borehole with file linked from db
         var borehole = GetBoreholesWithIncludes(context.Boreholes).Single(b => b.Id == minBoreholeId);
@@ -85,7 +85,7 @@ public class BoreholeFileCloudServiceTest
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
 
         // Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+        await boreholeFileUploadService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Get all objects in the bucket with provided name
         var listObjectsRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000, Prefix = fileName };
@@ -105,7 +105,7 @@ public class BoreholeFileCloudServiceTest
         var pdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
         // First Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+        await boreholeFileUploadService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Get all files with same key after upload
         var listObjectsRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000, Prefix = pdfFormFile.FileName };
@@ -119,7 +119,7 @@ public class BoreholeFileCloudServiceTest
         var uploadDate = files.First().LastModified;
 
         // Second Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+        await boreholeFileUploadService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Get all objects in the bucket with provided name
         listObjectResponse = await s3Client.ListObjectsV2Async(listObjectsRequest).ConfigureAwait(false);
@@ -146,7 +146,7 @@ public class BoreholeFileCloudServiceTest
         var pdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
         // Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+        await boreholeFileUploadService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Download file
         var result = await boreholeFileUploadService.GetObject(pdfFormFile.FileName);
@@ -161,7 +161,7 @@ public class BoreholeFileCloudServiceTest
         var pdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
         // Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+        await boreholeFileUploadService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Ensure file exists
         await boreholeFileUploadService.GetObject(pdfFormFile.FileName);

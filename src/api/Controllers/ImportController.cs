@@ -307,47 +307,35 @@ public class ImportController : ControllerBase
                 {
                     var fileName = $"{fileToProcess.File.NameUuid}_{fileToProcess.File.Name}";
                     var attachment = zipArchive.Entries.FirstOrDefault(e => e.FullName == fileName);
+                    if (attachment == null)
+                    {
+                        AddValidationErrorToModelState(borehole.index, $"Attachment with the name <{fileName}> is referenced in JSON file but was not not found in ZIP archive.", ValidationErrorType.Attachment);
+                        continue;
+                    }
 
                     using var memoryStream = new MemoryStream();
-                    FormFile formFile = await CreateFormFileFromAttachmentAsync(fileToProcess, attachment, memoryStream).ConfigureAwait(false);
+                    await attachment.Open().CopyToAsync(memoryStream).ConfigureAwait(false);
+                    memoryStream.Position = 0;
 
                     // Remove original file information from borehole object
                     borehole.value.BoreholeFiles.Remove(fileToProcess);
-
-                    await UploadFormFileAsync(borehole.value, borehole.index, fileName, formFile).ConfigureAwait(false);
+                    await UploadFormFileAsync(memoryStream, fileToProcess.File.Name, GetContentType(attachment.Name), borehole).ConfigureAwait(false);
                 }
             }
         }
     }
 
-    private async Task UploadFormFileAsync(BoreholeImport borehole, int boreholeIndex, string fileName, FormFile formFile)
+    private async Task UploadFormFileAsync(Stream fileStream, string fileName, string contentType, (BoreholeImport Value, int Index) borehole)
     {
         try
         {
-            await boreholeFileCloudService.UploadFileAndLinkToBorehole(formFile, borehole.Id).ConfigureAwait(false);
+            await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, fileName, contentType, borehole.Value.Id).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while uploading the file: {FileName}", formFile.FileName);
-            AddValidationErrorToModelState(boreholeIndex, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), ValidationErrorType.Attachment);
+            logger.LogError(ex, "An error occurred while uploading the file: {FileName}", fileName);
+            AddValidationErrorToModelState(borehole.Index, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), ValidationErrorType.Attachment);
         }
-    }
-
-    private static async Task<FormFile> CreateFormFileFromAttachmentAsync(BoreholeFile? boreholeFile, ZipArchiveEntry? attachment, MemoryStream memoryStream)
-    {
-        using (var entryStream = attachment.Open())
-        {
-            await entryStream.CopyToAsync(memoryStream).ConfigureAwait(false);
-        }
-
-        memoryStream.Position = 0;
-
-        var formFile = new FormFile(memoryStream, 0, memoryStream.Length, boreholeFile.File.Name, boreholeFile.File.Name)
-        {
-            Headers = new HeaderDictionary(),
-            ContentType = GetContentType(attachment.Name),
-        };
-        return formFile;
     }
 
     private static string GetContentType(string fileName)
