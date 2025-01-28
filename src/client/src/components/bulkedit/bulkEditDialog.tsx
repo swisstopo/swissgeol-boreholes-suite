@@ -188,6 +188,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
         return (
           <FormSelect
             canReset={false}
+            readonly={false}
             fieldName={"workgroup"}
             label=""
             values={enabledWorkgroups
