@@ -47,11 +47,7 @@ export async function upload(url, method, payload) {
 export async function download(url) {
   const response = await fetchApiV2Base(url, "GET", null);
   if (!response.ok) {
-    const json = await response.json();
-    if (json.title === "NoSuchKey") {
-      throw new ApiError("attachmentNotFoundInCloudStorage", response.status);
-    }
-    throw new ApiError(response.statusText, response.status);
+    throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
   }
 
   const fileName =

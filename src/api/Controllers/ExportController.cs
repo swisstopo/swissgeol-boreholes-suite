@@ -251,11 +251,6 @@ public class ExportController : ControllerBase
         catch (AmazonS3Exception ex)
         {
             logger.LogError(ex, "Amazon S3 Store threw an exception.");
-            if (ex.ErrorCode == "NoSuchKey")
-            {
-                return Problem(detail: "The file was not found in the cloud storage.", title: ex.ErrorCode);
-            }
-
             return Problem("An error occurred while fetching a file from the cloud storage.");
         }
         catch (Exception ex)

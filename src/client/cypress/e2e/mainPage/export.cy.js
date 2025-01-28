@@ -295,12 +295,12 @@ describe("Test for exporting boreholes.", () => {
       body: {
         title: "NoSuchKey",
         status: 500,
-        detail: "The file was not found in the cloud storage.",
+        detail: "An error occurred while fetching a file from the cloud storage.",
       },
     }).as("exportZipError");
 
     exportZipItem();
-    cy.get(".MuiAlert-message").contains("At least one attachment could not be found in cloud storage.");
+    cy.get(".MuiAlert-message").contains("An error occurred while fetching a file from the cloud storage.");
   });
 
   it("exports and reimports a borehole using csv", () => {
