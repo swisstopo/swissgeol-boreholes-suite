@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.IO.Compression;
 using System.Security.Claims;
 using System.Text;
@@ -79,6 +78,19 @@ public class ExportControllerTest
 
         var loggerMock = new Mock<ILogger<ExportController>>();
         controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
+    }
+
+    [TestMethod]
+    public async Task ExportGeopackage()
+    {
+        var id = 1_000_257;
+
+        var response = await controller.ExportGeoPackageAsync(new List<int>() { id }).ConfigureAwait(false);
+        FileContentResult fileContentResult = (FileContentResult)response!;
+        Assert.IsNotNull(fileContentResult);
+        Assert.AreEqual("application/geopackage+sqlite", fileContentResult.ContentType);
+        Assert.AreEqual($"boreholes_export_{DateTime.Now:yyyyMMdd}.gpkg", fileContentResult.FileDownloadName);
+        Assert.IsTrue(fileContentResult.FileContents.Length > 0);
     }
 
     [TestMethod]
@@ -208,37 +220,107 @@ public class ExportControllerTest
     }
 
     [TestMethod]
-    public async Task ExportJsonEmptyIdsReturnsBadRequest()
+    public async Task ExportJsonWithAttachmementsButFileDoesNotExist()
     {
-        var result = await controller.ExportJsonAsync([]).ConfigureAwait(false);
-        var badRequestResult = result as BadRequestObjectResult;
-        Assert.IsNotNull(badRequestResult);
-        Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
+        var newBorehole = GetBoreholeToAdd();
+
+        context.Add(newBorehole);
+
+        // Save first to get boreholeId
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var fileWithoutAttachments = new BoreholeFile
+        {
+            BoreholeId = newBorehole.Id,
+            File = new Models.File() { Name = "file.pdf", NameUuid = $"{Guid.NewGuid}.pdf", Type = "pdf" },
+        };
+
+        // Add file to context but not to S3 store
+        context.Add(fileWithoutAttachments);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id]).ConfigureAwait(false);
+
+        Assert.IsInstanceOfType(result, typeof(ObjectResult));
+        ObjectResult objectResult = (ObjectResult)result;
+        ProblemDetails problemDetails = (ProblemDetails)objectResult.Value!;
+        StringAssert.StartsWith(problemDetails.Detail, "An error occurred while fetching a file from the cloud storage.");
     }
 
     [TestMethod]
-    public async Task ExportWithAttachmentsEmptyIdsReturnsBadRequest()
-            {
-        var result = await controller.ExportJsonWithAttachmentsAsync([]).ConfigureAwait(false);
-        var badRequestResult = result as BadRequestObjectResult;
-        Assert.IsNotNull(badRequestResult);
-        Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
+    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
+    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
+    [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
+    [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
+    public async Task ExportGeoPackageIdsValidation(IEnumerable<int> ids, Type responseResultType)
+    {
+        var result = await controller.ExportGeoPackageAsync(ids).ConfigureAwait(false);
+
+        Assert.IsInstanceOfType(result, responseResultType);
+
+        if (responseResultType == typeof(BadRequestObjectResult))
+        {
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
+        }
     }
 
     [TestMethod]
-    public async Task DownloadCsvWithValidIdsReturnsFileResultWithMax100Boreholes()
+    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
+    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
+    [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(JsonResult), DisplayName = "Valid multiple ids.")]
+    [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
+    public async Task ExportJsonIdsValidation(IEnumerable<int> ids, Type responseResultType)
     {
-        var ids = Enumerable.Range(TestBoreholeId, 120).ToList();
+        var result = await controller.ExportJsonAsync(ids).ConfigureAwait(false);
 
-        var result = await controller.ExportCsvAsync(ids) as FileContentResult;
+        Assert.IsInstanceOfType(result, responseResultType);
 
-        Assert.IsNotNull(result);
-        Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
-        var csvData = Encoding.UTF8.GetString(result.FileContents);
-        var fileLength = csvData.Split('\n').Length;
-        var recordCount = fileLength - 2; // Remove header and last line break
-        Assert.AreEqual(100, recordCount);
+        if (responseResultType == typeof(BadRequestObjectResult))
+        {
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
+        }
+    }
+
+    [TestMethod]
+    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
+    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
+    [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
+    [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
+    public async Task ExportJsonWithAttachmentsIdsValidation(IEnumerable<int> ids, Type responseResultType)
+    {
+        var result = await controller.ExportJsonWithAttachmentsAsync(ids).ConfigureAwait(false);
+
+        Assert.IsInstanceOfType(result, responseResultType);
+
+        if (responseResultType == typeof(BadRequestObjectResult))
+        {
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
+        }
+    }
+
+    [TestMethod]
+    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
+    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
+    [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
+    [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
+    public async Task ExportCsvIdsValidation(IEnumerable<int> ids, Type responseResultType)
+    {
+        var result = await controller.ExportCsvAsync(ids).ConfigureAwait(false);
+
+        Assert.IsInstanceOfType(result, responseResultType);
+
+        if (responseResultType == typeof(BadRequestObjectResult))
+        {
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
+        }
     }
 
     [TestMethod]

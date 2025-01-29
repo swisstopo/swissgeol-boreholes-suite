@@ -1,13 +1,15 @@
-﻿using BDMS.Authentication;
+﻿using Amazon.S3;
+using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
+using MaxRev.Gdal.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO.Converters;
+using OSGeo.OGR;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -22,6 +24,8 @@ public class ExportController : ControllerBase
     // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
     private const int MaxPageSize = 100;
     private const string ExportFileName = "boreholes_export";
+    private const string MissingIdsMessage = "The list of IDs must not be empty.";
+    private const string NoBoreholesFoundMessage = "No borehole(s) found for the provided id(s).";
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
@@ -41,22 +45,118 @@ public class ExportController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets all <see cref="Borehole"/> records filtered by ids. Additional data is included in the response.
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a JSON file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The required list of borehole ids to filter by.</param>
     [HttpGet("json")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult> ExportJsonAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        if (ids == null || !ids.Any()) return BadRequest("The list of IDs must not be empty.");
+        if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
-        var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         return new JsonResult(boreholes, jsonExportOptions);
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of ids.
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a GeoPackage file. Filters the boreholes based on the provided list of IDs.
+    /// </summary>
+    /// <param name="ids">The required list of borehole ids to filter by.</param>
+    [HttpGet("gpkg")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult> ExportGeoPackageAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    {
+        if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
+
+        try
+        {
+            var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+            if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
+
+            var boreholeGeometries = await GetBoreholeGeometriesAsync(idList).ConfigureAwait(false);
+
+            foreach (var borehole in boreholes)
+            {
+                borehole.SetTvdValues(boreholeGeometries);
+            }
+
+            // Create the GeoJSON features for each borehole
+            var features = boreholes.Select(borehole =>
+            {
+                return new
+                {
+                    type = "Feature",
+                    geometry = new
+                    {
+                        type = "Point",
+                        crs = new
+                        {
+                            type = "name",
+                            properties = new { name = "EPSG:2056" },
+                        },
+                        coordinates = new[] { borehole.LocationX, borehole.LocationY },
+                    },
+                    properties = borehole,
+                };
+            }).ToList();
+
+            // Create the GeoJSON feature collection for each GeoJSON feature
+            var geojson = new
+            {
+                type = "FeatureCollection",
+                crs = new
+                {
+                    type = "name",
+                    properties = new { name = "EPSG:2056" },
+                },
+                features,
+            };
+
+            var tempGeoJsonFilePath = Path.Combine(Path.GetTempPath(), $"temp_geojson_{Guid.NewGuid()}.geojson");
+            await System.IO.File.WriteAllTextAsync(tempGeoJsonFilePath, JsonSerializer.Serialize(geojson, jsonExportOptions)).ConfigureAwait(false);
+
+            GdalBase.ConfigureAll();
+            Ogr.RegisterAll();
+            Ogr.UseExceptions();
+
+            // Create a temporary file for GeoPackage
+            var tempGpkgFilePath = Path.Combine(Path.GetTempPath(), $"temp_gpkg_{Guid.NewGuid()}.gpkg");
+            var openFileGdbDriver = Ogr.GetDriverByName("GPKG");
+
+            // Write GeoPackage to temporary file
+            using (var gpkgDataSource = openFileGdbDriver.CreateDataSource(tempGpkgFilePath, null))
+            {
+                using var geojsonDataSource = Ogr.Open(tempGeoJsonFilePath, 1);
+
+                if (geojsonDataSource == null)
+                {
+                    throw new InvalidOperationException("Could not open input GeoJSON datasource.");
+                }
+
+                gpkgDataSource.CopyLayer(geojsonDataSource.GetLayerByIndex(0), "boreholes", null);
+            }
+
+            // Read GeoPackage into memory
+            var gpkgBytes = await System.IO.File.ReadAllBytesAsync(tempGpkgFilePath).ConfigureAwait(false);
+
+            // Cleanup temporary file
+            System.IO.File.Delete(tempGpkgFilePath);
+            System.IO.File.Delete(tempGeoJsonFilePath);
+
+            // Return GeoPackage as a downloadable file
+            return File(gpkgBytes, "application/geopackage+sqlite", $"{ExportFileName}_{DateTime.Now:yyyyMMdd}.gpkg");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to prepare GPKG file.");
+            return Problem("An error occurred while preparing the GPKG file.");
+        }
+    }
+
+    /// <summary>
+    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The list of ids for the boreholes to be exported.</param>
     /// <returns>A CSV file containing the details of the specified boreholes.</returns>
@@ -64,8 +164,7 @@ public class ExportController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> ExportCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        List<int> idList = ids.Take(MaxPageSize).ToList();
-        if (idList.Count < 1) return BadRequest("The list of IDs must not be empty.");
+        if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
         var boreholes = await context.Boreholes
             .Include(b => b.BoreholeCodelists).ThenInclude(bc => bc.Codelist)
@@ -74,7 +173,7 @@ public class ExportController : ControllerBase
             .ToListAsync()
             .ConfigureAwait(false);
 
-        if (boreholes.Count == 0) return NotFound("No borehole(s) found for the provided id(s).");
+        if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         using var stringWriter = new StringWriter();
         using var csvWriter = new CsvWriter(stringWriter, CsvConfigHelper.CsvWriteConfig);
@@ -131,18 +230,12 @@ public class ExportController : ControllerBase
         // Move to the next line
         await csvWriter.NextRecordAsync().ConfigureAwait(false);
 
+        var boreholeGeometries = await GetBoreholeGeometriesAsync(idList).ConfigureAwait(false);
+
         // Write data for standard fields
         foreach (var b in boreholes)
         {
-            var boreholeGeometry = await context.BoreholeGeometry
-                .AsNoTracking()
-                .Where(g => g.BoreholeId == b.Id)
-                .ToListAsync()
-                .ConfigureAwait(false);
-
-            b.TotalDepthTvd = boreholeGeometry.GetTVDIfGeometryExists(b.TotalDepth);
-            b.TopBedrockFreshTvd = boreholeGeometry.GetTVDIfGeometryExists(b.TopBedrockFreshMd);
-            b.TopBedrockWeatheredTvd = boreholeGeometry.GetTVDIfGeometryExists(b.TopBedrockWeatheredMd);
+            b.SetTvdValues(boreholeGeometries);
 
             csvWriter.WriteField(b.Id);
             csvWriter.WriteField(b.OriginalName);
@@ -203,15 +296,13 @@ public class ExportController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        var idList = ids?.ToList() ?? [];
-        if (idList.Count < 1)
-        {
-            return BadRequest("The list of IDs must not be empty.");
-        }
+        if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
         try
         {
             var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+            if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
+
             var files = await context.BoreholeFiles.Include(f => f.File).AsNoTracking().Where(f => idList.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
             var fileName = $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}";
 
@@ -231,7 +322,7 @@ public class ExportController : ControllerBase
                 using var entryStream = jsonEntry.Open();
                 using (var textWriter = new StreamWriter(entryStream))
                 {
-                   await textWriter.WriteAsync(json).ConfigureAwait(false);
+                    await textWriter.WriteAsync(json).ConfigureAwait(false);
                 }
 
                 foreach (var file in files.Select(f => f.File))
@@ -247,6 +338,11 @@ public class ExportController : ControllerBase
 
             return File(memoryStream.ToArray(), "application/zip", $"{fileName}");
         }
+        catch (AmazonS3Exception ex)
+        {
+            logger.LogError(ex, "Amazon S3 Store threw an exception.");
+            return Problem("An error occurred while fetching a file from the cloud storage.");
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to prepare ZIP file.");
@@ -257,5 +353,28 @@ public class ExportController : ControllerBase
     private static IEnumerable<BoreholeCodelist> GetBoreholeCodelists(Borehole borehole)
     {
         return borehole.BoreholeCodelists ?? Enumerable.Empty<BoreholeCodelist>();
+    }
+
+    /// <summary>
+    /// Fetches borehole geometries for the provided borehole IDs.
+    /// </summary>
+    /// <param name="boreholeIds"></param>
+    /// <returns>A dictionary of borehole geometries keyed by borehole ID.</returns>
+    private async Task<Dictionary<int, List<BoreholeGeometryElement>>> GetBoreholeGeometriesAsync(List<int> boreholeIds)
+    {
+        return await context.BoreholeGeometry
+            .AsNoTracking()
+            .Where(g => boreholeIds.Contains(g.BoreholeId))
+            .GroupBy(g => g.BoreholeId)
+            .ToDictionaryAsync(group => group.Key, group => group.ToList())
+            .ConfigureAwait(false);
+    }
+
+    private static bool ValidateIds(IEnumerable<int> ids, out List<int> idList)
+    {
+        idList = ids?.ToList() ?? [];
+        if (idList.Count < 1) return false;
+
+        return true;
     }
 }

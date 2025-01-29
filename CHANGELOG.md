@@ -10,6 +10,7 @@
 ### Changed 
 
 - Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
+- Display an error message to the user when attachment files could not be fetched from cloud storage during export.
 - Removed all asterisks from required form fields.
 - Updated the UI design of the tabs component.
 - Reincluded download link for codelist references in the import panel.
@@ -18,12 +19,14 @@
 
 - Workgroup reset in the bulk edit form had to be clicked twice to take effect. 
 - Numeric inputs on the borehole tab were not correctly reset.
+- When navigating away from the sections tab with unsaved changes, no warning prompt was displayed.
 
 ## v2.1.1025 - 2025-01-17
 
 ### Added
 
 - Added ZIP export with JSON and attachments for single and multiple boreholes.
+- Added geopackage export for single and multiple boreholes.
 
 ### Changed 
 - Removed attachments from csv import.

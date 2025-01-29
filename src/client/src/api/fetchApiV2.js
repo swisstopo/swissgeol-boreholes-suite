@@ -32,8 +32,14 @@ export async function fetchApiV2(url, method, payload = null) {
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
       return await response.json();
+    } else if (
+      contentType &&
+      (contentType.indexOf("application/geopackage+sqlite") !== -1 ||
+        contentType.indexOf("application/octet-stream") !== -1)
+    ) {
+      return await response.blob(); // Binary response
     } else {
-      return await response.text();
+      return await response.text(); // Fallback for plain text
     }
   } else {
     return response.text().then(text => alert(text));
@@ -47,7 +53,7 @@ export async function upload(url, method, payload) {
 export async function download(url) {
   const response = await fetchApiV2Base(url, "GET", null);
   if (!response.ok) {
-    throw new ApiError(response.statusText, response.status);
+    throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
   }
 
   const fileName =
