@@ -48,7 +48,7 @@ export const FormInput: FC<FormInputProps> = ({
   const { formState, register, setValue } = useFormContext();
   const isDateTimeInput = type === FormValueType.DateTime;
   const isDateInput = type === FormValueType.Date;
-  const isReadOnly = readonly != undefined ? readonly : !editingEnabled;
+  const isReadOnly = readonly ?? !editingEnabled;
 
   const getDefaultValue = (value: string | number | Date | undefined) => {
     if (value == undefined) {
