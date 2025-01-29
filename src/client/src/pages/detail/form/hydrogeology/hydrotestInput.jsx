@@ -16,6 +16,7 @@ import {
 } from "../../../../components/form/form";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
+import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.js";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { ObservationType } from "./Observation.ts";
 import ObservationInput from "./observationInput.tsx";
@@ -155,8 +156,8 @@ const HydrotestInput = props => {
 
   const prepareFormDataForSubmit = data => {
     data = prepareCasingDataForSubmit(data);
-    data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
-    data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
+    data.startTime = getIsoDateIfDefined(data?.startTime);
+    data.endTime = getIsoDateIfDefined(data?.endTime);
     data.type = ObservationType.hydrotest;
     data.boreholeId = parentId;
 

@@ -4,6 +4,7 @@ import DataInputCard from "../../../../components/dataCard/dataInputCard.jsx";
 import { FormContainer } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
+import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.ts";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { ObservationType, WaterIngress, WaterIngressFormData } from "./Observation.ts";
 import ObservationInput from "./observationInput.tsx";
@@ -11,9 +12,8 @@ import ObservationInput from "./observationInput.tsx";
 const WaterIngressInput: FC<{ item: WaterIngress; parentId: number }> = ({ item, parentId }) => {
   const prepareFormDataForSubmit = (data: WaterIngressFormData) => {
     data = prepareCasingDataForSubmit(data);
-    console.log(data);
-    data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
-    data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
+    data.startTime = getIsoDateIfDefined(data?.startTime);
+    data.endTime = getIsoDateIfDefined(data?.endTime);
     data.type = ObservationType.waterIngress;
     data.boreholeId = parentId;
     if (data.conditionsId === "") {
