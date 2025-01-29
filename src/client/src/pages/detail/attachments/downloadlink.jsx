@@ -26,9 +26,6 @@ class DownloadLink extends React.Component {
         }}>
         <span
           className={this.state.downloading === false ? "link linker" : null}
-          style={{
-            whiteSpace: "pre", // Ensures multiple whitespaces are not squashed
-          }}
           onClick={() => {
             if (this.state.downloading === false) {
               this.setState(
@@ -44,7 +41,7 @@ class DownloadLink extends React.Component {
               );
             }
           }}>
-          {this.props.caption.replace("", "")}
+          {this.props.caption}
         </span>
         &nbsp;
         {this.state.downloading === true ? <Icon loading name="spinner" /> : <Icon name="arrow circle down" />}

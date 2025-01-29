@@ -62,7 +62,7 @@ export async function download(url) {
   const downLoadUrl = window.URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = downLoadUrl;
-  link.setAttribute("download", fileName.replace(/"/g, "")); // remove duplicated quotes
+  link.setAttribute("download", fileName);
   document.body.appendChild(link);
   link.click();
   return response;
