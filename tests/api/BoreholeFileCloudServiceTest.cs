@@ -61,7 +61,7 @@ public class BoreholeFileCloudServiceTest
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
 
-        var boreholeFile = await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType, minBoreholeId);
+        await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType, minBoreholeId);
 
         fileName = fileName.Replace(" ", "_");
 
