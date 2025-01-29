@@ -20,10 +20,7 @@ public class AuthenticationTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    [DataRow(null, "email_verified", "true", DisplayName = "Missing Email Claim")]
-    [DataRow("test@example.com", "email_verified", null, DisplayName = "Missing Email Verified Claim")]
-    [DataRow("test@example.com", "email_verified", "false", DisplayName = "Email Not Verified")]
-    public async Task CreateOrUpdateUser_ShouldThrowException_ForInvalidEmailClaims(string email, string emailVerifiedClaimType, string emailVerifiedClaimValue)
+    public async Task CreateOrUpdateUser_ShouldThrowException_ForMissingEmailClaims()
     {
         var user = new User
         {
@@ -38,11 +35,6 @@ public class AuthenticationTest
         await context.SaveChangesAsync();
 
         var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "12345") };
-
-        if (email != null)
-            claims.Add(new Claim(ClaimTypes.Email, email));
-
-        if (emailVerifiedClaimType != null && emailVerifiedClaimValue != null) claims.Add(new Claim(emailVerifiedClaimType, emailVerifiedClaimValue));
 
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));
         var transformation = new DatabaseAuthenticationClaimsTransformation(context);

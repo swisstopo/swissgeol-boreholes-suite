@@ -58,10 +58,8 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         user.Name = $"{user.FirstName[0]}. {user.LastName}";
 
         var emailClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
-        var emailVerifiedClaim = principal.Claims.FirstOrDefault(c => c.Type == "email_verified");
 
-        if (emailClaim == null || emailVerifiedClaim == null || emailVerifiedClaim.Value != "true")
-            throw new InvalidOperationException("The email claim or the email_verified claim is missing or the email is not verified.");
+        if (emailClaim == null) throw new InvalidOperationException("The email claim is missing.");
 
         user.Email = emailClaim.Value;
 
