@@ -1,7 +1,7 @@
 import { evaluateCoordinate, evaluateSelect, hasAiStyle, hasError, isDisabled } from "../helpers/formHelpers.js";
 import {
   newEditableBorehole,
-  newUneditableBorehole,
+  newUneditableBorehole, selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers.js";
@@ -114,14 +114,8 @@ describe("Test labeling tool", () => {
     isFileActive("borehole_attachment_3.pdf", true);
 
     const crypto = window.crypto || window.msCrypto;
-    cy.get("input[type=file]").selectFile(
-      {
-        contents: Cypress.Buffer.from(crypto.getRandomValues(new Uint32Array(1)).toString()),
-        fileName: "WOLFHEART.pdf",
-        mimeType: "application/pdf",
-      },
-      { force: true },
-    );
+
+    selectInputFile("input[type=file]", crypto.getRandomValues(new Uint32Array(1)).toString(), "WOLFHEART.pdf", "application/pdf");
 
     cy.get('[data-cy="labeling-file-button-select"]').contains("WOLFHEART.pdf");
     cy.get('[data-cy="button-select-popover"] .MuiListItem-root').eq(1).click();

@@ -6,21 +6,14 @@ import {
   deleteDownloadedFile,
   getElementByDataCy,
   loginAsAdmin,
-  readDownloadedFile,
+  readDownloadedFile, selectFile, selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
   const uploadLoudSpatulaFile = () => {
-    cy.get("input[type=file]").selectFile(
-      {
-        contents: Cypress.Buffer.from(Math.random().toString()),
-        fileName: "LOUDSPATULA.txt",
-        mimeType: "text/plain",
-      },
-      { force: true },
-    );
+    selectInputFile("input[type=file]", Math.random().toString(), "LOUDSPATULA.txt", "text/plain")
 
     // // upload file
     getElementByDataCy("attachments-upload-button").should("be.visible").click();
@@ -43,14 +36,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // create file "IRATETRINITY.pdf" for input
       let fileContent = Math.random().toString();
-      cy.get("input[type=file]").selectFile(
-        {
-          contents: Cypress.Buffer.from(fileContent),
-          fileName: "IRATETRINITY.pdf",
-          mimeType: "application/pdf",
-        },
-        { force: true },
-      );
+      selectInputFile("input[type=file]", Math.random().toString(), "IRATETRINITY.pdf", "application/pdf");
 
       // upload and verify file IRATETRINITY.pdf
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
@@ -60,14 +46,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get("tbody").children().contains("td", "application/pdf");
 
       // Upload and verify file "IRATETRINITY.pdf" for the second time but with different file name.
-      cy.get("input[type=file]").selectFile(
-        {
-          contents: Cypress.Buffer.from(fileContent),
-          fileName: "IRATETRINITY_2.pdf",
-          mimeType: "application/pdf",
-        },
-        { force: true },
-      );
+      selectInputFile("input[type=file]", Math.random().toString(), "IRATETRINITY_2.pdf", "application/pdf");
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 3);
@@ -75,14 +54,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get("tbody").children().contains("td", "application/pdf");
 
       // Upload and verify file "WHITE   SPACE.pdf" to test file names with white spaces.
-      cy.get("input[type=file]").selectFile(
-        {
-          contents: Cypress.Buffer.from(fileContent),
-          fileName: "WHITE   SPACE.pdf",
-          mimeType: "application/pdf",
-        },
-        { force: true },
-      );
+      selectInputFile("input[type=file]", Math.random().toString(), "WHITE   SPACE.pdf", "application/pdf");
       cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 4);

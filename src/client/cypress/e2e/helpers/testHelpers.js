@@ -664,3 +664,14 @@ export const selectLanguage = language => {
   cy.get(`[data-cy="${language.toLowerCase()}-button-select-item"]`).click({ force: true });
   cy.wait(1000);
 };
+
+export const selectInputFile = (inputIdentifier, content, fileName, mimeType) => {
+  cy.get(inputIdentifier).selectFile(
+    {
+      contents: Cypress.Buffer.from(content),
+      fileName: fileName,
+      mimeType: mimeType,
+    },
+    { force: true },
+  );
+};
