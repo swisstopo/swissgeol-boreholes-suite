@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Amazon.S3;
+using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
 using MaxRev.Gdal.Core;
@@ -336,6 +337,11 @@ public class ExportController : ControllerBase
             }
 
             return File(memoryStream.ToArray(), "application/zip", $"{fileName}");
+        }
+        catch (AmazonS3Exception ex)
+        {
+            logger.LogError(ex, "Amazon S3 Store threw an exception.");
+            return Problem("An error occurred while fetching a file from the cloud storage.");
         }
         catch (Exception ex)
         {

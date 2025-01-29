@@ -77,7 +77,6 @@ public class ExportControllerTest
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
         var loggerMock = new Mock<ILogger<ExportController>>();
-
         controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -218,6 +217,34 @@ public class ExportControllerTest
         Assert.AreEqual("Test borehole for project", borehole.Remarks);
         Assert.AreEqual("Borehole 257", borehole.Name);
         Assert.AreEqual("Project Alpha", borehole.ProjectName);
+    }
+
+    [TestMethod]
+    public async Task ExportJsonWithAttachmementsButFileDoesNotExist()
+    {
+        var newBorehole = GetBoreholeToAdd();
+
+        context.Add(newBorehole);
+
+        // Save first to get boreholeId
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var fileWithoutAttachments = new BoreholeFile
+        {
+            BoreholeId = newBorehole.Id,
+            File = new Models.File() { Name = "file.pdf", NameUuid = $"{Guid.NewGuid}.pdf", Type = "pdf" },
+        };
+
+        // Add file to context but not to S3 store
+        context.Add(fileWithoutAttachments);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id]).ConfigureAwait(false);
+
+        Assert.IsInstanceOfType(result, typeof(ObjectResult));
+        ObjectResult objectResult = (ObjectResult)result;
+        ProblemDetails problemDetails = (ProblemDetails)objectResult.Value!;
+        StringAssert.StartsWith(problemDetails.Detail, "An error occurred while fetching a file from the cloud storage.");
     }
 
     [TestMethod]
