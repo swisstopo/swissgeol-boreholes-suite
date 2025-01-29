@@ -11,7 +11,7 @@ import { FormContainer, FormInput, FormValueType } from "../../../../components/
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
-import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.js";
+import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.ts";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { ObservationType } from "./Observation.ts";
 import ObservationInput from "./observationInput.tsx";
