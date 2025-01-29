@@ -91,7 +91,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // Ensure files does not exist in download folder before download. If so, delete them.
       deleteDownloadedFile("IRATETRINITY_2.pdf");
-      deleteDownloadedFile("WHITE   SPACE.pdf");
+      deleteDownloadedFile("WHITE___SPACE.pdf");
 
       // Download recently uploaded file
       cy.get("tbody").children().contains("span", "IRATETRINITY_2.pdf").click();
@@ -101,11 +101,11 @@ describe("Tests for 'Attachments' edit page.", () => {
       readDownloadedFile("IRATETRINITY_2.pdf");
 
       // Download recently uploaded file
-      cy.get("tbody").children().contains("span", "WHITE   SPACE.pdf").click();
+      cy.get("tbody").children().contains("span", "WHITE___SPACE.pdf").click();
       cy.wait("@download-file");
 
       // Check if the file is present in download folder.
-      readDownloadedFile("WHITE   SPACE.pdf");
+      readDownloadedFile("WHITE___SPACE.pdf");
 
       // delete attachments
       getElementByDataCy("attachments-detach-button").children().first().click();
