@@ -25,7 +25,8 @@ import {
   newEditableBorehole,
   prepareDownloadPath,
   readDownloadedFile,
-  returnToOverview, selectInputFile,
+  returnToOverview,
+  selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -265,7 +266,7 @@ describe("Test for exporting boreholes.", () => {
       goToRouteAndAcceptTerms(`/${id}/attachments`);
       startBoreholeEditing();
 
-      selectInputFile("input[type=file]", Math.random().toString(), "FREEZINGCOLD.txt", "text/plain");
+      selectInputFile("input[type=file]", "FREEZINGCOLD.txt", "text/plain");
 
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);

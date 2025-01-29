@@ -665,7 +665,14 @@ export const selectLanguage = language => {
   cy.wait(1000);
 };
 
-export const selectInputFile = (inputIdentifier, content, fileName, mimeType) => {
+export const selectInputFile = (inputIdentifier, fileName, mimeType, content) => {
+  const crypto = window.crypto || window.msCrypto;
+
+  // If content is null, generate random content
+  if (content === null) {
+    content = crypto.getRandomValues(new Uint32Array(1)).toString();
+  }
+
   cy.get(inputIdentifier).selectFile(
     {
       contents: Cypress.Buffer.from(content),

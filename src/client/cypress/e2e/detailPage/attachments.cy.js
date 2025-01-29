@@ -6,14 +6,15 @@ import {
   deleteDownloadedFile,
   getElementByDataCy,
   loginAsAdmin,
-  readDownloadedFile, selectFile, selectInputFile,
+  readDownloadedFile,
+  selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
   const uploadLoudSpatulaFile = () => {
-    selectInputFile("input[type=file]", Math.random().toString(), "LOUDSPATULA.txt", "text/plain")
+    selectInputFile("input[type=file]", "LOUDSPATULA.txt", "text/plain");
 
     // // upload file
     getElementByDataCy("attachments-upload-button").should("be.visible").click();
@@ -35,8 +36,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get("tbody").children().contains("td", "text/plain");
 
       // create file "IRATETRINITY.pdf" for input
-      let fileContent = Math.random().toString();
-      selectInputFile("input[type=file]", Math.random().toString(), "IRATETRINITY.pdf", "application/pdf");
+      selectInputFile("input[type=file]", "IRATETRINITY.pdf", "application/pdf");
 
       // upload and verify file IRATETRINITY.pdf
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
@@ -46,7 +46,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get("tbody").children().contains("td", "application/pdf");
 
       // Upload and verify file "IRATETRINITY.pdf" for the second time but with different file name.
-      selectInputFile("input[type=file]", Math.random().toString(), "IRATETRINITY_2.pdf", "application/pdf");
+      selectInputFile("input[type=file]", "IRATETRINITY_2.pdf", "application/pdf");
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 3);
@@ -54,7 +54,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get("tbody").children().contains("td", "application/pdf");
 
       // Upload and verify file "WHITE   SPACE.pdf" to test file names with white spaces.
-      selectInputFile("input[type=file]", Math.random().toString(), "WHITE   SPACE.pdf", "application/pdf");
+      selectInputFile("input[type=file]", "WHITE   SPACE.pdf", "application/pdf");
       cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 4);
