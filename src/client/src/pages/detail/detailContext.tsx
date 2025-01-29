@@ -1,4 +1,4 @@
-import { createContext, FC, PropsWithChildren, useState } from "react";
+import { createContext, FC, PropsWithChildren, useMemo, useState } from "react";
 
 export interface DetailContextProps {
   editingEnabled: boolean;
@@ -14,10 +14,7 @@ export const DetailProvider: FC<PropsWithChildren> = ({ children }) => {
   const [editingEnabled, setEditingEnabled] = useState<boolean>(false);
   return (
     <DetailContext.Provider
-      value={{
-        editingEnabled,
-        setEditingEnabled,
-      }}>
+      value={useMemo(() => ({ editingEnabled, setEditingEnabled }), [editingEnabled, setEditingEnabled])}>
       {children}
     </DetailContext.Provider>
   );
