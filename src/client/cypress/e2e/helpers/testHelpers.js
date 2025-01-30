@@ -664,3 +664,18 @@ export const selectLanguage = language => {
   cy.get(`[data-cy="${language.toLowerCase()}-button-select-item"]`).click({ force: true });
   cy.wait(1000);
 };
+
+export const selectInputFile = (fileName, mimeType) => {
+  const crypto = window.crypto || window.msCrypto;
+  const content = crypto.getRandomValues(new Uint32Array(1)).toString();
+
+  cy.get("input[type=file]").selectFile(
+    {
+      contents: Cypress.Buffer.from(content),
+      fileName: fileName,
+      mimeType: mimeType,
+    },
+    { force: true },
+  );
+  cy.wait(1000);
+};

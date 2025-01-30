@@ -26,6 +26,7 @@ import {
   prepareDownloadPath,
   readDownloadedFile,
   returnToOverview,
+  selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -265,14 +266,7 @@ describe("Test for exporting boreholes.", () => {
       goToRouteAndAcceptTerms(`/${id}/attachments`);
       startBoreholeEditing();
 
-      cy.get("input[type=file]").selectFile(
-        {
-          contents: Cypress.Buffer.from(Math.random().toString()),
-          fileName: "FREEZINGCOLD.txt",
-          mimeType: "text/plain",
-        },
-        { force: true },
-      );
+      selectInputFile("FREEZINGCOLD.txt", "text/plain");
 
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
