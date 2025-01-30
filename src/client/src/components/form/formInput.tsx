@@ -5,6 +5,7 @@ import { InputProps, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { isValid } from "date-fns";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
+import { getFieldBorderColor } from "../legacyComponents/formUtils.ts";
 import { FormValueType, getFormFieldError } from "./form";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
 
@@ -65,7 +66,10 @@ export const FormInput: FC<FormInputProps> = ({
     <TextField
       required={required || false}
       error={getFormFieldError(fieldName, formState.errors)}
-      sx={{ ...sx }}
+      sx={{
+        ...sx,
+        ...getFieldBorderColor(isReadOnly),
+      }}
       className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
       type={type || FormValueType.Text}
       multiline={multiline || false}

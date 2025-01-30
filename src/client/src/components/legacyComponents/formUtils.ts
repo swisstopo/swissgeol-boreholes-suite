@@ -1,4 +1,5 @@
 import { Identifier } from "../../api/borehole.ts";
+import { theme } from "../../AppTheme.ts";
 import { BoreholeFormInputs } from "../../pages/detail/form/borehole/boreholePanelInterfaces.ts";
 import {
   LocationFormInputs,
@@ -40,6 +41,19 @@ export const getMaxPrecision = (numericString1: string, numericString2: string) 
  * @returns The precision of the string.
  */
 export const getPrecisionFromString = (numericString: string) => numericString.split(".")[1]?.length || 0;
+
+/**
+ * Gets the style definition for the MUI Textfield's border color based on whether the field is readonly.
+ * @param {boolean} isReadOnly The boolean defining whether the field is readonly.
+ * @returns The style definition.
+ */
+export const getFieldBorderColor = (isReadOnly: boolean) => {
+  return {
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: isReadOnly ? theme.palette.border.light : theme.palette.border.darker,
+    },
+  };
+};
 
 /**
  * Transforms the location form data into a format that can be submitted to the API.

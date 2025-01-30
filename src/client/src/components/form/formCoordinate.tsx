@@ -6,7 +6,7 @@ import { TextField } from "@mui/material/";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { boundingBox } from "../../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { Direction, ReferenceSystemKey } from "../../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { parseFloatWithThousandsSeparator } from "../legacyComponents/formUtils.ts";
+import { getFieldBorderColor, parseFloatWithThousandsSeparator } from "../legacyComponents/formUtils.ts";
 import { getFormFieldError } from "./form";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
 
@@ -64,7 +64,10 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
     <TextField
       required={required || false}
       error={!className?.includes("ai") && !disabled && getFormFieldError(fieldName, formState.errors)}
-      sx={{ ...sx }}
+      sx={{
+        ...sx,
+        ...getFieldBorderColor(isReadOnly),
+      }}
       className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
       label={t(`location_${direction.toLowerCase()}_${referenceSystem}`)}
       {...register(fieldName, {
