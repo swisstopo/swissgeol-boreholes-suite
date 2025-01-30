@@ -20,6 +20,7 @@
 - Workgroup reset in the bulk edit form had to be clicked twice to take effect. 
 - Numeric inputs on the borehole tab were not correctly reset.
 - When navigating away from the sections tab with unsaved changes, no warning prompt was displayed.
+- Replace whitespaces in borehole attachments before upload. Also replace whitespaces in existing filenames.
 
 ## v2.1.1025 - 2025-01-17
 

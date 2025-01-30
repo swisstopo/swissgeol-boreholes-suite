@@ -13,6 +13,7 @@ import {
   handlePrompt,
   loginAsAdmin,
   returnToOverview,
+  selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -21,16 +22,7 @@ const addMinimalAttachment = (boreholeIdentifier, fileName) => {
   cy.get(boreholeIdentifier).then(id => {
     goToRouteAndAcceptTerms(`/${id}/attachments`);
     startBoreholeEditing();
-
-    cy.get("input[type=file]").selectFile(
-      {
-        contents: Cypress.Buffer.from(Math.random().toString()),
-        fileName: fileName,
-        mimeType: "text/plain",
-      },
-      { force: true },
-    );
-
+    selectInputFile(fileName, "text/plain");
     getElementByDataCy("attachments-upload-button").should("be.visible").click();
     cy.wait(["@upload-files", "@getAllAttachments"]);
     stopBoreholeEditing();

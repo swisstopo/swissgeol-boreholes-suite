@@ -7,20 +7,14 @@ import {
   getElementByDataCy,
   loginAsAdmin,
   readDownloadedFile,
+  selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
   const uploadLoudSpatulaFile = () => {
-    cy.get("input[type=file]").selectFile(
-      {
-        contents: Cypress.Buffer.from(Math.random().toString()),
-        fileName: "LOUDSPATULA.txt",
-        mimeType: "text/plain",
-      },
-      { force: true },
-    );
+    selectInputFile("LOUDSPATULA.txt", "text/plain");
 
     // // upload file
     getElementByDataCy("attachments-upload-button").should("be.visible").click();
@@ -42,15 +36,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get("tbody").children().contains("td", "text/plain");
 
       // create file "IRATETRINITY.pdf" for input
-      let fileContent = Math.random().toString();
-      cy.get("input[type=file]").selectFile(
-        {
-          contents: Cypress.Buffer.from(fileContent),
-          fileName: "IRATETRINITY.pdf",
-          mimeType: "application/pdf",
-        },
-        { force: true },
-      );
+      selectInputFile("IRATETRINITY.pdf", "application/pdf");
 
       // upload and verify file IRATETRINITY.pdf
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
@@ -60,22 +46,24 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get("tbody").children().contains("td", "application/pdf");
 
       // Upload and verify file "IRATETRINITY.pdf" for the second time but with different file name.
-      cy.get("input[type=file]").selectFile(
-        {
-          contents: Cypress.Buffer.from(fileContent),
-          fileName: "IRATETRINITY_2.pdf",
-          mimeType: "application/pdf",
-        },
-        { force: true },
-      );
+      selectInputFile("IRATETRINITY_2.pdf", "application/pdf");
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 3);
       cy.get("tbody").children().contains("td", "text/plain");
       cy.get("tbody").children().contains("td", "application/pdf");
 
-      // Ensure file does not exist in download folder before download. If so, delete it.
+      // Upload and verify file "WHITE   SPACE.pdf" to test file names with white spaces.
+      selectInputFile("WHITE   SPACE.pdf", "application/pdf");
+      cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
+      cy.wait(["@upload-files", "@getAllAttachments"]);
+      cy.get("tbody").children().should("have.length", 4);
+      cy.get("tbody").children().contains("td", "text/plain");
+      cy.get("tbody").children().contains("td", "application/pdf");
+
+      // Ensure files does not exist in download folder before download. If so, delete them.
       deleteDownloadedFile("IRATETRINITY_2.pdf");
+      deleteDownloadedFile("WHITE___SPACE.pdf");
 
       // Download recently uploaded file
       cy.get("tbody").children().contains("span", "IRATETRINITY_2.pdf").click();
@@ -84,8 +72,18 @@ describe("Tests for 'Attachments' edit page.", () => {
       // Check if the file is present in download folder.
       readDownloadedFile("IRATETRINITY_2.pdf");
 
+      // Download recently uploaded file
+      cy.get("tbody").children().contains("span", "WHITE___SPACE.pdf").click();
+      cy.wait("@download-file");
+
+      // Check if the file is present in download folder.
+      readDownloadedFile("WHITE___SPACE.pdf");
+
       // delete attachments
       getElementByDataCy("attachments-detach-button").children().first().click();
+      cy.wait(["@delete-file", "@getAllAttachments"]);
+      cy.get("tbody").children().should("have.length", 3);
+      cy.get('[data-cy="attachments-detach-button"]').children().first().click();
       cy.wait(["@delete-file", "@getAllAttachments"]);
       cy.get("tbody").children().should("have.length", 2);
       cy.get('[data-cy="attachments-detach-button"]').children().first().click();

@@ -55,6 +55,24 @@ public class BoreholeFileCloudServiceTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
+    public async Task UploadFileWithWhiteSpaceShouldReplaceWithUnderscoreBeforeSaving()
+    {
+        var fileName = $"  {Guid.NewGuid()}   file  .pdf";
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
+
+        await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType, minBoreholeId);
+
+        fileName = fileName.Replace(" ", "_");
+
+        // Get borehole with file linked from db
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).Single(b => b.Id == minBoreholeId);
+
+        // Check if fileName whitespace is replaced with underscore
+        Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, fileName);
+    }
+
+    [TestMethod]
     public async Task UploadFileAndLinkToBoreholeShouldStoreFileInCloudStorageAndLinkFile()
     {
         var fileName = $"{Guid.NewGuid()}.pdf";

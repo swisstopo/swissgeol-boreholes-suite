@@ -2,7 +2,6 @@
 using Amazon.S3.Model;
 using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace BDMS;
 
@@ -53,6 +52,9 @@ public class BoreholeFileCloudService
             // Register the new file in the boreholes database.
             var fileExtension = Path.GetExtension(fileName);
             var fileNameGuid = $"{Guid.NewGuid()}{fileExtension}";
+
+            // Replace white spaces in file names, as they are interpreted differently across different systems.
+            fileName = fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
 
             var file = new Models.File { Name = fileName, NameUuid = fileNameGuid, Type = contentType };
 
