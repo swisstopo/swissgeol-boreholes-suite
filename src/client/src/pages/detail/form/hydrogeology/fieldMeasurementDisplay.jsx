@@ -8,12 +8,12 @@ import ObservationDisplay from "./observationDisplay.tsx";
 import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 
 const FieldMeasurementDisplay = props => {
-  const { item, isEditable } = props;
+  const { item } = props;
   const domains = useDomains();
   const { t, i18n } = useTranslation();
 
   return (
-    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteFieldMeasurement}>
+    <DataDisplayCard item={item} deleteData={deleteFieldMeasurement}>
       <ObservationDisplay observation={item} />
       <FormResultTableDisplay
         title={t("fieldMeasurementResult")}

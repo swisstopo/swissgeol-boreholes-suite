@@ -1,8 +1,11 @@
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import { Card, CardActions, CardContent, CircularProgress, Grid, Typography } from "@mui/material/";
 import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2.js";
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
+import { DetailContext } from "../../detailContext.tsx";
 import GeometryChartNE from "./geometryChartNE.jsx";
 import { GeometryChartZE, GeometryChartZInteractive, GeometryChartZN } from "./geometryChartZ.jsx";
 import GeometryImport from "./geometryImport.jsx";
@@ -13,13 +16,13 @@ import GeometryTable from "./geometryTable.jsx";
  *
  * @component
  * @param {Object} props - The component props.
- * @param {string} props.boreholeId - The ID of the borehole.
- * @param {boolean} props.isEditable - Indicates whether the component is editable.
  * @param {number} props.measuredDepth - The measured depth to show a perfectly vertical geometry if no geometry is set.
  * @returns {JSX.Element} The rendered Geometry component.
  */
-const Geometry = ({ boreholeId, isEditable, measuredDepth }) => {
+const Geometry = ({ measuredDepth }) => {
   const { t } = useTranslation();
+  const { editingEnabled } = useContext(DetailContext);
+  const { id: boreholeId } = useParams();
   const { data } = useBoreholeGeometry(boreholeId);
   const {
     delete: { mutate: deleteBoreholeGeometry, isLoading: isDeletingBoreholeGeometry },
@@ -39,20 +42,20 @@ const Geometry = ({ boreholeId, isEditable, measuredDepth }) => {
         <FullPageCentered>
           <CircularProgress />
         </FullPageCentered>
-      ) : !anyDataPresent && !measuredDepth && !isEditable ? (
+      ) : !anyDataPresent && !measuredDepth && !editingEnabled ? (
         <FullPageCentered>
           <Typography variant="fullPageMessage">{t("msgBoreholeGeometryEmpty")}</Typography>
         </FullPageCentered>
       ) : (
         <Grid container spacing={2}>
-          {isEditable && (
+          {editingEnabled && (
             <>
               <Grid item xs={12}>
                 <GeometryImport boreholeId={boreholeId} hasData={data?.length > 0} />
               </Grid>
             </>
           )}
-          {isEditable && anyDataPresent && (
+          {editingEnabled && anyDataPresent && (
             <Grid item xs={12}>
               <Card>
                 <CardActions>
@@ -68,7 +71,7 @@ const Geometry = ({ boreholeId, isEditable, measuredDepth }) => {
               </Card>
             </Grid>
           )}
-          {(!isEditable || anyDataPresent) &&
+          {(!editingEnabled || anyDataPresent) &&
             [
               <GeometryChartNE key="" data={data.length === 0 ? defaultData : data} />,
               <GeometryChartZN key="" data={data.length === 0 ? defaultData : data} />,

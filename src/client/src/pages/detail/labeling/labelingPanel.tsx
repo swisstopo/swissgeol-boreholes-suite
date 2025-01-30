@@ -1,5 +1,6 @@
 import { FC, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -57,12 +58,9 @@ export const LabelingAlert = styled(Alert)({
   },
 });
 
-interface LabelingPanelProps {
-  boreholeId: number;
-}
-
-const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
+const LabelingPanel: FC = () => {
   const { t } = useTranslation();
+  const { id: boreholeId } = useParams<{ id: string }>();
   const {
     panelPosition,
     setPanelPosition,
@@ -93,7 +91,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
   const loadFiles = useCallback(async () => {
     if (boreholeId) {
       setIsLoadingFiles(true);
-      getFiles<FileResponse>(boreholeId)
+      getFiles<FileResponse>(Number(boreholeId))
         .then(response =>
           setFiles(
             response
@@ -109,7 +107,7 @@ const LabelingPanel: FC<LabelingPanelProps> = ({ boreholeId }) => {
 
   const addFile = useCallback(
     async (file: File) => {
-      uploadFile<FileResponse>(boreholeId, file)
+      uploadFile<FileResponse>(Number(boreholeId), file)
         .then(fileResponse => {
           setSelectedFile(fileResponse.file);
           loadFiles();

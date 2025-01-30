@@ -5,7 +5,7 @@ import HierarchicalDataEditProfile from "../hierarchicalDataEditProfile.jsx";
 /**
  * Manages the chronostratigraphy data and mutations.
  */
-const ChronostratigraphyEditProfile = ({ selectedStratigraphyID, isEditable, sx, navState, setNavState }) => {
+const ChronostratigraphyEditProfile = ({ selectedStratigraphyID, sx, navState, setNavState }) => {
   const { t } = useTranslation();
 
   const { data: layers } = useChronostratigraphies(selectedStratigraphyID);
@@ -26,7 +26,6 @@ const ChronostratigraphyEditProfile = ({ selectedStratigraphyID, isEditable, sx,
       dataProperty="chronostratigraphyId"
       titel={t("chronostratigraphy")}
       selectedStratigraphyID={selectedStratigraphyID}
-      isEditable={isEditable}
       sx={{ ...sx }}
       navState={navState}
       setNavState={setNavState}

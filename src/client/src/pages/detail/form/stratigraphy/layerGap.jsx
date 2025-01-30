@@ -1,7 +1,9 @@
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { AddCircle, ArrowDownward, ArrowUpward, Warning } from "@mui/icons-material";
 import { Card, CardActionArea, Stack, Typography } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
+import { DetailContext } from "../../detailContext.tsx";
 
 const IconTypography = ({ icon, text }) => {
   return (
@@ -23,8 +25,9 @@ const IconTypography = ({ icon, text }) => {
  * Component that is displayed if there is a gap between two layers.
  * It offers solutions to fix the gap like extending the upper layer or filling the gap with an empty layers.
  */
-const LayerGap = ({ addLayer, updateLayer, previousLayer, nextLayer, isEditable, height }) => {
+const LayerGap = ({ addLayer, updateLayer, previousLayer, nextLayer, height }) => {
   const { t } = useTranslation();
+  const { editingEnabled } = useContext(DetailContext);
 
   return (
     <Card square variant="outlined">
@@ -34,8 +37,8 @@ const LayerGap = ({ addLayer, updateLayer, previousLayer, nextLayer, isEditable,
           justifyContent: "space-evenly",
           color: theme.palette.error.main,
         }}>
-        {!isEditable && <IconTypography text={t("errorGap")} icon={<Warning />} />}
-        {isEditable && (
+        {!editingEnabled && <IconTypography text={t("errorGap")} icon={<Warning />} />}
+        {editingEnabled && (
           <>
             {previousLayer && (
               <CardActionArea

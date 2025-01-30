@@ -4,10 +4,9 @@ import { sortByDepth } from "../sorter.jsx";
 import InstrumentationDisplay from "./instrumentationDisplay.jsx";
 import InstrumentationInput from "./instrumentationInput.jsx";
 
-const Instrumentation = ({ isEditable, completionId }) => {
+const Instrumentation = ({ completionId }) => {
   return (
     <DataCards
-      isEditable={isEditable}
       parentId={completionId}
       getData={getInstrumentation}
       cyLabel="instrumentation"

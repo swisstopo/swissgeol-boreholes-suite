@@ -1,8 +1,9 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
+import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { boundingBox } from "../../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { Direction, ReferenceSystemKey } from "../../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { parseFloatWithThousandsSeparator } from "../legacyComponents/formUtils.ts";
@@ -56,13 +57,15 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
 }) => {
   const { t } = useTranslation();
   const { formState, register } = useFormContext();
+  const { editingEnabled } = useContext(DetailContext);
+  const isReadOnly = readonly ?? !editingEnabled;
 
   return (
     <TextField
       required={required || false}
       error={!className?.includes("ai") && !disabled && getFormFieldError(fieldName, formState.errors)}
       sx={{ ...sx }}
-      className={`${readonly ? "readonly" : ""} ${className ?? ""}`}
+      className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
       label={t(`location_${direction.toLowerCase()}_${referenceSystem}`)}
       {...register(fieldName, {
         required: required || false,
@@ -85,7 +88,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
       InputProps={{
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         inputComponent: NumericFormatWithThousandSeparator as any,
-        readOnly: readonly,
+        readOnly: isReadOnly,
         disabled: disabled,
       }}
     />

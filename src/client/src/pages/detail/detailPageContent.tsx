@@ -8,13 +8,14 @@ import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
+import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
 import Completion from "./form/completion/completion.jsx";
 import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement.tsx";
 import Hydrotest from "./form/hydrogeology/hydrotest.jsx";
-import WaterIngress from "./form/hydrogeology/waterIngress.jsx";
+import WaterIngress from "./form/hydrogeology/waterIngress.tsx";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
 import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx";
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
@@ -23,7 +24,6 @@ import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithos
 import WorkflowForm from "./form/workflow/workflowForm.jsx";
 
 interface DetailPageContentProps {
-  editingEnabled: boolean;
   editableByCurrentUser: boolean;
   locationPanelRef: RefObject<{ submit: () => void; reset: () => void }>;
   boreholePanelRef: RefObject<{ submit: () => void; reset: () => void }>;
@@ -32,12 +32,8 @@ interface DetailPageContentProps {
   borehole: BoreholeV2;
   panelOpen: boolean;
 }
-type DetailPageParams = {
-  id: string;
-};
 
 export const DetailPageContent = ({
-  editingEnabled,
   editableByCurrentUser,
   locationPanelRef,
   boreholePanelRef,
@@ -48,7 +44,8 @@ export const DetailPageContent = ({
 }: DetailPageContentProps) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
-  const { id } = useParams<DetailPageParams>();
+  const { editingEnabled } = useContext<DetailContextProps>(DetailContext);
+  const { id } = useParams<{ id: string }>();
   const legacyBorehole = useSelector((state: ReduxRootState) => state.core_borehole);
 
   function checkLock() {
@@ -96,7 +93,6 @@ export const DetailPageContent = ({
               render={() => (
                 <LocationPanel
                   ref={locationPanelRef}
-                  editingEnabled={editingEnabled}
                   onSubmit={onLocationFormSubmit}
                   borehole={borehole}
                   labelingPanelOpen={panelOpen}
@@ -107,26 +103,12 @@ export const DetailPageContent = ({
               exact
               path={"/:id/borehole"}
               render={() => (
-                <BoreholePanel
-                  ref={boreholePanelRef}
-                  boreholeId={id}
-                  borehole={borehole}
-                  editingEnabled={editingEnabled}
-                  onSubmit={onBoreholeFormSubmit}
-                />
+                <BoreholePanel ref={boreholePanelRef} borehole={borehole} onSubmit={onBoreholeFormSubmit} />
               )}
             />
             <Route exact path={"/:id/stratigraphy/lithology"} render={() => <Lithology checkLock={checkLock} />} />
-            <Route
-              exact
-              path={"/:id/stratigraphy/chronostratigraphy"}
-              render={() => <ChronostratigraphyPanel id={id} isEditable={editingEnabled} />}
-            />
-            <Route
-              exact
-              path={"/:id/stratigraphy/lithostratigraphy"}
-              render={() => <LithostratigraphyPanel id={id} isEditable={editingEnabled} />}
-            />
+            <Route exact path={"/:id/stratigraphy/chronostratigraphy"} render={() => <ChronostratigraphyPanel />} />
+            <Route exact path={"/:id/stratigraphy/lithostratigraphy"} render={() => <LithostratigraphyPanel />} />
             <Route
               path={"/:id/stratigraphy"}
               render={() => {
@@ -139,31 +121,15 @@ export const DetailPageContent = ({
                 );
               }}
             />
-            <Route
-              exact
-              path={"/:id/attachments"}
-              render={() => <EditorBoreholeFilesTable id={parseInt(id, 10)} unlocked={editingEnabled} />}
-            />
-            <Route
-              exact
-              path={"/:id/hydrogeology/wateringress"}
-              render={() => <WaterIngress isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
-            />
+            <Route exact path={"/:id/attachments"} render={() => <EditorBoreholeFilesTable />} />
+            <Route exact path={"/:id/hydrogeology/wateringress"} render={() => <WaterIngress />} />
             <Route
               exact
               path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
-              render={() => <GroundwaterLevelMeasurement isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
+              render={() => <GroundwaterLevelMeasurement />}
             />
-            <Route
-              exact
-              path={"/:id/hydrogeology/fieldmeasurement"}
-              render={() => <FieldMeasurement isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
-            />
-            <Route
-              exact
-              path={"/:id/hydrogeology/hydrotest"}
-              render={() => <Hydrotest isEditable={editingEnabled} boreholeId={parseInt(id, 10)} />}
-            />
+            <Route exact path={"/:id/hydrogeology/fieldmeasurement"} render={() => <FieldMeasurement />} />
+            <Route exact path={"/:id/hydrogeology/hydrotest"} render={() => <Hydrotest />} />
             <Route
               path={"/:id/hydrogeology"}
               render={() => {
@@ -176,11 +142,8 @@ export const DetailPageContent = ({
                 );
               }}
             />
-            <Route
-              path={"/:boreholeId/completion/:completionId"}
-              render={() => <Completion isEditable={editingEnabled} />}
-            />
-            <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={editingEnabled} />} />
+            <Route path={"/:boreholeId/completion/:completionId"} render={() => <Completion />} />
+            <Route path={"/:boreholeId/completion"} render={() => <Completion />} />
             <Route exact path={"/:id/status"} render={() => <WorkflowForm id={parseInt(id, 10)} />} />
             <Route
               path={"/:id"}

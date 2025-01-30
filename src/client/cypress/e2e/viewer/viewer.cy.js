@@ -12,20 +12,20 @@ describe("Viewer tests", () => {
 
     // click on borehole
     clickOnRowWithText("Aaron Rempel");
-    // verify all text inputs are readonly on Location tab
-    cy.get('input[type="text"]')
-      .should("have.length", 14)
+    // // verify all text inputs are readonly on Location tab
+    cy.get(".MuiFormControl-root")
+      .should("have.length", 22)
       .each(i => {
-        cy.wrap(i).should("have.attr", "readonly");
+        cy.wrap(i).should("have.class", "readonly", "readonly");
       });
 
     // click on Borehole tab
     getElementByDataCy("borehole-menu-item").click();
     // verify all text inputs are readonly on Borehole tab
-    cy.get('input[type="text"]')
-      .should("have.length", 6)
+    cy.get(".MuiFormControl-root")
+      .should("have.length", 16)
       .each(i => {
-        cy.wrap(i).should("have.attr", "readonly");
+        cy.wrap(i).should("have.class", "readonly", "readonly");
       });
 
     getElementByDataCy("edit-button").should("not.exist");

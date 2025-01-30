@@ -3,7 +3,6 @@ import { BoreholeFile } from "../location/locationPanelInterfaces.tsx";
 
 export interface BoreholeGeneralProps {
   borehole: BoreholeV2;
-  editingEnabled: boolean;
 }
 
 export interface BoreholeDetailProps extends BoreholeGeneralProps {
@@ -11,7 +10,6 @@ export interface BoreholeDetailProps extends BoreholeGeneralProps {
 }
 
 export interface BoreholePanelProps extends BoreholeGeneralProps {
-  boreholeId: string;
   onSubmit: (data: BoreholeFormInputs) => void;
 }
 

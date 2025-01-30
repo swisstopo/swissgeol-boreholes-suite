@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
+import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { AddButton } from "../buttons/buttons.tsx";
 import { FullPage, FullPageCentered } from "../styledComponents.ts";
 import { DataCard, DataCardButtonContainer, DataCardContainer, DataCardItem } from "./dataCard";
@@ -17,7 +18,6 @@ export const MemoizedDataCardsContainer = React.memo(DataCardsContainer);
  * The parent component must use display: flex, otherwise the DataCards may not be visible.
  *
  * @param {Object} props - The properties that define the component.
- * @param {boolean} props.isEditable - Determines if the data cards are editable.
  * @param {string|number} props.parentId - The ID of the parent entity.
  * @param {Function} props.getData - A function to fetch data based on the parentId.
  * @param {string} props.cyLabel - The label used for Cypress testing.
@@ -30,14 +30,14 @@ export const MemoizedDataCardsContainer = React.memo(DataCardsContainer);
  * @returns {JSX.Element} The DataCards component.
  */
 export const DataCards = props => {
-  const { isEditable, parentId, getData, cyLabel, addLabel, emptyLabel, renderInput, renderDisplay, sortDisplayed } =
-    props;
+  const { parentId, getData, cyLabel, addLabel, emptyLabel, renderInput, renderDisplay, sortDisplayed } = props;
   const { t } = useTranslation();
   const mounted = useRef(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const { displayedCards, selectedCard, addCard, selectCard, shouldReload, setLoadedCards } =
     useContext(DataCardContext);
   const { switchToCard } = useContext(DataCardSwitchContext);
+  const { editingEnabled } = useContext(DetailContext);
 
   const loadData = () => {
     setIsLoadingData(true);
@@ -54,11 +54,11 @@ export const DataCards = props => {
   };
 
   useEffect(() => {
-    if (!isEditable) {
+    if (!editingEnabled) {
       selectCard(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditable]);
+  }, [editingEnabled]);
 
   useEffect(() => {
     mounted.current = true;
@@ -81,13 +81,13 @@ export const DataCards = props => {
       const isSelected = selectedCard?.id === item.id;
       const isTemp = item.id === 0;
       var cardLabel = `${cyLabel}-card.${index}`;
-      if (isEditable && isSelected) {
+      if (editingEnabled && isSelected) {
         cardLabel = `${cyLabel}-card.${index}.edit`;
       }
       return (
         <DataCardItem key={index}>
           <DataCard key={index} data-cy={cardLabel}>
-            {isEditable && isSelected
+            {editingEnabled && isSelected
               ? renderInput({
                   item: item,
                   parentId: parentId,
@@ -95,18 +95,18 @@ export const DataCards = props => {
               : !isTemp &&
                 renderDisplay({
                   item: item,
-                  isEditable: isEditable,
+                  editingEnabled: editingEnabled,
                 })}
           </DataCard>
         </DataCardItem>
       );
     });
-  }, [isEditable, parentId, renderInput, renderDisplay, sortDisplayed, cyLabel, displayedCards, selectedCard]);
+  }, [editingEnabled, parentId, renderInput, renderDisplay, sortDisplayed, cyLabel, displayedCards, selectedCard]);
 
   return (
     <FullPage data-cy={`${cyLabel}-content`}>
       <DataCardButtonContainer mr={1}>
-        {isEditable && (
+        {editingEnabled && (
           <AddButton
             label={addLabel}
             disabled={selectedCard?.id === 0}

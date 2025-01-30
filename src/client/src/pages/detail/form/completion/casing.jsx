@@ -5,10 +5,9 @@ import CasingDisplay from "./casingDisplay.jsx";
 import CasingInput from "./casingInput.jsx";
 import { extractCasingDepth } from "./casingUtils.jsx";
 
-const Casing = ({ isEditable, completionId }) => {
+const Casing = ({ completionId }) => {
   return (
     <DataCards
-      isEditable={isEditable}
       parentId={completionId}
       getData={getCasings}
       cyLabel="casing"

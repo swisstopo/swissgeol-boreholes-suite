@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { withTranslation } from "react-i18next";
 import { IconButton } from "@mui/material";
 import { Checkbox, Icon, Table, TextArea } from "semantic-ui-react";
@@ -5,10 +6,12 @@ import { Trash2 } from "lucide-react";
 import PropTypes from "prop-types";
 import { downloadFile } from "../../../../api/file/file";
 import DateText from "../../../../components/legacyComponents/dateText.js";
+import { DetailContext } from "../../detailContext.tsx";
 import DownloadLink from "../downloadlink.jsx";
 
 const FilesTableComponent = props => {
   const { t } = props;
+  const { editingEnabled } = useContext(DetailContext);
   return (
     <div
       className="flex_col flex_fill"
@@ -23,7 +26,7 @@ const FilesTableComponent = props => {
             <Table.HeaderCell>{t("description")}</Table.HeaderCell>
             <Table.HeaderCell>{t("type")}</Table.HeaderCell>
             <Table.HeaderCell>{t("uploaded")}</Table.HeaderCell>
-            {props.unlocked === true ? <Table.HeaderCell /> : null}
+            {editingEnabled ? <Table.HeaderCell /> : null}
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -31,7 +34,7 @@ const FilesTableComponent = props => {
             <Table.Row key={"ftc-" + boreholeFile.fileId}>
               {props.editor === true && (
                 <Table.Cell>
-                  {props.unlocked === true ? (
+                  {editingEnabled ? (
                     <Checkbox
                       checked={boreholeFile.public}
                       onChange={(e, d) => {
@@ -56,7 +59,7 @@ const FilesTableComponent = props => {
                 <DownloadLink caption={boreholeFile.file?.name} onDownload={() => downloadFile(boreholeFile.fileId)} />
               </Table.Cell>
               <Table.Cell>
-                {props.unlocked === true ? (
+                {editingEnabled ? (
                   <TextArea
                     onChange={e => {
                       props.patchFile(
@@ -86,7 +89,7 @@ const FilesTableComponent = props => {
                   {boreholeFile.user?.name}
                 </span>
               </Table.Cell>
-              {props.unlocked === true ? (
+              {editingEnabled ? (
                 <Table.Cell>
                   <IconButton
                     data-cy="attachments-detach-button"
@@ -115,14 +118,12 @@ FilesTableComponent.propTypes = {
   patchFile: PropTypes.func,
   reload: PropTypes.func,
   t: PropTypes.func,
-  unlocked: PropTypes.bool,
 };
 
 FilesTableComponent.defaultProps = {
   editor: false,
   files: [],
   id: null,
-  unlocked: false,
 };
 
 const NamedFilesTableComponent = withTranslation("common")(FilesTableComponent);

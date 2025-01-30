@@ -4,9 +4,9 @@ import { FormContainer, FormDisplay, FormValueType } from "../../../../component
 import { GroundwaterLevelMeasurementDisplayProps } from "./Observation.ts";
 import ObservationDisplay from "./observationDisplay.tsx";
 
-const GroundwaterLevelMeasurementDisplay = ({ item, isEditable }: GroundwaterLevelMeasurementDisplayProps) => {
+const GroundwaterLevelMeasurementDisplay = ({ item }: GroundwaterLevelMeasurementDisplayProps) => {
   return (
-    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteGroundwaterLevelMeasurement}>
+    <DataDisplayCard item={item} deleteData={deleteGroundwaterLevelMeasurement}>
       <ObservationDisplay observation={item} showDepthInputs={false} />
       <FormContainer direction="row">
         <FormDisplay label="gwlm_kind" value={item?.kind} type={FormValueType.Domain} />

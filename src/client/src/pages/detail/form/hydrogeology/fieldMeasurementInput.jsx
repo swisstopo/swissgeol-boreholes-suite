@@ -11,9 +11,10 @@ import { FormContainer, FormInput, FormValueType } from "../../../../components/
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
+import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.ts";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import { ObservationType } from "./Observation.ts";
 import ObservationInput from "./observationInput.tsx";
-import { ObservationType } from "./observationType";
 import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 
 const FieldMeasurementInput = props => {
@@ -109,8 +110,8 @@ const FieldMeasurementInput = props => {
 
   const prepareFormDataForSubmit = data => {
     data = prepareCasingDataForSubmit(data);
-    data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
-    data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
+    data.startTime = getIsoDateIfDefined(data?.startTime);
+    data.endTime = getIsoDateIfDefined(data?.endTime);
     data.type = ObservationType.fieldMeasurement;
     data.boreholeId = parentId;
 
@@ -137,7 +138,7 @@ const FieldMeasurementInput = props => {
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
           <FormContainer>
-            <ObservationInput observation={item} boreholeId={parentId} />
+            <ObservationInput observation={item} />
             <Box
               sx={{
                 paddingBottom: "8.5px",

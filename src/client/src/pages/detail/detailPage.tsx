@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
@@ -11,6 +11,7 @@ import {
   prepareLocationDataForSubmit,
 } from "../../components/legacyComponents/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
@@ -21,7 +22,6 @@ import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
 
 export const DetailPage: FC = () => {
-  const [editingEnabled, setEditingEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
   const [borehole, setBorehole] = useState<BoreholeV2 | null>(null);
@@ -30,17 +30,16 @@ export const DetailPage: FC = () => {
   const workflowStatus = useSelector((state: ReduxRootState) => state.core_workflow);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
+  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
   const dispatch = useDispatch();
-  const { id } = useParams<{
-    id: string;
-  }>();
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     getBoreholeById(parseInt(id, 10)).then(b => {
       setBorehole(b);
       setEditingEnabled(b.locked !== null && b.lockedById === user.data.id);
     });
-  }, [id, user.data.id, workflowStatus]);
+  }, [id, setEditingEnabled, user.data.id, workflowStatus]);
 
   const loadOrCreate = useCallback(
     (id: string) => {
@@ -91,7 +90,7 @@ export const DetailPage: FC = () => {
 
   useEffect(() => {
     setEditingEnabled(legacyBorehole?.data?.lock !== null);
-  }, [legacyBorehole.data.lock]);
+  }, [legacyBorehole?.data?.lock, setEditingEnabled]);
 
   useEffect(() => {
     if (!editingEnabled) {
@@ -128,16 +127,10 @@ export const DetailPage: FC = () => {
 
   return (
     <>
-      <DetailHeader
-        borehole={borehole}
-        editingEnabled={editingEnabled}
-        setEditingEnabled={setEditingEnabled}
-        editableByCurrentUser={editableByCurrentUser}
-        triggerReset={triggerReset}
-      />
+      <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} triggerReset={triggerReset} />
       <LayoutBox>
         <SidebarBox>
-          <DetailSideNav id={id} />
+          <DetailSideNav />
         </SidebarBox>
         <Stack width="100%" direction="column">
           <Box
@@ -161,7 +154,6 @@ export const DetailPage: FC = () => {
                 />
               )}
               <DetailPageContent
-                editingEnabled={editingEnabled}
                 editableByCurrentUser={editableByCurrentUser}
                 locationPanelRef={locationPanelRef}
                 onLocationFormSubmit={onLocationFormSubmit}
@@ -171,7 +163,7 @@ export const DetailPage: FC = () => {
                 panelOpen={panelOpen}
               />
             </MainContentBox>
-            {editingEnabled && panelOpen && <LabelingPanel boreholeId={Number(id)} />}
+            {editingEnabled && panelOpen && <LabelingPanel />}
           </Box>
           {editingEnabled && shouldShowSaveBar && <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} />}
         </Stack>

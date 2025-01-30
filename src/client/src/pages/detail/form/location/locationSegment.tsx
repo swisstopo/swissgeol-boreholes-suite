@@ -1,9 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, Grid, Stack } from "@mui/material";
 import { fetchApiV2 } from "../../../../api/fetchApiV2";
 import PointComponent from "../../../../components/map/pointComponent";
 import { FormSegmentBox } from "../../../../components/styledComponents";
+import { DetailContext } from "../../detailContext.tsx";
 import CantonMunicipalitySegment from "./cantonMunicipalitySegment.tsx";
 import { referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.ts";
 import { Location, ReferenceSystemCode, ReferenceSystemKey } from "./coordinateSegmentInterfaces.ts";
@@ -16,9 +17,10 @@ interface LocationSegmentProps extends LocationBaseProps {
   labelingPanelOpen: boolean;
 }
 
-const LocationSegment = ({ borehole, editingEnabled, labelingPanelOpen, formMethods }: LocationSegmentProps) => {
+const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationSegmentProps) => {
   const [currentLV95X, setCurrentLV95X] = useState(borehole.locationX ? Number(borehole.locationX) : null);
   const [currentLV95Y, setCurrentLV95Y] = useState(borehole.locationY ? Number(borehole.locationY) : null);
+  const { editingEnabled } = useContext(DetailContext);
   const transformCoordinates = useCallback(async (referenceSystem: string, x: number, y: number) => {
     let apiUrl;
     if (referenceSystem === referenceSystems.LV95.name) {
@@ -116,7 +118,6 @@ const LocationSegment = ({ borehole, editingEnabled, labelingPanelOpen, formMeth
           <Grid xs={12} md={12} lg={labelingPanelOpen ? 12 : 6}>
             <CoordinatesSegment
               borehole={borehole}
-              editingEnabled={editingEnabled}
               formMethods={formMethods}
               setValuesForReferenceSystem={setValuesForReferenceSystem}
               handleCoordinateTransformation={handleCoordinateTransformation}
@@ -144,7 +145,7 @@ const LocationSegment = ({ borehole, editingEnabled, labelingPanelOpen, formMeth
             </FormSegmentBox>
           </Grid>
           <Grid xs={12}>
-            <ElevationSegment borehole={borehole} editingEnabled={editingEnabled} formMethods={formMethods} />
+            <ElevationSegment borehole={borehole} formMethods={formMethods} />
           </Grid>
         </Grid>
       </Card>
