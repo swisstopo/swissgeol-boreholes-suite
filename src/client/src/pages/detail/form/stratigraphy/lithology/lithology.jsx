@@ -86,7 +86,7 @@ const Lithology = ({ checkLock }) => {
         overflow: "hidden",
         p: 3,
         backgroundColor: theme.palette.background.default,
-        border: `1px solid ${theme.palette.boxShadow}`,
+        border: `1px solid ${theme.palette.border.light}`,
       }}>
       {borehole.data.id && (
         <ProfileHeader

@@ -44,7 +44,7 @@ const StratigraphySelection = ({ id: selectedBoreholeId, noStratigraphiesMessage
         flex: "1",
         p: 3,
         backgroundColor: theme.palette.background.default,
-        border: `1px solid ${theme.palette.boxShadow}`,
+        border: `1px solid ${theme.palette.border.light}`,
       }}>
       <TextField
         value={stratigraphyId}

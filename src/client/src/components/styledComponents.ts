@@ -30,7 +30,7 @@ export const LayoutBox = styled(Box)({ flex: "1 1 100%", display: "flex", flexDi
 
 export const SidebarBox = styled(Box)(() => ({
   flexShrink: 0,
-  borderRight: "1px solid " + theme.palette.boxShadow,
+  borderRight: "1px solid " + theme.palette.border.light,
   position: "relative",
 }));
 
@@ -47,7 +47,7 @@ export const FormSegmentBox = styled(Box)({
 });
 
 export const DialogHeaderContainer = styled(Box)({
-  borderBottom: "1px solid " + theme.palette.border,
+  borderBottom: "1px solid " + theme.palette.border.light,
   paddingTop: theme.spacing(3),
   paddingRight: theme.spacing(3),
   paddingLeft: theme.spacing(3),
@@ -60,12 +60,12 @@ export const DialogMainContent = styled(Box)({
 });
 
 export const DialogFooterContainer = styled(Box)({
-  borderTop: "1px solid " + theme.palette.border,
+  borderTop: "1px solid " + theme.palette.border.light,
   padding: theme.spacing(3),
 });
 
 export const DetailHeaderStack = styled(Stack)({
-  borderBottom: "1px solid " + theme.palette.boxShadow,
+  borderBottom: "1px solid " + theme.palette.border.light,
   height: "84px",
   padding: "16px",
 });
