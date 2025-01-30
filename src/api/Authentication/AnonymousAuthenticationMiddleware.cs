@@ -35,6 +35,7 @@ public class AnonymousAuthenticationMiddleware(RequestDelegate next, IConfigurat
             claimsIdentity.AddClaim(new(ClaimTypes.NameIdentifier, AnonymousUserIdentifier));
             claimsIdentity.AddClaim(new(ClaimTypes.Role, PolicyNames.Viewer));
             claimsIdentity.AddClaim(new(groupClaimType, authorizedGroupName));
+            claimsIdentity.AddClaim(new(ClaimTypes.Email, anonymousUser.Email));
 
             context.User = new ClaimsPrincipal(claimsIdentity);
 

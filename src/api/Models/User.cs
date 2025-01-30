@@ -39,6 +39,12 @@ public class User : IIdentifyable
     public string LastName { get; set; }
 
     /// <summary>
+    /// Gets or sets the <see cref="User"/>s email.
+    /// </summary>
+    [Column("email")]
+    public string Email { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the <see cref="User"/> has admin privileges.
     /// </summary>
     [Column("admin_usr")]
