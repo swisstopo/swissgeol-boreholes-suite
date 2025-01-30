@@ -266,7 +266,7 @@ describe("Test for exporting boreholes.", () => {
       goToRouteAndAcceptTerms(`/${id}/attachments`);
       startBoreholeEditing();
 
-      selectInputFile("input[type=file]", "FREEZINGCOLD.txt", "text/plain");
+      selectInputFile("FREEZINGCOLD.txt", "text/plain");
 
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);

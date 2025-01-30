@@ -22,7 +22,7 @@ const addMinimalAttachment = (boreholeIdentifier, fileName) => {
   cy.get(boreholeIdentifier).then(id => {
     goToRouteAndAcceptTerms(`/${id}/attachments`);
     startBoreholeEditing();
-    selectInputFile("input[type=file]", fileName, "text/plain");
+    selectInputFile(fileName, "text/plain");
     getElementByDataCy("attachments-upload-button").should("be.visible").click();
     cy.wait(["@upload-files", "@getAllAttachments"]);
     stopBoreholeEditing();

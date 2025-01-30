@@ -114,7 +114,7 @@ describe("Test labeling tool", () => {
     isFileActive("borehole_attachment_1.pdf", false);
     isFileActive("borehole_attachment_3.pdf", true);
 
-    selectInputFile("input[type=file]", "WOLFHEART.pdf", "application/pdf");
+    selectInputFile("WOLFHEART.pdf", "application/pdf");
 
     cy.get('[data-cy="labeling-file-button-select"]').contains("WOLFHEART.pdf");
     cy.get('[data-cy="button-select-popover"] .MuiListItem-root').eq(1).click();
