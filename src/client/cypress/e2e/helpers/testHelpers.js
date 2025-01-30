@@ -668,7 +668,7 @@ export const selectLanguage = language => {
 export const selectInputFile = (fileName, mimeType) => {
   const crypto = window.crypto || window.msCrypto;
   const content = crypto.getRandomValues(new Uint32Array(1)).toString();
-  
+
   cy.get("input[type=file]").selectFile(
     {
       contents: Cypress.Buffer.from(content),
