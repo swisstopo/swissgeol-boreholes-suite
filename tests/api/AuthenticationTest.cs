@@ -57,7 +57,6 @@ public class AuthenticationTest
             new Claim(ClaimTypes.GivenName, givenName),
             new Claim(ClaimTypes.Surname, surName),
             new Claim(ClaimTypes.Email, email),
-            new Claim("email_verified", "true"),
         };
 
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));
@@ -97,7 +96,6 @@ public class AuthenticationTest
             new Claim(ClaimTypes.GivenName, givenName),
             new Claim(ClaimTypes.Surname, surName),
             new Claim(ClaimTypes.Email, email),
-            new Claim("email_verified", "true"),
         };
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));
 
