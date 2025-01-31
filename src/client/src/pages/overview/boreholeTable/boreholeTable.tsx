@@ -41,15 +41,16 @@ export interface BoreholeTableProps {
 }
 
 const formatWithThousandSeparator = (value: number | null): string => {
-  if (value == null) return "-"; // Handle null/undefined cases
+  if (value == null) return "-";
 
-  const numberString = value.toString();
-  const [integerPart, decimalPart] = numberString.split(".");
+  // Format number using de-CH
+  const formatted = new Intl.NumberFormat("de-CH", {
+    useGrouping: true,
+    minimumFractionDigits: 2,
+  }).format(value);
 
-  // Apply a thousand separator (') to the integer part
-  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, "'");
-
-  return decimalPart ? `${formattedInteger}.${decimalPart}` : formattedInteger; // Recombine parts
+  // Ensure thousand separators are always a standard single quote (')
+  return formatted.replace(/’/g, "'");
 };
 
 export const BoreholeTable: FC<BoreholeTableProps> = ({
