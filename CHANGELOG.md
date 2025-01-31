@@ -39,6 +39,7 @@
 - Years greater than 9999 can no longer be used in date inputs.
 - The application language is now determined by the browser language if it is any of the supported languages.
 - Changed the icon for opening the labeling area.
+- Add thousand separators to large numbers in borehole overview table.
 
 ### Fixed
 
