@@ -40,6 +40,18 @@ export interface BoreholeTableProps {
   isBusy: boolean;
 }
 
+const formatWithThousandSeparator = (value: number | null): string => {
+  if (value == null) return "-"; // Handle null/undefined cases
+
+  const numberString = value.toString();
+  const [integerPart, decimalPart] = numberString.split(".");
+
+  // Apply a thousand separator (') to the integer part
+  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+
+  return decimalPart ? `${formattedInteger}.${decimalPart}` : formattedInteger; // Recombine parts
+};
+
 export const BoreholeTable: FC<BoreholeTableProps> = ({
   boreholes,
   paginationModel,
@@ -157,9 +169,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     },
     {
       field: "total_depth",
-      valueGetter: value => {
-        return Math.round(value * 100) / 100;
-      },
+      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.total_depth * 100) / 100),
       headerName: t("totaldepth"),
       flex: 1,
     },
@@ -177,25 +187,19 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     },
     {
       field: "reference_elevation",
-      valueGetter: value => {
-        return Math.round(value * 100) / 100;
-      },
+      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.reference_elevation * 100) / 100),
       headerName: t("reference_elevation"),
       flex: 1,
     },
     {
       field: "location_x",
-      valueGetter: (value, row) => {
-        return `${Math.round(row.location_x * 100) / 100 || "-"}`;
-      },
+      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.location_x * 100) / 100),
       headerName: t("location_x"),
       flex: 1,
     },
     {
       field: "location_y",
-      valueGetter: (value, row) => {
-        return `${Math.round(row.location_y * 100) / 100 || "-"}`;
-      },
+      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.location_y * 100) / 100),
       headerName: t("location_y"),
       flex: 1,
     },
