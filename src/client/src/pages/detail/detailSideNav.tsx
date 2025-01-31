@@ -32,7 +32,7 @@ export const DetailSideNav = () => {
     cursor: "pointer",
     paddingLeft: "35.5px",
     color: active ? theme.palette.error.main : "",
-    borderTop: `1px solid ${theme.palette.boxShadow}`,
+    borderTop: `1px solid ${theme.palette.border.light}`,
     borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : undefined,
     backgroundColor: active ? theme.palette.background.lightgrey : "",
     "&:hover": {
@@ -223,7 +223,7 @@ export const DetailSideNav = () => {
               </ParentListItem>
               <ParentListItem
                 active={location.pathname === `/${id}/status`}
-                style={{ borderBottom: `1px solid ${theme.palette.boxShadow}` }}
+                style={{ borderBottom: `1px solid ${theme.palette.border.light}` }}
                 onClick={() => {
                   history.push(`/${id}/status`);
                 }}>

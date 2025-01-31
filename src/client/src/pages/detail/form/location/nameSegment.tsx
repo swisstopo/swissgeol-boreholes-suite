@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { Card, TextField } from "@mui/material";
-import { t } from "i18next";
+import { Card } from "@mui/material";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
-import { FormContainer, FormInput } from "../../../../components/form/form.ts";
+import { FormContainer, FormInput, FormInputDisplayOnly } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
@@ -28,14 +27,7 @@ const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
           {!auth.anonymousModeEnabled && (
             <FormContainer direction="row">
               <FormInput fieldName={"originalName"} label={"original_name"} value={borehole?.originalName} />
-              <TextField
-                InputProps={{
-                  readOnly: true,
-                }}
-                className="readonly"
-                label={t("workgroup")}
-                value={borehole?.workgroup?.name}
-              />
+              <FormInputDisplayOnly label={"workgroup"} value={borehole?.workgroup?.name} />
             </FormContainer>
           )}
           <FormContainer direction="row">

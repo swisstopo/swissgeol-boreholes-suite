@@ -83,7 +83,7 @@ const EditorBoreholeFilesTable: FC = () => {
         padding: 3,
         flex: "1 1 100%",
         backgroundColor: theme.palette.background.default,
-        border: `1px solid ${theme.palette.boxShadow}`,
+        border: `1px solid ${theme.palette.border.light}`,
       }}>
       {editingEnabled && (
         <Box sx={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>

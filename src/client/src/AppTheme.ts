@@ -50,7 +50,10 @@ const themePalette: AppThemePalette = {
     activeEnd: "#E53940",
     contrastText: "#ffffff",
   },
-  boxShadow: "#DFE4E9",
+  border: {
+    light: "#DFE4E9",
+    darker: "#596978",
+  },
   background: {
     default: "#ffffff",
     lightgrey: "#F8F9FA",
@@ -88,8 +91,6 @@ const themePalette: AppThemePalette = {
       },
     },
   },
-
-  border: "#E0E2E6",
 };
 
 const themeBoxShadows: Shadows = [...defaultTheme.shadows];
@@ -416,6 +417,7 @@ export const theme = createTheme({
         root: {
           marginTop: themeSpacing(2),
           borderRadius: themeSpacing(0.5),
+          borderColor: `${themePalette.border.light} !important`,
           flex: "1",
 
           "&.readonly": {
@@ -425,6 +427,14 @@ export const theme = createTheme({
           "&.ai .MuiOutlinedInput-notchedOutline": {
             borderColor: `${themePalette.ai.main} !important`,
             borderWidth: "3px",
+          },
+
+          "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${themePalette.border.light} !important`,
+          },
+
+          "& .MuiInputBase-input.Mui-disabled": {
+            WebkitTextFillColor: themePalette.border.darker,
           },
         },
       },
@@ -500,14 +510,14 @@ export const theme = createTheme({
         root: {
           paddingTop: themeSpacing(3),
           paddingBottom: themeSpacing(2),
-          borderBottom: "1px solid " + themePalette.border,
+          borderBottom: "1px solid " + themePalette.border.light,
         },
       },
     },
     MuiDialogActions: {
       styleOverrides: {
         root: {
-          borderTop: "1px solid " + themePalette.border,
+          borderTop: "1px solid " + themePalette.border.light,
           padding: themeSpacing(3),
         },
       },

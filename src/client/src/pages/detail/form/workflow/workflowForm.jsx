@@ -113,7 +113,7 @@ class WorkflowForm extends React.Component {
             height: "100%",
             maxWidth: "800px",
             backgroundColor: theme.palette.background.default,
-            border: `1px solid ${theme.palette.boxShadow}`,
+            border: `1px solid ${theme.palette.border.light}`,
           }}>
           <Typography variant="h4">
             <TranslationText id={"flowPublication"} />

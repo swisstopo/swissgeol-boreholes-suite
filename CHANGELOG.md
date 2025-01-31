@@ -14,6 +14,7 @@
 - Removed all asterisks from required form fields.
 - Updated the UI design of the tabs component.
 - Reincluded download link for codelist references in the import panel.
+- Formfield border color now depend on whether borehole editing is enabled or not.
 
 ### Fixed
 

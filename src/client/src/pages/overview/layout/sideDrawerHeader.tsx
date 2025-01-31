@@ -10,7 +10,7 @@ export function SideDrawerHeader({ title, toggleDrawer }: { title: string; toggl
         height: "70px",
         alignItems: "center",
         justifyContent: "flex-start",
-        borderBottom: "1px solid " + theme.palette.border,
+        borderBottom: "1px solid " + theme.palette.border.light,
         marginBottom: "24px",
       }}>
       <Typography variant="h4" sx={{ flexGrow: 1 }}>

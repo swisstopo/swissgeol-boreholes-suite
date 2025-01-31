@@ -5,7 +5,7 @@ import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandS
 
 interface FormInputDisplayOnlyProps extends Omit<TextFieldProps, "value"> {
   label: string;
-  value: number | null;
+  value: number | string | null;
   withThousandSeparator?: boolean;
   disabled?: boolean;
   readOnly?: boolean;

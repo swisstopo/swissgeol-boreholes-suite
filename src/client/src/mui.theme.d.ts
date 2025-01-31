@@ -57,7 +57,10 @@ declare module "@mui/material/styles" {
       activeEnd: string;
       contrastText: string;
     };
-    boxShadow: string;
+    border: {
+      light: string;
+      darker: string;
+    };
     background: {
       default: string;
       lightgrey: string;
@@ -67,7 +70,6 @@ declare module "@mui/material/styles" {
       filterItemActive: string;
       listItemActive: string;
     };
-    border: string;
     transparent: string;
     buttonStates: {
       contained: {

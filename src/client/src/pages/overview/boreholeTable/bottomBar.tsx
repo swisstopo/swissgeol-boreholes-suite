@@ -119,7 +119,7 @@ const BottomBar = ({
         height: "68px",
         p: 2,
         backgroundColor: theme.palette.background.lightgrey,
-        borderTop: ` 1px solid ${theme.palette.border}`,
+        borderTop: ` 1px solid ${theme.palette.border.light}`,
       }}>
       {selectionModel.length > 0 ? (
         <Stack direction="row" spacing={1} alignItems="center">

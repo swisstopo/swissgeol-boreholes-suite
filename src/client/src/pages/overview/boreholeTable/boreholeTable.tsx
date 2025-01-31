@@ -306,7 +306,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       sx={{
         cursor: "pointer",
         ".MuiDataGrid-columnHeader": {
-          backgroundColor: theme.palette.boxShadow,
+          backgroundColor: theme.palette.border.light,
         },
         ".MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
           outline: "none",

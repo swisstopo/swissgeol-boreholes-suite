@@ -365,6 +365,38 @@ describe("Test for the borehole form.", () => {
     });
   });
 
+  it("verifies textfield border color for editing enabled or disabled", () => {
+    createBorehole({ "extended.original_name": "AAA_EEL", "custom.alternate_name": "AAA_EEL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      cy.get('[data-cy="topBedrockWeatheredMd-formInput"] fieldset').should(
+        "have.css",
+        "border-color",
+        "rgb(223, 228, 233)",
+      ); //#DFE4E9
+
+      cy.get('[data-cy="top_bedrock_weathered_tvd-formInput"] fieldset').should(
+        "have.css",
+        "border-color",
+        "rgb(223, 228, 233)",
+      ); // #DFE4E9
+
+      startBoreholeEditing();
+
+      cy.get('[data-cy="topBedrockWeatheredMd-formInput"] fieldset').should(
+        "have.css",
+        "border-color",
+        "rgb(89, 105, 120)",
+      ); // #596978
+
+      cy.get('[data-cy="top_bedrock_weathered_tvd-formInput"] fieldset').should(
+        "have.css",
+        "border-color",
+        "rgb(223, 228, 233)",
+      ); // #DFE4E9 is not editable and should not change color
+    });
+  });
+
   it("stops editing when going back to overview", () => {
     createBorehole({ "extended.original_name": "AAA_HIPPOPOTHAMUS", "custom.alternate_name": "AAA_HIPPOPOTHAMUS" }).as(
       "borehole_id",

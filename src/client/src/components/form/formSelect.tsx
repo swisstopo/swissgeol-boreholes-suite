@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { MenuItem, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
+import { getFieldBorderColor } from "../legacyComponents/formUtils.ts";
 import { getFormFieldError } from "./form";
 
 export interface FormSelectProps {
@@ -84,7 +85,10 @@ export const FormSelect: FC<FormSelectProps> = ({
           select
           required={required ?? false}
           error={getFormFieldError(fieldName, formState.errors)}
-          sx={{ ...sx }}
+          sx={{
+            ...sx,
+            ...getFieldBorderColor(isReadOnly),
+          }}
           className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
           label={t(label)}
           name={field.name}
