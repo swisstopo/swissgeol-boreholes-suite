@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { Divider } from "semantic-ui-react";
 import _ from "lodash";
 import { register } from "ol/proj/proj4";
@@ -12,7 +12,6 @@ import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../api/fetchApiV2";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
-import TranslationText from "../../components/legacyComponents/translationText.jsx";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
 import MapSettings from "./components/editorSettingList/mapSettings";
 import { boreholeEditorData } from "./data/boreholeEditorData";
@@ -247,15 +246,13 @@ const EditorSettings = () => {
                 : theme.palette.background.default,
               padding: 10,
             }}>
-            <div
-              style={{
+            <Box
+              sx={{
                 display: "flex",
                 alignItems: "center",
-                fontSize: 18,
-                fontWeight: "bold",
               }}>
-              <TranslationText id={filter.translationId} />
-            </div>
+              <Typography variant="body1">{t(filter.translationId)}</Typography>
+            </Box>
             <div
               style={{
                 flex: 1,
