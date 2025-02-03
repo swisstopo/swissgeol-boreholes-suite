@@ -1,8 +1,13 @@
-import adminUser from "../../fixtures/adminUser.json";
 import { saveForm } from "../helpers/buttonHelpers.js";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
-import { createBorehole, goToRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  giveAdminUser1workgroup,
+  giveAdminUser2workgroups,
+  goToRouteAndAcceptTerms,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
 
 function createBoreholes() {
   createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as("borehole_id_1");
@@ -16,27 +21,6 @@ function startBulkEditing() {
     checkRowWithText("AAA_LOMONE");
   });
   cy.contains("button", "Bulk editing").click();
-}
-
-function giveAdminUser1workgroup() {
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(adminUser),
-  }).as("adminUser1Workgroups");
-}
-
-function giveAdminUser2workgroups() {
-  const adminUser2Workgroups = Object.assign({}, adminUser);
-  adminUser2Workgroups.data.workgroups.push({
-    id: 6,
-    workgroup: "Blue",
-    roles: ["EDIT"],
-    disabled: null,
-  });
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(adminUser2Workgroups),
-  }).as("adminUser2Workgroups");
 }
 
 describe("Test the borehole bulk edit feature.", () => {
