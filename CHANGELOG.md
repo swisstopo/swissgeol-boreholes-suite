@@ -95,6 +95,7 @@
 - When copying a borehole, the nested collections of observations were not copied.
 - There was a bug when changing the order, transparency or visibility of custom WMS user layers.
 - The borehole status was not translated everywhere in the workflow panel.
+- Scrollbar not appearing in the borehole general tab when the screen height was smaller than the tab height.
 
 ## v2.1.870 - 2024-09-27
 
