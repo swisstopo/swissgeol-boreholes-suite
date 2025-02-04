@@ -24,6 +24,7 @@
 - When navigating away from the sections tab with unsaved changes, no warning prompt was displayed.
 - Replace whitespaces in borehole attachments before upload. Also replace whitespaces in existing filenames.
 - When importing boreholes or creating a new borehole the workgroup could not be selected.
+- Scrollbar not appearing in the borehole general tab when the screen height was smaller than the tab height.
 
 ## v2.1.1025 - 2025-01-17
 
