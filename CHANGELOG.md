@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1052 - 2025-02-04
+
 ### Added
 
 - Added functionality to import borehole attachments inside a ZIP file.
