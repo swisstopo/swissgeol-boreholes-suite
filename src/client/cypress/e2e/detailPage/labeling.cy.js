@@ -1,5 +1,6 @@
 import { evaluateCoordinate, evaluateSelect, hasAiStyle, hasError, isDisabled } from "../helpers/formHelpers.js";
 import {
+  goToRouteAndAcceptTerms,
   newEditableBorehole,
   newUneditableBorehole,
   selectInputFile,
@@ -56,6 +57,7 @@ const waitForLabelingImageLoaded = () => {
 
 describe("Test labeling tool", () => {
   it("can show labeling panel", () => {
+    goToRouteAndAcceptTerms("/");
     newUneditableBorehole().as("borehole_id");
     // only show in editing mode
     cy.get('[data-cy="labeling-toggle-button"]').should("not.exist");
@@ -88,6 +90,7 @@ describe("Test labeling tool", () => {
   });
 
   it("can select file", () => {
+    goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
@@ -129,6 +132,7 @@ describe("Test labeling tool", () => {
   });
 
   it("can extract data from image", () => {
+    goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
@@ -183,6 +187,7 @@ describe("Test labeling tool", () => {
   });
 
   it("can extract data from rotated and zoomed next page", () => {
+    goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
@@ -238,6 +243,7 @@ describe("Test labeling tool", () => {
   });
 
   it("shows alert if no coordinates are extracted", () => {
+    goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
