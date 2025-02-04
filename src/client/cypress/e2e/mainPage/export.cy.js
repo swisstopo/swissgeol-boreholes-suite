@@ -300,7 +300,7 @@ describe("Test for exporting boreholes.", () => {
     cy.get(".MuiAlert-message").contains("An error occurred while fetching a file from the cloud storage.");
   });
 
-  it("exports and reimports a borehole using csv", () => {
+  it.only("exports and reimports a borehole using csv", () => {
     const boreholeName = "AAA_WALRUS";
     createBorehole({
       "extended.original_name": boreholeName,

@@ -16,7 +16,6 @@ export const verifyRowContains = (rowContent, rowIndex) => {
 };
 
 export const waitForTableData = () => {
-  cy.wait("@edit_list");
   cy.get(".MuiDataGrid-root").should("be.visible");
   cy.get(".loading-indicator").should("not.exist");
   cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);

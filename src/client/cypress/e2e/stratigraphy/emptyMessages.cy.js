@@ -1,12 +1,10 @@
 import { goToRouteAndAcceptTerms, newUneditableBorehole, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Messages for empty profiles", () => {
-  beforeEach(() => {
-    newUneditableBorehole().as("borehole_id");
-  });
-
   it("Displays correct messages for stratigraphy", () => {
     goToRouteAndAcceptTerms(`/`);
+
+    newUneditableBorehole().as("borehole_id");
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="lithology-menu-item"]').click();
     cy.get('[data-cy="stratigraphy-message"]').should("contain", "No stratigraphy available");
