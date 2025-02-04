@@ -307,7 +307,7 @@ export const deleteBorehole = id => {
 };
 
 export const loginAndResetState = () => {
-  loginAsAdmin();
+  login("admin");
   cy.get("@id_token").then(token => {
     // Reset boreholes
     cy.request({
