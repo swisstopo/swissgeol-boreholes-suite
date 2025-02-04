@@ -20,6 +20,12 @@ describe("Borehole editor table tests", () => {
     verifyRowContains("Aaliyah Lynch", 1);
     verifyRowContains("Aaron Bartell", 2);
 
+    // verify a thousand separator is applied
+    verifyRowContains("1'913.61", 4);
+    verifyRowContains("1'017.29", 4);
+    verifyRowContains("2'604'222.17", 4);
+    verifyRowContains("1'137'876.85", 4);
+
     // sort by Name descending
     sortBy("Name");
     verifyRowContains("Zena Rath", 0);
@@ -29,9 +35,9 @@ describe("Borehole editor table tests", () => {
     // sort by borehole length descending
     sortBy("Borehole length");
     sortBy("Borehole length");
-    verifyRowContains("1998.07", 0);
-    verifyRowContains("1997.79", 1);
-    verifyRowContains("1995.5", 2);
+    verifyRowContains("1'998.07", 0);
+    verifyRowContains("1'997.79", 1);
+    verifyRowContains("1'995.5", 2);
 
     // sort by reference elevation
     sortBy("Reference elevation");
