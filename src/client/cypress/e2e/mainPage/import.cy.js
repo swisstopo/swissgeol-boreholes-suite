@@ -12,7 +12,6 @@ import {
   giveAdminUser2workgroups,
   goToRouteAndAcceptTerms,
   handlePrompt,
-  loginAsAdmin,
   returnToOverview,
   selectInputFile,
   startBoreholeEditing,
@@ -40,7 +39,7 @@ const dropFileIntoImportDropzone = boreholeFile => {
 };
 describe("Test for importing boreholes.", () => {
   it("Successfully imports multiple boreholes.", () => {
-    loginAsAdmin();
+    goToRouteAndAcceptTerms("/");
     getElementByDataCy("import-borehole-button").click();
 
     // Select borehole csv file
@@ -62,7 +61,7 @@ describe("Test for importing boreholes.", () => {
   });
 
   it("Displays borehole validation errors.", () => {
-    loginAsAdmin();
+    goToRouteAndAcceptTerms("/");
     getElementByDataCy("import-borehole-button").click();
 
     // Select borehole csv file

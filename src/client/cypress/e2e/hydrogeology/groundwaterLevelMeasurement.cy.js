@@ -4,8 +4,8 @@ import {
   createBorehole,
   createCasing,
   createCompletion,
+  goToRouteAndAcceptTerms,
   handlePrompt,
-  loginAsAdmin,
   selectLanguage,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -26,7 +26,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
       );
 
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin(`/${id}`);
+      goToRouteAndAcceptTerms(`/${id}`);
     });
     startBoreholeEditing();
 

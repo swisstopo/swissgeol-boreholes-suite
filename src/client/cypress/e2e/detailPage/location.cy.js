@@ -33,6 +33,7 @@ describe("Tests for 'Location' edit page.", () => {
   };
 
   it("creates and deletes a borehole.", () => {
+    goToRouteAndAcceptTerms("/");
     newEditableBorehole();
 
     const originalNameInput = cy.contains("label", "Original name").next().children("input");
@@ -125,6 +126,7 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("Saves restriction until date.", () => {
+    goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
 
     setSelect("restrictionId", 3);
@@ -140,6 +142,7 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("saves with ctrl s", () => {
+    goToRouteAndAcceptTerms("/");
     newEditableBorehole();
 
     const originalNameInput = cy.contains("label", "Original name").next().children("input");
@@ -151,6 +154,7 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("blocks navigating away and stop editing with unsaved changes", () => {
+    goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     let boreholeId;
     cy.get("@borehole_id").then(id => {
@@ -184,6 +188,7 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("adds edits and deletes borehole identifiers", () => {
+    goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     const originalNameInput = cy.contains("label", "Original name").next().children("input");
     originalNameInput.type("AAA_FELIX_THE_PANDA");

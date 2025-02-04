@@ -1,10 +1,16 @@
 import { addItem, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { checkAllVisibleRows, verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
-import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
+import {
+  goToRouteAndAcceptTerms,
+  newEditableBorehole,
+  returnToOverview,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by identifier.", () => {
   it("can filter by identifier", () => {
+    goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
 
     addItem("addIdentifier");
@@ -36,6 +42,7 @@ describe("Tests for filtering data by identifier.", () => {
   });
 
   it("can bulk edit boreholes while filter by identifier is set", () => {
+    goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
     addItem("addIdentifier");
     setSelect("boreholeCodelists.0.codelistId", 1);

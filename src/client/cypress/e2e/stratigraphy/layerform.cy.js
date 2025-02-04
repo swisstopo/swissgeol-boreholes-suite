@@ -1,8 +1,14 @@
 import { addItem } from "../helpers/buttonHelpers";
-import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
+import {
+  goToRouteAndAcceptTerms,
+  newEditableBorehole,
+  returnToOverview,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 
 describe("Tests for the layer form.", () => {
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {
+    goToRouteAndAcceptTerms(`/`);
     // create boreholes
     newEditableBorehole().as("borehole_id");
 

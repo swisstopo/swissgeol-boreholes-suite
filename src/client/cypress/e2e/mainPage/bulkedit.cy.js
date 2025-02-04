@@ -26,6 +26,7 @@ function startBulkEditing() {
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
     giveAdminUser1workgroup();
+    goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
@@ -34,6 +35,8 @@ describe("Test the borehole bulk edit feature.", () => {
 
   it("displays workgroup accordion only if user has permission for more than one workgroup", () => {
     giveAdminUser1workgroup();
+    goToRouteAndAcceptTerms("/");
+    showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 19);

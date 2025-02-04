@@ -1,15 +1,14 @@
-import { goToRouteAndAcceptTerms, loginAsAdmin, returnToOverview } from "../helpers/testHelpers";
+import { getElementByDataCy, goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers";
 
 it("checks that the field settings control the field visibility.", () => {
-  loginAsAdmin("/");
+  goToRouteAndAcceptTerms("/");
 
   const waitForSettings = () => {
     cy.wait(["@setting", "@codes", "@codelist_GET"]);
   };
-  cy.get('[data-cy="settings-button"]').click();
+  getElementByDataCy("settings-button").click();
   cy.contains("Lithology fields").click();
   cy.contains("Select all").click();
-  cy.wait("@setting");
   waitForSettings();
 
   goToRouteAndAcceptTerms("/1001140/stratigraphy/lithology");
@@ -44,7 +43,7 @@ it("checks that the field settings control the field visibility.", () => {
   cy.contains("Notes").should("exist");
 
   returnToOverview();
-  cy.get('[data-cy="settings-button"]').click();
+  getElementByDataCy("settings-button").click();
   cy.contains("Lithology fields").click();
   cy.contains("Unselect all").click();
   waitForSettings();
@@ -79,7 +78,7 @@ it("checks that the field settings control the field visibility.", () => {
   cy.contains("Notes").should("not.exist");
 
   returnToOverview();
-  cy.get('[data-cy="settings-button"]').click();
+  getElementByDataCy("settings-button").click();
   cy.contains("Lithology fields").click();
   waitForSettings();
   cy.wait(500);

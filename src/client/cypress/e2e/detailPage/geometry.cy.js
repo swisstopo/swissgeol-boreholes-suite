@@ -1,5 +1,10 @@
 import { setSelect } from "../helpers/formHelpers";
-import { createBorehole, getImportFileFromFixtures, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  getImportFileFromFixtures,
+  goToRouteAndAcceptTerms,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
 
 describe("Geometry crud tests", () => {
   beforeEach(() => {
@@ -7,7 +12,7 @@ describe("Geometry crud tests", () => {
 
     // open section editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin(`/${id}/borehole#geometry`);
+      goToRouteAndAcceptTerms(`/${id}/borehole#geometry`);
     });
 
     // start editing session

@@ -1,4 +1,4 @@
-import { loginAsAdmin } from "../helpers/testHelpers.js";
+import { goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 const buttonInactiveColor = "rgb(255, 255, 255)";
 const buttonActiveColor = "rgb(214, 226, 230)";
@@ -33,7 +33,7 @@ function assertPolygonFilterActive() {
 
 describe("Polygon filter tests", () => {
   it("draws polygon and asserts filtering", () => {
-    loginAsAdmin();
+    goToRouteAndAcceptTerms("/");
     cy.wait(5000);
     cy.wait("@borehole_geojson");
     cy.get('[data-cy="show-filter-button"]').click();

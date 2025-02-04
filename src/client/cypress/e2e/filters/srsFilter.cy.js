@@ -1,7 +1,12 @@
 import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setSelect } from "../helpers/formHelpers";
-import { loginAsAdmin, newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
+import {
+  goToRouteAndAcceptTerms,
+  newEditableBorehole,
+  returnToOverview,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
@@ -10,7 +15,7 @@ describe("Tests for filtering data by reference system.", () => {
   }
 
   it("can set filters as editor", () => {
-    loginAsAdmin();
+    goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
     goToEditorLocationFilter();
 
@@ -34,6 +39,7 @@ describe("Tests for filtering data by reference system.", () => {
   });
 
   it("can filter by reference system", () => {
+    goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="locationXLV03-formCoordinate"]').as("LV03X-input");
     cy.get('[data-cy="locationXLV03-formCoordinate"]').as("LV03Y-input");

@@ -3,8 +3,8 @@ import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../hel
 import {
   createBorehole,
   getElementByDataCy,
+  goToRouteAndAcceptTerms,
   handlePrompt,
-  loginAsAdmin,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
@@ -14,7 +14,7 @@ describe("Section crud tests", () => {
 
     // open section editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin(`/${id}/borehole#sections`);
+      goToRouteAndAcceptTerms(`/${id}/borehole#sections`);
     });
 
     // start editing session

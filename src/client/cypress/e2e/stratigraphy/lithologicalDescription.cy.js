@@ -1,8 +1,14 @@
 import { addItem, deleteItem } from "../helpers/buttonHelpers";
-import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
+import {
+  goToRouteAndAcceptTerms,
+  newEditableBorehole,
+  returnToOverview,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 
 describe("Tests for the lithological description column.", () => {
   it("Creates, updates and deletes lithological descriptions ", () => {
+    goToRouteAndAcceptTerms(`/`);
     // create boreholes
     newEditableBorehole().as("borehole_id");
 

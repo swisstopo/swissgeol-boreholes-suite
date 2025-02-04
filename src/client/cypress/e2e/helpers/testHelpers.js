@@ -163,13 +163,12 @@ export const goToRouteAndAcceptTerms = route => {
   cy.get('[data-cy="accept-button"]').click();
 };
 
-export const loginAsAdmin = (route = "/") => {
+export const loginAsAdmin = () => {
   login("admin");
   cy.intercept("/api/v1/user", {
     statusCode: 200,
     body: JSON.stringify(adminUser),
   }).as("stubAdminUser");
-  goToRouteAndAcceptTerms(route);
 };
 
 /**

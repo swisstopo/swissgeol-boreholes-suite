@@ -4,8 +4,8 @@ import {
   createBorehole,
   createCasing,
   createCompletion,
+  goToRouteAndAcceptTerms,
   handlePrompt,
-  loginAsAdmin,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
@@ -21,7 +21,7 @@ describe("Casing crud tests", () => {
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin(`/${id}/completion`);
+      goToRouteAndAcceptTerms(`/${id}/completion`);
       cy.wait(["@borehole", "@borehole_by_id"]);
     });
 
@@ -131,7 +131,7 @@ describe("Casing crud tests", () => {
           { fromDepth: 0, toDepth: 12, kindId: 25000103 },
         ]);
       });
-      loginAsAdmin(`/${id}/completion`);
+      goToRouteAndAcceptTerms(`/${id}/completion`);
       cy.wait(["@borehole", "@borehole_by_id"]);
     });
 

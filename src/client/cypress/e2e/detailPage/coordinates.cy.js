@@ -2,6 +2,7 @@ import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { evaluateSelect, setSelect } from "../helpers/formHelpers";
 import {
   delayedType,
+  goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
   newUneditableBorehole,
@@ -19,6 +20,7 @@ function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
 
 describe("Tests for editing coordinates of a borehole.", () => {
   beforeEach(() => {
+    goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
 
     cy.get('[data-cy="locationX-formCoordinate"] input').as("LV95X-input");
