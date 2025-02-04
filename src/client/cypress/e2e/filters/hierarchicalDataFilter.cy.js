@@ -1,8 +1,8 @@
-import { loginAsAdmin } from "../helpers/testHelpers.js";
+import { goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("Hierachical data filter tests", () => {
   it("check visible filters", () => {
-    loginAsAdmin();
+    goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("h6", "Chronostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
@@ -13,7 +13,7 @@ describe("Hierachical data filter tests", () => {
   });
 
   it("check sorting of filter values", () => {
-    loginAsAdmin();
+    goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("h6", "Chronostratigraphy").click();
     let periodsDropdown = cy.contains("label", "Period").next();
@@ -48,7 +48,7 @@ describe("Hierachical data filter tests", () => {
       "Burdigalian",
       "late Burdigalian",
     ];
-    loginAsAdmin();
+    goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("h6", "Chronostratigraphy").click();
     cy.get('[data-cy="hierarchical-data-search"]')

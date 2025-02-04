@@ -1,7 +1,7 @@
-import { goToRouteAndAcceptTerms, loginAsAdmin, returnToOverview } from "../helpers/testHelpers";
+import { goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers";
 
 it("checks that the field settings control the field visibility.", () => {
-  loginAsAdmin("/");
+  goToRouteAndAcceptTerms("/");
 
   const waitForSettings = () => {
     cy.wait(["@setting", "@codes", "@codelist_GET"]);

@@ -1,4 +1,4 @@
-import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import { createBorehole, goToRouteAndAcceptTerms, handlePrompt, startBoreholeEditing } from "../helpers/testHelpers";
 
 const verifyColorForStatus = (status, color) => {
   cy.get(`[data-cy="workflow_status_color_${status}"]`).should("have.have.class", `ui ${color} circular label`);
@@ -28,7 +28,7 @@ describe("Tests the publication workflow.", () => {
   it("Publishes a borehole without rejections", () => {
     createBorehole({ "extended.original_name": "Borehole to publish" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin(`/${id}/status`);
+      goToRouteAndAcceptTerms(`/${id}/status`);
     });
 
     startBoreholeEditing();
@@ -116,7 +116,7 @@ describe("Tests the publication workflow.", () => {
   it("Deletes a borehole if its publication status is not Change in Progress", () => {
     createBorehole({ "extended.original_name": "Borehole in review to delete" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin(`/${id}/status`);
+      goToRouteAndAcceptTerms(`/${id}/status`);
     });
 
     // Submit for review

@@ -8,11 +8,11 @@ import {
   verifyRowContains,
   waitForTableData,
 } from "../helpers/dataGridHelpers";
-import { loginAsAdmin, loginAsEditor, returnToOverview } from "../helpers/testHelpers.js";
+import { goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers.js";
 
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
-    loginAsAdmin();
+    goToRouteAndAcceptTerms("/");
     showTableAndWaitForData();
 
     // default soring by name ascending
@@ -47,7 +47,7 @@ describe("Borehole editor table tests", () => {
   });
 
   it("preserves column sorting and active page when navigating", () => {
-    loginAsEditor();
+    goToRouteAndAcceptTerms("/");
     showTableAndWaitForData();
 
     // sort by name descending
@@ -81,7 +81,7 @@ describe("Borehole editor table tests", () => {
   });
 
   it("verifies all rows are selected on header checkbox click", () => {
-    loginAsAdmin();
+    goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
     showTableAndWaitForData();
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");

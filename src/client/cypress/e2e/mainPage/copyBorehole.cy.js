@@ -1,11 +1,11 @@
 import { showTableAndWaitForData } from "../helpers/dataGridHelpers";
-import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import { createBorehole, goToRouteAndAcceptTerms, handlePrompt, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Test copying of boreholes", () => {
   it("copies a borehole", () => {
     createBorehole({ "extended.original_name": "NINTIC" }).as("borehole_id_1");
 
-    loginAsAdmin();
+    goToRouteAndAcceptTerms("/");
     showTableAndWaitForData();
     cy.get(".MuiDataGrid-checkboxInput").eq(1).scrollIntoView().click();
 

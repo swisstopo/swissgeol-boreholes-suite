@@ -1,8 +1,8 @@
-import { loginAsAdmin } from "../helpers/testHelpers";
+import { goToRouteAndAcceptTerms } from "../helpers/testHelpers";
 
 describe("Admin settings test", () => {
   beforeEach(() => {
-    loginAsAdmin("/setting/admin");
+    goToRouteAndAcceptTerms("/setting/admin");
     cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 8);
   });
 

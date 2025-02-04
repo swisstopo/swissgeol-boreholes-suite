@@ -2,7 +2,7 @@ import {
   bearerAuth,
   createBorehole,
   createStratigraphy,
-  loginAsAdmin,
+  goToRouteAndAcceptTerms,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
@@ -58,7 +58,7 @@ describe("Tests for the lithostratigraphy editor.", () => {
 
     // open lithostratigraphy editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin(`/${id}/stratigraphy/lithostratigraphy`);
+      goToRouteAndAcceptTerms(`/${id}/stratigraphy/lithostratigraphy`);
     });
     cy.wait("@get-layers-by-profileId");
 
