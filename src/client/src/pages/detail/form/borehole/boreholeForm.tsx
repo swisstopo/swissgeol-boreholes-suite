@@ -155,7 +155,11 @@ export const BoreholeForm = forwardRef(({ borehole, onSubmit }: BoreholeDetailPr
                       schemaName={"depth_precision"}
                       selected={borehole.depthPrecisionId}
                     />
-                    <FormInputDisplayOnly label={"total_depth_tvd"} value={totalDepthTVD} withThousandSeparator={true} />
+                    <FormInputDisplayOnly
+                      label={"total_depth_tvd"}
+                      value={totalDepthTVD}
+                      withThousandSeparator={true}
+                    />
                   </FormContainer>
                 </FormContainer>
                 <FormContainer direction="row">
