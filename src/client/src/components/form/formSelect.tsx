@@ -88,6 +88,11 @@ export const FormSelect: FC<FormSelectProps> = ({
           sx={{
             ...sx,
             ...getFieldBorderColor(isReadOnly),
+            ...(isReadOnly && {
+              "& .MuiSelect-icon": {
+                color: "rgba(0, 0, 0, 0)",
+              },
+            }),
           }}
           className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
           label={t(label)}

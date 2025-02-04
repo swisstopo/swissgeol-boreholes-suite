@@ -196,6 +196,27 @@ export const loginAsViewer = (route = "/") => {
   goToRouteAndAcceptTerms(route);
 };
 
+export function giveAdminUser1workgroup() {
+  cy.intercept("/api/v1/user", {
+    statusCode: 200,
+    body: JSON.stringify(adminUser),
+  }).as("adminUser1Workgroups");
+}
+
+export function giveAdminUser2workgroups() {
+  const adminUser2Workgroups = Object.assign({}, adminUser);
+  adminUser2Workgroups.data.workgroups.push({
+    id: 6,
+    workgroup: "Blue",
+    roles: ["EDIT"],
+    disabled: null,
+  });
+  cy.intercept("/api/v1/user", {
+    statusCode: 200,
+    body: JSON.stringify(adminUser2Workgroups),
+  }).as("adminUser2Workgroups");
+}
+
 export const newEditableBorehole = () => {
   const id = newUneditableBorehole();
   startBoreholeEditing();

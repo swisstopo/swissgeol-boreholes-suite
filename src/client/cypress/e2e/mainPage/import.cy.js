@@ -9,6 +9,7 @@ import {
   createBorehole,
   getElementByDataCy,
   getImportFileFromFixtures,
+  giveAdminUser2workgroups,
   goToRouteAndAcceptTerms,
   handlePrompt,
   loginAsAdmin,
@@ -88,6 +89,17 @@ describe("Test for importing boreholes.", () => {
       .should("contain", "Row4")
       .should("contain", "Row5")
       .should("contain", "Borehole with same Coordinates (+/- 2m) and same TotalDepth is provided multiple times.");
+  });
+
+  it("can select workgroup when importing boreholes", () => {
+    giveAdminUser2workgroups();
+    goToRouteAndAcceptTerms(`/`);
+    getElementByDataCy("import-borehole-button").click();
+    getElementByDataCy("workgroup-formSelect").click();
+    // Verify two workgroup options are visible
+    cy.contains("Reset");
+    cy.contains("Default");
+    cy.contains("Blue");
   });
 
   it("exports and reimports boreholes with attachments", () => {

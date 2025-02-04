@@ -37,6 +37,7 @@ const WorkgroupSelect = ({ workgroupId, enabledWorkgroups, setWorkgroupId, sx }:
             fieldName={"workgroup"}
             label={"workgroup"}
             selected={workgroupId}
+            readonly={false}
             values={options}
             onUpdate={value => setWorkgroupId((value as number) ?? null)}
           />

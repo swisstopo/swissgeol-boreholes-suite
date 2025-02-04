@@ -15,6 +15,7 @@
 - Updated the UI design of the tabs component.
 - Reincluded download link for codelist references in the import panel.
 - Formfield border color now depend on whether borehole editing is enabled or not.
+- Select dropdown arrows are now only displayed if borehole editing is enabled.
 
 ### Fixed
 
@@ -22,6 +23,7 @@
 - Numeric inputs on the borehole tab were not correctly reset.
 - When navigating away from the sections tab with unsaved changes, no warning prompt was displayed.
 - Replace whitespaces in borehole attachments before upload. Also replace whitespaces in existing filenames.
+- When importing boreholes or creating a new borehole the workgroup could not be selected.
 
 ## v2.1.1025 - 2025-01-17
 
@@ -39,6 +41,7 @@
 - Years greater than 9999 can no longer be used in date inputs.
 - The application language is now determined by the browser language if it is any of the supported languages.
 - Changed the icon for opening the labeling area.
+- Add thousand separators to large numbers in borehole overview table.
 
 ### Fixed
 
