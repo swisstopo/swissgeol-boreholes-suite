@@ -32,6 +32,7 @@ function ensureEditingEnabled() {
 
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {
+    goToRouteAndAcceptTerms(`/`);
     // create boreholes
     newEditableBorehole().as("borehole_id");
 
@@ -201,6 +202,7 @@ describe("Test for the borehole form.", () => {
   });
 
   it("Checks if form values are updated when borehole changes", () => {
+    goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     // sort by Name descending
     sortBy("Name");

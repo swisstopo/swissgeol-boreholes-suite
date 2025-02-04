@@ -39,6 +39,7 @@ describe("Tests for filtering data by reference system.", () => {
   });
 
   it("can filter by reference system", () => {
+    goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="locationXLV03-formCoordinate"]').as("LV03X-input");
     cy.get('[data-cy="locationXLV03-formCoordinate"]').as("LV03Y-input");
