@@ -556,5 +556,52 @@ export const theme = createTheme({
         },
       },
     },
+    MuiDataGrid: {
+      styleOverrides: {
+        root: {
+          cursor: "pointer",
+          "& .MuiDataGrid-columnHeader": {
+            backgroundColor: themePalette.border.light,
+          },
+          "& .MuiDataGrid-columnHeaderCheckbox, .MuiDataGrid-cellCheckbox, .MuiDataGrid-cell": {
+            outline: "none !important",
+          },
+          "& .MuiDataGrid-toolbarContainer": {
+            paddingLeft: "2px !important",
+            paddingBottom: "20px !important",
+            width: "1000px",
+            flexDirection: "row-reverse",
+            p: 1,
+          },
+          "& .MuiTablePagination-toolbar p": {
+            margin: 0,
+          },
+          "& .MuiDataGrid-footerContainer": {
+            height: "42px !important",
+          },
+          "& .MuiTablePagination-selectLabel": {
+            fontSize: "12px",
+          },
+          "& .MuiTablePagination-selectIcon": {
+            width: "14px",
+            height: "14px",
+          },
+          "& .MuiTablePagination-displayedRows": {
+            fontSize: "12px",
+          },
+          "& .MuiIconButton-root.Mui-disabled": {
+            color: themePalette.action.disabled,
+          },
+          "& .highlighted-row": {
+            backgroundColor: themePalette.background.lightgrey,
+            color: themePalette.primary.main,
+          },
+          "& .locked-row": {
+            backgroundColor: themePalette.background.default,
+            color: themePalette.action.disabled,
+          },
+        },
+      },
+    },
   },
 });

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added a readonly table displaying all the users in the admin settings.
+
 ### Changed
 
 - The settings are now displayed in tabs.

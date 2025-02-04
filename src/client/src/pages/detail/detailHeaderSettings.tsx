@@ -17,7 +17,7 @@ export const DetailHeaderSettings = () => {
             history.push("/");
           }}
         />
-        <Typography variant="h2"> {capitalizeFirstLetter(t("settings"))}</Typography>
+        <Typography variant="h2"> {capitalizeFirstLetter(t("header_settings"))}</Typography>
       </Stack>
     </DetailHeaderStack>
   );
