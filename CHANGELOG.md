@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- The settings are now displayed in tabs.
+
 ## v2.1.1052 - 2025-02-04
 
 ### Added
@@ -17,7 +21,6 @@
 - Updated the UI design of the tabs component.
 - Reincluded download link for codelist references in the import panel.
 - Formfield border color now depend on whether borehole editing is enabled or not.
-- The settings are now displayed in tabs.
 - Select dropdown arrows are now only displayed if borehole editing is enabled.
 
 ### Fixed
