@@ -93,12 +93,12 @@ export const UserSettings = () => {
 
     return (
       <Stack direction="row" gap={1} p={1.2} style={{ maxWidth: cellWidth }}>
-        {displayedWorkgroups.map((name, index) => (
-          <Chip key={index} label={name.toUpperCase()} size="small" color="primary" />
+        {displayedWorkgroups.map(name => (
+          <Chip key={name} label={name.toUpperCase()} size="small" color="primary" />
         ))}
         {extraWorkgroups.length > 0 && (
           <Tooltip title={extraWorkgroups.join(", ")}>
-            <Chip key="more" label={`+${extraWorkgroups.length}`} size="small" color="primary" />
+            <Chip key="extra-workgroups" label={`+${extraWorkgroups.length}`} size="small" color="primary" />
           </Tooltip>
         )}
       </Stack>
