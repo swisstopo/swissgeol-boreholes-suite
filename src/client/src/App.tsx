@@ -20,7 +20,7 @@ import { OverviewProvider } from "./pages/overview/overViewContext.tsx";
 import { OverviewPage } from "./pages/overview/overviewPage.tsx";
 import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext.tsx";
 import { DataLoader } from "./pages/settings/dataLoader";
-import SettingsPage from "./pages/settings/settingsPage";
+import { SettingsPage } from "./pages/settings/settingsPage.tsx";
 import { AcceptTerms } from "./term/accept";
 
 const queryClient = new QueryClient();
@@ -67,7 +67,7 @@ class App extends React.Component {
                             <HeaderComponent />
                             <Router>
                               <Switch>
-                                <Route render={props => <SettingsPage {...props} />} key={0} path={"/setting"} />
+                                <Route key={0} path={"/setting"} render={() => <SettingsPage />} />
                                 <Route
                                   exact={false}
                                   key={1}

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- The settings are now displayed in tabs.
+
 ### Fixed
 - When hovering over the main side navigation icons, an incorrect background color was displayed for the hovered icon.
 

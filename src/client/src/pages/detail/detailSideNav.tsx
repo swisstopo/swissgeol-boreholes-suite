@@ -3,11 +3,9 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
-import ListItem from "@mui/material/ListItem";
-import { styled } from "@mui/material/styles";
-import { List } from "semantic-ui-react";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
+import { ChildListItem, ParentListItem } from "../../components/styledComponents.ts";
 import { capitalizeFirstLetter } from "../../utils";
 
 export const DetailSideNav = () => {
@@ -18,31 +16,6 @@ export const DetailSideNav = () => {
   const { t } = useTranslation();
   const auth = useAuth();
   const history = useHistory();
-
-  interface ParentListItemProps {
-    active: boolean;
-  }
-
-  const ParentListItem = styled(ListItem, {
-    shouldForwardProp: prop => prop !== "active", // Prevents "active" from being forwarded as a DOM attribute
-  })<ParentListItemProps>(({ active }) => ({
-    padding: "1em",
-    display: "flex",
-    height: "40px",
-    cursor: "pointer",
-    paddingLeft: "35.5px",
-    color: active ? theme.palette.error.main : "",
-    borderTop: `1px solid ${theme.palette.border.light}`,
-    borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : undefined,
-    backgroundColor: active ? theme.palette.background.lightgrey : "",
-    "&:hover": {
-      backgroundColor: theme.palette.hover.main,
-    },
-  }));
-
-  const ChildListItem = styled(ParentListItem)(() => ({
-    paddingLeft: "50px !important",
-  }));
 
   useEffect(() => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
@@ -66,40 +39,28 @@ export const DetailSideNav = () => {
           flexDirection: "column",
           overflow: "auto",
         }}>
-        <List divided relaxed selection>
+        <Box>
           <ParentListItem
             style={{ borderTop: "none" }}
             active={location.pathname === `/${id}/location`}
             onClick={() => {
               history.push(`/${id}/location`);
             }}>
-            <List.Content>
-              <List.Header as="h3" data-cy="location-menu-item">
-                <Typography>{capitalizeFirstLetter(t("location"))}</Typography>
-              </List.Header>
-            </List.Content>
+            <Typography data-cy="location-menu-item">{capitalizeFirstLetter(t("location"))}</Typography>
           </ParentListItem>
           <ParentListItem
             active={location.pathname === `/${id}/borehole`}
             onClick={() => {
               history.push(`/${id}/borehole`);
             }}>
-            <List.Content>
-              <List.Header as="h3" data-cy="borehole-menu-item">
-                <Typography>{capitalizeFirstLetter(t("borehole"))}</Typography>
-              </List.Header>
-            </List.Content>
+            <Typography data-cy="borehole-menu-item">{capitalizeFirstLetter(t("borehole"))}</Typography>
           </ParentListItem>
           <ParentListItem
             active={false}
             onClick={() => {
               setStratigraphyIsVisible(!stratigraphyIsVisible);
             }}>
-            <List.Content>
-              <List.Header as="h3" data-cy="stratigraphy-menu-item">
-                <Typography>{capitalizeFirstLetter(t("stratigraphy"))}</Typography>
-              </List.Header>
-            </List.Content>
+            <Typography data-cy="stratigraphy-menu-item">{capitalizeFirstLetter(t("stratigraphy"))}</Typography>
           </ParentListItem>
           {stratigraphyIsVisible && (
             <>
@@ -108,33 +69,25 @@ export const DetailSideNav = () => {
                 onClick={() => {
                   history.push(`/${id}/stratigraphy/lithology`);
                 }}>
-                <List.Content>
-                  <List.Header as="h3" data-cy="lithology-menu-item">
-                    <Typography>{capitalizeFirstLetter(t("lithology"))}</Typography>
-                  </List.Header>
-                </List.Content>
+                <Typography data-cy="lithology-menu-item">{capitalizeFirstLetter(t("lithology"))}</Typography>
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/stratigraphy/chronostratigraphy`}
                 onClick={() => {
                   history.push(`/${id}/stratigraphy/chronostratigraphy`);
                 }}>
-                <List.Content>
-                  <List.Header as="h3" data-cy="chronostratigraphy-menu-item">
-                    <Typography>{capitalizeFirstLetter(t("chronostratigraphy"))}</Typography>
-                  </List.Header>
-                </List.Content>
+                <Typography data-cy="chronostratigraphy-menu-item">
+                  {capitalizeFirstLetter(t("chronostratigraphy"))}
+                </Typography>
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/stratigraphy/lithostratigraphy`}
                 onClick={() => {
                   history.push(`/${id}/stratigraphy/lithostratigraphy`);
                 }}>
-                <List.Content>
-                  <List.Header as="h3" data-cy="lithostratigraphy-menu-item">
-                    <Typography>{capitalizeFirstLetter(t("lithostratigraphy"))}</Typography>
-                  </List.Header>
-                </List.Content>
+                <Typography data-cy="lithostratigraphy-menu-item">
+                  {capitalizeFirstLetter(t("lithostratigraphy"))}
+                </Typography>
               </ChildListItem>
             </>
           )}
@@ -143,22 +96,14 @@ export const DetailSideNav = () => {
             onClick={() => {
               history.push(`/${id}/completion`);
             }}>
-            <List.Content>
-              <List.Header as="h3" data-cy="completion-menu-item">
-                <Typography>{capitalizeFirstLetter(t("completion"))}</Typography>
-              </List.Header>
-            </List.Content>
+            <Typography data-cy="completion-menu-item">{capitalizeFirstLetter(t("completion"))}</Typography>
           </ParentListItem>
           <ParentListItem
             active={false}
             onClick={() => {
               setHydrogeologyIsVisible(!hydrogeologyIsVisible);
             }}>
-            <List.Content>
-              <List.Header as="h3" data-cy="hydrogeology-menu-item">
-                <Typography>{capitalizeFirstLetter(t("hydrogeology"))}</Typography>
-              </List.Header>
-            </List.Content>
+            <Typography data-cy="hydrogeology-menu-item">{capitalizeFirstLetter(t("hydrogeology"))}</Typography>
           </ParentListItem>
           {hydrogeologyIsVisible && (
             <>
@@ -167,44 +112,32 @@ export const DetailSideNav = () => {
                 onClick={() => {
                   history.push(`/${id}/hydrogeology/wateringress`);
                 }}>
-                <List.Content>
-                  <List.Header as="h3" data-cy="wateringress-menu-item">
-                    <Typography>{capitalizeFirstLetter(t("waterIngress"))}</Typography>
-                  </List.Header>
-                </List.Content>
+                <Typography data-cy="wateringress-menu-item">{capitalizeFirstLetter(t("waterIngress"))}</Typography>
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
                 onClick={() => {
                   history.push(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
                 }}>
-                <List.Content>
-                  <List.Header as="h3" data-cy="groundwaterlevelmeasurement-menu-item">
-                    <Typography>{capitalizeFirstLetter(t("groundwaterLevelMeasurement"))}</Typography>
-                  </List.Header>
-                </List.Content>
+                <Typography data-cy="groundwaterlevelmeasurement-menu-item">
+                  {capitalizeFirstLetter(t("groundwaterLevelMeasurement"))}
+                </Typography>
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
                 onClick={() => {
                   history.push(`/${id}/hydrogeology/fieldmeasurement`);
                 }}>
-                <List.Content>
-                  <List.Header as="h3" data-cy="fieldmeasurement-menu-item">
-                    <Typography>{capitalizeFirstLetter(t("fieldMeasurement"))}</Typography>
-                  </List.Header>
-                </List.Content>
+                <Typography data-cy="fieldmeasurement-menu-item">
+                  {capitalizeFirstLetter(t("fieldMeasurement"))}
+                </Typography>
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/hydrotest`}
                 onClick={() => {
                   history.push(`/${id}/hydrogeology/hydrotest`);
                 }}>
-                <List.Content>
-                  <List.Header as="h3" data-cy="hydrotest-menu-item">
-                    <Typography>{capitalizeFirstLetter(t("hydrotest"))}</Typography>
-                  </List.Header>
-                </List.Content>
+                <Typography data-cy="hydrotest-menu-item">{capitalizeFirstLetter(t("hydrotest"))}</Typography>
               </ChildListItem>
             </>
           )}
@@ -215,11 +148,7 @@ export const DetailSideNav = () => {
                 onClick={() => {
                   history.push(`/${id}/attachments`);
                 }}>
-                <List.Content>
-                  <List.Header as="h3" data-cy="attachments-menu-item">
-                    <Typography>{capitalizeFirstLetter(t("attachments"))}</Typography>
-                  </List.Header>
-                </List.Content>
+                <Typography data-cy="attachments-menu-item">{capitalizeFirstLetter(t("attachments"))}</Typography>
               </ParentListItem>
               <ParentListItem
                 active={location.pathname === `/${id}/status`}
@@ -227,15 +156,11 @@ export const DetailSideNav = () => {
                 onClick={() => {
                   history.push(`/${id}/status`);
                 }}>
-                <List.Content>
-                  <List.Header as="h3" data-cy="status-menu-item">
-                    <Typography>{capitalizeFirstLetter(t("flowPublicationStatus"))}</Typography>
-                  </List.Header>
-                </List.Content>
+                <Typography data-cy="status-menu-item">{capitalizeFirstLetter(t("flowPublicationStatus"))}</Typography>
               </ParentListItem>
             </>
           )}
-        </List>
+        </Box>
       </Box>
     </Box>
   );
