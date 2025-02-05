@@ -75,9 +75,7 @@ interface ParentListItemProps {
   active: boolean;
 }
 
-export const ParentListItem = styled(ListItem, {
-  shouldForwardProp: prop => prop !== "active", // Prevents "active" from being forwarded as a DOM attribute
-})<ParentListItemProps>(({ active }) => ({
+export const ParentListItem = styled(ListItem)<ParentListItemProps>(({ active }) => ({
   padding: "1em",
   display: "flex",
   height: "40px",
