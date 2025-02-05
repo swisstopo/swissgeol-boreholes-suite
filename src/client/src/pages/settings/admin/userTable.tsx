@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
 import {
@@ -10,9 +10,10 @@ import {
   GridToolbar,
 } from "@mui/x-data-grid";
 import { Trash2 } from "lucide-react";
-import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
-import { fetchUsers } from "../../../api/user.ts";
+import { ApiError, User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
+import { fetchUsers, updateUser } from "../../../api/user.ts";
 import { theme } from "../../../AppTheme.ts";
+import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 
@@ -27,25 +28,41 @@ export const UserTable = () => {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>({
     company: false,
   });
+  const { showAlert } = useContext(AlertContext);
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
   const handleColumnVisibilityChange = useCallback(
     (newModel: GridColumnVisibilityModel) => setColumnVisibilityModel(newModel),
     [],
   );
 
-  useEffect(() => {
-    const getUsers = async () => {
-      const users = await fetchUsers();
+  const getUsers = async () => {
+    const users = await fetchUsers();
       setUsers(users);
-    };
+  };
+
+  useEffect(() => {
     getUsers();
   }, []);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
-    const handleCheckBoxClick = (event: ChangeEvent<HTMLInputElement>, id: number) => {
+    const handleCheckBoxClick = async (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
       event.stopPropagation();
-      console.log("update user with id", id);
-      //Todo: update user admin status
+      const user = users.find(user => user.id === id);
+      if (user) {
+        const previousUsers = [...users];
+        // Optimistically update the user in the state
+        setUsers(users.map(user => (user.id === id ? { ...user, isAdmin: event.target.checked } : user)));
+        try {
+          await updateUser({ ...user, isAdmin: event.target.checked });
+        } catch (error) {
+          setUsers(previousUsers); // Restore state before update if request fails
+          if (error instanceof ApiError) {
+            showAlert(t(error.message), "error");
+          } else {
+            showAlert(t("errorWhileFetchingData"), "error");
+          }
+        }
+      }
     };
 
     return (
@@ -56,7 +73,6 @@ export const UserTable = () => {
       />
     );
   };
-
   const renderWorkgroupChips = (params: GridRenderCellParams<WorkgroupRole[]>) => {
     const averageCharacterWidth = 7.5;
     const chipPadding = 16;
