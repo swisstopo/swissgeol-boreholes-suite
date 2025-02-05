@@ -463,7 +463,7 @@ export const theme = createTheme({
     MuiCardHeader: {
       styleOverrides: {
         root: {
-          backgroundColor: themePalette.background.lightgrey,
+          backgroundColor: "#F1F3F5",
         },
       },
     },

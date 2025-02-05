@@ -11,10 +11,6 @@ export const updateUser = async (user: User) => {
   if (user.disabledAt) {
     user.disabledAt = new Date(user.disabledAt).toISOString();
   }
-  user.isDisabled = undefined;
-  user.acceptedTerms = undefined;
-  user.workgroupRoles = undefined;
-
   return await fetchApiV2WithApiError("user", "PUT", user);
 };
 
