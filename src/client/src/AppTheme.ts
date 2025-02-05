@@ -563,9 +563,10 @@ export const theme = createTheme({
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: themePalette.border.light,
           },
-          "& .MuiDataGrid-columnHeaderCheckbox, .MuiDataGrid-cellCheckbox, .MuiDataGrid-cell": {
-            outline: "none !important",
-          },
+          "& .MuiDataGrid-columnHeaderCheckbox, .MuiDataGrid-cellCheckbox, .MuiDataGrid-cell, .MuiDataGrid-columnHeader":
+            {
+              outline: "none !important",
+            },
           "& .MuiDataGrid-toolbarContainer": {
             paddingLeft: "2px !important",
             paddingBottom: "20px !important",
