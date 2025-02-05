@@ -2,6 +2,7 @@ import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setSelect } from "../helpers/formHelpers";
 import {
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   newEditableBorehole,
   returnToOverview,
@@ -10,7 +11,8 @@ import {
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
-    cy.get('[data-cy="settings-button"]').click();
+    getElementByDataCy("settings-button").click();
+    getElementByDataCy("general-tab").click();
     cy.contains("div", "Location filters").click();
   }
 

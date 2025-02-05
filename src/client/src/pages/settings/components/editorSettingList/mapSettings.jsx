@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { useTranslation } from "react-i18next";
-import { Button, CircularProgress, IconButton, Stack } from "@mui/material";
+import { Button, CircularProgress, IconButton, Stack, Typography } from "@mui/material";
 import { Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
 import { Plus, Trash2 } from "lucide-react";
 import _ from "lodash";
@@ -167,15 +167,7 @@ const MapSettings = props => {
           backgroundColor: state.map ? theme.palette.background.lightgrey : theme.palette.background.default,
           padding: 10,
         }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            fontSize: 18,
-            fontWeight: "bold",
-          }}>
-          {t("map")}
-        </div>
+        <Typography variant="body1"> {t("map")}</Typography>
         <div
           style={{
             flex: 1,

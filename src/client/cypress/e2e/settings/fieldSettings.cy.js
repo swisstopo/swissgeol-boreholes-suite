@@ -7,6 +7,7 @@ it("checks that the field settings control the field visibility.", () => {
     cy.wait(["@setting", "@codes", "@codelist_GET"]);
   };
   getElementByDataCy("settings-button").click();
+  getElementByDataCy("general-tab").click();
   cy.contains("Lithology fields").click();
   cy.contains("Select all").click();
   waitForSettings();
@@ -44,6 +45,7 @@ it("checks that the field settings control the field visibility.", () => {
 
   returnToOverview();
   getElementByDataCy("settings-button").click();
+  getElementByDataCy("general-tab").click();
   cy.contains("Lithology fields").click();
   cy.contains("Unselect all").click();
   waitForSettings();
@@ -79,6 +81,7 @@ it("checks that the field settings control the field visibility.", () => {
 
   returnToOverview();
   getElementByDataCy("settings-button").click();
+  getElementByDataCy("general-tab").click();
   cy.contains("Lithology fields").click();
   waitForSettings();
   cy.wait(500);

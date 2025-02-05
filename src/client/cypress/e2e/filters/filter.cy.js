@@ -3,6 +3,7 @@ import {
   createBorehole,
   createLithologyLayer,
   createStratigraphy,
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   returnToOverview,
   startBoreholeEditing,
@@ -11,13 +12,13 @@ import {
 describe("Search filter tests", () => {
   it("has search filters", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("Filters");
   });
 
   it("shows the correct dropdowns", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
     let indentifierDropdown = cy.contains("label", "ID type").next();
@@ -63,20 +64,22 @@ describe("Search filter tests", () => {
       });
 
     // turn on registration filters
-    cy.get('[data-cy="settings-button"]').click();
+    getElementByDataCy("settings-button").click();
+    getElementByDataCy("general-tab").click();
     cy.contains("Registration filters").click();
     cy.contains("Select all").click();
     cy.wait("@setting");
 
     // check visibility of filters
     returnToOverview();
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("Registration").click();
     cy.contains("Created by");
     cy.contains("Creation date");
 
     // reset setting
-    cy.get('[data-cy="settings-button"]').click();
+    getElementByDataCy("settings-button").click();
+    getElementByDataCy("general-tab").click();
     cy.contains("Registration filters").click();
     cy.contains("Unselect all").click();
     cy.wait("@setting");
@@ -84,7 +87,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by creator name", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -157,7 +160,7 @@ describe("Search filter tests", () => {
       });
 
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("Location").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -235,7 +238,7 @@ describe("Search filter tests", () => {
       cy.get('[data-cy="workflow_submit"]').click();
       cy.get('[data-cy="workflow_dialog_submit"]').click();
       returnToOverview();
-      cy.get('[data-cy="show-filter-button"]').click();
+      getElementByDataCy("show-filter-button").click();
       cy.contains("Status").click();
       cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'627");
       cy.get('[data-cy="statuseditor"]').click();
@@ -247,7 +250,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by boreholestatus", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("Borehole").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -265,7 +268,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by color and uscs3", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -315,7 +318,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by original lithology in editor mode", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     filterByOriginalLithology();
     cy.wait("@edit_list");
     showTableAndWaitForData();
@@ -323,7 +326,7 @@ describe("Search filter tests", () => {
   });
   it("filters boreholes by creation date", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -351,7 +354,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by workgroup", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     showTableAndWaitForData();
     cy.contains("Workgroup").click();
     cy.contains("Name").click();

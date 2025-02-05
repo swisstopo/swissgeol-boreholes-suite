@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- The settings are now displayed in tabs.
+
 ## v2.1.1052 - 2025-02-04
 
 ### Added
