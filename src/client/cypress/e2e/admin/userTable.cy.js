@@ -27,7 +27,7 @@ describe("Admin settings test", () => {
     // sort
     sortBy("First name");
     sortBy("First name"); // clicking twice to sort descending
-    verifyRowContains("Viewer", 0);
+    verifyRowContains("viewer", 0);
     verifyRowContains("example@example.com", 0);
     verifyRowContains("Enabled", 0);
 
