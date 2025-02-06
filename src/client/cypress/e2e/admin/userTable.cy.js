@@ -1,8 +1,10 @@
 import {
+  checkRowWithText,
   clickOnRowWithText,
   sortBy,
   verifyPaginationText,
   verifyRowContains,
+  verifyRowWithTextCheckState,
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers.js";
@@ -43,24 +45,43 @@ describe("Admin settings test", () => {
     verifyRowContains("example@example.com", 0);
     verifyRowContains("Enabled", 0);
 
+    // Click on Editor
     clickOnRowWithText("editor");
     getElementByDataCy("settings-header").should("contain", "E. user");
 
-    // User should not be admin
+    // Admin checkbox should not be checked
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");
 
     // Workgroup table should contain 1 entry
     verifyTableLength(1);
     verifyRowContains("Default", 0); // Workgroup
-
     getElementByDataCy("backButton").click();
 
+    // Click on Admin
     clickOnRowWithText("Admin");
     getElementByDataCy("settings-header").should("contain", "A. User");
-    // User should be admin
+    // Admin checkbox should be checked
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("be.checked");
     verifyTableLength(2);
     verifyRowContains("Default", 0); // Workgroup
     verifyRowContains("Blue", 1); // Workgroup
+
+    getElementByDataCy("backButton").click();
+    verifyRowWithTextCheckState("Admin", true);
+    verifyRowWithTextCheckState("editor", false);
+
+    // Make editor admin from user table
+    checkRowWithText("editor");
+    verifyRowWithTextCheckState("editor", true);
+
+    // Go to user detail
+    clickOnRowWithText("editor");
+    cy.get('[data-cy="is-user-admin-checkbox"] input').should("be.checked");
+
+    // Uncheck is admin from user detail
+    cy.get('[data-cy="is-user-admin-checkbox"] input').click();
+    cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");
+    getElementByDataCy("backButton").click();
+    verifyRowWithTextCheckState("editor", false);
   });
 });
