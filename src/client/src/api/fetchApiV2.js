@@ -51,7 +51,8 @@ export async function fetchApiV2(url, method, payload = null) {
 }
 
 /**
- * Fetch data from the C# Api.
+ * Fetch data from the C# Api and return an Api error if the fetch was not successfull.
+ * This method can only be used in a try-catch block, handling the error.
  * @param {*} url The resource url.
  * @param {*} method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param {*} payload The payload of the HTTP request (optional).
