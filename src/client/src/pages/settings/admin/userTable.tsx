@@ -16,7 +16,7 @@ import { theme } from "../../../AppTheme.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 
-export const UserSettings = () => {
+export const UserTable = () => {
   const { t, i18n } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [filterModel, setFilterModel] = useState<GridFilterModel>({
@@ -35,9 +35,10 @@ export const UserSettings = () => {
 
   useEffect(() => {
     const getUsers = async () => {
-      return await fetchUsers();
+      const users = await fetchUsers();
+      setUsers(users);
     };
-    getUsers().then(users => setUsers(users));
+    getUsers();
   }, []);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {

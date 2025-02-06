@@ -9,7 +9,7 @@ import { TabPanel } from "../../components/tabs/tabPanel.tsx";
 import { DetailHeaderSettings } from "../detail/detailHeaderSettings";
 import AboutSettings from "./aboutSettings";
 import AdminSettings from "./admin/adminSettings";
-import { UserSettings } from "./admin/userSettings.tsx";
+import { UserTable } from "./admin/userTable.tsx";
 import EditorSettings from "./editorSettings.tsx";
 import TermSettings from "./termSettings";
 
@@ -30,7 +30,7 @@ export const SettingsPage = () => {
     }
     if (isAdminUser) {
       tabsArray.unshift({ label: t("workgroups"), hash: "workgroups", component: <AdminSettings /> });
-      tabsArray.unshift({ label: t("users"), hash: "users", component: <UserSettings /> });
+      tabsArray.unshift({ label: t("users"), hash: "users", component: <UserTable /> });
     }
 
     return tabsArray;
