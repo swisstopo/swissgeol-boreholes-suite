@@ -10,16 +10,16 @@ import { SettingsHeaderContext } from "../settings/admin/settingsHeaderContext.t
 export const SettingsHeader = () => {
   const history = useHistory();
   const { t } = useTranslation();
-  const { title, chipContent } = useContext(SettingsHeaderContext);
+  const { headerTitle, chipContent } = useContext(SettingsHeaderContext);
   return (
     <DetailHeaderStack direction="row" alignItems="center">
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={1}>
         <ReturnButton
           onClick={() => {
-            title === "settings" ? history.push("/") : history.push("/setting");
+            headerTitle === "settings" ? history.push("/") : history.push("/setting");
           }}
         />
-        <Typography variant="h2"> {capitalizeFirstLetter(t(title))}</Typography>
+        <Typography variant="h2"> {capitalizeFirstLetter(t(headerTitle))}</Typography>
         {chipContent && <Chip color={"secondary"} label={t(chipContent)} />}
       </Stack>
     </DetailHeaderStack>

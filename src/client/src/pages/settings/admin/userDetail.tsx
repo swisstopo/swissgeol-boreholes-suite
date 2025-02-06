@@ -20,7 +20,7 @@ export const UserDetail = () => {
   const [user, setUser] = useState<User>();
   const [userWorkgroups, setUserWorkgroups] = useState<object[]>();
   const { handleApiCall, handleApiCallWithRollback } = useApiCallHandler();
-  const { setTitle, setChipContent } = useContext(SettingsHeaderContext);
+  const { setHeaderTitle, setChipContent } = useContext(SettingsHeaderContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
@@ -28,7 +28,7 @@ export const UserDetail = () => {
     const getUser = async () => {
       const user: User = await handleApiCall(fetchUser, [parseInt(id)]);
       setUser(user);
-      setTitle(user.name);
+      setHeaderTitle(user.name);
       setChipContent("user");
 
       const getUniqueWorkgroups = (user: User) => {
@@ -52,7 +52,7 @@ export const UserDetail = () => {
       setUserWorkgroups(getUniqueWorkgroups(user));
     };
     getUser();
-  }, [handleApiCall, id, setChipContent, setTitle]);
+  }, [handleApiCall, id, setChipContent, setHeaderTitle]);
 
   if (!user) return;
 

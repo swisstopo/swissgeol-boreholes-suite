@@ -25,7 +25,7 @@ export const UserTable = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const history = useHistory();
-  const { setTitle, setChipContent } = useContext(SettingsHeaderContext);
+  const { setHeaderTitle, setChipContent } = useContext(SettingsHeaderContext);
   const { handleApiCall, handleApiCallWithRollback } = useApiCallHandler();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
@@ -35,9 +35,9 @@ export const UserTable = () => {
       setUsers(users);
     };
     getUsers();
-    setTitle("settings");
+    setHeaderTitle("settings");
     setChipContent("");
-  }, [handleApiCall, setChipContent, setTitle, t]);
+  }, [handleApiCall, setChipContent, setHeaderTitle, t]);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
     const handleCheckBoxClick = async (event: ChangeEvent<HTMLInputElement>, id: number) => {
