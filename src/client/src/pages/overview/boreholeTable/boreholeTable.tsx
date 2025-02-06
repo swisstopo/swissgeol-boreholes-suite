@@ -308,46 +308,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 
   return (
     <DataGrid
-      sx={{
-        cursor: "pointer",
-        ".MuiDataGrid-columnHeader": {
-          backgroundColor: theme.palette.border.light,
-        },
-        ".MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus": {
-          outline: "none",
-        },
-        ".MuiTablePagination-toolbar p": {
-          margin: 0,
-        },
-        ".MuiDataGrid-footerContainer": {
-          height: "42px !important",
-        },
-        ".MuiTablePagination-selectLabel": {
-          fontSize: "12px",
-        },
-        ".MuiTablePagination-selectIcon": {
-          width: "14px",
-          height: "14px",
-        },
-        ".MuiTablePagination-displayedRows": {
-          fontSize: "12px",
-        },
-        ".MuiIconButton-root": {
-          color: "#0000008A",
-          backgroundColor: "rgba(0, 0, 0, 0)",
-        },
-        ".MuiIconButton-root.Mui-disabled": {
-          color: "#828e9a",
-        },
-        "& .highlighted-row": {
-          backgroundColor: theme.palette.background.lightgrey,
-          color: theme.palette.primary.main,
-        },
-        "& .locked-row": {
-          backgroundColor: theme.palette.background.default,
-          color: theme.palette.action.disabled,
-        },
-      }}
       data-cy="borehole-table"
       apiRef={apiRef}
       onRowClick={handleRowClick}

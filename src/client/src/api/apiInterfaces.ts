@@ -32,6 +32,7 @@ export interface WorkgroupRole {
   workgroupId: number;
   role: Role;
   isActive?: boolean;
+  workgroup?: Workgroup;
 }
 
 export interface Term {
