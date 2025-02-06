@@ -40,9 +40,7 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
           <BdmsTab data-cy={`${tab.hash}-tab`} label={tab.label} key={tab.hash} />
         ))}
       </BdmsTabs>
-      <BdmsTabContentBox flex="1 0 0" sx={{ overflow: "auto" }}>
-        {tabs[activeIndex].component}
-      </BdmsTabContentBox>
+      <BdmsTabContentBox flex="1 0 0">{tabs[activeIndex].component}</BdmsTabContentBox>
     </>
   );
 };

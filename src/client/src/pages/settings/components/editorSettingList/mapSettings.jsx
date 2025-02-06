@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { useTranslation } from "react-i18next";
-import { Button, CircularProgress, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Stack, Typography } from "@mui/material";
 import { Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
 import { Plus, Trash2 } from "lucide-react";
 import _ from "lodash";
@@ -178,16 +178,9 @@ const MapSettings = props => {
       </div>
       {state.map === true ? (
         <Segment.Group style={{ margin: 0 }}>
-          <Segment>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}>
-              <div
-                style={{
-                  flex: "1 1 100%",
-                }}>
+          <Box sx={{ overFlowY: "auto" }}>
+            <Stack direction={{ xs: "column", sm: "column", md: "row" }} gap={1} sx={{ p: 1 }}>
+              <Box sx={{ flex: "1 1 0" }}>
                 <div
                   style={{
                     alignItems: "center",
@@ -217,7 +210,7 @@ const MapSettings = props => {
                     />
                   </div>
                   <Button
-                    sx={{ height: "37px", width: "80px" }}
+                    sx={{ height: "37px", width: "80px", ml: 1 }}
                     variant="contained"
                     data-cy="load-layers-button"
                     onClick={() => {
@@ -280,12 +273,8 @@ const MapSettings = props => {
                       "WMTS",
                     )}
                 </div>
-              </div>
-              <div
-                style={{
-                  flex: "1 1 100%",
-                  marginLeft: "1em",
-                }}>
+              </Box>
+              <Box sx={{ ml: 3, flex: "1 1 0" }}>
                 <div
                   style={{
                     alignItems: "center",
@@ -373,9 +362,9 @@ const MapSettings = props => {
                       ) : null;
                     })}
                 </div>
-              </div>
-            </div>
-          </Segment>
+              </Box>
+            </Stack>
+          </Box>
         </Segment.Group>
       ) : (
         <Divider style={{ margin: 0 }} />
