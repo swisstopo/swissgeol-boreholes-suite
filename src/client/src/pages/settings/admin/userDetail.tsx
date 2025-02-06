@@ -137,7 +137,7 @@ export const UserDetail = () => {
         <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} titleTypographyProps={{ variant: "h5" }} />
         <CardContent sx={{ pt: 4, px: 3 }}>
           <Stack direction={"row"} alignItems={"center"}>
-            <Checkbox checked={user.isAdmin} onChange={handleCheckboxChange} />
+            <Checkbox checked={user.isAdmin} onChange={handleCheckboxChange} data-cy="is-user-admin-checkbox" />
             <Typography>Admin</Typography>
           </Stack>
         </CardContent>

@@ -15,6 +15,10 @@ export const verifyRowContains = (rowContent, rowIndex) => {
     });
 };
 
+export const verifyTableLength = length => {
+  cy.get(".MuiDataGrid-row").should("have.length", length);
+};
+
 export const waitForTableData = () => {
   cy.get(".MuiDataGrid-root").should("be.visible");
   cy.get(".loading-indicator").should("not.exist");

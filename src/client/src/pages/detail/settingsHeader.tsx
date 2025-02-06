@@ -12,7 +12,7 @@ export const SettingsHeader = () => {
   const { t } = useTranslation();
   const { headerTitle, chipContent } = useContext(SettingsHeaderContext);
   return (
-    <DetailHeaderStack direction="row" alignItems="center">
+    <DetailHeaderStack direction="row" alignItems="center" data-cy="settings-header">
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={1}>
         <ReturnButton
           onClick={() => {
