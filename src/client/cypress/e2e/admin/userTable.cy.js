@@ -8,11 +8,10 @@ import {
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers.js";
-import { getElementByDataCy, giveAdminUser2workgroups, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
+import { getElementByDataCy, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("Admin settings test", () => {
   beforeEach(() => {
-    giveAdminUser2workgroups();
     goToRouteAndAcceptTerms("/setting#users");
     waitForTableData();
   });
@@ -55,6 +54,9 @@ describe("Admin settings test", () => {
     // Workgroup table should contain 1 entry
     verifyTableLength(1);
     verifyRowContains("Default", 0); // Workgroup
+    // Editor user should have role editor
+    getElementByDataCy("Editor-chip").should("be.visible");
+
     getElementByDataCy("backButton").click();
 
     // Click on Admin
@@ -62,9 +64,15 @@ describe("Admin settings test", () => {
     getElementByDataCy("settings-header").should("contain", "A. User");
     // Admin checkbox should be checked
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("be.checked");
-    verifyTableLength(2);
+    verifyTableLength(1);
     verifyRowContains("Default", 0); // Workgroup
-    verifyRowContains("Blue", 1); // Workgroup
+
+    // Admin user should have roles view, editor, controller, validator, publisher
+    getElementByDataCy("View-chip").should("be.visible");
+    getElementByDataCy("Editor-chip").should("be.visible");
+    getElementByDataCy("Controller-chip").should("be.visible");
+    getElementByDataCy("Validator-chip").should("be.visible");
+    getElementByDataCy("Publisher-chip").should("be.visible");
 
     getElementByDataCy("backButton").click();
     verifyRowWithTextCheckState("Admin", true);

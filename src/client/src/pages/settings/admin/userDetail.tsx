@@ -60,7 +60,13 @@ export const UserDetail = () => {
     return (
       <Stack direction="row" gap={1} p={1.2}>
         {params.value.map((roleName: string) => (
-          <Chip key={roleName} label={roleName.toUpperCase()} size="small" color="primary" />
+          <Chip
+            key={roleName}
+            label={roleName.toUpperCase()}
+            size="small"
+            color="primary"
+            data-cy={`${roleName}-chip`}
+          />
         ))}
       </Stack>
     );
