@@ -4,26 +4,29 @@ import { useTranslation } from "react-i18next";
 import { ApiError } from "../api/apiInterfaces.ts";
 import { AlertContext } from "../components/alert/alertContext.tsx";
 
-export function useApiCallHandler() {
+// doc
+
+export function useApiRequest() {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
 
   // Common function to handle API calls
-  const executeApiCall = useCallback(
-    async (apiFunc: (...args: any[]) => Promise<any>, args: any[], errorHandler: (error: unknown) => void) => {
+  const callApi = useCallback(
+    async (apiFunc: (...args: any[]) => Promise<any>, args: any[], onError: (error: unknown) => void) => {
       try {
         return await apiFunc(...args);
       } catch (error) {
-        errorHandler(error);
+        onError(error);
       }
     },
     [],
   );
 
-  const getErrorHandler = useCallback(
-    (rollbackFunc = () => {}) =>
+  const createErrorHandler = useCallback(
+    (onRollback = () => {}) =>
       (error: unknown) => {
-        rollbackFunc();
+        onRollback();
+        // Fallback error message if error thrown is not of type ApiError or does not contain a message
         let errorMessage = t("errorWhileFetchingData");
         if (error instanceof ApiError && error.message) {
           errorMessage = t(error.message);
@@ -33,21 +36,21 @@ export function useApiCallHandler() {
     [showAlert, t],
   );
 
-  const handleApiCall = useCallback(
+  const callApiWithErrorHandling = useCallback(
     (apiFunc: (...args: any[]) => Promise<any>, args: any[]) => {
-      const errorHandler = getErrorHandler();
-      return executeApiCall(apiFunc, args, errorHandler);
+      const onError: (error: unknown) => void = createErrorHandler();
+      return callApi(apiFunc, args, onError);
     },
-    [executeApiCall, getErrorHandler],
+    [callApi, createErrorHandler],
   );
 
-  const handleApiCallWithRollback = useCallback(
+  const callApiWithRollback = useCallback(
     (apiFunc: (...args: any[]) => Promise<any>, args: any[], rollbackFunc: () => void) => {
-      const errorHandler = getErrorHandler(rollbackFunc);
-      return executeApiCall(apiFunc, args, errorHandler);
+      const onError: (error: unknown) => void = createErrorHandler(rollbackFunc);
+      return callApi(apiFunc, args, onError);
     },
-    [executeApiCall, getErrorHandler],
+    [callApi, createErrorHandler],
   );
 
-  return { handleApiCall, handleApiCallWithRollback };
+  return { callApiWithErrorHandling, callApiWithRollback };
 }

@@ -14,7 +14,7 @@ import { Trash2 } from "lucide-react";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchUsers, updateUser } from "../../../api/user.ts";
 import { theme } from "../../../AppTheme.ts";
-import { useApiCallHandler } from "../../../hooks/useApiCallHandler.ts";
+import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
@@ -26,18 +26,18 @@ export const UserTable = () => {
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const history = useHistory();
   const { setHeaderTitle, setChipContent } = useContext(SettingsHeaderContext);
-  const { handleApiCall, handleApiCallWithRollback } = useApiCallHandler();
+  const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
   useEffect(() => {
     const getUsers = async () => {
-      const users: User[] = await handleApiCall(fetchUsers, []);
+      const users: User[] = await callApiWithErrorHandling(fetchUsers, []);
       setUsers(users);
     };
     getUsers();
     setHeaderTitle("settings");
     setChipContent("");
-  }, [handleApiCall, setChipContent, setHeaderTitle, t]);
+  }, [callApiWithErrorHandling, setChipContent, setHeaderTitle, t]);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
     const handleCheckBoxClick = async (event: ChangeEvent<HTMLInputElement>, id: number) => {
@@ -46,10 +46,12 @@ export const UserTable = () => {
       if (user) {
         // Define rollback function to revert the state if the API call fails
         const rollback = () => setUsers([...users]);
+
         // Optimistically update the user in the state
         const updatedUser = { ...user, isAdmin: event.target.checked };
         setUsers([...users.map(user => (user.id === id ? updatedUser : user))]);
-        await handleApiCallWithRollback(updateUser, [updatedUser], rollback);
+
+        await callApiWithRollback(updateUser, [updatedUser], rollback);
       }
     };
 
@@ -169,7 +171,7 @@ export const UserTable = () => {
     },
   ];
 
-  const isLoading = !users.length;
+  const isLoading = !users?.length;
 
   return (
     <DataGrid
@@ -180,10 +182,10 @@ export const UserTable = () => {
       sortingOrder={["asc", "desc"]}
       loading={isLoading}
       onRowClick={handleRowClick}
-      rowCount={users.length}
+      rowCount={users?.length}
       rows={users}
       columns={columns}
-      hideFooterPagination={!users.length}
+      hideFooterPagination={!users?.length}
       pageSizeOptions={[100]}
       slots={{ toolbar: GridToolbar }}
       slotProps={{

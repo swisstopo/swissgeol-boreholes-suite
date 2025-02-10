@@ -15,7 +15,7 @@ export const SettingsHeaderContext = createContext<SettingsHeaderContextProps>({
 });
 
 export const SettingsHeaderProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [headerTitle, setHeaderTitle] = useState<string>("");
+  const [headerTitle, setHeaderTitle] = useState<string>("settings");
   const [chipContent, setChipContent] = useState<string>("");
   return (
     <SettingsHeaderContext.Provider

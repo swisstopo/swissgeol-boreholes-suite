@@ -8,7 +8,7 @@ import i18n from "i18next";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchUser, updateUser } from "../../../api/user.ts";
 import { theme } from "../../../AppTheme.ts";
-import { useApiCallHandler } from "../../../hooks/useApiCallHandler.ts";
+import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
@@ -19,14 +19,14 @@ export const UserDetail = () => {
   const { t } = useTranslation();
   const [user, setUser] = useState<User>();
   const [userWorkgroups, setUserWorkgroups] = useState<object[]>();
-  const { handleApiCall, handleApiCallWithRollback } = useApiCallHandler();
+  const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const { setHeaderTitle, setChipContent } = useContext(SettingsHeaderContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
   useEffect(() => {
     const getUser = async () => {
-      const user: User = await handleApiCall(fetchUser, [parseInt(id)]);
+      const user: User = await callApiWithErrorHandling(fetchUser, [parseInt(id)]);
       setUser(user);
       setHeaderTitle(user.name);
       setChipContent("user");
@@ -52,7 +52,7 @@ export const UserDetail = () => {
       setUserWorkgroups(getUniqueWorkgroups(user));
     };
     getUser();
-  }, [handleApiCall, id, setChipContent, setHeaderTitle]);
+  }, [callApiWithErrorHandling, id, setChipContent, setHeaderTitle]);
 
   if (!user) return;
 
@@ -122,10 +122,12 @@ export const UserDetail = () => {
     if (user) {
       // Define rollback function to revert the state if the API call fails
       const rollback = () => setUser({ ...user });
+
       // Optimistically update the user in the state
       const updatedUser = { ...user, isAdmin: event.target.checked };
       setUser({ ...updatedUser });
-      await handleApiCallWithRollback(updateUser, [updatedUser], rollback);
+
+      await callApiWithRollback(updateUser, [updatedUser], rollback);
     }
   };
 

@@ -19,7 +19,7 @@ export async function fetchApiV2Base(url, method, body, contentType = null) {
   });
 }
 
-async function readResponse(response) {
+async function readApiResponse(response) {
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.indexOf("application/json") !== -1) {
     return await response.json();
@@ -44,7 +44,7 @@ async function readResponse(response) {
 export async function fetchApiV2(url, method, payload = null) {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
-    return await readResponse(response);
+    return await readApiResponse(response);
   } else {
     return response.text().then(text => alert(text));
   }
@@ -61,9 +61,9 @@ export async function fetchApiV2(url, method, payload = null) {
 export async function fetchApiV2WithApiError(url, method, payload = null) {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
-    return await readResponse(response);
+    return await readApiResponse(response);
   } else {
-    throw new ApiError("errorOccurredWhileFetching", response.status);
+    throw new ApiError("errorWhileFetchingData", response.status);
   }
 }
 
