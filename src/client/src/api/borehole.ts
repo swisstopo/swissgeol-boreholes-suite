@@ -2,7 +2,10 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
 import { User, Workgroup } from "./apiInterfaces.ts";
+import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2";
+import { Observation } from "./observation.ts";
+import { Stratigraphy } from "./stratigraphy.ts";
 
 export interface BasicIdentifier {
   boreholeId: number;
@@ -64,6 +67,11 @@ export interface BoreholeV2 {
   updated: Date | string | null;
   updatedById: number;
   updatedBy: User;
+  stratigraphies: Stratigraphy[];
+  locked: boolean | null;
+  lockedById: number | null;
+  completions: Completion[];
+  observations: Observation[];
 }
 
 const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");
