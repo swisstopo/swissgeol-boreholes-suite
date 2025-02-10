@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "react-query";
 import { Trash2 } from "lucide-react";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
@@ -9,12 +10,13 @@ import { DataCardButtonContainer } from "./dataCard.jsx";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
 
 export const DataDisplayCard = props => {
-  const { item, deleteData } = props;
+  const { item, parentId, deleteData } = props;
   const { t } = useTranslation();
   const { selectedCard, selectCard, triggerReload } = useContext(DataCardContext);
   const { switchToCard } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(DetailContext);
+  const queryClient = useQueryClient();
 
   return (
     <>
@@ -36,6 +38,9 @@ export const DataDisplayCard = props => {
                   action: () => {
                     deleteData(item.id).then(() => {
                       triggerReload();
+                      queryClient.invalidateQueries({
+                        queryKey: ["borehole", parseInt(parentId, 10)],
+                      });
                     });
                   },
                 },

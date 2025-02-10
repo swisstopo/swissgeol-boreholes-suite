@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "react-query";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { addHydrotest, updateHydrotest, useDomains, useHydrotestDomains } from "../../../../api/fetchApiV2";
@@ -43,6 +44,7 @@ const HydrotestInput = props => {
 
   const [hydrotestKindIds, setHydrotestKindIds] = useState(item?.kindCodelists?.map(c => c.id) || []);
   const filteredTestKindDomains = useHydrotestDomains(hydrotestKindIds);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (checkIsDirty) {
@@ -202,6 +204,9 @@ const HydrotestInput = props => {
         ...data,
       }).then(() => {
         triggerReload();
+        queryClient.invalidateQueries({
+          queryKey: ["borehole", parseInt(parentId, 10)],
+        });
       });
     } else {
       updateHydrotest({

@@ -95,6 +95,7 @@ export const DataCards = props => {
               : !isTemp &&
                 renderDisplay({
                   item: item,
+                  parentId: parentId,
                   editingEnabled: editingEnabled,
                 })}
           </DataCard>
