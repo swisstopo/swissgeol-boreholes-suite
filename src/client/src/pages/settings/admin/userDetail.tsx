@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridFilterModel, GridRenderCellParams, GridToolbar } from "@mui/x-data-grid";
-import { Trash2 } from "lucide-react";
 import i18n from "i18next";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchUser, updateUser } from "../../../api/user.ts";
@@ -13,6 +12,7 @@ import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
 import { SettingsHeaderContext } from "./settingsHeaderContext.tsx";
+import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
 export const UserDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +21,7 @@ export const UserDetail = () => {
   const [userWorkgroups, setUserWorkgroups] = useState<object[]>();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const { setHeaderTitle, setChipContent } = useContext(SettingsHeaderContext);
+  const { statusColumn, deleteColumn } = useSharedTableColumns();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
@@ -84,37 +85,8 @@ export const UserDetail = () => {
       renderCell: renderRoleChips,
       flex: 1,
     },
-    {
-      field: "isDisabled",
-      headerName: t("status"),
-      valueGetter: isDisabled => {
-        return isDisabled ? t("disabled") : t("enabled");
-      },
-      width: 120,
-    },
-    {
-      field: "delete",
-      headerName: "",
-      width: 24,
-      resizable: false,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      disableReorder: true,
-      disableExport: true,
-      renderCell: value => {
-        return (
-          <Stack
-            direction={"row"}
-            gap={1}
-            p={0.5}
-            key={value.id}
-            sx={{ mt: 1, border: `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }}>
-            <Trash2 color={theme.palette.primary.main} />
-          </Stack>
-        );
-      },
-    },
+    statusColumn,
+    deleteColumn,
   ];
 
   const handleCheckboxChange = async (event: ChangeEvent<HTMLInputElement>) => {

@@ -10,15 +10,14 @@ import {
   GridRenderCellParams,
   GridToolbar,
 } from "@mui/x-data-grid";
-import { Trash2 } from "lucide-react";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchUsers, updateUser } from "../../../api/user.ts";
-import { theme } from "../../../AppTheme.ts";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
 import { SettingsHeaderContext } from "./settingsHeaderContext.tsx";
+import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
 export const UserTable = () => {
   const { t, i18n } = useTranslation();
@@ -27,6 +26,7 @@ export const UserTable = () => {
   const history = useHistory();
   const { setHeaderTitle, setChipContent } = useContext(SettingsHeaderContext);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
+  const { statusColumn, deleteColumn } = useSharedTableColumns();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
   useEffect(() => {
@@ -120,14 +120,7 @@ export const UserTable = () => {
     { field: "firstName", headerName: t("firstname"), flex: 1 },
     { field: "lastName", headerName: t("lastname"), flex: 1 },
     { field: "email", headerName: "Email", flex: 1 },
-    {
-      field: "isDisabled",
-      headerName: t("status"),
-      valueGetter: isDisabled => {
-        return isDisabled ? t("disabled") : t("enabled");
-      },
-      width: 120,
-    },
+    statusColumn,
     {
       field: "isAdmin",
       headerName: "Admin",
@@ -146,29 +139,7 @@ export const UserTable = () => {
       width: 320,
       renderCell: renderWorkgroupChips,
     },
-    {
-      field: "delete",
-      headerName: "",
-      width: 24,
-      resizable: false,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      disableReorder: true,
-      disableExport: true,
-      renderCell: value => {
-        return (
-          <Stack
-            direction={"row"}
-            gap={1}
-            p={0.5}
-            key={value.id}
-            sx={{ mt: 1, border: `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }}>
-            <Trash2 color={theme.palette.primary.main} />
-          </Stack>
-        );
-      },
-    },
+    deleteColumn,
   ];
 
   const isLoading = !users?.length;
