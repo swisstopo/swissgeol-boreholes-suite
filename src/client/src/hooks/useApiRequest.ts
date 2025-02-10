@@ -4,13 +4,19 @@ import { useTranslation } from "react-i18next";
 import { ApiError } from "../api/apiInterfaces.ts";
 import { AlertContext } from "../components/alert/alertContext.tsx";
 
-// doc
-
+/**
+ * Custom hook to handle API requests with error handling and rollback functionality.
+ *
+ * This hook provides two main functions:
+ * - `callApiWithErrorHandling`: Executes an API function and handles any errors that occur.
+ * - `callApiWithRollback`: Executes an API function, handles errors, and performs a rollback if the API call fails.
+ *
+ * @returns {Object} An object containing the `callApiWithErrorHandling` and `callApiWithRollback` functions.
+ */
 export function useApiRequest() {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
 
-  // Common function to handle API calls
   const callApi = useCallback(
     async (apiFunc: (...args: any[]) => Promise<any>, args: any[], onError: (error: unknown) => void) => {
       try {
@@ -36,6 +42,13 @@ export function useApiRequest() {
     [showAlert, t],
   );
 
+  /**
+   * Executes an API function and handles any errors that occur.
+   *
+   * @param {Function} apiFunc - The API function to be called.
+   * @param {Array} args - The arguments to be passed to the API function.
+   * @returns {Promise<any>} The result of the API call.
+   */
   const callApiWithErrorHandling = useCallback(
     (apiFunc: (...args: any[]) => Promise<any>, args: any[]) => {
       const onError: (error: unknown) => void = createErrorHandler();
@@ -44,6 +57,14 @@ export function useApiRequest() {
     [callApi, createErrorHandler],
   );
 
+  /**
+   * Executes an API function, handles errors, and performs a rollback if the API call fails.
+   *
+   * @param {Function} apiFunc - The API function to be called.
+   * @param {Array} args - The arguments to be passed to the API function.
+   * @param {Function} rollbackFunc - The rollback function to be called if an error occurs.
+   * @returns {Promise<any>} The result of the API call.
+   */
   const callApiWithRollback = useCallback(
     (apiFunc: (...args: any[]) => Promise<any>, args: any[], rollbackFunc: () => void) => {
       const onError: (error: unknown) => void = createErrorHandler(rollbackFunc);
