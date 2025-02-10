@@ -28,42 +28,38 @@ const Lithology = ({ checkLock }) => {
   const [attributesBasedKind, setAttributesBasedKind] = useState(null);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
-  const onUpdated = attribute => {
-    if (
-      attribute === "newLayer" ||
-      attribute === "deleteLayer" ||
-      attribute === "deleteStratigraphy" ||
-      attribute === "newAttribute"
-    ) {
-      queryClient.invalidateQueries(["borehole", parseInt(borehole.data.id, 10)]);
-    }
+  const onUpdated = useCallback(
+    attribute => {
+      if (
+        attribute === "newLayer" ||
+        attribute === "deleteLayer" ||
+        attribute === "deleteStratigraphy" ||
+        attribute === "newAttribute"
+      ) {
+        queryClient.invalidateQueries(["borehole", parseInt(borehole.data.id, 10)]);
+      }
 
-    if (attribute === "toDepth" || attribute === "fromDepth" || attribute === "lithology" || attribute === "newLayer") {
-      setReloadLayer(reloadLayer => reloadLayer + 1);
-    }
-
-    if (attribute === "deleteLayer" || attribute === "fixErrors") {
-      setSelectedLayer(null);
-      setReloadLayer(reloadLayer => reloadLayer + 1);
-    }
-
-    if (
-      attribute === "isPrimary" ||
-      attribute === "name" ||
-      attribute === "quality" ||
-      attribute === "date" ||
-      attribute === "cloneStratigraphy"
-    )
-      setReloadHeader(reloadHeader => reloadHeader + 1);
-
-    if (attribute === "deleteStratigraphy" || attribute === "newAttribute") {
-      setSelectedStratigraphy(null);
-      setReloadHeader(reloadHeader => reloadHeader + 1);
-      setReloadLayer(reloadLayer => reloadLayer + 1);
-    }
-
-    if (attribute === "newAttribute") setReloadAttribute(reloadAttribute => reloadAttribute + 1);
-  };
+      if (["toDepth", "fromDepth", "lithology", "newLayer"].includes(attribute)) {
+        setReloadLayer(prev => prev + 1);
+      }
+      if (["deleteLayer", "fixErrors"].includes(attribute)) {
+        setSelectedLayer(null);
+        setReloadLayer(prev => prev + 1);
+      }
+      if (["isPrimary", "name", "quality", "date", "cloneStratigraphy"].includes(attribute)) {
+        setReloadHeader(prev => prev + 1);
+      }
+      if (["deleteStratigraphy", "newAttribute"].includes(attribute)) {
+        setSelectedStratigraphy(null);
+        setReloadHeader(prev => prev + 1);
+        setReloadLayer(prev => prev + 1);
+      }
+      if (attribute === "newAttribute") {
+        setReloadAttribute(prev => prev + 1);
+      }
+    },
+    [queryClient, borehole?.data?.id],
+  );
 
   useEffect(() => {
     if (
@@ -75,7 +71,7 @@ const Lithology = ({ checkLock }) => {
     }
     setAttributesBasedKind(stratigraphyData);
     onUpdated("newAttribute");
-  }, [setIsEditable, borehole, user, onUpdated]);
+  }, [borehole, user, onUpdated]);
 
   const set = useCallback(
     e => {
