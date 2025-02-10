@@ -237,7 +237,7 @@ export const useChronostratigraphies = stratigraphyID =>
     enabled: !!stratigraphyID,
   });
 
-export const useChronostratigraphyMutations = () => {
+export const useChronostratigraphyMutations = boreholeID => {
   const queryClient = useQueryClient();
   const useAddChronostratigraphy = useMutation(
     async chronostratigraphy => {
@@ -247,6 +247,9 @@ export const useChronostratigraphyMutations = () => {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: [chronostratigraphiesQueryKey],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["borehole", parseInt(boreholeID, 10)],
         });
       },
     },
@@ -272,6 +275,9 @@ export const useChronostratigraphyMutations = () => {
         queryClient.invalidateQueries({
           queryKey: [chronostratigraphiesQueryKey],
         });
+        queryClient.invalidateQueries({
+          queryKey: ["borehole", parseInt(boreholeID, 10)],
+        });
       },
     },
   );
@@ -294,7 +300,7 @@ export const useLithostratigraphies = stratigraphyID =>
     enabled: !!stratigraphyID,
   });
 
-export const useLithostratigraphyMutations = () => {
+export const useLithostratigraphyMutations = boreholeID => {
   const queryClient = useQueryClient();
   const useAddLithostratigraphy = useMutation(
     async lithostratigraphy => {
@@ -304,6 +310,9 @@ export const useLithostratigraphyMutations = () => {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: [lithostratigraphiesQueryKey],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["borehole", parseInt(boreholeID, 10)],
         });
       },
     },
@@ -328,6 +337,9 @@ export const useLithostratigraphyMutations = () => {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: [lithostratigraphiesQueryKey],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["borehole", parseInt(boreholeID, 10)],
         });
       },
     },

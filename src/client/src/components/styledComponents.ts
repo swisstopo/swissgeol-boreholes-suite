@@ -73,15 +73,17 @@ export const DetailHeaderStack = styled(Stack)({
 
 interface ParentListItemProps {
   active: boolean;
+  hasContent?: boolean;
 }
 
-export const ParentListItem = styled(ListItem)<ParentListItemProps>(({ active }) => ({
+export const ParentListItem = styled(ListItem)<ParentListItemProps>(({ active, hasContent }) => ({
   padding: "1em",
   display: "flex",
   height: "40px",
   cursor: "pointer",
   paddingLeft: "35.5px",
-  color: active ? theme.palette.error.main : "",
+  color:
+    hasContent === false ? theme.palette.buttonStates.outlined.disabled.color : active ? theme.palette.error.main : "",
   borderTop: `1px solid ${theme.palette.border.light}`,
   borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : undefined,
   backgroundColor: active ? theme.palette.background.lightgrey : "",

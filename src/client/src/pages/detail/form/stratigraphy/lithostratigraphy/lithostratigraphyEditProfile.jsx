@@ -5,7 +5,7 @@ import HierarchicalDataEditProfile from "../hierarchicalDataEditProfile.jsx";
 /**
  * Manages the lithostratigraphy data and mutations.
  */
-const LithostratigraphyEditProfile = ({ selectedStratigraphyID, sx, navState, setNavState }) => {
+const LithostratigraphyEditProfile = ({ boreholeID, selectedStratigraphyID, sx, navState, setNavState }) => {
   const { t } = useTranslation();
 
   const { data: layers } = useLithostratigraphies(selectedStratigraphyID);
@@ -13,7 +13,7 @@ const LithostratigraphyEditProfile = ({ selectedStratigraphyID, sx, navState, se
     add: { mutate: addLayer },
     delete: { mutate: deleteLayer },
     update: { mutate: updateLayer },
-  } = useLithostratigraphyMutations();
+  } = useLithostratigraphyMutations(boreholeID);
 
   return (
     <HierarchicalDataEditProfile

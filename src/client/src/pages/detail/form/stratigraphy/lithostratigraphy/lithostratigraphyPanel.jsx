@@ -72,6 +72,7 @@ const LithostratigraphyPanel = () => {
                   <Scale navState={navState} />
                 </NavigationChild>
                 <LithostratigraphyEditProfile
+                  boreholeID={selectedBoreholeId}
                   selectedStratigraphyID={stratigraphyId}
                   navState={navState}
                   setNavState={setNavState}

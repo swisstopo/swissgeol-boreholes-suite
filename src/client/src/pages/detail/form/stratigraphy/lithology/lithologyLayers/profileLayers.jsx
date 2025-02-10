@@ -35,7 +35,8 @@ import ProfileLayersValidation from "./lithologyLayersValidation";
 import * as Styled from "./styles.js";
 
 const ProfileLayers = props => {
-  const { isEditable, selectedStratigraphyID, selectedLayer, setSelectedLayer, reloadLayer, onUpdated } = props.data;
+  const { isEditable, selectedStratigraphyID, selectedLayer, setSelectedLayer, reloadLayer, onUpdated, boreholeId } =
+    props.data;
   const { t } = props;
   const [layersWithValidation, setLayersWithValidation] = useState(null);
   const [selecteDescription, setSelectedDescription] = useState(null);
@@ -129,6 +130,18 @@ const ProfileLayers = props => {
     },
   );
 
+  const createLayerMutation = useMutation(
+    async () => {
+      return await createLayerApi(selectedStratigraphyID); // Disabled
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["borehole", parseInt(boreholeId, 10)]);
+        onUpdated("newLayer");
+      },
+    },
+  );
+
   const setData = useCallback(stratigraphyID => {
     // Todo: use get layers from new api.
     getData(stratigraphyID).then(res => {
@@ -150,14 +163,6 @@ const ProfileLayers = props => {
       mounted.current = false;
     };
   }, [selectedStratigraphyID, reloadLayer, setData]);
-
-  const createNewLayer = () => {
-    createLayerApi(selectedStratigraphyID).then(res => {
-      if (res) {
-        onUpdated("newLayer");
-      }
-    });
-  };
 
   const setSelectedLayerFunc = item => {
     if (item === selectedLayer) {
@@ -219,7 +224,11 @@ const ProfileLayers = props => {
                   <Typography>{t("lithology")}</Typography>
                   {isEditable && selectedStratigraphyID !== null && (
                     <Tooltip title={t("add")}>
-                      <AddCircleIcon sx={{ marginLeft: 1.5 }} data-cy="add-layer-icon" onClick={createNewLayer} />
+                      <AddCircleIcon
+                        sx={{ marginLeft: 10.5 }}
+                        data-cy="add-layer-icon"
+                        onClick={() => createLayerMutation.mutate()}
+                      />
                     </Tooltip>
                   )}
                 </Stack>

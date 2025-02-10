@@ -43,7 +43,7 @@ export const DetailPage: FC = () => {
     if (!isLoading && borehole) {
       setEditingEnabled(borehole.locked !== null && borehole.lockedById === user.data.id);
     }
-  }, [borehole, setEditingEnabled, user.data.id]);
+  }, [borehole, isLoading, setEditingEnabled, user.data.id]);
 
   const loadOrCreate = useCallback(
     (id: string) => {

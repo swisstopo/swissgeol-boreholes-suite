@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
 import { Stack } from "@mui/material";
 import { Loader } from "semantic-ui-react";
@@ -16,6 +17,7 @@ const Lithology = ({ checkLock }) => {
     borehole: state.core_borehole,
     user: state.core_user,
   }));
+  const queryClient = useQueryClient();
 
   const [isEditable, setIsEditable] = useState(false);
   const [selectedStratigraphy, setSelectedStratigraphy] = useState(null);
@@ -27,6 +29,15 @@ const Lithology = ({ checkLock }) => {
   const [isLoadingData, setIsLoadingData] = useState(false);
 
   const onUpdated = attribute => {
+    if (
+      attribute === "newLayer" ||
+      attribute === "deleteLayer" ||
+      attribute === "deleteStratigraphy" ||
+      attribute === "newAttribute"
+    ) {
+      queryClient.invalidateQueries(["borehole", parseInt(borehole.data.id, 10)]);
+    }
+
     if (attribute === "toDepth" || attribute === "fromDepth" || attribute === "lithology" || attribute === "newLayer") {
       setReloadLayer(reloadLayer => reloadLayer + 1);
     }
@@ -130,6 +141,7 @@ const Lithology = ({ checkLock }) => {
                 },
                 reloadLayer,
                 onUpdated,
+                boreholeId: borehole.data.id,
               }}
             />
           </Styled.FirstColumn>

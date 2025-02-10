@@ -72,6 +72,7 @@ const ChronostratigraphyPanel = () => {
                   <Scale navState={navState} />
                 </NavigationChild>
                 <ChronostratigraphyEditProfile
+                  boreholeID={selectedBoreholeId}
                   selectedStratigraphyID={stratigraphyId}
                   navState={navState}
                   setNavState={setNavState}

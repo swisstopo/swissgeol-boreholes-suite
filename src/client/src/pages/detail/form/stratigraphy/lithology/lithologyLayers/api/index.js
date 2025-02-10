@@ -17,18 +17,17 @@ export const getData = async id => {
   return data;
 };
 
-let isCreateLayer = false;
 export const createLayerApi = async id => {
-  await createLayer(id)
-    .then(response => {
-      if (response.data.success) {
-        isCreateLayer = true;
-      } else {
-        alert(response.data.message);
-      }
-    })
-    .catch(error => {
-      console.error(error);
-    });
-  return isCreateLayer;
+  try {
+    const response = await createLayer(id);
+    if (response.data.success) {
+      return true;
+    } else {
+      alert(response.data.message);
+      return false;
+    }
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 };
