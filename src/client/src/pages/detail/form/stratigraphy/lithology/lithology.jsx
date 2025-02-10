@@ -75,7 +75,7 @@ const Lithology = ({ checkLock }) => {
     }
     setAttributesBasedKind(stratigraphyData);
     onUpdated("newAttribute");
-  }, [setIsEditable, borehole, user]);
+  }, [setIsEditable, borehole, user, onUpdated]);
 
   const set = useCallback(
     e => {
