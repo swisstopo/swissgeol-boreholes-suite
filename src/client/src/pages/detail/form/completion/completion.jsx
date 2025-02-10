@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "react-query";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
@@ -40,6 +41,7 @@ const Completion = () => {
   });
   const [checkContentDirty, setCheckContentDirty] = useState(false);
   const [completionToBeSaved, setCompletionToBeSaved] = useState(null);
+  const queryClient = useQueryClient();
 
   const resetState = () => {
     setState({
@@ -176,6 +178,7 @@ const Completion = () => {
         if (!preventReload) {
           loadData();
         }
+        queryClient.invalidateQueries(["borehole", parseInt(boreholeId, 10)]);
       });
     } else {
       updateCompletion(completion).then(() => {
@@ -235,6 +238,7 @@ const Completion = () => {
     setState({ ...state, switchTabTo: newTabIndex });
     deleteCompletion(state.selected.id).then(() => {
       loadData();
+      queryClient.invalidateQueries(["borehole", parseInt(boreholeId, 10)]);
     });
   };
 
