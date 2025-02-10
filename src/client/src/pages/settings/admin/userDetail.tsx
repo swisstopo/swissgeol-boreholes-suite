@@ -25,6 +25,23 @@ export const UserDetail = () => {
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
+  const getUniqueWorkgroups = useCallback((user: User) => {
+    const { workgroupRoles } = user;
+    if (!workgroupRoles || workgroupRoles.length < 1) return [];
+    const workgroupsMap = new Map();
+    workgroupRoles.forEach((r: WorkgroupRole) => {
+      if (workgroupsMap.has(r.workgroupId)) {
+        workgroupsMap.get(r.workgroupId).roles.push(r.role);
+      } else {
+        workgroupsMap.set(r.workgroupId, {
+          ...r.workgroup,
+          roles: [r.role],
+        });
+      }
+    });
+    return Array.from(workgroupsMap.values());
+  }, []);
+
   useEffect(() => {
     const getUser = async () => {
       const user: User = await callApiWithErrorHandling(fetchUser, [parseInt(id)]);
@@ -32,28 +49,11 @@ export const UserDetail = () => {
       setHeaderTitle(user.name);
       setChipContent("user");
 
-      const getUniqueWorkgroups = (user: User) => {
-        const { workgroupRoles } = user;
-        if (!workgroupRoles || workgroupRoles.length < 1) return [];
-        const workgroupsMap = new Map();
-        workgroupRoles.forEach((r: WorkgroupRole) => {
-          if (workgroupsMap.has(r.workgroupId)) {
-            workgroupsMap.get(r.workgroupId).roles.push(r.role);
-          } else {
-            workgroupsMap.set(r.workgroupId, {
-              ...r.workgroup,
-              roles: [r.role],
-            });
-          }
-        });
-        return Array.from(workgroupsMap.values());
-      };
-
       // Get the transformed array of unique workgroups with roles
       setUserWorkgroups(getUniqueWorkgroups(user));
     };
     getUser();
-  }, [callApiWithErrorHandling, id, setChipContent, setHeaderTitle]);
+  }, [callApiWithErrorHandling, getUniqueWorkgroups, id, setChipContent, setHeaderTitle]);
 
   if (!user) return;
 
