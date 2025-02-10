@@ -1,4 +1,5 @@
 import { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
@@ -24,22 +25,25 @@ import { SaveBar } from "./saveBar";
 export const DetailPage: FC = () => {
   const [loading, setLoading] = useState(true);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
-  const [borehole, setBorehole] = useState<BoreholeV2 | null>(null);
   const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
-  const workflowStatus = useSelector((state: ReduxRootState) => state.core_workflow);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
   const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
   const dispatch = useDispatch();
   const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
+
+  const { data: borehole, isLoading } = useQuery<BoreholeV2, Error>({
+    queryKey: ["borehole", parseInt(id, 10)],
+    queryFn: () => getBoreholeById(parseInt(id, 10)),
+  });
 
   useEffect(() => {
-    getBoreholeById(parseInt(id, 10)).then(b => {
-      setBorehole(b);
-      setEditingEnabled(b.locked !== null && b.lockedById === user.data.id);
-    });
-  }, [id, setEditingEnabled, user.data.id, workflowStatus]);
+    if (!isLoading && borehole) {
+      setEditingEnabled(borehole.locked !== null && borehole.lockedById === user.data.id);
+    }
+  }, [borehole, setEditingEnabled, user.data.id]);
 
   const loadOrCreate = useCallback(
     (id: string) => {
@@ -60,8 +64,8 @@ export const DetailPage: FC = () => {
 
   function getAndUpdateBorehole(boreholeSubmission: BoreholeFormInputs | LocationFormSubmission) {
     getBoreholeById(parseInt(id)).then(b => {
-      updateBorehole({ ...b, ...boreholeSubmission }).then(r => {
-        setBorehole(r);
+      updateBorehole({ ...b, ...boreholeSubmission }).then(() => {
+        queryClient.invalidateQueries({ queryKey: ["borehole", id] });
       });
     });
   }
@@ -127,10 +131,14 @@ export const DetailPage: FC = () => {
 
   return (
     <>
-      <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} triggerReset={triggerReset} />
+      <DetailHeader
+        borehole={borehole ?? ({} as BoreholeV2)}
+        editableByCurrentUser={editableByCurrentUser}
+        triggerReset={triggerReset}
+      />
       <LayoutBox>
         <SidebarBox>
-          <DetailSideNav />
+          <DetailSideNav borehole={borehole ?? ({} as BoreholeV2)} />
         </SidebarBox>
         <Stack width="100%" direction="column">
           <Box
@@ -159,7 +167,7 @@ export const DetailPage: FC = () => {
                 onLocationFormSubmit={onLocationFormSubmit}
                 boreholePanelRef={boreholePanelRef}
                 onBoreholeFormSubmit={onBoreholeFormSubmit}
-                borehole={borehole}
+                borehole={borehole ?? ({} as BoreholeV2)}
                 panelOpen={panelOpen}
               />
             </MainContentBox>
