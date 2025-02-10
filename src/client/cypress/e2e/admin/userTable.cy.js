@@ -11,12 +11,9 @@ import {
 import { getElementByDataCy, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("Admin settings test", () => {
-  beforeEach(() => {
+  it("displays, sorts and filters user table and shows user detail.", () => {
     goToRouteAndAcceptTerms("/setting#users");
     waitForTableData();
-  });
-
-  it("displays, sorts and filters user table and shows user detail.", () => {
     verifyRowContains("Admin", 0);
     verifyRowContains("admin.user@local.dev", 0);
     verifyRowContains("Enabled", 0);
@@ -91,5 +88,11 @@ describe("Admin settings test", () => {
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");
     getElementByDataCy("backButton").click();
     verifyRowWithTextCheckState("editor", false);
+  });
+
+  it("displays error message when fetching user table data fails.", () => {
+    cy.intercept("api/v2/user*", req => req.destroy());
+    goToRouteAndAcceptTerms("/setting#users");
+    cy.get(".MuiAlert-message").contains("An error occurred while fetching or updating data");
   });
 });
