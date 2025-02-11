@@ -21,7 +21,7 @@ export const SettingsHeader: FC<SettingsHeaderProps> = ({ selectedUser, setSelec
   const history = useHistory();
   const { t } = useTranslation();
   const { callApiWithRollback } = useApiRequest();
-  const { showNotDeletablePrompt, showDeleteWarningPrompt } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
+  const { showDeleteWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
 
   const updateUserActiveStateWithRollback = async (isDisabled: boolean) => {
     // Define rollback function to revert the state if the API call fails
@@ -46,11 +46,7 @@ export const SettingsHeader: FC<SettingsHeaderProps> = ({ selectedUser, setSelec
 
   const handleDeleteUser = () => {
     if (!selectedUser) return;
-    if (!selectedUser?.deletable) {
-      showNotDeletablePrompt(selectedUser);
-    } else {
-      showDeleteWarningPrompt(selectedUser);
-    }
+    showDeleteWarning(selectedUser);
   };
 
   return (

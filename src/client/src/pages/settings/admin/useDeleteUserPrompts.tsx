@@ -32,11 +32,11 @@ export const useDeleteUserPrompts = (
   };
 
   const showNotDeletablePrompt = (user: User) => {
-    let noteDeletableMessage = `${t("msgDisablingUser")}.`;
+    let notDeletableMessage = `${t("msgDisablingUser")}.`;
     if (!user?.isDisabled) {
-      noteDeletableMessage += ` ${t("msgReenablingTip")}.`;
+      notDeletableMessage += ` ${t("msgReenablingTip")}.`;
     }
-    showPrompt(noteDeletableMessage, [
+    showPrompt(notDeletableMessage, [
       {
         label: t("cancel"),
         icon: <X />,
@@ -44,7 +44,7 @@ export const useDeleteUserPrompts = (
     ]);
   };
 
-  const showDeleteWarningPrompt = (user: User) => {
+  const showDeletablePrompt = (user: User) => {
     let deletableMessage = `${t("deleteUserMessage")}`;
     if (!user?.isDisabled) {
       deletableMessage += ` ${t("msgReenablingTip")}.`;
@@ -65,5 +65,13 @@ export const useDeleteUserPrompts = (
     ]);
   };
 
-  return { showNotDeletablePrompt, showDeleteWarningPrompt };
+  const showDeleteWarning = (user: User) => {
+    if (user?.deletable) {
+      showDeletablePrompt(user);
+    } else {
+      showNotDeletablePrompt(user);
+    }
+  };
+
+  return { showDeleteWarning };
 };

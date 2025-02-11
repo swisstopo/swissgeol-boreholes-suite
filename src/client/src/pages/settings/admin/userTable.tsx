@@ -35,7 +35,7 @@ export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers
   const history = useHistory();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const { statusColumn } = useSharedTableColumns();
-  const { showNotDeletablePrompt, showDeleteWarningPrompt } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
+  const { showDeleteWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
   useEffect(() => {
@@ -81,11 +81,7 @@ export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers
       const user = users.find(user => user.id === id);
       if (!user) return;
       setSelectedUser(user);
-      if (!user?.deletable) {
-        showNotDeletablePrompt(user);
-      } else {
-        showDeleteWarningPrompt(user);
-      }
+      showDeleteWarning(user);
     };
 
     return (
