@@ -11,9 +11,9 @@ import { DataCardButtonContainer } from "../../../../components/dataCard/dataCar
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
+import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
+import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
 import { useFormDirtyStore } from "../../formDirtyStore.ts";
-import { useBlockNavigation } from "../../useBlockNavigation.tsx";
-import { useSaveOnCtrlS } from "../../useSaveOnCtrlS";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);

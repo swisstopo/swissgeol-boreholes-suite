@@ -1,14 +1,17 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
+import { Route, Switch } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
-import { DetailHeaderSettings } from "../detail/detailHeaderSettings";
+import { SettingsHeader } from "../detail/settingsHeader.tsx";
 import AboutSettings from "./aboutSettings";
 import AdminSettings from "./admin/adminSettings";
+import { SettingsHeaderProvider } from "./admin/settingsHeaderContext.tsx";
+import { UserDetail } from "./admin/userDetail.tsx";
 import { UserTable } from "./admin/userTable.tsx";
 import EditorSettings from "./editorSettings.tsx";
 import TermSettings from "./termSettings";
@@ -37,17 +40,27 @@ export const SettingsPage = () => {
   }, [isAdminUser, isAnonymousUser, t]);
 
   return (
-    <>
-      <DetailHeaderSettings />
-      <Stack
-        sx={{
-          height: "100%",
-          p: 5,
-          overflowY: "auto",
-          backgroundColor: theme.palette.background.lightgrey,
-        }}>
-        <TabPanel tabs={tabs} />
-      </Stack>
-    </>
+    <SettingsHeaderProvider>
+      <SettingsHeader />
+      <Switch>
+        <Route exact={false} key={4} path={"/setting/user/:id"} render={() => <UserDetail />} />
+        <Route
+          exact={false}
+          key={4}
+          path={"/setting"}
+          render={() => (
+            <Stack
+              sx={{
+                height: "100%",
+                p: 5,
+                overflowY: "auto",
+                backgroundColor: theme.palette.background.lightgrey,
+              }}>
+              <TabPanel tabs={tabs} />
+            </Stack>
+          )}
+        />
+      </Switch>
+    </SettingsHeaderProvider>
   );
 };
