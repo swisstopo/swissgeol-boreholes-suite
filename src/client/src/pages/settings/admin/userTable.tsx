@@ -8,6 +8,7 @@ import {
   GridEventListener,
   GridFilterModel,
   GridRenderCellParams,
+  GridRowParams,
   GridToolbar,
 } from "@mui/x-data-grid";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
@@ -58,11 +59,13 @@ export const UserTable = () => {
     return (
       <Checkbox
         checked={params.value}
+        disabled={params.row.isDisabled}
         onChange={event => handleCheckBoxClick(event, params.id as number)}
         onClick={event => event.stopPropagation()}
       />
     );
   };
+
   const renderWorkgroupChips = (params: GridRenderCellParams<WorkgroupRole[]>) => {
     const averageCharacterWidth = 7.5;
     const chipPadding = 16;
@@ -142,11 +145,20 @@ export const UserTable = () => {
     deleteColumn,
   ];
 
+  const getRowClassName = (params: GridRowParams) => {
+    let css = "";
+    if (params.row.isDisabled) {
+      css = "disabled-row ";
+    }
+    return css;
+  };
+
   return (
     <DataGrid
       sx={{ border: "none !important", ...quickFilterStyles }}
       data-cy="users-table"
       columnHeaderHeight={44}
+      getRowClassName={getRowClassName}
       rowHeight={44}
       sortingOrder={["asc", "desc"]}
       loading={!users?.length}

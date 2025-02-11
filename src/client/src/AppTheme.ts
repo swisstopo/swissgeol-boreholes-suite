@@ -597,7 +597,7 @@ export const theme = createTheme({
             backgroundColor: themePalette.background.lightgrey,
             color: themePalette.primary.main,
           },
-          "& .locked-row": {
+          "& .disabled-row": {
             backgroundColor: themePalette.background.default,
             color: themePalette.action.disabled,
           },

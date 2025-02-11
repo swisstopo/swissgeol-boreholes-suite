@@ -103,10 +103,17 @@ export const UserDetail = () => {
     }
   };
 
+  const disabledStyles = {
+    cursor: isDisabled ? "default" : "pointer",
+    "& .MuiDataGrid-row:hover": { backgroundColor: isDisabled && "rgba(0,0,0,0)" },
+    "& .MuiDataGrid-columnHeader": { cursor: isDisabled ? "default" : "pointer" },
+  };
+
   return (
     <Stack
       sx={{
         height: "100%",
+        opacity: isDisabled ? "50%" : "100%",
         p: 5,
         overflowY: "auto",
         backgroundColor: theme.palette.background.lightgrey,
@@ -115,7 +122,12 @@ export const UserDetail = () => {
         <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} titleTypographyProps={{ variant: "h5" }} />
         <CardContent sx={{ pt: 4, px: 3 }}>
           <Stack direction={"row"} alignItems={"center"}>
-            <Checkbox checked={user.isAdmin} onChange={handleCheckboxChange} data-cy="is-user-admin-checkbox" />
+            <Checkbox
+              checked={user.isAdmin}
+              onChange={handleCheckboxChange}
+              data-cy="is-user-admin-checkbox"
+              disabled={isDisabled}
+            />
             <Typography>Admin</Typography>
           </Stack>
         </CardContent>
@@ -125,7 +137,11 @@ export const UserDetail = () => {
         <CardContent sx={{ pt: 4, px: 3 }}>
           {userWorkgroups && (
             <DataGrid
-              sx={{ border: "none !important", ...quickFilterStyles }}
+              sx={{
+                border: "none !important",
+                ...quickFilterStyles,
+                ...disabledStyles,
+              }}
               data-cy="user-workgroups-table"
               columnHeaderHeight={44}
               rowHeight={44}
@@ -152,6 +168,8 @@ export const UserDetail = () => {
               disableRowSelectionOnClick
               hideFooterSelectedRowCount
               disableColumnFilter
+              disableColumnSorting={isDisabled}
+              disableColumnResize={isDisabled}
               disableColumnMenu={true}
               disableDensitySelector
               filterModel={filterModel}

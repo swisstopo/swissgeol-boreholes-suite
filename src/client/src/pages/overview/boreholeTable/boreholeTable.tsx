@@ -244,7 +244,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const getRowClassName = (params: GridRowParams) => {
     let css = "";
     if (params.row.lock) {
-      css = "locked-row ";
+      css = "disabled-row ";
     }
     if (rowToHighlight === params.id) {
       css = "highlighted-row ";
