@@ -65,7 +65,7 @@ export const DetailPage: FC = () => {
   function getAndUpdateBorehole(boreholeSubmission: BoreholeFormInputs | LocationFormSubmission) {
     getBoreholeById(parseInt(id)).then(b => {
       updateBorehole({ ...b, ...boreholeSubmission }).then(() => {
-        queryClient.invalidateQueries({ queryKey: ["borehole", id] });
+        queryClient.invalidateQueries({ queryKey: ["borehole", parseInt(id, 10)] });
       });
     });
   }
