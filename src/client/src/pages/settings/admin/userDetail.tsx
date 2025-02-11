@@ -103,8 +103,6 @@ export const UserDetail = () => {
     }
   };
 
-  const isLoading = !userWorkgroups?.length;
-
   return (
     <Stack
       sx={{
@@ -132,7 +130,7 @@ export const UserDetail = () => {
               columnHeaderHeight={44}
               rowHeight={44}
               sortingOrder={["asc", "desc"]}
-              loading={isLoading}
+              loading={!userWorkgroups?.length}
               rowCount={userWorkgroups?.length}
               rows={userWorkgroups}
               columns={columns}

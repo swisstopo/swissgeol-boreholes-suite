@@ -142,8 +142,6 @@ export const UserTable = () => {
     deleteColumn,
   ];
 
-  const isLoading = !users?.length;
-
   return (
     <DataGrid
       sx={{ border: "none !important", ...quickFilterStyles }}
@@ -151,7 +149,7 @@ export const UserTable = () => {
       columnHeaderHeight={44}
       rowHeight={44}
       sortingOrder={["asc", "desc"]}
-      loading={isLoading}
+      loading={!users?.length}
       onRowClick={handleRowClick}
       rowCount={users?.length}
       rows={users}
