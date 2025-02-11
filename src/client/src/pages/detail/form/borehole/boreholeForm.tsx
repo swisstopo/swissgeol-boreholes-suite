@@ -12,7 +12,7 @@ import {
 } from "../../../../components/form/form.ts";
 import { parseFloatWithThousandsSeparator } from "../../../../components/legacyComponents/formUtils.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
-import { UseFormWithSaveBar } from "../useFormWithSaveBar.ts";
+import { UseFormWithSaveBar } from "../../../../hooks/useFormWithSaveBar.ts";
 import { BoreholeDetailProps, BoreholeFormInputs } from "./boreholePanelInterfaces.ts";
 
 export const BoreholeForm = forwardRef(({ borehole, onSubmit }: BoreholeDetailProps, ref) => {
