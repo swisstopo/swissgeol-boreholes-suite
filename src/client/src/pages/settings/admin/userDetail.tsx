@@ -1,6 +1,6 @@
-import { ChangeEvent, FC, useCallback, useContext, useEffect, useState } from "react";
+import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridFilterModel, GridRenderCellParams, GridToolbar } from "@mui/x-data-grid";
 import i18n from "i18next";
@@ -11,7 +11,6 @@ import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
-import { SettingsHeaderContext } from "./settingsHeaderContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
 interface UserDetailProps {
@@ -24,7 +23,7 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
   const { t } = useTranslation();
   const [userWorkgroups, setUserWorkgroups] = useState<object[]>();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
-  const { setHeaderTitle } = useContext(SettingsHeaderContext);
+  const history = useHistory();
   const { statusColumn, deleteColumn } = useSharedTableColumns();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
@@ -49,14 +48,17 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
   useEffect(() => {
     const getUser = async () => {
       const user: User = await callApiWithErrorHandling(fetchUser, [parseInt(id)]);
-      setUser(user);
-      setHeaderTitle(user.name);
+      if (!user) {
+        history.push("/setting#users");
+      } else {
+        setUser(user);
 
-      // Get the transformed array of unique workgroups with roles
-      setUserWorkgroups(getUniqueWorkgroups(user));
+        // Get the transformed array of unique workgroups with roles
+        setUserWorkgroups(getUniqueWorkgroups(user));
+      }
     };
     getUser();
-  }, [callApiWithErrorHandling, getUniqueWorkgroups, id, setHeaderTitle, setUser]);
+  }, [callApiWithErrorHandling, getUniqueWorkgroups, history, id, setUser]);
 
   if (!user) return;
   const isDisabled = user.isDisabled;

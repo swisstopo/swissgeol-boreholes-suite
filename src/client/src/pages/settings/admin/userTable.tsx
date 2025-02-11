@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
+import { ChangeEvent, FC, MouseEvent, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Button, Checkbox, Chip, Stack, Tooltip } from "@mui/material";
@@ -19,7 +19,6 @@ import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
-import { SettingsHeaderContext } from "./settingsHeaderContext.tsx";
 import { useDeleteUserPrompts } from "./useDeleteUserPrompts.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
@@ -32,22 +31,23 @@ interface UserTableProps {
 export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers }) => {
   const { t, i18n } = useTranslation();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
+  const [isLoading, setIsLoading] = useState(true);
   const history = useHistory();
-  const { setHeaderTitle } = useContext(SettingsHeaderContext);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const { statusColumn } = useSharedTableColumns();
   const { showNotDeletablePrompt, showDeleteWarningPrompt } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
   useEffect(() => {
+    setIsLoading(true);
     const getUsers = async () => {
       const users: User[] = await callApiWithErrorHandling(fetchUsers, []);
       setUsers(users);
+      setIsLoading(false);
     };
     getUsers();
-    setHeaderTitle("settings");
     setSelectedUser(null);
-  }, [callApiWithErrorHandling, setHeaderTitle, setSelectedUser, setUsers, t]);
+  }, [callApiWithErrorHandling, setSelectedUser, setUsers, t]);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
     const handleCheckBoxClick = async (event: ChangeEvent<HTMLInputElement>, id: number) => {
@@ -92,6 +92,7 @@ export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers
       <Button
         variant="outlined"
         key={params.row.id}
+        data-cy={`delete-user-${params.row.firstName}`}
         onClick={event => handleDeleteUser(event, params.id as number)}
         sx={{ p: 0.5 }}>
         <Trash2 color={theme.palette.primary.main} />
@@ -205,7 +206,7 @@ export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers
       getRowClassName={getRowClassName}
       rowHeight={44}
       sortingOrder={["asc", "desc"]}
-      loading={!users?.length}
+      loading={isLoading}
       onRowClick={handleRowClick}
       rowCount={users?.length}
       rows={users}

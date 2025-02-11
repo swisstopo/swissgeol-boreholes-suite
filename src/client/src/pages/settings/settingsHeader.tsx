@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useContext } from "react";
+import { FC, MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
@@ -8,7 +8,6 @@ import { DeleteButton, ReturnButton } from "../../components/buttons/buttons.tsx
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { useApiRequest } from "../../hooks/useApiRequest.ts";
 import { capitalizeFirstLetter } from "../../utils.ts";
-import { SettingsHeaderContext } from "./admin/settingsHeaderContext.tsx";
 import { useDeleteUserPrompts } from "./admin/useDeleteUserPrompts.tsx";
 
 interface SettingsHeaderProps {
@@ -21,7 +20,6 @@ interface SettingsHeaderProps {
 export const SettingsHeader: FC<SettingsHeaderProps> = ({ selectedUser, setSelectedUser, users, setUsers }) => {
   const history = useHistory();
   const { t } = useTranslation();
-  const { headerTitle } = useContext(SettingsHeaderContext);
   const { callApiWithRollback } = useApiRequest();
   const { showNotDeletablePrompt, showDeleteWarningPrompt } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
 
@@ -33,7 +31,7 @@ export const SettingsHeader: FC<SettingsHeaderProps> = ({ selectedUser, setSelec
     const updatedUser = {
       ...selectedUser!,
       isDisabled: isDisabled,
-      ...(isDisabled && { disabledAt: new Date() }),
+      disabledAt: isDisabled ? new Date() : undefined,
     };
     setSelectedUser({ ...updatedUser });
 
@@ -60,10 +58,12 @@ export const SettingsHeader: FC<SettingsHeaderProps> = ({ selectedUser, setSelec
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={1}>
         <ReturnButton
           onClick={() => {
-            headerTitle === "settings" ? history.push("/") : history.push("/setting");
+            selectedUser ? history.push("/setting") : history.push("/");
           }}
         />
-        <Typography variant="h2"> {capitalizeFirstLetter(t(headerTitle))}</Typography>
+        <Typography variant="h2">
+          {selectedUser ? capitalizeFirstLetter(t(selectedUser.name)) : t("header_settings")}
+        </Typography>
         {selectedUser && <Chip color={"secondary"} label={t("user")} />}
       </Stack>
       {selectedUser && (
@@ -76,10 +76,10 @@ export const SettingsHeader: FC<SettingsHeaderProps> = ({ selectedUser, setSelec
               handleInactiveToggleChange(isDisabled);
             }}
             sx={{ boxShadow: "none", backgroundColor: "#F1F3F5" }}>
-            <ToggleButton sx={{ m: "6px" }} value={true}>
+            <ToggleButton sx={{ m: "6px" }} value={true} data-cy="inactivate-user-button">
               {t("inactive")}
             </ToggleButton>
-            <ToggleButton sx={{ m: "6px" }} value={false}>
+            <ToggleButton sx={{ m: "6px" }} value={false} data-cy="activate-user-button">
               {t("active")}
             </ToggleButton>
           </ToggleButtonGroup>

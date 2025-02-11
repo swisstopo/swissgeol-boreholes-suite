@@ -1,188 +1,213 @@
-import { goToRouteAndAcceptTerms } from "../helpers/testHelpers";
+import {
+  checkRowWithText,
+  clickOnRowWithText,
+  sortBy,
+  verifyPaginationText,
+  verifyRowContains,
+  verifyRowWithTextCheckState,
+  verifyTableLength,
+  waitForTableData,
+} from "../helpers/dataGridHelpers.js";
+import { getElementByDataCy, goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers.js";
 
-describe("Admin settings test", () => {
-  beforeEach(() => {
-    goToRouteAndAcceptTerms("/setting#workgroups");
-    cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 8);
-  });
+describe("User administration settings tests", () => {
+  it("displays, sorts and filters user table and shows user detail.", () => {
+    goToRouteAndAcceptTerms("/setting#users");
+    waitForTableData();
+    verifyRowContains("Admin", 0);
+    verifyRowContains("admin.user@local.dev", 0);
+    verifyRowContains("Active", 0);
+    verifyPaginationText("1–8 of 8");
+    verifyTableLength(8);
 
-  it("displays correct message when enabling user.", () => {
-    // disable user
-    let userToEdit = cy.get('[data-cy="user-list-table-body"]').children().contains("tr", "p. user");
-    userToEdit.contains("td", "Disable").click();
+    // sort
+    sortBy("First name");
+    sortBy("First name"); // clicking twice to sort descending
+    verifyRowContains("viewer", 0);
+    verifyRowContains("example@example.com", 0);
+    verifyRowContains("Active", 0);
 
-    cy.get('.modal [data-cy="disable-user-button"]').click();
-
-    cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 7);
-
-    // show disabled users
-    cy.contains("Show Disabled").click();
-
-    cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 1);
-
-    // enable user
-    userToEdit = cy.get('[data-cy="user-list-table-body"]').children().first();
-    userToEdit.contains("td", "Enable").click();
-
-    cy.get(".modal p").should(
-      "contain",
-      'You are going to re-enable the user "p. user". This user will be able to login and apply modifications based on its roles.',
-    );
-
-    cy.get('.modal [data-cy="enable-user-button"]').click();
-
-    // show all users
-    cy.contains("Show All").click();
-
-    cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 8);
-  });
-
-  it("can toggle administrator privileges.", () => {
-    // Verify initial state
-    cy.get('[data-cy="administration-username-label"]').contains("N/A");
-    cy.get('[data-cy="administration-firstname-label"]').contains("N/A");
-    cy.get('[data-cy="administration-lastname-label"]').contains("N/A");
-    cy.get('[data-cy="administration-save-user-button"]').should("be.disabled");
-    cy.get('[data-cy="administration-admin-checkbox"]').should("not.be.checked", "be.disabled");
-
-    // Select and verify user to edit
-    let userToEdit = cy.get('[data-cy="user-list-table-body"]').children().contains("tr", "p. user");
-    userToEdit.contains("td", "No").click();
-
-    cy.get('[data-cy="administration-username-label"]').contains("p. user");
-    cy.get('[data-cy="administration-firstname-label"]').contains("publisher");
-    cy.get('[data-cy="administration-lastname-label"]').contains("user");
-    cy.get('[data-cy="administration-save-user-button"]').should("be.enabled");
-    cy.get('[data-cy="administration-admin-checkbox"]').should("not.be.checked", "be.endabled");
-
-    // edit and save changes
-    cy.get('[data-cy="administration-admin-checkbox"]').click();
-    cy.get('[data-cy="administration-save-user-button"]').click();
-
-    // Verify changes
-    userToEdit.contains("td", "Yes");
-
-    // Revert changes
-    cy.get('[data-cy="administration-admin-checkbox"]').click();
-    cy.get('[data-cy="administration-save-user-button"]').click();
-
-    cy.get('[data-cy="administration-username-label"]').contains("p. user");
-    cy.get('[data-cy="administration-firstname-label"]').contains("publisher");
-    cy.get('[data-cy="administration-lastname-label"]').contains("user");
-    cy.get('[data-cy="administration-save-user-button"]').should("be.enabled");
-    cy.get('[data-cy="administration-admin-checkbox"]').should("not.be.checked", "be.endabled");
-  });
-
-  it("cannot delete users with associated files.", () => {
-    // Try to delete user that only has associated files
-    let filesUser = cy.get('[data-cy="user-list-table-body"]').children().contains("tr", "has_files");
-
-    cy.contains("user_that_only");
-    cy.contains("has_files");
-    filesUser.contains("td", "Disable").click();
-
-    // Deletion should not be possible
-    cy.get(".modal").should("not.contain", '[data-cy="permanently-delete-user-button"]');
-
-    cy.get('.modal [data-cy="disable-user-button"]').should("be.visible");
-  });
-
-  it("can delete users with no associated database entries.", () => {
-    // Try to delete user
-    let deletableUser = cy.get('[data-cy="user-list-table-body"]').children().contains("tr", "be_deleted");
-
-    cy.contains("user_that_can");
-    cy.contains("be_deleted");
-    deletableUser.contains("td", "Disable").click();
-
-    // Deletion should be possible
-    cy.get('.modal [data-cy="permanently-delete-user-button"]').should("be.visible");
-
-    cy.get(".modal").should("not.contain", '[data-cy="disable-user-button"]');
-  });
-
-  it("can add and remove roles for users in workgroups.", () => {
-    // Select validator user
-    cy.get('[data-cy="user-list-table-body"]').children().contains("td", "validator").click();
-
-    // Workgroup "Default" should be visible with user role "VALIDATOR"
-    cy.get('[data-cy="workgroup-list-table-body"]')
-      .children()
-      .should("have.length", 2)
-      .contains("td", "Default")
-      .siblings()
-      .contains("label", "VALIDATOR")
-      .parent()
-      .within(() => {
-        cy.get("input").should("be.checked");
-      });
-
-    cy.get('[data-cy="workgroup-list-table-body"]')
-      .children()
-      .contains("td", "Default")
-      .siblings()
-      .contains("label", "EDITOR")
-      .parent()
-      .within(() => {
-        cy.get("input").should("not.be.checked");
-      });
-
-    const addRole = role => {
-      cy.get('[data-cy="workgroup-list-table-body"]')
-        .children()
-        .contains("td", "Default")
-        .siblings()
-        .contains("label", role)
-        .parent()
-        .within(() => {
-          cy.get("input").check({ force: true });
+    // filter with quick filter
+    cy.get(".MuiDataGrid-toolbarQuickFilter input")
+      .click()
+      .then(() => {
+        cy.focused().clear();
+        cy.get(".MuiDataGrid-toolbarQuickFilter input").type("editor", {
+          delay: 10,
         });
-    };
-
-    const removeRole = role => {
-      cy.get('[data-cy="workgroup-list-table-body"]')
-        .children()
-        .contains("td", "Default")
-        .siblings()
-        .contains("label", role)
-        .parent()
-        .within(() => {
-          cy.get("input").uncheck({ force: true });
-        });
-    };
-
-    // Remove role VALIDATOR and add role EDITOR
-    removeRole("VALIDATOR");
-    addRole("EDITOR");
-
-    // Change user selection to be sure that the workgroup table
-    // is reloaded and assert role assignments
-    cy.get('[data-cy="user-list-table-body"]').children().contains("td", "Admin").click();
-
-    cy.get('[data-cy="user-list-table-body"]').children().contains("td", "validator").click();
-
-    cy.get('[data-cy="workgroup-list-table-body"]')
-      .children()
-      .contains("td", "Default")
-      .siblings()
-      .contains("label", "VALIDATOR")
-      .parent()
-      .within(() => {
-        cy.get("input").should("not.be.checked");
       });
+    verifyTableLength(8);
+    verifyRowContains("editor", 0);
+    verifyRowContains("example@example.com", 0);
+    verifyRowContains("Active", 0);
 
-    cy.get('[data-cy="workgroup-list-table-body"]')
-      .children()
-      .contains("td", "Default")
-      .siblings()
-      .contains("label", "EDITOR")
-      .parent()
-      .within(() => {
-        cy.get("input").should("be.checked");
-      });
+    // Click on Editor
+    clickOnRowWithText("editor");
+    getElementByDataCy("settings-header").should("contain", "E. user");
 
-    // Revert role assignment
-    removeRole("EDITOR");
-    addRole("VALIDATOR");
+    // Admin checkbox should not be checked
+    cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");
+
+    // Workgroup table should contain 1 entry
+    verifyTableLength(1);
+    verifyRowContains("Default", 0); // Workgroup
+    // Editor user should have role editor
+    getElementByDataCy("Editor-chip").should("be.visible");
+
+    getElementByDataCy("backButton").click();
+
+    // Click on Admin
+    clickOnRowWithText("Admin");
+    getElementByDataCy("settings-header").should("contain", "A. User");
+    // Admin checkbox should be checked
+    cy.get('[data-cy="is-user-admin-checkbox"] input').should("be.checked");
+    verifyTableLength(1);
+    verifyRowContains("Default", 0); // Workgroup
+
+    // Admin user should have roles view, editor, controller, validator, publisher
+    getElementByDataCy("View-chip").should("be.visible");
+    getElementByDataCy("Editor-chip").should("be.visible");
+    getElementByDataCy("Controller-chip").should("be.visible");
+    getElementByDataCy("Validator-chip").should("be.visible");
+    getElementByDataCy("Publisher-chip").should("be.visible");
+
+    getElementByDataCy("backButton").click();
+    verifyRowWithTextCheckState("Admin", true);
+    verifyRowWithTextCheckState("editor", false);
+
+    // Make editor admin from user table
+    checkRowWithText("editor");
+    verifyRowWithTextCheckState("editor", true);
+
+    // Go to user detail
+    clickOnRowWithText("editor");
+    cy.get('[data-cy="is-user-admin-checkbox"] input').should("be.checked");
+
+    // Uncheck is admin from user detail
+    cy.get('[data-cy="is-user-admin-checkbox"] input').click();
+    cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");
+    getElementByDataCy("backButton").click();
+    verifyRowWithTextCheckState("editor", false);
+  });
+
+  it("shows appropriate prompts when clicking delete button", () => {
+    goToRouteAndAcceptTerms("/setting#users");
+    waitForTableData();
+
+    const messageForActiveNonDeletableUser =
+      "The selected user cannot be deleted because currently there are some traces of activity in the database. You can deactivate the user and re-enable them again at any time.";
+    const messageForInactiveNonDeletableUser =
+      "The selected user cannot be deleted because currently there are some traces of activity in the database.";
+
+    const messageForActiveDeletableUser =
+      "Do you really want to delete this user? This cannot be undone. You can deactivate the user and re-enable them again at any time.";
+
+    const messageForInactiveDeletableUser = "Do you really want to delete this user? This cannot be undone.";
+
+    verifyRowContains("Active", 1); // controller
+    verifyRowWithTextCheckState("controller", false);
+
+    // try to delete controller from user table
+    getElementByDataCy("delete-user-controller").click();
+    handlePrompt(messageForActiveNonDeletableUser, "Cancel");
+
+    // go to detail view and try to delete
+    clickOnRowWithText("controller");
+    getElementByDataCy("deleteuser-button").click();
+    handlePrompt(messageForActiveNonDeletableUser, "Cancel");
+
+    // verify editing is enabled on active user
+    getElementByDataCy("is-user-admin-checkbox").children().first().should("not.have.attr", "disabled");
+
+    // inactivate controller
+    getElementByDataCy("inactivate-user-button").click();
+    cy.wait("@update-user");
+    getElementByDataCy("is-user-admin-checkbox").children().first().should("have.attr", "disabled");
+
+    getElementByDataCy("deleteuser-button").click();
+    handlePrompt(messageForInactiveNonDeletableUser, "Cancel");
+
+    // go to users table
+    // goToRouteAndAcceptTerms("/setting#users"); // back button??
+    getElementByDataCy("backButton").click();
+    verifyRowContains("Inactive", 1); // controller
+    getElementByDataCy("delete-user-controller").click();
+    handlePrompt(messageForInactiveNonDeletableUser, "Cancel");
+
+    // go to user detail and reactive controller
+    clickOnRowWithText("controller");
+    cy.wait("@get-user");
+    getElementByDataCy("activate-user-button").click();
+
+    // go back to user table and check prompts for deletable user
+    // goToRouteAndAcceptTerms("/setting#users");
+    getElementByDataCy("backButton").click();
+    verifyRowContains("Active", 4); // user that can be deleted
+    getElementByDataCy("delete-user-user_that_can").click();
+    handlePrompt(messageForActiveDeletableUser, "Cancel");
+    clickOnRowWithText("user_that_can");
+    cy.wait("@get-user");
+    getElementByDataCy("deleteuser-button").click();
+    handlePrompt(messageForActiveDeletableUser, "Cancel");
+    getElementByDataCy("inactivate-user-button").click();
+    cy.wait("@update-user");
+    getElementByDataCy("deleteuser-button").click();
+    handlePrompt(messageForInactiveDeletableUser, "Cancel");
+    getElementByDataCy("activate-user-button").click();
+    cy.wait("@update-user");
+
+    // got back to user table and check if user with only files can be deleted
+    // goToRouteAndAcceptTerms("/setting#users");
+    getElementByDataCy("backButton").click();
+    verifyRowContains("Active", 5); // with only files
+    getElementByDataCy("delete-user-user_that_only").click();
+    handlePrompt(messageForActiveNonDeletableUser, "Cancel");
+  });
+
+  const errorWhileFetchingMessage = "An error occurred while fetching or updating data";
+
+  it("displays error message when fetching user table data fails.", () => {
+    cy.intercept("GET", "api/v2/user*", req => req.destroy());
+    goToRouteAndAcceptTerms("/setting#users");
+    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+  });
+
+  it("displays error message when fetching user detail data fails.", () => {
+    cy.intercept("GET", "api/v2/user/2", req => req.destroy());
+    goToRouteAndAcceptTerms("/setting/user/2");
+    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+  });
+
+  it("displays error message when updating user fails.", () => {
+    cy.intercept("PUT", "api/v2/user", req => req.destroy());
+    goToRouteAndAcceptTerms("/setting/user/2");
+    getElementByDataCy("inactivate-user-button").click();
+    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+    cy.get('[aria-label="Close"]').click(); // close alert
+
+    // user should still be displayed as active
+    getElementByDataCy("activate-user-button").should("have.class", "Mui-selected");
+    getElementByDataCy("inactivate-user-button").should("not.have.class", "Mui-selected");
+
+    getElementByDataCy("is-user-admin-checkbox").click();
+    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+
+    // user should not be displayed as admin
+    getElementByDataCy("is-user-admin-checkbox").should("not.be.checked");
+  });
+
+  it("displays error message when deleting user fails.", () => {
+    cy.intercept("DELETE", "api/v2/user/7", req => req.destroy());
+    goToRouteAndAcceptTerms("/setting/user/7"); // deletable user
+    getElementByDataCy("deleteuser-button").click();
+    getElementByDataCy("delete-button").click();
+    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+    cy.get('[aria-label="Close"]').click(); // close alert
+
+    // verify user detail page still visible
+    cy.location().should(location => {
+      expect(location.pathname).to.eq("/setting/user/7");
+    });
+    cy.contains("U. that_can");
   });
 });

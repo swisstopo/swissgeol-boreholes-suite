@@ -10,7 +10,6 @@ import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
 import AboutSettings from "./aboutSettings";
 import AdminSettings from "./admin/adminSettings";
-import { SettingsHeaderProvider } from "./admin/settingsHeaderContext.tsx";
 import { UserDetail } from "./admin/userDetail.tsx";
 import { UserTable } from "./admin/userTable.tsx";
 import EditorSettings from "./editorSettings.tsx";
@@ -47,7 +46,7 @@ export const SettingsPage = () => {
   }, [isAdminUser, isAnonymousUser, t, users]);
 
   return (
-    <SettingsHeaderProvider>
+    <>
       <SettingsHeader selectedUser={selectedUser} setSelectedUser={setSelectedUser} users={users} setUsers={setUsers} />
       <Switch>
         <Route
@@ -73,6 +72,6 @@ export const SettingsPage = () => {
           )}
         />
       </Switch>
-    </SettingsHeaderProvider>
+    </>
   );
 };
