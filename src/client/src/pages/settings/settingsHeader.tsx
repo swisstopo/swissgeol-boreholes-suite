@@ -2,15 +2,14 @@ import { FC, MouseEvent, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { Trash2, X } from "lucide-react";
 import { User } from "../../api/apiInterfaces.ts";
-import { deleteUser, updateUser } from "../../api/user.ts";
+import { updateUser } from "../../api/user.ts";
 import { DeleteButton, ReturnButton } from "../../components/buttons/buttons.tsx";
-import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { useApiRequest } from "../../hooks/useApiRequest.ts";
 import { capitalizeFirstLetter } from "../../utils.ts";
-import { SettingsHeaderContext } from "../settings/admin/settingsHeaderContext.tsx";
+import { SettingsHeaderContext } from "./admin/settingsHeaderContext.tsx";
+import { useDeleteUserPrompts } from "./admin/useDeleteUserPrompts.tsx";
 
 interface SettingsHeaderProps {
   selectedUser: User | null;
@@ -22,23 +21,9 @@ interface SettingsHeaderProps {
 export const SettingsHeader: FC<SettingsHeaderProps> = ({ selectedUser, setSelectedUser, users, setUsers }) => {
   const history = useHistory();
   const { t } = useTranslation();
-  const { showPrompt } = useContext(PromptContext);
   const { headerTitle } = useContext(SettingsHeaderContext);
   const { callApiWithRollback } = useApiRequest();
-
-  const deleteUserWithRollback = async () => {
-    // Define rollback function to revert the state if the API call fails
-    const rollback = () => {
-      setSelectedUser({ ...selectedUser! });
-      history.push("/setting/user/" + selectedUser?.id);
-    };
-
-    // Optimistically update the users table
-    setUsers({ ...users.filter(u => u.id != selectedUser?.id) });
-    history.push("/setting#users");
-
-    await callApiWithRollback(deleteUser, [selectedUser?.id], rollback);
-  };
+  const { showNotDeletablePrompt, showDeleteWarningPrompt } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
 
   const updateUserActiveStateWithRollback = async (isDisabled: boolean) => {
     // Define rollback function to revert the state if the API call fails
@@ -61,41 +46,12 @@ export const SettingsHeader: FC<SettingsHeaderProps> = ({ selectedUser, setSelec
     }
   };
 
-  function showNotDeletablePrompt() {
-    let noteDeletableMessage = `${t("msgDisablingUser")}.`;
-    if (!selectedUser?.isDisabled) {
-      noteDeletableMessage += ` ${t("msgReenablingTip")}.`;
-    }
-    showPrompt(noteDeletableMessage, [
-      {
-        label: t("cancel"),
-        icon: <X />,
-      },
-    ]);
-  }
-
-  function showDeleteWarningPrompt() {
-    showPrompt(t("deleteUserMessage"), [
-      {
-        label: t("cancel"),
-        icon: <X />,
-      },
-      {
-        label: t("delete"),
-        icon: <Trash2 />,
-        variant: "contained",
-        action: () => {
-          deleteUserWithRollback();
-        },
-      },
-    ]);
-  }
-
   const handleDeleteUser = () => {
+    if (!selectedUser) return;
     if (!selectedUser?.deletable) {
-      showNotDeletablePrompt();
+      showNotDeletablePrompt(selectedUser);
     } else {
-      showDeleteWarningPrompt();
+      showDeleteWarningPrompt(selectedUser);
     }
   };
 

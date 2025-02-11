@@ -8,13 +8,13 @@ import { User as UserV2 } from "../../api/apiInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
-import { SettingsHeader } from "../detail/settingsHeader.tsx";
 import AboutSettings from "./aboutSettings";
 import AdminSettings from "./admin/adminSettings";
 import { SettingsHeaderProvider } from "./admin/settingsHeaderContext.tsx";
 import { UserDetail } from "./admin/userDetail.tsx";
 import { UserTable } from "./admin/userTable.tsx";
 import EditorSettings from "./editorSettings.tsx";
+import { SettingsHeader } from "./settingsHeader.tsx";
 import TermSettings from "./termSettings";
 
 export const SettingsPage = () => {

@@ -68,6 +68,7 @@ export const DialogFooterContainer = styled(Box)({
 export const DetailHeaderStack = styled(Stack)({
   borderBottom: "1px solid " + theme.palette.border.light,
   padding: "24px",
+  minHeight: "89px",
 });
 
 interface ParentListItemProps {
