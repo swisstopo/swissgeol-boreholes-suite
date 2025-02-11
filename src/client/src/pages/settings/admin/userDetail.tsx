@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
+import { ChangeEvent, FC, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
@@ -14,13 +14,17 @@ import { quickFilterStyles } from "./quickfilterStyles.ts";
 import { SettingsHeaderContext } from "./settingsHeaderContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
-export const UserDetail = () => {
+interface UserDetailProps {
+  user: User | null;
+  setUser: (user: User | null) => void;
+}
+
+export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
-  const [user, setUser] = useState<User>();
   const [userWorkgroups, setUserWorkgroups] = useState<object[]>();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
-  const { setHeaderTitle, setChipContent } = useContext(SettingsHeaderContext);
+  const { setHeaderTitle } = useContext(SettingsHeaderContext);
   const { statusColumn, deleteColumn } = useSharedTableColumns();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
@@ -47,15 +51,15 @@ export const UserDetail = () => {
       const user: User = await callApiWithErrorHandling(fetchUser, [parseInt(id)]);
       setUser(user);
       setHeaderTitle(user.name);
-      setChipContent("user");
 
       // Get the transformed array of unique workgroups with roles
       setUserWorkgroups(getUniqueWorkgroups(user));
     };
     getUser();
-  }, [callApiWithErrorHandling, getUniqueWorkgroups, id, setChipContent, setHeaderTitle]);
+  }, [callApiWithErrorHandling, getUniqueWorkgroups, id, setHeaderTitle, setUser]);
 
   if (!user) return;
+  const isDisabled = user.isDisabled;
 
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
     return (

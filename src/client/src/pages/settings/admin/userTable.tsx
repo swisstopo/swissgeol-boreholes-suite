@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
+import { ChangeEvent, FC, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
@@ -20,12 +20,17 @@ import { quickFilterStyles } from "./quickfilterStyles.ts";
 import { SettingsHeaderContext } from "./settingsHeaderContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
-export const UserTable = () => {
+interface UserTableProps {
+  setSelectedUser: (user: User | null) => void;
+  users: User[];
+  setUsers: (users: User[]) => void;
+}
+
+export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers }) => {
   const { t, i18n } = useTranslation();
-  const [users, setUsers] = useState<User[]>([]);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const history = useHistory();
-  const { setHeaderTitle, setChipContent } = useContext(SettingsHeaderContext);
+  const { setHeaderTitle } = useContext(SettingsHeaderContext);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const { statusColumn, deleteColumn } = useSharedTableColumns();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
@@ -37,8 +42,8 @@ export const UserTable = () => {
     };
     getUsers();
     setHeaderTitle("settings");
-    setChipContent("");
-  }, [callApiWithErrorHandling, setChipContent, setHeaderTitle, t]);
+    setSelectedUser(null);
+  }, [callApiWithErrorHandling, setHeaderTitle, setSelectedUser, setUsers, t]);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
     const handleCheckBoxClick = async (event: ChangeEvent<HTMLInputElement>, id: number) => {
