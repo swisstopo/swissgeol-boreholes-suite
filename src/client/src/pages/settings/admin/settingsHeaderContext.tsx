@@ -2,9 +2,9 @@ import { createContext, FC, PropsWithChildren, useMemo, useState } from "react";
 
 export interface SettingsHeaderContextProps {
   headerTitle: string;
-  setHeaderTitle: (editingEnabled: string) => void;
+  setHeaderTitle: (title: string) => void;
   chipContent: string;
-  setChipContent: (chipContent: string) => void;
+  setChipContent: (content: string) => void;
 }
 
 export const SettingsHeaderContext = createContext<SettingsHeaderContextProps>({
