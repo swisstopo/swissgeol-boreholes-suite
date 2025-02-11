@@ -190,6 +190,7 @@
   "errorStartEditing": "You should press the 'start editing' button",
   "errorStartWrong": "First layer does not start at the reference level",
   "errorToDepthTooHigh": "to depth is too high",
+  "errorWhileFetchingData": "An error occurred while fetching or updating data",
   "errorWrongDepth": "Incorrect borehole end depth",
   "errrorStartPoint": "You should add a start point",
   "evaluationMethod": "Evaluation method",

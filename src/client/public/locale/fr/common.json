@@ -190,6 +190,7 @@
   "errorStartEditing": "Veuillez appuyer sur le bouton 'Commencer l'édition'",
   "errorStartWrong": "La première couche ne débute pas au niveau de la référence altitudinale",
   "errorToDepthTooHigh": "de la profondeur est trop élevée",
+  "errorWhileFetchingData": "Une erreur s'est produite lors de la récupération ou la mise a jour des données.",
   "errorWrongDepth": "Profondeur finale erronée",
   "errrorStartPoint": "Veuillez ajouter le point de départ",
   "evaluationMethod": "Méthode d'évaluation",

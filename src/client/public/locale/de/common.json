@@ -190,6 +190,7 @@
   "errorStartEditing": "Sie sollten die Schaltfläche 'Bearbeitung beginnen' drücken",
   "errorStartWrong": "Erste Schicht beginnt nicht auf dem Referenzniveau",
   "errorToDepthTooHigh": "bis Tiefe ist zu gross",
+  "errorWhileFetchingData": "Beim Laden oder Aktualisieren der Daten ist ein Fehler aufgetreten.",
   "errorWrongDepth": "Falsche Bohrendteufe",
   "errrorStartPoint": "Sie sollten den Ansatzpunkt hinzufügen",
   "evaluationMethod": "Auswertungsmethode",

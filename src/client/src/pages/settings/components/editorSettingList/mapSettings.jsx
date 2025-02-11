@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { useTranslation } from "react-i18next";
 import { Box, Button, CircularProgress, IconButton, Stack, Typography } from "@mui/material";
-import { Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
+import { Divider, Dropdown, Input, Label, Popup } from "semantic-ui-react";
 import { Plus, Trash2 } from "lucide-react";
 import _ from "lodash";
 import WMSCapabilities from "ol/format/WMSCapabilities";
@@ -50,29 +50,19 @@ const MapSettings = props => {
         (Object.prototype.hasOwnProperty.call(layer, "Title") && layer.Title.toLowerCase().search(search) >= 0) ||
         (Object.prototype.hasOwnProperty.call(layer, "Abstract") && layer.Abstract.toLowerCase().search(search) >= 0) ||
         (Object.prototype.hasOwnProperty.call(layer, "Name") && identifier.toLowerCase().search(search) >= 0) ? (
-        <div
-          className="selectable unselectable"
-          key={`${layerType.toLowerCase()}-list-${idx}`}
-          style={{
-            padding: "0.5em",
-          }}>
+        <Box className="selectable unselectable" key={`${layerType.toLowerCase()}-list-${idx}`} sx={{ p: "0.5em" }}>
           <Stack
             data-cy={`${layerType.toLowerCase()}-list-box`}
             direction="row"
             alignItems="center"
-            sx={{
-              fontWeight: "bold",
-            }}>
-            <div
-              style={{
-                flex: 1,
-              }}>
+            sx={{ fontWeight: "bold" }}>
+            <Box sx={{ flex: 1 }}>
               <Highlighter searchWords={[search]} textToHighlight={layer.Title} />
-            </div>
-            <div>{getIconButton(layer, layerType)}</div>
+            </Box>
+            <Box>{getIconButton(layer, layerType)}</Box>
           </Stack>
-          <div
-            style={{
+          <Box
+            sx={{
               color: "#787878",
               fontSize: "0.8em",
             }}>
@@ -94,14 +84,11 @@ const MapSettings = props => {
               />
             ) : null}
             <Highlighter searchWords={[search]} textToHighlight={identifier} />
-          </div>
-          <div
-            style={{
-              fontSize: "0.8em",
-            }}>
+          </Box>
+          <Box sx={{ fontSize: "0.8em" }}>
             <Highlighter searchWords={[search]} textToHighlight={layer.Abstract} />
-          </div>
-        </div>
+          </Box>
+        </Box>
       ) : null;
     });
   }
@@ -177,21 +164,12 @@ const MapSettings = props => {
         </div>
       </div>
       {state.map === true ? (
-        <Segment.Group style={{ margin: 0 }}>
+        <Box style={{ margin: 0 }}>
           <Box sx={{ overFlowY: "auto" }}>
-            <Stack direction={{ xs: "column", sm: "column", md: "row" }} gap={1} sx={{ p: 1 }}>
-              <Box sx={{ flex: "1 1 0" }}>
-                <div
-                  style={{
-                    alignItems: "center",
-                    marginBottom: "1em",
-                    display: "flex",
-                    flexDirection: "row",
-                  }}>
-                  <div
-                    style={{
-                      flex: 1,
-                    }}>
+            <Stack direction={{ xs: "column", sm: "column", md: "column", lg: "row" }} gap={6} p={2}>
+              <Box sx={{ flex: "1 1 0", width: { xs: "100%", sm: "100%", md: "100%", lg: 0 } }}>
+                <Stack gap={1}>
+                  <Stack direction="row" alignItems={"center"} gap={1}>
                     <Dropdown
                       additionLabel=""
                       allowAdditions
@@ -206,27 +184,26 @@ const MapSettings = props => {
                       placeholder=""
                       search
                       selection
+                      style={{ overflow: "hidden", padding: "10px" }}
                       value={setting.selectedWMS}
                     />
-                  </div>
-                  <Button
-                    sx={{ height: "37px", width: "80px", ml: 1 }}
-                    variant="contained"
-                    data-cy="load-layers-button"
-                    onClick={() => {
-                      setState({
-                        ...state,
-                        wmsFetch: true,
-                        wms: null,
-                        wmts: null,
-                      });
-                      fetchCapabilitiesForService();
-                    }}>
-                    {state.wmsFetch ? <CircularProgress size={22} color="inherit" /> : t("load")}
-                  </Button>
-                </div>
-                {state.wmts !== null ? (
-                  <div>
+                    <Button
+                      sx={{ height: "37px", width: "80px", ml: 1 }}
+                      variant="contained"
+                      data-cy="load-layers-button"
+                      onClick={() => {
+                        setState({
+                          ...state,
+                          wmsFetch: true,
+                          wms: null,
+                          wmts: null,
+                        });
+                        fetchCapabilitiesForService();
+                      }}>
+                      {state.wmsFetch ? <CircularProgress size={22} color="inherit" /> : t("load")}
+                    </Button>
+                  </Stack>
+                  {state.wmts !== null ? (
                     <Input
                       icon="search"
                       onChange={e => {
@@ -237,10 +214,8 @@ const MapSettings = props => {
                       }}
                       placeholder="Search..."
                     />
-                  </div>
-                ) : null}
-                {state.wms !== null ? (
-                  <div>
+                  ) : null}
+                  {state.wms !== null ? (
                     <Input
                       icon="search"
                       onChange={e => {
@@ -251,99 +226,73 @@ const MapSettings = props => {
                       }}
                       placeholder="Search..."
                     />
-                  </div>
-                ) : null}
-                <div
-                  style={{
-                    maxHeight: "300px",
-                    overflowY: "auto",
-                    border: state.wms === null && state.wmts === null ? null : "thin solid #cecece",
-                    marginTop: state.wms === null && state.wmts === null ? null : "1em",
-                  }}>
-                  {state.wms &&
-                    getLayerList(
-                      state.wms.Capability.Layer.Layer.sort((a, b) => a.Name.localeCompare(b.Name)),
-                      state.searchWms,
-                      "WMS",
-                    )}
-                  {state.wmts &&
-                    getLayerList(
-                      state.wmts.Contents.Layer.sort((a, b) => a.Identifier.localeCompare(b.Identifier)),
-                      state.searchWmts,
-                      "WMTS",
-                    )}
-                </div>
-              </Box>
-              <Box sx={{ ml: 3, flex: "1 1 0" }}>
-                <div
-                  style={{
-                    alignItems: "center",
-                    marginBottom: "1em",
-                    display: "flex",
-                    flexDirection: "row",
-                  }}>
-                  <div
-                    style={{
-                      flex: 1,
+                  ) : null}
+                  <Box
+                    sx={{
+                      height: state.wms || state.wmts ? "300px" : 0,
+                      overflowY: "auto",
+                      border: state.wms === null && state.wmts === null ? null : "thin solid #cecece",
+                      marginTop: state.wms === null && state.wmts === null ? null : "1em",
                     }}>
-                    {t("usersMap")}
-                  </div>
-                  <div>
-                    <Input
-                      icon="search"
-                      onChange={e => {
-                        setState({
-                          ...state,
-                          searchWmtsUser: e.target.value.toLowerCase(),
-                        });
-                      }}
-                      placeholder="Search..."
-                    />
-                  </div>
-                </div>
-                <div
-                  style={{
-                    maxHeight: "300px",
+                    {state.wms &&
+                      getLayerList(
+                        state.wms.Capability.Layer.Layer.sort((a, b) => a.Name.localeCompare(b.Name)),
+                        state.searchWms,
+                        "WMS",
+                      )}
+                    {state.wmts &&
+                      getLayerList(
+                        state.wmts.Contents.Layer.sort((a, b) => a.Identifier.localeCompare(b.Identifier)),
+                        state.searchWmts,
+                        "WMTS",
+                      )}
+                  </Box>
+                </Stack>
+              </Box>
+              <Box sx={{ flex: "1 1 0", width: { xs: "100%", sm: "100%", md: "100%", lg: 0 } }}>
+                <Stack direction={"column"} gap={2} py={1} mb={2}>
+                  <Typography>{t("usersMap")}</Typography>
+                  <Input
+                    icon="search"
+                    onChange={e => {
+                      setState({
+                        ...state,
+                        searchWmtsUser: e.target.value.toLowerCase(),
+                      });
+                    }}
+                    placeholder="Search..."
+                  />
+                </Stack>
+                <Box
+                  sx={{
+                    height: "300px",
                     overflowY: "auto",
-                    flex: "1 1 100%",
                     border: "thin solid #cecece",
                   }}>
                   {mapSettings &&
                     Object.entries(mapSettings).map(([key, layer], index) => {
                       return filterBySearchTerm(layer, state.searchWmtsUser) ? (
-                        <div
-                          className="selectable unselectable"
-                          key={"wmts-list-" + index}
-                          style={{
-                            padding: "0.5em",
-                          }}>
+                        <Box className="selectable unselectable" key={"wmts-list-" + index} sx={{ p: "0.5em" }}>
                           <Stack
                             data-cy="maps-for-user-box"
                             direction="row"
                             alignItems="center"
-                            sx={{
-                              fontWeight: "bold",
-                            }}>
-                            <div
-                              style={{
-                                flex: 1,
-                              }}>
+                            sx={{ fontWeight: "bold" }}>
+                            <Box sx={{ flex: 1 }}>
                               <Highlighter searchWords={[state.searchWmtsUser]} textToHighlight={layer.Title} />
-                            </div>
-                            <div>
-                              <IconButton
-                                data-cy="delete-user-map-button"
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  if (_.has(mapSettings, key)) {
-                                    layer.Identifier = key;
-                                    rmExplorerMap(layer);
-                                  }
-                                }}
-                                color="error">
-                                <Trash2 />
-                              </IconButton>
-                            </div>
+                            </Box>
+                            <IconButton
+                              data-cy="delete-user-map-button"
+                              onClick={e => {
+                                e.stopPropagation();
+                                if (_.has(mapSettings, key)) {
+                                  layer.Identifier = key;
+                                  rmExplorerMap(layer);
+                                }
+                              }}
+                              color="error">
+                              <Trash2 />
+                            </IconButton>
                           </Stack>
                           <div
                             style={{
@@ -358,14 +307,14 @@ const MapSettings = props => {
                             }}>
                             <Highlighter searchWords={[state.searchWmtsUser]} textToHighlight={layer.Abstract} />
                           </div>
-                        </div>
+                        </Box>
                       ) : null;
                     })}
-                </div>
+                </Box>
               </Box>
             </Stack>
           </Box>
-        </Segment.Group>
+        </Box>
       ) : (
         <Divider style={{ margin: 0 }} />
       )}

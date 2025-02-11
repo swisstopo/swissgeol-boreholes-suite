@@ -190,6 +190,7 @@
   "errorStartEditing": "Per favore premere il pulsante 'iniziare la modifica'",
   "errorStartWrong": "Il primo strato non inizia dalla riferimento della quota",
   "errorToDepthTooHigh": "la profondità è troppo alta",
+  "errorWhileFetchingData": "Si è verificato un errore durante il recupero o l'attualizzazione dei dati.",
   "errorWrongDepth": "Profondità di perforazione finale errata",
   "errrorStartPoint": "Per favore aggiungere il punto di partenza",
   "evaluationMethod": "Metodo di valutazione",

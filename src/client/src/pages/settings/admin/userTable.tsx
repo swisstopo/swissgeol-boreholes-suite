@@ -1,51 +1,58 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useHistory } from "react-router-dom";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
-  GridColumnVisibilityModel,
+  GridEventListener,
   GridFilterModel,
   GridRenderCellParams,
   GridToolbar,
 } from "@mui/x-data-grid";
-import { Trash2 } from "lucide-react";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
-import { fetchUsers } from "../../../api/user.ts";
-import { theme } from "../../../AppTheme.ts";
+import { fetchUsers, updateUser } from "../../../api/user.ts";
+import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
+import { quickFilterStyles } from "./quickfilterStyles.ts";
+import { SettingsHeaderContext } from "./settingsHeaderContext.tsx";
+import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
 export const UserTable = () => {
   const { t, i18n } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
-  const [filterModel, setFilterModel] = useState<GridFilterModel>({
-    items: [],
-    quickFilterExcludeHiddenColumns: true,
-    quickFilterValues: [""],
-  });
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>({
-    company: false,
-  });
+  const [filterModel, setFilterModel] = useState<GridFilterModel>();
+  const history = useHistory();
+  const { setHeaderTitle, setChipContent } = useContext(SettingsHeaderContext);
+  const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
+  const { statusColumn, deleteColumn } = useSharedTableColumns();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
-  const handleColumnVisibilityChange = useCallback(
-    (newModel: GridColumnVisibilityModel) => setColumnVisibilityModel(newModel),
-    [],
-  );
 
   useEffect(() => {
     const getUsers = async () => {
-      const users = await fetchUsers();
+      const users: User[] = await callApiWithErrorHandling(fetchUsers, []);
       setUsers(users);
     };
     getUsers();
-  }, []);
+    setHeaderTitle("settings");
+    setChipContent("");
+  }, [callApiWithErrorHandling, setChipContent, setHeaderTitle, t]);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
-    const handleCheckBoxClick = (event: ChangeEvent<HTMLInputElement>, id: number) => {
+    const handleCheckBoxClick = async (event: ChangeEvent<HTMLInputElement>, id: number) => {
       event.stopPropagation();
-      console.log("update user with id", id);
-      //Todo: update user admin status
+      const user = users.find(user => user.id === id);
+      if (user) {
+        // Define rollback function to revert the state if the API call fails
+        const rollback = () => setUsers([...users]);
+
+        // Optimistically update the user in the state
+        const updatedUser = { ...user, isAdmin: event.target.checked };
+        setUsers([...users.map(user => (user.id === id ? updatedUser : user))]);
+
+        await callApiWithRollback(updateUser, [updatedUser], rollback);
+      }
     };
 
     return (
@@ -56,7 +63,6 @@ export const UserTable = () => {
       />
     );
   };
-
   const renderWorkgroupChips = (params: GridRenderCellParams<WorkgroupRole[]>) => {
     const averageCharacterWidth = 7.5;
     const chipPadding = 16;
@@ -70,7 +76,7 @@ export const UserTable = () => {
 
     const uniqueWorkgroups: string[] = [
       ...new Set<string>(
-        params.value.map((role: WorkgroupRole) => role.workgroup?.name).filter((name: string) => name !== undefined),
+        params.value?.map((role: WorkgroupRole) => role.workgroup?.name).filter((name: string) => name !== undefined),
       ),
     ];
 
@@ -106,17 +112,15 @@ export const UserTable = () => {
     );
   };
 
+  const handleRowClick: GridEventListener<"rowClick"> = params => {
+    history.push(`/setting/user/${params.row.id}`);
+  };
+
   const columns: GridColDef[] = [
     { field: "firstName", headerName: t("firstname"), flex: 1 },
     { field: "lastName", headerName: t("lastname"), flex: 1 },
     { field: "email", headerName: "Email", flex: 1 },
-    {
-      field: "isDisabled",
-      headerName: t("status"),
-      valueGetter: isDisabled => {
-        return isDisabled ? t("disabled") : t("active");
-      },
-    },
+    statusColumn,
     {
       field: "isAdmin",
       headerName: "Admin",
@@ -135,54 +139,8 @@ export const UserTable = () => {
       width: 320,
       renderCell: renderWorkgroupChips,
     },
-    {
-      field: "delete",
-      headerName: "",
-      width: 24,
-      resizable: false,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      disableReorder: true,
-      disableExport: true,
-      renderCell: value => {
-        return (
-          <Stack
-            direction={"row"}
-            gap={1}
-            p={0.5}
-            key={value.id}
-            sx={{ mt: 1, border: `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }}>
-            <Trash2 color={theme.palette.primary.main} />
-          </Stack>
-        );
-      },
-    },
+    deleteColumn,
   ];
-
-  const quickFilterStyles = {
-    "& .MuiDataGrid-toolbarContainer .MuiDataGrid-toolbarQuickFilter .MuiInput-root": {
-      outline: `1px solid ${theme.palette.secondary.main} !important`,
-      borderRadius: "4px",
-      padding: "8px 4px  4px 4px",
-      color: theme.palette.secondary.main,
-      "&:focus-within": {
-        outline: `2px solid ${theme.palette.primary.main} !important`,
-      },
-    },
-    "& .MuiDataGrid-toolbarContainer .MuiInput-underline:after, & .MuiDataGrid-toolbarContainer .MuiInput-underline:before":
-      {
-        borderBottom: "none",
-      },
-    "& .MuiDataGrid-toolbarContainer .MuiInput-underline:hover:not(.Mui-disabled):before": {
-      borderBottom: "none",
-    },
-    "& .MuiDataGrid-toolbarContainer .MuiInput-underline.Mui-focused:after": {
-      borderBottom: "none",
-    },
-  };
-
-  const isLoading = !users.length;
 
   return (
     <DataGrid
@@ -191,11 +149,12 @@ export const UserTable = () => {
       columnHeaderHeight={44}
       rowHeight={44}
       sortingOrder={["asc", "desc"]}
-      loading={isLoading}
-      rowCount={users.length}
+      loading={!users?.length}
+      onRowClick={handleRowClick}
+      rowCount={users?.length}
       rows={users}
       columns={columns}
-      hideFooterPagination={!users.length}
+      hideFooterPagination={!users?.length}
       pageSizeOptions={[100]}
       slots={{ toolbar: GridToolbar }}
       slotProps={{
@@ -217,8 +176,6 @@ export const UserTable = () => {
       disableDensitySelector
       filterModel={filterModel}
       onFilterModelChange={handleFilterModelChange}
-      columnVisibilityModel={columnVisibilityModel}
-      onColumnVisibilityModelChange={handleColumnVisibilityChange}
     />
   );
 };

@@ -66,5 +66,5 @@ export interface User {
   createdAt?: Date | string;
   settings?: string;
   workgroupRoles?: WorkgroupRole[];
-  acceptedTerms?: TermsAccepted[];
+  termsAccepted?: TermsAccepted[];
 }
