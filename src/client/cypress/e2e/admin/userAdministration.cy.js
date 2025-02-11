@@ -208,6 +208,6 @@ describe("User administration settings tests", () => {
     cy.location().should(location => {
       expect(location.pathname).to.eq("/setting/user/7");
     });
-    cy.contains("U. that_can");
+    cy.contains("U. be_deleted");
   });
 });
