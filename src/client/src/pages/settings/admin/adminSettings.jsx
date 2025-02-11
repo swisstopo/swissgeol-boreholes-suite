@@ -4,7 +4,13 @@ import { connect } from "react-redux";
 import { Button, Checkbox, Form, Icon, Input, Label, Loader, Modal, Table } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import { deleteUser, fetchUser, fetchUsers, updateUser } from "../../../api/user";
-import { createWorkgroup, deleteWorkgroup, fetchWorkgroups, setRole, updateWorkgroup } from "../../../api/workgroup";
+import {
+  createWorkgroup,
+  deleteWorkgroup,
+  fetchWorkgroups,
+  setWorkgroupRole,
+  updateWorkgroup,
+} from "../../../api/workgroup";
 import { AlertContext } from "../../../components/alert/alertContext";
 import DateText from "../../../components/legacyComponents/dateText.js";
 import TranslationText from "../../../components/legacyComponents/translationText.jsx";
@@ -125,7 +131,7 @@ class AdminSettings extends React.Component {
       },
       () => {
         let isRoleActive = uwg !== undefined && uwg.some(x => x.role === role);
-        setRole(this.state.user.id, workgroup.id, role, !isRoleActive).then(() => {
+        setWorkgroupRole(this.state.user.id, workgroup.id, role, !isRoleActive).then(() => {
           this.listUsers();
         });
       },
