@@ -1,11 +1,10 @@
 import { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
+import { BoreholeV2, useBorehole, useUpdateBorehole } from "../../api/borehole.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import {
   prepareBoreholeDataForSubmit,
@@ -23,7 +22,7 @@ import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
 
 export const DetailPage: FC = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Redux loading state
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
   const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
@@ -32,42 +31,42 @@ export const DetailPage: FC = () => {
   const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
   const dispatch = useDispatch();
   const { id } = useParams<{ id: string }>();
-  const queryClient = useQueryClient();
 
-  const { data: borehole, isLoading } = useQuery<BoreholeV2, Error>({
-    queryKey: ["borehole", parseInt(id, 10)],
-    queryFn: () => getBoreholeById(parseInt(id, 10)),
-  });
+  const { data: borehole, isLoading: isLoadingV2 } = useBorehole(parseInt(id, 10));
+  const { mutate: updateBoreholeMutation } = useUpdateBorehole();
 
   useEffect(() => {
-    if (!isLoading && borehole) {
+    if (borehole) {
       setEditingEnabled(borehole.locked !== null && borehole.lockedById === user.data.id);
     }
-  }, [borehole, isLoading, setEditingEnabled, user.data.id]);
+  }, [borehole, setEditingEnabled, user.data.id]);
 
   const loadOrCreate = useCallback(
     (id: string) => {
-      setLoading(true);
+      setLoading(true); // Redux loading starts
       dispatch(loadBorehole(parseInt(id, 10)))
         //@ts-expect-error // legacy fetch function returns not typed
         .then(response => {
           if (response.success) {
-            setLoading(false);
+            setLoading(false); // Redux loading ends
           }
         });
     },
-    [dispatch, setLoading],
+    [dispatch],
   );
 
   const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
   const boreholePanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
 
   function getAndUpdateBorehole(boreholeSubmission: BoreholeFormInputs | LocationFormSubmission) {
-    getBoreholeById(parseInt(id)).then(b => {
-      updateBorehole({ ...b, ...boreholeSubmission }).then(() => {
-        queryClient.invalidateQueries({ queryKey: ["borehole", parseInt(id, 10)] });
-      });
-    });
+    updateBoreholeMutation(
+      { id: parseInt(id, 10), boreholeSubmission },
+      {
+        onSuccess: updatedData => {
+          setEditingEnabled(updatedData.locked !== null && updatedData.lockedById === user.data.id);
+        },
+      },
+    );
   }
 
   const onBoreholeFormSubmit = (formInputs: BoreholeFormInputs) => {
@@ -93,10 +92,6 @@ export const DetailPage: FC = () => {
   }, [id, loadOrCreate]);
 
   useEffect(() => {
-    setEditingEnabled(legacyBorehole?.data?.lock !== null);
-  }, [legacyBorehole?.data?.lock, setEditingEnabled]);
-
-  useEffect(() => {
     if (!editingEnabled) {
       togglePanel(false);
     }
@@ -118,7 +113,8 @@ export const DetailPage: FC = () => {
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
   }, [editingEnabled, user, legacyBorehole, location, togglePanel]);
 
-  if (loading || !borehole)
+  // Ensure Redux store and data via API V2 is loaded
+  if (loading || isLoadingV2)
     return (
       <Stack height="100%" alignItems="center" justifyContent="center">
         <CircularProgress />
