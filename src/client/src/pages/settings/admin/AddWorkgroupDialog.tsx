@@ -19,39 +19,22 @@ interface AddWorkgroupDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   userId: string;
-  shouldUserUpdate: boolean;
-  setShouldUserUpdate: (shouldUserUpdate: boolean) => void;
+  userWorkgroups: Workgroup[];
+  setUserWorkgroups: (userWorkgroups: Workgroup[]) => void;
 }
 
 export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
   open,
   setOpen,
   userId,
-  shouldUserUpdate,
-  setShouldUserUpdate,
+  userWorkgroups,
+  setUserWorkgroups,
 }) => {
   const { t } = useTranslation();
   const [workgroups, setWorkgroups] = useState<Workgroup[]>([]);
   const [workgroupId, setWorkgroupId] = useState<string | null>(null);
   const [role, setRole] = useState<Role | null>(null);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
-
-  const addWorkgroup = async () => {
-    if (workgroupId && role) {
-      const rollback = () => {
-        setWorkgroupId(null);
-        console.log("rollback");
-
-        setRole(null);
-      };
-      await callApiWithRollback(setWorkgroupRole, [userId, workgroupId, role, true], rollback);
-      setOpen(false);
-      setShouldUserUpdate(!shouldUserUpdate);
-      setWorkgroupId(null);
-      setRole(null);
-      // update workgroup table!
-    }
-  };
 
   useEffect(() => {
     const getWorkgroups = async () => {
@@ -65,6 +48,39 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
     getWorkgroups();
   }, [callApiWithErrorHandling, setOpen]);
 
+  const resetDialog = () => {
+    setOpen(false);
+    setWorkgroupId(null);
+    setRole(null);
+  };
+
+  const updateWorkgroupsTableWithNewRole = (workgroupId: number, role: Role) => {
+    const existingUserWorkgroup = userWorkgroups.find(wgp => wgp.id === workgroupId);
+    if (existingUserWorkgroup) {
+      setUserWorkgroups([{ ...existingUserWorkgroup, roles: [...existingUserWorkgroup.roles, role] }]);
+    } else {
+      const newWorkgroup = workgroups.find(wgp => wgp.id === workgroupId);
+      if (newWorkgroup) {
+        newWorkgroup.roles = [role];
+        setUserWorkgroups([...userWorkgroups, newWorkgroup]);
+      }
+    }
+  };
+
+  const addWorkgroup = async () => {
+    if (workgroupId && role) {
+      resetDialog();
+
+      const rollback = () => {
+        setUserWorkgroups([...userWorkgroups]);
+      };
+
+      updateWorkgroupsTableWithNewRole(parseInt(workgroupId), role);
+
+      await callApiWithRollback(setWorkgroupRole, [userId, workgroupId, role, true], rollback);
+    }
+  };
+
   return (
     <Dialog open={open}>
       <Stack sx={{ minWidth: "326px" }}>
@@ -72,7 +88,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
           <Typography variant="h4">{t("addWorkgroup")}</Typography>
         </DialogTitle>
         <DialogContent>
-          <Stack gap={1} sx={{ mt: 3 }}>
+          <Stack gap={2} sx={{ mt: 3 }}>
             <TextField
               select
               label={t("workgroup")}
@@ -105,16 +121,10 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
         </DialogContent>
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
-            <CancelButton
-              onClick={() => {
-                setWorkgroupId(null);
-                setRole(null);
-                setOpen(false);
-              }}
-            />
+            <CancelButton onClick={resetDialog} />
             <AddButton
               disabled={!workgroupId || !role}
-              label="addWorkgroup"
+              label="addWorkgroupRole"
               variant="contained"
               onClick={addWorkgroup}
             />

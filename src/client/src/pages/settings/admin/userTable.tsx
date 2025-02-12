@@ -1,7 +1,7 @@
 import { ChangeEvent, FC, MouseEvent, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
-import { Button, Checkbox, Chip, Stack, Tooltip } from "@mui/material";
+import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -11,10 +11,8 @@ import {
   GridRowParams,
   GridToolbar,
 } from "@mui/x-data-grid";
-import { Trash2 } from "lucide-react";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchUsers, updateUser } from "../../../api/user.ts";
-import { theme } from "../../../AppTheme.ts";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
@@ -34,7 +32,7 @@ export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers
   const [isLoading, setIsLoading] = useState(true);
   const history = useHistory();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
-  const { statusColumn } = useSharedTableColumns();
+  const { statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { showDeleteWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
@@ -72,27 +70,6 @@ export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers
         onChange={event => handleCheckBoxClick(event, params.id as number)}
         onClick={event => event.stopPropagation()}
       />
-    );
-  };
-
-  const renderCellDelete = (params: GridRenderCellParams) => {
-    const handleDeleteUser = (event: MouseEvent<HTMLButtonElement>, id: number) => {
-      event.stopPropagation();
-      const user = users.find(user => user.id === id);
-      if (!user) return;
-      setSelectedUser(user);
-      showDeleteWarning(user);
-    };
-
-    return (
-      <Button
-        variant="outlined"
-        key={params.row.id}
-        data-cy={`delete-user-${params.row.firstName}`}
-        onClick={event => handleDeleteUser(event, params.id as number)}
-        sx={{ p: 0.5 }}>
-        <Trash2 color={theme.palette.primary.main} />
-      </Button>
     );
   };
 
@@ -149,6 +126,14 @@ export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers
     history.push(`/setting/user/${params.row.id}`);
   };
 
+  const handleDeleteUser = (event: MouseEvent<HTMLButtonElement>, id: number) => {
+    event.stopPropagation();
+    const user = users.find(user => user.id === id);
+    if (!user) return;
+    setSelectedUser(user);
+    showDeleteWarning(user);
+  };
+
   const columns: GridColDef[] = [
     { field: "firstName", headerName: t("firstname"), flex: 1 },
     { field: "lastName", headerName: t("lastname"), flex: 1 },
@@ -172,18 +157,7 @@ export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers
       width: 320,
       renderCell: renderWorkgroupChips,
     },
-    {
-      field: "delete",
-      headerName: "",
-      width: 32,
-      resizable: false,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      disableReorder: true,
-      disableExport: true,
-      renderCell: renderCellDelete,
-    },
+    getDeleteColumn(handleDeleteUser),
   ];
 
   const getRowClassName = (params: GridRowParams) => {
