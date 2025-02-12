@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added a readonly table displaying all the users in the admin settings.
+- Added a table displaying all the users in the admin settings.
 
 ### Changed
 

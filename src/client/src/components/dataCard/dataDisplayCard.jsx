@@ -22,7 +22,6 @@ export const DataDisplayCard = props => {
       {editingEnabled && (
         <DataCardButtonContainer>
           <DeleteButton
-            label="delete"
             onClick={() => {
               showPrompt(t("deleteMessage"), [
                 {

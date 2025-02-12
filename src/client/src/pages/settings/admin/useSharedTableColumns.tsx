@@ -10,7 +10,7 @@ export function useSharedTableColumns() {
     field: "isDisabled",
     headerName: t("status"),
     valueGetter: isDisabled => {
-      return isDisabled ? t("disabled") : t("enabled");
+      return isDisabled ? t("inactive") : t("active");
     },
     width: 120,
   };

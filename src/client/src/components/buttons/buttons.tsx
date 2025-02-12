@@ -112,6 +112,7 @@ export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
     <BdmsBaseButton
       ref={ref}
       {...props}
+      label={props.label ?? "delete"}
       variant={props.variant ?? "outlined"}
       color={props.color ?? "secondary"}
       icon={<Trash2 />}

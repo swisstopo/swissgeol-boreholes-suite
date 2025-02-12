@@ -394,6 +394,7 @@ export const theme = createTheme({
           borderRadius: `${themeSpacing(0.5)} !important`,
           margin: themeSpacing(0.5),
           padding: "7px",
+          textTransform: "none",
           color: themePalette.primary.main,
           "&.Mui-selected": {
             color: themePalette.buttonStates.outlined.hoverOrFocus.color,
@@ -597,7 +598,7 @@ export const theme = createTheme({
             backgroundColor: themePalette.background.lightgrey,
             color: themePalette.primary.main,
           },
-          "& .locked-row": {
+          "& .disabled-row": {
             backgroundColor: themePalette.background.default,
             color: themePalette.action.disabled,
           },
