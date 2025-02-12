@@ -38,7 +38,7 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>((props, r
         width: "fit-content",
         transition: "background-color 0.3s ease, color 0.3s ease, width 0.3s ease",
         "&:hover": {
-          backgroundColor: `${theme.palette.primary.main} !important`,
+          backgroundColor: `${theme.palette.buttonStates.contained.hoverOrFocus.backgroundColor} !important`,
           color: `${theme.palette.primary.contrastText} !important`,
           width: "fit-content",
           whiteSpace: "nowrap",

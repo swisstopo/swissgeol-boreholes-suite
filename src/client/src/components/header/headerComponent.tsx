@@ -17,8 +17,7 @@ const HeaderComponent = () => {
       alignItems="center"
       sx={{
         borderBottom: "1px solid " + theme.palette.border.light,
-        height: "88px",
-        padding: "16px",
+        padding: "21.5px",
         zIndex: "10",
       }}>
       <Box sx={{ flex: "1 1 100%", padding: 0 }}>

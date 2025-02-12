@@ -15,6 +15,10 @@ export const verifyRowContains = (rowContent, rowIndex) => {
     });
 };
 
+export const verifyTableLength = length => {
+  cy.get(".MuiDataGrid-row").should("have.length", length);
+};
+
 export const waitForTableData = () => {
   cy.get(".MuiDataGrid-root").should("be.visible");
   cy.get(".loading-indicator").should("not.exist");
@@ -36,6 +40,12 @@ export const checkRowWithText = text => {
 
 export const unCheckRowWithText = text => {
   cy.contains(".MuiDataGrid-row", text).find('.MuiCheckbox-root input[type="checkbox"]').uncheck({ force: true });
+};
+
+export const verifyRowWithTextCheckState = (text, checked) => {
+  cy.contains(".MuiDataGrid-row", text)
+    .find('.MuiCheckbox-root input[type="checkbox"]')
+    .should(checked ? "be.checked" : "not.be.checked");
 };
 
 export const checkTwoFirstRows = () => {

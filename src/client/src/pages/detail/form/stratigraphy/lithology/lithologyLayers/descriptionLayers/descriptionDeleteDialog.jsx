@@ -33,7 +33,6 @@ const DescriptionDeleteDialog = props => {
           }}
         />
         <DeleteButton
-          label="delete"
           onClick={e => {
             e.stopPropagation();
             deleteMutation.mutate(item.id);

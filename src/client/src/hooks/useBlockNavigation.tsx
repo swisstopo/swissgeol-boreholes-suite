@@ -2,8 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
-import { PromptContext } from "../../components/prompt/promptContext.tsx";
-import { useFormDirtyStore } from "./formDirtyStore.ts";
+import { PromptContext } from "../components/prompt/promptContext.tsx";
+import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
 
 interface UseBlockNavigationResult {
   handleBlockedNavigation: (nextLocation: string) => boolean;

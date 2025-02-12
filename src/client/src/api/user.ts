@@ -1,21 +1,15 @@
 import { User } from "./apiInterfaces.ts";
-import { fetchApiV2 } from "./fetchApiV2";
+import { fetchApiV2WithApiError } from "./fetchApiV2";
 
-export const fetchCurrentUser = async () => await fetchApiV2("user/self", "GET");
+export const fetchUser = async (id: number) => await fetchApiV2WithApiError(`user/${id}`, "GET");
 
-export const fetchUser = async (id: number) => await fetchApiV2(`user/${id}`, "GET");
-
-export const fetchUsers = async () => await fetchApiV2("user", "GET");
+export const fetchUsers = async () => await fetchApiV2WithApiError("user", "GET");
 
 export const updateUser = async (user: User) => {
   if (user.disabledAt) {
     user.disabledAt = new Date(user.disabledAt).toISOString();
   }
-  user.isDisabled = undefined;
-  user.acceptedTerms = undefined;
-  user.workgroupRoles = undefined;
-
-  return await fetchApiV2("user", "PUT", user);
+  return await fetchApiV2WithApiError("user", "PUT", user);
 };
 
-export const deleteUser = async (id: number) => await fetchApiV2(`user/${id}`, "DELETE");
+export const deleteUser = async (id: number) => await fetchApiV2WithApiError(`user/${id}`, "DELETE");

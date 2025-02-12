@@ -60,7 +60,6 @@ const Geometry = ({ measuredDepth }) => {
               <Card>
                 <CardActions>
                   <DeleteButton
-                    label="delete"
                     sx={{ marginLeft: "auto" }}
                     onClick={() => deleteBoreholeGeometry(boreholeId)}
                     endIcon={

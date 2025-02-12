@@ -61,10 +61,11 @@ export interface User {
   firstName: string;
   lastName: string;
   isAdmin: boolean;
+  deletable: boolean;
   isDisabled?: boolean;
   disabledAt?: Date | string;
   createdAt?: Date | string;
   settings?: string;
   workgroupRoles?: WorkgroupRole[];
-  acceptedTerms?: TermsAccepted[];
+  termsAccepted?: TermsAccepted[];
 }

@@ -43,7 +43,6 @@ const CompletionHeaderDisplay = ({ completion, setEditing, copyCompletion, delet
                   }}
                 />
                 <DeleteButton
-                  label="delete"
                   onClick={e => {
                     e.stopPropagation();
                     deleteCompletion();

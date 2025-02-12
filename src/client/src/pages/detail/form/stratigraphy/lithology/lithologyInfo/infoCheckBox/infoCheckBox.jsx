@@ -37,7 +37,6 @@ const InfoCheckBox = props => {
               });
             }}></CopyButton>
           <DeleteButton
-            label="delete"
             onClick={() => {
               showPrompt(t("deleteMessage"), [
                 {

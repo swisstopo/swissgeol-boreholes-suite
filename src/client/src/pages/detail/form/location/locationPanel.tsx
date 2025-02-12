@@ -2,7 +2,7 @@ import { forwardRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Box, Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
-import { UseFormWithSaveBar } from "../useFormWithSaveBar.ts";
+import { UseFormWithSaveBar } from "../../../../hooks/useFormWithSaveBar.ts";
 import IdentifierSegment from "./identifierSegment.tsx";
 import { LocationFormInputs, LocationPanelProps } from "./locationPanelInterfaces.tsx";
 import LocationSegment from "./locationSegment.tsx";

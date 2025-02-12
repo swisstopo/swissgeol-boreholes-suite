@@ -125,7 +125,6 @@ const BottomBar = ({
         <Stack direction="row" spacing={1} alignItems="center">
           {showAllTableActions && (
             <DeleteButton
-              label="delete"
               color="secondary"
               onClick={() =>
                 showPrompt(t("deleteBoreholesMessage", { count: selectionModel.length }), [

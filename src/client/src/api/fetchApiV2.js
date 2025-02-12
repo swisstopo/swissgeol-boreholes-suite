@@ -19,6 +19,21 @@ export async function fetchApiV2Base(url, method, body, contentType = null) {
   });
 }
 
+async function readApiResponse(response) {
+  const contentType = response.headers.get("content-type");
+  if (contentType && contentType.indexOf("application/json") !== -1) {
+    return await response.json();
+  } else if (
+    contentType &&
+    (contentType.indexOf("application/geopackage+sqlite") !== -1 ||
+      contentType.indexOf("application/octet-stream") !== -1)
+  ) {
+    return await response.blob(); // Binary response
+  } else {
+    return await response.text(); // Fallback for plain text
+  }
+}
+
 /**
  * Fetch data from the C# Api.
  * @param {*} url The resource url.
@@ -29,20 +44,26 @@ export async function fetchApiV2Base(url, method, body, contentType = null) {
 export async function fetchApiV2(url, method, payload = null) {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-      return await response.json();
-    } else if (
-      contentType &&
-      (contentType.indexOf("application/geopackage+sqlite") !== -1 ||
-        contentType.indexOf("application/octet-stream") !== -1)
-    ) {
-      return await response.blob(); // Binary response
-    } else {
-      return await response.text(); // Fallback for plain text
-    }
+    return await readApiResponse(response);
   } else {
     return response.text().then(text => alert(text));
+  }
+}
+
+/**
+ * Fetch data from the C# Api and return an Api error if the fetch was not successfull.
+ * This method should only be used in a try-catch block, handling the error.
+ * @param {*} url The resource url.
+ * @param {*} method The HTTP request method to apply (e.g. GET, PUT, POST...).
+ * @param {*} payload The payload of the HTTP request (optional).
+ * @returns The HTTP response as JSON.
+ */
+export async function fetchApiV2WithApiError(url, method, payload = null) {
+  const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
+  if (response.ok) {
+    return await readApiResponse(response);
+  } else {
+    throw new ApiError("errorWhileFetchingData", response.status);
   }
 }
 
