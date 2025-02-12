@@ -25,3 +25,16 @@ export const setWorkgroupRole = async (userId: number, workgroupId: number, role
   };
   return await fetchApiV2("workgroup/setRole", "POST", workgroupRole);
 };
+
+export const removeAllWorkgroupRolesForUser = async (userId: number, workgroupId: number, roles: Role[]) => {
+  const workgroupRoles: WorkgroupRole[] = [];
+  for (const role of roles) {
+    workgroupRoles.push({
+      workgroupId: workgroupId,
+      userId: userId,
+      role: role,
+      isActive: false,
+    });
+  }
+  return await fetchApiV2("workgroup/setRoles", "POST", workgroupRoles);
+};
