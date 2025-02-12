@@ -57,7 +57,10 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
   const updateWorkgroupsTableWithNewRole = (workgroupId: number, role: Role) => {
     const existingUserWorkgroup = userWorkgroups.find(wgp => wgp.id === workgroupId);
     if (existingUserWorkgroup) {
-      setUserWorkgroups([{ ...existingUserWorkgroup, roles: [...existingUserWorkgroup.roles, role] }]);
+      setUserWorkgroups([
+        ...userWorkgroups.filter(wgp => wgp.id !== workgroupId),
+        { ...existingUserWorkgroup, roles: [...existingUserWorkgroup.roles, role] },
+      ]);
     } else {
       const newWorkgroup = workgroups.find(wgp => wgp.id === workgroupId);
       if (newWorkgroup) {
@@ -94,6 +97,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
               label={t("workgroup")}
               name={"workgroup"}
               value={workgroupId}
+              data-cy="workgroup-formSelect"
               onChange={event => {
                 setWorkgroupId(event.target.value);
               }}>
@@ -108,6 +112,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
               label={t("role")}
               name={"role"}
               value={role}
+              data-cy="role-formSelect"
               onChange={event => {
                 setRole(event.target.value as Role);
               }}>

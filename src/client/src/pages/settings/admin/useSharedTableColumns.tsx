@@ -22,7 +22,7 @@ export function useSharedTableColumns() {
         <Button
           variant="outlined"
           key={params.row.id}
-          data-cy={`delete-row-${params.row.id}`}
+          data-cy={`delete-id-${params.row.id}`}
           onClick={event => handleDelete(event, params.row.id as number)}
           sx={{ p: 0.5 }}>
           <Trash2 color={theme.palette.primary.main} />

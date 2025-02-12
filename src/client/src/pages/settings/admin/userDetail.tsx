@@ -190,7 +190,7 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
           action={<AddButton label="addWorkgroup" variant="contained" onClick={() => addWorkgroup()} />}
         />
         <CardContent sx={{ pt: 4, px: 3 }}>
-          {userWorkgroups && (
+          {userWorkgroups && userWorkgroups?.length > 0 && (
             <DataGrid
               sx={{
                 border: "none !important",

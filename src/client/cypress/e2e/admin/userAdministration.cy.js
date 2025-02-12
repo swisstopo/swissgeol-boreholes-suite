@@ -8,6 +8,7 @@ import {
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers.js";
+import { setSelect } from "../helpers/formHelpers.js";
 import { getElementByDataCy, goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers.js";
 
 describe("User administration settings tests", () => {
@@ -128,7 +129,6 @@ describe("User administration settings tests", () => {
     handlePrompt(messageForInactiveNonDeletableUser, "Cancel");
 
     // go to users table
-    // goToRouteAndAcceptTerms("/setting#users"); // back button??
     getElementByDataCy("backButton").click();
     verifyRowContains("Inactive", 1); // controller
     getElementByDataCy("delete-user-controller").click();
@@ -140,7 +140,6 @@ describe("User administration settings tests", () => {
     getElementByDataCy("activate-user-button").click();
 
     // go back to user table and check prompts for deletable user
-    // goToRouteAndAcceptTerms("/setting#users");
     getElementByDataCy("backButton").click();
     verifyRowContains("Active", 4); // user that can be deleted
     getElementByDataCy("delete-user-user_that_can").click();
@@ -157,11 +156,61 @@ describe("User administration settings tests", () => {
     cy.wait("@update-user");
 
     // got back to user table and check if user with only files can be deleted
-    // goToRouteAndAcceptTerms("/setting#users");
     getElementByDataCy("backButton").click();
     verifyRowContains("Active", 5); // with only files
     getElementByDataCy("delete-user-user_that_only").click();
     handlePrompt(messageForActiveNonDeletableUser, "Cancel");
+  });
+
+  it("adds and deletes workgroups and workgroup roles for user.", () => {
+    goToRouteAndAcceptTerms("/setting/user/7");
+    waitForTableData();
+
+    // Add two workgroup roles to workgroup Reggae
+    getElementByDataCy("addworkgroup-button").click();
+    setSelect("workgroup", 1); // Workgroup called "Reggae";
+    setSelect("role", 1); // "Editor";
+    getElementByDataCy("addworkgrouprole-button").click();
+
+    getElementByDataCy("addworkgroup-button").click();
+    setSelect("workgroup", 1); // Workgroup called "Reggae";
+    setSelect("role", 2); // "Controller";
+    getElementByDataCy("addworkgrouprole-button").click();
+
+    // Add one workgroup roles to workgroup Country
+    getElementByDataCy("addworkgroup-button").click();
+    setSelect("workgroup", 4); // Workgroup called "Country";
+    setSelect("role", 0); // "View";
+    getElementByDataCy("addworkgrouprole-button").click();
+
+    verifyRowContains("Default", 0);
+    verifyRowContains("Reggae", 1);
+    verifyRowContains("Country", 2);
+
+    verifyPaginationText("1–3 of 3");
+    verifyTableLength(3);
+
+    // sort
+    sortBy("Workgroup");
+    verifyRowContains("Country", 0);
+    verifyRowContains("Default", 1);
+    verifyRowContains("Reggae", 2);
+
+    // delete all workgroup roles for Reggae Workgroup
+    getElementByDataCy("delete-id-2").click();
+    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Reggae"?', "Delete");
+    verifyTableLength(2);
+    verifyRowContains("Country", 0);
+
+    // cancel delete all workgroup roles for Country Workgroup
+    getElementByDataCy("delete-id-5").click();
+    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "Cancel");
+    verifyTableLength(2);
+    verifyRowContains("Country", 0);
+
+    getElementByDataCy("delete-id-5").click();
+    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "Delete");
+    verifyTableLength(1);
   });
 
   const errorWhileFetchingMessage = "An error occurred while fetching or updating data";
