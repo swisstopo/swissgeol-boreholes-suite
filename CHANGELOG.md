@@ -5,6 +5,7 @@
 ### Added
 
 - Added a table displaying all the users in the admin settings.
+- Added a detail view for users in the admin settings.
 
 ### Changed
 
