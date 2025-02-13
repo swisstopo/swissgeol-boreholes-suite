@@ -116,8 +116,8 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
               onChange={event => {
                 setRole(event.target.value as Role);
               }}>
-              {Object.values(Role).map((role, index) => (
-                <MenuItem key={index} value={role}>
+              {Object.values(Role).map(role => (
+                <MenuItem key={role} value={role}>
                   {role}
                 </MenuItem>
               ))}
