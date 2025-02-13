@@ -14,7 +14,7 @@ import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
-import { AddWorkgroupDialog } from "./AddWorkgroupDialog.tsx";
+import { AddWorkgroupDialog } from "./addWorkgroupDialog.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
