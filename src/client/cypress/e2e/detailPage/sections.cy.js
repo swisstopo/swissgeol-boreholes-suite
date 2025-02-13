@@ -199,7 +199,7 @@ describe("Section crud tests", () => {
     cy.contains("AA_CAPYBARA");
   });
 
-  it.only("changes drillingMudSubtype select options based on drillingMudType", () => {
+  it("changes drillingMudSubtype select options based on drillingMudType", () => {
     addItem("addSection");
     cy.wait("@codelist_GET");
     setInput("name", "A");

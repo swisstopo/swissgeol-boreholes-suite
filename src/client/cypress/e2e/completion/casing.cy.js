@@ -168,7 +168,7 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains("casing-2");
   });
 
-  it.only("checks for unsaved changes when switching between cards", () => {
+  it("checks for unsaved changes when switching between cards", () => {
     addItem("addcasing");
     cy.get('[data-cy="addcasing-button"]').should("be.disabled");
     cy.wait("@codelist_GET");
