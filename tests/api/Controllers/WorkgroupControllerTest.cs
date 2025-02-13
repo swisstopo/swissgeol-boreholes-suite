@@ -244,11 +244,6 @@ public class WorkgroupControllerTest
         It.IsAny<Exception>(),
         (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
         Times.Once);
-
-        var validUserWorkgroupRoles = new UserWorkgroupRole[]
-        {
-            CreateUserWorkgroupRole(user2, createdWorkgroup, Role.Validator, true),
-        };
     }
 
     private UserWorkgroupRole CreateUserWorkgroupRole(User user, Workgroup workgroup, Role role, bool? isActive) =>
