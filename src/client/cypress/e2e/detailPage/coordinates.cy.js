@@ -128,6 +128,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.wait("@location");
     cy.get('[data-cy="height-button"]').click();
     cy.wait("@height");
+    cy.wait(100);
     cy.get('[data-cy="apply-button"]').click();
 
     // verify automatically filled inputs
