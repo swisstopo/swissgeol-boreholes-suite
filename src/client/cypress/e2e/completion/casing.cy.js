@@ -175,6 +175,8 @@ describe("Casing crud tests", () => {
     setInput("casingElements.0.toDepth", "10");
     setSelect("casingElements.0.kindId", 3);
     saveForm();
+    cy.wait("@casing_POST");
+
     cy.get('[data-cy="addcasing-button"]').should("be.enabled");
 
     // can switch cards without prompt if no changes were made
@@ -196,6 +198,7 @@ describe("Casing crud tests", () => {
     setInput("notes", "Lorem.");
     addItem("addcasing");
     handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Save");
+    cy.wait("@casing_PUT");
     evaluateDisplayValue("notes", "Lorem.");
 
     // can reset creating and switch to existing card
@@ -216,6 +219,7 @@ describe("Casing crud tests", () => {
     setSelect("casingElements.0.kindId", 3);
     startEditing();
     handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Save");
+    cy.wait("@casing_POST");
     cy.get('[data-cy="casing-card.0.edit"]').should("exist");
     cy.get('[data-cy="casing-card.1"]').should("exist");
   });
