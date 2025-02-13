@@ -12,6 +12,7 @@ import AboutSettings from "./aboutSettings";
 import AdminSettings from "./admin/adminSettings";
 import { UserDetail } from "./admin/userDetail.tsx";
 import { UserTable } from "./admin/userTable.tsx";
+import { WorkgroupTable } from "./admin/workgroupTable.tsx";
 import EditorSettings from "./editorSettings.tsx";
 import { SettingsHeader } from "./settingsHeader.tsx";
 import TermSettings from "./termSettings";
@@ -34,7 +35,12 @@ export const SettingsPage = () => {
       tabsArray.push({ label: t("terms"), hash: "terms", component: <TermSettings /> });
     }
     if (isAdminUser) {
-      tabsArray.unshift({ label: t("workgroups"), hash: "workgroups", component: <AdminSettings /> });
+      tabsArray.unshift({ label: t("legacySettings"), hash: "legacysettings", component: <AdminSettings /> });
+      tabsArray.unshift({
+        label: t("workgroups"),
+        hash: "workgroups",
+        component: <WorkgroupTable />,
+      });
       tabsArray.unshift({
         label: t("users"),
         hash: "users",

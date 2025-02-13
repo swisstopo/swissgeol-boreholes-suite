@@ -293,6 +293,7 @@
   "layer_last": "Terminaison du forage",
   "layer_lithology_top_bedrock": "Lithologie des débris grossiers",
   "layer_loading_fetch": "La couche est en cours de chargement...",
+  "legacySettings": "Paramètres de l'ancien système",
   "length_from": "Longueur du forage (de)",
   "length_to": "Longueur du forage (à)",
   "license": "Licence",
