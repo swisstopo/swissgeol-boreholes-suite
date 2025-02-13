@@ -34,7 +34,7 @@ public class WorkgroupControllerTest
     [TestMethod]
     public async Task CreateWorkgroup()
     {
-        var workgroup = new Workgroup { Name = "New Workgroup" };
+        var workgroup = new Workgroup { Name = "FIRESTOPPEXAMPLE" };
         var result = await workgroupController.Create(workgroup);
         ActionResultAssert.IsOk(result);
 
@@ -85,7 +85,7 @@ public class WorkgroupControllerTest
     [TestMethod]
     public async Task DeleteWorkgroup()
     {
-        var workgroup = new Workgroup { Name = "New Workgroup" };
+        var workgroup = new Workgroup { Name = "CLOWNSHOES" };
         var createResult = await workgroupController.Create(workgroup);
         ActionResultAssert.IsOk(createResult);
         var createdWorkgroup = (createResult as OkObjectResult).Value as Workgroup;
