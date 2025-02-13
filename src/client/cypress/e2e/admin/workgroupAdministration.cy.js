@@ -8,34 +8,44 @@ import {
 import { goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("User administration settings tests", () => {
-  it("displays, sorts and filters user table and shows user detail.", () => {
+  it("displays, sorts and filters workgroup table.", () => {
     goToRouteAndAcceptTerms("/setting#workgroups");
     waitForTableData();
-    verifyRowContains("Admin", 0);
-    verifyRowContains("admin.user@local.dev", 0);
+    verifyRowContains("Default", 0);
+    verifyRowContains("3000", 0);
     verifyRowContains("Active", 0);
-    verifyPaginationText("1–8 of 8");
-    verifyTableLength(8);
+    verifyRowContains("View (2)", 0);
+    verifyRowContains("Editor (2)", 0);
+    verifyRowContains("Controller (2)", 0);
+    verifyRowContains("Validator (2)", 0);
+    verifyRowContains("Publisher (4)", 0);
+    verifyRowContains("Reggae", 1);
+    verifyRowContains("Inactive", 1);
+
+    verifyPaginationText("1–6 of 6");
+    verifyTableLength(6);
 
     // sort
-    sortBy("First name");
-    sortBy("First name"); // clicking twice to sort descending
-    verifyRowContains("viewer", 0);
-    verifyRowContains("example@example.com", 0);
-    verifyRowContains("Active", 0);
+    sortBy("Workgroup");
+    verifyRowContains("Blues", 0);
+    verifyRowContains("Country", 1);
+    verifyRowContains("Default", 2);
+    verifyRowContains("Reggae", 3);
 
     // filter with quick filter
     cy.get(".MuiDataGrid-toolbarQuickFilter input")
       .click()
       .then(() => {
         cy.focused().clear();
-        cy.get(".MuiDataGrid-toolbarQuickFilter input").type("editor", {
+        cy.get(".MuiDataGrid-toolbarQuickFilter input").type("inactive", {
           delay: 10,
         });
       });
-    verifyTableLength(8);
-    verifyRowContains("editor", 0);
-    verifyRowContains("example@example.com", 0);
-    verifyRowContains("Active", 0);
+
+    verifyTableLength(4);
+    verifyRowContains("Blues", 0);
+    verifyRowContains("Country", 1);
+    verifyRowContains("Reggae", 2);
+    verifyRowContains("World", 3);
   });
 });
