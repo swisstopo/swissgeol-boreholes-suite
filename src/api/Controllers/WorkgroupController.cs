@@ -153,34 +153,6 @@ public class WorkgroupController : ControllerBase
         }
     }
 
-    [HttpPost("setRole")]
-    [SwaggerResponse(StatusCodes.Status200OK, "The role was set successfully.")]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "The role could not be set due to invalid input.")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "The user or workgroup could not be found.")]
-    [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user is not authorized to set roles.")]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ")]
-    public async Task<IActionResult> SetRole(UserWorkgroupRole userWorkgroupRole)
-    {
-        try
-        {
-            if (userWorkgroupRole == null)
-            {
-                return BadRequest();
-            }
-
-            await UpdateWorkgroupRoleActiveStatus(userWorkgroupRole).ConfigureAwait(false);
-
-            await context.SaveChangesAsync().ConfigureAwait(false);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            var message = "Error while setting role.";
-            logger.LogError(e, message);
-            return Problem(message);
-        }
-    }
-
     [HttpPost("setRoles")]
     [SwaggerResponse(StatusCodes.Status200OK, "The roles were set successfully.")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The roles could not be set due to invalid input.")]
@@ -198,7 +170,18 @@ public class WorkgroupController : ControllerBase
 
             foreach (var userWorkgroupRole in userWorkgroupRoles)
             {
-                await UpdateWorkgroupRoleActiveStatus(userWorkgroupRole).ConfigureAwait(false);
+                var existingRole = await context.UserWorkgroupRoles
+                    .SingleOrDefaultAsync(r => r.UserId == userWorkgroupRole.UserId && r.WorkgroupId == userWorkgroupRole.WorkgroupId && r.Role == userWorkgroupRole.Role)
+                    .ConfigureAwait(false);
+
+                if (userWorkgroupRole.IsActive == true && existingRole == default)
+                {
+                    await context.AddAsync(userWorkgroupRole).ConfigureAwait(false);
+                }
+                else if (userWorkgroupRole.IsActive == false && existingRole != default)
+                {
+                    context.UserWorkgroupRoles.Remove(existingRole);
+                }
             }
 
             await context.SaveChangesAsync().ConfigureAwait(false);
@@ -209,22 +192,6 @@ public class WorkgroupController : ControllerBase
             var message = "Error while setting roles.";
             logger.LogError(e, message);
             return Problem(message);
-        }
-    }
-
-    private async Task UpdateWorkgroupRoleActiveStatus(UserWorkgroupRole userWorkgroupRole)
-    {
-        var existingRole = await context.UserWorkgroupRoles
-            .SingleOrDefaultAsync(r => r.UserId == userWorkgroupRole.UserId && r.WorkgroupId == userWorkgroupRole.WorkgroupId && r.Role == userWorkgroupRole.Role)
-            .ConfigureAwait(false);
-
-        if (userWorkgroupRole.IsActive == true && existingRole == default)
-        {
-            await context.AddAsync(userWorkgroupRole).ConfigureAwait(false);
-        }
-        else if (userWorkgroupRole.IsActive == false && existingRole != default)
-        {
-            context.UserWorkgroupRoles.Remove(existingRole);
         }
     }
 }
