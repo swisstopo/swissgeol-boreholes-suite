@@ -41,6 +41,5 @@ export default defineConfig({
     },
   },
   defaultCommandTimeout: 10000,
-  waitForAnimations: true,
-  animationDistanceThreshold: 1,
+  waitForAnimations: false,
 });
