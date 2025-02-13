@@ -109,7 +109,7 @@ describe("User administration settings tests", () => {
     verifyRowWithTextCheckState("controller", false);
 
     // try to delete controller from user table
-    getElementByDataCy("delete-user-controller").click();
+    getElementByDataCy("delete-id-3").click();
     handlePrompt(messageForActiveNonDeletableUser, "Cancel");
 
     // go to detail view and try to delete
@@ -131,7 +131,7 @@ describe("User administration settings tests", () => {
     // go to users table
     getElementByDataCy("backButton").click();
     verifyRowContains("Inactive", 1); // controller
-    getElementByDataCy("delete-user-controller").click();
+    getElementByDataCy("delete-id-3").click(); // controller
     handlePrompt(messageForInactiveNonDeletableUser, "Cancel");
 
     // go to user detail and reactive controller
@@ -142,7 +142,7 @@ describe("User administration settings tests", () => {
     // go back to user table and check prompts for deletable user
     getElementByDataCy("backButton").click();
     verifyRowContains("Active", 4); // user that can be deleted
-    getElementByDataCy("delete-user-user_that_can").click();
+    getElementByDataCy("delete-id-7").click(); // user that can be deleted
     handlePrompt(messageForActiveDeletableUser, "Cancel");
     clickOnRowWithText("user_that_can");
     cy.wait("@get-user");
@@ -157,8 +157,8 @@ describe("User administration settings tests", () => {
 
     // got back to user table and check if user with only files can be deleted
     getElementByDataCy("backButton").click();
-    verifyRowContains("Active", 5); // with only files
-    getElementByDataCy("delete-user-user_that_only").click();
+    verifyRowContains("Active", 5); // user with only files
+    getElementByDataCy("delete-id-6").click(); // user with only files
     handlePrompt(messageForActiveNonDeletableUser, "Cancel");
   });
 
