@@ -72,12 +72,12 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({ users }) => {
 
   const columns: GridColDef[] = [
     { field: "name", headerName: t("workgroup"), flex: 1 },
-    { field: "boreholeCount", headerName: t("boreholeCount"), width: 150 },
+    { field: "boreholeCount", headerName: t("boreholeCount"), width: 200 },
     {
       field: "usersPerRole",
       headerName: t("usersPerRole"),
       flex: 1,
-      minWidth: 400,
+      minWidth: 450,
       renderCell: renderUserChips,
     },
     statusColumn,
