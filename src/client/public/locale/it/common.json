@@ -36,6 +36,7 @@
   "bed": "Strato",
   "beforedate": "Fino a questa data",
   "borehole": "Perforazione",
+  "boreholeCount": "Numero di perforazioni",
   "boreholeGeometry": "Geometria",
   "boreholeGeometryFormat": "Formato della geometria",
   "boreholeGeometryImport": "Importazione della geometria",
