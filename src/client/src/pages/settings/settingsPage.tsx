@@ -39,7 +39,7 @@ export const SettingsPage = () => {
       tabsArray.unshift({
         label: t("workgroups"),
         hash: "workgroups",
-        component: <WorkgroupTable />,
+        component: <WorkgroupTable users={users} />,
       });
       tabsArray.unshift({
         label: t("users"),
