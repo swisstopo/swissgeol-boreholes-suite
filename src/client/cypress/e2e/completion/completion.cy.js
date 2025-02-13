@@ -551,6 +551,7 @@ describe("completion crud tests", () => {
     evaluateDisplayValue("name", "Compl-1", "completion-header");
     setContentTab("instrumentation");
     cy.get('[data-cy="instrumentation-card.0"]').should("be.visible");
+    evaluateDisplayValue("notes", "-");
 
     // save header changes, cancel content changes
     startEditing("instrumentation-card.0");
@@ -583,6 +584,7 @@ describe("completion crud tests", () => {
 
     // save header changes, save content changes
     cy.get('[data-cy="instrumentation-card.0"]').should("be.visible");
+    evaluateDisplayValue("notes", "-");
     startEditing("instrumentation-card.0");
     cy.wait("@casing_GET");
     setInput("notes", "Lorem.");
