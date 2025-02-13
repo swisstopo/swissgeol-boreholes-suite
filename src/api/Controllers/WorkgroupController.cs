@@ -182,6 +182,14 @@ public class WorkgroupController : ControllerBase
                 {
                     context.UserWorkgroupRoles.Remove(existingRole);
                 }
+                else if (userWorkgroupRole.IsActive == null)
+                {
+                    logger.LogWarning("No active state for the user's workgroup role was provided in the request body: <{UserWorkgroupRole}> ", userWorkgroupRole);
+                }
+                else
+                {
+                    logger.LogInformation("The user's workgroup role provided in the request body: <{UserWorkgroupRole}> already corresponds to the role saved in the database, no changes were made.", userWorkgroupRole);
+                }
             }
 
             await context.SaveChangesAsync().ConfigureAwait(false);

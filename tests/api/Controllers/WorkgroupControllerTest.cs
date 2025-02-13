@@ -11,6 +11,7 @@ namespace BDMS.Controllers;
 [TestClass]
 public class WorkgroupControllerTest
 {
+    private readonly Mock<ILogger<WorkgroupController>> loggerMock = new();
     private BdmsContext context;
     private WorkgroupController workgroupController;
 
@@ -18,7 +19,7 @@ public class WorkgroupControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        workgroupController = new WorkgroupController(context, new Mock<ILogger<WorkgroupController>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        workgroupController = new WorkgroupController(context, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -243,7 +244,49 @@ public class WorkgroupControllerTest
         setRolesResult = await workgroupController.SetRoles(userWorkgroupRoles);
         ActionResultAssert.IsOk(setRolesResult);
 
+        loggerMock.Verify(
+            x => x.Log(
+            LogLevel.Information,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("no changes were made.")),
+            It.IsAny<Exception>(),
+            (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+            Times.Exactly(2));
+
         roles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user1.Id).ToListAsync();
         Assert.AreEqual(2, roles.Count); // No duplicate roles should be added
+    }
+
+    [TestMethod]
+    public async Task SetWithIsActiveNull()
+    {
+        var user2 = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == "viewer");
+        var workgroup = new Workgroup { Name = "SHRIMPLACES" };
+        var createResult = await workgroupController.Create(workgroup);
+        ActionResultAssert.IsOk(createResult);
+        var createdWorkgroup = (createResult as OkObjectResult).Value as Workgroup;
+
+        // Set roles for multiple users
+        var userWorkgroupRoles = new UserWorkgroupRole[]
+        {
+            new UserWorkgroupRole { UserId = user2.Id, WorkgroupId = createdWorkgroup.Id, Role = Role.Validator, IsActive = null },
+        };
+
+        var setRolesResult = await workgroupController.SetRoles(userWorkgroupRoles);
+        ActionResultAssert.IsOk(setRolesResult);
+
+        loggerMock.Verify(
+        x => x.Log(
+        LogLevel.Warning,
+        It.IsAny<EventId>(),
+        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("No active state for the user's workgroup role was provided in the request body")),
+        It.IsAny<Exception>(),
+        (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+        Times.Once);
+
+        var validUserWorkgroupRoles = new UserWorkgroupRole[]
+        {
+            new UserWorkgroupRole { UserId = user2.Id, WorkgroupId = createdWorkgroup.Id, Role = Role.Validator, IsActive = true },
+        };
     }
 }
