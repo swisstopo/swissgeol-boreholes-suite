@@ -22,6 +22,7 @@ export const verifyTableLength = length => {
 export const waitForTableData = () => {
   cy.get(".MuiDataGrid-root").should("be.visible");
   cy.get(".loading-indicator").should("not.exist");
+  cy.get(".MuiCircularProgress-root").should("not.exist");
   cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
 };
 
