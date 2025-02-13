@@ -25,5 +25,13 @@ export default defineConfig({
       },
     },
     port: 3000,
+    headers: {
+      "Content-Security-Policy":
+        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'",
+      "X-FRAME-OPTIONS": "DENY",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    },
   },
 });

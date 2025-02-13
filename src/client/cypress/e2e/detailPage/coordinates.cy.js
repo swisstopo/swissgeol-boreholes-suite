@@ -1,4 +1,4 @@
-import { saveWithSaveBar } from "../helpers/buttonHelpers";
+import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { evaluateSelect, setSelect } from "../helpers/formHelpers";
 import {
   delayedType,
@@ -176,8 +176,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     checkDecimalPlaces("@LV03Y-input", 4);
 
     saveWithSaveBar();
+    cy.wait(4000);
     // Navigate somewhere else and return
     cy.get('[data-cy="borehole-menu-item"]').click();
+    cy.contains("Borehole type");
     cy.get('[data-cy="location-menu-item"]').click();
 
     cy.get('[data-cy="locationX-formCoordinate"] input').as("LV95X-input");
@@ -197,6 +199,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     checkDecimalPlaces("@LV95Y-input", 5);
     checkDecimalPlaces("@LV03X-input", 5);
     checkDecimalPlaces("@LV03Y-input", 5);
+    discardChanges();
   });
 
   it("updates canton and municipality when changing coordinates", () => {
