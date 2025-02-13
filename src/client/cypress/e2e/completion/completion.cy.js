@@ -151,8 +151,7 @@ describe("completion crud tests", () => {
     evaluateDisplayValue("mainCompletion", "Yes");
   });
 
-  // temporarily disable flaky test
-  it.skip("switches tabs", () => {
+  it("switches tabs", () => {
     let boreholeId;
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
