@@ -106,6 +106,7 @@ describe("Casing crud tests", () => {
     setSelect("casingId", 2);
     saveForm();
     cy.wait("@instrumentation_GET");
+    evaluateDisplayValue("name", "Inst-1");
 
     cy.get("[data-cy=completion-content-tab-casing]").click();
     cy.wait("@casing_GET");
@@ -114,6 +115,7 @@ describe("Casing crud tests", () => {
     handlePrompt("Do you really want to delete this entry?", "Delete");
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
+    cy.contains("No casing available").should("exist");
 
     cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
