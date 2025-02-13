@@ -7,6 +7,7 @@ import { createBaseSelector } from "./testHelpers";
 export const saveWithSaveBar = parent => {
   saveForm(parent);
   cy.wait(["@borehole_by_id", "@update-borehole"]);
+  cy.contains("Changes saved").should("exist");
 };
 
 /**

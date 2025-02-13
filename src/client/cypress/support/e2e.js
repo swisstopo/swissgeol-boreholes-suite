@@ -7,6 +7,15 @@ Cypress.on("uncaught:exception", () => {
   return false;
 });
 
+for (const command of ["click", "type", "select", "check", "uncheck"]) {
+  Cypress.Commands.overwrite(command, (originalFn, ...args) => {
+    const result = originalFn(...args);
+    return new Promise(resolve => {
+      setTimeout(() => resolve(result), 100);
+    });
+  });
+}
+
 beforeEach(() => {
   interceptApiCalls();
   loginAndResetState();

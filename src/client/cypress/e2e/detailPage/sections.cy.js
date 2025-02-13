@@ -118,6 +118,7 @@ describe("Section crud tests", () => {
     setInput("sectionElements.0.toDepth", "1");
     setSelect("sectionElements.0.drillingMudTypeId", 5);
     cy.get("body").type("{ctrl}s");
+    cy.wait("@section_POST");
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
 
     // switch tab to borehole general tab and edit depth
@@ -148,6 +149,8 @@ describe("Section crud tests", () => {
     startEditing();
     setSelect("sectionElements.0.drillingMudTypeId", 4);
     cy.get("body").type("{ctrl}s");
+    cy.wait("@section_PUT");
+    evaluateDisplayValue("0.drilling_mud_type", "water-based non-dispersed");
 
     // borehole tab should still display saved depth value
     cy.get('[data-cy="general-tab"]').click();
@@ -206,6 +209,7 @@ describe("Section crud tests", () => {
     setSelect("sectionElements.0.drillingMudTypeId", 5);
     setSelect("sectionElements.0.drillingMudSubtypeId", 2, 5);
     saveForm();
+    cy.wait("@section_POST");
 
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
     evaluateDisplayValue(
@@ -216,6 +220,7 @@ describe("Section crud tests", () => {
     startEditing();
     setSelect("sectionElements.0.drillingMudTypeId", 3);
     saveForm();
+    cy.wait("@section_PUT");
 
     evaluateDisplayValue("0.drilling_mud_type", "pneumatic");
     evaluateDisplayValue("0.drilling_mud_subtype", "-"); // subtype was reset because it is not a subtype of pneumatic
@@ -223,6 +228,7 @@ describe("Section crud tests", () => {
     startEditing();
     setSelect("sectionElements.0.drillingMudSubtypeId", 2, 7);
     saveForm();
+    cy.wait("@section_PUT");
 
     evaluateDisplayValue("0.drilling_mud_type", "pneumatic");
     evaluateDisplayValue("0.drilling_mud_subtype", "gas");
@@ -231,6 +237,7 @@ describe("Section crud tests", () => {
     setSelect("sectionElements.0.drillingMudSubtypeId", 5, 7);
     setSelect("sectionElements.0.drillingMudTypeId", 1);
     saveForm();
+    cy.wait("@section_PUT");
 
     evaluateDisplayValue("0.drilling_mud_type", "water");
     evaluateDisplayValue("0.drilling_mud_subtype", "other"); // subtype other is not reset when switching type
@@ -239,6 +246,7 @@ describe("Section crud tests", () => {
     setSelect("sectionElements.0.drillingMudTypeId", 0); // reset
     setSelect("sectionElements.0.drillingMudSubtypeId", 0, 3); // still 3 options (Reset, other, not specified)
     saveForm();
+    cy.wait("@section_PUT");
 
     evaluateDisplayValue("0.drilling_mud_type", "-");
     evaluateDisplayValue("0.drilling_mud_subtype", "-");
