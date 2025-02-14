@@ -30,6 +30,6 @@ public interface IBoreholeLockService
     /// </summary>
     /// <param name="boreholes">The list of <see cref="Borehole"/> objects to check permissions for.</param>
     /// <param name="user">The <see cref="User"/> to check against.</param>
-    /// <returns>A list of <see cref="Borehole"/> objects the user lacks permissions to edit.</returns>
-    ICollection<Borehole> GetBoreholesUserLacksPermissionFor(ICollection<Borehole> boreholes, User user);
+    /// <returns><c>true</c> if the user is lacking permissions for the borehole; otherwise, <c>false</c>.</returns>
+    bool IsUserLackingPermissions(ICollection<Borehole> boreholes, User user);
 }

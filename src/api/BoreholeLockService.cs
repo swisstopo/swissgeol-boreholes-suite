@@ -1,6 +1,5 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.ObjectModel;
 
 namespace BDMS;
 
@@ -44,19 +43,11 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
     }
 
     /// <inheritdoc />
-    public ICollection<Borehole> GetBoreholesUserLacksPermissionFor(ICollection<Borehole> boreholes, User user)
+    public bool IsUserLackingPermissions(ICollection<Borehole> boreholes, User user)
     {
         var boreholesLackingPermission = new List<Borehole>();
 
-        foreach (var borehole in boreholes)
-        {
-            if (IsUserLackingPermissions(borehole, user))
-            {
-                boreholesLackingPermission.Add(borehole);
-            }
-        }
-
-        return boreholesLackingPermission;
+        return boreholes.Any(borehole => IsUserLackingPermissions(borehole, user));
     }
 
     private bool IsUserLackingPermissions(Borehole borehole, User user)

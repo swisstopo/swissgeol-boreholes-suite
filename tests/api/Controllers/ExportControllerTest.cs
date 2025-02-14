@@ -75,8 +75,8 @@ public class ExportControllerTest
             .ReturnsAsync(false);
 
         boreholeLockServiceMock
-            .Setup(x => x.GetBoreholesUserLacksPermissionFor(It.IsAny<List<Borehole>>(), It.IsAny<User>()))
-            .Returns(new List<Borehole>());
+            .Setup(x => x.IsUserLackingPermissions(It.IsAny<List<Borehole>>(), It.IsAny<User>()))
+            .Returns(false);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
@@ -483,7 +483,6 @@ public class ExportControllerTest
         var result = await controller.ExportCsvAsync(ids) as FileContentResult;
 
         Assert.IsNotNull(result);
-        Assert.IsNotNull(result);
         Assert.AreEqual(TestCsvString, result.ContentType);
         Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
         var csvData = Encoding.UTF8.GetString(result.FileContents);
@@ -509,8 +508,8 @@ public class ExportControllerTest
         // Override return value of GetBoreholesUserLacksPermissionFor in this specific test
         var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Loose);
         boreholeLockServiceMock
-            .Setup(x => x.GetBoreholesUserLacksPermissionFor(It.IsAny<List<Borehole>>(), It.IsAny<User>()))
-            .Returns(new List<Borehole> { new Borehole { Id = 1 }, new Borehole { Id = 2 } });
+            .Setup(x => x.IsUserLackingPermissions(It.IsAny<List<Borehole>>(), It.IsAny<User>()))
+            .Returns(true);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));

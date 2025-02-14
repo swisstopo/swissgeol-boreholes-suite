@@ -107,25 +107,23 @@ public class BoreholeLockServiceTest
     }
 
     [TestMethod]
-    public async Task GetBoreholesUserLacksPermissionWithSufficientPermissions()
+    public async Task IsUserLackingPermissionsWithSufficientPermissions()
     {
-        var user = await context.Users
-            .Include(s => s.WorkgroupRoles)
-            .SingleOrDefaultAsync(u => u.FirstName == "editor");
+        var users = await context.Users.Include(s => s.WorkgroupRoles).ToListAsync().ConfigureAwait(false);
+        var user = users.FirstOrDefault(u => u.FirstName.Equals("editor", StringComparison.OrdinalIgnoreCase));
 
         var boreholes = await context.Boreholes.Include(b => b.Workflows).ToListAsync();
         boreholes = boreholes.Where(x => x.Workflows.Count > 0 && x.Workflows.Any(w => w.Role == Role.Editor)).Take(2).ToList();
 
-        var result = boreholeLockService.GetBoreholesUserLacksPermissionFor(boreholes, user);
-        Assert.AreEqual(0, result.Count);
+        var result = boreholeLockService.IsUserLackingPermissions(boreholes, user);
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
-    public async Task GetBoreholesUserLacksPermissionWithNotMatchingWorkgroupId()
+    public async Task IsUserLackingPermissionsWithNotMatchingWorkgroupId()
     {
-        var user = await context.Users
-            .Include(s => s.WorkgroupRoles)
-            .SingleOrDefaultAsync(u => u.FirstName == "editor");
+        var users = await context.Users.Include(s => s.WorkgroupRoles).ToListAsync().ConfigureAwait(false);
+        var user = users.FirstOrDefault(u => u.FirstName.Equals("editor", StringComparison.OrdinalIgnoreCase));
 
         var boreholes = await context.Boreholes.Include(b => b.Workflows).ToListAsync();
         boreholes = boreholes.Where(x => x.Workflows.Count > 0 && x.Workflows.Any(w => w.Role == Role.Editor)).Take(2).ToList();
@@ -133,24 +131,23 @@ public class BoreholeLockServiceTest
         // Update workgroupId of first borehole to simulate a workgroup mismatch
         boreholes[0].WorkgroupId = 2;
 
-        var result = boreholeLockService.GetBoreholesUserLacksPermissionFor(boreholes, user);
-        Assert.AreEqual(1, result.Count);
+        var result = boreholeLockService.IsUserLackingPermissions(boreholes, user);
+        Assert.IsTrue(result);
     }
 
     [TestMethod]
-    public async Task GetBoreholesUserLacksPermissionWithNotMatchingWorkflowRole()
+    public async Task IsUserLackingPermissionsWithNotMatchingWorkflowRole()
     {
         // Retrieve a user with the 'Viewer' role, which lacks sufficient permissions to manage boreholes
         // that are associated with workflows requiring the 'Editor'(Role.Editor) role.
-        var user = await context.Users
-            .Include(s => s.WorkgroupRoles)
-            .SingleOrDefaultAsync(u => u.FirstName == "viewer");
+        var users = await context.Users.Include(s => s.WorkgroupRoles).ToListAsync().ConfigureAwait(false);
+        var user = users.FirstOrDefault(u => u.FirstName.Equals("viewer", StringComparison.OrdinalIgnoreCase));
 
         var boreholes = await context.Boreholes.Include(b => b.Workflows).ToListAsync();
         boreholes = boreholes.Where(x => x.Workflows.Count > 0 && x.Workflows.Any(w => w.Role == Role.Editor)).Take(2).ToList();
 
-        var result = boreholeLockService.GetBoreholesUserLacksPermissionFor(boreholes, user);
-        Assert.AreEqual(2, result.Count);
+        var result = boreholeLockService.IsUserLackingPermissions(boreholes, user);
+        Assert.IsTrue(result);
     }
 
     private Borehole GetLockedBorehole(bool lockedByAdmin)
