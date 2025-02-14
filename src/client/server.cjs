@@ -17,6 +17,16 @@ app.use(limiter);
 
 app.use(express.static(path.join(__dirname, "dist")));
 
+// apply security response headers
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "default-src 'self'; connect-src 'self' https://*.geo.admin.ch; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch data:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  next();
+});
+
 app.get("/help/*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "help", "index.html"));
 });

@@ -35,8 +35,7 @@ describe("Casing crud tests", () => {
     cy.wait("@casing_GET");
   });
 
-  // temporarily disable flaky test
-  it.skip("adds, edits and deletes casings", () => {
+  it("adds, edits and deletes casings", () => {
     // create casing
     addItem("addcasing");
     cy.wait("@codelist_GET");
@@ -107,6 +106,7 @@ describe("Casing crud tests", () => {
     setSelect("casingId", 2);
     saveForm();
     cy.wait("@instrumentation_GET");
+    evaluateDisplayValue("name", "Inst-1");
 
     cy.get("[data-cy=completion-content-tab-casing]").click();
     cy.wait("@casing_GET");
@@ -115,6 +115,7 @@ describe("Casing crud tests", () => {
     handlePrompt("Do you really want to delete this entry?", "Delete");
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
+    cy.contains("No casing available").should("exist");
 
     cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
@@ -176,6 +177,9 @@ describe("Casing crud tests", () => {
     setInput("casingElements.0.toDepth", "10");
     setSelect("casingElements.0.kindId", 3);
     saveForm();
+    cy.wait("@casing_POST");
+    evaluateDisplayValue("name", "casing 1");
+
     cy.get('[data-cy="addcasing-button"]').should("be.enabled");
 
     // can switch cards without prompt if no changes were made
@@ -197,6 +201,7 @@ describe("Casing crud tests", () => {
     setInput("notes", "Lorem.");
     addItem("addcasing");
     handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Save");
+    cy.wait("@casing_PUT");
     evaluateDisplayValue("notes", "Lorem.");
 
     // can reset creating and switch to existing card
@@ -217,7 +222,9 @@ describe("Casing crud tests", () => {
     setSelect("casingElements.0.kindId", 3);
     startEditing();
     handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Save");
-    cy.get('[data-cy="casing-card.0.edit"]').should("exist");
-    cy.get('[data-cy="casing-card.1"]').should("exist");
+    cy.wait("@casing_POST");
+    evaluateDisplayValue("name", "casing 2");
+    cy.get('[data-cy="casing-card.1.edit"]').should("exist");
+    cy.get('[data-cy="casing-card.0"]').should("exist");
   });
 });
