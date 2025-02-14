@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -73,11 +74,15 @@ public class ExportControllerTest
             .Setup(x => x.IsUserLackingPermissions(It.IsAny<int?>(), "sub_admin"))
             .ReturnsAsync(false);
 
+        boreholeLockServiceMock
+            .Setup(x => x.GetBoreholesUserLacksPermissionFor(It.IsAny<List<Borehole>>(), It.IsAny<User>()))
+            .Returns(new List<Borehole>());
+
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
         var loggerMock = new Mock<ILogger<ExportController>>();
-        controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestMethod]
@@ -496,6 +501,43 @@ public class ExportControllerTest
 
         Assert.IsNotNull(result);
         Assert.AreEqual("The list of IDs must not be empty.", result.Value);
+    }
+
+    [TestMethod]
+    public async Task ExportControllerMethodsShouldValidateUserLacksPermissions()
+    {
+        // Override return value of GetBoreholesUserLacksPermissionFor in this specific test
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Loose);
+        boreholeLockServiceMock
+            .Setup(x => x.GetBoreholesUserLacksPermissionFor(It.IsAny<List<Borehole>>(), It.IsAny<User>()))
+            .Returns(new List<Borehole> { new Borehole { Id = 1 }, new Borehole { Id = 2 } });
+
+        var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
+        boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+
+        var loggerMock = new Mock<ILogger<ExportController>>();
+        controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
+        // Get all export methods from ExportController
+        var exportMethods = typeof(ExportController)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .Where(m => !m.IsConstructor && m.Name.Contains("export", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        Assert.AreEqual(4, exportMethods.Count);
+
+        // Invoke each export method and check if the user permissions are validated
+        foreach (var method in exportMethods)
+        {
+            var resultTask = method.Invoke(controller, [new List<int>() { 1_000_257 }]) as Task;
+            await resultTask.ConfigureAwait(false);
+
+            var result = (resultTask as dynamic).Result;
+
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult, $"Method {method.Name} did not return BadRequestObjectResult");
+            Assert.AreEqual("The user lacks permissions to export the borehole(s).", badRequestResult.Value);
+        }
     }
 
     private static List<dynamic> GetRecordsFromFileContent(FileContentResult result)
