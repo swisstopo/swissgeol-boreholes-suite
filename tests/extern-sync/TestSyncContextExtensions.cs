@@ -1,4 +1,4 @@
-﻿using BDMS.Models;
+using BDMS.Models;
 using DotNet.Testcontainers.Builders;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
@@ -12,20 +12,6 @@ namespace BDMS.ExternSync;
 /// </summary>
 internal static class TestSyncContextExtensions
 {
-    internal static async Task SeedUserTestDataAsync(this TestSyncContext syncContext)
-    {
-        var (source, target) = (syncContext.Source, syncContext.Target);
-
-        source.Users.Add(new User { Id = 1, FirstName = "John", LastName = "Doe", Name = "John Doe", SubjectId = "doe123", Email = "john@example.com" });
-        source.Users.Add(new User { Id = 2, FirstName = "Jane", LastName = "Doe", Name = "Jane Doe", SubjectId = "doe456", Email = "jane@example.com" });
-        source.Users.Add(new User { Id = 3, FirstName = "Alice", LastName = "Smith", Name = "Alice Smith", SubjectId = "smith789", Email = "alice@example.com" });
-        source.Users.Add(new User { Id = 4, FirstName = "Bob", LastName = "Smith", Name = "Bob Smith", SubjectId = "smith101", Email = "bob@example.com" });
-        await source.SaveChangesAsync().ConfigureAwait(false);
-
-        target.Users.Add(new User { Id = 1, FirstName = "Charlie", LastName = "Brown", Name = "Charlie Brown", SubjectId = "brown123", Email = "charlie@example.com" });
-        await target.SaveChangesAsync().ConfigureAwait(false);
-    }
-
     /// <summary>
     /// Creates a new <see cref="BdmsContext"/> for testing purposes. Use <paramref name="useInMemory"/> to specify
     /// whether to use a real PostgreSQL database or an in-memory context.
@@ -41,7 +27,6 @@ internal static class TestSyncContextExtensions
         var postgreSqlContainer = await CreatePostgreSqlContainerAsync().ConfigureAwait(false);
         var context = new BdmsContext(GetDbContextOptions(postgreSqlContainer.GetConnectionString()));
         await context.Database.MigrateAsync().ConfigureAwait(false);
-        await context.CleanUpSuperfluousDataAsync().ConfigureAwait(false);
         return context;
     }
 

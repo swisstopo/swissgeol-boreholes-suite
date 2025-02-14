@@ -18,9 +18,6 @@ using var app = Host.CreateDefaultBuilder(args).ConfigureServices((context, serv
 
     // Register tasks. The order specified here is the order in which they will be executed.
     services.AddScoped<ISyncTask, CollectInformationTask>();
-    services.AddScoped<ISyncTask, SetupDatabaseTask>();
-    services.AddScoped<ISyncTask, UpdateSequencesTask>();
-    services.AddScoped<ISyncTask, SynchronizeUsersTask>();
 
     // Register task manager
     services.AddScoped<SyncTaskManager>();
