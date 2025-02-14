@@ -34,10 +34,12 @@ internal class TestSyncContext : ISyncContext, IDisposable
     /// when source and target database contexts are created. This allows to execute
     /// raw SQL queries but comes with a performance penalty. When set to <c>true</c>
     /// an in-memory database is used instead.</param>
-    public static async Task<TestSyncContext> BuildAsync(bool useInMemory = false)
+    /// <param name="seedTestData">Seeds some test data. This option only works when using a real
+    /// PostgreSQL database (<paramref name="useInMemory"/> != <c>true</c>).</param>
+    public static async Task<TestSyncContext> BuildAsync(bool useInMemory = false, bool seedTestData = false)
     {
-        var source = CreateDbContextAsync(useInMemory);
-        var target = CreateDbContextAsync(useInMemory);
+        var source = CreateDbContextAsync(useInMemory, seedTestData);
+        var target = CreateDbContextAsync(useInMemory, seedTestData);
         await Task.WhenAll(source, target).ConfigureAwait(false);
         return new TestSyncContext(source.Result, target.Result);
     }

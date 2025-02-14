@@ -16,17 +16,18 @@ internal static class TestSyncContextExtensions
     /// Creates a new <see cref="BdmsContext"/> for testing purposes. Use <paramref name="useInMemory"/> to specify
     /// whether to use a real PostgreSQL database or an in-memory context.
     /// </summary>
-    internal static async Task<BdmsContext> CreateDbContextAsync(bool useInMemory) =>
-        useInMemory ? CreateInMemoryDbContext() : await CreatePostgreSqlDbContextAsync().ConfigureAwait(false);
+    internal static async Task<BdmsContext> CreateDbContextAsync(bool useInMemory, bool seedTestData) =>
+        useInMemory ? CreateInMemoryDbContext() : await CreatePostgreSqlDbContextAsync(seedTestData).ConfigureAwait(false);
 
     private static BdmsContext CreateInMemoryDbContext() =>
         new(new DbContextOptionsBuilder<BdmsContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
 
-    private static async Task<BdmsContext> CreatePostgreSqlDbContextAsync()
+    private static async Task<BdmsContext> CreatePostgreSqlDbContextAsync(bool seedTestData)
     {
         var postgreSqlContainer = await CreatePostgreSqlContainerAsync().ConfigureAwait(false);
         var context = new BdmsContext(GetDbContextOptions(postgreSqlContainer.GetConnectionString()));
         await context.Database.MigrateAsync().ConfigureAwait(false);
+        if (seedTestData) context.SeedData();
         return context;
     }
 
