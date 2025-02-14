@@ -12,6 +12,7 @@ The application is configured using environment variables. The following environ
 
 - `CONNECTIONSTRINGS__SourceBdmsContext`: The connection string of the source database.
 - `CONNECTIONSTRINGS__TargetBdmsContext`: The connection string of the target database.
+- `MIGRATE_TARGET_DATABASE`: A flag to indicate whether the target database should be migrated if necessary. If not set, it defaults to `false`.
 
 ## 🧪 Unit Tests
 
