@@ -34,20 +34,6 @@ public static class SyncContextExtensions
     }
 
     /// <summary>
-    /// Cleans up superfluous data in the boreholes database. After applying database migrations to a new/empty database,
-    /// the database contains data that is not meant to be present in the production environment. This method removes this data.
-    /// </summary>
-    public static async Task CleanUpSuperfluousDataAsync(this BdmsContext context, CancellationToken cancellationToken = default)
-    {
-        var usersToRemove = await context.Users
-            .Where(u => u.SubjectId.StartsWith("sub_"))
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        context.Users.RemoveRange(usersToRemove);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="dbConnection"/>.
     /// </summary>
     public static DbContextOptions<BdmsContext> GetDbContextOptions(DbConnection dbConnection) =>
