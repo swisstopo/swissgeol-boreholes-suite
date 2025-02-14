@@ -10,8 +10,8 @@ The application is packed into a Docker container and can be run in a containeri
 
 The application is configured using environment variables. The following environment variables are mandatory:
 
-- `CONNECTIONSTRINGS__SourceBdmsContext`: The connection string to the source database.
-- `CONNECTIONSTRINGS__TargetBdmsContext`: The connection string to the target database.
+- `CONNECTIONSTRINGS__SourceBdmsContext`: The connection string of the source database.
+- `CONNECTIONSTRINGS__TargetBdmsContext`: The connection string of the target database.
 
 ## 🧪 Unit Tests
 
