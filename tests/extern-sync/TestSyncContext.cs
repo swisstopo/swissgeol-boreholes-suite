@@ -27,7 +27,8 @@ internal class TestSyncContext : ISyncContext, IDisposable
     }
 
     /// <summary>
-    /// Builds a new instance of the <see cref="TestSyncContext"/> class.
+    /// Builds a new instance of the <see cref="TestSyncContext"/> class using real PostgreSQL
+    /// databases in the background.
     /// </summary>
     /// <param name="useInMemory">By default a real PostgreSQL database is used
     /// when source and target database contexts are created. This allows to execute

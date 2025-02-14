@@ -1,4 +1,4 @@
-﻿using BDMS.ExternSync;
+using BDMS.ExternSync;
 using BDMS.ExternSync.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +18,7 @@ using var app = Host.CreateDefaultBuilder(args).ConfigureServices((context, serv
 
     // Register tasks. The order specified here is the order in which they will be executed.
     services.AddScoped<ISyncTask, CollectInformationTask>();
+    services.AddScoped<ISyncTask, CheckDatabaseStateTask>();
 
     // Register task manager
     services.AddScoped<SyncTaskManager>();
