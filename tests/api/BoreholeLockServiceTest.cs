@@ -111,7 +111,7 @@ public class BoreholeLockServiceTest
     {
         var user = await context.Users
             .Include(s => s.WorkgroupRoles)
-            .SingleOrDefaultAsync(u => u.FirstName == "Editor");
+            .SingleOrDefaultAsync(u => u.FirstName == "editor");
 
         var boreholes = await context.Boreholes.Include(b => b.Workflows).ToListAsync();
         boreholes = boreholes.Where(x => x.Workflows.Count > 0 && x.Workflows.Any(w => w.Role == Role.Editor)).Take(2).ToList();
@@ -121,11 +121,11 @@ public class BoreholeLockServiceTest
     }
 
     [TestMethod]
-    public async Task GetBoreholesUserLacksPermissionWithNotMatchingWorkGroupId()
+    public async Task GetBoreholesUserLacksPermissionWithNotMatchingWorkgroupId()
     {
         var user = await context.Users
             .Include(s => s.WorkgroupRoles)
-            .SingleOrDefaultAsync(u => u.FirstName == "Editor");
+            .SingleOrDefaultAsync(u => u.FirstName == "editor");
 
         var boreholes = await context.Boreholes.Include(b => b.Workflows).ToListAsync();
         boreholes = boreholes.Where(x => x.Workflows.Count > 0 && x.Workflows.Any(w => w.Role == Role.Editor)).Take(2).ToList();
