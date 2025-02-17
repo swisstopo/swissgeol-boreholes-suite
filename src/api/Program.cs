@@ -138,6 +138,13 @@ builder.Services
     .AddDbContextCheck<BdmsContext>("Database")
     .AddCheck<S3HealthCheck>("S3");
 
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(365);
+});
+
 var app = builder.Build();
 
 // Migrate db changes on startup
@@ -158,6 +165,15 @@ app.UseSwaggerUI(options =>
     options.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
     options.RoutePrefix = string.Empty;
 });
+
+app.UseMiddleware<SecurityResponseHeaderMiddleware>();
+
+// UseHsts isn't recommended in development because the HSTS settings are highly cacheable by browsers.
+// By default, UseHsts excludes the local loopback address.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
 
 if (builder.Configuration.IsAnonymousModeEnabled())
 {

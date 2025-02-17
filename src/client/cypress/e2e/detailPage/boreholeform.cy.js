@@ -154,8 +154,10 @@ describe("Test for the borehole form.", () => {
       // can save value for top bedrock intersected which does not correspond to automatically set values
       setBooleanSelect("topBedrockIntersected", false);
       saveWithSaveBar();
+      cy.wait(1000);
       // navigate away and return
       getElementByDataCy("location-menu-item").click();
+      cy.contains("Spatial reference system");
       getElementByDataCy("borehole-menu-item").click();
       evaluateBooleanSelect("topBedrockIntersected", false);
       evaluateInput("topBedrockFreshMd", "");

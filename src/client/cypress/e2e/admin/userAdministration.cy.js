@@ -55,6 +55,7 @@ describe("User administration settings tests", () => {
     getElementByDataCy("Editor-chip").should("be.visible");
 
     getElementByDataCy("backButton").click();
+    waitForTableData();
 
     // Click on Admin
     clickOnRowWithText("Admin");
@@ -72,6 +73,7 @@ describe("User administration settings tests", () => {
     getElementByDataCy("Publisher-chip").should("be.visible");
 
     getElementByDataCy("backButton").click();
+    waitForTableData();
     verifyRowWithTextCheckState("Admin", true);
     verifyRowWithTextCheckState("editor", false);
 
@@ -87,6 +89,7 @@ describe("User administration settings tests", () => {
     cy.get('[data-cy="is-user-admin-checkbox"] input').click();
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");
     getElementByDataCy("backButton").click();
+    waitForTableData();
     verifyRowWithTextCheckState("editor", false);
   });
 
@@ -130,6 +133,7 @@ describe("User administration settings tests", () => {
     // go to users table
     // goToRouteAndAcceptTerms("/setting#users"); // back button??
     getElementByDataCy("backButton").click();
+    waitForTableData();
     verifyRowContains("Inactive", 1); // controller
     getElementByDataCy("delete-user-controller").click();
     handlePrompt(messageForInactiveNonDeletableUser, "Cancel");
@@ -140,8 +144,8 @@ describe("User administration settings tests", () => {
     getElementByDataCy("activate-user-button").click();
 
     // go back to user table and check prompts for deletable user
-    // goToRouteAndAcceptTerms("/setting#users");
     getElementByDataCy("backButton").click();
+    waitForTableData();
     verifyRowContains("Active", 4); // user that can be deleted
     getElementByDataCy("delete-user-user_that_can").click();
     handlePrompt(messageForActiveDeletableUser, "Cancel");
@@ -157,8 +161,8 @@ describe("User administration settings tests", () => {
     cy.wait("@update-user");
 
     // got back to user table and check if user with only files can be deleted
-    // goToRouteAndAcceptTerms("/setting#users");
     getElementByDataCy("backButton").click();
+    waitForTableData();
     verifyRowContains("Active", 5); // with only files
     getElementByDataCy("delete-user-user_that_only").click();
     handlePrompt(messageForActiveNonDeletableUser, "Cancel");
