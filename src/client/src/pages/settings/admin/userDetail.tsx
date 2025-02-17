@@ -125,6 +125,7 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
       headerName: t("workgroup"),
       flex: 1,
     },
+    { field: "boreholeCount", headerName: t("boreholeCount"), width: 200 },
     {
       field: "roles",
       headerName: t("roles"),

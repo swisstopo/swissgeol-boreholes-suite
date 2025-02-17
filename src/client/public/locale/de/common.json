@@ -38,6 +38,7 @@
   "bed": "Bank",
   "beforedate": "bis Datum",
   "borehole": "Bohrung",
+  "boreholeCount": "Anzahl Bohrungen",
   "boreholeGeometry": "Geometrie",
   "boreholeGeometryFormat": "Geometrieformat",
   "boreholeGeometryImport": "Geometrie importieren",

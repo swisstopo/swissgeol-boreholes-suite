@@ -38,6 +38,7 @@
   "bed": "Bed",
   "beforedate": "Before this date",
   "borehole": "Borehole",
+  "boreholeCount": "Borehole count",
   "boreholeGeometry": "Geometry",
   "boreholeGeometryFormat": "Geometry format",
   "boreholeGeometryImport": "Import geometry",

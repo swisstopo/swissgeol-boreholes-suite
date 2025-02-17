@@ -38,6 +38,7 @@
   "bed": "Banc",
   "beforedate": "Jusqu'à cette date",
   "borehole": "Forage",
+  "boreholeCount": "Nombre de forages",
   "boreholeGeometry": "Géométrie",
   "boreholeGeometryFormat": "Format de la géométrie",
   "boreholeGeometryImport": "Importer la géométrie",
