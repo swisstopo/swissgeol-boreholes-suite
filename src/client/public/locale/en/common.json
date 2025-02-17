@@ -19,6 +19,8 @@
   "addSectionElement": "Add reaming/overcoring",
   "addStratigraphy": "Add stratigraphy",
   "addWaterIngress": "Add water ingress",
+  "addWorkgroup": "Add workgroup",
+  "addWorkgroupRole": "Add role",
   "admin": "Administrator",
   "afterdate": "after this date",
   "age": "Stage",
@@ -77,6 +79,8 @@
   "completionKind": "Completion type",
   "conditions": "Groundwater conditions",
   "confirm": "Confirm",
+  "confirmRemoveRoles": "Do you want to remove all roles of the user \"{{name}}\" in the workgroup \"{{workgroupName}}\"?",
+
   "consistance": "Consistency",
   "coordinates": "Coordinates",
   "coordinatesNotFound": "No coordinates found",

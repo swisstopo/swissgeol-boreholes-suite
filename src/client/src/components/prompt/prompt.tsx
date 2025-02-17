@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Dialog, DialogActions, DialogContent, DialogContentText, Stack } from "@mui/material";
-import { BdmsButton } from "../buttons/buttons.tsx";
+import { BoreholesButton } from "../buttons/buttons.tsx";
 import { PromptContext } from "./promptContext.js";
 
 export const Prompt = () => {
@@ -24,7 +24,7 @@ export const Prompt = () => {
       <DialogActions sx={{ pr: 0, pb: 0, pt: 2, border: "none" }}>
         <Stack direction="row" spacing={2}>
           {actions?.map((action, index) => (
-            <BdmsButton
+            <BoreholesButton
               label={action.label}
               key={index}
               onClick={() => {

@@ -7,7 +7,7 @@ import CopyIcon from "../../assets/icons/copy.svg?react";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { ButtonProps } from "./buttonsInterface";
 
-export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const BoreholesBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
   // As of now there is no variant "contained" with color "secondary" in the design system, fallback to "primary".
   const color = props.variant === "contained" ? "primary" : (props.color ?? "primary");
@@ -24,13 +24,13 @@ export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
   );
 });
 
-export const BdmsButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label={props.label} />;
+export const BoreholesButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  return <BoreholesBaseButton ref={ref} {...props} label={props.label} />;
 });
 
 export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
+    <BoreholesBaseButton
       ref={ref}
       {...props}
       label={props.label}
@@ -42,12 +42,14 @@ export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref)
 });
 
 export const EditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />;
+  return (
+    <BoreholesBaseButton ref={ref} {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />
+  );
 });
 
 export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
+    <BoreholesBaseButton
       ref={ref}
       {...props}
       label="bulkEditing"
@@ -60,13 +62,19 @@ export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
 
 export const EndEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton ref={ref} {...props} label="editingStop" variant={props.variant ?? "contained"} icon={<Check />} />
+    <BoreholesBaseButton
+      ref={ref}
+      {...props}
+      label="editingStop"
+      variant={props.variant ?? "contained"}
+      icon={<Check />}
+    />
   );
 });
 
 export const CopyButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
+    <BoreholesBaseButton
       ref={ref}
       {...props}
       label="copy"
@@ -79,7 +87,7 @@ export const CopyButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
 
 export const CancelButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
+    <BoreholesBaseButton
       ref={ref}
       {...props}
       label="cancel"
@@ -92,7 +100,7 @@ export const CancelButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
 
 export const SaveButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
+    <BoreholesBaseButton
       ref={ref}
       {...props}
       label="save"
@@ -104,12 +112,12 @@ export const SaveButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
 });
 
 export const AcceptButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BdmsBaseButton ref={ref} {...props} label="accept" variant={props.variant ?? "contained"} />;
+  return <BoreholesBaseButton ref={ref} {...props} label="accept" variant={props.variant ?? "contained"} />;
 });
 
 export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
+    <BoreholesBaseButton
       ref={ref}
       {...props}
       label={props.label ?? "delete"}
@@ -122,7 +130,7 @@ export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
 
 export const ExportButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <BdmsBaseButton
+    <BoreholesBaseButton
       ref={ref}
       {...props}
       label={props.label ?? "export"}

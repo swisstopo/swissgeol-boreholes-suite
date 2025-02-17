@@ -16,12 +16,27 @@ export const updateWorkgroup = async (workgroup: Workgroup) => {
 
 export const deleteWorkgroup = async (id: number) => await fetchApiV2(`workgroup/${id}`, "DELETE");
 
-export const setRole = async (userId: number, workgroupId: number, role: Role, isActive: boolean) => {
-  const workgroupRole: WorkgroupRole = {
-    workgroupId: workgroupId,
-    userId: userId,
-    role: role,
-    isActive: isActive,
-  };
-  return await fetchApiV2("workgroup/setRole", "POST", workgroupRole);
+export const setWorkgroupRole = async (userId: number, workgroupId: number, role: Role, isActive: boolean) => {
+  const workgroupRole: WorkgroupRole[] = [
+    {
+      workgroupId: workgroupId,
+      userId: userId,
+      role: role,
+      isActive: isActive,
+    },
+  ];
+  return await fetchApiV2("workgroup/setRoles", "POST", workgroupRole);
+};
+
+export const removeAllWorkgroupRolesForUser = async (userId: number, workgroupId: number, roles: Role[]) => {
+  const workgroupRoles: WorkgroupRole[] = [];
+  for (const role of roles) {
+    workgroupRoles.push({
+      workgroupId: workgroupId,
+      userId: userId,
+      role: role,
+      isActive: false,
+    });
+  }
+  return await fetchApiV2("workgroup/setRoles", "POST", workgroupRoles);
 };

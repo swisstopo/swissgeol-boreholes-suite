@@ -19,6 +19,8 @@
   "addSectionElement": "Aggiungere alesatura/tecnica di overcoring",
   "addStratigraphy": "Aggiungere una stratigrafia",
   "addWaterIngress": "Aggiungere un ingresso d'acqua",
+  "addWorkgroup": "Aggiungere un gruppo di lavoro",
+  "addWorkgroupRole": "Aggiungere un ruolo",
   "admin": "Amministratore",
   "afterdate": "a partire da questa data",
   "age": "Piano",
@@ -77,6 +79,8 @@
   "completionKind": "Tipologia di installazione",
   "conditions": "Condizioni della falda acquifera",
   "confirm": "Confermare",
+  "confirmRemoveRoles": "Vuoi rimuovere tutti i ruoli dell'utente \"{{name}}\" nel gruppo di lavoro \"{{workgroupName}}\"?",
+
   "consistance": "Consistenza",
   "coordinates": "Coordinate",
   "coordinatesNotFound": "Nessuna coordinata trovata",

@@ -1,6 +1,7 @@
+import { MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Stack } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { Button } from "@mui/material";
+import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2 } from "lucide-react";
 import { theme } from "../../../AppTheme.ts";
 
@@ -15,29 +16,33 @@ export function useSharedTableColumns() {
     width: 120,
   };
 
-  const deleteColumn: GridColDef = {
-    field: "delete",
-    headerName: "",
-    width: 24,
-    resizable: false,
-    sortable: false,
-    filterable: false,
-    disableColumnMenu: true,
-    disableReorder: true,
-    disableExport: true,
-    renderCell: value => {
+  const getDeleteColumn = (handleDelete: (event: MouseEvent<HTMLButtonElement>, id: number) => void): GridColDef => {
+    const renderDeleteCell = (params: GridRenderCellParams) => {
       return (
-        <Stack
-          direction={"row"}
-          gap={1}
-          p={0.5}
-          key={value.id}
-          sx={{ mt: 1, border: `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }}>
+        <Button
+          variant="outlined"
+          key={params.row.id}
+          data-cy={`delete-id-${params.row.id}`}
+          onClick={event => handleDelete(event, params.row.id as number)}
+          sx={{ p: 0.5 }}>
           <Trash2 color={theme.palette.primary.main} />
-        </Stack>
+        </Button>
       );
-    },
+    };
+
+    return {
+      field: "delete",
+      headerName: "",
+      width: 32,
+      resizable: false,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      disableReorder: true,
+      disableExport: true,
+      renderCell: renderDeleteCell,
+    };
   };
 
-  return { statusColumn, deleteColumn };
+  return { statusColumn, getDeleteColumn };
 }
