@@ -562,6 +562,7 @@ WorkflowForm.propTypes = {
   user: PropTypes.object,
   workflow: PropTypes.object,
   workflows: PropTypes.object,
+  queryClient: PropTypes.object,
 };
 
 WorkflowForm.defaultProps = {
@@ -577,38 +578,39 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = (dispatch, props) => {
-  return {
-    dispatch: dispatch,
-    loadWorkflows: id => {
-      dispatch(loadWorkflows(id));
-    },
-    patchWorkflow: (id, value) => {
-      dispatch(patchWorkflow(id, "notes", value));
-    },
-    updateWorkflow: value => {
-      dispatch(updateWorkflow("notes", value));
-    },
-    submitWorkflow: (id, online = false) => {
-      return dispatch(submitWorkflow(id, online)).then(() => {
-        dispatch(loadBorehole(props.id));
-      });
-    },
-    rejectWorkflow: id => {
-      return dispatch(rejectWorkflow(id)).then(() => {
-        dispatch(loadBorehole(props.id));
-      });
-    },
-    resetWorkflow: id => {
-      return dispatch(resetWorkflow(id)).then(() => {
-        dispatch(loadBorehole(props.id));
-      });
-    },
-    updateBorehole: data => {
-      return dispatch(updateBorehole(data));
-    },
-  };
-};
+const mapDispatchToProps = (dispatch, props) => ({
+  dispatch: dispatch,
+  loadWorkflows: id => {
+    dispatch(loadWorkflows(id));
+  },
+  patchWorkflow: (id, value) => {
+    dispatch(patchWorkflow(id, "notes", value));
+  },
+  updateWorkflow: value => {
+    dispatch(updateWorkflow("notes", value));
+  },
+  submitWorkflow: (id, online = false) => {
+    return dispatch(submitWorkflow(id, online)).then(() => {
+      props.queryClient.invalidateQueries(["borehole", parseInt(props.id, 10)]);
+      dispatch(loadBorehole(props.id));
+    });
+  },
+  rejectWorkflow: id => {
+    return dispatch(rejectWorkflow(id)).then(() => {
+      props.queryClient.invalidateQueries(["borehole", parseInt(props.id, 10)]);
+      dispatch(loadBorehole(props.id));
+    });
+  },
+  resetWorkflow: id => {
+    return dispatch(resetWorkflow(id)).then(() => {
+      props.queryClient.invalidateQueries(["borehole", parseInt(props.id, 10)]);
+      dispatch(loadBorehole(props.id));
+    });
+  },
+  updateBorehole: data => {
+    return dispatch(updateBorehole(data));
+  },
+});
 
 const ConnectedWorkflowForm = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(WorkflowForm));
 export default ConnectedWorkflowForm;
