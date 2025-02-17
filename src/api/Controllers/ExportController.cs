@@ -175,6 +175,7 @@ public class ExportController : ControllerBase
 
         var boreholes = await context.Boreholes
             .Include(b => b.BoreholeCodelists).ThenInclude(bc => bc.Codelist)
+            .Include(b => b.Workflows)
             .Where(borehole => idList.Contains(borehole.Id))
             .OrderBy(b => idList.IndexOf(b.Id))
             .ToListAsync()
