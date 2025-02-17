@@ -19,7 +19,7 @@ app.use(limiter);
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; connect-src 'self' https://cognito-idp.eu-west-1.amazonaws.com https://*.auth.eu-west-1.amazoncognito.com https://*.geo.admin.ch; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch data:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'",
+    "default-src 'self'; connect-src 'self' https://cognito-idp.eu-west-1.amazonaws.com https://*.auth.eu-west-1.amazoncognito.com https://*.geo.admin.ch; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch data: blob:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'",
   );
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("X-Content-Type-Options", "nosniff");
