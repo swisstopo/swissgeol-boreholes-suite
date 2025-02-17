@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
 import {
@@ -10,8 +10,11 @@ import {
   GridRowParams,
   GridToolbar,
 } from "@mui/x-data-grid";
+import { Trash2, X } from "lucide-react";
+import i18n from "i18next";
 import { Role, User, Workgroup } from "../../../api/apiInterfaces.ts";
-import { fetchWorkgroups } from "../../../api/workgroup.ts";
+import { removeAllWorkgroupRolesForUser } from "../../../api/workgroup.ts";
+import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
@@ -19,29 +22,50 @@ import { quickFilterStyles } from "./quickfilterStyles.ts";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
 interface WorkgroupTableProps {
-  users: User[];
+  isDisabled: boolean;
+  workgroups: Workgroup[];
+  setWorkgroups: (workgroups: Workgroup[]) => void;
+  isLoading: boolean;
+  user?: User;
+  users?: User[];
+  handleRowClick?: GridEventListener<"rowClick">;
+  getRowClassName?: (params: GridRowParams) => string;
 }
-
-export const WorkgroupTable: FC<WorkgroupTableProps> = ({ users }) => {
-  const { t, i18n } = useTranslation();
-  const [filterModel, setFilterModel] = useState<GridFilterModel>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [workgroups, setWorkgroups] = useState<Workgroup[]>();
-  const { callApiWithErrorHandling } = useApiRequest();
+export const WorkgroupTable: FC<WorkgroupTableProps> = ({
+  isDisabled,
+  workgroups,
+  setWorkgroups,
+  isLoading,
+  user = null,
+  users = null,
+  handleRowClick,
+  getRowClassName,
+}) => {
+  const { t } = useTranslation();
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
+  const { showPrompt } = useContext(PromptContext);
+  const { callApiWithRollback } = useApiRequest();
+  const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
-  useEffect(() => {
-    setIsLoading(true);
-    const getWorkgroups = async () => {
-      const workgroups: Workgroup[] = await callApiWithErrorHandling(fetchWorkgroups, []);
-      setWorkgroups(workgroups);
-      setIsLoading(false);
-    };
-    getWorkgroups();
-  }, [callApiWithErrorHandling, t]);
+  const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
+    return (
+      <Stack direction="row" gap={1} p={1.2}>
+        {params.value.map((roleName: string) => (
+          <Chip
+            key={roleName}
+            label={roleName.toUpperCase()}
+            size="small"
+            color="primary"
+            data-cy={`${roleName}-chip`}
+          />
+        ))}
+      </Stack>
+    );
+  };
 
   const userWorkgroupRoles = useMemo(() => {
+    if (!users) return [];
     return users.map(user => user.workgroupRoles).flat();
   }, [users]);
 
@@ -60,48 +84,75 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({ users }) => {
     );
   };
 
-  const handleRowClick: GridEventListener<"rowClick"> = params => {
-    console.log(`navigate to /setting/workgroup/${params.row.id}`);
+  const deleteWorkgroupWithRollback = async (workgroup: Workgroup) => {
+    // Define rollback function to revert the state if the API call fails
+    const rollback = () => {
+      setWorkgroups([...workgroups!]);
+    };
+
+    // Optimistically update the workgroup table
+    setWorkgroups([...workgroups!.filter(wgp => wgp.id != workgroup.id)]);
+
+    if (!user) return;
+    await callApiWithRollback(removeAllWorkgroupRolesForUser, [user.id, workgroup.id, workgroup.roles], rollback);
   };
 
   const handleDeleteWorkgroup = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
-    const workgroup = workgroups?.find(workgroup => workgroup.id === id);
-    if (!workgroup) return;
+    if (!workgroups || !user) return;
+    const userWorkgroup = workgroups.find(workgroup => workgroup.id === id);
+    if (!userWorkgroup) return;
+    showPrompt(t("confirmRemoveRoles", { name: user.name, workgroupName: userWorkgroup.name }), [
+      {
+        label: t("cancel"),
+        icon: <X />,
+      },
+      {
+        label: t("delete"),
+        icon: <Trash2 />,
+        variant: "contained",
+        action: () => {
+          deleteWorkgroupWithRollback(userWorkgroup);
+        },
+      },
+    ]);
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: t("workgroup"), flex: 1 },
+    {
+      field: "name",
+      headerName: t("workgroup"),
+      flex: 1,
+    },
     { field: "boreholeCount", headerName: t("boreholeCount"), width: 200 },
     {
-      field: "usersPerRole",
-      headerName: t("usersPerRole"),
+      field: "roles",
+      headerName: t("roles"),
+      renderCell: users ? renderUserChips : renderRoleChips,
       flex: 1,
-      minWidth: 450,
-      renderCell: renderUserChips,
     },
     statusColumn,
-    getDeleteColumn(handleDeleteWorkgroup),
+    getDeleteColumn(user ? handleDeleteWorkgroup : () => {}),
   ];
 
-  const getRowClassName = (params: GridRowParams) => {
-    let css = "";
-    if (params.row.isDisabled) {
-      css = "disabled-row ";
-    }
-    return css;
+  const disabledStyles = {
+    cursor: isDisabled ? "default" : "pointer",
+    "& .MuiDataGrid-row:hover": { backgroundColor: isDisabled && "rgba(0,0,0,0)" },
+    "& .MuiDataGrid-columnHeader": { cursor: isDisabled ? "default" : "pointer" },
   };
 
   return (
     <DataGrid
-      sx={{ border: "none !important", ...quickFilterStyles }}
-      data-cy="users-table"
+      sx={{
+        border: "none !important",
+        ...quickFilterStyles,
+        ...disabledStyles,
+      }}
+      data-cy="user-workgroups-table"
       columnHeaderHeight={44}
-      getRowClassName={getRowClassName}
       rowHeight={44}
       sortingOrder={["asc", "desc"]}
       loading={isLoading}
-      onRowClick={handleRowClick}
       rowCount={workgroups?.length}
       rows={workgroups}
       columns={columns}
@@ -115,7 +166,7 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({ users }) => {
         toolbar: {
           csvOptions: { disableToolbarButton: true },
           printOptions: { disableToolbarButton: true },
-          showQuickFilter: true,
+          showQuickFilter: workgroups?.length > 3,
         },
       }}
       localeText={muiLocales[i18n.language]}
@@ -123,9 +174,13 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({ users }) => {
       disableRowSelectionOnClick
       hideFooterSelectedRowCount
       disableColumnFilter
+      disableColumnSorting={isDisabled}
+      disableColumnResize={isDisabled}
       disableColumnMenu={true}
       disableDensitySelector
       filterModel={filterModel}
+      onRowClick={handleRowClick}
+      getRowClassName={getRowClassName}
       onFilterModelChange={handleFilterModelChange}
     />
   );

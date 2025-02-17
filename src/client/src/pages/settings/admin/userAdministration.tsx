@@ -20,13 +20,13 @@ import { quickFilterStyles } from "./quickfilterStyles.ts";
 import { useDeleteUserPrompts } from "./useDeleteUserPrompts.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
-interface UserTableProps {
+interface UserAdministrationProps {
   setSelectedUser: (user: User | null) => void;
   users: User[];
   setUsers: (users: User[]) => void;
 }
 
-export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers }) => {
+export const UserAdministration: FC<UserAdministrationProps> = ({ setSelectedUser, users, setUsers }) => {
   const { t, i18n } = useTranslation();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const [isLoading, setIsLoading] = useState(true);
