@@ -42,6 +42,12 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
         return IsUserLackingPermissions(borehole, user);
     }
 
+    /// <inheritdoc />
+    public bool IsUserLackingPermissions(ICollection<Borehole> boreholes, User user)
+    {
+        return boreholes.Any(borehole => IsUserLackingPermissions(borehole, user));
+    }
+
     private bool IsUserLackingPermissions(Borehole borehole, User user)
     {
         if (borehole.Workflows != null)

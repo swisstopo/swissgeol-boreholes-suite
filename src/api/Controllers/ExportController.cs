@@ -26,9 +26,11 @@ public class ExportController : ControllerBase
     private const string ExportFileName = "boreholes_export";
     private const string MissingIdsMessage = "The list of IDs must not be empty.";
     private const string NoBoreholesFoundMessage = "No borehole(s) found for the provided id(s).";
+    private const string UserLacksPermissionsMessage = "The user lacks permissions to export the borehole(s).";
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
+    private readonly IBoreholeLockService boreholeLockService;
 
     private static readonly JsonSerializerOptions jsonExportOptions = new()
     {
@@ -37,11 +39,12 @@ public class ExportController : ControllerBase
         Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
     };
 
-    public ExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService, ILogger<ExportController> logger)
+    public ExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService, ILogger<ExportController> logger, IBoreholeLockService boreholeLockService)
     {
         this.context = context;
         this.logger = logger;
         this.boreholeFileCloudService = boreholeFileCloudService;
+        this.boreholeLockService = boreholeLockService;
     }
 
     /// <summary>
@@ -57,6 +60,8 @@ public class ExportController : ControllerBase
         var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
+        if (await CheckUserPermissions(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
+
         return new JsonResult(boreholes, jsonExportOptions);
     }
 
@@ -70,11 +75,13 @@ public class ExportController : ControllerBase
     {
         if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
+        var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
+
+        if (await CheckUserPermissions(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
+
         try
         {
-            var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
-            if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
-
             var boreholeGeometries = await GetBoreholeGeometriesAsync(idList).ConfigureAwait(false);
 
             foreach (var borehole in boreholes)
@@ -168,12 +175,15 @@ public class ExportController : ControllerBase
 
         var boreholes = await context.Boreholes
             .Include(b => b.BoreholeCodelists).ThenInclude(bc => bc.Codelist)
+            .Include(b => b.Workflows)
             .Where(borehole => idList.Contains(borehole.Id))
             .OrderBy(b => idList.IndexOf(b.Id))
             .ToListAsync()
             .ConfigureAwait(false);
 
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
+
+        if (await CheckUserPermissions(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
         using var stringWriter = new StringWriter();
         using var csvWriter = new CsvWriter(stringWriter, CsvConfigHelper.CsvWriteConfig);
@@ -298,11 +308,13 @@ public class ExportController : ControllerBase
     {
         if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
+        var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
+
+        if (await CheckUserPermissions(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
+
         try
         {
-            var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
-            if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
-
             var files = await context.BoreholeFiles.Include(f => f.File).AsNoTracking().Where(f => idList.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
             var fileName = $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}";
 
@@ -376,5 +388,27 @@ public class ExportController : ControllerBase
         if (idList.Count < 1) return false;
 
         return true;
+    }
+
+    /// <summary>
+    /// Checks whether the user has sufficient permissions to export the provided boreholes.
+    /// </summary>
+    /// <param name="boreholes">The list of boreholes to check permissions for.</param>
+    /// <returns><c>true</c> if the user is lacking permissions for the borehole; otherwise, <c>false</c>.</returns>
+    private async Task<bool> CheckUserPermissions(List<Borehole> boreholes)
+    {
+        var user = await context.Users
+            .Include(u => u.WorkgroupRoles)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
+        if (user == null)
+        {
+            logger.LogError("User with SubjectId {SubjectId} not found.", HttpContext.GetUserSubjectId());
+            return true;
+        }
+
+        return boreholeLockService.IsUserLackingPermissions(boreholes, user);
     }
 }
