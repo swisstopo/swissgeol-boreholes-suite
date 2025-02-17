@@ -17,10 +17,12 @@ import { Role, User, Workgroup } from "../../../api/apiInterfaces.ts";
 import { removeAllWorkgroupRolesForUser } from "../../../api/workgroup.ts";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
+import { useDeleteWorkgroupPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
+import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
 interface WorkgroupTableProps {
   isDisabled: boolean;
@@ -45,9 +47,11 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
   const { t } = useTranslation();
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { showPrompt } = useContext(PromptContext);
+  const { setSelectedWorkgroup } = useContext(WorkgroupAdministrationContext);
   const { callApiWithRollback } = useApiRequest();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
+  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts(setSelectedWorkgroup, workgroups, setWorkgroups);
 
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
     return (
@@ -84,7 +88,7 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
     );
   };
 
-  const deleteWorkgroupWithRollback = async (workgroup: Workgroup) => {
+  const removeAllWorkgroupRolesWithRollback = async (workgroup: Workgroup) => {
     // Define rollback function to revert the state if the API call fails
     const rollback = () => {
       setWorkgroups([...workgroups!]);
@@ -97,7 +101,7 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
     await callApiWithRollback(removeAllWorkgroupRolesForUser, [user.id, workgroup.id, workgroup.roles], rollback);
   };
 
-  const handleDeleteWorkgroup = (event: MouseEvent<HTMLButtonElement>, id: number) => {
+  const handleRemoveAllWorkgroupRoles = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
     if (!workgroups || !user) return;
     const userWorkgroup = workgroups.find(workgroup => workgroup.id === id);
@@ -112,10 +116,17 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
         icon: <Trash2 />,
         variant: "contained",
         action: () => {
-          deleteWorkgroupWithRollback(userWorkgroup);
+          removeAllWorkgroupRolesWithRollback(userWorkgroup);
         },
       },
     ]);
+  };
+
+  const handleDeleteWorkgroup = (event: MouseEvent<HTMLButtonElement>, id: number) => {
+    event.stopPropagation();
+    const workgroupToDelete = workgroups.find(wgp => wgp.id === id);
+    if (!workgroupToDelete) return;
+    showDeleteWorkgroupWarning(workgroupToDelete);
   };
 
   const columns: GridColDef[] = [
@@ -132,7 +143,7 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
       flex: 1,
     },
     statusColumn,
-    getDeleteColumn(user ? handleDeleteWorkgroup : () => {}),
+    getDeleteColumn(user ? handleRemoveAllWorkgroupRoles : handleDeleteWorkgroup),
   ];
 
   const disabledStyles = {
@@ -182,8 +193,6 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
       onRowClick={handleRowClick}
       getRowClassName={getRowClassName}
       onFilterModelChange={handleFilterModelChange}
-      sortModel={sortModel}
-      onSortModelChange={setSortModel}
     />
   );
 };

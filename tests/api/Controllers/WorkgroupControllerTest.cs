@@ -28,7 +28,7 @@ public class WorkgroupControllerTest
     [TestMethod]
     public async Task GetAll()
     {
-        var workgroups = await workgroupController.GetAll();
+        var workgroups = await workgroupController.GetAllAsync();
         Assert.AreEqual(6, workgroups.Count());
     }
 
@@ -36,7 +36,7 @@ public class WorkgroupControllerTest
     public async Task CreateWorkgroup()
     {
         var workgroup = new Workgroup { Name = "FIRESTOPPEXAMPLE" };
-        var result = await workgroupController.Create(workgroup);
+        var result = await workgroupController.CreateAsync(workgroup);
         ActionResultAssert.IsOk(result);
 
         var createdWorkgroup = (result as OkObjectResult).Value as Workgroup;
@@ -50,7 +50,7 @@ public class WorkgroupControllerTest
     public async Task EditWorkgroup()
     {
         var workgroup = new Workgroup { Name = "New Workgroup" };
-        var createResult = await workgroupController.Create(workgroup);
+        var createResult = await workgroupController.CreateAsync(workgroup);
         ActionResultAssert.IsOk(createResult);
         var createdWorkgroup = (createResult as OkObjectResult).Value as Workgroup;
 
@@ -66,7 +66,7 @@ public class WorkgroupControllerTest
         workgroupToEdit.DisabledAt = DateTime.UtcNow;
         workgroupToEdit.Boreholes.Clear();
 
-        var result = await workgroupController.Edit(workgroupToEdit);
+        var result = await workgroupController.EditAsync(workgroupToEdit);
         ActionResultAssert.IsOk(result);
         var updatedWorkgroup = (result as OkObjectResult).Value as Workgroup;
 
@@ -79,7 +79,7 @@ public class WorkgroupControllerTest
     [TestMethod]
     public async Task EditWorkgroupNotFound()
     {
-        var result = await workgroupController.Edit(new Workgroup { Id = 0 });
+        var result = await workgroupController.EditAsync(new Workgroup { Id = 0 });
         ActionResultAssert.IsNotFound(result);
     }
 
@@ -87,11 +87,11 @@ public class WorkgroupControllerTest
     public async Task DeleteWorkgroup()
     {
         var workgroup = new Workgroup { Name = "CLOWNSHOES" };
-        var createResult = await workgroupController.Create(workgroup);
+        var createResult = await workgroupController.CreateAsync(workgroup);
         ActionResultAssert.IsOk(createResult);
         var createdWorkgroup = (createResult as OkObjectResult).Value as Workgroup;
 
-        var deleteResult = await workgroupController.Delete(createdWorkgroup.Id);
+        var deleteResult = await workgroupController.DeleteAsync(createdWorkgroup.Id);
         ActionResultAssert.IsOk(deleteResult);
 
         var workgroupExists = await context.Workgroups.AsNoTracking().AnyAsync(u => u.Id == createdWorkgroup.Id);
@@ -101,7 +101,7 @@ public class WorkgroupControllerTest
     [TestMethod]
     public async Task DeleteWorkgroupNotFound()
     {
-        var result = await workgroupController.Delete(0);
+        var result = await workgroupController.DeleteAsync(0);
         ActionResultAssert.IsNotFound(result);
     }
 
@@ -111,7 +111,7 @@ public class WorkgroupControllerTest
         var workgroup = await context.WorkgroupsWithIncludes.AsNoTracking().SingleOrDefaultAsync(u => u.Id == 1);
         Assert.IsNotNull(workgroup);
 
-        var result = await workgroupController.Delete(workgroup.Id);
+        var result = await workgroupController.DeleteAsync(workgroup.Id);
         ActionResultAssert.IsInternalServerError(result, "The workgroup is associated with boreholes and cannot be deleted.");
     }
 
@@ -120,12 +120,12 @@ public class WorkgroupControllerTest
     {
         var user = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == "editor");
         var workgroup = new Workgroup { Name = "WINDDESPERADO" };
-        var createResult = await workgroupController.Create(workgroup);
+        var createResult = await workgroupController.CreateAsync(workgroup);
         ActionResultAssert.IsOk(createResult);
         var createdWorkgroup = (createResult as OkObjectResult).Value as Workgroup;
 
         // Set role for user
-        var setRoleResult = await workgroupController.SetRoles([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Editor, true)]);
+        var setRoleResult = await workgroupController.SetRolesAsync([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Editor, true)]);
 
         ActionResultAssert.IsOk(setRoleResult);
         var userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
@@ -133,14 +133,14 @@ public class WorkgroupControllerTest
         Assert.AreEqual(Role.Editor, userWorkgroupRoles[0].Role);
 
         // Cannot set the same role twice
-        setRoleResult = await workgroupController.SetRoles([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Editor, true)]);
+        setRoleResult = await workgroupController.SetRolesAsync([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Editor, true)]);
         ActionResultAssert.IsOk(setRoleResult);
         userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
         Assert.AreEqual(1, userWorkgroupRoles.Count);
         Assert.AreEqual(Role.Editor, userWorkgroupRoles[0].Role);
 
         // Set another role for user
-        setRoleResult = await workgroupController.SetRoles([CreateUserWorkgroupRole(user, createdWorkgroup, Role.View, true)]);
+        setRoleResult = await workgroupController.SetRolesAsync([CreateUserWorkgroupRole(user, createdWorkgroup, Role.View, true)]);
         ActionResultAssert.IsOk(setRoleResult);
         userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
         Assert.AreEqual(2, userWorkgroupRoles.Count);
@@ -148,7 +148,7 @@ public class WorkgroupControllerTest
         Assert.IsTrue(userWorkgroupRoles.Any(r => r.Role == Role.View));
 
         // Cannot remove a role that does not exist
-        setRoleResult = await workgroupController.SetRoles([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Publisher, false)]);
+        setRoleResult = await workgroupController.SetRolesAsync([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Publisher, false)]);
         ActionResultAssert.IsOk(setRoleResult);
         userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
         Assert.AreEqual(2, userWorkgroupRoles.Count);
@@ -156,7 +156,7 @@ public class WorkgroupControllerTest
         Assert.IsTrue(userWorkgroupRoles.Any(r => r.Role == Role.View));
 
         // Remove a role
-        setRoleResult = await workgroupController.SetRoles([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Editor, false)]);
+        setRoleResult = await workgroupController.SetRolesAsync([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Editor, false)]);
         ActionResultAssert.IsOk(setRoleResult);
         userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
         Assert.AreEqual(1, userWorkgroupRoles.Count);
@@ -169,7 +169,7 @@ public class WorkgroupControllerTest
         var user1 = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == "editor");
         var user2 = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == "viewer");
         var workgroup = new Workgroup { Name = "TECHWARRIORS" };
-        var createResult = await workgroupController.Create(workgroup);
+        var createResult = await workgroupController.CreateAsync(workgroup);
         ActionResultAssert.IsOk(createResult);
         var createdWorkgroup = (createResult as OkObjectResult).Value as Workgroup;
 
@@ -179,7 +179,7 @@ public class WorkgroupControllerTest
             CreateUserWorkgroupRole(user1, createdWorkgroup, Role.Editor, true),
             CreateUserWorkgroupRole(user2, createdWorkgroup, Role.View, true),
         };
-        var setRolesResult = await workgroupController.SetRoles(userWorkgroupRoles);
+        var setRolesResult = await workgroupController.SetRolesAsync(userWorkgroupRoles);
         ActionResultAssert.IsOk(setRolesResult);
 
         // Verify roles are added
@@ -191,7 +191,7 @@ public class WorkgroupControllerTest
         // Add an additional role for one user and remove for another
         userWorkgroupRoles[0].Role = Role.Publisher;
         userWorkgroupRoles[1].IsActive = false;
-        setRolesResult = await workgroupController.SetRoles(userWorkgroupRoles);
+        setRolesResult = await workgroupController.SetRolesAsync(userWorkgroupRoles);
         ActionResultAssert.IsOk(setRolesResult);
 
         // Verify roles are updated
@@ -202,7 +202,7 @@ public class WorkgroupControllerTest
 
         // Attempt to add duplicate role
         userWorkgroupRoles[0].IsActive = true;
-        setRolesResult = await workgroupController.SetRoles(userWorkgroupRoles);
+        setRolesResult = await workgroupController.SetRolesAsync(userWorkgroupRoles);
         ActionResultAssert.IsOk(setRolesResult);
 
         loggerMock.Verify(
@@ -223,7 +223,7 @@ public class WorkgroupControllerTest
     {
         var user2 = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == "viewer");
         var workgroup = new Workgroup { Name = "SHRIMPLACES" };
-        var createResult = await workgroupController.Create(workgroup);
+        var createResult = await workgroupController.CreateAsync(workgroup);
         ActionResultAssert.IsOk(createResult);
         var createdWorkgroup = (createResult as OkObjectResult).Value as Workgroup;
 
@@ -233,7 +233,7 @@ public class WorkgroupControllerTest
             CreateUserWorkgroupRole(user2, createdWorkgroup, Role.Validator, null),
         };
 
-        var setRolesResult = await workgroupController.SetRoles(userWorkgroupRoles);
+        var setRolesResult = await workgroupController.SetRolesAsync(userWorkgroupRoles);
         ActionResultAssert.IsOk(setRolesResult);
 
         loggerMock.Verify(

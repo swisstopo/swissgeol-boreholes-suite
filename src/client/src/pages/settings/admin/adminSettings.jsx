@@ -358,7 +358,7 @@ class AdminSettings extends React.Component {
                           {t("disable")}:
                         </span>
                         <br />
-                        {t("msgReenablingTip")}
+                        {t("msgReenablingUserTip")}
                         <br />
                         &nbsp;
                       </li>
@@ -389,7 +389,7 @@ class AdminSettings extends React.Component {
                           {t("disable")}:
                         </span>
                         <br />
-                        {t("msgReenablingTip")}
+                        {t("msgReenablingUserTip")}
                       </li>
                     </ul>
                   </Modal.Description>
@@ -775,7 +775,7 @@ class AdminSettings extends React.Component {
                               {t("disable")}
                             </span>
                             <br />
-                            {t("msgReenablingTip")}
+                            {t("msgReenablingWorkgroupTip")}
                             <br />
                             &nbsp;
                           </li>
@@ -805,7 +805,7 @@ class AdminSettings extends React.Component {
                               {t("disable")}:
                             </span>
                             <br />
-                            {t("msgReenablingTip")}
+                            {t("msgReenablingWorkgroupTip")}
                           </li>
                         </ul>
                       </Modal.Description>
