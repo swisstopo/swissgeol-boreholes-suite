@@ -111,7 +111,7 @@ export const DetailPage: FC = () => {
     const isBoreholeInEditWorkflow = legacyBorehole?.data.workflow?.role === "EDIT";
 
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
-  }, [editingEnabled, user, legacyBorehole, location, togglePanel]);
+  }, [editingEnabled, user, legacyBorehole, location, togglePanel, borehole]);
 
   // Ensure Redux store and data via API V2 is loaded
   if (loading || isLoadingV2)
