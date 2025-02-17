@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { GridEventListener, GridRowParams } from "@mui/x-data-grid";
+import { GridEventListener } from "@mui/x-data-grid";
 import { User, Workgroup } from "../../../api/apiInterfaces.ts";
 import { fetchWorkgroups } from "../../../api/workgroup.ts";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
@@ -30,14 +30,6 @@ export const WorkgroupAdministration: FC<WorkgroupAdministrationProps> = ({ user
     console.log(`navigate to /setting/workgroup/${params.row.id}`);
   };
 
-  const getRowClassName = (params: GridRowParams) => {
-    let css = "";
-    if (params.row.isDisabled) {
-      css = "disabled-row ";
-    }
-    return css;
-  };
-
   return (
     <WorkgroupTable
       isDisabled={false}
@@ -46,7 +38,6 @@ export const WorkgroupAdministration: FC<WorkgroupAdministrationProps> = ({ user
       setWorkgroups={setWorkgroups}
       isLoading={isLoading}
       handleRowClick={handleRowClick}
-      getRowClassName={getRowClassName}
     />
   );
 };

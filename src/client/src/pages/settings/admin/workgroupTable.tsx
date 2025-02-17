@@ -29,7 +29,6 @@ interface WorkgroupTableProps {
   user?: User;
   users?: User[];
   handleRowClick?: GridEventListener<"rowClick">;
-  getRowClassName?: (params: GridRowParams) => string;
 }
 export const WorkgroupTable: FC<WorkgroupTableProps> = ({
   isDisabled,
@@ -39,7 +38,6 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
   user = null,
   users = null,
   handleRowClick,
-  getRowClassName,
 }) => {
   const { t } = useTranslation();
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
@@ -62,6 +60,14 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
         ))}
       </Stack>
     );
+  };
+
+  const getRowClassName = (params: GridRowParams) => {
+    let css = "";
+    if (params.row.isDisabled) {
+      css = "disabled-row ";
+    }
+    return css;
   };
 
   const userWorkgroupRoles = useMemo(() => {
