@@ -2,7 +2,7 @@ import { goToRouteAndAcceptTerms } from "../helpers/testHelpers";
 
 describe("Admin settings test", () => {
   beforeEach(() => {
-    goToRouteAndAcceptTerms("/setting#workgroups");
+    goToRouteAndAcceptTerms("/setting#legacysettings");
     cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 8);
   });
 

@@ -294,6 +294,7 @@
   "layer_last": "End of borehole",
   "layer_lithology_top_bedrock": "Debris lithology",
   "layer_loading_fetch": "Loading an existing layer...",
+  "legacySettings": "Legacy settings",
   "length_from": "Borehole Length (from)",
   "length_to": "Borehole Length (to)",
   "license": "License",
