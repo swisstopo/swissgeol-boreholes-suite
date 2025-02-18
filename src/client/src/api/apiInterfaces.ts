@@ -70,5 +70,3 @@ export interface User {
   workgroupRoles?: WorkgroupRole[];
   termsAccepted?: TermsAccepted[];
 }
-
-export type DeletableEntity = User | Workgroup;

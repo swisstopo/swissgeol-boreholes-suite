@@ -42,9 +42,6 @@ export const WorkgroupDetail: FC = () => {
         history.push("/setting#workgroups");
       } else {
         setSelectedWorkgroup(workgroup);
-
-        // // Get the transformed array of unique workgroups with roles
-        // setUserWorkgroups(workgroup);
       }
     };
     getWorkgroup();
@@ -71,7 +68,7 @@ export const WorkgroupDetail: FC = () => {
     event.stopPropagation();
     const user = users.find(user => user.id === id);
     if (!user) return;
-    // showDeleteUserWarning(user);
+    // Todo implement remove user from workgroup
   };
 
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
@@ -145,7 +142,7 @@ export const WorkgroupDetail: FC = () => {
               columnHeaderHeight={44}
               rowHeight={44}
               sortingOrder={["asc", "desc"]}
-              // loading={isLoading}
+              loading={!workgroupUsers?.length}
               rowCount={workgroupUsers?.length}
               rows={workgroupUsers}
               columns={columns}

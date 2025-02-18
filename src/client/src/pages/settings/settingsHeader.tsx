@@ -43,7 +43,7 @@ export const SettingsHeader: FC = () => {
     // Define rollback function to revert the state if the API call fails
     const rollback = () => setSelectedWorkgroup({ ...selectedWorkgroup! });
 
-    // Optimistically update the user in the state
+    // Optimistically update the workgroup in the state
     const updatedWorkgroup = {
       ...selectedWorkgroup!,
       isDisabled: isDisabled,
