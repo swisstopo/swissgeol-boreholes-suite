@@ -21,19 +21,15 @@ import { useDeleteUserPrompts } from "./useDeleteUserPrompts.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
-interface UserTableProps {
-  users: User[];
-  setUsers: (users: User[]) => void;
-}
-
-export const UserTable: FC<UserTableProps> = ({ users, setUsers }) => {
+export const UserTable: FC = () => {
   const { t, i18n } = useTranslation();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const [isLoading, setIsLoading] = useState(true);
   const history = useHistory();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
-  const { setSelectedUser, userTableSortModel, setUserTableSortModel } = useContext(UserAdministrationContext);
+  const { users, setUsers, setSelectedUser, userTableSortModel, setUserTableSortModel } =
+    useContext(UserAdministrationContext);
   const { showDeleteWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 

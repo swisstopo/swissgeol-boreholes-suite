@@ -1,10 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { Route, Switch } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
-import { User as UserV2 } from "../../api/apiInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
@@ -21,8 +20,6 @@ export const SettingsPage = () => {
   const auth = useAuth();
   const { t } = useTranslation();
   const currentUser: User = useSelector((state: ReduxRootState) => state.core_user);
-  const [users, setUsers] = useState<UserV2[]>([]);
-
   const isAdminUser = currentUser.data.admin;
   const isAnonymousUser = auth.anonymousModeEnabled;
 
@@ -38,16 +35,16 @@ export const SettingsPage = () => {
       tabsArray.unshift({
         label: t("users"),
         hash: "users",
-        component: <UserTable users={users} setUsers={setUsers} />,
+        component: <UserTable />,
       });
     }
 
     return tabsArray;
-  }, [isAdminUser, isAnonymousUser, t, users]);
+  }, [isAdminUser, isAnonymousUser, t]);
 
   return (
     <UserAdministrationProvider>
-      <SettingsHeader users={users} setUsers={setUsers} />
+      <SettingsHeader />
       <Switch>
         <Route exact={false} key={4} path={"/setting/user/:id"} render={() => <UserDetail />} />
         <Route

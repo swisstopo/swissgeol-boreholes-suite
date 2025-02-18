@@ -2,7 +2,6 @@ import { FC, MouseEvent, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { User } from "../../api/apiInterfaces.ts";
 import { updateUser } from "../../api/user.ts";
 import { DeleteButton, ReturnButton } from "../../components/buttons/buttons.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
@@ -11,16 +10,11 @@ import { capitalizeFirstLetter } from "../../utils.ts";
 import { useDeleteUserPrompts } from "./admin/useDeleteUserPrompts.tsx";
 import { UserAdministrationContext } from "./admin/userAdministrationContext.tsx";
 
-interface SettingsHeaderProps {
-  users: User[];
-  setUsers: (users: User[]) => void;
-}
-
-export const SettingsHeader: FC<SettingsHeaderProps> = ({ users, setUsers }) => {
+export const SettingsHeader: FC = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const { callApiWithRollback } = useApiRequest();
-  const { selectedUser, setSelectedUser } = useContext(UserAdministrationContext);
+  const { users, setUsers, selectedUser, setSelectedUser } = useContext(UserAdministrationContext);
   const { showDeleteWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
 
   const updateUserActiveStateWithRollback = async (isDisabled: boolean) => {
