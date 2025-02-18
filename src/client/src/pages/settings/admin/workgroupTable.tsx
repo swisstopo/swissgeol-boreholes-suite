@@ -25,7 +25,6 @@ interface WorkgroupTableProps {
   isDisabled: boolean;
   workgroups: Workgroup[];
   setWorkgroups: (workgroups: Workgroup[]) => void;
-  isLoading: boolean;
   user?: User;
   users?: User[];
   handleRowClick?: GridEventListener<"rowClick">;
@@ -34,7 +33,6 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
   isDisabled,
   workgroups,
   setWorkgroups,
-  isLoading,
   user = null,
   users = null,
   handleRowClick,
@@ -158,7 +156,7 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
       columnHeaderHeight={44}
       rowHeight={44}
       sortingOrder={["asc", "desc"]}
-      loading={isLoading}
+      loading={!workgroups?.length}
       rowCount={workgroups?.length}
       rows={workgroups}
       columns={columns}

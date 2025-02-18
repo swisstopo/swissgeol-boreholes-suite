@@ -18,7 +18,6 @@ interface UserDetailProps {
 export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(true);
   const [userWorkgroups, setUserWorkgroups] = useState<Workgroup[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
@@ -42,7 +41,6 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
     const getUser = async () => {
       const user: User = await callApiWithErrorHandling(fetchUser, [parseInt(id)]);
       if (!user) {
@@ -52,7 +50,6 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
 
         // Get the transformed array of unique workgroups with roles
         setUserWorkgroups(getUniqueWorkgroups(user));
-        setIsLoading(false);
       }
     };
     getUser();
@@ -112,7 +109,6 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
         <CardContent sx={{ pt: 4, px: 3 }}>
           {userWorkgroups && userWorkgroups?.length > 0 && (
             <WorkgroupTable
-              isLoading={isLoading}
               isDisabled={isDisabled}
               workgroups={userWorkgroups}
               user={user}

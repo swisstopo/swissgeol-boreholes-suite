@@ -29,7 +29,6 @@ interface UserAdministrationProps {
 export const UserAdministration: FC<UserAdministrationProps> = ({ setSelectedUser, users, setUsers }) => {
   const { t, i18n } = useTranslation();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
-  const [isLoading, setIsLoading] = useState(true);
   const history = useHistory();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
@@ -37,11 +36,9 @@ export const UserAdministration: FC<UserAdministrationProps> = ({ setSelectedUse
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
   useEffect(() => {
-    setIsLoading(true);
     const getUsers = async () => {
       const users: User[] = await callApiWithErrorHandling(fetchUsers, []);
       setUsers(users);
-      setIsLoading(false);
     };
     getUsers();
     setSelectedUser(null);
@@ -176,7 +173,7 @@ export const UserAdministration: FC<UserAdministrationProps> = ({ setSelectedUse
       getRowClassName={getRowClassName}
       rowHeight={44}
       sortingOrder={["asc", "desc"]}
-      loading={isLoading}
+      loading={!users?.length}
       onRowClick={handleRowClick}
       rowCount={users?.length}
       rows={users}
