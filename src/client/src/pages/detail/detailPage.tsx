@@ -130,6 +130,7 @@ export const DetailPage: FC = () => {
       <DetailHeader
         borehole={borehole ?? ({} as BoreholeV2)}
         editableByCurrentUser={editableByCurrentUser}
+        editingEnabled={editingEnabled}
         triggerReset={triggerReset}
       />
       <LayoutBox>

@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "react-query";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
@@ -18,32 +19,33 @@ import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
-import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import { useFormDirtyStore } from "./formDirtyStore.ts";
 
 interface DetailHeaderProps {
   editableByCurrentUser: boolean;
   borehole: BoreholeV2;
   triggerReset: () => void;
+  editingEnabled?: boolean;
 }
 
-const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailHeaderProps) => {
+const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole, editingEnabled }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
-  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
   const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
   const auth = useAuth();
+  const queryClient = useQueryClient();
 
-  const toggleEditing = (editing: boolean) => {
+  const toggleEditing = async (editing: boolean) => {
     if (!editing) {
-      dispatch(unlockBorehole(borehole.id));
+      await dispatch(unlockBorehole(borehole.id));
+      await queryClient.invalidateQueries(["borehole", borehole.id]);
     } else {
-      dispatch(lockBorehole(borehole.id));
+      await dispatch(lockBorehole(borehole.id));
+      await queryClient.invalidateQueries(["borehole", borehole.id]);
     }
-    setEditingEnabled(editing);
   };
 
   const startEditing = () => {
