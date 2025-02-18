@@ -8,6 +8,7 @@ import {
   GridFilterModel,
   GridRenderCellParams,
   GridRowParams,
+  GridSortModel,
   GridToolbar,
 } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
@@ -25,6 +26,8 @@ interface WorkgroupTableProps {
   isDisabled: boolean;
   workgroups: Workgroup[];
   setWorkgroups: (workgroups: Workgroup[]) => void;
+  sortModel: GridSortModel;
+  setSortModel: (model: GridSortModel) => void;
   user?: User;
   users?: User[];
   handleRowClick?: GridEventListener<"rowClick">;
@@ -33,6 +36,8 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
   isDisabled,
   workgroups,
   setWorkgroups,
+  sortModel,
+  setSortModel,
   user = null,
   users = null,
   handleRowClick,
@@ -161,7 +166,7 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
         toolbar: {
           csvOptions: { disableToolbarButton: true },
           printOptions: { disableToolbarButton: true },
-          showQuickFilter: workgroups?.length > 3,
+          showQuickFilter: true,
         },
       }}
       localeText={muiLocales[i18n.language]}
@@ -177,6 +182,8 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
       onRowClick={handleRowClick}
       getRowClassName={getRowClassName}
       onFilterModelChange={handleFilterModelChange}
+      sortModel={sortModel}
+      onSortModelChange={setSortModel}
     />
   );
 };

@@ -5,7 +5,7 @@ import {
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers.js";
-import { goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
+import { getElementByDataCy, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("User administration settings tests", () => {
   it("displays, sorts and filters workgroup table.", () => {
@@ -27,6 +27,14 @@ describe("User administration settings tests", () => {
 
     // sort
     sortBy("Workgroup");
+    verifyRowContains("Blues", 0);
+    verifyRowContains("Country", 1);
+    verifyRowContains("Default", 2);
+    verifyRowContains("Reggae", 3);
+
+    // navigate away and check if sorting is still applied
+    getElementByDataCy("users-tab").click();
+    getElementByDataCy("workgroups-tab").click();
     verifyRowContains("Blues", 0);
     verifyRowContains("Country", 1);
     verifyRowContains("Default", 2);

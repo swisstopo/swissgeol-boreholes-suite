@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, Checkbox, Stack, Typography } from "@mui/material";
@@ -8,18 +8,16 @@ import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { AddWorkgroupDialog } from "./addWorkgroupDialog.tsx";
+import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { WorkgroupTable } from "./workgroupTable.tsx";
 
-interface UserDetailProps {
-  user: User | null;
-  setUser: (user: User | null) => void;
-}
-
-export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
+export const UserDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const [userWorkgroups, setUserWorkgroups] = useState<Workgroup[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
+  const { selectedUser, setSelectedUser, userDetailTableSortModel, setUserDetailTableSortModel } =
+    useContext(UserAdministrationContext);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const history = useHistory();
 
@@ -46,27 +44,27 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
       if (!user) {
         history.push("/setting#users");
       } else {
-        setUser(user);
+        setSelectedUser(user);
 
         // Get the transformed array of unique workgroups with roles
         setUserWorkgroups(getUniqueWorkgroups(user));
       }
     };
     getUser();
-  }, [callApiWithErrorHandling, history, id, setUser]);
+  }, [callApiWithErrorHandling, history, id, setSelectedUser]);
 
-  if (!user) return;
-  const isDisabled = user.isDisabled ?? true;
+  if (!selectedUser) return;
+  const isDisabled = selectedUser.isDisabled ?? true;
 
   const handleCheckboxChange = async (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
-    if (user) {
+    if (selectedUser) {
       // Define rollback function to revert the state if the API call fails
-      const rollback = () => setUser({ ...user });
+      const rollback = () => setSelectedUser({ ...selectedUser });
 
       // Optimistically update the user in the state
-      const updatedUser = { ...user, isAdmin: event.target.checked };
-      setUser({ ...updatedUser });
+      const updatedUser = { ...selectedUser, isAdmin: event.target.checked };
+      setSelectedUser({ ...updatedUser });
 
       await callApiWithRollback(updateUser, [updatedUser], rollback);
     }
@@ -90,7 +88,7 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
         <CardContent sx={{ pt: 4, px: 3 }}>
           <Stack direction={"row"} alignItems={"center"}>
             <Checkbox
-              checked={user.isAdmin}
+              checked={selectedUser.isAdmin}
               onChange={handleCheckboxChange}
               data-cy="is-user-admin-checkbox"
               disabled={isDisabled}
@@ -111,8 +109,10 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
             <WorkgroupTable
               isDisabled={isDisabled}
               workgroups={userWorkgroups}
-              user={user}
+              user={selectedUser}
               setWorkgroups={setUserWorkgroups}
+              sortModel={userDetailTableSortModel}
+              setSortModel={setUserDetailTableSortModel}
             />
           )}
         </CardContent>

@@ -28,6 +28,11 @@ describe("User administration settings tests", () => {
     verifyRowContains("example@example.com", 0);
     verifyRowContains("Active", 0);
 
+    // navigate away and check if sorting is still applied
+    getElementByDataCy("workgroups-tab").click();
+    getElementByDataCy("users-tab").click();
+    verifyRowContains("viewer", 0);
+
     // filter with quick filter
     cy.get(".MuiDataGrid-toolbarQuickFilter input")
       .click()
