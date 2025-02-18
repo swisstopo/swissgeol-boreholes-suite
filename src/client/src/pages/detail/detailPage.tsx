@@ -2,9 +2,9 @@ import { FC, useCallback, useContext, useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
-import { loadBorehole } from "../../api-lib";
+import { loadBorehole, updateBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { BoreholeV2, useBorehole, useUpdateBorehole } from "../../api/borehole.ts";
+import { BoreholeV2, getBoreholeById } from "../../api/borehole.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import {
   prepareBoreholeDataForSubmit,
@@ -22,51 +22,48 @@ import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
 
 export const DetailPage: FC = () => {
-  const [loading, setLoading] = useState(true); // Redux loading state
+  const [loading, setLoading] = useState(true);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
+  const [borehole, setBorehole] = useState<BoreholeV2 | null>(null);
   const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
+  const workflowStatus = useSelector((state: ReduxRootState) => state.core_workflow);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
   const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
   const dispatch = useDispatch();
   const { id } = useParams<{ id: string }>();
 
-  const { data: borehole, isLoading: isLoadingV2 } = useBorehole(parseInt(id, 10));
-  const { mutate: updateBoreholeMutation } = useUpdateBorehole();
-
   useEffect(() => {
-    if (borehole) {
-      setEditingEnabled(borehole.locked !== null && borehole.lockedById === user.data.id);
-    }
-  }, [borehole, setEditingEnabled, user.data.id]);
+    getBoreholeById(parseInt(id, 10)).then(b => {
+      setBorehole(b);
+      setEditingEnabled(b.locked !== null && b.lockedById === user.data.id);
+    });
+  }, [id, setEditingEnabled, user.data.id, workflowStatus]);
 
   const loadOrCreate = useCallback(
     (id: string) => {
-      setLoading(true); // Redux loading starts
+      setLoading(true);
       dispatch(loadBorehole(parseInt(id, 10)))
         //@ts-expect-error // legacy fetch function returns not typed
         .then(response => {
           if (response.success) {
-            setLoading(false); // Redux loading ends
+            setLoading(false);
           }
         });
     },
-    [dispatch],
+    [dispatch, setLoading],
   );
 
   const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
   const boreholePanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
 
   function getAndUpdateBorehole(boreholeSubmission: BoreholeFormInputs | LocationFormSubmission) {
-    updateBoreholeMutation(
-      { id: parseInt(id, 10), boreholeSubmission },
-      {
-        onSuccess: updatedData => {
-          setEditingEnabled(updatedData.locked !== null && updatedData.lockedById === user.data.id);
-        },
-      },
-    );
+    getBoreholeById(parseInt(id)).then(b => {
+      updateBorehole({ ...b, ...boreholeSubmission }).then(r => {
+        setBorehole(r);
+      });
+    });
   }
 
   const onBoreholeFormSubmit = (formInputs: BoreholeFormInputs) => {
@@ -92,6 +89,10 @@ export const DetailPage: FC = () => {
   }, [id, loadOrCreate]);
 
   useEffect(() => {
+    setEditingEnabled(legacyBorehole?.data?.lock !== null);
+  }, [legacyBorehole?.data?.lock, setEditingEnabled]);
+
+  useEffect(() => {
     if (!editingEnabled) {
       togglePanel(false);
     }
@@ -111,10 +112,9 @@ export const DetailPage: FC = () => {
     const isBoreholeInEditWorkflow = legacyBorehole?.data.workflow?.role === "EDIT";
 
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
-  }, [editingEnabled, user, legacyBorehole, location, togglePanel, borehole]);
+  }, [editingEnabled, user, legacyBorehole, location, togglePanel]);
 
-  // Ensure Redux store and data via API V2 is loaded
-  if (loading || isLoadingV2)
+  if (loading || !borehole)
     return (
       <Stack height="100%" alignItems="center" justifyContent="center">
         <CircularProgress />
