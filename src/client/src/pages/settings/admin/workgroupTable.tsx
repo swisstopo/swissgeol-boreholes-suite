@@ -60,18 +60,9 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
     );
   };
 
-  const getRowClassName = (params: GridRowParams) => {
-    let css = "";
-    if (params.row.isDisabled) {
-      css = "disabled-row ";
-    }
-    return css;
-  };
+  const getRowClassName = (params: GridRowParams): string => (params.row.isDisabled ? "disabled-row" : "");
 
-  const userWorkgroupRoles = useMemo(() => {
-    if (!users) return [];
-    return users.map(user => user.workgroupRoles).flat();
-  }, [users]);
+  const userWorkgroupRoles = useMemo(() => users?.map(user => user.workgroupRoles).flat() ?? [], [users]);
 
   const renderUserChips = (params: GridRenderCellParams<Workgroup>) => {
     if (!userWorkgroupRoles || userWorkgroupRoles.length === 0) return null;
