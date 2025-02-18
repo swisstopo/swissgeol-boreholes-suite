@@ -4,7 +4,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { BoreholeV2, getBoreholeById, updateBorehole} from "../../api/borehole.ts";
+import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import {
   prepareBoreholeDataForSubmit,
