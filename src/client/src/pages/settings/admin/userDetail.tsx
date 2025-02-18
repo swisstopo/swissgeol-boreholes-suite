@@ -1,23 +1,15 @@
-import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
+import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
-import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
-import { DataGrid, GridColDef, GridFilterModel, GridRenderCellParams, GridToolbar } from "@mui/x-data-grid";
-import { Trash2, X } from "lucide-react";
-import i18n from "i18next";
+import { Card, CardContent, CardHeader, Checkbox, Stack, Typography } from "@mui/material";
 import { User, Workgroup, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchUser, updateUser } from "../../../api/user.ts";
-import { removeAllWorkgroupRolesForUser } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
-import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
-import { muiLocales } from "../../../mui.locales.ts";
-import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { AddWorkgroupDialog } from "./AddWorkgroupDialog.tsx";
-import { quickFilterStyles } from "./quickfilterStyles.ts";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
-import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
+import { WorkgroupTable } from "./workgroupTable.tsx";
 
 export const UserDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,10 +20,6 @@ export const UserDetail: FC = () => {
     useContext(UserAdministrationContext);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const history = useHistory();
-  const { statusColumn, getDeleteColumn } = useSharedTableColumns();
-  const [filterModel, setFilterModel] = useState<GridFilterModel>();
-  const { showPrompt } = useContext(PromptContext);
-  const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
   const getUniqueWorkgroups = (user: User) => {
     const { workgroupRoles } = user;
@@ -66,77 +54,7 @@ export const UserDetail: FC = () => {
   }, [callApiWithErrorHandling, history, id, setSelectedUser]);
 
   if (!selectedUser) return;
-  const isDisabled = selectedUser.isDisabled;
-
-  const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
-    return (
-      <Stack direction="row" gap={1} p={1.2}>
-        {params.value.map((roleName: string) => (
-          <Chip
-            key={roleName}
-            label={roleName.toUpperCase()}
-            size="small"
-            color="primary"
-            data-cy={`${roleName}-chip`}
-          />
-        ))}
-      </Stack>
-    );
-  };
-
-  const deleteWorkgroupWithRollback = async (workgroup: Workgroup) => {
-    // Define rollback function to revert the state if the API call fails
-    const rollback = () => {
-      setUserWorkgroups([...userWorkgroups!]);
-    };
-
-    // Optimistically update the workgroup table
-    setUserWorkgroups([...userWorkgroups!.filter(wgp => wgp.id != workgroup.id)]);
-
-    await callApiWithRollback(
-      removeAllWorkgroupRolesForUser,
-      [selectedUser.id, workgroup.id, workgroup.roles],
-      rollback,
-    );
-  };
-
-  const handleDeleteWorkgroup = (event: MouseEvent<HTMLButtonElement>, id: number) => {
-    event.stopPropagation();
-    if (!userWorkgroups) return;
-    const userWorkgroup = userWorkgroups.find(workgroup => workgroup.id === id);
-    if (!userWorkgroup) return;
-    showPrompt(t("confirmRemoveRoles", { name: selectedUser.name, workgroupName: userWorkgroup.name }), [
-      {
-        label: t("cancel"),
-        icon: <X />,
-      },
-      {
-        label: t("delete"),
-        icon: <Trash2 />,
-        variant: "contained",
-        action: () => {
-          deleteWorkgroupWithRollback(userWorkgroup);
-        },
-      },
-    ]);
-  };
-
-  const columns: GridColDef[] = [
-    {
-      field: "name",
-      headerName: t("workgroup"),
-      flex: 1,
-    },
-    { field: "boreholeCount", headerName: t("boreholeCount"), width: 200 },
-    {
-      field: "roles",
-      headerName: t("roles"),
-      renderCell: renderRoleChips,
-      flex: 1,
-    },
-    statusColumn,
-    getDeleteColumn(handleDeleteWorkgroup),
-  ];
+  const isDisabled = selectedUser.isDisabled ?? true;
 
   const handleCheckboxChange = async (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
@@ -154,12 +72,6 @@ export const UserDetail: FC = () => {
 
   const addWorkgroup = () => {
     setWorkgroupDialogOpen(true);
-  };
-
-  const disabledStyles = {
-    cursor: isDisabled ? "default" : "pointer",
-    "& .MuiDataGrid-row:hover": { backgroundColor: isDisabled && "rgba(0,0,0,0)" },
-    "& .MuiDataGrid-columnHeader": { cursor: isDisabled ? "default" : "pointer" },
   };
 
   return (
@@ -194,46 +106,13 @@ export const UserDetail: FC = () => {
         />
         <CardContent sx={{ pt: 4, px: 3 }}>
           {userWorkgroups && userWorkgroups?.length > 0 && (
-            <DataGrid
-              sx={{
-                border: "none !important",
-                ...quickFilterStyles,
-                ...disabledStyles,
-              }}
-              data-cy="user-workgroups-table"
-              columnHeaderHeight={44}
-              rowHeight={44}
-              sortingOrder={["asc", "desc"]}
-              loading={!userWorkgroups?.length}
-              rowCount={userWorkgroups?.length}
-              rows={userWorkgroups}
-              columns={columns}
-              hideFooterPagination={!userWorkgroups?.length}
-              pageSizeOptions={[100]}
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                pagination: {
-                  ActionsComponent: TablePaginationActions,
-                },
-                toolbar: {
-                  csvOptions: { disableToolbarButton: true },
-                  printOptions: { disableToolbarButton: true },
-                  showQuickFilter: userWorkgroups?.length > 3,
-                },
-              }}
-              localeText={muiLocales[i18n.language]}
-              disableColumnSelector
-              disableRowSelectionOnClick
-              hideFooterSelectedRowCount
-              disableColumnFilter
-              disableColumnSorting={isDisabled}
-              disableColumnResize={isDisabled}
-              disableColumnMenu={true}
-              disableDensitySelector
-              filterModel={filterModel}
-              onFilterModelChange={handleFilterModelChange}
+            <WorkgroupTable
+              isDisabled={isDisabled}
+              workgroups={userWorkgroups}
+              user={selectedUser}
+              setWorkgroups={setUserWorkgroups}
               sortModel={userDetailTableSortModel}
-              onSortModelChange={setUserDetailTableSortModel}
+              setSortModel={setUserDetailTableSortModel}
             />
           )}
         </CardContent>

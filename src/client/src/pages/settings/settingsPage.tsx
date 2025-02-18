@@ -9,9 +9,11 @@ import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
 import AboutSettings from "./aboutSettings";
 import AdminSettings from "./admin/adminSettings";
+import { UserAdministration } from "./admin/userAdministration.tsx";
 import { UserAdministrationProvider } from "./admin/userAdministrationContext.tsx";
 import { UserDetail } from "./admin/userDetail.tsx";
-import { UserTable } from "./admin/userTable.tsx";
+import { WorkgroupAdministration } from "./admin/workgroupAdministration.tsx";
+import { WorkgroupAdministrationProvider } from "./admin/workgroupAdministrationContext.tsx";
 import EditorSettings from "./editorSettings.tsx";
 import { SettingsHeader } from "./settingsHeader.tsx";
 import TermSettings from "./termSettings";
@@ -31,11 +33,16 @@ export const SettingsPage = () => {
       tabsArray.push({ label: t("terms"), hash: "terms", component: <TermSettings /> });
     }
     if (isAdminUser) {
-      tabsArray.unshift({ label: t("workgroups"), hash: "workgroups", component: <AdminSettings /> });
+      tabsArray.unshift({ label: t("legacySettings"), hash: "legacysettings", component: <AdminSettings /> });
+      tabsArray.unshift({
+        label: t("workgroups"),
+        hash: "workgroups",
+        component: <WorkgroupAdministration />,
+      });
       tabsArray.unshift({
         label: t("users"),
         hash: "users",
-        component: <UserTable />,
+        component: <UserAdministration />,
       });
     }
 
@@ -44,26 +51,28 @@ export const SettingsPage = () => {
 
   return (
     <UserAdministrationProvider>
-      <SettingsHeader />
-      <Switch>
-        <Route exact={false} key={4} path={"/setting/user/:id"} render={() => <UserDetail />} />
-        <Route
-          exact={false}
-          key={4}
-          path={"/setting"}
-          render={() => (
-            <Stack
-              sx={{
-                height: "100%",
-                p: 5,
-                overflowY: "auto",
-                backgroundColor: theme.palette.background.lightgrey,
-              }}>
-              <TabPanel tabs={tabs} />
-            </Stack>
-          )}
-        />
-      </Switch>
+      <WorkgroupAdministrationProvider>
+        <SettingsHeader />
+        <Switch>
+          <Route exact={false} key={4} path={"/setting/user/:id"} render={() => <UserDetail />} />
+          <Route
+            exact={false}
+            key={4}
+            path={"/setting"}
+            render={() => (
+              <Stack
+                sx={{
+                  height: "100%",
+                  p: 5,
+                  overflowY: "auto",
+                  backgroundColor: theme.palette.background.lightgrey,
+                }}>
+                <TabPanel tabs={tabs} />
+              </Stack>
+            )}
+          />
+        </Switch>
+      </WorkgroupAdministrationProvider>
     </UserAdministrationProvider>
   );
 };
