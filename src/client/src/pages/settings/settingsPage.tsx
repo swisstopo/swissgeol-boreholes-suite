@@ -10,8 +10,9 @@ import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
 import AboutSettings from "./aboutSettings";
 import AdminSettings from "./admin/adminSettings";
+import { UserAdministration } from "./admin/userAdministration.tsx";
 import { UserDetail } from "./admin/userDetail.tsx";
-import { UserTable } from "./admin/userTable.tsx";
+import { WorkgroupAdministration } from "./admin/workgroupAdministration.tsx";
 import EditorSettings from "./editorSettings.tsx";
 import { SettingsHeader } from "./settingsHeader.tsx";
 import TermSettings from "./termSettings";
@@ -34,11 +35,16 @@ export const SettingsPage = () => {
       tabsArray.push({ label: t("terms"), hash: "terms", component: <TermSettings /> });
     }
     if (isAdminUser) {
-      tabsArray.unshift({ label: t("workgroups"), hash: "workgroups", component: <AdminSettings /> });
+      tabsArray.unshift({ label: t("legacySettings"), hash: "legacysettings", component: <AdminSettings /> });
+      tabsArray.unshift({
+        label: t("workgroups"),
+        hash: "workgroups",
+        component: <WorkgroupAdministration users={users} />,
+      });
       tabsArray.unshift({
         label: t("users"),
         hash: "users",
-        component: <UserTable setSelectedUser={setSelectedUser} users={users} setUsers={setUsers} />,
+        component: <UserAdministration setSelectedUser={setSelectedUser} users={users} setUsers={setUsers} />,
       });
     }
 
