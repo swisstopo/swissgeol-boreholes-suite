@@ -24,4 +24,12 @@ public interface IBoreholeLockService
     /// <returns><c>true</c> if the user is lacking permissions for the borehole; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">Provided user or <see cref="Borehole"/> does not exist.</exception>
     Task<bool> IsUserLackingPermissions(int? boreholeId, string? subjectId);
+
+    /// <summary>
+    /// Checks which boreholes in the provided list the user lacks permissions to edit.
+    /// </summary>
+    /// <param name="boreholes">The list of <see cref="Borehole"/> objects to check permissions for.</param>
+    /// <param name="user">The <see cref="User"/> to check against.</param>
+    /// <returns><c>true</c> if the user is lacking permissions for the borehole; otherwise, <c>false</c>.</returns>
+    bool IsUserLackingPermissions(ICollection<Borehole> boreholes, User user);
 }

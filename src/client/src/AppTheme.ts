@@ -474,6 +474,7 @@ export const theme = createTheme({
           border: "1px solid #DFE4E9",
           boxShadow: "none !important",
           borderRadius: `${themeSpacing(1)} !important`,
+          flexShrink: 0,
         },
       },
     },
