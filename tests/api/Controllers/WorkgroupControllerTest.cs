@@ -33,6 +33,27 @@ public class WorkgroupControllerTest
     }
 
     [TestMethod]
+    public async Task GetByInexistentId()
+    {
+        var response = await workgroupController.GetByIdAsync(6784).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(response.Result);
+    }
+
+    [TestMethod]
+    public async Task GetById()
+    {
+        var response = await workgroupController.GetByIdAsync(5).ConfigureAwait(false);
+        var okResult = response.Result as OkObjectResult;
+        var workgroup = okResult.Value as Workgroup;
+        Assert.IsNotNull(workgroup);
+        Assert.AreEqual(workgroup.Name, "Country");
+        Assert.IsNotNull(workgroup.CreatedAt);
+        Assert.IsNotNull(workgroup.DisabledAt);
+        Assert.IsTrue(workgroup.IsDisabled);
+        Assert.AreEqual(null, workgroup.Settings);
+    }
+
+    [TestMethod]
     public async Task CreateWorkgroup()
     {
         var workgroup = new Workgroup { Name = "FIRESTOPPEXAMPLE" };
