@@ -43,4 +43,26 @@ internal static class TestSyncContextExtensions
         await postgreSqlContainer.StartAsync();
         return postgreSqlContainer;
     }
+
+    /// <summary>
+    /// Sets the publication <paramref name="status"/> for the specified <paramref name="boreholeId"/>.
+    /// </summary>
+    /// <param name="context">The database context to be used.</param>
+    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to set the publication state on.</param>
+    /// <param name="userId">The <see cref="User.Id"/> to be assigned to each <see cref="Workflow"/> entry.</param>
+    /// <param name="status">The <see cref="Role"/>/Status to be set.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The updated <see cref="Borehole"/> entity.</returns>
+    internal static async Task<Borehole> SetBoreholePublicationStatusAsync(this BdmsContext context, int boreholeId, int userId, Role status, CancellationToken cancellationToken)
+    {
+        var borehole = await context.Boreholes
+            .Include(b => b.Workflows).ThenInclude(w => w.User)
+            .SingleAsync(borehole => borehole.Id == boreholeId, cancellationToken);
+
+        var user = await context.Users.SingleAsync(u => u.Id == userId, cancellationToken);
+
+        borehole.SetBoreholePublicationStatus(status);
+        await context.SaveChangesAsync(cancellationToken);
+        return borehole;
+    }
 }
