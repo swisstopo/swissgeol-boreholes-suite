@@ -1,8 +1,7 @@
-import { FC, MouseEvent } from "react";
+import { FC, MouseEvent, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { User, Workgroup } from "../../api/apiInterfaces.ts";
 import { updateUser } from "../../api/user.ts";
 import { updateWorkgroup } from "../../api/workgroup.ts";
 import { DeleteButton, ReturnButton } from "../../components/buttons/buttons.tsx";
@@ -10,31 +9,16 @@ import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { useApiRequest } from "../../hooks/useApiRequest.ts";
 import { useDeleteUserPrompts, useDeleteWorkgroupPrompts } from "../../hooks/useDeleteEntityPrompts.tsx";
 import { capitalizeFirstLetter } from "../../utils.ts";
+import { UserAdministrationContext } from "./admin/userAdministrationContext.tsx";
+import { WorkgroupAdministrationContext } from "./admin/workgroupAdministrationContext.tsx";
 
-interface SettingsHeaderProps {
-  selectedUser: User | null;
-  setSelectedUser: (user: User | null) => void;
-  selectedWorkgroup: Workgroup | null;
-  setSelectedWorkgroup: (workgroup: Workgroup | null) => void;
-  users: User[];
-  setUsers: (users: User[]) => void;
-  workgroups: Workgroup[];
-  setWorkgroups: (workgroups: Workgroup[]) => void;
-}
-
-export const SettingsHeader: FC<SettingsHeaderProps> = ({
-  selectedUser,
-  setSelectedUser,
-  selectedWorkgroup,
-  setSelectedWorkgroup,
-  users,
-  workgroups,
-  setWorkgroups,
-  setUsers,
-}) => {
+export const SettingsHeader: FC = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const { callApiWithRollback } = useApiRequest();
+  const { users, setUsers, selectedUser, setSelectedUser } = useContext(UserAdministrationContext);
+  const { workgroups, setWorkgroups, selectedWorkgroup, setSelectedWorkgroup } =
+    useContext(WorkgroupAdministrationContext);
   const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
   const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts(setSelectedWorkgroup, workgroups, setWorkgroups);
 

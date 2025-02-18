@@ -193,6 +193,8 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
       onRowClick={handleRowClick}
       getRowClassName={getRowClassName}
       onFilterModelChange={handleFilterModelChange}
+      sortModel={sortModel}
+      onSortModelChange={setSortModel}
     />
   );
 };

@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
@@ -14,27 +14,24 @@ import i18n from "i18next";
 import { User, Workgroup, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchWorkgroupById } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
-import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { FormInputDisplayOnly } from "../../../components/form/form.ts";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
+import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
+import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
-interface WorkgroupDetailProps {
-  workgroup: Workgroup | null;
-  setSelectedWorkgroup: (workgroup: Workgroup | null) => void;
-  users: User[];
-}
-
-export const WorkgroupDetail: FC<WorkgroupDetailProps> = ({ workgroup, setSelectedWorkgroup, users }) => {
+export const WorkgroupDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const { callApiWithErrorHandling } = useApiRequest();
   const history = useHistory();
 
   const { t } = useTranslation();
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
+  const { users } = useContext(UserAdministrationContext);
+  const { selectedWorkgroup, setSelectedWorkgroup } = useContext(WorkgroupAdministrationContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
@@ -60,7 +57,6 @@ export const WorkgroupDetail: FC<WorkgroupDetailProps> = ({ workgroup, setSelect
     );
   }, [users, id]);
 
-  console.log(workgroupUsers);
   if (!workgroupUsers) return;
 
   const getRowClassName = (params: GridRowParams) => {
@@ -76,10 +72,6 @@ export const WorkgroupDetail: FC<WorkgroupDetailProps> = ({ workgroup, setSelect
     const user = users.find(user => user.id === id);
     if (!user) return;
     // showDeleteUserWarning(user);
-  };
-
-  const addUserToWorkgroup = () => {
-    console.log("add user");
   };
 
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
@@ -113,7 +105,7 @@ export const WorkgroupDetail: FC<WorkgroupDetailProps> = ({ workgroup, setSelect
     getDeleteColumn(handleRemoveUserFromWorkgroup),
   ];
 
-  const isDisabled = workgroup?.isDisabled;
+  const isDisabled = selectedWorkgroup?.isDisabled;
 
   const disabledStyles = {
     cursor: isDisabled ? "default" : "pointer",
@@ -134,17 +126,12 @@ export const WorkgroupDetail: FC<WorkgroupDetailProps> = ({ workgroup, setSelect
         <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} titleTypographyProps={{ variant: "h5" }} />
         <CardContent sx={{ pt: 4, px: 3 }}>
           <Stack direction={"row"} alignItems={"center"}>
-            <FormInputDisplayOnly label={"workgroup"} value={workgroup?.name ?? null} sx={{ maxWidth: 500 }} />
+            <FormInputDisplayOnly label={"workgroup"} value={selectedWorkgroup?.name ?? null} sx={{ maxWidth: 500 }} />
           </Stack>
         </CardContent>
       </Card>
       <Card data-cy="workgroup-users">
-        <CardHeader
-          title={t("users")}
-          sx={{ p: 4, pb: 3 }}
-          titleTypographyProps={{ variant: "h5" }}
-          action={<AddButton label="addUserToWorkgroup" variant="contained" onClick={() => addUserToWorkgroup()} />}
-        />
+        <CardHeader title={t("users")} sx={{ p: 4, pb: 3 }} titleTypographyProps={{ variant: "h5" }} />
         <CardContent sx={{ pt: 4, px: 3 }}>
           {users && users?.length > 0 && (
             <DataGrid
@@ -190,13 +177,6 @@ export const WorkgroupDetail: FC<WorkgroupDetailProps> = ({ workgroup, setSelect
           )}
         </CardContent>
       </Card>
-      {/*<AddUserDialog*/}
-      {/*  open={workgroupDialogOpen}*/}
-      {/*  setOpen={setWorkgroupDialogOpen}*/}
-      {/*  userId={id}*/}
-      {/*  setUserWorkgroups={setUserWorkgroups}*/}
-      {/*  userWorkgroups={userWorkgroups ?? []}*/}
-      {/*/>*/}
     </Stack>
   );
 };
