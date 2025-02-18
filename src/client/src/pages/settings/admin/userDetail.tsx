@@ -24,7 +24,8 @@ export const UserDetail: FC = () => {
   const { t } = useTranslation();
   const [userWorkgroups, setUserWorkgroups] = useState<Workgroup[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
-  const { selectedUser, setSelectedUser } = useContext(UserAdministrationContext);
+  const { selectedUser, setSelectedUser, userDetailTableSortModel, setUserDetailTableSortModel } =
+    useContext(UserAdministrationContext);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const history = useHistory();
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
@@ -231,6 +232,8 @@ export const UserDetail: FC = () => {
               disableDensitySelector
               filterModel={filterModel}
               onFilterModelChange={handleFilterModelChange}
+              sortModel={userDetailTableSortModel}
+              onSortModelChange={setUserDetailTableSortModel}
             />
           )}
         </CardContent>

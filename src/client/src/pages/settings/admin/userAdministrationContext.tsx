@@ -7,6 +7,8 @@ export interface UserAdministrationContextProps {
   setSelectedUser: (user: User | null) => void;
   userTableSortModel: GridSortModel;
   setUserTableSortModel: (model: GridSortModel) => void;
+  userDetailTableSortModel: GridSortModel;
+  setUserDetailTableSortModel: (model: GridSortModel) => void;
 }
 
 export const UserAdministrationContext = createContext<UserAdministrationContextProps>({
@@ -14,16 +16,26 @@ export const UserAdministrationContext = createContext<UserAdministrationContext
   setSelectedUser: () => {},
   userTableSortModel: [],
   setUserTableSortModel: () => {},
+  userDetailTableSortModel: [],
+  setUserDetailTableSortModel: () => {},
 });
 
 export const UserAdministrationProvider: FC<PropsWithChildren> = ({ children }) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userTableSortModel, setUserTableSortModel] = useState<GridSortModel>([]);
+  const [userDetailTableSortModel, setUserDetailTableSortModel] = useState<GridSortModel>([]);
   return (
     <UserAdministrationContext.Provider
       value={useMemo(
-        () => ({ selectedUser, setSelectedUser, userTableSortModel, setUserTableSortModel }),
-        [selectedUser, userTableSortModel],
+        () => ({
+          selectedUser,
+          setSelectedUser,
+          userTableSortModel,
+          setUserTableSortModel,
+          userDetailTableSortModel,
+          setUserDetailTableSortModel,
+        }),
+        [selectedUser, userDetailTableSortModel, userTableSortModel],
       )}>
       {children}
     </UserAdministrationContext.Provider>
