@@ -166,7 +166,7 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
         toolbar: {
           csvOptions: { disableToolbarButton: true },
           printOptions: { disableToolbarButton: true },
-          showQuickFilter: workgroups?.length > 3,
+          showQuickFilter: true,
         },
       }}
       localeText={muiLocales[i18n.language]}
