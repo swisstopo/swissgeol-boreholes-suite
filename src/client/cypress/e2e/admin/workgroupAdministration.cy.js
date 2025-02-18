@@ -1,11 +1,14 @@
 import {
+  clickOnRowWithText,
   sortBy,
   verifyPaginationText,
   verifyRowContains,
+  verifyRowWithContantAlsoContains,
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers.js";
-import { getElementByDataCy, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
+import { evaluateInput } from "../helpers/formHelpers.js";
+import { getElementByDataCy, goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers.js";
 
 describe("User administration settings tests", () => {
   it("displays, sorts and filters workgroup table.", () => {
@@ -55,5 +58,60 @@ describe("User administration settings tests", () => {
     verifyRowContains("Country", 1);
     verifyRowContains("Reggae", 2);
     verifyRowContains("World", 3);
+  });
+
+  it("shows workgroup detail inactivates and activates workgroup", () => {
+    goToRouteAndAcceptTerms("/setting#workgroups");
+    waitForTableData();
+
+    const activeWorkgroupDeletePrompt =
+      "Do you really want to delete this workgroup? This cannot be undone. You can deactivate the workgroup and re-enable it again at any time.";
+    const inactiveWorkgroupDeletePrompt = "Do you really want to delete this workgroup? This cannot be undone.";
+
+    // Click on workgroup World
+    getElementByDataCy("settings-header").should("contain", "Settings");
+    verifyRowWithContantAlsoContains("World", "Active");
+
+    // Click on workgroup delete button
+    getElementByDataCy("delete-id-3").click();
+    handlePrompt(activeWorkgroupDeletePrompt, "Cancel");
+
+    // Navigate to workgroup detail
+    clickOnRowWithText("World");
+    getElementByDataCy("settings-header").should("contain", "World");
+    evaluateInput("workgroup", "World");
+
+    // User table should contain 1 entry
+    verifyTableLength(1);
+    verifyRowContains("Admin", 0);
+    verifyRowContains("admin.user@local.dev", 0);
+    verifyRowContains("Active", 0);
+
+    // Admin user should have role editor in workgroup World
+    getElementByDataCy("Editor-chip").should("be.visible");
+
+    // Set workgroup World inactive
+    getElementByDataCy("workgroup-detail").should("have.css", "opacity", "1");
+    getElementByDataCy("inactivate-button").click();
+    cy.wait("@update-workgroup");
+    getElementByDataCy("workgroup-detail").should("have.css", "opacity", "0.5");
+
+    getElementByDataCy("backButton").click();
+    waitForTableData();
+
+    verifyRowWithContantAlsoContains("World", "Inactive");
+
+    // Click on workgroup delete button
+    getElementByDataCy("delete-id-3").click();
+    handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
+
+    // Go to detail and click on delete again
+    clickOnRowWithText("World");
+    getElementByDataCy("deleteworkgroup-button").click();
+    handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
+    getElementByDataCy("activate-button").click();
+    cy.wait("@update-workgroup");
+    getElementByDataCy("deleteworkgroup-button").click();
+    handlePrompt(activeWorkgroupDeletePrompt, "Cancel");
   });
 });

@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, MouseEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
@@ -18,33 +18,27 @@ import { useDeleteUserPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx"
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
+import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
-interface UserAdministrationProps {
-  setSelectedUser: (user: User | null) => void;
-  users: User[];
-  setUsers: (users: User[]) => void;
-}
-
-export const UserAdministration: FC<UserAdministrationProps> = ({ setSelectedUser, users, setUsers }) => {
+export const UserAdministration: FC = () => {
   const { t, i18n } = useTranslation();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
-  const [isLoading, setIsLoading] = useState(true);
   const history = useHistory();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
+  const { users, setUsers, setSelectedUser, userTableSortModel, setUserTableSortModel } =
+    useContext(UserAdministrationContext);
   const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
   useEffect(() => {
-    setIsLoading(true);
+    setSelectedUser(null);
     const getUsers = async () => {
       const users: User[] = await callApiWithErrorHandling(fetchUsers, []);
       setUsers(users);
-      setIsLoading(false);
     };
     getUsers();
-    setSelectedUser(null);
   }, [callApiWithErrorHandling, setSelectedUser, setUsers, t]);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
@@ -175,7 +169,7 @@ export const UserAdministration: FC<UserAdministrationProps> = ({ setSelectedUse
       getRowClassName={getRowClassName}
       rowHeight={44}
       sortingOrder={["asc", "desc"]}
-      loading={isLoading}
+      loading={!users?.length}
       onRowClick={handleRowClick}
       rowCount={users?.length}
       rows={users}
@@ -202,6 +196,8 @@ export const UserAdministration: FC<UserAdministrationProps> = ({ setSelectedUse
       disableDensitySelector
       filterModel={filterModel}
       onFilterModelChange={handleFilterModelChange}
+      sortModel={userTableSortModel}
+      onSortModelChange={setUserTableSortModel}
     />
   );
 };

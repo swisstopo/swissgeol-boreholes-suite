@@ -1,55 +1,43 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { GridEventListener } from "@mui/x-data-grid";
-import { User, Workgroup } from "../../../api/apiInterfaces.ts";
+import { Workgroup } from "../../../api/apiInterfaces.ts";
 import { fetchWorkgroups } from "../../../api/workgroup.ts";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
+import { UserAdministrationContext } from "./userAdministrationContext.tsx";
+import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 import { WorkgroupTable } from "./workgroupTable.tsx";
 
-interface WorkgroupAdministrationProps {
-  users: User[];
-  setSelectedWorkgroup: (workgroup: Workgroup | null) => void;
-  workgroups: Workgroup[] | null;
-  setWorkgroups: (workgroups: Workgroup[]) => void;
-}
-
-export const WorkgroupAdministration: FC<WorkgroupAdministrationProps> = ({
-  users,
-  workgroups,
-  setWorkgroups,
-  setSelectedWorkgroup,
-}) => {
+export const WorkgroupAdministration: FC = () => {
   const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(true);
   const history = useHistory();
+  const { users } = useContext(UserAdministrationContext);
+  const { workgroups, setWorkgroups, setSelectedWorkgroup, workgroupTableSortModel, setworkgroupTableSortModel } =
+    useContext(WorkgroupAdministrationContext);
   const { callApiWithErrorHandling } = useApiRequest();
 
   useEffect(() => {
-    setIsLoading(true);
+    setSelectedWorkgroup(null);
     const getWorkgroups = async () => {
       const workgroups: Workgroup[] = await callApiWithErrorHandling(fetchWorkgroups, []);
       setWorkgroups(workgroups);
-      setSelectedWorkgroup(null);
-      setIsLoading(false);
     };
     getWorkgroups();
-  }, [callApiWithErrorHandling, setSelectedWorkgroup, t]);
+  }, [callApiWithErrorHandling, setSelectedWorkgroup, setWorkgroups, t]);
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
     history.push(`/setting/workgroup/${params.row.id}`);
   };
-
   return (
     <WorkgroupTable
       isDisabled={false}
       workgroups={workgroups ?? []}
       users={users}
       setWorkgroups={setWorkgroups}
-      isLoading={isLoading}
       handleRowClick={handleRowClick}
-      selectedWorkgroup={null}
-      setSelectedWorkgroup={setSelectedWorkgroup}
+      sortModel={workgroupTableSortModel}
+      setSortModel={setworkgroupTableSortModel}
     />
   );
 };

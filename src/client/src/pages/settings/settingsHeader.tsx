@@ -101,10 +101,10 @@ export const SettingsHeader: FC = () => {
           handleInactiveToggleChange(isDisabled);
         }}
         sx={{ boxShadow: "none", backgroundColor: "#F1F3F5" }}>
-        <ToggleButton sx={{ m: "6px" }} value={true} data-cy="inactivate-user-button">
+        <ToggleButton sx={{ m: "6px" }} value={true} data-cy="inactivate-button">
           {t("inactive")}
         </ToggleButton>
-        <ToggleButton sx={{ m: "6px" }} value={false} data-cy="activate-user-button">
+        <ToggleButton sx={{ m: "6px" }} value={false} data-cy="activate-button">
           {t("active")}
         </ToggleButton>
       </ToggleButtonGroup>

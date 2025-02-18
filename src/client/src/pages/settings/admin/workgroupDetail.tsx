@@ -115,6 +115,7 @@ export const WorkgroupDetail: FC = () => {
 
   return (
     <Stack
+      data-cy={"workgroup-detail"}
       sx={{
         height: "100%",
         opacity: isDisabled ? "50%" : "100%",
