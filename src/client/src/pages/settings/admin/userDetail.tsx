@@ -7,7 +7,7 @@ import { fetchUser, updateUser } from "../../../api/user.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
-import { AddWorkgroupDialog } from "./AddWorkgroupDialog.tsx";
+import { AddWorkgroupDialog } from "./addWorkgroupDialog.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { WorkgroupTable } from "./workgroupTable.tsx";
 
