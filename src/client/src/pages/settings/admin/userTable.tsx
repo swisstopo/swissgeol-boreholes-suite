@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, MouseEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
@@ -18,21 +18,22 @@ import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
 import { useDeleteUserPrompts } from "./useDeleteUserPrompts.tsx";
+import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
 interface UserTableProps {
-  setSelectedUser: (user: User | null) => void;
   users: User[];
   setUsers: (users: User[]) => void;
 }
 
-export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers }) => {
+export const UserTable: FC<UserTableProps> = ({ users, setUsers }) => {
   const { t, i18n } = useTranslation();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const [isLoading, setIsLoading] = useState(true);
   const history = useHistory();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
+  const { setSelectedUser, userTableSortModel, setUserTableSortModel } = useContext(UserAdministrationContext);
   const { showDeleteWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
@@ -203,6 +204,8 @@ export const UserTable: FC<UserTableProps> = ({ setSelectedUser, users, setUsers
       disableDensitySelector
       filterModel={filterModel}
       onFilterModelChange={handleFilterModelChange}
+      sortModel={userTableSortModel}
+      onSortModelChange={setUserTableSortModel}
     />
   );
 };

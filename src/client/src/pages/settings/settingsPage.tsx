@@ -10,6 +10,7 @@ import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
 import AboutSettings from "./aboutSettings";
 import AdminSettings from "./admin/adminSettings";
+import { UserAdministrationProvider } from "./admin/userAdministrationContext.tsx";
 import { UserDetail } from "./admin/userDetail.tsx";
 import { UserTable } from "./admin/userTable.tsx";
 import EditorSettings from "./editorSettings.tsx";
@@ -20,7 +21,6 @@ export const SettingsPage = () => {
   const auth = useAuth();
   const { t } = useTranslation();
   const currentUser: User = useSelector((state: ReduxRootState) => state.core_user);
-  const [selectedUser, setSelectedUser] = useState<UserV2 | null>(null);
   const [users, setUsers] = useState<UserV2[]>([]);
 
   const isAdminUser = currentUser.data.admin;
@@ -38,7 +38,7 @@ export const SettingsPage = () => {
       tabsArray.unshift({
         label: t("users"),
         hash: "users",
-        component: <UserTable setSelectedUser={setSelectedUser} users={users} setUsers={setUsers} />,
+        component: <UserTable users={users} setUsers={setUsers} />,
       });
     }
 
@@ -46,15 +46,10 @@ export const SettingsPage = () => {
   }, [isAdminUser, isAnonymousUser, t, users]);
 
   return (
-    <>
-      <SettingsHeader selectedUser={selectedUser} setSelectedUser={setSelectedUser} users={users} setUsers={setUsers} />
+    <UserAdministrationProvider>
+      <SettingsHeader users={users} setUsers={setUsers} />
       <Switch>
-        <Route
-          exact={false}
-          key={4}
-          path={"/setting/user/:id"}
-          render={() => <UserDetail user={selectedUser} setUser={setSelectedUser} />}
-        />
+        <Route exact={false} key={4} path={"/setting/user/:id"} render={() => <UserDetail />} />
         <Route
           exact={false}
           key={4}
@@ -72,6 +67,6 @@ export const SettingsPage = () => {
           )}
         />
       </Switch>
-    </>
+    </UserAdministrationProvider>
   );
 };

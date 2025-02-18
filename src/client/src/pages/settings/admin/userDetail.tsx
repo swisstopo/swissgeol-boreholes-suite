@@ -16,18 +16,15 @@ import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { AddWorkgroupDialog } from "./AddWorkgroupDialog.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
+import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
-interface UserDetailProps {
-  user: User | null;
-  setUser: (user: User | null) => void;
-}
-
-export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
+export const UserDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const [userWorkgroups, setUserWorkgroups] = useState<Workgroup[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
+  const { selectedUser, setSelectedUser } = useContext(UserAdministrationContext);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const history = useHistory();
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
@@ -58,17 +55,17 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
       if (!user) {
         history.push("/setting#users");
       } else {
-        setUser(user);
+        setSelectedUser(user);
 
         // Get the transformed array of unique workgroups with roles
         setUserWorkgroups(getUniqueWorkgroups(user));
       }
     };
     getUser();
-  }, [callApiWithErrorHandling, history, id, setUser]);
+  }, [callApiWithErrorHandling, history, id, setSelectedUser]);
 
-  if (!user) return;
-  const isDisabled = user.isDisabled;
+  if (!selectedUser) return;
+  const isDisabled = selectedUser.isDisabled;
 
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
     return (
@@ -95,7 +92,11 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
     // Optimistically update the workgroup table
     setUserWorkgroups([...userWorkgroups!.filter(wgp => wgp.id != workgroup.id)]);
 
-    await callApiWithRollback(removeAllWorkgroupRolesForUser, [user.id, workgroup.id, workgroup.roles], rollback);
+    await callApiWithRollback(
+      removeAllWorkgroupRolesForUser,
+      [selectedUser.id, workgroup.id, workgroup.roles],
+      rollback,
+    );
   };
 
   const handleDeleteWorkgroup = (event: MouseEvent<HTMLButtonElement>, id: number) => {
@@ -103,7 +104,7 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
     if (!userWorkgroups) return;
     const userWorkgroup = userWorkgroups.find(workgroup => workgroup.id === id);
     if (!userWorkgroup) return;
-    showPrompt(t("confirmRemoveRoles", { name: user.name, workgroupName: userWorkgroup.name }), [
+    showPrompt(t("confirmRemoveRoles", { name: selectedUser.name, workgroupName: userWorkgroup.name }), [
       {
         label: t("cancel"),
         icon: <X />,
@@ -138,13 +139,13 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
 
   const handleCheckboxChange = async (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
-    if (user) {
+    if (selectedUser) {
       // Define rollback function to revert the state if the API call fails
-      const rollback = () => setUser({ ...user });
+      const rollback = () => setSelectedUser({ ...selectedUser });
 
       // Optimistically update the user in the state
-      const updatedUser = { ...user, isAdmin: event.target.checked };
-      setUser({ ...updatedUser });
+      const updatedUser = { ...selectedUser, isAdmin: event.target.checked };
+      setSelectedUser({ ...updatedUser });
 
       await callApiWithRollback(updateUser, [updatedUser], rollback);
     }
@@ -174,7 +175,7 @@ export const UserDetail: FC<UserDetailProps> = ({ user, setUser }) => {
         <CardContent sx={{ pt: 4, px: 3 }}>
           <Stack direction={"row"} alignItems={"center"}>
             <Checkbox
-              checked={user.isAdmin}
+              checked={selectedUser.isAdmin}
               onChange={handleCheckboxChange}
               data-cy="is-user-admin-checkbox"
               disabled={isDisabled}
