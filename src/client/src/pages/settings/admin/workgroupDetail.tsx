@@ -54,8 +54,6 @@ export const WorkgroupDetail: FC = () => {
     );
   }, [users, id]);
 
-  if (!workgroupUsers) return;
-
   const getRowClassName = (params: GridRowParams) => {
     let css = "";
     if (params.row.isDisabled) {
