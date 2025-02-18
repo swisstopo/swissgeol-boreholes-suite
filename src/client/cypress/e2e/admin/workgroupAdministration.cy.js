@@ -68,13 +68,12 @@ describe("User administration settings tests", () => {
       "Do you really want to delete this workgroup? This cannot be undone. You can deactivate the workgroup and re-enable it again at any time.";
     const inactiveWorkgroupDeletePrompt = "Do you really want to delete this workgroup? This cannot be undone.";
 
-    // Click on workgroup World
     getElementByDataCy("settings-header").should("contain", "Settings");
-    verifyRowWithContantAlsoContains("World", "Active");
+    verifyRowWithContantAlsoContains("World", "Inactive");
 
     // Click on workgroup delete button
     getElementByDataCy("delete-id-3").click();
-    handlePrompt(activeWorkgroupDeletePrompt, "Cancel");
+    handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
 
     // Navigate to workgroup detail
     clickOnRowWithText("World");
@@ -90,28 +89,28 @@ describe("User administration settings tests", () => {
     // Admin user should have role editor in workgroup World
     getElementByDataCy("Editor-chip").should("be.visible");
 
-    // Set workgroup World inactive
-    getElementByDataCy("workgroup-detail").should("have.css", "opacity", "1");
-    getElementByDataCy("inactivate-button").click();
-    cy.wait("@update-workgroup");
+    // Set workgroup World active
     getElementByDataCy("workgroup-detail").should("have.css", "opacity", "0.5");
+    getElementByDataCy("activate-button").click();
+    cy.wait("@update-workgroup");
+    getElementByDataCy("workgroup-detail").should("have.css", "opacity", "1");
 
     getElementByDataCy("backButton").click();
     waitForTableData();
 
-    verifyRowWithContantAlsoContains("World", "Inactive");
+    verifyRowWithContantAlsoContains("World", "Active");
 
     // Click on workgroup delete button
     getElementByDataCy("delete-id-3").click();
-    handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
+    handlePrompt(activeWorkgroupDeletePrompt, "Cancel");
 
     // Go to detail and click on delete again
     clickOnRowWithText("World");
     getElementByDataCy("deleteworkgroup-button").click();
-    handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
-    getElementByDataCy("activate-button").click();
+    handlePrompt(activeWorkgroupDeletePrompt, "Cancel");
+    getElementByDataCy("inactivate-button").click();
     cy.wait("@update-workgroup");
     getElementByDataCy("deleteworkgroup-button").click();
-    handlePrompt(activeWorkgroupDeletePrompt, "Cancel");
+    handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
   });
 });
