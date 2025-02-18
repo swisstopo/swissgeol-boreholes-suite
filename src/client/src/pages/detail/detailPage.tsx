@@ -2,9 +2,9 @@ import { FC, useCallback, useContext, useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
-import { loadBorehole, updateBorehole } from "../../api-lib";
+import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { BoreholeV2, getBoreholeById } from "../../api/borehole.ts";
+import { BoreholeV2, getBoreholeById, updateBorehole} from "../../api/borehole.ts";
 import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
 import {
   prepareBoreholeDataForSubmit,
