@@ -22,7 +22,7 @@ export const SettingsHeader: FC = () => {
   const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
   const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts(setSelectedWorkgroup, workgroups, setWorkgroups);
 
-  const selectedEntity = selectedUser ? selectedUser : selectedWorkgroup;
+  const selectedEntity = selectedUser ?? selectedWorkgroup;
 
   const updateUserActiveStateWithRollback = async (isDisabled: boolean) => {
     // Define rollback function to revert the state if the API call fails
