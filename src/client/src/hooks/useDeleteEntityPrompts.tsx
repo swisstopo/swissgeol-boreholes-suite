@@ -29,25 +29,37 @@ export const useDeleteEntityPrompts = <T extends User | Workgroup>(
     return "boreholeCount" in entity;
   }
 
-  const getNotDeletableMessage = (entity: User | Workgroup): string => {
-    const entityType = isWorkgroup(entity) ? "Workgroup" : "User";
-    let deletableMessage = `${t(`msgDisabling${entityType}`)}`;
-
-    if (!entity?.isDisabled) {
-      deletableMessage += `${t(`msgReenabling${entityType}Tip`)}.`;
+  const getNotDeletableMessage = (entity: User | Workgroup) => {
+    let notDeletableMessage = "";
+    if (isWorkgroup(entity)) {
+      notDeletableMessage += `${t("msgDisablingWorkgroup")}.`;
+      if (!entity?.isDisabled) {
+        notDeletableMessage += ` ${t("msgReenablingWorkgroupTip")}.`;
+      }
     }
-
-    return deletableMessage;
+    if (isUser(entity)) {
+      notDeletableMessage += `${t("msgDisablingUser")}.`;
+      if (!entity?.isDisabled) {
+        notDeletableMessage += ` ${t("msgReenablingUserTip")}.`;
+      }
+    }
+    return notDeletableMessage;
   };
 
-  const getDeletableMessage = (entity: User | Workgroup): string => {
-    const entityType = isWorkgroup(entity) ? "Workgroup" : "User";
-    let deletableMessage = `${t(`delete${entityType}Message`)}`;
-
-    if (!entity?.isDisabled) {
-      deletableMessage += `${t(`msgReenabling${entityType}Tip`)}.`;
+  const getDeletableMessage = (entity: User | Workgroup) => {
+    let deletableMessage = "";
+    if (isWorkgroup(entity)) {
+      deletableMessage += `${t("deleteWorkgroupMessage")}`;
+      if (!entity?.isDisabled) {
+        deletableMessage += ` ${t("msgReenablingWorkgroupTip")}.`;
+      }
     }
-
+    if (isUser(entity)) {
+      deletableMessage += `${t("deleteUserMessage")}`;
+      if (!entity?.isDisabled) {
+        deletableMessage += ` ${t("msgReenablingUserTip")}.`;
+      }
+    }
     return deletableMessage;
   };
 
