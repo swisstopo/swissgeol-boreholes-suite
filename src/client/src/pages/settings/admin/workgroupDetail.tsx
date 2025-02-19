@@ -66,7 +66,7 @@ export const WorkgroupDetail: FC = () => {
     event.stopPropagation();
     const user = users.find(user => user.id === id);
     if (!user) return;
-    // Todo implement remove user from workgroup
+    // Implement remove user from workgroup
   };
 
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
