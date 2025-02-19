@@ -29,51 +29,39 @@ export const useDeleteEntityPrompts = <T extends User | Workgroup>(
     return "boreholeCount" in entity;
   }
 
-  const getNotDeletableMessage = (entity: User | Workgroup) => {
-    let notDeletableMessage = "";
-    if (isWorkgroup(entity)) {
-      notDeletableMessage += `${t("msgDisablingWorkgroup")}.`;
-      if (!entity?.isDisabled) {
-        notDeletableMessage += ` ${t("msgReenablingWorkgroupTip")}.`;
-      }
+  const getNotDeletableMessage = (entity: User | Workgroup): string => {
+    const entityType = isWorkgroup(entity) ? "Workgroup" : "User";
+    let deletableMessage = `${t(`msgDisabling${entityType}`)}`;
+
+    if (!entity?.isDisabled) {
+      deletableMessage += ` ${t(`msgReenabling${entityType}Tip`)}.`;
     }
-    if (isUser(entity)) {
-      notDeletableMessage += `${t("msgDisablingUser")}.`;
-      if (!entity?.isDisabled) {
-        notDeletableMessage += ` ${t("msgReenablingUserTip")}.`;
-      }
-    }
-    return notDeletableMessage;
+
+    return deletableMessage;
   };
 
-  const getDeletableMessage = (entity: User | Workgroup) => {
-    let deletableMessage = "";
-    if (isWorkgroup(entity)) {
-      deletableMessage += `${t("deleteWorkgroupMessage")}`;
-      if (!entity?.isDisabled) {
-        deletableMessage += ` ${t("msgReenablingWorkgroupTip")}.`;
-      }
+  const getDeletableMessage = (entity: User | Workgroup): string => {
+    const entityType = isWorkgroup(entity) ? "Workgroup" : "User";
+    let deletableMessage = `${t(`delete${entityType}Message`)}`;
+
+    if (!entity?.isDisabled) {
+      deletableMessage += ` ${t(`msgReenabling${entityType}Tip`)}.`;
     }
-    if (isUser(entity)) {
-      deletableMessage += `${t("deleteUserMessage")}`;
-      if (!entity?.isDisabled) {
-        deletableMessage += ` ${t("msgReenablingUserTip")}.`;
-      }
-    }
+
     return deletableMessage;
   };
 
   const deleteEntityWithRollback = async (entity: User | Workgroup) => {
     const rollback = () => {
       setSelectedEntity({ ...entity } as T);
-      const returnUrl = () => {
+      const getReturnUrl = () => {
         if (isUser(entity)) {
           return `/setting/user/${entity.id}`;
         } else if (isWorkgroup(entity)) {
           return `/setting/workgroup/${entity.id}`;
         } else return `/setting`;
       };
-      history.push(returnUrl());
+      history.push(getReturnUrl());
     };
 
     setEntities(entities.filter(e => e.id !== entity.id));
