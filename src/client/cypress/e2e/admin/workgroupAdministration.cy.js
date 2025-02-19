@@ -7,7 +7,7 @@ import {
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers.js";
-import { evaluateInput } from "../helpers/formHelpers.js";
+import { evaluateInput, setSelect } from "../helpers/formHelpers.js";
 import { getElementByDataCy, goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers.js";
 
 describe("User administration settings tests", () => {
@@ -61,8 +61,17 @@ describe("User administration settings tests", () => {
   });
 
   it("shows workgroup detail inactivates and activates workgroup", () => {
-    goToRouteAndAcceptTerms("/setting#workgroups");
+    goToRouteAndAcceptTerms("/setting#users");
     waitForTableData();
+
+    // add  "publisher" to workgroup "World"
+    clickOnRowWithText("publisher");
+    getElementByDataCy("addworkgroup-button").click();
+    setSelect("workgroup", 2); // Workgroup called "World";
+    setSelect("role", 4); // "Publisher";
+    getElementByDataCy("addworkgrouprole-button").click();
+    getElementByDataCy("backButton").click();
+    getElementByDataCy("workgroups-tab").click();
 
     const activeWorkgroupDeletePrompt =
       "Do you really want to delete this workgroup? This cannot be undone. You can deactivate the workgroup and re-enable it again at any time.";
@@ -82,12 +91,12 @@ describe("User administration settings tests", () => {
 
     // User table should contain 1 entry
     verifyTableLength(1);
-    verifyRowContains("Admin", 0);
-    verifyRowContains("admin.user@local.dev", 0);
+    verifyRowContains("publisher", 0);
+    verifyRowContains("example@example.com", 0);
     verifyRowContains("Active", 0);
 
     // Admin user should have role editor in workgroup World
-    getElementByDataCy("Editor-chip").should("be.visible");
+    getElementByDataCy("Publisher-chip").should("be.visible");
 
     // Set workgroup World active
     getElementByDataCy("workgroup-detail").should("have.css", "opacity", "0.5");
