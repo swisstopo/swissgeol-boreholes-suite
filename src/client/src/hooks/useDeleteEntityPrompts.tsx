@@ -34,7 +34,7 @@ export const useDeleteEntityPrompts = <T extends User | Workgroup>(
     let deletableMessage = `${t(`msgDisabling${entityType}`)}`;
 
     if (!entity?.isDisabled) {
-      deletableMessage += ` ${t(`msgReenabling${entityType}Tip`)}.`;
+      deletableMessage += `${t(`msgReenabling${entityType}Tip`)}.`;
     }
 
     return deletableMessage;
@@ -45,7 +45,7 @@ export const useDeleteEntityPrompts = <T extends User | Workgroup>(
     let deletableMessage = `${t(`delete${entityType}Message`)}`;
 
     if (!entity?.isDisabled) {
-      deletableMessage += ` ${t(`msgReenabling${entityType}Tip`)}.`;
+      deletableMessage += `${t(`msgReenabling${entityType}Tip`)}.`;
     }
 
     return deletableMessage;
