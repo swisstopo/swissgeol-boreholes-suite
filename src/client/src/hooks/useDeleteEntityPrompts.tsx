@@ -66,11 +66,18 @@ export const useDeleteEntityPrompts = <T extends User | Workgroup>(
   const deleteEntityWithRollback = async (entity: User | Workgroup) => {
     const rollback = () => {
       setSelectedEntity({ ...entity } as T);
-      history.push(`/setting/${entity}/${entity.id}`);
+      const returnUrl = () => {
+        if (isUser(entity)) {
+          return `/setting/user/${entity.id}`;
+        } else if (isWorkgroup(entity)) {
+          return `/setting/workgroup/${entity.id}`;
+        } else return `/setting`;
+      };
+      history.push(returnUrl());
     };
 
     setEntities(entities.filter(e => e.id !== entity.id));
-    history.push(`/setting#${entity}s`);
+    history.push(`/setting#${entity.name}s`);
 
     await callApiWithRollback(deleteEntity, [entity.id], rollback);
   };
