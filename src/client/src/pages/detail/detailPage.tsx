@@ -127,10 +127,14 @@ export const DetailPage: FC = () => {
 
   return (
     <>
-      <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} triggerReset={triggerReset} />
+      <DetailHeader
+        borehole={borehole ?? ({} as BoreholeV2)}
+        editableByCurrentUser={editableByCurrentUser}
+        triggerReset={triggerReset}
+      />
       <LayoutBox>
         <SidebarBox>
-          <DetailSideNav />
+          <DetailSideNav borehole={borehole ?? ({} as BoreholeV2)} />
         </SidebarBox>
         <Stack width="100%" direction="column">
           <Box
@@ -159,7 +163,7 @@ export const DetailPage: FC = () => {
                 onLocationFormSubmit={onLocationFormSubmit}
                 boreholePanelRef={boreholePanelRef}
                 onBoreholeFormSubmit={onBoreholeFormSubmit}
-                borehole={borehole}
+                borehole={borehole ?? ({} as BoreholeV2)}
                 panelOpen={panelOpen}
               />
             </MainContentBox>
