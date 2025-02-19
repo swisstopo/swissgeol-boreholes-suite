@@ -1,8 +1,14 @@
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
+import { BoreholeFormInputs } from "../pages/detail/form/borehole/boreholePanelInterfaces.ts";
+import { LocationFormSubmission } from "../pages/detail/form/location/locationPanelInterfaces.tsx";
 import { User, Workgroup } from "./apiInterfaces.ts";
+import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2";
+import { Observation } from "./observation.ts";
+import { Stratigraphy } from "./stratigraphy.ts";
 
 export interface BasicIdentifier {
   boreholeId: number;
@@ -64,11 +70,14 @@ export interface BoreholeV2 {
   updated: Date | string | null;
   updatedById: number;
   updatedBy: User;
+  stratigraphies: Stratigraphy[];
+  locked: boolean | null;
+  lockedById: number | null;
+  completions: Completion[];
+  observations: Observation[];
 }
 
 const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");
-
-export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
 
 export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelectionModel) => {
   return await fetchApiV2(`export/json?${getIdQuery(boreholeIds)}`, "GET");
@@ -76,10 +85,6 @@ export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelecti
 
 export const exportGeoPackageBoreholes = async (boreholeIds: number[] | GridRowSelectionModel) => {
   return await fetchApiV2(`export/gpkg?${getIdQuery(boreholeIds)}`, "GET");
-};
-
-export const updateBorehole = async (borehole: BoreholeV2) => {
-  return await fetchApiV2("borehole", "PUT", borehole);
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -109,4 +114,44 @@ export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel) => {
 
 export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | GridRowSelectionModel) => {
   return await download(`export/zip?${getIdQuery(boreholeIds)}`);
+};
+
+export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
+
+export const useBorehole = (id: number) => {
+  return useQuery<BoreholeV2 | null>(["borehole", id], () => getBoreholeById(id), {
+    enabled: !!id,
+  });
+};
+
+export const updateBorehole = async (borehole: BoreholeV2) => {
+  return await fetchApiV2("borehole", "PUT", borehole);
+};
+
+export const useUpdateBorehole = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async ({
+      id,
+      boreholeSubmission,
+    }: {
+      id: number;
+      boreholeSubmission: BoreholeFormInputs | LocationFormSubmission;
+    }) => {
+      if (!id) throw new Error("Borehole ID is required");
+
+      // Fetch the latest borehole
+      const latestBorehole = await getBoreholeById(id);
+      if (!latestBorehole) throw new Error("Failed to fetch borehole");
+
+      // Merge the latest data with the submission
+      const updatedBorehole: BoreholeV2 = { ...latestBorehole, ...boreholeSubmission };
+      return updateBorehole(updatedBorehole);
+    },
+    {
+      onSuccess: updatedData => {
+        queryClient.invalidateQueries(["borehole", updatedData.id]);
+      },
+    },
+  );
 };
