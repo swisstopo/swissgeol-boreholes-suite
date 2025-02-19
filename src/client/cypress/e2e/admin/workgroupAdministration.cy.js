@@ -122,4 +122,45 @@ describe("User administration settings tests", () => {
     getElementByDataCy("deleteworkgroup-button").click();
     handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
   });
+
+  const errorWhileFetchingMessage = "An error occurred while fetching or updating data";
+
+  it("displays error message when fetching workgroup table data fails.", () => {
+    cy.intercept("GET", "api/v2/workgroup*", req => req.destroy());
+    goToRouteAndAcceptTerms("/setting#workgroups");
+    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+  });
+
+  it("displays error message when fetching workgroup detail data fails.", () => {
+    cy.intercept("GET", "api/v2/workgroup/2", req => req.destroy());
+    goToRouteAndAcceptTerms("/setting/workgroup/2");
+    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+  });
+
+  it("displays error message when updating workgroup fails.", () => {
+    cy.intercept("PUT", "api/v2/workgroup", req => req.destroy());
+    goToRouteAndAcceptTerms("/setting/workgroup/2");
+    getElementByDataCy("activate-button").click();
+    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+    cy.get('[aria-label="Close"]').click(); // close alert
+
+    // workgroup should still be displayed as inactive
+    getElementByDataCy("inactivate-button").should("have.class", "Mui-selected");
+    getElementByDataCy("activate-button").should("not.have.class", "Mui-selected");
+  });
+
+  it("displays error message when deleting user fails.", () => {
+    cy.intercept("DELETE", "api/v2/workgroup/2", req => req.destroy());
+    goToRouteAndAcceptTerms("/setting/workgroup/2"); // workgroup "Reggae"
+    getElementByDataCy("deleteworkgroup-button").click();
+    getElementByDataCy("delete-button").click();
+    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+    cy.get('[aria-label="Close"]').click(); // close alert
+
+    // verify user detail page still visible
+    cy.location().should(location => {
+      expect(location.pathname).to.eq("/setting/workgroup/2");
+    });
+    cy.contains("Reggae");
+  });
 });
