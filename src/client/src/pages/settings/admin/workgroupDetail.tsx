@@ -54,13 +54,7 @@ export const WorkgroupDetail: FC = () => {
     );
   }, [users, id]);
 
-  const getRowClassName = (params: GridRowParams) => {
-    let css = "";
-    if (params.row.isDisabled) {
-      css = "disabled-row ";
-    }
-    return css;
-  };
+  const getRowClassName = (params: GridRowParams): string => (params.row.isDisabled ? "disabled-row" : "");
 
   const handleRemoveUserFromWorkgroup = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
