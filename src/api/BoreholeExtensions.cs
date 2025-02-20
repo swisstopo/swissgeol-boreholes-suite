@@ -1,11 +1,16 @@
-﻿using BDMS.Models;
+using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BDMS;
 
 public static class BoreholeExtensions
 {
-    public static IQueryable<Borehole> GetAllWithIncludes(this DbSet<Borehole> boreholes)
+    /// <summary>
+    /// Gets a new query for the specified <paramref name="boreholes"/> including all the data which represents a
+    /// complete <see cref="Borehole"/>. In the first place, this extension method is meant to be used to export
+    /// or copy an entire <see cref="Borehole"/> with all its dependencies.
+    /// </summary>
+    public static IQueryable<Borehole> GetAllWithIncludes(this IQueryable<Borehole> boreholes)
     {
         return boreholes.Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
