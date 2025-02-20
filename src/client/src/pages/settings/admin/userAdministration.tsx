@@ -14,10 +14,10 @@ import {
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchUsers, updateUser } from "../../../api/user.ts";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
+import { useDeleteUserPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
 import { muiLocales } from "../../../mui.locales.ts";
 import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "./quickfilterStyles.ts";
-import { useDeleteUserPrompts } from "./useDeleteUserPrompts.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
@@ -29,16 +29,16 @@ export const UserAdministration: FC = () => {
   const { statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { users, setUsers, setSelectedUser, userTableSortModel, setUserTableSortModel } =
     useContext(UserAdministrationContext);
-  const { showDeleteWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
+  const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
   useEffect(() => {
+    setSelectedUser(null);
     const getUsers = async () => {
       const users: User[] = await callApiWithErrorHandling(fetchUsers, []);
       setUsers(users);
     };
     getUsers();
-    setSelectedUser(null);
   }, [callApiWithErrorHandling, setSelectedUser, setUsers, t]);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
@@ -123,9 +123,7 @@ export const UserAdministration: FC = () => {
   const handleDeleteUser = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
     const user = users.find(user => user.id === id);
-    if (!user) return;
-    setSelectedUser(user);
-    showDeleteWarning(user);
+    showDeleteUserWarning(user);
   };
 
   const columns: GridColDef[] = [

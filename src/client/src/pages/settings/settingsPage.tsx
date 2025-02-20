@@ -14,6 +14,7 @@ import { UserAdministrationProvider } from "./admin/userAdministrationContext.ts
 import { UserDetail } from "./admin/userDetail.tsx";
 import { WorkgroupAdministration } from "./admin/workgroupAdministration.tsx";
 import { WorkgroupAdministrationProvider } from "./admin/workgroupAdministrationContext.tsx";
+import { WorkgroupDetail } from "./admin/workgroupDetail.tsx";
 import EditorSettings from "./editorSettings.tsx";
 import { SettingsHeader } from "./settingsHeader.tsx";
 import TermSettings from "./termSettings";
@@ -55,9 +56,10 @@ export const SettingsPage = () => {
         <SettingsHeader />
         <Switch>
           <Route exact={false} key={4} path={"/setting/user/:id"} render={() => <UserDetail />} />
+          <Route exact={false} key={5} path={"/setting/workgroup/:id"} render={() => <WorkgroupDetail />} />
           <Route
             exact={false}
-            key={4}
+            key={6}
             path={"/setting"}
             render={() => (
               <Stack

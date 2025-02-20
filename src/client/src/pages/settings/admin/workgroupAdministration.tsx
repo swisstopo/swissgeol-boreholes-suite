@@ -1,5 +1,6 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useHistory } from "react-router-dom";
 import { GridEventListener } from "@mui/x-data-grid";
 import { Workgroup } from "../../../api/apiInterfaces.ts";
 import { fetchWorkgroups } from "../../../api/workgroup.ts";
@@ -10,23 +11,24 @@ import { WorkgroupTable } from "./workgroupTable.tsx";
 
 export const WorkgroupAdministration: FC = () => {
   const { t } = useTranslation();
-  const [workgroups, setWorkgroups] = useState<Workgroup[]>();
+  const history = useHistory();
   const { users } = useContext(UserAdministrationContext);
-  const { workgroupTableSortModel, setworkgroupTableSortModel } = useContext(WorkgroupAdministrationContext);
+  const { workgroups, setWorkgroups, setSelectedWorkgroup, workgroupTableSortModel, setworkgroupTableSortModel } =
+    useContext(WorkgroupAdministrationContext);
   const { callApiWithErrorHandling } = useApiRequest();
 
   useEffect(() => {
+    setSelectedWorkgroup(null);
     const getWorkgroups = async () => {
       const workgroups: Workgroup[] = await callApiWithErrorHandling(fetchWorkgroups, []);
       setWorkgroups(workgroups);
     };
     getWorkgroups();
-  }, [callApiWithErrorHandling, t]);
+  }, [callApiWithErrorHandling, setSelectedWorkgroup, setWorkgroups, t]);
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
-    console.log(`navigate to /setting/workgroup/${params.row.id}`);
+    history.push(`/setting/workgroup/${params.row.id}`);
   };
-
   return (
     <WorkgroupTable
       isDisabled={false}

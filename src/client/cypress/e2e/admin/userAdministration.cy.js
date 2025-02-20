@@ -48,6 +48,7 @@ describe("User administration settings tests", () => {
     verifyRowContains("Active", 0);
 
     // Click on Editor
+    getElementByDataCy("settings-header").should("contain", "Settings");
     clickOnRowWithText("editor");
     getElementByDataCy("settings-header").should("contain", "E. user");
 
@@ -129,7 +130,7 @@ describe("User administration settings tests", () => {
     getElementByDataCy("is-user-admin-checkbox").children().first().should("not.have.attr", "disabled");
 
     // inactivate controller
-    getElementByDataCy("inactivate-user-button").click();
+    getElementByDataCy("inactivate-button").click();
     cy.wait("@update-user");
     getElementByDataCy("is-user-admin-checkbox").children().first().should("have.attr", "disabled");
 
@@ -146,7 +147,7 @@ describe("User administration settings tests", () => {
     // go to user detail and reactive controller
     clickOnRowWithText("controller");
     cy.wait("@get-user");
-    getElementByDataCy("activate-user-button").click();
+    getElementByDataCy("activate-button").click();
 
     // go back to user table and check prompts for deletable user
     getElementByDataCy("backButton").click();
@@ -158,11 +159,11 @@ describe("User administration settings tests", () => {
     cy.wait("@get-user");
     getElementByDataCy("deleteuser-button").click();
     handlePrompt(messageForActiveDeletableUser, "Cancel");
-    getElementByDataCy("inactivate-user-button").click();
+    getElementByDataCy("inactivate-button").click();
     cy.wait("@update-user");
     getElementByDataCy("deleteuser-button").click();
     handlePrompt(messageForInactiveDeletableUser, "Cancel");
-    getElementByDataCy("activate-user-button").click();
+    getElementByDataCy("activate-button").click();
     cy.wait("@update-user");
 
     // got back to user table and check if user with only files can be deleted
@@ -241,13 +242,13 @@ describe("User administration settings tests", () => {
   it("displays error message when updating user fails.", () => {
     cy.intercept("PUT", "api/v2/user", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/user/2");
-    getElementByDataCy("inactivate-user-button").click();
+    getElementByDataCy("inactivate-button").click();
     cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
     cy.get('[aria-label="Close"]').click(); // close alert
 
     // user should still be displayed as active
-    getElementByDataCy("activate-user-button").should("have.class", "Mui-selected");
-    getElementByDataCy("inactivate-user-button").should("not.have.class", "Mui-selected");
+    getElementByDataCy("activate-button").should("have.class", "Mui-selected");
+    getElementByDataCy("inactivate-button").should("not.have.class", "Mui-selected");
 
     getElementByDataCy("is-user-admin-checkbox").click();
     cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);

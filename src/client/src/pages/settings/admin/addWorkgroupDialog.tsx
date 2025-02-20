@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Dialog,
@@ -14,6 +14,7 @@ import { Role, Workgroup } from "../../../api/apiInterfaces.ts";
 import { fetchWorkgroups, setWorkgroupRole } from "../../../api/workgroup.ts";
 import { AddButton, CancelButton } from "../../../components/buttons/buttons";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
+import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
 interface AddWorkgroupDialogProps {
   open: boolean;
@@ -31,9 +32,9 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
   setUserWorkgroups,
 }) => {
   const { t } = useTranslation();
-  const [workgroups, setWorkgroups] = useState<Workgroup[]>([]);
   const [workgroupId, setWorkgroupId] = useState<string | null>(null);
   const [role, setRole] = useState<Role | null>(null);
+  const { workgroups, setWorkgroups } = useContext(WorkgroupAdministrationContext);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
       }
     };
     getWorkgroups();
-  }, [callApiWithErrorHandling, setOpen]);
+  }, [callApiWithErrorHandling, setOpen, setWorkgroups]);
 
   const resetDialog = () => {
     setOpen(false);
