@@ -764,7 +764,7 @@ class AdminSettings extends React.Component {
                       </Modal.Description>
                     ) : this.state.deleteWorkgroup.boreholeCount === 0 ? (
                       <Modal.Description>
-                        <p>{t("msgDeleteWorkgroup")}</p>
+                        <p>{t("msgWorkgroupCanBeDeleted")}</p>
                         <ul>
                           <li>
                             <span
