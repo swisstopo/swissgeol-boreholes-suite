@@ -262,4 +262,50 @@ public class BoreholeGeometryControllerTest
 
         Assert.AreEqual(0.0, result.Value);
     }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithGeometryAndPositiveDepthMD()
+    {
+        var borehole = context.Boreholes.Find(boreholeIdWithGeometry);
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithGeometry, 102);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+
+        var depthInMasl = result.Value as double?;
+        Assert.IsTrue(depthInMasl.HasValue, "Response value is not a valid double.");
+        Assert.IsTrue(depthInMasl.Value < borehole.ElevationZ, "Returned depth should be below borehole elevation.");
+    }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithNoGeometryAboveBoreholeElevationAndNegativeDepthMD()
+    {
+        var borehole = context.Boreholes.Find(boreholeIdWithGeometry);
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithGeometry, -102);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+        Assert.IsNull(result.Value);
+    }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithNoGeometryAndNegativeDepthMD()
+    {
+        var borehole = context.Boreholes.Find(boreholeIdWithoutGeometry);
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithoutGeometry, -102);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+        Assert.IsNull(result.Value);
+    }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithNoGeometryAndPositiveDepthMD()
+    {
+        var borehole = context.Boreholes.Find(boreholeIdWithoutGeometry);
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithoutGeometry, 355);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+
+        var depthInMasl = result.Value as double?;
+        Assert.IsTrue(depthInMasl.HasValue, "Response value is not a valid double.");
+        Assert.IsTrue(depthInMasl.Value < borehole.ElevationZ, "Returned depth should be below borehole elevation.");
+    }
 }
