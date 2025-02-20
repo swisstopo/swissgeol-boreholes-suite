@@ -105,7 +105,7 @@ export const useDeleteEntityPrompts = <T extends User | Workgroup>(
     ]);
   };
 
-  const showDeleteEntityWarning = (entity?: User | Workgroup) => {
+  const showDeleteEntityWarning = (entity?: User | Workgroup | null) => {
     if (!entity) return;
     if (isEntityDeletable(entity)) {
       showDeletablePrompt(entity);
