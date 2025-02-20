@@ -64,12 +64,10 @@ export const SettingsHeader: FC = () => {
   };
 
   const handleDeleteUser = () => {
-    if (!selectedUser) return;
     showDeleteUserWarning(selectedUser);
   };
 
   const handleDeleteWorkgroup = () => {
-    if (!selectedWorkgroup) return;
     showDeleteWorkgroupWarning(selectedWorkgroup);
   };
 

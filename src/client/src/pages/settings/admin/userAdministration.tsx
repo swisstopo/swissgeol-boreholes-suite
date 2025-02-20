@@ -123,7 +123,6 @@ export const UserAdministration: FC = () => {
   const handleDeleteUser = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
     const user = users.find(user => user.id === id);
-    if (!user) return;
     showDeleteUserWarning(user);
   };
 

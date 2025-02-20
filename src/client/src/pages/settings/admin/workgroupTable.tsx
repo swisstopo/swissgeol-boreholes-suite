@@ -125,7 +125,6 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
   const handleDeleteWorkgroup = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
     const workgroupToDelete = workgroups.find(wgp => wgp.id === id);
-    if (!workgroupToDelete) return;
     showDeleteWorkgroupWarning(workgroupToDelete);
   };
 
