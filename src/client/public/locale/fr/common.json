@@ -33,6 +33,7 @@
   "analyze": "Analyser",
   "appearance": "Mode de présentation",
   "attachments": "Annexes",
+  "autoSetDepthMaslEnabled": "Définir automatiquement la profondeur De et À m s.m.",
   "backfill": "Remplissage/Remblayage",
   "background": "Arrière-plan",
   "bed": "Banc",
