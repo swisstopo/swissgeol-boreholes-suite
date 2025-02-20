@@ -347,7 +347,7 @@ class AdminSettings extends React.Component {
                   </Modal.Description>
                 ) : this.state.deleteUser.deletable ? (
                   <Modal.Description>
-                    <p>{t("msgDeleteUser")}</p>
+                    <p>{t("msgUserCanBeDeleted")}</p>
                     <ul>
                       <li>
                         <span
