@@ -43,8 +43,7 @@ public class WorkgroupControllerTest
     public async Task GetById()
     {
         var response = await workgroupController.GetByIdAsync(5).ConfigureAwait(false);
-        var okResult = response.Result as OkObjectResult;
-        var workgroup = okResult.Value as Workgroup;
+        var workgroup = ActionResultAssert.IsOkObjectResult<Workgroup>(response.Result);
         Assert.IsNotNull(workgroup);
         Assert.AreEqual(workgroup.Name, "Country");
         Assert.IsNotNull(workgroup.CreatedAt);
