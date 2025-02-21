@@ -3,11 +3,11 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
 import { BoreholeFormInputs } from "../pages/detail/form/borehole/boreholePanelInterfaces.ts";
+import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { LocationFormSubmission } from "../pages/detail/form/location/locationPanelInterfaces.tsx";
 import { User, Workgroup } from "./apiInterfaces.ts";
 import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2";
-import { Observation } from "./observation.ts";
 import { Stratigraphy } from "./stratigraphy.ts";
 
 export interface BasicIdentifier {

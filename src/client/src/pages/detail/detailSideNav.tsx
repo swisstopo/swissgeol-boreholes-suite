@@ -8,6 +8,7 @@ import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { ChildListItem, ParentListItem } from "../../components/styledComponents.ts";
 import { capitalizeFirstLetter } from "../../utils";
+import { ObservationType } from "./form/hydrogeology/Observation.ts";
 
 interface DetailSideNavProps {
   borehole: BoreholeV2;
@@ -27,11 +28,16 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const hasLithoStratigraphy = borehole.stratigraphies?.[0]?.lithostratigraphyLayers?.length > 0;
   const hasCompletion = borehole.completions.length > 0;
   const hasObservation = borehole.observations.length > 0;
-  const hasWaterIngress = borehole.observations.length > 0 && borehole.observations.some(obs => obs.type === 1);
+  const hasWaterIngress =
+    borehole.observations.length > 0 && borehole.observations.some(obs => obs.type === ObservationType.waterIngress);
   const hasGroundwaterLevelMeasurement =
-    borehole.observations.length > 0 && borehole.observations.some(obs => obs.type === 2);
-  const hasHydroTest = borehole.observations.length > 0 && borehole.observations.some(obs => obs.type === 3);
-  const hasFieldMeasurement = borehole.observations.length > 0 && borehole.observations.some(obs => obs.type === 4);
+    borehole.observations.length > 0 &&
+    borehole.observations.some(obs => obs.type === ObservationType.groundwaterLevelMeasurement);
+  const hasHydroTest =
+    borehole.observations.length > 0 && borehole.observations.some(obs => obs.type === ObservationType.hydrotest);
+  const hasFieldMeasurement =
+    borehole.observations.length > 0 &&
+    borehole.observations.some(obs => obs.type === ObservationType.fieldMeasurement);
 
   useEffect(() => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
