@@ -1,10 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
-import { BoreholeFormInputs } from "../pages/detail/form/borehole/boreholePanelInterfaces.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
-import { LocationFormSubmission } from "../pages/detail/form/location/locationPanelInterfaces.tsx";
 import { User, Workgroup } from "./apiInterfaces.ts";
 import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2";
@@ -118,40 +115,6 @@ export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | 
 
 export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
 
-export const useBorehole = (id: number) => {
-  return useQuery<BoreholeV2 | null>(["borehole", id], () => getBoreholeById(id), {
-    enabled: !!id,
-  });
-};
-
 export const updateBorehole = async (borehole: BoreholeV2) => {
   return await fetchApiV2("borehole", "PUT", borehole);
-};
-
-export const useUpdateBorehole = () => {
-  const queryClient = useQueryClient();
-  return useMutation(
-    async ({
-      id,
-      boreholeSubmission,
-    }: {
-      id: number;
-      boreholeSubmission: BoreholeFormInputs | LocationFormSubmission;
-    }) => {
-      if (!id) throw new Error("Borehole ID is required");
-
-      // Fetch the latest borehole
-      const latestBorehole = await getBoreholeById(id);
-      if (!latestBorehole) throw new Error("Failed to fetch borehole");
-
-      // Merge the latest data with the submission
-      const updatedBorehole: BoreholeV2 = { ...latestBorehole, ...boreholeSubmission };
-      return updateBorehole(updatedBorehole);
-    },
-    {
-      onSuccess: updatedData => {
-        queryClient.invalidateQueries(["borehole", updatedData.id]);
-      },
-    },
-  );
 };
