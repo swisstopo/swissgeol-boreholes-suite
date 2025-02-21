@@ -146,7 +146,7 @@ public class BoreholeGeometryController : ControllerBase
         var tvd = geometry.GetTVDIfGeometryExists(depthMD);
         if (tvd == null)
         {
-            logger?.LogInformation($"Invalid input, could not calculate true vertical depth from measured depth of {depthMD}");
+            logger.LogInformation("Invalid input, could not calculate true vertical depth from measured depth of {DepthMD}", depthMD);
         }
 
         return Ok(tvd);
@@ -168,7 +168,7 @@ public class BoreholeGeometryController : ControllerBase
 
         if (tvd == null || borehole?.ElevationZ == null)
         {
-            logger?.LogInformation($"Invalid input, could not calculate depth in MASL from measured depth of {depthMD}");
+            logger.LogInformation("Invalid input, could not calculate depth in MASL from measured depth of {DepthMD}", depthMD);
             return Ok(null);
         }
 
