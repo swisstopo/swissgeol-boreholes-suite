@@ -29,15 +29,12 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const hasCompletion = borehole.completions.length > 0;
   const hasObservation = borehole.observations.length > 0;
   const hasWaterIngress =
-    borehole.observations.length > 0 && borehole.observations.some(obs => obs.type === ObservationType.waterIngress);
+    hasObservation && borehole.observations.some(obs => obs.type === ObservationType.waterIngress);
   const hasGroundwaterLevelMeasurement =
-    borehole.observations.length > 0 &&
-    borehole.observations.some(obs => obs.type === ObservationType.groundwaterLevelMeasurement);
-  const hasHydroTest =
-    borehole.observations.length > 0 && borehole.observations.some(obs => obs.type === ObservationType.hydrotest);
+    hasObservation && borehole.observations.some(obs => obs.type === ObservationType.groundwaterLevelMeasurement);
+  const hasHydroTest = hasObservation && borehole.observations.some(obs => obs.type === ObservationType.hydrotest);
   const hasFieldMeasurement =
-    borehole.observations.length > 0 &&
-    borehole.observations.some(obs => obs.type === ObservationType.fieldMeasurement);
+    hasObservation && borehole.observations.some(obs => obs.type === ObservationType.fieldMeasurement);
 
   useEffect(() => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
