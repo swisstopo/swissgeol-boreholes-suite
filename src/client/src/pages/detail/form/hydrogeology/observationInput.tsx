@@ -19,7 +19,6 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   const getCasingOptions = useGetCasingOptions();
 
   const [depthUnit, setDepthUnit] = useState(ObservationDepthUnitType.measuredDepth);
-
   const [fromDepthM, setFromDepthM] = useState(observation.fromDepthM || null);
   const [toDepthM, setToDepthM] = useState(observation.toDepthM || null);
   const [fromDepthMasl, setFromDepthMasl] = useState(observation.fromDepthMasl || null);
@@ -29,7 +28,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
     if (typeof e !== "number") return;
     setDepthUnit(e);
   };
-  const roundTvdValue = (value: number | null) => {
+  const roundValue = (value: number | null) => {
     return value ? Math.round(value * 100) / 100 : null;
   };
 
@@ -42,7 +41,6 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   }, [boreholeId]);
 
   useEffect(() => {
-    // If 'observation' changes, sync local state with the updated observation
     if (observation) {
       setFromDepthM(observation.fromDepthM);
       setToDepthM(observation.toDepthM);
@@ -51,9 +49,8 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
     }
   }, [observation]);
 
-  const fetchDepthTVD = useCallback(
+  const fetchDepthMASL = useCallback(
     async (fieldValue: number | null) => {
-      // check if fieldValue is effectively zero
       if (fieldValue !== null && Math.abs(fieldValue) === 0) {
         return fieldValue;
       }
@@ -68,7 +65,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
       };
 
       const depth = await getDepthMasl(parseFloatWithThousandsSeparator(fieldValue.toString()));
-      return roundTvdValue(depth);
+      return roundValue(depth);
     },
     [boreholeId],
   );
@@ -76,22 +73,22 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   useEffect(() => {
     const fetchAndSetFromDepthMasl = async () => {
       if (depthUnit === ObservationDepthUnitType.measuredDepth) {
-        setFromDepthMasl(await fetchDepthTVD(fromDepthM));
+        setFromDepthMasl(await fetchDepthMASL(fromDepthM));
         setFormValue("fromDepthMasl", fromDepthMasl);
       }
     };
     fetchAndSetFromDepthMasl();
-  }, [depthUnit, fetchDepthTVD, fromDepthM, fromDepthMasl, setFormValue]);
+  }, [depthUnit, fetchDepthMASL, fromDepthM, fromDepthMasl, setFormValue]);
 
   useEffect(() => {
     const fetchAndSetToDepthMasl = async () => {
       if (depthUnit === ObservationDepthUnitType.measuredDepth) {
-        setToDepthMasl(await fetchDepthTVD(toDepthM));
+        setToDepthMasl(await fetchDepthMASL(toDepthM));
         setFormValue("toDepthMasl", toDepthMasl);
       }
     };
     fetchAndSetToDepthMasl();
-  }, [depthUnit, fetchDepthTVD, setFormValue, toDepthM, toDepthMasl]);
+  }, [depthUnit, fetchDepthMASL, setFormValue, toDepthM, toDepthMasl]);
 
   return (
     <>
@@ -114,14 +111,14 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
               label="fromdepth"
               value={fromDepthM ?? undefined}
               type={FormValueType.Number}
-              onUpdate={(value: string) => setFromDepthM(parseFloat(value) || 0)} // Convert the value to a number
+              onUpdate={(value: string) => setFromDepthM(parseFloat(value) || 0)}
             />
             <FormInput
               fieldName="toDepthM"
               label="todepth"
               value={toDepthM ?? undefined}
               type={FormValueType.Number}
-              onUpdate={(value: string) => setToDepthM(parseFloat(value) || 0)} // Convert the value to a number
+              onUpdate={(value: string) => setToDepthM(parseFloat(value) || 0)}
             />
           </FormContainer>
           <FormContainer direction="row">
@@ -131,7 +128,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
               label="fromDepthMasl"
               value={fromDepthMasl ?? undefined}
               type={FormValueType.Number}
-              disabled={depthUnit === ObservationDepthUnitType.measuredDepth} // This ensures it is disabled when depthUnit is METERS
+              disabled={depthUnit === ObservationDepthUnitType.measuredDepth}
             />
             <FormInput
               key={`toDepthMasl-${toDepthMasl}`} // Unique key forces re-render
@@ -139,7 +136,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
               label="toDepthMasl"
               value={toDepthMasl ?? undefined}
               type={FormValueType.Number}
-              disabled={depthUnit === ObservationDepthUnitType.measuredDepth} // Same here for the 'to' field
+              disabled={depthUnit === ObservationDepthUnitType.measuredDepth}
             />
           </FormContainer>
         </>

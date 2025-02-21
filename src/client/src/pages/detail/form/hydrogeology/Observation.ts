@@ -4,6 +4,7 @@ export enum ObservationDepthUnitType {
   measuredDepth = 0,
   masl = 1,
 }
+
 export enum ObservationType {
   waterIngress = 1,
   groundwaterLevelMeasurement = 2,
