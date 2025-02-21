@@ -262,4 +262,48 @@ public class BoreholeGeometryControllerTest
 
         Assert.AreEqual(0.0, result.Value);
     }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithGeometryAndPositiveDepthMD()
+    {
+        var borehole = await context.Boreholes.FindAsync(boreholeIdWithGeometry).ConfigureAwait(false);
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithGeometry, 102);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+
+        var depthInMasl = result.Value as double?;
+        Assert.IsNotNull(depthInMasl.Value);
+        Assert.IsTrue(depthInMasl.Value < borehole.ElevationZ, "Returned depth should be below borehole elevation.");
+    }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithNoGeometryAboveBoreholeElevationAndNegativeDepthMD()
+    {
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithGeometry, -102);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+        Assert.IsNull(result.Value);
+    }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithNoGeometryAndNegativeDepthMD()
+    {
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithoutGeometry, -102);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+        Assert.IsNull(result.Value);
+    }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithNoGeometryAndPositiveDepthMD()
+    {
+        var borehole = await context.Boreholes.FindAsync(boreholeIdWithoutGeometry).ConfigureAwait(false);
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithoutGeometry, 355);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+
+        var depthInMasl = result.Value as double?;
+        Assert.IsNotNull(depthInMasl.Value);
+        Assert.IsTrue(depthInMasl.Value < borehole.ElevationZ, "Returned depth should be below borehole elevation.");
+    }
 }
