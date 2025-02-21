@@ -272,7 +272,7 @@ public class BoreholeGeometryControllerTest
         ActionResultAssert.IsOk(result);
 
         var depthInMasl = result.Value as double?;
-        Assert.IsTrue(depthInMasl.HasValue, "Response value is not a valid double.");
+        Assert.IsNotNull(depthInMasl.Value);
         Assert.IsTrue(depthInMasl.Value < borehole.ElevationZ, "Returned depth should be below borehole elevation.");
     }
 
@@ -305,7 +305,7 @@ public class BoreholeGeometryControllerTest
         ActionResultAssert.IsOk(result);
 
         var depthInMasl = result.Value as double?;
-        Assert.IsTrue(depthInMasl.HasValue, "Response value is not a valid double.");
+        Assert.IsNotNull(depthInMasl.Value);
         Assert.IsTrue(depthInMasl.Value < borehole.ElevationZ, "Returned depth should be below borehole elevation.");
     }
 }
