@@ -266,7 +266,7 @@ public class BoreholeGeometryControllerTest
     [TestMethod]
     public async Task GetDepthInMaslWithGeometryAndPositiveDepthMD()
     {
-        var borehole = context.Boreholes.Find(boreholeIdWithGeometry);
+        var borehole = await context.Boreholes.FindAsync(boreholeIdWithGeometry).ConfigureAwait(false);
         IActionResult response = await controller.GetDepthInMasl(boreholeIdWithGeometry, 102);
         ObjectResult result = (ObjectResult)response;
         ActionResultAssert.IsOk(result);
@@ -279,7 +279,6 @@ public class BoreholeGeometryControllerTest
     [TestMethod]
     public async Task GetDepthInMaslWithNoGeometryAboveBoreholeElevationAndNegativeDepthMD()
     {
-        var borehole = context.Boreholes.Find(boreholeIdWithGeometry);
         IActionResult response = await controller.GetDepthInMasl(boreholeIdWithGeometry, -102);
         ObjectResult result = (ObjectResult)response;
         ActionResultAssert.IsOk(result);
@@ -289,7 +288,6 @@ public class BoreholeGeometryControllerTest
     [TestMethod]
     public async Task GetDepthInMaslWithNoGeometryAndNegativeDepthMD()
     {
-        var borehole = context.Boreholes.Find(boreholeIdWithoutGeometry);
         IActionResult response = await controller.GetDepthInMasl(boreholeIdWithoutGeometry, -102);
         ObjectResult result = (ObjectResult)response;
         ActionResultAssert.IsOk(result);
@@ -299,7 +297,7 @@ public class BoreholeGeometryControllerTest
     [TestMethod]
     public async Task GetDepthInMaslWithNoGeometryAndPositiveDepthMD()
     {
-        var borehole = context.Boreholes.Find(boreholeIdWithoutGeometry);
+        var borehole = await context.Boreholes.FindAsync(boreholeIdWithoutGeometry).ConfigureAwait(false);
         IActionResult response = await controller.GetDepthInMasl(boreholeIdWithoutGeometry, 355);
         ObjectResult result = (ObjectResult)response;
         ActionResultAssert.IsOk(result);
