@@ -6,6 +6,8 @@
 
 - Added a table displaying all the users in the admin settings.
 - Added a detail view for users in the admin settings.
+- Added a table displaying all the workgroups in the admin settings.
+- Added a detail view for workgroups in the admin settings.
 - Enable auto setting of depth in MASL in hydro module.
 
 ### Changed

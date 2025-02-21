@@ -1,4 +1,6 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
@@ -28,7 +30,7 @@ public class WorkgroupController : ControllerBase
     /// </summary>
     [HttpGet]
     [SwaggerResponse(StatusCodes.Status200OK, "Returns a list of workgroups.")]
-    public async Task<IEnumerable<Workgroup>> GetAll()
+    public async Task<IEnumerable<Workgroup>> GetAllAsync()
     {
         var workgroups = await context
             .WorkgroupsWithIncludes
@@ -40,6 +42,27 @@ public class WorkgroupController : ControllerBase
     }
 
     /// <summary>
+    /// Asynchronously gets the <see cref="Workgroup"/> with the specified <paramref name="id"/>.
+    /// </summary>
+    [HttpGet("{id}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns a workgroup.")]
+    public async Task<ActionResult<Workgroup>> GetByIdAsync(int id)
+    {
+        var workgroup = await context
+            .WorkgroupsWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(w => w.Id == id)
+            .ConfigureAwait(false);
+
+        if (workgroup == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(workgroup);
+    }
+
+    /// <summary>
     /// Create a new workgroup./>.
     /// </summary>
     [HttpPost]
@@ -47,7 +70,7 @@ public class WorkgroupController : ControllerBase
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The workgroup could not be created due to invalid input.")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user is not authorized to create workgroups.")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ")]
-    public async Task<IActionResult> Create(Workgroup workgroup)
+    public async Task<IActionResult> CreateAsync(Workgroup workgroup)
     {
         try
         {
@@ -87,7 +110,7 @@ public class WorkgroupController : ControllerBase
     [SwaggerResponse(StatusCodes.Status404NotFound, "The workgroup could not be found.")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user is not authorized to update workgroups.")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ")]
-    public async Task<IActionResult> Edit(Workgroup workgroup)
+    public async Task<IActionResult> EditAsync(Workgroup workgroup)
     {
         try
         {
@@ -126,7 +149,7 @@ public class WorkgroupController : ControllerBase
     [SwaggerResponse(StatusCodes.Status404NotFound, "The workgroup could not be found.")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user is not authorized to delete workgroups.")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
         try
         {
@@ -159,7 +182,7 @@ public class WorkgroupController : ControllerBase
     [SwaggerResponse(StatusCodes.Status404NotFound, "The user or workgroup could not be found.")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user is not authorized to set roles.")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ")]
-    public async Task<IActionResult> SetRoles(UserWorkgroupRole[] userWorkgroupRoles)
+    public async Task<IActionResult> SetRolesAsync(UserWorkgroupRole[] userWorkgroupRoles)
     {
         try
         {

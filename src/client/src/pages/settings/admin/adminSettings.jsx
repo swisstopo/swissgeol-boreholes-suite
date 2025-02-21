@@ -347,7 +347,7 @@ class AdminSettings extends React.Component {
                   </Modal.Description>
                 ) : this.state.deleteUser.deletable ? (
                   <Modal.Description>
-                    <p>{t("msgDeleteUser")}</p>
+                    <p>{t("msgUserCanBeDeleted")}</p>
                     <ul>
                       <li>
                         <span
@@ -358,7 +358,7 @@ class AdminSettings extends React.Component {
                           {t("disable")}:
                         </span>
                         <br />
-                        {t("msgReenablingTip")}
+                        {t("msgReenablingUserTip")}
                         <br />
                         &nbsp;
                       </li>
@@ -389,7 +389,7 @@ class AdminSettings extends React.Component {
                           {t("disable")}:
                         </span>
                         <br />
-                        {t("msgReenablingTip")}
+                        {t("msgReenablingUserTip")}
                       </li>
                     </ul>
                   </Modal.Description>
@@ -764,7 +764,7 @@ class AdminSettings extends React.Component {
                       </Modal.Description>
                     ) : this.state.deleteWorkgroup.boreholeCount === 0 ? (
                       <Modal.Description>
-                        <p>{t("msgDeleteWorkgroup")}</p>
+                        <p>{t("msgWorkgroupCanBeDeleted")}</p>
                         <ul>
                           <li>
                             <span
@@ -775,7 +775,7 @@ class AdminSettings extends React.Component {
                               {t("disable")}
                             </span>
                             <br />
-                            {t("msgReenablingTip")}
+                            {t("msgReenablingWorkgroupTip")}
                             <br />
                             &nbsp;
                           </li>
@@ -805,7 +805,7 @@ class AdminSettings extends React.Component {
                               {t("disable")}:
                             </span>
                             <br />
-                            {t("msgReenablingTip")}
+                            {t("msgReenablingWorkgroupTip")}
                           </li>
                         </ul>
                       </Modal.Description>

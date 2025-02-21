@@ -15,6 +15,15 @@ export const verifyRowContains = (rowContent, rowIndex) => {
     });
 };
 
+export const verifyRowWithContantAlsoContains = (rowContent, alsoContains) => {
+  cy.get(".MuiDataGrid-row")
+    .contains(rowContent)
+    .parent()
+    .within(() => {
+      cy.contains(alsoContains).should("exist");
+    });
+};
+
 export const verifyTableLength = length => {
   cy.get(".MuiDataGrid-row").should("have.length", length);
 };

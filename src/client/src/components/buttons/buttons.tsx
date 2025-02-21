@@ -150,7 +150,6 @@ export const ReturnButton = ({ onClick }: { onClick: () => void }) => {
       sx={{
         width: "36px",
         height: "36px",
-        marginRight: "18px",
         borderRadius: "2px",
       }}>
       <ChevronLeft />

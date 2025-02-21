@@ -102,7 +102,7 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
 
   return (
     <DetailHeaderStack direction="row" alignItems="center">
-      <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"}>
+      <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={3}>
         <ReturnButton
           onClick={() => {
             {
@@ -121,7 +121,6 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
         </Stack>
         {workflows && (
           <Chip
-            sx={{ marginLeft: "18px" }}
             label={t(`status${currentWorkflow.role.toLowerCase()}`)}
             color={currentWorkflow.finished != null ? "success" : "warning"}
             icon={currentWorkflow.finished != null ? <Check /> : <div />}
