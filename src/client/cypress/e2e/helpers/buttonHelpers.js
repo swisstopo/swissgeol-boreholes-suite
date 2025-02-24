@@ -5,9 +5,28 @@ import { createBaseSelector } from "./testHelpers";
  * @param {string} parent (optional) The parent of the button.
  */
 export const saveWithSaveBar = parent => {
+  // Count all 'borehole_by_id' requests before save button click to be able to separate requests 'borehole_by_id' requests triggered by the borehole update
+  cy.get("@borehole_by_id.all").then(requests => {
+    cy.wrap(requests.length).as("countBeforeSaveButton");
+    cy.log("'borehole_by_id'-Requests before save button click: " + requests.length);
+  });
+
+  // Clicks save button
   saveForm(parent);
-  cy.wait(["@borehole_by_id", "@update-borehole"]);
-  cy.contains("Changes saved").should("exist");
+
+  // Verify one additional 'borehole_by_id' requests is made and awaited (statusCode 200) before the update request.
+  cy.get("@countBeforeSaveButton").then(countBeforeSaveButton => {
+    cy.get("@borehole_by_id.all")
+      .should("have.length", countBeforeSaveButton + 1)
+      .then(() => {
+        cy.get(`@borehole_by_id.${countBeforeSaveButton + 1}`)
+          .its("response.statusCode")
+          .should("equal", 200);
+      });
+  });
+
+  // Ensure the actual update request is processed
+  cy.wait(["@update-borehole"]);
 };
 
 /**

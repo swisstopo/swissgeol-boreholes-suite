@@ -130,7 +130,7 @@ export const DetailPage: FC = () => {
       <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} triggerReset={triggerReset} />
       <LayoutBox>
         <SidebarBox>
-          <DetailSideNav />
+          <DetailSideNav borehole={borehole} />
         </SidebarBox>
         <Stack width="100%" direction="column">
           <Box
