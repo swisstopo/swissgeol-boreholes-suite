@@ -6,7 +6,8 @@
 
 - Added a table displaying all the users in the admin settings.
 - Added a detail view for users in the admin settings.
-- Added a read-only table displaying all the workgroups in the admin settings.
+- Added a table displaying all the workgroups in the admin settings.
+- Added a detail view for workgroups in the admin settings.
 
 ### Changed
 

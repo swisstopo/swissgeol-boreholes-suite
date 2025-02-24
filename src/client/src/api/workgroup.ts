@@ -3,6 +3,8 @@ import { fetchApiV2 } from "./fetchApiV2";
 
 export const fetchWorkgroups = async () => await fetchApiV2("workgroup", "GET");
 
+export const fetchWorkgroupById = async (id: number) => await fetchApiV2(`workgroup/${id}`, "GET");
+
 export const createWorkgroup = async (workgroup: Workgroup) => await fetchApiV2("workgroup", "POST", workgroup);
 
 export const updateWorkgroup = async (workgroup: Workgroup) => {
