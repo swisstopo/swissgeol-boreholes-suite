@@ -2,27 +2,17 @@ import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useEffect, useSta
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
-import {
-  DataGrid,
-  GridColDef,
-  GridEventListener,
-  GridFilterModel,
-  GridRenderCellParams,
-  GridRowParams,
-  GridToolbar,
-} from "@mui/x-data-grid";
+import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchUsers, updateUser } from "../../../api/user.ts";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { useDeleteUserPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
-import { muiLocales } from "../../../mui.locales.ts";
-import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
-import { quickFilterStyles } from "./quickfilterStyles.ts";
+import { Table } from "./Table.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
 export const UserAdministration: FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const history = useHistory();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
@@ -152,51 +142,16 @@ export const UserAdministration: FC = () => {
     getDeleteColumn(handleDeleteUser),
   ];
 
-  const getRowClassName = (params: GridRowParams) => {
-    let css = "";
-    if (params.row.isDisabled) {
-      css = "disabled-row ";
-    }
-    return css;
-  };
-
   return (
-    <DataGrid
-      sx={{ border: "none !important", ...quickFilterStyles }}
-      data-cy="users-table"
-      columnHeaderHeight={44}
-      getRowClassName={getRowClassName}
-      rowHeight={44}
-      sortingOrder={["asc", "desc"]}
-      loading={!users?.length}
-      onRowClick={handleRowClick}
-      rowCount={users?.length}
+    <Table
       rows={users}
       columns={columns}
-      hideFooterPagination={!users?.length}
-      pageSizeOptions={[100]}
-      slots={{ toolbar: GridToolbar }}
-      slotProps={{
-        pagination: {
-          ActionsComponent: TablePaginationActions,
-        },
-        toolbar: {
-          csvOptions: { disableToolbarButton: true },
-          printOptions: { disableToolbarButton: true },
-          showQuickFilter: true,
-        },
-      }}
-      localeText={muiLocales[i18n.language]}
-      disableColumnSelector
-      disableRowSelectionOnClick
-      hideFooterSelectedRowCount
-      disableColumnFilter
-      disableColumnMenu={true}
-      disableDensitySelector
+      onRowClick={handleRowClick}
       filterModel={filterModel}
       onFilterModelChange={handleFilterModelChange}
       sortModel={userTableSortModel}
       onSortModelChange={setUserTableSortModel}
+      dataCy={"users-table"}
     />
   );
 };

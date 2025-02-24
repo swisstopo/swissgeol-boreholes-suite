@@ -1,26 +1,14 @@
 import { FC, MouseEvent, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
-import {
-  DataGrid,
-  GridColDef,
-  GridEventListener,
-  GridFilterModel,
-  GridRenderCellParams,
-  GridRowParams,
-  GridSortModel,
-  GridToolbar,
-} from "@mui/x-data-grid";
+import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams, GridSortModel } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
-import i18n from "i18next";
 import { Role, User, Workgroup } from "../../../api/apiInterfaces.ts";
 import { removeAllWorkgroupRolesForUser } from "../../../api/workgroup.ts";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { useDeleteWorkgroupPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
-import { muiLocales } from "../../../mui.locales.ts";
-import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
-import { quickFilterStyles } from "./quickfilterStyles.ts";
+import { Table } from "./Table.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
@@ -68,8 +56,6 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
       </Stack>
     );
   };
-
-  const getRowClassName = (params: GridRowParams): string => (params.row.isDisabled ? "disabled-row" : "");
 
   const userWorkgroupRoles = useMemo(() => users?.map(user => user.workgroupRoles).flat() ?? [], [users]);
 
@@ -145,55 +131,17 @@ export const WorkgroupTable: FC<WorkgroupTableProps> = ({
     getDeleteColumn(user ? handleRemoveAllWorkgroupRoles : handleDeleteWorkgroup),
   ];
 
-  const disabledStyles = {
-    cursor: isDisabled ? "default" : "pointer",
-    "& .MuiDataGrid-row:hover": { backgroundColor: isDisabled && "rgba(0,0,0,0)" },
-    "& .MuiDataGrid-columnHeader": { cursor: isDisabled ? "default" : "pointer" },
-  };
-
   return (
-    <DataGrid
-      sx={{
-        border: "none !important",
-        ...quickFilterStyles,
-        ...disabledStyles,
-      }}
-      data-cy="user-workgroups-table"
-      columnHeaderHeight={44}
-      rowHeight={44}
-      sortingOrder={["asc", "desc"]}
-      loading={!workgroups?.length}
-      rowCount={workgroups?.length}
+    <Table
       rows={workgroups}
       columns={columns}
-      hideFooterPagination={!workgroups?.length}
-      pageSizeOptions={[100]}
-      slots={{ toolbar: GridToolbar }}
-      slotProps={{
-        pagination: {
-          ActionsComponent: TablePaginationActions,
-        },
-        toolbar: {
-          csvOptions: { disableToolbarButton: true },
-          printOptions: { disableToolbarButton: true },
-          showQuickFilter: true,
-        },
-      }}
-      localeText={muiLocales[i18n.language]}
-      disableColumnSelector
-      disableRowSelectionOnClick
-      hideFooterSelectedRowCount
-      disableColumnFilter
-      disableColumnSorting={isDisabled}
-      disableColumnResize={isDisabled}
-      disableColumnMenu={true}
-      disableDensitySelector
-      filterModel={filterModel}
       onRowClick={handleRowClick}
-      getRowClassName={getRowClassName}
+      filterModel={filterModel}
       onFilterModelChange={handleFilterModelChange}
       sortModel={sortModel}
+      isDisabled={isDisabled}
       onSortModelChange={setSortModel}
+      dataCy={"user-workgroups-table"}
     />
   );
 };

@@ -2,23 +2,13 @@ import { FC, MouseEvent, useCallback, useContext, useEffect, useMemo, useState }
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
-import {
-  DataGrid,
-  GridColDef,
-  GridFilterModel,
-  GridRenderCellParams,
-  GridRowParams,
-  GridToolbar,
-} from "@mui/x-data-grid";
-import i18n from "i18next";
+import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { User, Workgroup, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchWorkgroupById } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { FormInputDisplayOnly } from "../../../components/form/form.ts";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
-import { muiLocales } from "../../../mui.locales.ts";
-import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
-import { quickFilterStyles } from "./quickfilterStyles.ts";
+import { Table } from "./Table.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
@@ -53,8 +43,6 @@ export const WorkgroupDetail: FC = () => {
       user.workgroupRoles?.some((wgr: WorkgroupRole) => wgr.workgroupId === parseInt(id)),
     );
   }, [users, id]);
-
-  const getRowClassName = (params: GridRowParams): string => (params.row.isDisabled ? "disabled-row" : "");
 
   const handleRemoveUserFromWorkgroup = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
@@ -96,12 +84,6 @@ export const WorkgroupDetail: FC = () => {
 
   const isDisabled = selectedWorkgroup?.isDisabled;
 
-  const disabledStyles = {
-    cursor: isDisabled ? "default" : "pointer",
-    "& .MuiDataGrid-row:hover": { backgroundColor: isDisabled && "rgba(0,0,0,0)" },
-    "& .MuiDataGrid-columnHeader": { cursor: isDisabled ? "default" : "pointer" },
-  };
-
   return (
     <Stack
       data-cy={"workgroup-detail"}
@@ -124,45 +106,13 @@ export const WorkgroupDetail: FC = () => {
         <CardHeader title={t("users")} sx={{ p: 4, pb: 3 }} titleTypographyProps={{ variant: "h5" }} />
         <CardContent sx={{ pt: 4, px: 3 }}>
           {users && users?.length > 0 && (
-            <DataGrid
-              sx={{
-                border: "none !important",
-                ...quickFilterStyles,
-                ...disabledStyles,
-              }}
-              data-cy="user-workgroups-table"
-              columnHeaderHeight={44}
-              rowHeight={44}
-              sortingOrder={["asc", "desc"]}
-              loading={!workgroupUsers?.length}
-              rowCount={workgroupUsers?.length}
+            <Table
               rows={workgroupUsers}
               columns={columns}
-              hideFooterPagination={!workgroupUsers?.length}
-              pageSizeOptions={[100]}
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                pagination: {
-                  ActionsComponent: TablePaginationActions,
-                },
-                toolbar: {
-                  csvOptions: { disableToolbarButton: true },
-                  printOptions: { disableToolbarButton: true },
-                  showQuickFilter: workgroupUsers?.length > 3,
-                },
-              }}
-              localeText={muiLocales[i18n.language]}
-              disableColumnSelector
-              disableRowSelectionOnClick
-              hideFooterSelectedRowCount
-              disableColumnFilter
-              disableColumnSorting={isDisabled}
-              disableColumnResize={isDisabled}
-              disableColumnMenu={true}
-              disableDensitySelector
               filterModel={filterModel}
-              getRowClassName={getRowClassName}
               onFilterModelChange={handleFilterModelChange}
+              isDisabled={isDisabled}
+              dataCy={"user-workgroups-table"}
             />
           )}
         </CardContent>
