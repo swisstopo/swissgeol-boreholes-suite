@@ -118,7 +118,7 @@ export const Table: FC<TableProps> = ({
       paginationMode={paginationMode}
       sortingMode={sortingMode}
       checkboxSelection={checkboxSelection}
-      isRowSelectable={isRowSelectable ? isRowSelectable : () => true}
+      isRowSelectable={isRowSelectable}
       rowSelectionModel={rowSelectionModel}
     />
   );
