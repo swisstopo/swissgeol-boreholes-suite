@@ -94,7 +94,7 @@ export const RoleAssignmentDialog = <T,>({
               label={t(entityType)}
               name={entityType}
               value={selectedId}
-              data-cy={`${entityType}-formSelect`}
+              data-cy={`${entityType.toLowerCase()}-formSelect`}
               onChange={event => {
                 setSelectedId(event.target.value);
               }}>

@@ -25,7 +25,11 @@ export const verifyRowWithContantAlsoContains = (rowContent, alsoContains) => {
 };
 
 export const verifyTableLength = length => {
-  cy.get(".MuiDataGrid-row").should("have.length", length);
+  if (length === 0) {
+    cy.get(".MuiDataGrid-row").should("not.exist");
+  } else {
+    cy.get(".MuiDataGrid-row").should("have.length", length);
+  }
 };
 
 export const waitForTableData = () => {

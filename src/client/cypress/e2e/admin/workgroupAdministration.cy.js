@@ -64,7 +64,7 @@ describe("User administration settings tests", () => {
     goToRouteAndAcceptTerms("/setting#users");
     waitForTableData();
 
-    // add  "publisher" to workgroup "World"
+    // add "publisher" to workgroup "World"
     clickOnRowWithText("publisher");
     getElementByDataCy("addworkgroup-button").click();
     setSelect("workgroup", 2); // Workgroup called "World";
@@ -123,6 +123,58 @@ describe("User administration settings tests", () => {
     handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
   });
 
+  it("adds and deletes users from workgroup.", () => {
+    goToRouteAndAcceptTerms("/setting/workgroup/6"); // Blues
+    getElementByDataCy("activate-button").click();
+
+    // Add  two users to workgroup
+    getElementByDataCy("adduser-button").click();
+    setSelect("user", 2); // "editor user";
+    setSelect("role", 0); // "Viewer";
+    getElementByDataCy("add-button").click();
+
+    getElementByDataCy("adduser-button").click();
+    setSelect("user", 3); //  "publisher user";
+    setSelect("role", 2); // "Controller";
+    getElementByDataCy("add-button").click();
+
+    // Add one another role to user publisher
+    getElementByDataCy("adduser-button").click();
+    setSelect("user", 3); // "publisher user";
+    setSelect("role", 0); // "View";
+    getElementByDataCy("add-button").click();
+
+    verifyRowWithContantAlsoContains("editor", "VIEW");
+    verifyRowWithContantAlsoContains("publisher", "CONTROLLER");
+    verifyRowWithContantAlsoContains("publisher", "VIEW");
+
+    verifyPaginationText("1–2 of 2");
+    verifyTableLength(2);
+
+    sortBy("First name");
+    verifyRowContains("editor", 0);
+    verifyRowContains("publisher", 1);
+    sortBy("First name");
+    verifyRowContains("publisher", 0);
+    verifyRowContains("editor", 1);
+
+    // delete all roles for publisher
+    getElementByDataCy("delete-id-5").click();
+    handlePrompt('Do you want to remove all roles of the user "p. user" in the workgroup "Blues"?', "Delete");
+    verifyTableLength(1);
+    verifyRowContains("editor", 0);
+
+    // cancel delete all roles for editor
+    getElementByDataCy("delete-id-2").click();
+    handlePrompt('Do you want to remove all roles of the user "e. user" in the workgroup "Blues"?', "Cancel");
+    verifyTableLength(1);
+    verifyRowContains("editor", 0);
+
+    getElementByDataCy("delete-id-2").click();
+    handlePrompt('Do you want to remove all roles of the user "e. user" in the workgroup "Blues"?', "Delete");
+    verifyTableLength(0);
+  });
+
   const errorWhileFetchingMessage = "An error occurred while fetching or updating data";
 
   it("displays error message when fetching workgroup table data fails.", () => {
@@ -149,7 +201,7 @@ describe("User administration settings tests", () => {
     getElementByDataCy("activate-button").should("not.have.class", "Mui-selected");
   });
 
-  it("displays error message when deleting user fails.", () => {
+  it("displays error message when deleting workgroup fails.", () => {
     cy.intercept("DELETE", "api/v2/workgroup/2", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/workgroup/2"); // workgroup "Reggae"
     getElementByDataCy("deleteworkgroup-button").click();

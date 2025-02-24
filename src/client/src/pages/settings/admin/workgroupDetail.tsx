@@ -27,14 +27,8 @@ export const WorkgroupDetail: FC = () => {
   const { users } = useContext(UserAdministrationContext);
   const [userDialogOpen, setUserDialogOpen] = useState(false);
 
-  const {
-    workgroups,
-    setWorkgroups,
-    selectedWorkgroup,
-    setSelectedWorkgroup,
-    workgroupDetailTableSortModel,
-    setWorkgroupDetailTableSortModel,
-  } = useContext(WorkgroupAdministrationContext);
+  const { selectedWorkgroup, setSelectedWorkgroup, workgroupDetailTableSortModel, setWorkgroupDetailTableSortModel } =
+    useContext(WorkgroupAdministrationContext);
   const { showPrompt } = useContext(PromptContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
