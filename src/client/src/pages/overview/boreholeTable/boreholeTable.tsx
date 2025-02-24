@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Box } from "@mui/system";
 import {
-  DataGrid,
   GridCellCheckboxRenderer,
   GridColDef,
   GridColumnHeaderParams,
@@ -23,9 +22,8 @@ import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../../api/fetchApiV2";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
-import { muiLocales } from "../../../mui.locales.ts";
+import { Table } from "../../settings/admin/Table.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
-import { TablePaginationActions } from "./TablePaginationActions.tsx";
 
 export interface BoreholeTableProps {
   boreholes: Boreholes;
@@ -307,39 +305,25 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   }, [apiRef, isLoading, tableScrollPosition]);
 
   return (
-    <DataGrid
-      data-cy="borehole-table"
+    <Table
+      rows={boreholes.data}
+      columns={columns}
+      dataCy={"borehole-table"}
       apiRef={apiRef}
       onRowClick={handleRowClick}
       getRowClassName={getRowClassName}
-      columnHeaderHeight={42}
-      rowHeight={42}
-      sortingOrder={["asc", "desc"]}
-      loading={isLoading}
-      rowCount={rowCount}
-      rows={boreholes.data}
-      columns={columns}
-      paginationMode="server"
-      hideFooterPagination={!boreholes.length}
-      paginationModel={paginationModel}
-      onPaginationModelChange={setPaginationModel}
-      pageSizeOptions={[100]}
-      slotProps={{
-        pagination: {
-          ActionsComponent: TablePaginationActions,
-        },
-      }}
-      localeText={muiLocales[i18n.language]}
-      disableColumnSelector
-      disableColumnFilter
-      checkboxSelection={true}
-      isRowSelectable={(params: GridRowParams) => params.row.lock === null}
-      disableRowSelectionOnClick
-      rowSelectionModel={selectionModel}
-      hideFooterSelectedRowCount
-      sortingMode="server"
       sortModel={sortModel}
       onSortModelChange={setSortModel}
+      isLoading={isLoading}
+      paginationModel={paginationModel}
+      onPaginationModelChange={setPaginationModel}
+      rowCount={rowCount}
+      paginationMode="server"
+      sortingMode="server"
+      checkboxSelection={true}
+      isRowSelectable={(params: GridRowParams) => params.row.lock === null}
+      rowSelectionModel={selectionModel}
+      showQuickFilter={false}
     />
   );
 };
