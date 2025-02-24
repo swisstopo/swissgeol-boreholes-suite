@@ -102,7 +102,7 @@ export const Table: FC<TableProps> = ({
       localeText={muiLocales[i18n.language]}
       disableColumnSelector
       disableRowSelectionOnClick
-      hideFooterPagination={!rows.length}
+      hideFooterPagination={!rows?.length}
       hideFooterSelectedRowCount
       disableColumnFilter
       disableColumnMenu={true}
