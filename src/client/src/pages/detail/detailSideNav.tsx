@@ -23,9 +23,9 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const auth = useAuth();
   const history = useHistory();
   const hasStratigraphy = borehole.stratigraphies.length > 0;
-  const hasLithology = borehole.stratigraphies?.some(s => s.layers?.length > 0);
-  const hasChronoStratigraphy = borehole.stratigraphies?.some(s => s.chronostratigraphyLayers?.length > 0);
-  const hasLithoStratigraphy = borehole.stratigraphies?.some(s => s.lithostratigraphyLayers?.length > 0);
+  const hasLithology = borehole.stratigraphies.some(s => s.layers.length > 0);
+  const hasChronoStratigraphy = borehole.stratigraphies.some(s => s.chronostratigraphyLayers.length > 0);
+  const hasLithoStratigraphy = borehole.stratigraphies.some(s => s.lithostratigraphyLayers.length > 0);
   const hasCompletion = borehole.completions.length > 0;
   const hasObservation = borehole.observations.length > 0;
   const hasWaterIngress =
