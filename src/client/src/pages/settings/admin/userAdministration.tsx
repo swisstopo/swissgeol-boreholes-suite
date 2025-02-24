@@ -5,9 +5,9 @@ import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
 import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchUsers, updateUser } from "../../../api/user.ts";
+import { Table } from "../../../components/table/table.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { useDeleteUserPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
-import { Table } from "./Table.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 

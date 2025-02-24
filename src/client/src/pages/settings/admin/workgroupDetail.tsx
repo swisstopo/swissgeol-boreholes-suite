@@ -10,9 +10,9 @@ import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { FormInputDisplayOnly } from "../../../components/form/form.ts";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
+import { Table } from "../../../components/table/table.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
-import { AddUserDialog } from "./addUserDialog.tsx";
-import { Table } from "./Table.tsx";
+import { AddUserDialog } from "./dialogs/addUserDialog.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
@@ -23,7 +23,6 @@ export const WorkgroupDetail: FC = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const [workgroupUsers, setWorkgroupUsers] = useState<User[]>();
-
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { users } = useContext(UserAdministrationContext);
   const [userDialogOpen, setUserDialogOpen] = useState(false);
@@ -121,6 +120,8 @@ export const WorkgroupDetail: FC = () => {
     );
   };
 
+  const isDisabled = selectedWorkgroup?.isDisabled;
+
   const columns: GridColDef[] = [
     firstNameColumn,
     lastNameColumn,
@@ -132,10 +133,8 @@ export const WorkgroupDetail: FC = () => {
       flex: 1,
       renderCell: renderRoleChips,
     },
-    getDeleteColumn(handleRemoveUserFromWorkgroup),
+    getDeleteColumn(handleRemoveUserFromWorkgroup, isDisabled),
   ];
-
-  const isDisabled = selectedWorkgroup?.isDisabled;
 
   return (
     <Stack
@@ -161,7 +160,7 @@ export const WorkgroupDetail: FC = () => {
           title={t("users")}
           sx={{ p: 4, pb: 3 }}
           titleTypographyProps={{ variant: "h5" }}
-          action={<AddButton label="addUser" variant="contained" onClick={addUser} />}
+          action={<AddButton label="addUser" variant="contained" onClick={addUser} disabled={isDisabled} />}
         />
         <CardContent sx={{ pt: 4, px: 3 }}>
           {workgroupUsers && workgroupUsers?.length > 0 && (

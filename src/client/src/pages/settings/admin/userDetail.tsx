@@ -10,9 +10,9 @@ import { removeAllWorkgroupRolesForUser } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
+import { Table } from "../../../components/table/table.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
-import { AddWorkgroupDialog } from "./addWorkgroupDialog.tsx";
-import { Table } from "./Table.tsx";
+import { AddWorkgroupDialog } from "./dialogs/addWorkgroupDialog.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
@@ -148,7 +148,7 @@ export const UserDetail: FC = () => {
       flex: 1,
     },
     statusColumn,
-    getDeleteColumn(handleRemoveAllWorkgroupRoles),
+    getDeleteColumn(handleRemoveAllWorkgroupRoles, isDisabled),
   ];
 
   return (
@@ -179,7 +179,7 @@ export const UserDetail: FC = () => {
           title={t("workgroups")}
           sx={{ p: 4, pb: 3 }}
           titleTypographyProps={{ variant: "h5" }}
-          action={<AddButton label="addWorkgroup" variant="contained" onClick={addWorkgroup} />}
+          action={<AddButton label="addWorkgroup" variant="contained" onClick={addWorkgroup} disabled={isDisabled} />}
         />
         <CardContent sx={{ pt: 4, px: 3 }}>
           {userWorkgroups && userWorkgroups?.length > 0 && (
