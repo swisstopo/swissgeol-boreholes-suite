@@ -182,18 +182,18 @@ describe("User administration settings tests", () => {
     getElementByDataCy("addworkgroup-button").click();
     setSelect("workgroup", 1); // Workgroup called "Reggae";
     setSelect("role", 1); // "Editor";
-    getElementByDataCy("addworkgrouprole-button").click();
+    getElementByDataCy("add-button").click();
 
     getElementByDataCy("addworkgroup-button").click();
     setSelect("workgroup", 1); // Workgroup called "Reggae";
     setSelect("role", 2); // "Controller";
-    getElementByDataCy("addworkgrouprole-button").click();
+    getElementByDataCy("add-button").click();
 
     // Add one workgroup roles to workgroup Country
     getElementByDataCy("addworkgroup-button").click();
     setSelect("workgroup", 4); // Workgroup called "Country";
     setSelect("role", 0); // "View";
-    getElementByDataCy("addworkgrouprole-button").click();
+    getElementByDataCy("add-button").click();
 
     verifyRowContains("Default", 0);
     verifyRowContains("Reggae", 1);

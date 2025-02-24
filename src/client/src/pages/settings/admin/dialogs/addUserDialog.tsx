@@ -24,24 +24,42 @@ export const AddUserDialog: FC<AddUserDialogProps> = ({
   const { users, setUsers } = useContext(UserAdministrationContext);
   const { callApiWithRollback } = useApiRequest();
 
+  const addRoleToExistingUser = (userId: number, newWorkgroupRole: WorkgroupRole) => {
+    const newWorkgroupUsers = workgroupUsers.map(user => {
+      if (user.id === userId) {
+        return {
+          ...user,
+          workgroupRoles: user.workgroupRoles ? [...user.workgroupRoles, newWorkgroupRole] : [newWorkgroupRole],
+        };
+      }
+      return user;
+    });
+    console.log(newWorkgroupUsers);
+    setWorkgroupUsers([...newWorkgroupUsers]);
+  };
+
+  const addNewUserToWorkgroup = (userId: number, newWorkgroupRole: WorkgroupRole) => {
+    const newUser = users.find(usr => usr.id === userId);
+    console.log(newUser);
+    if (newUser) {
+      newUser.workgroupRoles = [newWorkgroupRole];
+      setWorkgroupUsers([...workgroupUsers, newUser]);
+    }
+  };
+
   const updateUsersTableWithNewRole = (userId: number, role: Role) => {
-    const workgroupRole: WorkgroupRole = {
+    const existingWorkgroupUser = workgroupUsers.find(user => user.id === userId);
+    const newWorkgroupRole: WorkgroupRole = {
       userId,
       workgroupId,
       role,
       isActive: true,
     };
-    setWorkgroupUsers(
-      workgroupUsers.map(user => {
-        if (user.id === userId) {
-          return {
-            ...user,
-            workgroupRoles: user.workgroupRoles ? [...user.workgroupRoles, workgroupRole] : [workgroupRole],
-          };
-        }
-        return user;
-      }),
-    );
+    if (existingWorkgroupUser) {
+      addRoleToExistingUser(userId, newWorkgroupRole);
+    } else {
+      addNewUserToWorkgroup(userId, newWorkgroupRole);
+    }
   };
 
   const addUser = async (userId: string, role: Role) => {

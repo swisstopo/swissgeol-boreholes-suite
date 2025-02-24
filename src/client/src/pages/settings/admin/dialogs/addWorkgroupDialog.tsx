@@ -23,7 +23,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
   const { workgroups, setWorkgroups } = useContext(WorkgroupAdministrationContext);
   const { callApiWithRollback } = useApiRequest();
 
-  const updateWorkgroupsTableWithNewRole = (workgroupId: number, role: Role) => {
+  const addRoleToExistingWorkgroup = (workgroupId: number, role: Role) => {
     setUserWorkgroups(
       userWorkgroups.map(workgroup => {
         if (workgroup.id === workgroupId) {
@@ -35,6 +35,23 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
         return workgroup;
       }),
     );
+  };
+
+  const addNewWorkgroupToUser = (workgroupId: number, role: Role) => {
+    const newWorkgroup = workgroups.find(wgp => wgp.id === workgroupId);
+    if (newWorkgroup) {
+      newWorkgroup.roles = [role];
+      setUserWorkgroups([...userWorkgroups, newWorkgroup]);
+    }
+  };
+
+  const updateWorkgroupsTableWithNewRole = (workgroupId: number, role: Role) => {
+    const existingUserWorkgroup = userWorkgroups.find(wgp => wgp.id === workgroupId);
+    if (existingUserWorkgroup) {
+      addRoleToExistingWorkgroup(workgroupId, role);
+    } else {
+      addNewWorkgroupToUser(workgroupId, role);
+    }
   };
 
   const addWorkgroup = async (workgroupId: string, role: Role) => {
