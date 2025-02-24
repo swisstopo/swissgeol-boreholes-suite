@@ -85,16 +85,16 @@ export const WorkgroupDetail: FC = () => {
   const removeAllWorkgroupRolesWithRollback = async (user: User) => {
     // Define rollback function to revert the state if the API call fails
     const rollback = () => {
-      setWorkgroups([...workgroups!]);
+      setWorkgroupUsers([...workgroupUsers!]);
     };
 
     // Optimistically update the workgroup table
-    setWorkgroups([...workgroups!.filter(wgp => wgp.id != selectedWorkgroup.id)]);
+    setWorkgroupUsers([...workgroupUsers!.filter(usr => usr.id != user.id)]);
 
-    if (!user) return;
+    if (!selectedWorkgroup) return;
     await callApiWithRollback(
       removeAllWorkgroupRolesForUser,
-      [user.id, selectedWorkgroup.id, selectedWorkgroup.roles],
+      [user.id, selectedWorkgroup.id, user.workgroupRoles?.map(r => r.role) ?? []],
       rollback,
     );
   };
