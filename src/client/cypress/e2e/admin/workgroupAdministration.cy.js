@@ -14,34 +14,36 @@ describe("User administration settings tests", () => {
   it("displays, sorts and filters workgroup table.", () => {
     goToRouteAndAcceptTerms("/setting#workgroups");
     waitForTableData();
-    verifyRowContains("Default", 0);
-    verifyRowContains("3000", 0);
-    verifyRowContains("Active", 0);
-    verifyRowContains("View (2)", 0);
-    verifyRowContains("Editor (2)", 0);
-    verifyRowContains("Controller (2)", 0);
-    verifyRowContains("Validator (2)", 0);
-    verifyRowContains("Publisher (4)", 0);
-    verifyRowContains("Reggae", 1);
-    verifyRowContains("Inactive", 1);
+    verifyRowContains("Default", 2);
+    verifyRowContains("3000", 2);
+    verifyRowContains("Active", 2);
+    verifyRowContains("View (2)", 2);
+    verifyRowContains("Editor (2)", 2);
+    verifyRowContains("Controller (2)", 2);
+    verifyRowContains("Validator (2)", 2);
+    verifyRowContains("Publisher (4)", 2);
+    verifyRowContains("Reggae", 3);
+    verifyRowContains("Inactive", 3);
 
     verifyPaginationText("1–6 of 6");
     verifyTableLength(6);
 
-    // sort
-    sortBy("Workgroup");
+    // sort by workgroup name descending
     verifyRowContains("Blues", 0);
-    verifyRowContains("Country", 1);
-    verifyRowContains("Default", 2);
-    verifyRowContains("Reggae", 3);
+    sortBy("Workgroup");
+
+    verifyRowContains("World", 0);
+    verifyRowContains("Stage And Screen", 1);
+    verifyRowContains("Reggae", 2);
+    verifyRowContains("Default", 3);
 
     // navigate away and check if sorting is still applied
     getElementByDataCy("users-tab").click();
     getElementByDataCy("workgroups-tab").click();
-    verifyRowContains("Blues", 0);
-    verifyRowContains("Country", 1);
-    verifyRowContains("Default", 2);
-    verifyRowContains("Reggae", 3);
+    verifyRowContains("World", 0);
+    verifyRowContains("Stage And Screen", 1);
+    verifyRowContains("Reggae", 2);
+    verifyRowContains("Default", 3);
 
     // filter with quick filter
     cy.get(".MuiDataGrid-toolbarQuickFilter input")
@@ -54,10 +56,10 @@ describe("User administration settings tests", () => {
       });
 
     verifyTableLength(4);
-    verifyRowContains("Blues", 0);
-    verifyRowContains("Country", 1);
-    verifyRowContains("Reggae", 2);
-    verifyRowContains("World", 3);
+    verifyRowContains("World", 0);
+    verifyRowContains("Reggae", 1);
+    verifyRowContains("Country", 2);
+    verifyRowContains("Blues", 3);
   });
 
   it("shows workgroup detail inactivates and activates workgroup", () => {
@@ -69,7 +71,7 @@ describe("User administration settings tests", () => {
     getElementByDataCy("addworkgroup-button").click();
     setSelect("workgroup", 2); // Workgroup called "World";
     setSelect("role", 4); // "Publisher";
-    getElementByDataCy("addworkgrouprole-button").click();
+    getElementByDataCy("add-button").click();
     getElementByDataCy("backButton").click();
     getElementByDataCy("workgroups-tab").click();
 
