@@ -10,74 +10,81 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Role, Workgroup } from "../../../api/apiInterfaces.ts";
-import { fetchWorkgroups, setWorkgroupRole } from "../../../api/workgroup.ts";
+import { Role, User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
+import { fetchUsers } from "../../../api/user.ts";
+import { setWorkgroupRole } from "../../../api/workgroup.ts";
 import { AddButton, CancelButton } from "../../../components/buttons/buttons";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
-import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
+import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 
-interface AddWorkgroupDialogProps {
+interface AddUserDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  userId: string;
-  userWorkgroups: Workgroup[];
-  setUserWorkgroups: (userWorkgroups: Workgroup[]) => void;
+  workgroupId: number;
+  workgroupUsers: User[];
+  setWorkgroupUsers: (users: User[]) => void;
 }
 
-export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
+export const AddUserDialog: FC<AddUserDialogProps> = ({
   open,
   setOpen,
-  userId,
-  userWorkgroups,
-  setUserWorkgroups,
+  workgroupId,
+  workgroupUsers,
+  setWorkgroupUsers,
 }) => {
   const { t } = useTranslation();
-  const [workgroupId, setWorkgroupId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [role, setRole] = useState<Role | null>(null);
-  const { workgroups, setWorkgroups } = useContext(WorkgroupAdministrationContext);
+  const { users, setUsers } = useContext(UserAdministrationContext);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
 
   useEffect(() => {
-    const getWorkgroups = async () => {
-      const workgroups: Workgroup[] = await callApiWithErrorHandling(fetchWorkgroups, []);
-      if (!workgroups) {
+    const getUsers = async () => {
+      const users: User[] = await callApiWithErrorHandling(fetchUsers, []);
+      if (!users) {
         setOpen(false);
       } else {
-        setWorkgroups(workgroups);
+        setUsers(users);
       }
     };
-    getWorkgroups();
-  }, [callApiWithErrorHandling, setOpen, setWorkgroups]);
+    getUsers();
+  }, [callApiWithErrorHandling, setOpen, setUsers]);
 
   const resetDialog = () => {
     setOpen(false);
-    setWorkgroupId(null);
+    setUserId(null);
     setRole(null);
   };
 
-  const updateWorkgroupsTableWithNewRole = (workgroupId: number, role: Role) => {
-    setUserWorkgroups(
-      userWorkgroups.map(workgroup => {
-        if (workgroup.id === workgroupId) {
+  const updateUsersTableWithNewRole = (userId: number, role: Role) => {
+    const workgroupRole: WorkgroupRole = {
+      userId,
+      workgroupId,
+      role,
+      isActive: true,
+    };
+    setWorkgroupUsers(
+      workgroupUsers.map(user => {
+        if (user.id === userId) {
           return {
-            ...workgroup,
-            roles: workgroup.roles ? [...workgroup.roles, role] : [role],
+            ...user,
+            workgroupRoles: user.workgroupRoles ? [...user.workgroupRoles, workgroupRole] : [workgroupRole],
           };
         }
-        return workgroup;
+        return user;
       }),
     );
   };
 
-  const addWorkgroup = async () => {
-    if (workgroupId && role) {
+  const addUser = async () => {
+    if (userId && role) {
       resetDialog();
 
       const rollback = () => {
-        setUserWorkgroups([...userWorkgroups]);
+        setWorkgroupUsers([...workgroupUsers]);
       };
 
-      updateWorkgroupsTableWithNewRole(parseInt(workgroupId), role);
+      updateUsersTableWithNewRole(parseInt(userId), role);
 
       await callApiWithRollback(setWorkgroupRole, [userId, workgroupId, role, true], rollback);
     }
@@ -87,22 +94,22 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
     <Dialog open={open}>
       <Stack sx={{ minWidth: "326px" }}>
         <DialogTitle>
-          <Typography variant="h4">{t("addWorkgroupRole")}</Typography>
+          <Typography variant="h4">{t("addUserRole")}</Typography>
         </DialogTitle>
         <DialogContent>
           <Stack gap={2} sx={{ mt: 3 }}>
             <TextField
               select
-              label={t("workgroup")}
-              name={"workgroup"}
-              value={workgroupId}
-              data-cy="workgroup-formSelect"
+              label={t("user")}
+              name={"user"}
+              value={userId}
+              data-cy="user-formSelect"
               onChange={event => {
-                setWorkgroupId(event.target.value);
+                setUserId(event.target.value);
               }}>
-              {workgroups.map(wgp => (
-                <MenuItem key={wgp.id} value={wgp.id}>
-                  {wgp.name}
+              {users.map(usr => (
+                <MenuItem key={usr.id} value={usr.id}>
+                  {`${usr.firstName} ${usr.lastName}`}
                 </MenuItem>
               ))}
             </TextField>
@@ -126,7 +133,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
             <CancelButton onClick={resetDialog} />
-            <AddButton disabled={!workgroupId || !role} label="add" variant="contained" onClick={addWorkgroup} />
+            <AddButton disabled={!userId || !role} label="add" variant="contained" onClick={addUser} />
           </Stack>
         </DialogActions>
       </Stack>

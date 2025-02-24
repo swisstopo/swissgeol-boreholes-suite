@@ -9,6 +9,8 @@ export interface WorkgroupAdministrationContextProps {
   setSelectedWorkgroup: (workgroup: Workgroup | null) => void;
   workgroupTableSortModel: GridSortModel;
   setworkgroupTableSortModel: (model: GridSortModel) => void;
+  workgroupDetailTableSortModel: GridSortModel;
+  setWorkgroupDetailTableSortModel: (model: GridSortModel) => void;
 }
 
 export const WorkgroupAdministrationContext = createContext<WorkgroupAdministrationContextProps>({
@@ -18,12 +20,19 @@ export const WorkgroupAdministrationContext = createContext<WorkgroupAdministrat
   setSelectedWorkgroup: () => {},
   workgroupTableSortModel: [],
   setworkgroupTableSortModel: () => {},
+  workgroupDetailTableSortModel: [],
+  setWorkgroupDetailTableSortModel: () => {},
 });
 
 export const WorkgroupAdministrationProvider: FC<PropsWithChildren> = ({ children }) => {
   const [workgroups, setWorkgroups] = useState<Workgroup[]>([]);
   const [selectedWorkgroup, setSelectedWorkgroup] = useState<Workgroup | null>(null);
-  const [workgroupTableSortModel, setworkgroupTableSortModel] = useState<GridSortModel>([]);
+  const [workgroupTableSortModel, setworkgroupTableSortModel] = useState<GridSortModel>([
+    { field: "name", sort: "asc" },
+  ]);
+  const [workgroupDetailTableSortModel, setWorkgroupDetailTableSortModel] = useState<GridSortModel>([
+    { field: "lastName", sort: "asc" },
+  ]);
   return (
     <WorkgroupAdministrationContext.Provider
       value={useMemo(
@@ -34,8 +43,10 @@ export const WorkgroupAdministrationProvider: FC<PropsWithChildren> = ({ childre
           setSelectedWorkgroup,
           workgroupTableSortModel,
           setworkgroupTableSortModel,
+          workgroupDetailTableSortModel,
+          setWorkgroupDetailTableSortModel,
         }),
-        [workgroups, selectedWorkgroup, workgroupTableSortModel],
+        [workgroups, selectedWorkgroup, workgroupTableSortModel, workgroupDetailTableSortModel],
       )}>
       {children}
     </WorkgroupAdministrationContext.Provider>

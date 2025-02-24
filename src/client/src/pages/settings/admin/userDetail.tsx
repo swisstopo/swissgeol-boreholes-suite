@@ -179,7 +179,7 @@ export const UserDetail: FC = () => {
           title={t("workgroups")}
           sx={{ p: 4, pb: 3 }}
           titleTypographyProps={{ variant: "h5" }}
-          action={<AddButton label="addWorkgroup" variant="contained" onClick={() => addWorkgroup()} />}
+          action={<AddButton label="addWorkgroup" variant="contained" onClick={addWorkgroup} />}
         />
         <CardContent sx={{ pt: 4, px: 3 }}>
           {userWorkgroups && userWorkgroups?.length > 0 && (
