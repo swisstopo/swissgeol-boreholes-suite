@@ -78,7 +78,7 @@ interface ParentListItemProps {
 
 export const ParentListItem = styled(ListItem)<ParentListItemProps>(({ active, hasContent }) => {
   let textColor = "inherit";
-  if (!hasContent) {
+  if (hasContent === false) {
     textColor = theme.palette.buttonStates.outlined.disabled.color;
   } else if (active) {
     textColor = theme.palette.error.main;

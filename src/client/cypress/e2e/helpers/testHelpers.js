@@ -1,3 +1,4 @@
+import { ObservationType } from "../../../src/pages/detail/form/hydrogeology/Observation.ts";
 import adminUser from "../../fixtures/adminUser.json";
 import editorUser from "../../fixtures/editorUser.json";
 import viewerUser from "../../fixtures/viewerUser.json";
@@ -529,6 +530,7 @@ export const createFieldMeasurement = (
         casingId: casingId,
         fromDepthM: fromDepthM,
         toDepthM: toDepthM,
+        type: ObservationType.fieldMeasurement,
       },
       cache: "no-cache",
       credentials: "same-origin",
@@ -558,6 +560,7 @@ export const createWateringress = (
         casingId: casingId,
         fromDepthM: fromDepthM,
         toDepthM: toDepthM,
+        type: ObservationType.waterIngress,
       },
       cache: "no-cache",
       credentials: "same-origin",
@@ -587,6 +590,7 @@ export const createGroundwaterLevelMeasurement = (
         casingId: casingId,
         fromDepthM: fromDepthM,
         toDepthM: toDepthM,
+        type: ObservationType.groundwaterLevelMeasurement,
       },
       cache: "no-cache",
       credentials: "same-origin",
@@ -616,6 +620,7 @@ export const createHydrotest = (
         casingId: casingId,
         fromDepthM: fromDepthM,
         toDepthM: toDepthM,
+        type: ObservationType.hydrotest,
       },
       cache: "no-cache",
       credentials: "same-origin",
