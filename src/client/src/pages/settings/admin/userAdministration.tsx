@@ -16,7 +16,7 @@ export const UserAdministration: FC = () => {
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const history = useHistory();
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
-  const { statusColumn, getDeleteColumn } = useSharedTableColumns();
+  const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { users, setUsers, setSelectedUser, userTableSortModel, setUserTableSortModel } =
     useContext(UserAdministrationContext);
   const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
@@ -117,9 +117,9 @@ export const UserAdministration: FC = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "firstName", headerName: t("firstname"), flex: 1 },
-    { field: "lastName", headerName: t("lastname"), flex: 1 },
-    { field: "email", headerName: "Email", flex: 1 },
+    firstNameColumn,
+    lastNameColumn,
+    emailColumn,
     statusColumn,
     {
       field: "isAdmin",

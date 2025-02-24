@@ -1,23 +1,31 @@
-import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
+import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
-import { Card, CardContent, CardHeader, Checkbox, Stack, Typography } from "@mui/material";
+import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
+import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
+import { Trash2, X } from "lucide-react";
 import { User, Workgroup, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { fetchUser, updateUser } from "../../../api/user.ts";
+import { removeAllWorkgroupRolesForUser } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
+import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { AddWorkgroupDialog } from "./addWorkgroupDialog.tsx";
+import { Table } from "./Table.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
-import { WorkgroupTable } from "./workgroupTable.tsx";
+import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
 export const UserDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const [userWorkgroups, setUserWorkgroups] = useState<Workgroup[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
+  const [filterModel, setFilterModel] = useState<GridFilterModel>();
+  const { workgroupNameColumn, boreholeCountColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { selectedUser, setSelectedUser, userDetailTableSortModel, setUserDetailTableSortModel } =
     useContext(UserAdministrationContext);
+  const { showPrompt } = useContext(PromptContext);
   const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const history = useHistory();
 
@@ -53,6 +61,8 @@ export const UserDetail: FC = () => {
     getUser();
   }, [callApiWithErrorHandling, history, id, setSelectedUser]);
 
+  const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
+
   if (!selectedUser) return;
   const isDisabled = selectedUser.isDisabled ?? true;
 
@@ -73,6 +83,73 @@ export const UserDetail: FC = () => {
   const addWorkgroup = () => {
     setWorkgroupDialogOpen(true);
   };
+
+  const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
+    return (
+      <Stack direction="row" gap={1} p={1.2}>
+        {params.value.map((roleName: string) => (
+          <Chip
+            key={roleName}
+            label={roleName.toUpperCase()}
+            size="small"
+            color="primary"
+            data-cy={`${roleName}-chip`}
+          />
+        ))}
+      </Stack>
+    );
+  };
+
+  const removeAllWorkgroupRolesWithRollback = async (workgroup: Workgroup) => {
+    // Define rollback function to revert the state if the API call fails
+    const rollback = () => {
+      setUserWorkgroups([...userWorkgroups!]);
+    };
+
+    // Optimistically update the workgroup table
+    setUserWorkgroups([...userWorkgroups!.filter(wgp => wgp.id != workgroup.id)]);
+
+    if (!selectedUser) return;
+    await callApiWithRollback(
+      removeAllWorkgroupRolesForUser,
+      [selectedUser.id, workgroup.id, workgroup.roles],
+      rollback,
+    );
+  };
+
+  const handleRemoveAllWorkgroupRoles = (event: MouseEvent<HTMLButtonElement>, id: number) => {
+    event.stopPropagation();
+    if (!userWorkgroups || !selectedUser) return;
+    const userWorkgroup = userWorkgroups.find(workgroup => workgroup.id === id);
+    if (!userWorkgroup) return;
+    showPrompt(t("confirmRemoveRoles", { name: selectedUser.name, workgroupName: userWorkgroup.name }), [
+      {
+        label: t("cancel"),
+        icon: <X />,
+      },
+      {
+        label: t("delete"),
+        icon: <Trash2 />,
+        variant: "contained",
+        action: () => {
+          removeAllWorkgroupRolesWithRollback(userWorkgroup);
+        },
+      },
+    ]);
+  };
+
+  const columns: GridColDef[] = [
+    workgroupNameColumn,
+    boreholeCountColumn,
+    {
+      field: "roles",
+      headerName: t("roles"),
+      renderCell: renderRoleChips,
+      flex: 1,
+    },
+    statusColumn,
+    getDeleteColumn(handleRemoveAllWorkgroupRoles),
+  ];
 
   return (
     <Stack
@@ -106,13 +183,15 @@ export const UserDetail: FC = () => {
         />
         <CardContent sx={{ pt: 4, px: 3 }}>
           {userWorkgroups && userWorkgroups?.length > 0 && (
-            <WorkgroupTable
-              isDisabled={isDisabled}
-              workgroups={userWorkgroups}
-              user={selectedUser}
-              setWorkgroups={setUserWorkgroups}
+            <Table
+              rows={userWorkgroups}
+              columns={columns}
+              filterModel={filterModel}
+              onFilterModelChange={handleFilterModelChange}
               sortModel={userDetailTableSortModel}
-              setSortModel={setUserDetailTableSortModel}
+              isDisabled={isDisabled}
+              onSortModelChange={setUserDetailTableSortModel}
+              dataCy={"user-workgroups-table"}
             />
           )}
         </CardContent>

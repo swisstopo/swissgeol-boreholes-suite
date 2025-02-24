@@ -19,7 +19,7 @@ export const WorkgroupDetail: FC = () => {
   const history = useHistory();
 
   const { t } = useTranslation();
-  const { statusColumn, getDeleteColumn } = useSharedTableColumns();
+  const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { users } = useContext(UserAdministrationContext);
   const { selectedWorkgroup, setSelectedWorkgroup } = useContext(WorkgroupAdministrationContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
@@ -69,9 +69,9 @@ export const WorkgroupDetail: FC = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "firstName", headerName: t("firstname"), flex: 1 },
-    { field: "lastName", headerName: t("lastname"), flex: 1 },
-    { field: "email", headerName: "Email", flex: 1 },
+    firstNameColumn,
+    lastNameColumn,
+    emailColumn,
     statusColumn,
     {
       field: "workgroupRoles",
@@ -112,7 +112,7 @@ export const WorkgroupDetail: FC = () => {
               filterModel={filterModel}
               onFilterModelChange={handleFilterModelChange}
               isDisabled={isDisabled}
-              dataCy={"user-workgroups-table"}
+              dataCy={"workgroup-users-table"}
             />
           )}
         </CardContent>
