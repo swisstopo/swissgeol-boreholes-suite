@@ -205,24 +205,27 @@ describe("User administration settings tests", () => {
 
     // sort
     sortBy("Workgroup");
-    verifyRowContains("Country", 0);
+    verifyRowContains("Reggae", 0);
     verifyRowContains("Default", 1);
-    verifyRowContains("Reggae", 2);
+    verifyRowContains("Country", 2);
 
     // delete all workgroup roles for Reggae Workgroup
     getElementByDataCy("delete-id-2").click();
     handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Reggae"?', "Delete");
     verifyTableLength(2);
-    verifyRowContains("Country", 0);
+    verifyRowContains("Default", 0);
+    verifyRowContains("Country", 1);
 
     // cancel delete all workgroup roles for Country Workgroup
     getElementByDataCy("delete-id-5").click();
     handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "Cancel");
     verifyTableLength(2);
-    verifyRowContains("Country", 0);
+    verifyRowContains("Default", 0);
+    verifyRowContains("Country", 1);
 
     getElementByDataCy("delete-id-5").click();
     handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "Delete");
+    verifyRowContains("Default", 0);
     verifyTableLength(1);
   });
 
