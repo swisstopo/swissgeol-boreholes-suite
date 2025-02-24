@@ -4,6 +4,7 @@ import {
   sortBy,
   verifyPaginationText,
   verifyRowContains,
+  verifyRowWithContantAlsoContains,
   verifyRowWithTextCheckState,
   verifyTableLength,
   waitForTableData,
@@ -15,9 +16,9 @@ describe("User administration settings tests", () => {
   it("displays, sorts and filters user table and shows user detail.", () => {
     goToRouteAndAcceptTerms("/setting#users");
     waitForTableData();
-    verifyRowContains("Admin", 0);
-    verifyRowContains("admin.user@local.dev", 0);
-    verifyRowContains("Active", 0);
+    verifyRowContains("Admin", 7);
+    verifyRowContains("admin.user@local.dev", 7);
+    verifyRowContains("Active", 7);
     verifyPaginationText("1–8 of 8");
     verifyTableLength(8);
 
@@ -140,7 +141,7 @@ describe("User administration settings tests", () => {
     // go to users table
     getElementByDataCy("backButton").click();
     waitForTableData();
-    verifyRowContains("Inactive", 1); // controller
+    verifyRowWithContantAlsoContains("controller", "Inactive");
     getElementByDataCy("delete-id-3").click(); // controller
     handlePrompt(messageForInactiveNonDeletableUser, "Cancel");
 
@@ -195,9 +196,9 @@ describe("User administration settings tests", () => {
     setSelect("role", 0); // "View";
     getElementByDataCy("add-button").click();
 
-    verifyRowContains("Default", 0);
-    verifyRowContains("Reggae", 1);
-    verifyRowContains("Country", 2);
+    verifyRowContains("Country", 0);
+    verifyRowContains("Default", 1);
+    verifyRowContains("Reggae", 2);
 
     verifyPaginationText("1–3 of 3");
     verifyTableLength(3);
