@@ -68,7 +68,7 @@ export const RoleAssignmentDialog = <T,>({
       const user = entity as User;
       return (
         <MenuItem key={user.id} value={user.id}>
-          `${user.firstName} ${user.lastName}`;
+          {`${user.firstName} ${user.lastName}`}
         </MenuItem>
       );
     }
@@ -92,8 +92,9 @@ export const RoleAssignmentDialog = <T,>({
             <TextField
               select
               label={t(entityType)}
-              name={`${entityType}Select`}
+              name={entityType}
               value={selectedId}
+              data-cy={`${entityType}-formSelect`}
               onChange={event => {
                 setSelectedId(event.target.value);
               }}>
@@ -104,6 +105,7 @@ export const RoleAssignmentDialog = <T,>({
               label={t("role")}
               name={"role"}
               value={role}
+              data-cy="role-formSelect"
               onChange={event => {
                 setRole(event.target.value as Role);
               }}>
