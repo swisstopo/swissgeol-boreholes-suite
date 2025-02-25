@@ -41,8 +41,7 @@ public class BoreholeGeometryController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> GetAsync([FromQuery] int boreholeId)
     {
-        if (await boreholeLockService.IsUserLackingPermissions(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
-            return Unauthorized("You are missing permissions for the borehole with the requested id.");
+        if (await boreholeLockService.IsUserLackingPermissions(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
 
         var result = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
         return Ok(result);
@@ -145,8 +144,7 @@ public class BoreholeGeometryController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> GetDepthTVD([FromQuery] int boreholeId, [FromQuery] double depthMD)
     {
-        if (await boreholeLockService.IsUserLackingPermissions(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
-            return Unauthorized("You are missing permissions for the borehole with the requested id.");
+        if (await boreholeLockService.IsUserLackingPermissions(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
 
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
 
@@ -169,8 +167,7 @@ public class BoreholeGeometryController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> GetDepthInMasl([FromQuery] int boreholeId, [FromQuery] double depthMD)
     {
-        if (await boreholeLockService.IsUserLackingPermissions(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
-            return Unauthorized("You are missing permissions for the borehole with the requested id.");
+        if (await boreholeLockService.IsUserLackingPermissions(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
 
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
         var tvd = geometry.GetTVDIfGeometryExists(depthMD);
