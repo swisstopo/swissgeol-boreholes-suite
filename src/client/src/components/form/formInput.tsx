@@ -18,7 +18,7 @@ export interface FormInputProps {
   type?: FormValueType;
   multiline?: boolean;
   rows?: number;
-  value?: string | number | Date;
+  value?: string | number | Date | null;
   controlledValue?: string | number | Date;
   sx?: SxProps;
   className?: string;

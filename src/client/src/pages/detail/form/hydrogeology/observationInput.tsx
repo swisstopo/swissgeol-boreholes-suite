@@ -19,10 +19,10 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   const getCasingOptions = useGetCasingOptions();
 
   const [depthUnit, setDepthUnit] = useState(ObservationDepthUnitType.measuredDepth);
-  const [fromDepthM, setFromDepthM] = useState(observation.fromDepthM || null);
-  const [toDepthM, setToDepthM] = useState(observation.toDepthM || null);
-  const [fromDepthMasl, setFromDepthMasl] = useState(observation.fromDepthMasl || null);
-  const [toDepthMasl, setToDepthMasl] = useState(observation.toDepthMasl || null);
+  const [fromDepthM, setFromDepthM] = useState<number | null>(observation.fromDepthM);
+  const [toDepthM, setToDepthM] = useState<number | null>(observation.toDepthM);
+  const [fromDepthMasl, setFromDepthMasl] = useState<number | null>(observation.fromDepthMasl);
+  const [toDepthMasl, setToDepthMasl] = useState<number | null>(observation.toDepthMasl);
 
   const setValue = (e: number | boolean | null) => {
     if (typeof e !== "number") return;
@@ -109,14 +109,14 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
             <FormInput
               fieldName="fromDepthM"
               label="fromdepth"
-              value={fromDepthM ?? undefined}
+              value={fromDepthM}
               type={FormValueType.Number}
               onUpdate={(value: string) => setFromDepthM(parseFloat(value) || 0)}
             />
             <FormInput
               fieldName="toDepthM"
               label="todepth"
-              value={toDepthM ?? undefined}
+              value={toDepthM}
               type={FormValueType.Number}
               onUpdate={(value: string) => setToDepthM(parseFloat(value) || 0)}
             />
@@ -126,7 +126,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
               key={`fromDepthMasl-${fromDepthMasl}`} // Unique key forces re-render
               fieldName="fromDepthMasl"
               label="fromDepthMasl"
-              value={fromDepthMasl ?? undefined}
+              value={fromDepthMasl}
               type={FormValueType.Number}
               disabled={depthUnit === ObservationDepthUnitType.measuredDepth}
             />
@@ -134,7 +134,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
               key={`toDepthMasl-${toDepthMasl}`} // Unique key forces re-render
               fieldName="toDepthMasl"
               label="toDepthMasl"
-              value={toDepthMasl ?? undefined}
+              value={toDepthMasl}
               type={FormValueType.Number}
               disabled={depthUnit === ObservationDepthUnitType.measuredDepth}
             />
