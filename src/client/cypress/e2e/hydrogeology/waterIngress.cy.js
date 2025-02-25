@@ -128,12 +128,16 @@ describe("Tests for the wateringress editor.", () => {
       cy.wait("@wateringress_GET");
 
       // Ensure depths have no values
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromdepth-formDisplay"]').contains("-");
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="todepth-formDisplay"]').contains("-");
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromDepthMasl-formDisplay"]').contains("-");
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="toDepthMasl-formDisplay"]').contains("-");
+      cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromdepth-formDisplay"]').as("fromDepthDisplay").contains("-");
+      cy.get('[data-cy="waterIngress-card.0"] [data-cy="todepth-formDisplay"]').as("toDepthDisplay").contains("-");
+      cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromDepthMasl-formDisplay"]')
+        .as("fromDepthMaslDisplay")
+        .contains("-");
+      cy.get('[data-cy="waterIngress-card.0"] [data-cy="toDepthMasl-formDisplay"]')
+        .as("toDepthMaslDisplay")
+        .contains("-");
 
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="edit-button"]').click({ force: true });
+      startEditing();
 
       // Enter measured depth and ensure MASL is automatically set
       setInput("fromDepthM", 24);
@@ -156,12 +160,12 @@ describe("Tests for the wateringress editor.", () => {
       cy.wait("@wateringress_GET");
 
       // Ensure depths have correct values in display
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromdepth-formDisplay"]').contains("24");
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="todepth-formDisplay"]').contains("55");
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromDepthMasl-formDisplay"]').contains("3976");
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="toDepthMasl-formDisplay"]').contains("3945");
+      cy.get("@fromDepthDisplay").contains("24");
+      cy.get("@toDepthDisplay").contains("55");
+      cy.get("@fromDepthMaslDisplay").contains("3976");
+      cy.get("@toDepthMaslDisplay").contains("3945");
 
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="edit-button"]').click({ force: true });
+      startEditing();
 
       // Switch to manual depth input in MASL
       setSelect("depthUnit", 1);
@@ -190,10 +194,10 @@ describe("Tests for the wateringress editor.", () => {
       cy.wait("@wateringress_GET");
 
       // Double check values in display form
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromdepth-formDisplay"]').contains("500");
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="todepth-formDisplay"]').contains("300");
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromDepthMasl-formDisplay"]').contains("2222");
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="toDepthMasl-formDisplay"]').contains("1555");
+      cy.get("@fromDepthDisplay").contains("500");
+      cy.get("@toDepthDisplay").contains("300");
+      cy.get("@fromDepthMaslDisplay").contains("2222");
+      cy.get("@toDepthMaslDisplay").contains("1555");
     });
   });
 });
