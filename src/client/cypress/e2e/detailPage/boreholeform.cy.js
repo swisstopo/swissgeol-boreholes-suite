@@ -30,6 +30,22 @@ function ensureEditingEnabled() {
   cy.get('[data-cy="editingstop-button"]').should("exist");
 }
 
+function navigateToLocationTab(id) {
+  getElementByDataCy("location-menu-item").click();
+  cy.location().should(location => {
+    expect(location.pathname).to.eq(`/${id}/location`);
+  });
+  cy.contains("Spatial reference system");
+}
+
+function navigateToBoreholeTab(id) {
+  getElementByDataCy("borehole-menu-item").click();
+  cy.location().should(location => {
+    expect(location.pathname).to.eq(`/${id}/borehole`);
+  });
+  cy.contains("Borehole type");
+}
+
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {
     goToRouteAndAcceptTerms(`/`);
@@ -58,38 +74,40 @@ describe("Test for the borehole form.", () => {
 
     saveWithSaveBar();
     // navigate away and back to check if values are saved
-    cy.get('[data-cy="borehole-menu-item"]').click();
-    cy.get('[data-cy="location-menu-item"]').click();
-    evaluateSelect("restrictionId", "20111003");
-    evaluateSelect("nationalInterest", "2");
-    evaluateSelect("originalReferenceSystem", "20104001");
-    evaluateSelect("locationPrecisionId", "20113002");
-    evaluateSelect("elevationPrecisionId", "20114002");
-    evaluateSelect("referenceElevationPrecisionId", "20114002");
-    evaluateSelect("referenceElevationTypeId", "20117004");
+    cy.get("@borehole_id").then(id => {
+      navigateToBoreholeTab(id);
+      navigateToLocationTab(id);
+      evaluateSelect("restrictionId", "20111003");
+      evaluateSelect("nationalInterest", "2");
+      evaluateSelect("originalReferenceSystem", "20104001");
+      evaluateSelect("locationPrecisionId", "20113002");
+      evaluateSelect("elevationPrecisionId", "20114002");
+      evaluateSelect("referenceElevationPrecisionId", "20114002");
+      evaluateSelect("referenceElevationTypeId", "20117004");
 
-    // fill all dropdowns on borehole tab
-    cy.get('[data-cy="borehole-menu-item"]').click();
-    setSelect("purposeId", 1);
-    setSelect("typeId", 1);
-    setSelect("depthPrecisionId", 1);
-    setSelect("statusId", 1);
+      // fill all dropdowns on borehole tab
+      navigateToBoreholeTab(id);
+      setSelect("purposeId", 1);
+      setSelect("typeId", 1);
+      setSelect("depthPrecisionId", 1);
+      setSelect("statusId", 1);
 
-    evaluateSelect("purposeId", "22103001");
-    evaluateSelect("typeId", "20101001");
-    evaluateSelect("depthPrecisionId", "22108001");
-    evaluateSelect("statusId", "22104001");
+      evaluateSelect("purposeId", "22103001");
+      evaluateSelect("typeId", "20101001");
+      evaluateSelect("depthPrecisionId", "22108001");
+      evaluateSelect("statusId", "22104001");
 
-    saveWithSaveBar();
+      saveWithSaveBar();
 
-    // navigate away and back to check if values are saved
-    cy.get('[data-cy="location-menu-item"]').click();
-    cy.get('[data-cy="borehole-menu-item"]').click();
+      // navigate away and back to check if values are saved
+      navigateToLocationTab(id);
+      navigateToBoreholeTab(id);
 
-    evaluateSelect("purposeId", "22103001");
-    evaluateSelect("typeId", "20101001");
-    evaluateSelect("depthPrecisionId", "22108001");
-    evaluateSelect("statusId", "22104001");
+      evaluateSelect("purposeId", "22103001");
+      evaluateSelect("typeId", "20101001");
+      evaluateSelect("depthPrecisionId", "22108001");
+      evaluateSelect("statusId", "22104001");
+    });
   });
 
   it("Fills all inputs on borehole tab and saves", () => {
@@ -120,9 +138,8 @@ describe("Test for the borehole form.", () => {
       handlePrompt(messageUnsavedChanges, "cancel");
 
       saveWithSaveBar();
-      getElementByDataCy("location-menu-item").click();
-      cy.contains("Boreholes.swissgeol.ch ID");
-      getElementByDataCy("borehole-menu-item").click();
+      navigateToLocationTab(id);
+      navigateToBoreholeTab(id);
       evaluateSelect("lithostratigraphyTopBedrockId", "15300583");
       evaluateSelect("chronostratigraphyTopBedrockId", "15001001");
       cy.contains("Bodensee-Nagelfluh").should("exist");
@@ -147,8 +164,8 @@ describe("Test for the borehole form.", () => {
       saveWithSaveBar();
 
       // navigate away and return
-      getElementByDataCy("location-menu-item").click();
-      getElementByDataCy("borehole-menu-item").click();
+      navigateToLocationTab(id);
+      navigateToBoreholeTab(id);
       evaluateBooleanSelect("topBedrockIntersected", true);
 
       // can save value for top bedrock intersected which does not correspond to automatically set values
@@ -156,9 +173,8 @@ describe("Test for the borehole form.", () => {
       saveWithSaveBar();
       cy.wait(1000);
       // navigate away and return
-      getElementByDataCy("location-menu-item").click();
-      cy.contains("Spatial reference system");
-      getElementByDataCy("borehole-menu-item").click();
+      navigateToLocationTab(id);
+      navigateToBoreholeTab(id);
       evaluateBooleanSelect("topBedrockIntersected", false);
       evaluateInput("topBedrockFreshMd", "");
       evaluateInput("topBedrockFreshMd", "");
@@ -192,7 +208,7 @@ describe("Test for the borehole form.", () => {
       returnToOverview();
       showTableAndWaitForData();
       clickOnRowWithText("AAA_Penguin");
-      cy.get('[data-cy="borehole-menu-item"]').click();
+      navigateToBoreholeTab(id);
       evaluateInput("totalDepth", "700");
       evaluateInput("topBedrockFreshMd", "0.60224");
       evaluateInput("topBedrockWeatheredMd", "78'945'100");
@@ -285,7 +301,7 @@ describe("Test for the borehole form.", () => {
       evaluateInput("elevationZ", "0");
       evaluateInput("referenceElevation", "0");
 
-      getElementByDataCy("borehole-menu-item").click();
+      navigateToBoreholeTab(id);
 
       evaluateInput("totalDepth", "0");
       evaluateInput("topBedrockWeatheredMd", "0");
