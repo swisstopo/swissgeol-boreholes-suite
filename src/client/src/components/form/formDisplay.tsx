@@ -8,7 +8,7 @@ import { FormValueType } from "./form";
 export interface FormDisplayProps {
   prefix?: string;
   label: string;
-  value: string | string[] | number | number[] | boolean | Codelist | Codelist[];
+  value: string | string[] | number | number[] | boolean | Codelist | Codelist[] | null;
   type?: FormValueType;
   sx?: SxProps;
 }
@@ -16,7 +16,7 @@ export interface FormDisplayProps {
 export const FormDisplay: FC<FormDisplayProps> = ({ prefix, label, value, type, sx }) => {
   const { t, i18n } = useTranslation();
 
-  const convert = (value: string | number | boolean | Codelist | undefined): string => {
+  const convert = (value: string | number | boolean | Codelist | undefined | null): string => {
     if ((value !== 0 && value == undefined) || value === "") {
       return "-";
     } else if (type === FormValueType.Date) {
@@ -48,7 +48,7 @@ export const FormDisplay: FC<FormDisplayProps> = ({ prefix, label, value, type, 
     }
   };
 
-  const formatValue = (value: string | string[] | number | number[] | boolean | Codelist | Codelist[]): string => {
+  const formatValue = (value: string | string[] | number | number[] | boolean | Codelist | Codelist[] | null): string => {
     if (Array.isArray(value)) {
       if (value.length === 0) {
         return "-";

@@ -51,8 +51,8 @@ export const FormInput: FC<FormInputProps> = ({
   const isDateInput = type === FormValueType.Date;
   const isReadOnly = readonly ?? !editingEnabled;
 
-  const getDefaultValue = (value: string | number | Date | undefined) => {
-    if (value == undefined) {
+  const getDefaultValue = (value: string | number | Date | undefined | null) => {
+    if (!value) {
       return "";
     } else if (isDateTimeInput) {
       // re-format from 'YYYY-MM-DDTHH:mm:ss.sssZ' to 'YYYY-MM-DDTHH:mm'.
