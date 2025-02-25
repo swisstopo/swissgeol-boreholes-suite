@@ -3,12 +3,18 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
+import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { ChildListItem, ParentListItem } from "../../components/styledComponents.ts";
 import { capitalizeFirstLetter } from "../../utils";
+import { ObservationType } from "./form/hydrogeology/Observation.ts";
 
-export const DetailSideNav = () => {
+interface DetailSideNavProps {
+  borehole: BoreholeV2;
+}
+
+export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const [stratigraphyIsVisible, setStratigraphyIsVisible] = useState(false);
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const { id } = useParams<{ id: string }>();
@@ -16,6 +22,21 @@ export const DetailSideNav = () => {
   const { t } = useTranslation();
   const auth = useAuth();
   const history = useHistory();
+  const hasStratigraphy = (borehole.stratigraphies?.length ?? 0) > 0;
+  const hasLithology = borehole.stratigraphies?.some(s => s.layers?.length > 0) ?? false;
+  const hasChronoStratigraphy = borehole.stratigraphies?.some(s => s.chronostratigraphyLayers?.length > 0) ?? false;
+  const hasLithoStratigraphy = borehole.stratigraphies?.some(s => s.lithostratigraphyLayers?.length > 0) ?? false;
+  const hasCompletion = (borehole.completions?.length ?? 0) > 0;
+  const hasObservation = (borehole.observations?.length ?? 0) > 0;
+  const hasWaterIngress =
+    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.waterIngress) ?? false);
+  const hasGroundwaterLevelMeasurement =
+    hasObservation &&
+    (borehole.observations?.some(obs => obs.type === ObservationType.groundwaterLevelMeasurement) ?? false);
+  const hasHydroTest =
+    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.hydrotest) ?? false);
+  const hasFieldMeasurement =
+    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.fieldMeasurement) ?? false);
 
   useEffect(() => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
@@ -57,6 +78,7 @@ export const DetailSideNav = () => {
           </ParentListItem>
           <ParentListItem
             active={false}
+            hasContent={hasStratigraphy}
             onClick={() => {
               setStratigraphyIsVisible(!stratigraphyIsVisible);
             }}>
@@ -66,6 +88,7 @@ export const DetailSideNav = () => {
             <>
               <ChildListItem
                 active={location.pathname === `/${id}/stratigraphy/lithology`}
+                hasContent={hasLithology}
                 onClick={() => {
                   history.push(`/${id}/stratigraphy/lithology`);
                 }}>
@@ -73,6 +96,7 @@ export const DetailSideNav = () => {
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/stratigraphy/chronostratigraphy`}
+                hasContent={hasChronoStratigraphy}
                 onClick={() => {
                   history.push(`/${id}/stratigraphy/chronostratigraphy`);
                 }}>
@@ -82,6 +106,7 @@ export const DetailSideNav = () => {
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/stratigraphy/lithostratigraphy`}
+                hasContent={hasLithoStratigraphy}
                 onClick={() => {
                   history.push(`/${id}/stratigraphy/lithostratigraphy`);
                 }}>
@@ -93,6 +118,7 @@ export const DetailSideNav = () => {
           )}
           <ParentListItem
             active={location.pathname.includes(`/${id}/completion`)}
+            hasContent={hasCompletion}
             onClick={() => {
               history.push(`/${id}/completion`);
             }}>
@@ -100,6 +126,7 @@ export const DetailSideNav = () => {
           </ParentListItem>
           <ParentListItem
             active={false}
+            hasContent={hasObservation}
             onClick={() => {
               setHydrogeologyIsVisible(!hydrogeologyIsVisible);
             }}>
@@ -109,6 +136,7 @@ export const DetailSideNav = () => {
             <>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/wateringress`}
+                hasContent={hasWaterIngress}
                 onClick={() => {
                   history.push(`/${id}/hydrogeology/wateringress`);
                 }}>
@@ -116,6 +144,7 @@ export const DetailSideNav = () => {
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
+                hasContent={hasGroundwaterLevelMeasurement}
                 onClick={() => {
                   history.push(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
                 }}>
@@ -125,6 +154,7 @@ export const DetailSideNav = () => {
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
+                hasContent={hasFieldMeasurement}
                 onClick={() => {
                   history.push(`/${id}/hydrogeology/fieldmeasurement`);
                 }}>
@@ -134,6 +164,7 @@ export const DetailSideNav = () => {
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/hydrotest`}
+                hasContent={hasHydroTest}
                 onClick={() => {
                   history.push(`/${id}/hydrogeology/hydrotest`);
                 }}>
