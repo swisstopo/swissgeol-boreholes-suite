@@ -67,11 +67,11 @@ export interface BoreholeV2 {
   updated: Date | string | null;
   updatedById: number;
   updatedBy: User;
-  stratigraphies: Stratigraphy[];
+  stratigraphies: Stratigraphy[] | null;
   locked: boolean | null;
   lockedById: number | null;
-  completions: Completion[];
-  observations: Observation[];
+  completions: Completion[] | null;
+  observations: Observation[] | null;
 }
 
 const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");

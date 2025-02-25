@@ -22,19 +22,21 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const { t } = useTranslation();
   const auth = useAuth();
   const history = useHistory();
-  const hasStratigraphy = borehole.stratigraphies.length > 0;
-  const hasLithology = borehole.stratigraphies.some(s => s.layers.length > 0);
-  const hasChronoStratigraphy = borehole.stratigraphies.some(s => s.chronostratigraphyLayers.length > 0);
-  const hasLithoStratigraphy = borehole.stratigraphies.some(s => s.lithostratigraphyLayers.length > 0);
-  const hasCompletion = borehole.completions.length > 0;
-  const hasObservation = borehole.observations.length > 0;
+  const hasStratigraphy = (borehole.stratigraphies?.length ?? 0) > 0;
+  const hasLithology = borehole.stratigraphies?.some(s => s.layers?.length > 0) ?? false;
+  const hasChronoStratigraphy = borehole.stratigraphies?.some(s => s.chronostratigraphyLayers?.length > 0) ?? false;
+  const hasLithoStratigraphy = borehole.stratigraphies?.some(s => s.lithostratigraphyLayers?.length > 0) ?? false;
+  const hasCompletion = (borehole.completions?.length ?? 0) > 0;
+  const hasObservation = (borehole.observations?.length ?? 0) > 0;
   const hasWaterIngress =
-    hasObservation && borehole.observations.some(obs => obs.type === ObservationType.waterIngress);
+    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.waterIngress) ?? false);
   const hasGroundwaterLevelMeasurement =
-    hasObservation && borehole.observations.some(obs => obs.type === ObservationType.groundwaterLevelMeasurement);
-  const hasHydroTest = hasObservation && borehole.observations.some(obs => obs.type === ObservationType.hydrotest);
+    hasObservation &&
+    (borehole.observations?.some(obs => obs.type === ObservationType.groundwaterLevelMeasurement) ?? false);
+  const hasHydroTest =
+    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.hydrotest) ?? false);
   const hasFieldMeasurement =
-    hasObservation && borehole.observations.some(obs => obs.type === ObservationType.fieldMeasurement);
+    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.fieldMeasurement) ?? false);
 
   useEffect(() => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
