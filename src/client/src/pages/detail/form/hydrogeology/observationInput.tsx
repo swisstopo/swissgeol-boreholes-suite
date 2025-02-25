@@ -73,8 +73,9 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   useEffect(() => {
     const fetchAndSetFromDepthMasl = async () => {
       if (depthUnit === ObservationDepthUnitType.measuredDepth) {
-        setFromDepthMasl(await fetchDepthMASL(fromDepthM));
-        setFormValue("fromDepthMasl", fromDepthMasl);
+        const depthInMasl = await fetchDepthMASL(fromDepthM);
+        setFromDepthMasl(depthInMasl);
+        setFormValue("fromDepthMasl", depthInMasl);
       }
     };
     fetchAndSetFromDepthMasl();
@@ -83,8 +84,9 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   useEffect(() => {
     const fetchAndSetToDepthMasl = async () => {
       if (depthUnit === ObservationDepthUnitType.measuredDepth) {
-        setToDepthMasl(await fetchDepthMASL(toDepthM));
-        setFormValue("toDepthMasl", toDepthMasl);
+        const depthInMasl = await fetchDepthMASL(toDepthM);
+        setToDepthMasl(depthInMasl);
+        setFormValue("toDepthMasl", depthInMasl);
       }
     };
     fetchAndSetToDepthMasl();
