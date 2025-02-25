@@ -12,6 +12,7 @@
 ### Changed
 
 - The settings are now displayed in tabs.
+- Detail page side navigation points are greyed out if there is no applicable content.
 
 ### Fixed
 

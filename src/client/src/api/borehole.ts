@@ -1,8 +1,11 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
+import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { User, Workgroup } from "./apiInterfaces.ts";
+import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2";
+import { Stratigraphy } from "./stratigraphy.ts";
 
 export interface BasicIdentifier {
   boreholeId: number;
@@ -64,11 +67,14 @@ export interface BoreholeV2 {
   updated: Date | string | null;
   updatedById: number;
   updatedBy: User;
+  stratigraphies: Stratigraphy[] | null;
+  locked: boolean | null;
+  lockedById: number | null;
+  completions: Completion[] | null;
+  observations: Observation[] | null;
 }
 
 const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");
-
-export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
 
 export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelectionModel) => {
   return await fetchApiV2(`export/json?${getIdQuery(boreholeIds)}`, "GET");
@@ -76,10 +82,6 @@ export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelecti
 
 export const exportGeoPackageBoreholes = async (boreholeIds: number[] | GridRowSelectionModel) => {
   return await fetchApiV2(`export/gpkg?${getIdQuery(boreholeIds)}`, "GET");
-};
-
-export const updateBorehole = async (borehole: BoreholeV2) => {
-  return await fetchApiV2("borehole", "PUT", borehole);
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -109,4 +111,10 @@ export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel) => {
 
 export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | GridRowSelectionModel) => {
   return await download(`export/zip?${getIdQuery(boreholeIds)}`);
+};
+
+export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
+
+export const updateBorehole = async (borehole: BoreholeV2) => {
+  return await fetchApiV2("borehole", "PUT", borehole);
 };
