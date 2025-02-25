@@ -53,14 +53,14 @@ describe("Test for the detail page side navigation.", () => {
       cy.get(`[data-cy="${item}"]`).should("have.css", "color", "rgb(130, 142, 154)");
     });
 
-    // Add stratigraphy
-    cy.get('[data-cy="lithology-menu-item"]').click();
-    addItem("addStratigraphy");
-    cy.wait("@stratigraphy_POST");
-
-    // Add layers (Lithology)
-    cy.get('[data-cy="add-layer-icon"]').click();
-    cy.wait("@layer");
+    // Add stratigraphy and Lithology
+    cy.get("@borehole_id").then(boreholeId => {
+      createStratigraphy(boreholeId, 3000)
+        .as("stratigraphy_id")
+        .then(id => {
+          createLithologyLayer(id, { isStriae: true });
+        });
+    });
 
     // Add Chronostratigraphy
     cy.get(`[data-cy="chronostratigraphy-menu-item"]`).click();
