@@ -2,11 +2,15 @@ import { addItem, saveForm } from "../helpers/buttonHelpers.js";
 import { clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers.js";
 import { setInput, setSelect } from "../helpers/formHelpers.js";
 import {
+  checkElementColorByDataCy,
   createBorehole,
   createFieldMeasurement,
   createGroundwaterLevelMeasurement,
   createHydrotest,
+  createLithologyLayer,
+  createStratigraphy,
   createWateringress,
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   returnToOverview,
   startBoreholeEditing,
@@ -25,21 +29,21 @@ describe("Test for the detail page side navigation.", () => {
     });
 
     // Check that some menu items are enabled (not greyed out)
-    getElementByDataCy("location-menu-item").should("have.css", "color", "rgb(153, 25, 30)");
-    getElementByDataCy("borehole-menu-item").should("have.css", "color", "rgba(0, 0, 0, 0.87)");
-    getElementByDataCy("status-menu-item").should("have.css", "color", "rgba(0, 0, 0, 0.87)");
+    checkElementColorByDataCy("location-menu-item", "rgb(153, 25, 30)");
+    checkElementColorByDataCy("borehole-menu-item", "rgba(0, 0, 0, 0.87)");
+    checkElementColorByDataCy("status-menu-item", "rgba(0, 0, 0, 0.87)");
 
     // Check greyed-out main menu items
     const mainMenuItems = ["stratigraphy-menu-item", "completion-menu-item", "hydrogeology-menu-item"];
 
     mainMenuItems.forEach(item => {
-      getElementByDataCy(item).should("have.css", "color", "rgb(130, 142, 154)");
+      checkElementColorByDataCy(item, "rgb(130, 142, 154)");
     });
 
     // Expand Stratigraphy menu and check its child items
     getElementByDataCy("stratigraphy-menu-item").click();
     ["lithology-menu-item", "chronostratigraphy-menu-item", "lithostratigraphy-menu-item"].forEach(item => {
-      getElementByDataCy(item).should("have.css", "color", "rgb(130, 142, 154)");
+      checkElementColorByDataCy(item, "rgb(130, 142, 154)");
     });
 
     // Expand Hydrogeology menu and check its child items
@@ -50,7 +54,7 @@ describe("Test for the detail page side navigation.", () => {
       "fieldmeasurement-menu-item",
       "hydrotest-menu-item",
     ].forEach(item => {
-      getElementByDataCy(item).should("have.css", "color", "rgb(130, 142, 154)");
+      checkElementColorByDataCy(item, "rgb(130, 142, 154)");
     });
 
     // Add stratigraphy and Lithology
@@ -70,7 +74,6 @@ describe("Test for the detail page side navigation.", () => {
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
     cy.wait("@chronostratigraphy_POST");
-    cy.wait("@layer");
 
     // Add lithostratigraphy
     getElementByDataCy("lithostratigraphy-menu-item").click();
@@ -80,10 +83,9 @@ describe("Test for the detail page side navigation.", () => {
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
     cy.wait("@lithostratigraphy_POST");
-    cy.wait("@layer");
 
     // Add completion
-    cgetElementByDataCy("completion-menu-item").click();
+    getElementByDataCy("completion-menu-item").click();
     addItem("addCompletion");
     cy.wait("@codelist_GET");
     setInput("name", "Compl-1");
@@ -108,13 +110,13 @@ describe("Test for the detail page side navigation.", () => {
     // Verify that previously greyed-out items are now enabled
     // Check main menu items
     mainMenuItems.forEach(item => {
-      getElementByDataCy(item).should("have.css", "color", "rgba(0, 0, 0, 0.87)");
+      checkElementColorByDataCy(item, "rgba(0, 0, 0, 0.87)");
     });
 
     // Expand stratigraphy menu and check its child items
     getElementByDataCy("stratigraphy-menu-item").click();
     ["lithology-menu-item", "chronostratigraphy-menu-item", "lithostratigraphy-menu-item"].forEach(item => {
-      getElementByDataCy(item).should("have.css", "color", "rgba(0, 0, 0, 0.87)");
+      checkElementColorByDataCy(item, "rgba(0, 0, 0, 0.87)");
     });
 
     // Expand hydrogeology menu and check its child items
@@ -125,7 +127,7 @@ describe("Test for the detail page side navigation.", () => {
       "fieldmeasurement-menu-item",
       "hydrotest-menu-item",
     ].forEach(item => {
-      getElementByDataCy(item).should("have.css", "color", "rgba(0, 0, 0, 0.87)");
+      checkElementColorByDataCy(item, "rgba(0, 0, 0, 0.87)");
     });
   });
 });

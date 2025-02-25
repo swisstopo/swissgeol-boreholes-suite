@@ -293,6 +293,10 @@ export const getElementByDataCy = attribute => {
   return cy.get(`[data-cy=${attribute}]`);
 };
 
+export const checkElementColorByDataCy = (attribute, expectedColor) => {
+  getElementByDataCy(attribute).should("have.css", "color", expectedColor);
+};
+
 export const deleteBorehole = id => {
   cy.get("@id_token").then(token => {
     cy.request({
