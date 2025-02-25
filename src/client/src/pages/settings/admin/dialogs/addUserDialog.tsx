@@ -34,13 +34,11 @@ export const AddUserDialog: FC<AddUserDialogProps> = ({
       }
       return user;
     });
-    console.log(newWorkgroupUsers);
     setWorkgroupUsers([...newWorkgroupUsers]);
   };
 
   const addNewUserToWorkgroup = (userId: number, newWorkgroupRole: WorkgroupRole) => {
     const newUser = users.find(usr => usr.id === userId);
-    console.log(newUser);
     if (newUser) {
       newUser.workgroupRoles = [newWorkgroupRole];
       setWorkgroupUsers([...workgroupUsers, newUser]);
