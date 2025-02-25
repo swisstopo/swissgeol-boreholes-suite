@@ -142,7 +142,6 @@ export const WorkgroupDetail: FC = () => {
       }}>
       <Card data-cy="workgroup-general" sx={{ mb: 3 }}>
         <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} titleTypographyProps={{ variant: "h5" }} />
-
         <CardContent sx={{ pt: 4, px: 3 }}>
           <Stack direction={"row"} alignItems={"center"}>
             <FormInputDisplayOnly label={"workgroup"} value={selectedWorkgroup?.name ?? null} sx={{ maxWidth: 500 }} />
