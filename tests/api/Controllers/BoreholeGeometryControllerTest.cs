@@ -26,6 +26,9 @@ public class BoreholeGeometryControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
+        boreholeLockServiceMock
+            .Setup(x => x.IsUserLackingPermissions(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
         controller = new BoreholeGeometryController(context, new Mock<ILogger<BoreholeGeometryElement>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
         boreholeIdWithoutGeometry = context.Boreholes
@@ -53,7 +56,11 @@ public class BoreholeGeometryControllerTest
     [TestMethod]
     public async Task GetAsyncBoreholeGeometryByBoreholeId()
     {
-        var geometries = await controller.GetAsync(boreholeIdWithGeometry).ConfigureAwait(false);
+        var response = await controller.GetAsync(boreholeIdWithGeometry).ConfigureAwait(false);
+        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        var okResult = response as OkObjectResult;
+        var geometries = okResult?.Value as IEnumerable<BoreholeGeometryElement>;
+
         Assert.IsNotNull(geometries);
         Assert.IsTrue(geometries.Count() > 1);
     }
