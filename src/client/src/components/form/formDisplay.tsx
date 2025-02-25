@@ -48,7 +48,9 @@ export const FormDisplay: FC<FormDisplayProps> = ({ prefix, label, value, type, 
     }
   };
 
-  const formatValue = (value: string | string[] | number | number[] | boolean | Codelist | Codelist[] | null): string => {
+  const formatValue = (
+    value: string | string[] | number | number[] | boolean | Codelist | Codelist[] | null,
+  ): string => {
     if (Array.isArray(value)) {
       if (value.length === 0) {
         return "-";
