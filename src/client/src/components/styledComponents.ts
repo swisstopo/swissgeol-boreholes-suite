@@ -73,22 +73,32 @@ export const DetailHeaderStack = styled(Stack)({
 
 interface ParentListItemProps {
   active: boolean;
+  hasContent?: boolean;
 }
 
-export const ParentListItem = styled(ListItem)<ParentListItemProps>(({ active }) => ({
-  padding: "1em",
-  display: "flex",
-  height: "40px",
-  cursor: "pointer",
-  paddingLeft: "35.5px",
-  color: active ? theme.palette.error.main : "",
-  borderTop: `1px solid ${theme.palette.border.light}`,
-  borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : undefined,
-  backgroundColor: active ? theme.palette.background.lightgrey : "",
-  "&:hover": {
-    backgroundColor: theme.palette.hover.main,
-  },
-}));
+export const ParentListItem = styled(ListItem)<ParentListItemProps>(({ active, hasContent }) => {
+  let textColor = "inherit";
+  if (hasContent === false) {
+    textColor = theme.palette.buttonStates.outlined.disabled.color;
+  } else if (active) {
+    textColor = theme.palette.error.main;
+  }
+
+  return {
+    padding: "1em",
+    display: "flex",
+    height: "40px",
+    cursor: "pointer",
+    paddingLeft: "35.5px",
+    color: textColor,
+    borderTop: `1px solid ${theme.palette.border.light}`,
+    borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : "none",
+    backgroundColor: active ? theme.palette.background.lightgrey : "transparent",
+    "&:hover": {
+      backgroundColor: theme.palette.hover.main,
+    },
+  };
+});
 
 export const ChildListItem = styled(ParentListItem)(() => ({
   paddingLeft: "50px !important",
