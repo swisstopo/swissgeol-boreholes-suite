@@ -7,6 +7,23 @@ import { theme } from "../../../AppTheme.ts";
 
 export function useSharedTableColumns() {
   const { t } = useTranslation();
+
+  const firstNameColumn: GridColDef = { field: "firstName", headerName: t("firstname"), flex: 1 };
+  const lastNameColumn: GridColDef = { field: "lastName", headerName: t("lastname"), flex: 1 };
+  const emailColumn: GridColDef = { field: "email", headerName: "Email", flex: 1 };
+
+  const workgroupNameColumn: GridColDef = {
+    field: "name",
+    headerName: t("workgroup"),
+    flex: 1,
+  };
+
+  const boreholeCountColumn: GridColDef = {
+    field: "boreholeCount",
+    headerName: t("boreholeCount"),
+    width: 200,
+  };
+
   const statusColumn: GridColDef = {
     field: "isDisabled",
     headerName: t("status"),
@@ -44,5 +61,13 @@ export function useSharedTableColumns() {
     };
   };
 
-  return { statusColumn, getDeleteColumn };
+  return {
+    firstNameColumn,
+    lastNameColumn,
+    emailColumn,
+    workgroupNameColumn,
+    boreholeCountColumn,
+    statusColumn,
+    getDeleteColumn,
+  };
 }
