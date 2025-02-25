@@ -51,9 +51,6 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
 
   const fetchDepthMASL = useCallback(
     async (fieldValue: number | null) => {
-      if (fieldValue !== null && Math.abs(fieldValue) === 0) {
-        return fieldValue;
-      }
       if (!fieldValue) return null;
       const getDepthMasl = async (depthMD: number | null) => {
         if (depthMD == null) {
