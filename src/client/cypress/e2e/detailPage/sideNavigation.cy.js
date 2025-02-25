@@ -25,32 +25,32 @@ describe("Test for the detail page side navigation.", () => {
     });
 
     // Check that some menu items are enabled (not greyed out)
-    cy.get('[data-cy="location-menu-item"]').should("have.css", "color", "rgb(153, 25, 30)");
-    cy.get('[data-cy="borehole-menu-item"]').should("have.css", "color", "rgba(0, 0, 0, 0.87)");
-    cy.get('[data-cy="status-menu-item"]').should("have.css", "color", "rgba(0, 0, 0, 0.87)");
+    getElementByDataCy("location-menu-item").should("have.css", "color", "rgb(153, 25, 30)");
+    getElementByDataCy("borehole-menu-item").should("have.css", "color", "rgba(0, 0, 0, 0.87)");
+    getElementByDataCy("status-menu-item").should("have.css", "color", "rgba(0, 0, 0, 0.87)");
 
     // Check greyed-out main menu items
     const mainMenuItems = ["stratigraphy-menu-item", "completion-menu-item", "hydrogeology-menu-item"];
 
     mainMenuItems.forEach(item => {
-      cy.get(`[data-cy="${item}"]`).should("have.css", "color", "rgb(130, 142, 154)");
+      getElementByDataCy(item).should("have.css", "color", "rgb(130, 142, 154)");
     });
 
     // Expand Stratigraphy menu and check its child items
-    cy.get('[data-cy="stratigraphy-menu-item"]').click();
+    getElementByDataCy("stratigraphy-menu-item").click();
     ["lithology-menu-item", "chronostratigraphy-menu-item", "lithostratigraphy-menu-item"].forEach(item => {
-      cy.get(`[data-cy="${item}"]`).should("have.css", "color", "rgb(130, 142, 154)");
+      getElementByDataCy(item).should("have.css", "color", "rgb(130, 142, 154)");
     });
 
     // Expand Hydrogeology menu and check its child items
-    cy.get('[data-cy="hydrogeology-menu-item"]').click();
+    getElementByDataCy("hydrogeology-menu-item").click();
     [
       "wateringress-menu-item",
       "groundwaterlevelmeasurement-menu-item",
       "fieldmeasurement-menu-item",
       "hydrotest-menu-item",
     ].forEach(item => {
-      cy.get(`[data-cy="${item}"]`).should("have.css", "color", "rgb(130, 142, 154)");
+      getElementByDataCy(item).should("have.css", "color", "rgb(130, 142, 154)");
     });
 
     // Add stratigraphy and Lithology
@@ -62,28 +62,28 @@ describe("Test for the detail page side navigation.", () => {
         });
     });
 
-    // Add Chronostratigraphy
-    cy.get(`[data-cy="chronostratigraphy-menu-item"]`).click();
+    // Add chronostratigraphy
+    getElementByDataCy("chronostratigraphy-menu-item").click();
     cy.wait("@get-layers-by-profileId");
     cy.wait("@chronostratigraphy_GET");
-    cy.get('[data-cy="add-layer-button"]').click({ force: true });
-    cy.get('[data-cy="add-layer-button"]').click({ force: true });
-    cy.get('[data-cy="add-layer-button"]').click({ force: true });
+    getElementByDataCy("add-layer-button").click({ force: true });
+    getElementByDataCy("add-layer-button").click({ force: true });
+    getElementByDataCy("add-layer-button").click({ force: true });
     cy.wait("@chronostratigraphy_POST");
     cy.wait("@layer");
 
-    // Add Lithostratigraphy
-    cy.get(`[data-cy="lithostratigraphy-menu-item"]`).click();
+    // Add lithostratigraphy
+    getElementByDataCy("lithostratigraphy-menu-item").click();
     cy.wait("@get-layers-by-profileId");
     cy.wait("@lithostratigraphy_GET");
-    cy.get('[data-cy="add-layer-button"]').click({ force: true });
-    cy.get('[data-cy="add-layer-button"]').click({ force: true });
-    cy.get('[data-cy="add-layer-button"]').click({ force: true });
+    getElementByDataCy("add-layer-button").click({ force: true });
+    getElementByDataCy("add-layer-button").click({ force: true });
+    getElementByDataCy("add-layer-button").click({ force: true });
     cy.wait("@lithostratigraphy_POST");
     cy.wait("@layer");
 
-    // Add Completion
-    cy.get('[data-cy="completion-menu-item"]').click();
+    // Add completion
+    cgetElementByDataCy("completion-menu-item").click();
     addItem("addCompletion");
     cy.wait("@codelist_GET");
     setInput("name", "Compl-1");
@@ -91,7 +91,7 @@ describe("Test for the detail page side navigation.", () => {
     saveForm("completion-header");
     cy.wait("@get-completions-by-boreholeId");
 
-    // Add Hydro module data
+    // Add hydro module data
     cy.get("@borehole_id").then(id => {
       createHydrotest(id, "2012-11-14T12:06Z", 15203157, [15203175], null, 0, 10);
       createWateringress(id, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
@@ -100,7 +100,7 @@ describe("Test for the detail page side navigation.", () => {
     });
 
     // Navigate back to overview and verify enabled items
-    cy.get('[data-cy="location-menu-item"]').click();
+    getElementByDataCy("location-menu-item").click();
     returnToOverview();
     showTableAndWaitForData();
     clickOnRowWithText("AAA_HIPPOPOTHAMUS");
@@ -108,24 +108,24 @@ describe("Test for the detail page side navigation.", () => {
     // Verify that previously greyed-out items are now enabled
     // Check main menu items
     mainMenuItems.forEach(item => {
-      cy.get(`[data-cy="${item}"]`).should("have.css", "color", "rgba(0, 0, 0, 0.87)");
+      getElementByDataCy(item).should("have.css", "color", "rgba(0, 0, 0, 0.87)");
     });
 
-    // Expand Stratigraphy menu and check its child items
-    cy.get('[data-cy="stratigraphy-menu-item"]').click();
+    // Expand stratigraphy menu and check its child items
+    getElementByDataCy("stratigraphy-menu-item").click();
     ["lithology-menu-item", "chronostratigraphy-menu-item", "lithostratigraphy-menu-item"].forEach(item => {
-      cy.get(`[data-cy="${item}"]`).should("have.css", "color", "rgba(0, 0, 0, 0.87)");
+      getElementByDataCy(item).should("have.css", "color", "rgba(0, 0, 0, 0.87)");
     });
 
-    // Expand Hydrogeology menu and check its child items
-    cy.get('[data-cy="hydrogeology-menu-item"]').click();
+    // Expand hydrogeology menu and check its child items
+    getElementByDataCy("hydrogeology-menu-item").click();
     [
       "wateringress-menu-item",
       "groundwaterlevelmeasurement-menu-item",
       "fieldmeasurement-menu-item",
       "hydrotest-menu-item",
     ].forEach(item => {
-      cy.get(`[data-cy="${item}"]`).should("have.css", "color", "rgba(0, 0, 0, 0.87)");
+      getElementByDataCy(item).should("have.css", "color", "rgba(0, 0, 0, 0.87)");
     });
   });
 });
