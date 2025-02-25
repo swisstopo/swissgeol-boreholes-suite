@@ -277,7 +277,7 @@ public class BoreholeGeometryControllerTest
     }
 
     [TestMethod]
-    public async Task GetDepthInMaslWithNoGeometryAboveBoreholeElevationAndNegativeDepthMD()
+    public async Task GetDepthInMaslWithGeometryAndNegativeDepthMD()
     {
         IActionResult response = await controller.GetDepthInMasl(boreholeIdWithGeometry, -102);
         ObjectResult result = (ObjectResult)response;
