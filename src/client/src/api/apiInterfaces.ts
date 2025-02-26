@@ -70,3 +70,8 @@ export interface User {
   workgroupRoles?: WorkgroupRole[];
   termsAccepted?: TermsAccepted[];
 }
+
+export enum EntityType {
+  user = "User",
+  workgroup = "Workgroup",
+}

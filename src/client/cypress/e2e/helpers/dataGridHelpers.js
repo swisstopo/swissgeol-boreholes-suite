@@ -15,7 +15,7 @@ export const verifyRowContains = (rowContent, rowIndex) => {
     });
 };
 
-export const verifyRowWithContantAlsoContains = (rowContent, alsoContains) => {
+export const verifyRowWithContentAlsoContains = (rowContent, alsoContains) => {
   cy.get(".MuiDataGrid-row")
     .contains(rowContent)
     .parent()
@@ -25,7 +25,11 @@ export const verifyRowWithContantAlsoContains = (rowContent, alsoContains) => {
 };
 
 export const verifyTableLength = length => {
-  cy.get(".MuiDataGrid-row").should("have.length", length);
+  if (length === 0) {
+    cy.get(".MuiDataGrid-row").should("not.exist");
+  } else {
+    cy.get(".MuiDataGrid-row").should("have.length", length);
+  }
 };
 
 export const waitForTableData = () => {

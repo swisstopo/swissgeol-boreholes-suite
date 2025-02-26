@@ -12,11 +12,11 @@ import {
   GridToolbar,
 } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
-import { BoreholeAttributes } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { User, Workgroup } from "../../../api/apiInterfaces.ts";
-import { muiLocales } from "../../../mui.locales.ts";
-import { TablePaginationActions } from "../../overview/boreholeTable/TablePaginationActions.tsx";
-import { quickFilterStyles } from "./quickfilterStyles.ts";
+import { BoreholeAttributes } from "../../api-lib/ReduxStateInterfaces.ts";
+import { User, Workgroup } from "../../api/apiInterfaces.ts";
+import { muiLocales } from "../../mui.locales.ts";
+import { TablePaginationActions } from "../../pages/overview/boreholeTable/TablePaginationActions.tsx";
+import { quickFilterStyles } from "../../pages/settings/admin/quickfilterStyles.ts";
 
 interface TableProps {
   rows: User[] | Workgroup[] | BoreholeAttributes[];
