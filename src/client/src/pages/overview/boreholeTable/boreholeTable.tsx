@@ -22,7 +22,7 @@ import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../../api/fetchApiV2";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
-import { Table } from "../../settings/admin/Table.tsx";
+import { Table } from "../../../components/table/table.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 
 export interface BoreholeTableProps {

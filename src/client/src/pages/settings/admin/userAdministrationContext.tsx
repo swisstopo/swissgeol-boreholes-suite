@@ -27,8 +27,10 @@ export const UserAdministrationContext = createContext<UserAdministrationContext
 export const UserAdministrationProvider: FC<PropsWithChildren> = ({ children }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [userTableSortModel, setUserTableSortModel] = useState<GridSortModel>([]);
-  const [userDetailTableSortModel, setUserDetailTableSortModel] = useState<GridSortModel>([]);
+  const [userTableSortModel, setUserTableSortModel] = useState<GridSortModel>([{ field: "lastName", sort: "asc" }]);
+  const [userDetailTableSortModel, setUserDetailTableSortModel] = useState<GridSortModel>([
+    { field: "name", sort: "asc" },
+  ]);
   return (
     <UserAdministrationContext.Provider
       value={useMemo(
