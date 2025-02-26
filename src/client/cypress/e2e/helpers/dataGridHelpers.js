@@ -15,7 +15,7 @@ export const verifyRowContains = (rowContent, rowIndex) => {
     });
 };
 
-export const verifyRowWithContantAlsoContains = (rowContent, alsoContains) => {
+export const verifyRowWithContentAlsoContains = (rowContent, alsoContains) => {
   cy.get(".MuiDataGrid-row")
     .contains(rowContent)
     .parent()

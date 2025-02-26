@@ -4,7 +4,7 @@ import {
   sortBy,
   verifyPaginationText,
   verifyRowContains,
-  verifyRowWithContantAlsoContains,
+  verifyRowWithContentAlsoContains,
   verifyRowWithTextCheckState,
   verifyTableLength,
   waitForTableData,
@@ -141,7 +141,7 @@ describe("User administration settings tests", () => {
     // go to users table
     getElementByDataCy("backButton").click();
     waitForTableData();
-    verifyRowWithContantAlsoContains("controller", "Inactive");
+    verifyRowWithContentAlsoContains("controller", "Inactive");
     getElementByDataCy("delete-id-3").click(); // controller
     handlePrompt(messageForInactiveNonDeletableUser, "Cancel");
 

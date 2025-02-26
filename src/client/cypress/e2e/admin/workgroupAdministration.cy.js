@@ -3,7 +3,7 @@ import {
   sortBy,
   verifyPaginationText,
   verifyRowContains,
-  verifyRowWithContantAlsoContains,
+  verifyRowWithContentAlsoContains,
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers.js";
@@ -80,7 +80,7 @@ describe("User administration settings tests", () => {
     const inactiveWorkgroupDeletePrompt = "Do you really want to delete this workgroup? This cannot be undone.";
 
     getElementByDataCy("settings-header").should("contain", "Settings");
-    verifyRowWithContantAlsoContains("World", "Inactive");
+    verifyRowWithContentAlsoContains("World", "Inactive");
 
     // Click on workgroup delete button
     getElementByDataCy("delete-id-3").click();
@@ -109,7 +109,7 @@ describe("User administration settings tests", () => {
     getElementByDataCy("backButton").click();
     waitForTableData();
 
-    verifyRowWithContantAlsoContains("World", "Active");
+    verifyRowWithContentAlsoContains("World", "Active");
 
     // Click on workgroup delete button
     getElementByDataCy("delete-id-3").click();
@@ -146,9 +146,9 @@ describe("User administration settings tests", () => {
     setSelect("role", 0); // "View";
     getElementByDataCy("add-button").click();
 
-    verifyRowWithContantAlsoContains("editor", "VIEW");
-    verifyRowWithContantAlsoContains("publisher", "CONTROLLER");
-    verifyRowWithContantAlsoContains("publisher", "VIEW");
+    verifyRowWithContentAlsoContains("editor", "VIEW");
+    verifyRowWithContentAlsoContains("publisher", "CONTROLLER");
+    verifyRowWithContentAlsoContains("publisher", "VIEW");
 
     verifyPaginationText("1–2 of 2");
     verifyTableLength(2);
