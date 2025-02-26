@@ -129,6 +129,8 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="height-button"]').click();
     cy.wait("@height");
     cy.get('[data-cy="apply-button"]').click();
+    cy.wait("@geodesy");
+    cy.wait("@location");
 
     // verify automatically filled inputs
     cy.get("@LV95X-input").should("not.have.value", "");
