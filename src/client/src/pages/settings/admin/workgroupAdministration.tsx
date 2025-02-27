@@ -39,7 +39,7 @@ export const WorkgroupAdministration: FC = () => {
   const renderUserChips = (params: GridRenderCellParams<Workgroup>) => {
     if (!userWorkgroupRoles || userWorkgroupRoles.length === 0) return null;
     return (
-      <Stack direction="row" gap={1} p={1.2}>
+      <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
         {Object.values(Role).map(role => {
           const usersPerRole = userWorkgroupRoles.filter(
             u => u!.workgroupId === params.row.id && u!.role === role,
@@ -83,6 +83,7 @@ export const WorkgroupAdministration: FC = () => {
       sortModel={workgroupTableSortModel}
       onSortModelChange={setworkgroupTableSortModel}
       dataCy={"workgroups-table"}
+      rowAutoHeight={true}
     />
   );
 };

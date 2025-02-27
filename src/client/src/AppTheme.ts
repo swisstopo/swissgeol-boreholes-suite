@@ -572,6 +572,11 @@ export const theme = createTheme({
             {
               outline: "none !important",
             },
+          "& .MuiDataGrid-cell": {
+            minHeight: "44px",
+            display: "flex",
+            alignItems: "center",
+          },
           "& .MuiDataGrid-toolbarContainer": {
             paddingLeft: "2px !important",
             paddingBottom: "20px !important",
