@@ -8,14 +8,12 @@ interface FormInputDisplayOnlyProps extends Omit<TextFieldProps, "value"> {
   value: number | string | null;
   withThousandSeparator?: boolean;
   disabled?: boolean;
-  readOnly?: boolean;
 }
 
 export const FormInputDisplayOnly: React.FC<FormInputDisplayOnlyProps> = ({
   label,
   value,
   withThousandSeparator,
-  readOnly = true,
   disabled = true,
   ...props
 }) => {
@@ -28,11 +26,10 @@ export const FormInputDisplayOnly: React.FC<FormInputDisplayOnlyProps> = ({
       InputProps={{
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),
-        readOnly: readOnly,
+        readOnly: true,
         disabled: disabled,
         ...props.InputProps,
       }}
-      className="readonly"
       {...props}
     />
   );
