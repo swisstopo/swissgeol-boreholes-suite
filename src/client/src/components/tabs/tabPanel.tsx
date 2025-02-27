@@ -6,6 +6,7 @@ interface Tab {
   label: string;
   hash: string;
   component: JSX.Element;
+  hasContent?: boolean | undefined;
 }
 
 export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
@@ -37,7 +38,7 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
     <>
       <BdmsTabs value={activeIndex} onChange={handleIndexChange}>
         {tabs.map(tab => (
-          <BdmsTab data-cy={`${tab.hash}-tab`} label={tab.label} key={tab.hash} />
+          <BdmsTab data-cy={`${tab.hash}-tab`} label={tab.label} key={tab.hash} hasContent={tab.hasContent} />
         ))}
       </BdmsTabs>
       <BdmsTabContentBox flex="1 0 0">{tabs[activeIndex].component}</BdmsTabContentBox>

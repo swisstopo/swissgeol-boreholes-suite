@@ -13,6 +13,7 @@ import {
   getElementByDataCy,
   goToRouteAndAcceptTerms,
   returnToOverview,
+  selectInputFile,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
@@ -33,9 +34,20 @@ describe("Test for the detail page side navigation.", () => {
     checkElementColorByDataCy("borehole-menu-item", "rgba(0, 0, 0, 0.87)");
     checkElementColorByDataCy("status-menu-item", "rgba(0, 0, 0, 0.87)");
 
-    // Check greyed-out main menu items
-    const mainMenuItems = ["stratigraphy-menu-item", "completion-menu-item", "hydrogeology-menu-item"];
+    // Check borehole content tabs
+    getElementByDataCy("borehole-menu-item").click();
+    const boreholeContentTabs = ["sections-tab", "geometry-tab"];
+    boreholeContentTabs.forEach(item => {
+      checkElementColorByDataCy(item, "rgb(130, 142, 154)");
+    });
 
+    // Check greyed-out main menu items
+    const mainMenuItems = [
+      "stratigraphy-menu-item",
+      "completion-menu-item",
+      "hydrogeology-menu-item",
+      "attachments-menu-item",
+    ];
     mainMenuItems.forEach(item => {
       checkElementColorByDataCy(item, "rgb(130, 142, 154)");
     });
@@ -100,6 +112,10 @@ describe("Test for the detail page side navigation.", () => {
       createFieldMeasurement(id, "2012-11-14T12:06Z", 15203157, 15203209, 15203219, 10, null, 0, 10);
       createGroundwaterLevelMeasurement(id, "2012-11-14T12:06Z", 15203157, 15203175, null, 0, 10);
     });
+
+    // Add attachment
+    getElementByDataCy("attachments-menu-item").click();
+    selectInputFile("SKIPBOX.pdf", "application/pdf");
 
     // Navigate back to overview and verify enabled items
     getElementByDataCy("location-menu-item").click();
