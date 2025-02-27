@@ -427,6 +427,9 @@ export const theme = createTheme({
           "&.readonly .MuiInputLabel-formControl": {
             color: `${themePalette.neutral.contrastText} !important`,
           },
+          "& .Mui-disabled": {
+            cursor: "text !important",
+          },
           "&.ai .MuiOutlinedInput-notchedOutline": {
             borderColor: `${themePalette.ai.main} !important`,
             borderWidth: "3px",
