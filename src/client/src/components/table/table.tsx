@@ -40,6 +40,7 @@ interface TableProps {
   isRowSelectable?: (params: GridRowParams) => boolean;
   isDisabled?: boolean;
   showQuickFilter?: boolean;
+  rowAutoHeight?: boolean;
 }
 
 export const Table: FC<TableProps> = ({
@@ -64,6 +65,7 @@ export const Table: FC<TableProps> = ({
   isRowSelectable,
   isDisabled = false,
   showQuickFilter = true,
+  rowAutoHeight = false,
 }) => {
   const { i18n } = useTranslation();
 
@@ -80,12 +82,12 @@ export const Table: FC<TableProps> = ({
       sx={{ border: "none !important", ...quickFilterStyles, ...disabledStyles }}
       data-cy={dataCy || "data-table"}
       columnHeaderHeight={44}
-      rowHeight={44}
       sortingOrder={["asc", "desc"]}
       loading={isLoading ?? !rows?.length}
       rowCount={rowCount ?? rows?.length}
       rows={rows}
       columns={columns}
+      getRowHeight={() => (rowAutoHeight ? "auto" : 44)}
       onRowClick={onRowClick}
       pageSizeOptions={[100]}
       slots={{ toolbar: GridToolbar }}
