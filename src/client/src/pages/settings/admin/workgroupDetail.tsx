@@ -100,7 +100,7 @@ export const WorkgroupDetail: FC = () => {
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
     const workgroupRoles = params.value.filter((role: WorkgroupRole) => role.workgroupId === parseInt(id));
     return (
-      <Stack direction="row" gap={1} p={1.2}>
+      <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
         {workgroupRoles.map((workgroupRole: WorkgroupRole) => (
           <Chip
             key={workgroupRole.role}
@@ -166,6 +166,7 @@ export const WorkgroupDetail: FC = () => {
               sortModel={workgroupDetailTableSortModel}
               onSortModelChange={setWorkgroupDetailTableSortModel}
               dataCy={"workgroup-users-table"}
+              rowAutoHeight={true}
             />
           )}
         </CardContent>
