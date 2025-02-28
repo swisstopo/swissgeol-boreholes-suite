@@ -409,6 +409,6 @@ public class ExportController : ControllerBase
             return false;
         }
 
-        return boreholes.All(borehole => boreholeLockService.HasUserWorkgroupPermissions(borehole, user));
+        return !boreholes.Any(borehole => boreholeLockService.IsUserLackingPermissions(borehole, user));
     }
 }

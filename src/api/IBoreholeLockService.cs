@@ -26,6 +26,14 @@ public interface IBoreholeLockService
     Task<bool> IsUserLackingPermissionsAsync(int? boreholeId, string? subjectId);
 
     /// <summary>
+    /// Checks whether the <paramref name="user"/> lacks permissions to edit the <paramref name="borehole"/>.
+    /// </summary>
+    /// <param name="borehole">The <see cref="Borehole"/> object to check the workgroup for.</param>
+    /// <param name="user">The <see cref="User"/> to check against.</param>
+    /// <returns><c>true</c> if the user is lacking permissions for the borehole; otherwise, <c>false</c>.</returns>
+    bool IsUserLackingPermissions(Borehole borehole, User user);
+
+    /// <summary>
     /// Checks whether the currently authenticated user is part of the borehole's work group.
     /// </summary>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to check workgroup for.</param>
@@ -35,7 +43,7 @@ public interface IBoreholeLockService
     Task<bool> HasUserWorkgroupPermissionsAsync(int? boreholeId, string? subjectId);
 
     /// <summary>
-    /// Checks if the user is part of the borehole's work group.
+    /// Checks whether the <paramref name="user"/> is part of the <paramref name="borehole"/> work group.
     /// </summary>
     /// <param name="borehole">The <see cref="Borehole"/> object to check the workgroup for.</param>
     /// <param name="user">The <see cref="User"/> to check against.</param>

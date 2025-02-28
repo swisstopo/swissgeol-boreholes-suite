@@ -42,7 +42,8 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
         return IsUserLackingPermissions(borehole, user);
     }
 
-    private bool IsUserLackingPermissions(Borehole borehole, User user)
+    /// <inheritdoc />
+    public bool IsUserLackingPermissions(Borehole borehole, User user)
     {
         try
         {
