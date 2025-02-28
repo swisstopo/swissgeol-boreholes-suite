@@ -67,11 +67,11 @@ public class ExportControllerTest
             .ReturnsAsync(false);
 
         boreholeLockServiceMock
-            .Setup(x => x.IsUserLackingPermissions(It.IsAny<int?>(), "sub_viewer"))
+            .Setup(x => x.IsUserLackingPermissionsAsync(It.IsAny<int?>(), "sub_viewer"))
             .ReturnsAsync(true);
 
         boreholeLockServiceMock
-            .Setup(x => x.IsUserLackingPermissions(It.IsAny<int?>(), "sub_admin"))
+            .Setup(x => x.IsUserLackingPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
             .ReturnsAsync(false);
 
         boreholeLockServiceMock

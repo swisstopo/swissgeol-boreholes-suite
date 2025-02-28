@@ -54,7 +54,7 @@ public class BoreholeLockServiceTest
     public async Task IsUserLackingPermissionsWithUnauthorizedUser()
     {
         var borehole = await context.Boreholes.FirstAsync();
-        Assert.AreEqual(true, await boreholeLockService.IsUserLackingPermissions(borehole.Id, "sub_deletableUser"));
+        Assert.AreEqual(true, await boreholeLockService.IsUserLackingPermissionsAsync(borehole.Id, "sub_deletableUser"));
     }
 
     [TestMethod]

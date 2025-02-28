@@ -32,7 +32,7 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
     }
 
     /// <inheritdoc />
-    public async Task<bool> IsUserLackingPermissions(int? boreholeId, string? subjectId)
+    public async Task<bool> IsUserLackingPermissionsAsync(int? boreholeId, string? subjectId)
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
 

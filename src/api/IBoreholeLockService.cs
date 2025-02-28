@@ -23,7 +23,7 @@ public interface IBoreholeLockService
     /// <param name="subjectId">The <see cref="User.SubjectId" /> of the current user.</param>
     /// <returns><c>true</c> if the user is lacking permissions for the borehole; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">Provided user or <see cref="Borehole"/> does not exist.</exception>
-    Task<bool> IsUserLackingPermissions(int? boreholeId, string? subjectId);
+    Task<bool> IsUserLackingPermissionsAsync(int? boreholeId, string? subjectId);
 
     /// <summary>
     /// Checks whether the currently authenticated user is part of the borehole's work group.
