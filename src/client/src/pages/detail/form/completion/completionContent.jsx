@@ -1,7 +1,8 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
-import { Stack } from "@mui/material";
+import { CircularProgress, Stack } from "@mui/material";
+import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.js";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.tsx";
 import Backfill from "./backfill.jsx";
@@ -18,13 +19,26 @@ const CompletionContent = ({ completion, editingEnabled }) => {
   const history = useHistory();
   const location = useLocation();
   const { t } = useTranslation();
+  const [casings, setCasings] = useState([]);
+  const [instrumentation, setInstrumentation] = useState([]);
+  const [backfills, setBackfills] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const tabs = [
     {
       label: t("casing"),
       hash: "casing",
+      hasContent: casings.length > 0,
     },
-    { label: t("instrument"), hash: "instrumentation" },
-    { label: t("backfill"), hash: "backfill" },
+    {
+      label: t("instrument"),
+      hash: "instrumentation",
+      hasContent: instrumentation.length > 0,
+    },
+    {
+      label: t("backfill"),
+      hash: "backfill",
+      hasContent: backfills.length > 0,
+    },
   ];
   const [activeIndex, setActiveIndex] = useState(0);
   const [newIndex, setNewIndex] = useState(null);
@@ -35,6 +49,26 @@ const CompletionContent = ({ completion, editingEnabled }) => {
     setCheckContentDirty(true);
     triggerCanSwitch();
   };
+
+  const loadData = useCallback(() => {
+    setIsLoading(true);
+    Promise.all([getCasings(completion.id), getInstrumentation(completion.id), getBackfills(completion.id)])
+      .then(([casings, instrumentation, backfills]) => {
+        setCasings(casings);
+        setInstrumentation(instrumentation);
+        setBackfills(backfills);
+      })
+      .catch(error => {
+        console.error("Error loading data:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [completion.id]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   useEffect(() => {
     if (checkContentDirty) {
@@ -72,25 +106,26 @@ const CompletionContent = ({ completion, editingEnabled }) => {
     );
   }, [activeIndex, completion.id, editingEnabled]);
 
-  return (
+  return isLoading ? (
+    <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+      <CircularProgress />
+    </Stack>
+  ) : (
     <Stack direction="column" flex="1 0 0">
       <Stack direction="row" justifyContent="space-between" alignItems="center" flex="0 1 auto">
         <BdmsTabs value={activeIndex} onChange={handleCompletionChanged}>
-          {tabs.map((tab, index) => {
-            return (
-              <BdmsTab
-                data-cy={"completion-content-tab-" + tab.hash}
-                label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
-                key={index}
-              />
-            );
-          })}
+          {tabs.map((tab, index) => (
+            <BdmsTab
+              data-cy={"completion-content-tab-" + tab.hash}
+              label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
+              key={index}
+              hasContent={tab.hasContent}
+            />
+          ))}
         </BdmsTabs>
       </Stack>
-      {
-        // eslint-disable-next-line react/no-children-prop
-        <MemoizedCompletionContentTabBox children={renderTabContent} />
-      }
+      {/* eslint-disable-next-line react/no-children-prop */}
+      <MemoizedCompletionContentTabBox children={renderTabContent} />
     </Stack>
   );
 };
