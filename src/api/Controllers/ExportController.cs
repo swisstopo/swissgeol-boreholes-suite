@@ -60,7 +60,7 @@ public class ExportController : ControllerBase
         var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
-        if (!await UserHasPermissionForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
+        if (!await HasUserPermissionsForBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
         return new JsonResult(boreholes, jsonExportOptions);
     }
@@ -78,7 +78,7 @@ public class ExportController : ControllerBase
         var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
-        if (!await UserHasPermissionForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
+        if (!await HasUserPermissionsForBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
         try
         {
@@ -183,7 +183,7 @@ public class ExportController : ControllerBase
 
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
-        if (!await UserHasPermissionForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
+        if (!await HasUserPermissionsForBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
         using var stringWriter = new StringWriter();
         using var csvWriter = new CsvWriter(stringWriter, CsvConfigHelper.CsvWriteConfig);
@@ -311,7 +311,7 @@ public class ExportController : ControllerBase
         var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
-        if (!await UserHasPermissionForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
+        if (!await HasUserPermissionsForBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
         try
         {
@@ -395,7 +395,7 @@ public class ExportController : ControllerBase
     /// </summary>
     /// <param name="boreholes">The list of boreholes to check permissions for.</param>
     /// <returns><c>true</c> if the user has permissions for all boreholes; otherwise, <c>false</c>.</returns>
-    private async Task<bool> UserHasPermissionForAllBoreholes(List<Borehole> boreholes)
+    private async Task<bool> HasUserPermissionsForBoreholes(List<Borehole> boreholes)
     {
         var user = await context.Users
             .Include(u => u.WorkgroupRoles)
