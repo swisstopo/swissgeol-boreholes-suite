@@ -23,13 +23,30 @@ public interface IBoreholeLockService
     /// <param name="subjectId">The <see cref="User.SubjectId" /> of the current user.</param>
     /// <returns><c>true</c> if the user is lacking permissions for the borehole; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">Provided user or <see cref="Borehole"/> does not exist.</exception>
-    Task<bool> IsUserLackingPermissions(int? boreholeId, string? subjectId);
+    Task<bool> IsUserLackingPermissionsAsync(int? boreholeId, string? subjectId);
 
     /// <summary>
-    /// Checks which boreholes in the provided list the user lacks permissions to edit.
+    /// Checks whether the <paramref name="user"/> lacks permissions to edit the <paramref name="borehole"/>.
     /// </summary>
-    /// <param name="boreholes">The list of <see cref="Borehole"/> objects to check permissions for.</param>
+    /// <param name="borehole">The <see cref="Borehole"/> object to check the workgroup for.</param>
     /// <param name="user">The <see cref="User"/> to check against.</param>
     /// <returns><c>true</c> if the user is lacking permissions for the borehole; otherwise, <c>false</c>.</returns>
-    bool IsUserLackingPermissions(ICollection<Borehole> boreholes, User user);
+    bool IsUserLackingPermissions(Borehole borehole, User user);
+
+    /// <summary>
+    /// Checks whether the currently authenticated user is part of the borehole's work group.
+    /// </summary>
+    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to check workgroup for.</param>
+    /// <param name="subjectId">The <see cref="User.SubjectId" /> of the current user.</param>
+    /// <returns><c>true</c> if the user is part of the borehole's workgroup; otherwise, <c>false</c>.</returns>
+    /// <exception cref="InvalidOperationException">Provided user or <see cref="Borehole"/> does not exist.</exception>
+    Task<bool> HasUserWorkgroupPermissionsAsync(int? boreholeId, string? subjectId);
+
+    /// <summary>
+    /// Checks whether the <paramref name="user"/> is part of the <paramref name="borehole"/> work group.
+    /// </summary>
+    /// <param name="borehole">The <see cref="Borehole"/> object to check the workgroup for.</param>
+    /// <param name="user">The <see cref="User"/> to check against.</param>
+    /// <returns><c>true</c> if the user is part of the borehole's workgroup; otherwise, <c>false</c>.</returns>
+    bool HasUserWorkgroupPermissions(Borehole borehole, User user);
 }

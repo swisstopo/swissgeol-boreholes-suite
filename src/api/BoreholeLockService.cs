@@ -32,7 +32,7 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
     }
 
     /// <inheritdoc />
-    public async Task<bool> IsUserLackingPermissions(int? boreholeId, string? subjectId)
+    public async Task<bool> IsUserLackingPermissionsAsync(int? boreholeId, string? subjectId)
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
 
@@ -43,27 +43,48 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
     }
 
     /// <inheritdoc />
-    public bool IsUserLackingPermissions(ICollection<Borehole> boreholes, User user)
+    public bool IsUserLackingPermissions(Borehole borehole, User user)
     {
-        return boreholes.Any(borehole => IsUserLackingPermissions(borehole, user));
-    }
-
-    private bool IsUserLackingPermissions(Borehole borehole, User user)
-    {
-        if (borehole.Workflows != null)
+        try
         {
-            var boreholeWorkflowRoles = borehole.Workflows
-                .Select(w => w.Role)
-                .ToHashSet();
+            if (borehole.Workflows == null || borehole.Workflows.Count == 0)
+            {
+                logger.LogWarning("User with SubjectId <{SubjectId}> attempted to edit BoreholeId <{BoreholeId}>, but it has no workflows.", user.SubjectId, borehole.Id);
+                return true;
+            }
+
+            var boreholeWorkflowRoles = borehole.Workflows.Select(w => w.Role).ToHashSet();
 
             if (user.WorkgroupRoles == null || !user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId && boreholeWorkflowRoles.Contains(x.Role)))
             {
-                logger.LogWarning("Current user with subject_id <{SubjectId}> does not have the required role to edit the borehole with id <{BoreholeId}>.", user.SubjectId, borehole.Id);
+                logger.LogWarning("User with SubjectId <{SubjectId}> lacks the required role to edit BoreholeId <{BoreholeId}>.", user.SubjectId, borehole.Id);
                 return true;
             }
-        }
 
-        return false;
+            return false;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking user permissions for BoreholeId <{BoreholeId}>.", borehole.Id);
+            return true;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> HasUserWorkgroupPermissionsAsync(int? boreholeId, string? subjectId)
+    {
+        var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
+
+        if (user.IsAdmin) return true;
+        var borehole = await GetBoreholeWithWorkflowsAsync(boreholeId).ConfigureAwait(false);
+
+        return HasUserWorkgroupPermissions(borehole, user);
+    }
+
+    /// <inheritdoc />
+    public bool HasUserWorkgroupPermissions(Borehole borehole, User user)
+    {
+        return user.WorkgroupRoles != null && user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId);
     }
 
     private async Task<Borehole> GetBoreholeWithWorkflowsAsync(int? boreholeId)
