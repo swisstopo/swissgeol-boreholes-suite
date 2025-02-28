@@ -83,7 +83,7 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
     /// <inheritdoc />
     public bool HasUserWorkgroupPermissions(Borehole borehole, User user)
     {
-        return borehole.Workflows != null && user.WorkgroupRoles != null && user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId);
+        return user.WorkgroupRoles != null && user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId);
     }
 
     private async Task<Borehole> GetBoreholeWithWorkflowsAsync(int? boreholeId)
