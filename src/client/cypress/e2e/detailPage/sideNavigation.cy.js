@@ -1,12 +1,12 @@
-import { addItem, saveForm } from "../helpers/buttonHelpers.js";
 import { clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers.js";
-import { setInput, setSelect } from "../helpers/formHelpers.js";
 import {
   checkElementColorByDataCy,
-  createBorehole,
+  createBackfill,
+  createBorehole, createCasing,
+  createCompletion,
   createFieldMeasurement,
   createGroundwaterLevelMeasurement,
-  createHydrotest,
+  createHydrotest, createInstrument,
   createLithologyLayer,
   createStratigraphy,
   createWateringress,
@@ -60,6 +60,7 @@ describe("Test for the detail page side navigation.", () => {
 
     // Expand Hydrogeology menu and check its child items
     getElementByDataCy("hydrogeology-menu-item").click();
+    cy.wait("@codelist_GET");
     [
       "wateringress-menu-item",
       "groundwaterlevelmeasurement-menu-item",
@@ -97,13 +98,28 @@ describe("Test for the detail page side navigation.", () => {
     cy.wait("@lithostratigraphy_POST");
 
     // Add completion
+    cy.get("@borehole_id").then(boreholeId => {
+      createCompletion("Comp-1", boreholeId, 16000002, true).as("completion_id");
+    });
+
+    // Check completions content tabs and verify that they are greyed out
     getElementByDataCy("completion-menu-item").click();
-    addItem("addCompletion");
-    cy.wait("@codelist_GET");
-    setInput("name", "Compl-1");
-    setSelect("kindId", 1);
-    saveForm("completion-header");
-    cy.wait("@get-completions-by-boreholeId");
+    ["completion-content-tab-instrumentation", "completion-content-tab-backfill"].forEach(item => {
+      checkElementColorByDataCy(item, "rgb(130, 142, 154)");
+    });
+    getElementByDataCy("completion-content-tab-backfill").click();
+    checkElementColorByDataCy("completion-content-tab-casing", "rgb(130, 142, 154)");
+
+    // Add backfill, instrumentation and casing
+    cy.get("@borehole_id").then(boreholeId => {
+      cy.get("@completion_id").then(completionId => {
+        createCasing("casing-1", boreholeId, completionId, "2021-01-01", "2021-01-02", [
+          { fromDepth: 0, toDepth: 10, kindId: 25000103 },
+        ]);
+        createBackfill(completionId, null, 25000109, 25000102, 0, 10, "Lorem.");
+        createInstrument(completionId, null, "Inst-1", 25000212, 25000102, 0, 10, "Lorem.");
+      });
+    });
 
     // Add hydro module data
     cy.get("@borehole_id").then(id => {
@@ -135,8 +151,18 @@ describe("Test for the detail page side navigation.", () => {
       checkElementColorByDataCy(item, "rgba(0, 0, 0, 0.87)");
     });
 
+    // Expand completion menu and check content tabs
+    getElementByDataCy("completion-menu-item").click();
+    ["completion-content-tab-instrumentation", "completion-content-tab-backfill"].forEach(item => {
+      checkElementColorByDataCy(item, "rgb(28, 40, 52)");
+    });
+    getElementByDataCy("completion-content-tab-backfill").click();
+    checkElementColorByDataCy("completion-content-tab-casing", "rgb(28, 40, 52)");
+
     // Expand hydrogeology menu and check its child items
     getElementByDataCy("hydrogeology-menu-item").click();
+    getElementByDataCy("hydrogeology-menu-item").click();
+    cy.wait("@codelist_GET");
     [
       "wateringress-menu-item",
       "groundwaterlevelmeasurement-menu-item",
