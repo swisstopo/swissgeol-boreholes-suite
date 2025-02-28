@@ -74,7 +74,7 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
 
-        if (user.IsAdmin) return false;
+        if (user.IsAdmin) return true;
         var borehole = await GetBoreholeWithWorkflowsAsync(boreholeId).ConfigureAwait(false);
 
         return HasUserWorkgroupPermissions(borehole, user);

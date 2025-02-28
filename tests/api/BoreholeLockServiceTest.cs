@@ -12,6 +12,7 @@ public class BoreholeLockServiceTest
 {
     private const string AdminSubjectId = "sub_admin";
     private const string EditorSubjectId = "sub_editor";
+    private const string ViewerSubjectId = "sub_viewer";
     private const int AdminUserId = 1;
 
     private BoreholeLockService boreholeLockService;
@@ -107,46 +108,50 @@ public class BoreholeLockServiceTest
     }
 
     [TestMethod]
-    public async Task HasUserWorkgroupPermissionsWithEditorIsInWorkgroup()
+    public async Task HasUserWorkgroupPermissionsAsyncWithEditorIsInWorkgroup()
     {
-        var users = await context.Users.Include(s => s.WorkgroupRoles).ToListAsync().ConfigureAwait(false);
-        var user = users.FirstOrDefault(u => u.FirstName.Equals("editor", StringComparison.OrdinalIgnoreCase));
-
         var boreholes = await context.Boreholes.Include(b => b.Workflows).ToListAsync();
         var editorBorehole = boreholes.FirstOrDefault(x => x.Workflows.Count > 0 && x.Workflows.Any(w => w.Role == Role.Editor));
 
-        var result = boreholeLockService.HasUserWorkgroupPermissions(editorBorehole, user);
+        var result = await boreholeLockService.HasUserWorkgroupPermissionsAsync(editorBorehole.Id, EditorSubjectId).ConfigureAwait(false);
         Assert.IsTrue(result);
     }
 
     [TestMethod]
-    public async Task HasUserWorkgroupPermissionsWithEditorIsNotInWorkgroup()
+    public async Task HasUserWorkgroupPermissionsAsyncWithEditorIsNotInWorkgroup()
     {
-        var users = await context.Users.Include(s => s.WorkgroupRoles).ToListAsync().ConfigureAwait(false);
-        var user = users.FirstOrDefault(u => u.FirstName.Equals("editor", StringComparison.OrdinalIgnoreCase));
-
         var boreholes = await context.Boreholes.Include(b => b.Workflows).ToListAsync();
         var editorBorehole = boreholes.FirstOrDefault(x => x.Workflows.Count > 0 && x.Workflows.Any(w => w.Role == Role.Editor));
 
         // Update workgroupId of first borehole to simulate a workgroup mismatch
         editorBorehole.WorkgroupId = 2;
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var result = boreholeLockService.HasUserWorkgroupPermissions(editorBorehole, user);
+        var result = await boreholeLockService.HasUserWorkgroupPermissionsAsync(editorBorehole.Id, EditorSubjectId).ConfigureAwait(false);
         Assert.IsFalse(result);
     }
 
     [TestMethod]
-    public async Task HasUserWorkgroupPermissionsWithViewerIsInWorkgroup()
+    public async Task HasUserWorkgroupPermissionsAsyncWithAdminIsNotInWorkgroup()
     {
-        // Retrieve a user with the 'Viewer' role, which lacks sufficient permissions to manage boreholes
-        // that are associated with workflows requiring the 'Editor'(Role.Editor) role.
-        var users = await context.Users.Include(s => s.WorkgroupRoles).ToListAsync().ConfigureAwait(false);
-        var user = users.FirstOrDefault(u => u.FirstName.Equals("viewer", StringComparison.OrdinalIgnoreCase));
-
         var boreholes = await context.Boreholes.Include(b => b.Workflows).ToListAsync();
         var editorBorehole = boreholes.FirstOrDefault(x => x.Workflows.Count > 0 && x.Workflows.Any(w => w.Role == Role.Editor));
 
-        var result = boreholeLockService.HasUserWorkgroupPermissions(editorBorehole, user);
+        // Update workgroupId of first borehole to simulate a workgroup mismatch
+        editorBorehole.WorkgroupId = 2;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var result = await boreholeLockService.HasUserWorkgroupPermissionsAsync(editorBorehole.Id, AdminSubjectId).ConfigureAwait(false);
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task HasUserWorkgroupPermissionsAsyncWithViewerIsInWorkgroup()
+    {
+        var boreholes = await context.Boreholes.Include(b => b.Workflows).ToListAsync();
+        var editorBorehole = boreholes.FirstOrDefault(x => x.Workflows.Count > 0 && x.Workflows.Any(w => w.Role == Role.Editor));
+
+        var result = await boreholeLockService.HasUserWorkgroupPermissionsAsync(editorBorehole.Id, ViewerSubjectId).ConfigureAwait(false);
         Assert.IsTrue(result);
     }
 
