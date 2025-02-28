@@ -42,12 +42,6 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
         return IsUserLackingPermissions(borehole, user);
     }
 
-    /// <inheritdoc />
-    public bool IsUserLackingPermissions(ICollection<Borehole> boreholes, User user)
-    {
-        return boreholes.Any(borehole => IsUserLackingPermissions(borehole, user));
-    }
-
     private bool IsUserLackingPermissions(Borehole borehole, User user)
     {
         if (borehole.Workflows != null)
@@ -64,6 +58,23 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
         }
 
         return false;
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> HasUserWorkgroupPermissionsAsync(int? boreholeId, string? subjectId)
+    {
+        var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
+
+        if (user.IsAdmin) return false;
+        var borehole = await GetBoreholeWithWorkflowsAsync(boreholeId).ConfigureAwait(false);
+
+        return HasUserWorkgroupPermissions(borehole, user);
+    }
+
+    /// <inheritdoc />
+    public bool HasUserWorkgroupPermissions(Borehole borehole, User user)
+    {
+        return borehole.Workflows != null && user.WorkgroupRoles != null && user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId);
     }
 
     private async Task<Borehole> GetBoreholeWithWorkflowsAsync(int? boreholeId)

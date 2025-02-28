@@ -75,7 +75,7 @@ public class ExportControllerTest
             .ReturnsAsync(false);
 
         boreholeLockServiceMock
-            .Setup(x => x.IsUserLackingPermissions(It.IsAny<List<Borehole>>(), It.IsAny<User>()))
+            .Setup(x => x.HasUserWorkgroupPermissions(It.IsAny<Borehole>(), It.IsAny<User>()))
             .Returns(false);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
@@ -508,7 +508,7 @@ public class ExportControllerTest
         // Override return value of GetBoreholesUserLacksPermissionFor in this specific test
         var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Loose);
         boreholeLockServiceMock
-            .Setup(x => x.IsUserLackingPermissions(It.IsAny<List<Borehole>>(), It.IsAny<User>()))
+            .Setup(x => x.HasUserWorkgroupPermissions(It.IsAny<Borehole>(), It.IsAny<User>()))
             .Returns(true);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
