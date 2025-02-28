@@ -44,20 +44,29 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
 
     private bool IsUserLackingPermissions(Borehole borehole, User user)
     {
-        if (borehole.Workflows != null)
+        try
         {
-            var boreholeWorkflowRoles = borehole.Workflows
-                .Select(w => w.Role)
-                .ToHashSet();
+            if (borehole.Workflows == null || borehole.Workflows.Count == 0)
+            {
+                logger.LogWarning("User with SubjectId <{SubjectId}> attempted to edit BoreholeId <{BoreholeId}>, but it has no workflows.", user.SubjectId, borehole.Id);
+                return true;
+            }
+
+            var boreholeWorkflowRoles = borehole.Workflows.Select(w => w.Role).ToHashSet();
 
             if (user.WorkgroupRoles == null || !user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId && boreholeWorkflowRoles.Contains(x.Role)))
             {
-                logger.LogWarning("Current user with subject_id <{SubjectId}> does not have the required role to edit the borehole with id <{BoreholeId}>.", user.SubjectId, borehole.Id);
+                logger.LogWarning("User with SubjectId <{SubjectId}> lacks the required role to edit BoreholeId <{BoreholeId}>.", user.SubjectId, borehole.Id);
                 return true;
             }
-        }
 
-        return false;
+            return false;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking user permissions for BoreholeId <{BoreholeId}>.", borehole.Id);
+            return true;
+        }
     }
 
     /// <inheritdoc />
