@@ -154,12 +154,12 @@ export const setSelect = (fieldName, index, expected, parent) => {
 /**
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the select field.
- * @param {boolean?} option The option to select (true, false, not specified)
+ * @param {string?} option The option to select ("Yes", "No", "Not specified")
  * @param {number} expected The expected number of options in the dropdown.
  * @param {string} parent (optional) The parent of the form element.
  */
-export const setBooleanSelect = (fieldName, option, expected, parent) => {
-  const listIndex = option === true ? 0 : option === false ? 1 : 2; //order of options in dropdown list is Yes, No, Not Specified
+export const setYesNoSelect = (fieldName, option, expected, parent) => {
+  const listIndex = option.toLowerCase() === "yes" ? 0 : option.toLowerCase() === "no" ? 1 : 2; //order of options in dropdown list is Yes, No, Not Specified
   setSelect(fieldName, listIndex, expected, parent);
 };
 
@@ -172,11 +172,15 @@ export const setBooleanSelect = (fieldName, option, expected, parent) => {
 export const evaluateYesNoSelect = (fieldName, expectedValue, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
   cy.get(selector).then($input => {
-    const actualInputString = $input.val();
-    expect(
-      actualInputString,
-      `Expected ${fieldName} to have value ${expectedValue} but got ${actualInputString}`,
-    ).to.eq(expectedValue);
+    const actualValue = $input.val();
+    // If input is not readonly it is evaluated as a select component using the keys of the select
+    if (!$input.hasClass("MuiInputBase-readOnly")) {
+      expectedValue = expectedValue === "Yes" ? "1" : expectedValue === "No" ? "0" : "2";
+    }
+    // If input readonly it is evaluated as an input component
+    expect(actualValue, `Expected ${fieldName} to have value ${expectedValue} but got ${actualValue}`).to.eq(
+      expectedValue,
+    );
   });
 };
 

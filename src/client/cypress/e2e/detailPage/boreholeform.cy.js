@@ -6,9 +6,9 @@ import {
   evaluateTextarea,
   evaluateYesNoSelect,
   isDisabled,
-  setBooleanSelect,
   setInput,
   setSelect,
+  setYesNoSelect,
 } from "../helpers/formHelpers";
 import {
   createBorehole,
@@ -43,7 +43,7 @@ describe("Test for the borehole form.", () => {
     isDisabled("restrictionUntil", true);
     setSelect("restrictionId", 3);
     isDisabled("restrictionUntil", false);
-    setBooleanSelect("nationalInterest", null); // Not specified
+    setYesNoSelect("nationalInterest", "Not specified");
     setSelect("originalReferenceSystem", 0);
     setSelect("locationPrecisionId", 2);
     setSelect("elevationPrecisionId", 2);
@@ -109,8 +109,8 @@ describe("Test for the borehole form.", () => {
       setSelect("lithologyTopBedrockId", 1);
       setSelect("lithostratigraphyTopBedrockId", 1);
       setSelect("chronostratigraphyTopBedrockId", 1);
-      setBooleanSelect("hasGroundwater", true);
-      setBooleanSelect("topBedrockIntersected", false);
+      setYesNoSelect("hasGroundwater", "Yes");
+      setYesNoSelect("topBedrockIntersected", "No");
 
       setInput("totalDepth", 700);
       setInput("topBedrockFreshMd", 0.60224);
@@ -155,7 +155,7 @@ describe("Test for the borehole form.", () => {
       evaluateYesNoSelect("topBedrockIntersected", "Yes");
 
       // can save value for top bedrock intersected which does not correspond to automatically set values
-      setBooleanSelect("topBedrockIntersected", "No");
+      setYesNoSelect("topBedrockIntersected", "No");
       saveWithSaveBar();
       cy.wait(1000);
       // navigate away and return
@@ -205,7 +205,7 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it.only("Checks if form values are updated when borehole changes", () => {
+  it("Checks if form values are updated when borehole changes", () => {
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     // sort by Name descending
@@ -217,14 +217,14 @@ describe("Test for the borehole form.", () => {
     evaluateInput("projectName", "Reactive asymmetric alliance");
     evaluateSelect("restrictionId", "");
     evaluateYesNoSelect("nationalInterest", "No");
-    evaluateSelect("originalReferenceSystem", "20104002"); // LV03
-    evaluateSelect("locationPrecisionId", "20113005");
+    evaluateSelect("originalReferenceSystem", "LV03");
+    evaluateSelect("locationPrecisionId", "0.1 (± DGPS / Theodolit)");
 
     evaluateInput("elevationZ", "3'519.948980314633");
     evaluateInput("referenceElevation", "3'554.9389396584306");
     evaluateSelect("elevationPrecisionId", "");
-    evaluateSelect("referenceElevationPrecisionId", "20114007"); // not specified
-    evaluateSelect("referenceElevationTypeId", "30000013"); // kelly bushing
+    evaluateSelect("referenceElevationPrecisionId", "not specified");
+    evaluateSelect("referenceElevationTypeId", "kelly bushing");
 
     returnToOverview();
     clickOnRowWithText("Zena Mraz");
@@ -233,14 +233,14 @@ describe("Test for the borehole form.", () => {
     evaluateInput("projectName", "Ergonomic heuristic installation");
     evaluateSelect("restrictionId", "");
     evaluateYesNoSelect("nationalInterest", "Yes");
-    evaluateSelect("originalReferenceSystem", "20104002"); // LV03
-    evaluateSelect("locationPrecisionId", "20113007"); // not specified
+    evaluateSelect("originalReferenceSystem", "LV03");
+    evaluateSelect("locationPrecisionId", "not specified");
 
     evaluateInput("elevationZ", "3'062.9991330499756");
     evaluateInput("referenceElevation", "3'478.1368118609007");
-    evaluateSelect("elevationPrecisionId", "20114003"); // 1
-    evaluateSelect("referenceElevationPrecisionId", "20114005"); //0.1
-    evaluateSelect("referenceElevationTypeId", "30000013"); // kelly bushing
+    evaluateSelect("elevationPrecisionId", "1");
+    evaluateSelect("referenceElevationPrecisionId", "0.1");
+    evaluateSelect("referenceElevationTypeId", "kelly bushing");
   });
 
   it("switches tabs", () => {
