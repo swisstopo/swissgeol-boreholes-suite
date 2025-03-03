@@ -42,7 +42,7 @@ const IdentifierSegment = ({ borehole, formMethods }: IdentifierSegmentProps) =>
               <FormInputDisplayOnly label={"borehole_identifier_value"} value={borehole.id} />
             </FormContainer>
             {fields.map((field, index) => (
-              <FormContainer direction={"row"} gap={2}>
+              <FormContainer direction={"row"} gap={2} key={field.id}>
                 <FormDomainSelect
                   fieldName={`boreholeCodelists.${index}.codelistId`}
                   label="borehole_identifier"
