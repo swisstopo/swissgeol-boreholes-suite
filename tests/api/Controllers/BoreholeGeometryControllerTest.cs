@@ -28,7 +28,7 @@ public class BoreholeGeometryControllerTest
             .ReturnsAsync(false);
         boreholeLockServiceMock
             .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(false);
+            .ReturnsAsync(true);
         controller = new BoreholeGeometryController(context, new Mock<ILogger<BoreholeGeometryElement>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
         boreholeIdWithoutGeometry = context.Boreholes
