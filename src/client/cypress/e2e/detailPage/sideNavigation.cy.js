@@ -163,7 +163,6 @@ describe("Test for the detail page side navigation.", () => {
 
     // Expand hydrogeology menu and check its child items
     getElementByDataCy("hydrogeology-menu-item").click();
-    getElementByDataCy("hydrogeology-menu-item").click();
     cy.wait("@codelist_GET");
     [
       "wateringress-menu-item",
