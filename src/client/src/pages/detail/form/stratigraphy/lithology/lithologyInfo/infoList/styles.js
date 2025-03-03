@@ -6,12 +6,6 @@ export const FormContainer = styled.div`
   grid-template-columns: 48% 48%;
   column-gap: 2%;
 `;
-export const CheckBoxContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-  align-items: center;
-`;
 export const AttributesContainer = styled(Form.Field)``;
 
 export const AttributesItem = styled.div`

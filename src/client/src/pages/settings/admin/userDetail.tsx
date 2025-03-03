@@ -86,7 +86,7 @@ export const UserDetail: FC = () => {
 
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
     return (
-      <Stack direction="row" gap={1} p={1.2}>
+      <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
         {params.value.map((roleName: string) => (
           <Chip
             key={roleName}
@@ -192,6 +192,7 @@ export const UserDetail: FC = () => {
               isDisabled={isDisabled}
               onSortModelChange={setUserDetailTableSortModel}
               dataCy={"user-workgroups-table"}
+              rowAutoHeight={true}
             />
           )}
         </CardContent>
