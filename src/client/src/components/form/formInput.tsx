@@ -18,7 +18,7 @@ export interface FormInputProps {
   type?: FormValueType;
   multiline?: boolean;
   rows?: number;
-  value?: string | number | Date;
+  value?: string | number | Date | null;
   controlledValue?: string | number | Date;
   sx?: SxProps;
   className?: string;
@@ -51,7 +51,7 @@ export const FormInput: FC<FormInputProps> = ({
   const isDateInput = type === FormValueType.Date;
   const isReadOnly = readonly ?? !editingEnabled;
 
-  const getDefaultValue = (value: string | number | Date | undefined) => {
+  const getDefaultValue = (value: string | number | Date | undefined | null) => {
     if (value == undefined) {
       return "";
     } else if (isDateTimeInput) {

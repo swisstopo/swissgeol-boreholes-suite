@@ -26,6 +26,9 @@ public class BoreholeGeometryControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
+        boreholeLockServiceMock
+            .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(true);
         controller = new BoreholeGeometryController(context, new Mock<ILogger<BoreholeGeometryElement>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
         boreholeIdWithoutGeometry = context.Boreholes
@@ -53,7 +56,11 @@ public class BoreholeGeometryControllerTest
     [TestMethod]
     public async Task GetAsyncBoreholeGeometryByBoreholeId()
     {
-        var geometries = await controller.GetAsync(boreholeIdWithGeometry).ConfigureAwait(false);
+        var response = await controller.GetAsync(boreholeIdWithGeometry).ConfigureAwait(false);
+        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        var okResult = response as OkObjectResult;
+        var geometries = okResult?.Value as IEnumerable<BoreholeGeometryElement>;
+
         Assert.IsNotNull(geometries);
         Assert.IsTrue(geometries.Count() > 1);
     }
@@ -261,5 +268,49 @@ public class BoreholeGeometryControllerTest
         ActionResultAssert.IsOk(result);
 
         Assert.AreEqual(0.0, result.Value);
+    }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithGeometryAndPositiveDepthMD()
+    {
+        var borehole = await context.Boreholes.FindAsync(boreholeIdWithGeometry).ConfigureAwait(false);
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithGeometry, 102);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+
+        var depthInMasl = result.Value as double?;
+        Assert.IsNotNull(depthInMasl.Value);
+        Assert.IsTrue(depthInMasl.Value < borehole.ElevationZ, "Returned depth should be below borehole elevation.");
+    }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithGeometryAndNegativeDepthMD()
+    {
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithGeometry, -102);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+        Assert.IsNull(result.Value);
+    }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithNoGeometryAndNegativeDepthMD()
+    {
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithoutGeometry, -102);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+        Assert.IsNull(result.Value);
+    }
+
+    [TestMethod]
+    public async Task GetDepthInMaslWithNoGeometryAndPositiveDepthMD()
+    {
+        var borehole = await context.Boreholes.FindAsync(boreholeIdWithoutGeometry).ConfigureAwait(false);
+        IActionResult response = await controller.GetDepthInMasl(boreholeIdWithoutGeometry, 355);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+
+        var depthInMasl = result.Value as double?;
+        Assert.IsNotNull(depthInMasl.Value);
+        Assert.IsTrue(depthInMasl.Value < borehole.ElevationZ, "Returned depth should be below borehole elevation.");
     }
 }
