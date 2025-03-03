@@ -71,14 +71,19 @@ export async function upload(url, method, payload) {
   return await fetchApiV2Base(url, method, payload);
 }
 
+const getFallbackFileName = url => {
+  const match = url.match(/export\/(\w+)\?/);
+  if (!match) return "export";
+  return `export.${match[1]}`;
+};
+
 export async function download(url) {
   const response = await fetchApiV2Base(url, "GET", null);
   if (!response.ok) {
     throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
   }
-
   const fileName =
-    response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? "export.pdf";
+    response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? getFallbackFileName(url);
   const blob = await response.blob();
   const downLoadUrl = window.URL.createObjectURL(blob);
   const link = document.createElement("a");
