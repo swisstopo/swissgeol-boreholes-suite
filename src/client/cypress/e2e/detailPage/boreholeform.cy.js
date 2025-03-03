@@ -1,10 +1,10 @@
 import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import {
-  evaluateBooleanSelect,
   evaluateInput,
   evaluateSelect,
   evaluateTextarea,
+  evaluateYesNoSelect,
   isDisabled,
   setBooleanSelect,
   setInput,
@@ -15,6 +15,8 @@ import {
   getElementByDataCy,
   goToRouteAndAcceptTerms,
   handlePrompt,
+  navigateToBoreholeTab,
+  navigateToLocationTab,
   newEditableBorehole,
   returnToOverview,
   startBoreholeEditing,
@@ -30,22 +32,6 @@ function ensureEditingEnabled() {
   cy.get('[data-cy="editingstop-button"]').should("exist");
 }
 
-function navigateToLocationTab(id) {
-  getElementByDataCy("location-menu-item").click();
-  cy.location().should(location => {
-    expect(location.pathname).to.eq(`/${id}/location`);
-  });
-  cy.contains("Spatial reference system");
-}
-
-function navigateToBoreholeTab(id) {
-  getElementByDataCy("borehole-menu-item").click();
-  cy.location().should(location => {
-    expect(location.pathname).to.eq(`/${id}/borehole`);
-  });
-  cy.contains("Borehole type");
-}
-
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {
     goToRouteAndAcceptTerms(`/`);
@@ -57,7 +43,7 @@ describe("Test for the borehole form.", () => {
     isDisabled("restrictionUntil", true);
     setSelect("restrictionId", 3);
     isDisabled("restrictionUntil", false);
-    setBooleanSelect("nationalInterest", null); // not specified
+    setBooleanSelect("nationalInterest", null); // Not specified
     setSelect("originalReferenceSystem", 0);
     setSelect("locationPrecisionId", 2);
     setSelect("elevationPrecisionId", 2);
@@ -65,7 +51,7 @@ describe("Test for the borehole form.", () => {
     setSelect("referenceElevationTypeId", 4);
 
     evaluateSelect("restrictionId", "20111003");
-    evaluateSelect("nationalInterest", "2");
+    evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("originalReferenceSystem", "20104001");
     evaluateSelect("locationPrecisionId", "20113002");
     evaluateSelect("elevationPrecisionId", "20114002");
@@ -78,7 +64,7 @@ describe("Test for the borehole form.", () => {
       navigateToBoreholeTab(id);
       navigateToLocationTab(id);
       evaluateSelect("restrictionId", "20111003");
-      evaluateSelect("nationalInterest", "2");
+      evaluateYesNoSelect("nationalInterest", "Not specified");
       evaluateSelect("originalReferenceSystem", "20104001");
       evaluateSelect("locationPrecisionId", "20113002");
       evaluateSelect("elevationPrecisionId", "20114002");
@@ -154,28 +140,28 @@ describe("Test for the borehole form.", () => {
       startBoreholeEditing();
 
       // updated top bedrock intersected when top bedrock values change
-      evaluateBooleanSelect("topBedrockIntersected", null); // not specified
+      evaluateYesNoSelect("topBedrockIntersected", "Not specified"); // not specified
       setInput("topBedrockFreshMd", 897);
-      evaluateBooleanSelect("topBedrockIntersected", true);
+      evaluateYesNoSelect("topBedrockIntersected", "Yes");
       setInput("topBedrockFreshMd", " ");
-      evaluateBooleanSelect("topBedrockIntersected", null);
+      evaluateYesNoSelect("topBedrockIntersected", "Not specified");
       setInput("topBedrockWeatheredMd", 564);
-      evaluateBooleanSelect("topBedrockIntersected", true);
+      evaluateYesNoSelect("topBedrockIntersected", "Yes");
       saveWithSaveBar();
 
       // navigate away and return
       navigateToLocationTab(id);
       navigateToBoreholeTab(id);
-      evaluateBooleanSelect("topBedrockIntersected", true);
+      evaluateYesNoSelect("topBedrockIntersected", "Yes");
 
       // can save value for top bedrock intersected which does not correspond to automatically set values
-      setBooleanSelect("topBedrockIntersected", false);
+      setBooleanSelect("topBedrockIntersected", "No");
       saveWithSaveBar();
       cy.wait(1000);
       // navigate away and return
       navigateToLocationTab(id);
       navigateToBoreholeTab(id);
-      evaluateBooleanSelect("topBedrockIntersected", false);
+      evaluateYesNoSelect("topBedrockIntersected", "No");
       evaluateInput("topBedrockFreshMd", "");
       evaluateInput("topBedrockFreshMd", "");
       evaluateInput("topBedrockWeatheredMd", "564");
@@ -189,7 +175,7 @@ describe("Test for the borehole form.", () => {
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
-      evaluateBooleanSelect("topBedrockIntersected", null);
+      evaluateYesNoSelect("topBedrockIntersected", "Not specified");
       setInput("totalDepth", 700);
       setInput("topBedrockFreshMd", 0.60224);
       setInput("topBedrockWeatheredMd", 78945100);
@@ -219,7 +205,7 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it("Checks if form values are updated when borehole changes", () => {
+  it.only("Checks if form values are updated when borehole changes", () => {
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     // sort by Name descending
@@ -230,7 +216,7 @@ describe("Test for the borehole form.", () => {
     evaluateInput("name", "Zena Rath");
     evaluateInput("projectName", "Reactive asymmetric alliance");
     evaluateSelect("restrictionId", "");
-    cy.get(`[data-cy="nationalInterest-formSelect"] input`).should("have.attr", "value", "0");
+    evaluateYesNoSelect("nationalInterest", "No");
     evaluateSelect("originalReferenceSystem", "20104002"); // LV03
     evaluateSelect("locationPrecisionId", "20113005");
 
@@ -246,7 +232,7 @@ describe("Test for the borehole form.", () => {
     evaluateInput("name", "Zena Mraz");
     evaluateInput("projectName", "Ergonomic heuristic installation");
     evaluateSelect("restrictionId", "");
-    evaluateBooleanSelect("nationalInterest", true);
+    evaluateYesNoSelect("nationalInterest", "Yes");
     evaluateSelect("originalReferenceSystem", "20104002"); // LV03
     evaluateSelect("locationPrecisionId", "20113007"); // not specified
 

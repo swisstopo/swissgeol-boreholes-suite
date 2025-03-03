@@ -290,6 +290,22 @@ export const returnToOverview = () => {
   cy.wait(["@edit_list", "@borehole"]);
 };
 
+export const navigateToLocationTab = id => {
+  getElementByDataCy("location-menu-item").click();
+  cy.location().should(location => {
+    expect(location.pathname).to.eq(`/${id}/location`);
+  });
+  cy.contains("Spatial reference system");
+};
+
+export const navigateToBoreholeTab = id => {
+  getElementByDataCy("borehole-menu-item").click();
+  cy.location().should(location => {
+    expect(location.pathname).to.eq(`/${id}/borehole`);
+  });
+  cy.contains("Borehole type");
+};
+
 export const getElementByDataCy = attribute => {
   return cy.get(`[data-cy=${attribute}]`);
 };

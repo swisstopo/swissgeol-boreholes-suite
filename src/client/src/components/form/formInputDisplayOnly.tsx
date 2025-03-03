@@ -23,6 +23,7 @@ export const FormInputDisplayOnly: React.FC<FormInputDisplayOnlyProps> = ({
       label={t(label)}
       data-cy={label + "-formInput"}
       value={value}
+      className="readonly"
       InputProps={{
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),

@@ -164,20 +164,19 @@ export const setBooleanSelect = (fieldName, option, expected, parent) => {
 };
 
 /**
- * Evaluates the state of a boolean select form element.
+ * Evaluates the state of a select form element with the options "Yes", "No", "Not specified".
  * @param {string} fieldName The name of the select field.
- * @param {boolean?} expectedBoolean The expected value of the select (true, false, null)
+ * @param {string?} expectedValue The expected value of the select ("Yes", "No", "Not specified")
  * @param {string} parent (optional) The parent of the form element.
  */
-export const evaluateBooleanSelect = (fieldName, expectedBoolean, parent) => {
-  const expectedInputString = expectedBoolean === true ? "1" : expectedBoolean === false ? "0" : "2";
+export const evaluateYesNoSelect = (fieldName, expectedValue, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
   cy.get(selector).then($input => {
     const actualInputString = $input.val();
-    const actualBoolean = actualInputString === "1" ? true : actualInputString === "0" ? false : null;
-    expect(actualInputString, `Expected ${fieldName} to have value ${expectedBoolean} but got ${actualBoolean}`).to.eq(
-      expectedInputString,
-    );
+    expect(
+      actualInputString,
+      `Expected ${fieldName} to have value ${expectedValue} but got ${actualInputString}`,
+    ).to.eq(expectedValue);
   });
 };
 
