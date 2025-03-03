@@ -36,6 +36,7 @@
   "analyze": "Analyzing",
   "appearance": "Appearance",
   "attachments": "Attachments",
+  "autoSetDepthMaslEnabled": "Auto set From and To Depth m a.s.l.",
   "backfill": "Sealing/Backfilling",
   "background": "Background",
   "bed": "Bed",

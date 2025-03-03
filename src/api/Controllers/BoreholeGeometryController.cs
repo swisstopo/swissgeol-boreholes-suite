@@ -32,13 +32,25 @@ public class BoreholeGeometryController : ControllerBase
         this.boreholeLockService = boreholeLockService;
     }
 
+    /// <summary>
+    /// Get borehole geometry data for the provided borehole id.
+    /// </summary>
+    /// <param name="boreholeId">The id of the <see cref="Borehole"/> to get geometry data for.</param>"
+    /// <returns>An IEnumerable of type <see cref="BoreholeGeometryElement"/>.</returns>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<BoreholeGeometryElement>> GetAsync([FromQuery] int boreholeId)
+    public async Task<IActionResult> GetAsync([FromQuery] int boreholeId)
     {
-        return await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
+        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+
+        var result = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
+        return Ok(result);
     }
 
+    /// <summary>
+    /// Delete borehole geometry data for the provided borehole id.
+    /// </summary>
+    /// <param name="boreholeId">The id of the <see cref="Borehole"/> to delete geometry data for.</param>"
     [HttpDelete]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> DeleteAsync(int boreholeId)
@@ -54,6 +66,10 @@ public class BoreholeGeometryController : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Get available geometry formats for borehole geometry data.
+    /// </summary>
+    /// <returns>A List of objects containing the format name, key, and CSV header.</returns>
     [HttpGet("[action]")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public IActionResult GeometryFormats()
@@ -63,6 +79,12 @@ public class BoreholeGeometryController : ControllerBase
             .ToList());
     }
 
+    /// <summary>
+    /// Upload borehole geometry data to the database.
+    /// </summary>
+    /// <param name="boreholeId">The id of the <see cref="Borehole"/> to upload geometry data for.</param>
+    /// <param name="geometryFile">The <see cref="IFormFile"/> containing the geometry data.</param>
+    /// <param name="geometryFormat">The format of the geometry data.</param>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
@@ -112,19 +134,52 @@ public class BoreholeGeometryController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Get the true vertical depth (TVD) from the borehole's geometry for the provided measured depth.
+    /// </summary>
+    /// <param name="boreholeId">The id of the <see cref="Borehole"/> to get the TVD for.</param>
+    /// <param name="depthMD">The measured depth to get the TVD for.</param>
+    /// <returns>The true vertical depth (TVD) in meters.</returns>
     [HttpGet("[action]")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> GetDepthTVD([FromQuery] int boreholeId, [FromQuery] double depthMD)
     {
+        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
 
         var tvd = geometry.GetTVDIfGeometryExists(depthMD);
         if (tvd == null)
         {
-            logger?.LogInformation($"Invalid input, could not calculate true vertical depth from measured depth of {depthMD}");
+            logger.LogInformation("Invalid input, could not calculate true vertical depth from measured depth of {DepthMD}", depthMD);
         }
 
         return Ok(tvd);
+    }
+
+    /// <summary>
+    /// Get the depth in meters above sea level (MASL) from the borehole's elevation for the provided measured depth.
+    /// </summary>
+    /// <param name="boreholeId">The id of the <see cref="Borehole"/> to get the MASL for.</param>
+    /// <param name="depthMD">The measured depth to get the MASL for.</param>
+    /// <returns>The depth in meters above sea level (MASL).</returns>
+    [HttpGet("[action]")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> GetDepthInMasl([FromQuery] int boreholeId, [FromQuery] double depthMD)
+    {
+        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+
+        var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
+        var tvd = geometry.GetTVDIfGeometryExists(depthMD);
+        var borehole = await context.Boreholes.FindAsync(boreholeId).ConfigureAwait(false);
+
+        if (tvd == null || borehole?.ElevationZ == null)
+        {
+            logger.LogInformation("Invalid input, could not calculate depth in MASL from measured depth of {DepthMD}", depthMD);
+            return Ok(null);
+        }
+
+        return Ok(borehole.ElevationZ - tvd);
     }
 
     private async Task<List<BoreholeGeometryElement>> GetBoreholeGeometry(int boreholeId)

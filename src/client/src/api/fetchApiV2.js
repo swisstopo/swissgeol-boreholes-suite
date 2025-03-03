@@ -418,6 +418,10 @@ export const getBoreholeGeometryDepthTVD = async (boreholeId, depthMD) => {
   return await fetchApiV2(`boreholegeometry/getDepthTVD?boreholeId=${boreholeId}&depthMD=${depthMD}`, "GET");
 };
 
+export const getBoreholeGeometryDepthMasl = async (boreholeId, depthMD) => {
+  return await fetchApiV2(`boreholegeometry/getDepthInMasl?boreholeId=${boreholeId}&depthMD=${depthMD}`, "GET");
+};
+
 export const getWaterIngress = async boreholeId => {
   return await fetchApiV2(`wateringress?boreholeId=${boreholeId}`, "GET");
 };
