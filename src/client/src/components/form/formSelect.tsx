@@ -52,7 +52,8 @@ export const FormSelect: FC<FormSelectProps> = ({
   const isReadOnly = readonly ?? !editingEnabled;
 
   const menuItems: FormSelectMenuItem[] = [];
-  if (!required && canReset) {
+
+  if (!isReadOnly && !required && canReset) {
     menuItems.push({ key: 0, value: null, label: t("reset"), italic: true });
   }
 
