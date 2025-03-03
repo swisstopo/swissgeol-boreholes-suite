@@ -112,6 +112,7 @@ describe("completion crud tests", () => {
     setInput("abandonDate", "2012-11-14");
     setInput("notes", "Lorem.");
     saveChanges();
+    cy.wait("@backfill_GET");
     cy.contains("Compl-1");
     cy.get('[data-cy="addcompletion-button"]').should("be.enabled");
 
@@ -124,6 +125,8 @@ describe("completion crud tests", () => {
     // both to make sure that the UI has completed loading. Otherwise, the header cannot yet be toggled open.
     cy.wait("@casing_GET");
     cy.wait("@casing_GET");
+    cy.wait("@backfill_GET");
+    cy.wait("@backfill_GET");
 
     // edit completion
     startEditHeader();
@@ -134,6 +137,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-2");
     toggleCheckbox("isPrimary");
     saveChanges();
+    cy.wait("@backfill_GET");
     cy.contains("Compl-2");
     startEditHeader();
     evaluateCheckbox("isPrimary", "true");
@@ -146,6 +150,8 @@ describe("completion crud tests", () => {
     deleteCompletion();
     handlePrompt("Do you really want to delete this completion?", "Delete");
     cy.wait("@get-completions-by-boreholeId");
+    cy.wait("@backfill_GET");
+    cy.wait("@backfill_GET");
     cy.get('[data-cy="completion-header-tab-1"]').should("not.exist");
     isHeaderTabSelected(0);
     evaluateDisplayValue("mainCompletion", "Yes");
