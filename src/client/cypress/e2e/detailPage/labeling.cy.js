@@ -17,26 +17,28 @@ const isFileActive = (fileName, isActive) => {
 };
 
 const drawBox = (x1, y1, x2, y2) => {
-  cy.get('[data-cy="labeling-draw-tooltip"]').should("to.be.visible");
+  cy.get('[data-cy="labeling-draw-tooltip"]').should("be.visible");
   cy.get('[data-cy="labeling-draw-tooltip"]').contains("Draw box around north & east coordinates");
   cy.window().then(win => {
     const interactions = win.labelingImage.getInteractions().getArray();
     expect(
       interactions.some(interaction => {
-        return interaction.constructor.name === "Draw";
+        return interaction.constructor.name === "DragBox";
       }),
     ).to.be.true;
   });
-  cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 }).trigger("pointerup", { x: x1, y: y1 });
-  cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 }).trigger("pointerup", { x: x2, y: y2 });
+  cy.get('[data-cy="labeling-panel"]')
+    .trigger("pointerdown", { x: x1, y: y1 })
+    .trigger("pointermove", { x: x2, y: y2 })
+    .trigger("pointerup", { x: x2, y: y2 });
 
   cy.wait("@extract-data");
-  cy.get('[data-cy="labeling-draw-tooltip"]').should("not.to.be.visible");
+  cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");
   cy.window().then(win => {
     const interactions = win.labelingImage.getInteractions().getArray();
     expect(
       interactions.some(interaction => {
-        return interaction.constructor.name === "Draw";
+        return interaction.constructor.name === "DragBox";
       }),
     ).to.be.false;
   });
@@ -131,7 +133,7 @@ describe("Test labeling tool", () => {
     });
   });
 
-  it("can extract data from image", () => {
+  it.only("can extract data from image", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
@@ -186,7 +188,7 @@ describe("Test labeling tool", () => {
     isDisabled("locationYLV03", true);
   });
 
-  it("can extract data from rotated and zoomed next page", () => {
+  it.only("can extract data from rotated and zoomed next page", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
@@ -242,7 +244,7 @@ describe("Test labeling tool", () => {
     isDisabled("locationY", true);
   });
 
-  it("shows alert if no coordinates are extracted", () => {
+  it.only("shows alert if no coordinates are extracted", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();

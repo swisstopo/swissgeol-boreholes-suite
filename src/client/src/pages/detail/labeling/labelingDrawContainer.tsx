@@ -6,8 +6,8 @@ import { defaults as defaultControls } from "ol/control/defaults";
 import { Extent, getCenter } from "ol/extent";
 import Feature from "ol/Feature";
 import { Geometry } from "ol/geom";
-import { DragRotate, PinchRotate } from "ol/interaction";
-import Draw, { createBox } from "ol/interaction/Draw";
+import { fromExtent } from "ol/geom/Polygon";
+import { DragBox, DragRotate, PinchRotate } from "ol/interaction";
 import ImageLayer from "ol/layer/Image";
 import VectorLayer from "ol/layer/Vector";
 import Map from "ol/Map";
@@ -108,23 +108,15 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
       const drawingSource = (layers[1] as VectorLayer<Feature<Geometry>>).getSource();
       if (drawingSource) {
         drawingSource.clear();
-        const drawInteraction = new Draw({
-          source: drawingSource,
-          type: "Circle",
-          geometryFunction: createBox(),
-          style: drawingStyle,
-        });
-        drawInteraction.on("drawend", () => {
+        const dragBox = new DragBox();
+        dragBox.on("boxend", () => {
+          const boxFeature = new Feature({
+            geometry: fromExtent(dragBox.getGeometry().getExtent()),
+          });
+          drawingSource.addFeature(boxFeature);
           const tmpMap = map;
           if (tmpMap) {
-            tmpMap
-              .getInteractions()
-              .getArray()
-              .forEach(interaction => {
-                if (interaction instanceof Draw) {
-                  tmpMap.removeInteraction(interaction);
-                }
-              });
+            tmpMap.removeInteraction(dragBox);
             tmpMap.getTargetElement().style.cursor = "";
 
             if (tooltipRef.current) {
@@ -138,7 +130,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
         });
 
         const tmpMap = map;
-        tmpMap.addInteraction(drawInteraction);
+        tmpMap.addInteraction(dragBox);
         tmpMap.getTargetElement().style.cursor = "crosshair";
 
         if (tooltipRef.current) {
