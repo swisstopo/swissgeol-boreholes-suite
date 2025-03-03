@@ -22,7 +22,7 @@ export const UserDetail: FC = () => {
   const [userWorkgroups, setUserWorkgroups] = useState<Workgroup[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
-  const { workgroupNameColumn, boreholeCountColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
+  const { workgroupNameColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { selectedUser, setSelectedUser, userDetailTableSortModel, setUserDetailTableSortModel } =
     useContext(UserAdministrationContext);
   const { showPrompt } = useContext(PromptContext);
@@ -140,7 +140,6 @@ export const UserDetail: FC = () => {
 
   const columns: GridColDef[] = [
     workgroupNameColumn,
-    boreholeCountColumn,
     {
       field: "roles",
       headerName: t("roles"),
