@@ -173,7 +173,7 @@ describe("Test labeling tool", () => {
     hasError("locationYLV03", false);
     isDisabled("locationYLV03");
 
-    drawBox(400, 60, 600, 170);
+    drawBox(400, 140, 600, 250);
     evaluateSelect("originalReferenceSystem", "20104001");
     evaluateCoordinate("locationX", "2'646'359.7");
     hasError("locationX", false);
@@ -228,7 +228,7 @@ describe("Test labeling tool", () => {
     cy.wait(1000);
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
     cy.wait(1000);
-    drawBox(400, 60, 600, 220);
+    drawBox(400, 135, 600, 295);
     cy.wait("@location");
     evaluateSelect("originalReferenceSystem", "20104002");
     evaluateCoordinate("locationXLV03", "646'465.97");
@@ -275,7 +275,7 @@ describe("Test labeling tool", () => {
 
     cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
 
-    drawBox(180, 70, 400, 110);
+    drawBox(180, 125, 400, 185);
     cy.get('[data-cy="labeling-alert"]').contains("No coordinates found");
 
     // Drawing is active immediately when opening the panel with the labeling-button
