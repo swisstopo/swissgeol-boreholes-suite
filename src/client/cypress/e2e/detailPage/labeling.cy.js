@@ -134,7 +134,7 @@ describe("Test labeling tool", () => {
     });
   });
 
-  it.only("can extract data from image", () => {
+  it("can extract data from image", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
@@ -189,7 +189,7 @@ describe("Test labeling tool", () => {
     isDisabled("locationYLV03", true);
   });
 
-  it.only("can extract data from rotated and zoomed next page", () => {
+  it("can extract data from rotated and zoomed next page", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
@@ -245,7 +245,7 @@ describe("Test labeling tool", () => {
     isDisabled("locationY", true);
   });
 
-  it.only("shows alert if no coordinates are extracted", () => {
+  it("shows alert if no coordinates are extracted", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="labeling-toggle-button"]').click();
