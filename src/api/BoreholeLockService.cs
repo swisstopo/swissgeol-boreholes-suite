@@ -87,6 +87,22 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
         return user.WorkgroupRoles != null && user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId);
     }
 
+    /// <inheritdoc />
+    public async Task<bool> IsUserLackingWorkgroupRoleAsync(string? subjectId, int workgroupId, Role expectedRole)
+    {
+        var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
+        return IsUserLackingWorkgroupRole(user, workgroupId, expectedRole);
+    }
+
+    /// <inheritdoc />
+    public bool IsUserLackingWorkgroupRole(User user, int workgroupId, Role expectedRole)
+    {
+        var workgroupRoles = user?.WorkgroupRoles ?? Enumerable.Empty<UserWorkgroupRole>();
+        var hasExpectedWorkgroupRole = workgroupRoles.Any(x => x.WorkgroupId == workgroupId && x.Role == expectedRole);
+
+        return !hasExpectedWorkgroupRole;
+    }
+
     private async Task<Borehole> GetBoreholeWithWorkflowsAsync(int? boreholeId)
     {
         return await context.Boreholes
