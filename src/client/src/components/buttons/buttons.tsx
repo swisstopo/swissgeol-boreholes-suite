@@ -168,6 +168,7 @@ export const TextExtractionButton = ({ onClick }: { onClick: () => void }) => {
       sx={{
         p: 0.5,
         boxShadow: 1,
+        height: "44px",
       }}>
       <Box
         sx={{
