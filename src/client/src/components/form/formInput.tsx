@@ -104,7 +104,7 @@ export const FormInput: FC<FormInputProps> = ({
         ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),
         ...(isDateTimeInput && { inputProps: { max: "9999-01-01T00:00" } }),
         ...(isDateInput && { inputProps: { max: "9999-01-01" } }),
-        readOnly: readonly,
+        readOnly: isReadOnly,
         disabled: disabled,
       }}
     />

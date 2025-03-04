@@ -1,20 +1,22 @@
 import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import {
-  evaluateBooleanSelect,
   evaluateInput,
   evaluateSelect,
   evaluateTextarea,
+  evaluateYesNoSelect,
   isDisabled,
-  setBooleanSelect,
   setInput,
   setSelect,
+  setYesNoSelect,
 } from "../helpers/formHelpers";
 import {
   createBorehole,
   getElementByDataCy,
   goToRouteAndAcceptTerms,
   handlePrompt,
+  navigateToBoreholeTab,
+  navigateToLocationTab,
   newEditableBorehole,
   returnToOverview,
   startBoreholeEditing,
@@ -30,22 +32,6 @@ function ensureEditingEnabled() {
   cy.get('[data-cy="editingstop-button"]').should("exist");
 }
 
-function navigateToLocationTab(id) {
-  getElementByDataCy("location-menu-item").click();
-  cy.location().should(location => {
-    expect(location.pathname).to.eq(`/${id}/location`);
-  });
-  cy.contains("Spatial reference system");
-}
-
-function navigateToBoreholeTab(id) {
-  getElementByDataCy("borehole-menu-item").click();
-  cy.location().should(location => {
-    expect(location.pathname).to.eq(`/${id}/borehole`);
-  });
-  cy.contains("Borehole type");
-}
-
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {
     goToRouteAndAcceptTerms(`/`);
@@ -57,7 +43,7 @@ describe("Test for the borehole form.", () => {
     isDisabled("restrictionUntil", true);
     setSelect("restrictionId", 3);
     isDisabled("restrictionUntil", false);
-    setBooleanSelect("nationalInterest", null); // not specified
+    setYesNoSelect("nationalInterest", "Not specified");
     setSelect("originalReferenceSystem", 0);
     setSelect("locationPrecisionId", 2);
     setSelect("elevationPrecisionId", 2);
@@ -65,7 +51,7 @@ describe("Test for the borehole form.", () => {
     setSelect("referenceElevationTypeId", 4);
 
     evaluateSelect("restrictionId", "20111003");
-    evaluateSelect("nationalInterest", "2");
+    evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("originalReferenceSystem", "20104001");
     evaluateSelect("locationPrecisionId", "20113002");
     evaluateSelect("elevationPrecisionId", "20114002");
@@ -78,7 +64,7 @@ describe("Test for the borehole form.", () => {
       navigateToBoreholeTab(id);
       navigateToLocationTab(id);
       evaluateSelect("restrictionId", "20111003");
-      evaluateSelect("nationalInterest", "2");
+      evaluateYesNoSelect("nationalInterest", "Not specified");
       evaluateSelect("originalReferenceSystem", "20104001");
       evaluateSelect("locationPrecisionId", "20113002");
       evaluateSelect("elevationPrecisionId", "20114002");
@@ -123,8 +109,8 @@ describe("Test for the borehole form.", () => {
       setSelect("lithologyTopBedrockId", 1);
       setSelect("lithostratigraphyTopBedrockId", 1);
       setSelect("chronostratigraphyTopBedrockId", 1);
-      setBooleanSelect("hasGroundwater", true);
-      setBooleanSelect("topBedrockIntersected", false);
+      setYesNoSelect("hasGroundwater", "Yes");
+      setYesNoSelect("topBedrockIntersected", "No");
 
       setInput("totalDepth", 700);
       setInput("topBedrockFreshMd", 0.60224);
@@ -154,28 +140,28 @@ describe("Test for the borehole form.", () => {
       startBoreholeEditing();
 
       // updated top bedrock intersected when top bedrock values change
-      evaluateBooleanSelect("topBedrockIntersected", null); // not specified
+      evaluateYesNoSelect("topBedrockIntersected", "Not specified"); // not specified
       setInput("topBedrockFreshMd", 897);
-      evaluateBooleanSelect("topBedrockIntersected", true);
+      evaluateYesNoSelect("topBedrockIntersected", "Yes");
       setInput("topBedrockFreshMd", " ");
-      evaluateBooleanSelect("topBedrockIntersected", null);
+      evaluateYesNoSelect("topBedrockIntersected", "Not specified");
       setInput("topBedrockWeatheredMd", 564);
-      evaluateBooleanSelect("topBedrockIntersected", true);
+      evaluateYesNoSelect("topBedrockIntersected", "Yes");
       saveWithSaveBar();
 
       // navigate away and return
       navigateToLocationTab(id);
       navigateToBoreholeTab(id);
-      evaluateBooleanSelect("topBedrockIntersected", true);
+      evaluateYesNoSelect("topBedrockIntersected", "Yes");
 
       // can save value for top bedrock intersected which does not correspond to automatically set values
-      setBooleanSelect("topBedrockIntersected", false);
+      setYesNoSelect("topBedrockIntersected", "No");
       saveWithSaveBar();
       cy.wait(1000);
       // navigate away and return
       navigateToLocationTab(id);
       navigateToBoreholeTab(id);
-      evaluateBooleanSelect("topBedrockIntersected", false);
+      evaluateYesNoSelect("topBedrockIntersected", "No");
       evaluateInput("topBedrockFreshMd", "");
       evaluateInput("topBedrockFreshMd", "");
       evaluateInput("topBedrockWeatheredMd", "564");
@@ -189,7 +175,7 @@ describe("Test for the borehole form.", () => {
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
-      evaluateBooleanSelect("topBedrockIntersected", null);
+      evaluateYesNoSelect("topBedrockIntersected", "Not specified");
       setInput("totalDepth", 700);
       setInput("topBedrockFreshMd", 0.60224);
       setInput("topBedrockWeatheredMd", 78945100);
@@ -230,15 +216,15 @@ describe("Test for the borehole form.", () => {
     evaluateInput("name", "Zena Rath");
     evaluateInput("projectName", "Reactive asymmetric alliance");
     evaluateSelect("restrictionId", "");
-    cy.get(`[data-cy="nationalInterest-formSelect"] input`).should("have.attr", "value", "0");
-    evaluateSelect("originalReferenceSystem", "20104002"); // LV03
-    evaluateSelect("locationPrecisionId", "20113005");
+    evaluateYesNoSelect("nationalInterest", "No");
+    evaluateSelect("originalReferenceSystem", "LV03");
+    evaluateSelect("locationPrecisionId", "0.1 (± DGPS / Theodolit)");
 
     evaluateInput("elevationZ", "3'519.948980314633");
     evaluateInput("referenceElevation", "3'554.9389396584306");
     evaluateSelect("elevationPrecisionId", "");
-    evaluateSelect("referenceElevationPrecisionId", "20114007"); // not specified
-    evaluateSelect("referenceElevationTypeId", "30000013"); // kelly bushing
+    evaluateSelect("referenceElevationPrecisionId", "not specified");
+    evaluateSelect("referenceElevationTypeId", "kelly bushing");
 
     returnToOverview();
     clickOnRowWithText("Zena Mraz");
@@ -246,15 +232,15 @@ describe("Test for the borehole form.", () => {
     evaluateInput("name", "Zena Mraz");
     evaluateInput("projectName", "Ergonomic heuristic installation");
     evaluateSelect("restrictionId", "");
-    evaluateBooleanSelect("nationalInterest", true);
-    evaluateSelect("originalReferenceSystem", "20104002"); // LV03
-    evaluateSelect("locationPrecisionId", "20113007"); // not specified
+    evaluateYesNoSelect("nationalInterest", "Yes");
+    evaluateSelect("originalReferenceSystem", "LV03");
+    evaluateSelect("locationPrecisionId", "not specified");
 
     evaluateInput("elevationZ", "3'062.9991330499756");
     evaluateInput("referenceElevation", "3'478.1368118609007");
-    evaluateSelect("elevationPrecisionId", "20114003"); // 1
-    evaluateSelect("referenceElevationPrecisionId", "20114005"); //0.1
-    evaluateSelect("referenceElevationTypeId", "30000013"); // kelly bushing
+    evaluateSelect("elevationPrecisionId", "1");
+    evaluateSelect("referenceElevationPrecisionId", "0.1");
+    evaluateSelect("referenceElevationTypeId", "kelly bushing");
   });
 
   it("switches tabs", () => {
