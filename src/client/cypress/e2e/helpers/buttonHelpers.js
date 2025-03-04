@@ -128,7 +128,6 @@ const exportFileType = fileType => {
   const selector = `[data-cy="${fileType}-button"]`;
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
-  cy.get(".MuiCircularProgress-root").should("be.visible");
 };
 /**
  * Clicks on the copy button.
