@@ -4,10 +4,7 @@ import { Box, Card, CardContent, CardHeader } from "@mui/material";
 import { Check, X } from "lucide-react";
 import { LabelingButton } from "../../../../components/buttons/labelingButton";
 import { FormContainer, FormCoordinate, FormDomainSelect, FormSelect } from "../../../../components/form/form";
-import {
-  getPrecisionFromString,
-  parseFloatWithThousandsSeparator,
-} from "../../../../components/legacyComponents/formUtils.js";
+import { getPrecisionFromString, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { DetailContext } from "../../detailContext.tsx";

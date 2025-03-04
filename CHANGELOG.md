@@ -16,6 +16,7 @@
 - Detail page side navigation points are greyed out if there is no applicable content.
 - In the data extraction panel the boxes can now be drawn with click and drag instead of two clicks.
 - The pressure unit in the hydrotest module is now displayed as `kPa` instead of `Pa`.
+- The values in the hydrotest results are not displayed with thousand separators.
 
 ### Fixed
 

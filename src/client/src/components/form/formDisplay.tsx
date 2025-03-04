@@ -2,6 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, SxProps, Typography } from "@mui/material";
 import { Language } from "../../appInterfaces.ts";
+import { formatWithThousandSeparator } from "../../utils.ts";
 import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
 import { FormValueType } from "./form";
 
@@ -19,6 +20,8 @@ export const FormDisplay: FC<FormDisplayProps> = ({ prefix, label, value, type, 
   const convert = (value: string | number | boolean | Codelist | undefined | null): string => {
     if ((value !== 0 && value == undefined) || value === "") {
       return "-";
+    } else if (type === FormValueType.Number) {
+      return formatWithThousandSeparator(value as number);
     } else if (type === FormValueType.Date) {
       const date = new Date(value as string);
       const dateTimeFormat = new Intl.DateTimeFormat("de-CH", {

@@ -7,13 +7,8 @@ import { addHydrotest, updateHydrotest, useDomains, useHydrotestDomains } from "
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import {
-  FormContainer,
-  FormDomainMultiSelect,
-  FormDomainSelect,
-  FormInput,
-  FormValueType,
-} from "../../../../components/form/form";
+import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput } from "../../../../components/form/form";
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
 import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.ts";
@@ -176,9 +171,9 @@ const HydrotestInput = props => {
         return {
           id: r.id,
           parameterId: r.parameterId,
-          value: r.value,
-          minValue: r.minValue,
-          maxValue: r.maxValue,
+          value: parseFloatWithThousandsSeparator(r.value?.toString() ?? ""),
+          minValue: parseFloatWithThousandsSeparator(r.minValue?.toString() ?? ""),
+          maxValue: parseFloatWithThousandsSeparator(r.maxValue?.toString() ?? ""),
         };
       });
     }
@@ -290,7 +285,7 @@ const HydrotestInput = props => {
                       fieldName={`hydrotestResults.${index}.value`}
                       label="value"
                       value={field.value}
-                      type={FormValueType.Number}
+                      withThousandSeparator={true}
                       inputProps={{
                         endAdornment: (
                           <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>
@@ -301,7 +296,7 @@ const HydrotestInput = props => {
                       fieldName={`hydrotestResults.${index}.minValue`}
                       label="minValue"
                       value={field.minValue}
-                      type={FormValueType.Number}
+                      withThousandSeparator={true}
                       inputProps={{
                         endAdornment: (
                           <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>
@@ -312,7 +307,7 @@ const HydrotestInput = props => {
                       fieldName={`hydrotestResults.${index}.maxValue`}
                       label="maxValue"
                       value={field.maxValue}
-                      type={FormValueType.Number}
+                      withThousandSeparator={true}
                       inputProps={{
                         endAdornment: (
                           <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>

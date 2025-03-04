@@ -6,8 +6,8 @@ import { TextField } from "@mui/material/";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { boundingBox } from "../../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { Direction, ReferenceSystemKey } from "../../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { getFieldBorderColor, parseFloatWithThousandsSeparator } from "../legacyComponents/formUtils.ts";
 import { getFormFieldError } from "./form";
+import { getFieldBorderColor, parseFloatWithThousandsSeparator } from "./formUtils.ts";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
 
 const inLV95XBounds = (value: string): boolean => {
