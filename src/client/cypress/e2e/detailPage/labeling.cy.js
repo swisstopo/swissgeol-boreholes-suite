@@ -7,6 +7,7 @@ import {
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers.js";
+import "cypress-real-events/support";
 
 const isFileActive = (fileName, isActive) => {
   cy.contains("span", fileName)
@@ -28,9 +29,9 @@ const drawBox = (x1, y1, x2, y2) => {
     ).to.be.true;
   });
   cy.get('[data-cy="labeling-panel"]')
-    .trigger("pointerdown", { x: x1, y: y1 })
-    .trigger("pointermove", { x: x2, y: y2 })
-    .trigger("pointerup", { x: x2, y: y2 });
+    .realMouseDown({ position: "topLeft", x: x1, y: y1 })
+    .realMouseMove(x2, y2, { position: "topLeft" })
+    .realMouseUp({ position: "topLeft", x: x2, y: y2 });
 
   cy.wait("@extract-data");
   cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");

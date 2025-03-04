@@ -83,6 +83,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "cypress": "^13.6.1",
     "cypress-file-upload": "^5.0.8",
+    "cypress-real-events": "^1.14.0",
     "cypress-vite": "^1.5.0",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
