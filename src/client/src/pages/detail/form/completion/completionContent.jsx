@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { CircularProgress, Stack } from "@mui/material";
+import PropTypes from "prop-types";
 import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.js";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.tsx";
@@ -128,6 +129,13 @@ const CompletionContent = ({ completion, editingEnabled }) => {
       <MemoizedCompletionContentTabBox children={renderTabContent} />
     </Stack>
   );
+};
+
+CompletionContent.propTypes = {
+  completion: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  }).isRequired,
+  editingEnabled: PropTypes.bool.isRequired,
 };
 
 export default CompletionContent;
