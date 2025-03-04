@@ -1,5 +1,6 @@
 import { evaluateCoordinate, evaluateSelect, hasAiStyle, hasError, isDisabled } from "../helpers/formHelpers.js";
 import {
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   newEditableBorehole,
   newUneditableBorehole,
@@ -17,9 +18,15 @@ const isFileActive = (fileName, isActive) => {
     .should(isActive ? "exist" : "not.exist");
 };
 
-const drawBox = (x1, y1, x2, y2) => {
+function assertDrawTooltip(content) {
   cy.get('[data-cy="labeling-draw-tooltip"]').should("be.visible");
-  cy.get('[data-cy="labeling-draw-tooltip"]').contains("Draw box around north & east coordinates");
+  cy.get('[data-cy="labeling-draw-tooltip"]').contains(content);
+}
+
+const drawBox = (x1, y1, x2, y2) => {
+  cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 });
+  cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 });
+
   cy.window().then(win => {
     const interactions = win.labelingImage.getInteractions().getArray();
     expect(
@@ -58,6 +65,36 @@ const waitForLabelingImageLoaded = () => {
   });
 };
 
+function assertPageCount(currentPage, totalPages) {
+  cy.get('[data-cy="labeling-page-count"]').contains(`${currentPage} / ${totalPages}`);
+  const previousPageDisabled = currentPage === 1;
+  const nextPageDisabled = currentPage === totalPages;
+  cy.get('[data-cy="labeling-page-previous"]').should(previousPageDisabled ? "be.disabled" : "not.be.disabled");
+  cy.get('[data-cy="labeling-page-next"]').should(nextPageDisabled ? "be.disabled" : "not.be.disabled");
+}
+
+function toggleLabelingPanelWithoutDocuments() {
+  cy.get('[data-cy="labeling-toggle-button"]').click();
+  cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
+  cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.");
+}
+
+function selectLabelingAttament() {
+  cy.get('[data-cy="labeling-file-dropzone"]').selectFile("cypress/fixtures/labeling_attachment.pdf", {
+    force: true,
+    mimeType: "application/pdf",
+    fileName: "labeling_attachment.pdf",
+  });
+
+  cy.wait("@get-borehole-files");
+  waitForLabelingImageLoaded();
+  cy.get('[data-cy="labeling-file-button-select"]').contains("labeling_attachment.pdf");
+}
+
+function clickCoordinateLabelingButton() {
+  cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
+}
+
 describe("Test labeling tool", () => {
   it("can show labeling panel", () => {
     goToRouteAndAcceptTerms("/");
@@ -95,9 +132,7 @@ describe("Test labeling tool", () => {
   it("can select file", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    cy.get('[data-cy="labeling-toggle-button"]').click();
-    cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
-    cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.");
+    toggleLabelingPanelWithoutDocuments();
 
     cy.get('[data-cy="labeling-file-dropzone"]').attachFile("import/borehole_attachment_1.pdf", {
       subjectType: "drag-n-drop",
@@ -137,24 +172,11 @@ describe("Test labeling tool", () => {
   it("can extract data from image", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    cy.get('[data-cy="labeling-toggle-button"]').click();
-    cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
-    cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.");
+    toggleLabelingPanelWithoutDocuments();
+    selectLabelingAttament();
+    assertPageCount(1, 3);
 
-    cy.get('[data-cy="labeling-file-dropzone"]').selectFile("cypress/fixtures/labeling_attachment.pdf", {
-      force: true,
-      mimeType: "application/pdf",
-      fileName: "labeling_attachment.pdf",
-    });
-
-    cy.wait("@get-borehole-files");
-    waitForLabelingImageLoaded();
-    cy.get('[data-cy="labeling-file-button-select"]').contains("labeling_attachment.pdf");
-    cy.get('[data-cy="labeling-page-count"]').contains("1 / 3");
-    cy.get('[data-cy="labeling-page-previous"]').should("be.disabled");
-    cy.get('[data-cy="labeling-page-next"]').should("not.be.disabled");
-
-    cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
+    clickCoordinateLabelingButton();
     evaluateSelect("originalReferenceSystem", "20104001");
     hasAiStyle("originalReferenceSystem");
     hasError("originalReferenceSystem", false);
@@ -173,6 +195,7 @@ describe("Test labeling tool", () => {
     hasError("locationYLV03", false);
     isDisabled("locationYLV03");
 
+    assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 140, 600, 250);
     evaluateSelect("originalReferenceSystem", "20104001");
     evaluateCoordinate("locationX", "2'646'359.7");
@@ -192,29 +215,14 @@ describe("Test labeling tool", () => {
   it("can extract data from rotated and zoomed next page", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    cy.get('[data-cy="labeling-toggle-button"]').click();
-    cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
-    cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.");
+    toggleLabelingPanelWithoutDocuments();
+    selectLabelingAttament();
+    assertPageCount(1, 3);
 
-    cy.get('[data-cy="labeling-file-dropzone"]').selectFile("cypress/fixtures/labeling_attachment.pdf", {
-      force: true,
-      mimeType: "application/pdf",
-      fileName: "labeling_attachment.pdf",
-    });
-
-    cy.wait("@get-borehole-files");
-    waitForLabelingImageLoaded();
-    cy.get('[data-cy="labeling-file-button-select"]').contains("labeling_attachment.pdf");
-    cy.get('[data-cy="labeling-page-count"]').contains("1 / 3");
-    cy.get('[data-cy="labeling-page-previous"]').should("be.disabled");
-    cy.get('[data-cy="labeling-page-next"]').should("not.be.disabled");
-
-    cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
+    clickCoordinateLabelingButton();
     cy.get('[data-cy="labeling-page-next"]').click();
     waitForLabelingImageLoaded();
-    cy.get('[data-cy="labeling-page-count"]').contains("2 / 3");
-    cy.get('[data-cy="labeling-page-previous"]').should("not.be.disabled");
-    cy.get('[data-cy="labeling-page-next"]').should("not.be.disabled");
+    assertPageCount(2, 3);
 
     cy.window().then(win => {
       const view = win.labelingImage.getView();
@@ -228,7 +236,8 @@ describe("Test labeling tool", () => {
     cy.wait(1000);
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
     cy.wait(1000);
-    drawBox(400, 135, 600, 295);
+    assertDrawTooltip("Draw box around north & east coordinates");
+    drawBox(400, 120, 600, 300);
     cy.wait("@location");
     evaluateSelect("originalReferenceSystem", "20104002");
     evaluateCoordinate("locationXLV03", "646'465.97");
@@ -245,36 +254,59 @@ describe("Test labeling tool", () => {
     isDisabled("locationY", true);
   });
 
+  it("can copy text to clipboard", () => {
+    goToRouteAndAcceptTerms("/");
+    newEditableBorehole().as("borehole_id");
+    toggleLabelingPanelWithoutDocuments();
+    selectLabelingAttament();
+    getElementByDataCy("labeling-page-next").click();
+    getElementByDataCy("labeling-page-next").click();
+    assertPageCount(3, 3);
+    getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltip("Draw box around any text");
+
+    // can switch between text extraction and coordinate extraction
+    clickCoordinateLabelingButton();
+    assertDrawTooltip("Draw box around north & east coordinates");
+    getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltip("Draw box around any text");
+
+    // draw box around empty space
+    cy.wait(1000);
+    drawBox(200, 400, 500, 500);
+    getElementByDataCy("labeling-alert").contains("No text found");
+    cy.get('button[aria-label="Close"]').click(); // close alert
+
+    // draw box around text
+    getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltip("Draw box around any text");
+    cy.wait(1000);
+    drawBox(200, 120, 500, 400);
+    getElementByDataCy("labeling-alert").contains('Copied to clipboard: "Some information without coo...');
+
+    cy.window().then(win => {
+      win.navigator.clipboard.readText().then(text => {
+        expect(text).to.eq("Some information without coordinates");
+      });
+    });
+  });
+
   it("shows alert if no coordinates are extracted", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    cy.get('[data-cy="labeling-toggle-button"]').click();
-    cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
-    cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.");
-
-    cy.get('[data-cy="labeling-file-dropzone"]').selectFile("cypress/fixtures/labeling_attachment.pdf", {
-      force: true,
-      mimeType: "application/pdf",
-      fileName: "labeling_attachment.pdf",
-    });
-
-    cy.wait("@get-borehole-files");
-    waitForLabelingImageLoaded();
-    cy.get('[data-cy="labeling-file-button-select"]').contains("labeling_attachment.pdf");
-    cy.get('[data-cy="labeling-page-count"]').contains("1 / 3");
-    cy.get('[data-cy="labeling-page-previous"]').should("be.disabled");
-    cy.get('[data-cy="labeling-page-next"]').should("not.be.disabled");
+    toggleLabelingPanelWithoutDocuments();
+    selectLabelingAttament();
+    assertPageCount(1, 3);
 
     cy.get('[data-cy="labeling-page-next"]').click();
     cy.get('[data-cy="labeling-page-next"]').click();
     waitForLabelingImageLoaded();
-    cy.get('[data-cy="labeling-page-count"]').contains("3 / 3");
-    cy.get('[data-cy="labeling-page-previous"]').should("not.be.disabled");
-    cy.get('[data-cy="labeling-page-next"]').should("be.disabled");
+    assertPageCount(3, 3);
     cy.wait(1000);
 
-    cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
+    clickCoordinateLabelingButton();
 
+    assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(180, 125, 400, 185);
     cy.get('[data-cy="labeling-alert"]').contains("No coordinates found");
 
@@ -282,7 +314,7 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-panel"]').should("not.exist");
 
-    cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
+    clickCoordinateLabelingButton();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
   });
 });

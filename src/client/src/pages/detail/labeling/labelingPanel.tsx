@@ -238,6 +238,7 @@ const LabelingPanel: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePage, selectedFile]);
 
+  const isExtractionLoading = extractionState === ExtractionState.loading;
   return (
     <Stack
       sx={{
@@ -360,7 +361,7 @@ const LabelingPanel: FC = () => {
       </Stack>
       {selectedFile ? (
         <Box sx={{ height: "100%", width: "100%", position: "relative" }}>
-          <StackFullWidth
+          <Stack
             direction="row"
             sx={{
               position: "absolute",
@@ -368,6 +369,7 @@ const LabelingPanel: FC = () => {
               left: theme.spacing(2),
               zIndex: "500",
               gap: 1,
+              width: isExtractionLoading || alertIsOpen ? "100%" : "50px",
             }}>
             <TextExtractionButton
               onClick={() => {
@@ -375,31 +377,39 @@ const LabelingPanel: FC = () => {
                 setDrawTooltipLabel("drawTextBox");
               }}
             />
-            <StackFullWidth alignItems={"center"}>
-              <Box>
-                {alertIsOpen ? (
-                  <LabelingAlert
-                    data-cy="labeling-alert"
-                    variant="filled"
-                    severity={severity}
-                    onClose={closeAlert}
-                    icon={severity !== "info"}>
-                    {text}
-                  </LabelingAlert>
-                ) : (
-                  extractionState === ExtractionState.loading && (
-                    <Button onClick={() => cancelRequest()} variant="text" endIcon={<X />} sx={labelingButtonStyles}>
-                      <CircularProgress
-                        sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }}
-                      />
-                      {t("analyze")}
-                    </Button>
-                  )
-                )}
-              </Box>
-            </StackFullWidth>
-            <Box sx={{ width: "100px" }} />
-          </StackFullWidth>
+            {(isExtractionLoading || alertIsOpen) && (
+              <>
+                <StackFullWidth alignItems={"center"}>
+                  <Box>
+                    {alertIsOpen ? (
+                      <LabelingAlert
+                        data-cy="labeling-alert"
+                        variant="filled"
+                        severity={severity}
+                        onClose={closeAlert}
+                        icon={severity !== "info"}>
+                        {text}
+                      </LabelingAlert>
+                    ) : (
+                      isExtractionLoading && (
+                        <Button
+                          onClick={() => cancelRequest()}
+                          variant="text"
+                          endIcon={<X />}
+                          sx={labelingButtonStyles}>
+                          <CircularProgress
+                            sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }}
+                          />
+                          {t("analyze")}
+                        </Button>
+                      )
+                    )}
+                  </Box>
+                </StackFullWidth>
+                <Box sx={{ width: "100px" }} />
+              </>
+            )}
+          </Stack>
           <LabelingDrawContainer
             fileInfo={fileInfo}
             onDrawEnd={setExtractionExtent}
