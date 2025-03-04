@@ -1,11 +1,21 @@
-import { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
+import {
+  Backdrop,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { ApiError } from "../../api/apiInterfaces.ts";
 import { exportCSVBorehole, exportJsonBoreholes, exportJsonWithAttachmentsBorehole } from "../../api/borehole.ts";
+import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { downloadData } from "../../utils.ts";
 import { AlertContext } from "../alert/alertContext.tsx";
@@ -20,11 +30,19 @@ interface ExportDialogProps {
 export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, fileName }: ExportDialogProps) => {
   const { t } = useTranslation();
   const auth = useAuth();
+  const [inProgress, setInprogress] = useState(false);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const canExportAttachments = !auth.anonymousModeEnabled && user.data.roles.includes("EDIT");
   const { showAlert } = useContext(AlertContext);
 
+  const closeExportDialog = () => {
+    setInprogress(false);
+    setIsExporting(false);
+  };
+
   const handleExport = async (exportFunction: (ids: number[] | GridRowSelectionModel) => Promise<Response | void>) => {
+    setInprogress(true);
+    const startTime = Date.now();
     try {
       await exportFunction(selectionModel.slice(0, 100));
     } catch (error) {
@@ -34,7 +52,16 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
         showAlert(t("errorDuringExport"), "error");
       }
     } finally {
-      setIsExporting(false);
+      // Display spinner for at least 1 second to improve UX
+      const endTime = Date.now();
+      const elapsedTime = endTime - startTime;
+      if (elapsedTime < 1000) {
+        setTimeout(() => {
+          closeExportDialog();
+        }, 1000 - elapsedTime);
+      } else {
+        closeExportDialog();
+      }
     }
   };
 
@@ -76,10 +103,18 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
         </DialogContent>
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
-            <CancelButton onClick={() => setIsExporting(false)} />
+            <CancelButton onClick={closeExportDialog} />
           </Stack>
         </DialogActions>
       </Stack>
+      {inProgress && (
+        <Backdrop
+          sx={{ color: theme.palette.primary.main, backgroundColor: "rgba(0, 0, 0, 0.2)" }}
+          open={inProgress}
+          onClick={closeExportDialog}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
     </Dialog>
   );
 };
