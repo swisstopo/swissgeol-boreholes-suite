@@ -14,6 +14,7 @@
 
 - The settings are now displayed in tabs.
 - Detail page side navigation points are greyed out if there is no applicable content.
+- In the data extraction panel the boxes can now be drawn with click and drag instead of two clicks.
 
 ### Fixed
 
