@@ -47,6 +47,10 @@
 .ol-popup-closer:after {
   content: "✖";
 }
+.ol-dragbox {
+    border: 2px solid #5B21B6 !important;  /* theme.palette.ai.main */
+    background-color: rgba(91, 33, 182, 0.2) !important; /* theme.palette.ai.mainTransparent */
+}
 
 .stbg {
   background: #fff

@@ -1,4 +1,4 @@
-import { createBaseSelector } from "./testHelpers";
+import { createBaseSelector, getElementByDataCy } from "./testHelpers";
 
 /**
  * Clicks on the save button and waits for borehole update.
@@ -11,6 +11,7 @@ export const saveWithSaveBar = parent => {
     cy.log("'borehole_by_id'-Requests before save button click: " + requests.length);
   });
 
+  getElementByDataCy("save-bar-text").should("contain", "Unsaved changes");
   // Clicks save button
   saveForm(parent);
 
@@ -27,6 +28,8 @@ export const saveWithSaveBar = parent => {
 
   // Ensure the actual update request is processed
   cy.wait(["@update-borehole"]);
+  getElementByDataCy("save-bar-text").should("contain", "Changes saved");
+  getElementByDataCy("save-bar-text").should("not.exist");
 };
 
 /**
