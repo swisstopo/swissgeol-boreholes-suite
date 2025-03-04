@@ -43,6 +43,7 @@ const themePalette: AppThemePalette = {
   },
   ai: {
     background: "#46596B",
+    header: "rgba(28, 40, 52, 0.6)",
     main: "#5B21B6",
     mainTransparent: "rgba(91, 33, 182, 0.2)",
     mainEnd: "#8B5CF6",

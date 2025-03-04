@@ -214,7 +214,7 @@ const LabelingPanel: FC = () => {
   }, [activePage, selectedFile]);
 
   return (
-    <Box
+    <Stack
       sx={{
         backgroundColor: theme.palette.ai.background,
         border: `1px solid ${theme.palette.ai.background}`,
@@ -225,6 +225,28 @@ const LabelingPanel: FC = () => {
         position: "relative",
       }}
       data-cy="labeling-panel">
+      <Stack alignItems={"flex-end"} p={2} sx={{ backgroundColor: theme.palette.ai.header }}>
+        {selectedFile && (
+          <ButtonSelect
+            fieldName="labeling-file"
+            startIcon={<FileIcon />}
+            items={[
+              ...(files?.map(file => ({ key: file.id, value: file.name })) || []),
+              { key: -1, value: t("addFile"), startIcon: <Plus /> },
+            ]}
+            selectedItem={{ key: selectedFile?.id, value: selectedFile?.name }}
+            onItemSelected={item => {
+              setActivePage(1);
+              if (item.key === -1) {
+                handleFileInputClick();
+              } else {
+                setSelectedFile(files?.find(file => file.id === item.key));
+              }
+            }}
+            sx={labelingButtonStyles}
+          />
+        )}
+      </Stack>
       <input
         type="file"
         ref={fileInputRef}
@@ -336,24 +358,19 @@ const LabelingPanel: FC = () => {
               zIndex: "500",
               gap: 1,
             }}>
-            <ButtonSelect
-              fieldName="labeling-file"
-              startIcon={<FileIcon />}
-              items={[
-                ...(files?.map(file => ({ key: file.id, value: file.name })) || []),
-                { key: -1, value: t("addFile"), startIcon: <Plus /> },
-              ]}
-              selectedItem={{ key: selectedFile?.id, value: selectedFile?.name }}
-              onItemSelected={item => {
-                setActivePage(1);
-                if (item.key === -1) {
-                  handleFileInputClick();
-                } else {
-                  setSelectedFile(files?.find(file => file.id === item.key));
-                }
-              }}
-              sx={labelingButtonStyles}
-            />
+            <Stack gap={1}>
+              {/*<Button*/}
+              {/*  data-cy="text-extraction-button"*/}
+              {/*  variant="text"*/}
+              {/*  onClick={() => {}}*/}
+              {/*  sx={{*/}
+              {/*    width: "44px",*/}
+              {/*    height: "44px",*/}
+              {/*    boxShadow: 1,*/}
+              {/*  }}>*/}
+              {/*  <RotateCwSquare />*/}
+              {/*</Button>*/}
+            </Stack>
           </Stack>
           <LabelingDrawContainer
             fileInfo={fileInfo}
@@ -370,7 +387,7 @@ const LabelingPanel: FC = () => {
           showAlert={showAlert}
         />
       )}
-    </Box>
+    </Stack>
   );
 };
 
