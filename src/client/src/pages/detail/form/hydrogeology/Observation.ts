@@ -1,5 +1,10 @@
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 
+export enum ObservationDepthUnitType {
+  measuredDepth = 0,
+  masl = 1,
+}
+
 export enum ObservationType {
   waterIngress = 1,
   groundwaterLevelMeasurement = 2,
@@ -14,10 +19,10 @@ export interface Observation {
   isOpenBorehole: boolean;
   endTime: string;
   startTime: string;
-  toDepthMasl: number;
-  fromDepthMasl: number;
-  toDepthM: number;
-  fromDepthM: number;
+  toDepthMasl: number | null;
+  fromDepthMasl: number | null;
+  toDepthM: number | null;
+  fromDepthM: number | null;
   reliabilityId: number | null;
   reliability: string; // domain name
   type: ObservationType;
