@@ -17,7 +17,7 @@ interface Units {
  * - `1`, `2`: "m/s" (meters per second)
  * - `3`: "m²/s" (square meters per second)
  * - `4`, `9`: "" (no unit)
- * - `5`: "Pa" (Pascals)
+ * - `5`: "kPa" (Kilopascals)
  * - `6`: "1/m" (inverse meters)
  * - `7`: "Lu" (Lambertian reflectance units)
  * - `8`: "m" (meters)
@@ -28,7 +28,7 @@ export const TestResultParameterUnits: Units = {
   2: "m/s",
   3: "m²/s",
   4: "",
-  5: "Pa",
+  5: "kPa",
   6: "1/m",
   7: "Lu",
   8: "m",

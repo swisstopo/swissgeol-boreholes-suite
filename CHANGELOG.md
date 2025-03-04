@@ -14,6 +14,7 @@
 
 - The settings are now displayed in tabs.
 - Detail page side navigation points are greyed out if there is no applicable content.
+- The pressure unit in the hydrotest module is now displayed as `kPa` instead of `Pa`.
 
 ### Fixed
 
