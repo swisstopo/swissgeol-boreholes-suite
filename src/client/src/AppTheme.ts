@@ -511,6 +511,15 @@ export const theme = createTheme({
         },
       },
     },
+    MuiAlert: {
+      styleOverrides: {
+        filledInfo: {
+          backgroundColor: themePalette.background.default,
+          color: themePalette.primary.main,
+        },
+      },
+    },
+
     MuiDialogTitle: {
       styleOverrides: {
         root: {

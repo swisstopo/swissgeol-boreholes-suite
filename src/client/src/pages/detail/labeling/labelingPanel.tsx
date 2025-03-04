@@ -14,7 +14,13 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
-import { extractData, getDataExtractionFileInfo, getFiles, uploadFile } from "../../../api/file/file.ts";
+import {
+  extractCoordinates,
+  extractText,
+  getDataExtractionFileInfo,
+  getFiles,
+  uploadFile,
+} from "../../../api/file/file.ts";
 import {
   DataExtractionResponse,
   File as FileInterface,
@@ -23,7 +29,9 @@ import {
 } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
+import { TextExtractionButton } from "../../../components/buttons/buttons.tsx";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
+import { StackFullWidth } from "../../../components/styledComponents.ts";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
 import {
@@ -123,6 +131,19 @@ const LabelingPanel: FC = () => {
     fileInputRef.current?.click();
   };
 
+  const setTextToClipboard = useCallback(
+    async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        const successText = `${t("copiedToClipboard")}: "${text}"`;
+        showAlert(successText.length < 50 ? successText : successText.substring(0, 50) + "...", "info");
+      } catch (err) {
+        showAlert(t("errorCopyingToClipboard"), "error");
+      }
+    },
+    [showAlert, t],
+  );
+
   const triggerDataExtraction = useCallback(
     (extent: number[]) => {
       if (fileInfo && extractionObject?.type) {
@@ -143,7 +164,8 @@ const LabelingPanel: FC = () => {
         setDrawTooltipLabel(undefined);
         const abortController = new AbortController();
         setAbortController(abortController);
-        extractData(request, abortController.signal)
+        const extractFunction = extractionObject.type === "coordinates" ? extractCoordinates : extractText;
+        extractFunction(request, abortController.signal)
           .then(response => {
             if (extractionObject.type) {
               setExtractionState(ExtractionState.success);
@@ -151,6 +173,9 @@ const LabelingPanel: FC = () => {
                 ...extractionObject,
                 value: response[extractionObject.type],
               });
+            }
+            if (extractionObject.type === "text") {
+              setTextToClipboard(response[extractionObject.type].toString());
             }
           })
           .catch(error => {
@@ -164,7 +189,7 @@ const LabelingPanel: FC = () => {
           });
       }
     },
-    [activePage, extractionObject, fileInfo, setExtractionObject, setExtractionState, showAlert, t],
+    [activePage, extractionObject, fileInfo, setExtractionObject, setExtractionState, setTextToClipboard, showAlert, t],
   );
 
   useEffect(() => {
@@ -318,20 +343,6 @@ const LabelingPanel: FC = () => {
             )}
           </ButtonGroup>
         )}
-        <Box>
-          {alertIsOpen ? (
-            <LabelingAlert data-cy="labeling-alert" variant="filled" severity={severity} onClose={closeAlert}>
-              {text}
-            </LabelingAlert>
-          ) : (
-            extractionState === ExtractionState.loading && (
-              <Button onClick={() => cancelRequest()} variant="text" endIcon={<X />} sx={labelingButtonStyles}>
-                <CircularProgress sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }} />
-                {t("analyze")}
-              </Button>
-            )
-          )}
-        </Box>
         <ToggleButtonGroup
           value={panelPosition}
           onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
@@ -349,7 +360,7 @@ const LabelingPanel: FC = () => {
       </Stack>
       {selectedFile ? (
         <Box sx={{ height: "100%", width: "100%", position: "relative" }}>
-          <Stack
+          <StackFullWidth
             direction="row"
             sx={{
               position: "absolute",
@@ -358,20 +369,37 @@ const LabelingPanel: FC = () => {
               zIndex: "500",
               gap: 1,
             }}>
-            <Stack gap={1}>
-              {/*<Button*/}
-              {/*  data-cy="text-extraction-button"*/}
-              {/*  variant="text"*/}
-              {/*  onClick={() => {}}*/}
-              {/*  sx={{*/}
-              {/*    width: "44px",*/}
-              {/*    height: "44px",*/}
-              {/*    boxShadow: 1,*/}
-              {/*  }}>*/}
-              {/*  <RotateCwSquare />*/}
-              {/*</Button>*/}
-            </Stack>
-          </Stack>
+            <TextExtractionButton
+              onClick={() => {
+                setExtractionObject({ type: "text" });
+                setDrawTooltipLabel("drawTextBox");
+              }}
+            />
+            <StackFullWidth alignItems={"center"}>
+              <Box>
+                {alertIsOpen ? (
+                  <LabelingAlert
+                    data-cy="labeling-alert"
+                    variant="filled"
+                    severity={severity}
+                    onClose={closeAlert}
+                    icon={severity !== "info"}>
+                    {text}
+                  </LabelingAlert>
+                ) : (
+                  extractionState === ExtractionState.loading && (
+                    <Button onClick={() => cancelRequest()} variant="text" endIcon={<X />} sx={labelingButtonStyles}>
+                      <CircularProgress
+                        sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }}
+                      />
+                      {t("analyze")}
+                    </Button>
+                  )
+                )}
+              </Box>
+            </StackFullWidth>
+            <Box sx={{ width: "100px" }} />
+          </StackFullWidth>
           <LabelingDrawContainer
             fileInfo={fileInfo}
             onDrawEnd={setExtractionExtent}

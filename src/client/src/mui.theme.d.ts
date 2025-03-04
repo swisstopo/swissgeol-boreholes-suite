@@ -118,6 +118,7 @@ declare module "@mui/material/styles" {
   }
 
   interface AppThemeComponents extends Components {
+    MuiAlert: object;
     MuiButtonBase: object;
     MuiButton: object;
     MuiCard: object;
@@ -142,6 +143,7 @@ declare module "@mui/material/styles" {
   }
 
   interface AppThemeComponentsOptions extends ComponentsOptions {
+    MuiAlert: object;
     MuiButtonBase: object;
     MuiButton: object;
     MuiCard: object;

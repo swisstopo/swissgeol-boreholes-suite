@@ -89,7 +89,11 @@ export async function createExtractionPngs(fileName: string) {
   }
 }
 
-export async function extractData(request: ExtractionRequest, abortSignal: AbortSignal): Promise<ExtractionResponse> {
+async function fetchAndHandleExtractionResponse(
+  request: ExtractionRequest,
+  abortSignal: AbortSignal,
+  notFoundErrorKey: string,
+): Promise<ExtractionResponse> {
   const response = await fetchExtractData(request, abortSignal);
   if (response.ok) {
     const responseObject = await response.json();
@@ -99,8 +103,19 @@ export async function extractData(request: ExtractionRequest, abortSignal: Abort
     return responseObject as ExtractionResponse;
   } else {
     if (response.status === 404) {
-      throw new ApiError("coordinatesNotFound", response.status);
+      throw new ApiError(notFoundErrorKey, response.status);
     }
     throw new ApiError("errorDataExtraction", response.status);
   }
+}
+
+export async function extractCoordinates(
+  request: ExtractionRequest,
+  abortSignal: AbortSignal,
+): Promise<ExtractionResponse> {
+  return fetchAndHandleExtractionResponse(request, abortSignal, "coordinatesNotFound");
+}
+
+export async function extractText(request: ExtractionRequest, abortSignal: AbortSignal): Promise<ExtractionResponse> {
+  return fetchAndHandleExtractionResponse(request, abortSignal, "noTextFound");
 }
