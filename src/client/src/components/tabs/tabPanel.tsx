@@ -6,7 +6,7 @@ interface Tab {
   label: string;
   hash: string;
   component: JSX.Element;
-  hasContent: boolean | undefined;
+  hasContent?: boolean;
 }
 
 export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
