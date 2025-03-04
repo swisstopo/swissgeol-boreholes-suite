@@ -7,6 +7,7 @@ import {
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers.js";
+import "cypress-real-events/support";
 
 const isFileActive = (fileName, isActive) => {
   cy.contains("span", fileName)
@@ -17,26 +18,28 @@ const isFileActive = (fileName, isActive) => {
 };
 
 const drawBox = (x1, y1, x2, y2) => {
-  cy.get('[data-cy="labeling-draw-tooltip"]').should("to.be.visible");
+  cy.get('[data-cy="labeling-draw-tooltip"]').should("be.visible");
   cy.get('[data-cy="labeling-draw-tooltip"]').contains("Draw box around north & east coordinates");
   cy.window().then(win => {
     const interactions = win.labelingImage.getInteractions().getArray();
     expect(
       interactions.some(interaction => {
-        return interaction.constructor.name === "Draw";
+        return interaction.constructor.name === "DragBox";
       }),
     ).to.be.true;
   });
-  cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 }).trigger("pointerup", { x: x1, y: y1 });
-  cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 }).trigger("pointerup", { x: x2, y: y2 });
+  cy.get('[data-cy="labeling-panel"]')
+    .realMouseDown({ position: "topLeft", x: x1, y: y1 })
+    .realMouseMove(x2, y2, { position: "topLeft" })
+    .realMouseUp({ position: "topLeft", x: x2, y: y2 });
 
   cy.wait("@extract-data");
-  cy.get('[data-cy="labeling-draw-tooltip"]').should("not.to.be.visible");
+  cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");
   cy.window().then(win => {
     const interactions = win.labelingImage.getInteractions().getArray();
     expect(
       interactions.some(interaction => {
-        return interaction.constructor.name === "Draw";
+        return interaction.constructor.name === "DragBox";
       }),
     ).to.be.false;
   });
