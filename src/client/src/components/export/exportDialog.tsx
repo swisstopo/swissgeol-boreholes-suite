@@ -30,18 +30,18 @@ interface ExportDialogProps {
 export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, fileName }: ExportDialogProps) => {
   const { t } = useTranslation();
   const auth = useAuth();
-  const [inProgress, setInprogress] = useState(false);
+  const [inProgress, setInProgress] = useState(false);
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const canExportAttachments = !auth.anonymousModeEnabled && user.data.roles.includes("EDIT");
   const { showAlert } = useContext(AlertContext);
 
   const closeExportDialog = () => {
-    setInprogress(false);
+    setInProgress(false);
     setIsExporting(false);
   };
 
   const handleExport = async (exportFunction: (ids: number[] | GridRowSelectionModel) => Promise<Response | void>) => {
-    setInprogress(true);
+    setInProgress(true);
     const startTime = Date.now();
     try {
       await exportFunction(selectionModel.slice(0, 100));
