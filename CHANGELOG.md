@@ -9,6 +9,7 @@
 - Added a table displaying all the workgroups in the admin settings.
 - Added a detail view for workgroups in the admin settings.
 - Enable auto setting of depth in MASL in hydro module.
+- Added functionality to copy extracted text to clipboard in the labeling panel.
 
 ### Changed
 
