@@ -1,4 +1,4 @@
-import { createBaseSelector } from "./testHelpers";
+import { createBaseSelector, getElementByDataCy } from "./testHelpers";
 
 /**
  * Clicks on the save button and waits for borehole update.
@@ -11,6 +11,7 @@ export const saveWithSaveBar = parent => {
     cy.log("'borehole_by_id'-Requests before save button click: " + requests.length);
   });
 
+  getElementByDataCy("save-bar-text").should("contain", "Unsaved changes");
   // Clicks save button
   saveForm(parent);
 
@@ -27,6 +28,8 @@ export const saveWithSaveBar = parent => {
 
   // Ensure the actual update request is processed
   cy.wait(["@update-borehole"]);
+  getElementByDataCy("save-bar-text").should("contain", "Changes saved");
+  getElementByDataCy("save-bar-text").should("not.exist");
 };
 
 /**
@@ -101,29 +104,31 @@ export const exportItem = () => {
  * Clicks on the JSON-export button.
  */
 export const exportJsonItem = () => {
-  const selector = '[data-cy="json-button"]';
-  cy.get(selector).should("not.be.disabled");
-  cy.get(selector).click({ force: true });
+  exportFileType("json");
 };
 
 /**
  * Clicks on the CSV-export button.
  */
 export const exportCSVItem = () => {
-  const selector = '[data-cy="csv-button"]';
-  cy.get(selector).should("not.be.disabled");
-  cy.get(selector).click({ force: true });
+  exportFileType("csv");
 };
 
 /**
  * Clicks on the ZIP-export button.
  */
 export const exportZipItem = () => {
-  const selector = '[data-cy="json + pdf-button"]';
+  exportFileType("json + pdf");
+};
+
+/**
+ * Clicks on the export button corresponding to the provided file type
+ */
+const exportFileType = fileType => {
+  const selector = `[data-cy="${fileType}-button"]`;
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
-
 /**
  * Clicks on the copy button.
  * @param {string} parent (optional) The parent of the button.

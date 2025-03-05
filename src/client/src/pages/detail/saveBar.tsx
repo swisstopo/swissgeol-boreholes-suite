@@ -24,14 +24,14 @@ export const SaveBar = ({ triggerSubmit, triggerReset }: SaveBarProps) => {
   const changesMessage = (
     <>
       <CircleX />
-      <Box> {t("unsavedChanges")}</Box>
+      <Box data-cy="save-bar-text"> {t("unsavedChanges")}</Box>
     </>
   );
 
   const savedMessage = (
     <>
       <CircleCheck />
-      <Box> {t("savedChanges")}</Box>
+      <Box data-cy="save-bar-text"> {t("savedChanges")}</Box>
     </>
   );
   return (
