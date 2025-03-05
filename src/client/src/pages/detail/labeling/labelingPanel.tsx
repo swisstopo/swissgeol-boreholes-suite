@@ -31,7 +31,6 @@ import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { TextExtractionButton } from "../../../components/buttons/buttons.tsx";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
-import { StackFullWidth } from "../../../components/styledComponents.ts";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
 import {
@@ -49,17 +48,25 @@ const labelingButtonStyles = {
 
 export const LabelingAlert = styled(Alert)({
   ...labelingButtonStyles,
+  maxWidth: "100%",
+  display: "flex",
+  alignItems: "center",
   " & .MuiAlert-icon": {
     padding: "0",
     alignItems: "center",
     justifyContent: "center",
   },
   " & .MuiAlert-message": {
-    padding: "0",
-    display: "flex",
-    alignItems: "center",
+    flex: 1,
+    padding: 0,
+    minWidth: 0,
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    maxWidth: "100%",
   },
   " & .MuiAlert-action": {
+    flexShrink: 0,
     alignItems: "center",
     justifyContent: "center",
     padding: "0 0 0 16px",
@@ -251,7 +258,7 @@ const LabelingPanel: FC = () => {
         position: "relative",
       }}
       data-cy="labeling-panel">
-      <Stack alignItems={"flex-end"} p={2} sx={{ backgroundColor: theme.palette.ai.header }}>
+      <Stack alignItems={"flex-end"} p={2} sx={{ backgroundColor: theme.palette.ai.header }} data-cy="labeling-header">
         {selectedFile && (
           <ButtonSelect
             fieldName="labeling-file"
@@ -361,55 +368,63 @@ const LabelingPanel: FC = () => {
       </Stack>
       {selectedFile ? (
         <Box sx={{ height: "100%", width: "100%", position: "relative" }}>
-          <Stack
-            direction="row"
+          <Box
             sx={{
               position: "absolute",
               top: theme.spacing(2),
               left: theme.spacing(2),
               zIndex: "500",
-              gap: 1,
-              width: isExtractionLoading || alertIsOpen ? "100%" : "50px",
             }}>
             <TextExtractionButton
               onClick={() => {
+                closeAlert();
                 setExtractionObject({ type: "text" });
                 setDrawTooltipLabel("drawTextBox");
               }}
             />
+          </Box>
+          <Box
+            sx={{
+              position: "absolute",
+              top: theme.spacing(2),
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: "500",
+              maxWidth: "70%",
+              overflow: "hidden",
+            }}>
             {(isExtractionLoading || alertIsOpen) && (
-              <>
-                <StackFullWidth alignItems={"center"}>
-                  <Box>
-                    {alertIsOpen ? (
-                      <LabelingAlert
-                        data-cy="labeling-alert"
-                        variant="filled"
-                        severity={severity}
-                        onClose={closeAlert}
-                        icon={severity !== "info"}>
-                        {text}
-                      </LabelingAlert>
-                    ) : (
-                      isExtractionLoading && (
-                        <Button
-                          onClick={() => cancelRequest()}
-                          variant="text"
-                          endIcon={<X />}
-                          sx={labelingButtonStyles}>
-                          <CircularProgress
-                            sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }}
-                          />
-                          {t("analyze")}
-                        </Button>
-                      )
-                    )}
-                  </Box>
-                </StackFullWidth>
-                <Box sx={{ width: "100px" }} />
-              </>
+              <Box
+                sx={{
+                  boxShadow: theme.shadows[1],
+                  width: "auto",
+                  maxWidth: "100%",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}>
+                {alertIsOpen ? (
+                  <LabelingAlert
+                    data-cy="labeling-alert"
+                    variant="filled"
+                    severity={severity}
+                    onClose={closeAlert}
+                    icon={severity !== "info"}>
+                    {text}
+                  </LabelingAlert>
+                ) : (
+                  isExtractionLoading && (
+                    <Button onClick={() => cancelRequest()} variant="text" endIcon={<X />} sx={labelingButtonStyles}>
+                      <CircularProgress
+                        sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }}
+                      />
+                      {t("analyze")}
+                    </Button>
+                  )
+                )}
+              </Box>
             )}
-          </Stack>
+          </Box>
           <LabelingDrawContainer
             fileInfo={fileInfo}
             onDrawEnd={setExtractionExtent}
