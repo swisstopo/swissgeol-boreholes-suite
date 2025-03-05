@@ -123,10 +123,7 @@ describe("completion crud tests", () => {
     cy.contains("Compl-1 (Clone)");
     // The casing request is triggered twice; once for the original completion and once for the copied. We have to await
     // both to make sure that the UI has completed loading. Otherwise, the header cannot yet be toggled open.
-    cy.wait("@casing_GET");
-    cy.wait("@casing_GET");
-    cy.wait("@backfill_GET");
-    cy.wait("@backfill_GET");
+    cy.wait(["@casing_GET", "@casing_GET", "@backfill_GET", "@backfill_GET"]);
 
     // edit completion
     startEditHeader();
@@ -149,9 +146,7 @@ describe("completion crud tests", () => {
     cy.contains("Compl-2");
     deleteCompletion();
     handlePrompt("Do you really want to delete this completion?", "Delete");
-    cy.wait("@get-completions-by-boreholeId");
-    cy.wait("@backfill_GET");
-    cy.wait("@backfill_GET");
+    cy.wait(["@get-completions-by-boreholeId", "@backfill_GET", "@backfill_GET"]);
     cy.get('[data-cy="completion-header-tab-1"]').should("not.exist");
     isHeaderTabSelected(0);
     evaluateDisplayValue("mainCompletion", "Yes");
