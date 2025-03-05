@@ -16,7 +16,7 @@ export interface File {
 
 export interface BoreholeFile {
   boreholeId: number;
-  borehole?: BoreholeV2;
+  borehole: BoreholeV2 | null;
   fileId: number;
   file: File;
 }
