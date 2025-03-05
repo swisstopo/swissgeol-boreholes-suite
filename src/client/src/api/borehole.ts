@@ -3,10 +3,10 @@ import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { User, Workgroup } from "./apiInterfaces.ts";
-import { BoreholeFile } from "./boreholeFile.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2";
+import { BoreholeFile } from "./file/fileInterfaces.ts";
 import { Section } from "./section.ts";
 import { Stratigraphy } from "./stratigraphy.ts";
 
