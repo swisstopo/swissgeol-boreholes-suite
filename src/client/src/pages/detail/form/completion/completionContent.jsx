@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
-import { CircularProgress, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import PropTypes from "prop-types";
 import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.js";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
@@ -23,7 +23,6 @@ const CompletionContent = ({ completion, editingEnabled }) => {
   const [casings, setCasings] = useState([]);
   const [instrumentation, setInstrumentation] = useState([]);
   const [backfills, setBackfills] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const tabs = [
     {
       label: t("casing"),
@@ -52,7 +51,6 @@ const CompletionContent = ({ completion, editingEnabled }) => {
   };
 
   const loadData = useCallback(() => {
-    setIsLoading(true);
     Promise.all([getCasings(completion.id), getInstrumentation(completion.id), getBackfills(completion.id)])
       .then(([casings, instrumentation, backfills]) => {
         setCasings(casings);
@@ -61,9 +59,6 @@ const CompletionContent = ({ completion, editingEnabled }) => {
       })
       .catch(error => {
         console.error("Error loading data:", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
   }, [completion.id]);
 
@@ -107,11 +102,7 @@ const CompletionContent = ({ completion, editingEnabled }) => {
     );
   }, [activeIndex, completion.id, editingEnabled]);
 
-  return isLoading ? (
-    <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
-      <CircularProgress />
-    </Stack>
-  ) : (
+  return (
     <Stack direction="column" flex="1 0 0">
       <Stack direction="row" justifyContent="space-between" alignItems="center" flex="0 1 auto">
         <BoreholeTabs value={activeIndex} onChange={handleCompletionChanged}>
