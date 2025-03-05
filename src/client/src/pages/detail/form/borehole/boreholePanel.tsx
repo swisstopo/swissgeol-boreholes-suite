@@ -16,8 +16,18 @@ export const BoreholePanel = forwardRef(({ borehole, onSubmit }: BoreholePanelPr
         hash: "general",
         component: <BoreholeForm borehole={borehole} onSubmit={onSubmit} ref={ref} />,
       },
-      { label: t("sections"), hash: "sections", component: <Sections /> },
-      { label: t("boreholeGeometry"), hash: "geometry", component: <Geometry measuredDepth={borehole?.totalDepth} /> },
+      {
+        label: t("sections"),
+        hash: "sections",
+        component: <Sections />,
+        hasContent: (borehole?.sections?.length ?? 0) > 0,
+      },
+      {
+        label: t("boreholeGeometry"),
+        hash: "geometry",
+        component: <Geometry measuredDepth={borehole?.totalDepth} />,
+        hasContent: (borehole?.boreholeGeometry?.length ?? 0) > 0,
+      },
     ],
     [borehole, onSubmit, ref, t],
   );

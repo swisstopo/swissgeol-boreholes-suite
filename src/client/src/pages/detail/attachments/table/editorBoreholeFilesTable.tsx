@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { Box, Button, Input } from "@mui/material";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
 import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
-import { FileResponse } from "../../../../api/file/fileInterfaces.ts";
+import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { DetailContext } from "../../detailContext.tsx";
@@ -14,7 +14,7 @@ const EditorBoreholeFilesTable: FC = () => {
   const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
   const { id } = useParams<{ id: string }>();
-  const [files, setFiles] = useState<FileResponse[]>([]);
+  const [files, setFiles] = useState<BoreholeFile[]>([]);
   const [patchQueued, setPatchQueued] = useState<NodeJS.Timeout | string | number | undefined>();
   const { showAlert } = useContext(AlertContext);
   const { editingEnabled } = useContext(DetailContext);
@@ -26,7 +26,7 @@ const EditorBoreholeFilesTable: FC = () => {
 
   const loadFiles = async () => {
     if (id) {
-      getFiles<FileResponse>(parseInt(id)).then(setFiles);
+      getFiles<BoreholeFile>(parseInt(id)).then(setFiles);
     }
   };
 

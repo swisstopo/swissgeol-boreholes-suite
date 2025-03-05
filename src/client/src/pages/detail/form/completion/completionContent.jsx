@@ -2,15 +2,18 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { Stack } from "@mui/material";
+import PropTypes from "prop-types";
+import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.js";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
-import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.tsx";
+import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import Backfill from "./backfill.jsx";
 import Casing from "./casing.jsx";
 import Instrumentation from "./instrumentation.jsx";
 
 const CompletionContentTabBox = props => {
-  return <BdmsTabContentBox flex="1 0 0">{props.children()}</BdmsTabContentBox>;
+  return <BoreholeTabContentBox flex="1 0 0">{props.children()}</BoreholeTabContentBox>;
 };
+CompletionContentTabBox.propTypes = { children: PropTypes.func.isRequired };
 export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBox);
 
 const CompletionContent = ({ completion, editingEnabled }) => {
@@ -18,13 +21,25 @@ const CompletionContent = ({ completion, editingEnabled }) => {
   const history = useHistory();
   const location = useLocation();
   const { t } = useTranslation();
+  const [casings, setCasings] = useState([]);
+  const [instrumentation, setInstrumentation] = useState([]);
+  const [backfills, setBackfills] = useState([]);
   const tabs = [
     {
       label: t("casing"),
       hash: "casing",
+      hasContent: casings.length > 0,
     },
-    { label: t("instrument"), hash: "instrumentation" },
-    { label: t("backfill"), hash: "backfill" },
+    {
+      label: t("instrument"),
+      hash: "instrumentation",
+      hasContent: instrumentation.length > 0,
+    },
+    {
+      label: t("backfill"),
+      hash: "backfill",
+      hasContent: backfills.length > 0,
+    },
   ];
   const [activeIndex, setActiveIndex] = useState(0);
   const [newIndex, setNewIndex] = useState(null);
@@ -35,6 +50,22 @@ const CompletionContent = ({ completion, editingEnabled }) => {
     setCheckContentDirty(true);
     triggerCanSwitch();
   };
+
+  const loadData = useCallback(() => {
+    Promise.all([getCasings(completion.id), getInstrumentation(completion.id), getBackfills(completion.id)])
+      .then(([casings, instrumentation, backfills]) => {
+        setCasings(casings);
+        setInstrumentation(instrumentation);
+        setBackfills(backfills);
+      })
+      .catch(error => {
+        console.error("Error loading data:", error);
+      });
+  }, [completion.id]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   useEffect(() => {
     if (checkContentDirty) {
@@ -75,24 +106,28 @@ const CompletionContent = ({ completion, editingEnabled }) => {
   return (
     <Stack direction="column" flex="1 0 0">
       <Stack direction="row" justifyContent="space-between" alignItems="center" flex="0 1 auto">
-        <BdmsTabs value={activeIndex} onChange={handleCompletionChanged}>
-          {tabs.map((tab, index) => {
-            return (
-              <BdmsTab
-                data-cy={"completion-content-tab-" + tab.hash}
-                label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
-                key={index}
-              />
-            );
-          })}
-        </BdmsTabs>
+        <BoreholeTabs value={activeIndex} onChange={handleCompletionChanged}>
+          {tabs.map((tab, index) => (
+            <BoreholeTab
+              data-cy={"completion-content-tab-" + tab.hash}
+              label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
+              key={index}
+              hasContent={tab.hasContent}
+            />
+          ))}
+        </BoreholeTabs>
       </Stack>
-      {
-        // eslint-disable-next-line react/no-children-prop
-        <MemoizedCompletionContentTabBox children={renderTabContent} />
-      }
+      {/* eslint-disable-next-line react/no-children-prop */}
+      <MemoizedCompletionContentTabBox children={renderTabContent} />
     </Stack>
   );
+};
+
+CompletionContent.propTypes = {
+  completion: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  }).isRequired,
+  editingEnabled: PropTypes.bool.isRequired,
 };
 
 export default CompletionContent;
