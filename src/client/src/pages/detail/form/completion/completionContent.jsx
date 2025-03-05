@@ -13,6 +13,7 @@ import Instrumentation from "./instrumentation.jsx";
 const CompletionContentTabBox = props => {
   return <BoreholeTabContentBox flex="1 0 0">{props.children()}</BoreholeTabContentBox>;
 };
+CompletionContentTabBox.propTypes = { children: PropTypes.func.isRequired };
 export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBox);
 
 const CompletionContent = ({ completion, editingEnabled }) => {
@@ -127,7 +128,6 @@ CompletionContent.propTypes = {
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   }).isRequired,
   editingEnabled: PropTypes.bool.isRequired,
-  children: PropTypes.func.isRequired,
 };
 
 export default CompletionContent;
