@@ -14,6 +14,7 @@ import {
   createWateringress,
   getElementByDataCy,
   goToRouteAndAcceptTerms,
+  navigateToBoreholeTab,
   returnToOverview,
   selectInputFile,
   startBoreholeEditing,
@@ -37,7 +38,9 @@ describe("Test for the detail page side navigation.", () => {
     checkElementColorByDataCy("status-menu-item", "rgba(0, 0, 0, 0.87)");
 
     // Check borehole content tabs
-    getElementByDataCy("borehole-menu-item").click();
+    cy.get("@borehole_id").then(id => {
+      navigateToBoreholeTab(id);
+    });
     const boreholeContentTabs = ["sections-tab", "geometry-tab"];
     boreholeContentTabs.forEach(item => {
       checkElementColorByDataCy(item, "rgb(130, 142, 154)");
