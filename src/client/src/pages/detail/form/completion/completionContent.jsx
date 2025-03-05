@@ -127,6 +127,7 @@ CompletionContent.propTypes = {
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   }).isRequired,
   editingEnabled: PropTypes.bool.isRequired,
+  children: PropTypes.func.isRequired,
 };
 
 export default CompletionContent;
