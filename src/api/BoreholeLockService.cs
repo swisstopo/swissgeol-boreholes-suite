@@ -97,6 +97,11 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
     /// <inheritdoc />
     public bool IsUserLackingWorkgroupRole(User user, int workgroupId, Role expectedRole)
     {
+        if (user != null && user.IsAdmin)
+        {
+            return false;
+        }
+
         var workgroupRoles = user?.WorkgroupRoles ?? Enumerable.Empty<UserWorkgroupRole>();
         var hasExpectedWorkgroupRole = workgroupRoles.Any(x => x.WorkgroupId == workgroupId && x.Role == expectedRole);
 

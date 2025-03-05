@@ -206,6 +206,14 @@ public class BoreholeLockServiceTest
     }
 
     [TestMethod]
+    public void IsUserLackingWorkgroupRoleAdminUser()
+    {
+        var user = new User { IsAdmin = true };
+
+        Assert.IsFalse(boreholeLockService.IsUserLackingWorkgroupRole(user, 1, Role.Editor));
+    }
+
+    [TestMethod]
     public async Task IsUserLackingWorkgroupRoleAsync()
     {
         Assert.IsFalse(await boreholeLockService.IsUserLackingWorkgroupRoleAsync(AdminSubjectId, DefaultWorkgroupId, Role.Editor));
