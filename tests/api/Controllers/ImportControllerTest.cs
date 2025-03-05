@@ -30,6 +30,7 @@ public class ImportControllerTest
     private Mock<ILogger<ImportController>> loggerMock;
     private Mock<ILogger<LocationService>> loggerLocationServiceMock;
     private Mock<ILogger<CoordinateService>> loggerCoordinateServiceMock;
+    private Mock<IBoreholeLockService> boreholeLockServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
@@ -58,7 +59,10 @@ public class ImportControllerTest
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, context.Users.FirstOrDefault().SubjectId) }));
         var boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, loggerBoreholeFileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
 
-        controller = new ImportController(context, loggerMock.Object, locationService, coordinateService, boreholeFileCloudService) { ControllerContext = GetControllerContextAdmin() };
+        boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock.Setup(x => x.IsUserLackingWorkgroupRoleAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>())).ReturnsAsync(false);
+
+        controller = new ImportController(context, loggerMock.Object, locationService, coordinateService, boreholeFileCloudService, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -78,6 +82,7 @@ public class ImportControllerTest
 
         await context.DisposeAsync();
         httpClientFactoryMock.Verify();
+        boreholeLockServiceMock.Verify();
         loggerMock.Verify();
     }
 
@@ -1120,6 +1125,36 @@ public class ImportControllerTest
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
         Assert.AreEqual("POINT (2000000 1000000)", borehole.Geometry.ToString());
+    }
+
+    [TestMethod]
+    public async Task UploadCsvWorkgroupPermissionMissing()
+    {
+        boreholeLockServiceMock.Setup(x => x.IsUserLackingWorkgroupRoleAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>())).ReturnsAsync(true);
+        var boreholeCsvFile = GetFormFileByExistingFile("minimal_testdata.csv");
+
+        var response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
+        ActionResultAssert.IsUnauthorized(response.Result);
+    }
+
+    [TestMethod]
+    public async Task UploadJsonWorkgroupPermissionMissing()
+    {
+        boreholeLockServiceMock.Setup(x => x.IsUserLackingWorkgroupRoleAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>())).ReturnsAsync(true);
+        var boreholeCsvFile = GetFormFileByExistingFile("minimal_testdata.csv");
+
+        var response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeCsvFile);
+        ActionResultAssert.IsUnauthorized(response.Result);
+    }
+
+    [TestMethod]
+    public async Task UploadZipWorkgroupPermissionMissing()
+    {
+        boreholeLockServiceMock.Setup(x => x.IsUserLackingWorkgroupRoleAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>())).ReturnsAsync(true);
+        var boreholeCsvFile = GetFormFileByExistingFile("minimal_testdata.csv");
+
+        var response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeCsvFile);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     private static async Task<FormFile> GetZipFileFromExistingFileAsync(string fileName)
