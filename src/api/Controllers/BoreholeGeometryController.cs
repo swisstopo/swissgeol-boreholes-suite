@@ -158,7 +158,7 @@ public class BoreholeGeometryController : ControllerBase
     }
 
     /// <summary>
-    /// Get the depth in meters above sea level (MASL) from the borehole's elevation for the provided measured depth.
+    /// Get the depth in meters above sea level (MASL) from the borehole's reference elevation for the provided measured depth.
     /// </summary>
     /// <param name="boreholeId">The id of the <see cref="Borehole"/> to get the MASL for.</param>
     /// <param name="depthMD">The measured depth to get the MASL for.</param>
@@ -173,13 +173,13 @@ public class BoreholeGeometryController : ControllerBase
         var tvd = geometry.GetTVDIfGeometryExists(depthMD);
         var borehole = await context.Boreholes.FindAsync(boreholeId).ConfigureAwait(false);
 
-        if (tvd == null || borehole?.ElevationZ == null)
+        if (tvd == null || borehole?.ReferenceElevation == null)
         {
             logger.LogInformation("Invalid input, could not calculate depth in MASL from measured depth of {DepthMD}", depthMD);
             return Ok(null);
         }
 
-        return Ok(borehole.ElevationZ - tvd);
+        return Ok(borehole.ReferenceElevation - tvd);
     }
 
     private async Task<List<BoreholeGeometryElement>> GetBoreholeGeometry(int boreholeId)
