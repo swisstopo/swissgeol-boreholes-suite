@@ -50,6 +50,7 @@ declare module "@mui/material/styles" {
     };
     ai: {
       background: string;
+      header: string;
       main: string;
       mainTransparent: string;
       mainEnd: string;
@@ -117,6 +118,7 @@ declare module "@mui/material/styles" {
   }
 
   interface AppThemeComponents extends Components {
+    MuiAlert: object;
     MuiButtonBase: object;
     MuiButton: object;
     MuiCard: object;
@@ -141,6 +143,7 @@ declare module "@mui/material/styles" {
   }
 
   interface AppThemeComponentsOptions extends ComponentsOptions {
+    MuiAlert: object;
     MuiButtonBase: object;
     MuiButton: object;
     MuiCard: object;
