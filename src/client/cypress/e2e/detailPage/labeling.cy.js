@@ -95,6 +95,15 @@ function clickCoordinateLabelingButton() {
   cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
 }
 
+function assertLabelingAlertText(expectedText) {
+  getElementByDataCy("labeling-alert")
+    .invoke("text")
+    .then(actualText => {
+      cy.log("Actual Alert Text:", actualText); // Logs the found text in Cypress
+      expect(actualText.trim()).to.equal(expectedText);
+    });
+}
+
 describe("Test labeling tool", () => {
   it("can show labeling panel", () => {
     goToRouteAndAcceptTerms("/");
@@ -261,34 +270,35 @@ describe("Test labeling tool", () => {
     selectLabelingAttament();
     getElementByDataCy("labeling-page-next").click();
     getElementByDataCy("labeling-page-next").click();
+    waitForLabelingImageLoaded();
     assertPageCount(3, 3);
-    getElementByDataCy("text-extraction-button").click();
-    assertDrawTooltip("Draw box around any text");
-
-    // can switch between text extraction and coordinate extraction
-    clickCoordinateLabelingButton();
-    assertDrawTooltip("Draw box around north & east coordinates");
     getElementByDataCy("text-extraction-button").click();
     assertDrawTooltip("Draw box around any text");
 
     // draw box around empty space
     cy.wait(1000);
     drawBox(200, 400, 500, 500);
-    getElementByDataCy("labeling-alert").contains("No text found");
+    assertLabelingAlertText("No text found");
     cy.get('button[aria-label="Close"]').click(); // close alert
-
     // draw box around text
+
     getElementByDataCy("text-extraction-button").click();
     assertDrawTooltip("Draw box around any text");
     cy.wait(1000);
     drawBox(200, 120, 500, 400);
-    getElementByDataCy("labeling-alert").contains('Copied to clipboard: "Some information without coo...');
+    assertLabelingAlertText('Copied to clipboard: "Some information without coo...');
 
     cy.window().then(win => {
       win.navigator.clipboard.readText().then(text => {
         expect(text).to.eq("Some information without coordinates");
       });
     });
+
+    // can switch between text extraction and coordinate extraction
+    clickCoordinateLabelingButton();
+    assertDrawTooltip("Draw box around north & east coordinates");
+    getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltip("Draw box around any text");
   });
 
   it("shows alert if no coordinates are extracted", () => {
@@ -308,7 +318,7 @@ describe("Test labeling tool", () => {
 
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(180, 125, 400, 185);
-    cy.get('[data-cy="labeling-alert"]').contains("No coordinates found");
+    assertLabelingAlertText("No coordinates found");
 
     // Drawing is active immediately when opening the panel with the labeling-button
     cy.get('[data-cy="labeling-toggle-button"]').click();
