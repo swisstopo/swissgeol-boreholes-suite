@@ -116,7 +116,9 @@ describe("Tests for the wateringress editor.", () => {
 
       // Create water ingress and check states of depth inputs
       addItem("addWaterIngress");
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should("not.be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should(
+        "not.be.disabled",
+      );
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("not.be.disabled");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("not.be.disabled");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("not.be.disabled");
