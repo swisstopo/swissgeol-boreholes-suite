@@ -5,13 +5,13 @@ import { CircularProgress, Stack } from "@mui/material";
 import PropTypes from "prop-types";
 import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.js";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
-import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.tsx";
+import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import Backfill from "./backfill.jsx";
 import Casing from "./casing.jsx";
 import Instrumentation from "./instrumentation.jsx";
 
 const CompletionContentTabBox = props => {
-  return <BdmsTabContentBox flex="1 0 0">{props.children()}</BdmsTabContentBox>;
+  return <BoreholeTabContentBox flex="1 0 0">{props.children()}</BoreholeTabContentBox>;
 };
 export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBox);
 
@@ -114,16 +114,16 @@ const CompletionContent = ({ completion, editingEnabled }) => {
   ) : (
     <Stack direction="column" flex="1 0 0">
       <Stack direction="row" justifyContent="space-between" alignItems="center" flex="0 1 auto">
-        <BdmsTabs value={activeIndex} onChange={handleCompletionChanged}>
+        <BoreholeTabs value={activeIndex} onChange={handleCompletionChanged}>
           {tabs.map((tab, index) => (
-            <BdmsTab
+            <BoreholeTab
               data-cy={"completion-content-tab-" + tab.hash}
               label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
               key={index}
               hasContent={tab.hasContent}
             />
           ))}
-        </BdmsTabs>
+        </BoreholeTabs>
       </Stack>
       {/* eslint-disable-next-line react/no-children-prop */}
       <MemoizedCompletionContentTabBox children={renderTabContent} />

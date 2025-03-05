@@ -1,6 +1,6 @@
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../styledTabComponents.tsx";
+import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../styledTabComponents.tsx";
 
 interface Tab {
   label: string;
@@ -36,12 +36,12 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
 
   return (
     <>
-      <BdmsTabs value={activeIndex} onChange={handleIndexChange}>
+      <BoreholeTabs value={activeIndex} onChange={handleIndexChange}>
         {tabs.map(tab => (
-          <BdmsTab data-cy={`${tab.hash}-tab`} label={tab.label} key={tab.hash} hasContent={tab.hasContent} />
+          <BoreholeTab data-cy={`${tab.hash}-tab`} label={tab.label} key={tab.hash} hasContent={tab.hasContent} />
         ))}
-      </BdmsTabs>
-      <BdmsTabContentBox flex="1 0 0">{tabs[activeIndex].component}</BdmsTabContentBox>
+      </BoreholeTabs>
+      <BoreholeTabContentBox flex="1 0 0">{tabs[activeIndex].component}</BoreholeTabContentBox>
     </>
   );
 };

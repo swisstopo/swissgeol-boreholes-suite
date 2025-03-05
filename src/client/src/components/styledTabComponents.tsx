@@ -2,7 +2,7 @@ import { Box, Tab, Tabs } from "@mui/material";
 import { styled } from "@mui/system";
 import { theme } from "../AppTheme";
 
-export const BdmsTabContentBox = styled(Box)(() => ({
+export const BoreholeTabContentBox = styled(Box)(() => ({
   backgroundColor: theme.palette.background.default,
   border: `1px solid ${theme.palette.border.light}`,
   padding: `${theme.spacing(3)}`,
@@ -10,7 +10,7 @@ export const BdmsTabContentBox = styled(Box)(() => ({
   flexDirection: "column",
 }));
 
-export const BdmsTabs = styled(Tabs)({
+export const BoreholeTabs = styled(Tabs)({
   overflow: "visible",
   margin: "0 4px",
   "& .MuiTabs-indicator": {
@@ -18,14 +18,14 @@ export const BdmsTabs = styled(Tabs)({
   },
 });
 
-interface BdmsTabProps {
+interface BoreholeTabProps {
   label: string;
   key: string;
   "data-cy": string;
   hasContent: boolean | undefined;
 }
 
-export const BdmsTab = styled(({ ...props }: BdmsTabProps) => <Tab disableRipple {...props} />)(
+export const BoreholeTab = styled(({ ...props }: BoreholeTabProps) => <Tab disableRipple {...props} />)(
   ({ theme, hasContent }) => ({
     fontSize: "16px",
     fontWeight: 400,

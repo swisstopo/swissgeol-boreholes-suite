@@ -14,7 +14,7 @@ import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
-import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents.tsx";
+import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { DetailContext } from "../../detailContext.tsx";
 import CompletionContent from "./completionContent.jsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";
@@ -316,18 +316,18 @@ const Completion = () => {
       <FullPage>
         <Stack flex="0 1 auto">
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginRight: "5px" }}>
-            <BdmsTabs value={state.index} onChange={handleCompletionChanged}>
+            <BoreholeTabs value={state.index} onChange={handleCompletionChanged}>
               {state.displayed?.length > 0 &&
                 state.displayed.map((item, index) => {
                   return (
-                    <BdmsTab
+                    <BoreholeTab
                       data-cy={"completion-header-tab-" + index}
                       label={item.name === null || item.name === "" ? t("common:np") : item.name}
                       key={item.id}
                     />
                   );
                 })}
-            </BdmsTabs>
+            </BoreholeTabs>
             {editingEnabled && (
               <AddButton
                 label="addCompletion"
@@ -340,7 +340,7 @@ const Completion = () => {
           </Stack>
           {state.selected != null && (
             <>
-              <BdmsTabContentBox sx={{ padding: "18px" }} data-cy="completion-header">
+              <BoreholeTabContentBox sx={{ padding: "18px" }} data-cy="completion-header">
                 {state.editing ? (
                   <CompletionHeaderInput
                     completion={state.selected}
@@ -360,7 +360,7 @@ const Completion = () => {
                     deleteCompletion={deleteSelectedCompletion}
                   />
                 )}
-              </BdmsTabContentBox>
+              </BoreholeTabContentBox>
             </>
           )}
         </Stack>
