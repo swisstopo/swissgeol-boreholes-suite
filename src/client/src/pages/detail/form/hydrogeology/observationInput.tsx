@@ -18,7 +18,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   const { id: boreholeId } = useParams<{ id: string }>();
   const getCasingOptions = useGetCasingOptions();
 
-  const [depthUnit, setDepthUnit] = useState(ObservationDepthUnitType.measuredDepth);
+  const [depthUnit, setDepthUnit] = useState(ObservationDepthUnitType.masl);
   const [fromDepthM, setFromDepthM] = useState<number | null>(observation.fromDepthM);
   const [toDepthM, setToDepthM] = useState<number | null>(observation.toDepthM);
   const [fromDepthMasl, setFromDepthMasl] = useState<number | null>(observation.fromDepthMasl);

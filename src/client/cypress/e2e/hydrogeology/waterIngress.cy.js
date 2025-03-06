@@ -107,7 +107,7 @@ describe("Tests for the wateringress editor.", () => {
   it("calculates and sets depth automatically", () => {
     createBorehole({
       "extended.original_name": "INTEADAL",
-      elevation_z: 4000,
+      reference_elevation: 4000,
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
@@ -116,11 +116,13 @@ describe("Tests for the wateringress editor.", () => {
 
       // Create water ingress and check states of depth inputs
       addItem("addWaterIngress");
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should("be.disabled");
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should(
+        "not.be.disabled",
+      );
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("not.be.disabled");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("not.be.disabled");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("not.be.disabled");
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="depthUnit-formSelect"] input').should("have.value", "0");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="depthUnit-formSelect"] input').should("have.value", "1");
 
       // Save with minimal info
       setSelect("quantityId", 2);
@@ -138,6 +140,15 @@ describe("Tests for the wateringress editor.", () => {
         .contains("-");
 
       startEditing();
+      // Ensure depth input dropdown is set to manual input and switch to auto input
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="depthUnit-formSelect"] input').should("have.value", "1");
+      setSelect("depthUnit", 0);
+
+      // Check states of depth inputs
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should("be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("not.be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("not.be.disabled");
 
       // Enter measured depth and ensure MASL is automatically set
       setInput("fromDepthM", 24);
@@ -166,9 +177,10 @@ describe("Tests for the wateringress editor.", () => {
       cy.get("@toDepthMaslDisplay").contains("3'945");
 
       startEditing();
+      // Ensure depth input dropdown is set to manual
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="depthUnit-formSelect"] input').should("have.value", "1");
 
-      // Switch to manual depth input in MASL
-      setSelect("depthUnit", 1);
+      // Check states of depth inputs
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should(
         "not.be.disabled",
       );
