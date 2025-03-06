@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, PanelBottom, PanelRight } from "lucide-react
 import {
   extractCoordinates,
   extractText,
+  fetchExtractionBoundingBoxes,
   getDataExtractionFileInfo,
   getFiles,
   uploadFile,
@@ -25,6 +26,7 @@ import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
 import { LabelingHeader } from "./labelingHeader.tsx";
 import {
+  ExtractionBoundingBox,
   ExtractionRequest,
   ExtractionState,
   labelingFileFormat,
@@ -75,6 +77,7 @@ const LabelingPanel: FC = () => {
   const [files, setFiles] = useState<FileInterface[]>();
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
   const [fileInfo, setFileInfo] = useState<DataExtractionResponse>();
+  const [pageBoundingBoxes, setPageBoundingBoxes] = useState<ExtractionBoundingBox[]>([]);
   const [activePage, setActivePage] = useState<number>(1);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
   const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
@@ -153,6 +156,8 @@ const LabelingPanel: FC = () => {
           bbox: bbox,
           format: extractionObject.type,
         };
+        console.log(bbox);
+        console.log(extent);
         setExtractionState(ExtractionState.loading);
         setDrawTooltipLabel(undefined);
         const abortController = new AbortController();
@@ -219,17 +224,20 @@ const LabelingPanel: FC = () => {
   useEffect(() => {
     if (selectedFile) {
       getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
+        let newActivePage = activePage;
         if (fileInfo?.count !== response.count) {
-          setActivePage(1);
+          newActivePage = 1;
+          setActivePage(newActivePage);
         }
-        if (fileInfo !== response) {
+        if (fileInfo?.fileName !== response.fileName) {
           setFileInfo(response);
+          fetchExtractionBoundingBoxes(selectedFile.nameUuid, newActivePage).then(res => {
+            setPageBoundingBoxes(res.bounding_boxes);
+          });
         }
       });
     }
-    // Adding fileInfo to dependencies would cause an infinite loop
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePage, selectedFile]);
+  }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
   return (
@@ -366,6 +374,7 @@ const LabelingPanel: FC = () => {
             fileInfo={fileInfo}
             onDrawEnd={setExtractionExtent}
             drawTooltipLabel={drawTooltipLabel}
+            boundingBoxes={pageBoundingBoxes}
           />
         </Box>
       ) : (

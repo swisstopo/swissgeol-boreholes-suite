@@ -1,6 +1,10 @@
-import { ExtractionRequest, ExtractionResponse } from "../../pages/detail/labeling/labelingInterfaces.tsx";
+import {
+  BoundingBoxResponse,
+  ExtractionRequest,
+  ExtractionResponse,
+} from "../../pages/detail/labeling/labelingInterfaces.tsx";
 import { ApiError } from "../apiInterfaces.ts";
-import { fetchCreatePngs, fetchExtractData } from "../dataextraction";
+import { fetchCreatePngs, fetchExtractData, fetchPageBoundingBoxes } from "../dataextraction";
 import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2";
 import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
@@ -87,6 +91,14 @@ export async function createExtractionPngs(fileName: string) {
   if (!response.ok) {
     throw new ApiError("errorDataExtractionFileLoading", 500);
   }
+}
+
+export async function fetchExtractionBoundingBoxes(fileName: string, pageNumber: number): Promise<BoundingBoxResponse> {
+  const response = await fetchPageBoundingBoxes(fileName, pageNumber);
+  if (!response.ok) {
+    throw new ApiError("errorDataExtractionFetchBoundingBoxes", 500);
+  }
+  return await response.json();
 }
 
 async function fetchAndHandleExtractionResponse(
