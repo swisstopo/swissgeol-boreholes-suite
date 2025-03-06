@@ -240,7 +240,7 @@ describe("Test labeling tool", () => {
     isDisabled("locationYLV03", true);
   });
 
-  it.only("can extract data from rotated and zoomed next page", () => {
+  it("can extract data from rotated and zoomed next page", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
