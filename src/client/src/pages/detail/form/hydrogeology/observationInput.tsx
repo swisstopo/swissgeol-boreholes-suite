@@ -6,7 +6,7 @@ import { getBoreholeGeometryDepthMasl, getCasingsByBoreholeId } from "../../../.
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { parseFloatWithThousandsSeparator } from "../../../../components/legacyComponents/formUtils.ts";
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { ObservationDepthUnitType, ObservationInputProps } from "./Observation.ts";

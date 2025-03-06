@@ -5,8 +5,8 @@ import { InputProps, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { isValid } from "date-fns";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
-import { getFieldBorderColor } from "../legacyComponents/formUtils.ts";
 import { FormValueType, getFormFieldError } from "./form";
+import { getFieldBorderColor } from "./formUtils.ts";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
 
 export interface FormInputProps {

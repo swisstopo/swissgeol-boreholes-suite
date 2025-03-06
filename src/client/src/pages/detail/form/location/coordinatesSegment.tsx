@@ -4,10 +4,7 @@ import { Box, Card, CardContent, CardHeader } from "@mui/material";
 import { Check, X } from "lucide-react";
 import { LabelingButton } from "../../../../components/buttons/labelingButton";
 import { FormContainer, FormCoordinate, FormDomainSelect, FormSelect } from "../../../../components/form/form";
-import {
-  getPrecisionFromString,
-  parseFloatWithThousandsSeparator,
-} from "../../../../components/legacyComponents/formUtils.js";
+import { getPrecisionFromString, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { DetailContext } from "../../detailContext.tsx";
@@ -158,6 +155,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     const floatValue = parseFloatWithThousandsSeparator(value);
     // verify coordinates are in bounding box
     if (
+      floatValue !== null &&
       boundingBox[referenceSystem][direction].Min < floatValue &&
       floatValue < boundingBox[referenceSystem][direction].Max
     ) {

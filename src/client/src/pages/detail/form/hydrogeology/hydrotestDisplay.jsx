@@ -5,6 +5,7 @@ import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
 import { parameterTableHeaderStyles } from "../../../../components/form/formResultTableDisplayStyles";
+import { formatWithThousandSeparator } from "../../../../utils.ts";
 import ObservationDisplay from "./observationDisplay.tsx";
 import { getHydrotestParameterUnits } from "./parameterUnits";
 
@@ -50,7 +51,7 @@ const HydrotestDisplay = props => {
               <TableCell sx={styles} data-cy={`hydrotestResult.${index}.value-formDisplay`}>
                 {result?.value && (
                   <>
-                    <span>{result?.value + " "}</span>
+                    <span>{formatWithThousandSeparator(result?.value) + " "}</span>
                     {getHydrotestParameterUnits(result.parameterId, domains.data)}
                   </>
                 )}
@@ -58,7 +59,7 @@ const HydrotestDisplay = props => {
               <TableCell sx={styles} data-cy={`hydrotestResult.${index}.minValue-formDisplay`}>
                 {result?.minValue && (
                   <>
-                    <span>{result?.minValue + " "}</span>
+                    <span>{formatWithThousandSeparator(result?.minValue) + " "}</span>
                     {getHydrotestParameterUnits(result.parameterId, domains.data)}
                   </>
                 )}
@@ -66,7 +67,7 @@ const HydrotestDisplay = props => {
               <TableCell sx={styles} data-cy={`hydrotestResult.${index}.maxValue-formDisplay`}>
                 {result?.maxValue && (
                   <>
-                    <span>{result?.maxValue + " "}</span>
+                    <span>{formatWithThousandSeparator(result?.maxValue) + " "}</span>
                     {getHydrotestParameterUnits(result.parameterId, domains.data)}
                   </>
                 )}

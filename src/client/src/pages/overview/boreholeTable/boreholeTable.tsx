@@ -23,6 +23,7 @@ import { useDomains } from "../../../api/fetchApiV2";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { Table } from "../../../components/table/table.tsx";
+import { formatWithThousandSeparator } from "../../../utils.ts";
 import { OverViewContext } from "../overViewContext.tsx";
 
 export interface BoreholeTableProps {
@@ -37,19 +38,6 @@ export interface BoreholeTableProps {
   rowToHighlight: number | null;
   isBusy: boolean;
 }
-
-const formatWithThousandSeparator = (value: number | null): string => {
-  if (value == null) return "-";
-
-  // Format number using de-CH
-  const formatted = new Intl.NumberFormat("de-CH", {
-    useGrouping: true,
-    minimumFractionDigits: 2,
-  }).format(value);
-
-  // Ensure thousand separators are always a standard single quote (')
-  return formatted.replace(/’/g, "'");
-};
 
 export const BoreholeTable: FC<BoreholeTableProps> = ({
   boreholes,
@@ -168,7 +156,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     },
     {
       field: "total_depth",
-      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.total_depth * 100) / 100),
+      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.total_depth * 100) / 100, 2),
       headerName: t("totaldepth"),
       flex: 1,
     },
@@ -186,19 +174,19 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     },
     {
       field: "reference_elevation",
-      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.reference_elevation * 100) / 100),
+      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.reference_elevation * 100) / 100, 2),
       headerName: t("reference_elevation"),
       flex: 1,
     },
     {
       field: "location_x",
-      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.location_x * 100) / 100),
+      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.location_x * 100) / 100, 2),
       headerName: t("location_x"),
       flex: 1,
     },
     {
       field: "location_y",
-      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.location_y * 100) / 100),
+      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.location_y * 100) / 100, 2),
       headerName: t("location_y"),
       flex: 1,
     },

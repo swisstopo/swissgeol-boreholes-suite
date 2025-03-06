@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import { MenuItem, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
-import { getFieldBorderColor } from "../legacyComponents/formUtils.ts";
 import { getFormFieldError } from "./form";
+import { getFieldBorderColor } from "./formUtils.ts";
 
 export interface FormSelectProps {
   fieldName: string;
