@@ -155,6 +155,15 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
       if (drawingSource && boundingBoxSource) {
         drawingSource.clear();
         boundingBoxSource?.clear();
+        map
+          .getInteractions()
+          .getArray()
+          .forEach(interaction => {
+            if (interaction instanceof DragBox) {
+              map.removeInteraction(interaction);
+            }
+          }); // Fix bug where sometimes two interactions where added on initial render
+
         const dragBox = new DragBox();
         dragBox.on("boxstart", () => {
           if (extractionType === "text") {
@@ -185,7 +194,6 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
           drawingSource.addFeature(boxFeature);
           const tmpMap = map;
           if (tmpMap) {
-            tmpMap.removeInteraction(dragBox);
             tmpMap
               .getInteractions()
               .getArray()
@@ -220,7 +228,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
         setMap(tmpMap);
       }
     }
-  }, [boundingBoxes, drawTooltipLabel, map, t]);
+  }, [boundingBoxes, drawTooltipLabel, extractionType, map, t]);
 
   useEffect(() => {
     if (fileInfo) {
