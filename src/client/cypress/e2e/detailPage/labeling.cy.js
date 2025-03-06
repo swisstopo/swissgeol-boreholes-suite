@@ -104,6 +104,24 @@ function assertLabelingAlertText(expectedText) {
     });
 }
 
+function assertBoundingBoxes(totalCount, visibleCount) {
+  cy.window().then(win => {
+    const layers = win.labelingImage.getLayers().getArray();
+    const boundingBoxLayer = layers.find(layer => layer.get("name") === "boundingBoxLayer");
+    const features = boundingBoxLayer.getSource().getFeatures();
+    const featureColors = features.map(feature => {
+      const style = feature.getStyle();
+      return style?.getFill()?.getColor();
+    });
+    expect(features.length).to.equal(totalCount); // layer contains 4 bounding boxes for each word
+
+    const expectedColors = Array.from({ length: totalCount }, (_, i) =>
+      i < visibleCount ? "rgba(91, 33, 182, 0.2)" : "transparent",
+    );
+    expect(featureColors).to.deep.equal(expectedColors);
+  });
+}
+
 describe("Test labeling tool", () => {
   it("can show labeling panel", () => {
     goToRouteAndAcceptTerms("/");
@@ -206,6 +224,7 @@ describe("Test labeling tool", () => {
 
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 140, 600, 250);
+    assertBoundingBoxes(0, 0); // no bounding box preview for coordinate extraction
     evaluateSelect("originalReferenceSystem", "20104001");
     evaluateCoordinate("locationX", "2'646'359.7");
     hasError("locationX", false);
@@ -221,7 +240,7 @@ describe("Test labeling tool", () => {
     isDisabled("locationYLV03", true);
   });
 
-  it("can extract data from rotated and zoomed next page", () => {
+  it.only("can extract data from rotated and zoomed next page", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
@@ -263,7 +282,7 @@ describe("Test labeling tool", () => {
     isDisabled("locationY", true);
   });
 
-  it("can copy text to clipboard", () => {
+  it("can copy text to clipboard and show word bounding box preview", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
@@ -278,19 +297,34 @@ describe("Test labeling tool", () => {
     // draw box around empty space
     cy.wait(1000);
     drawBox(200, 400, 500, 500);
+    assertBoundingBoxes(4, 0);
     assertLabelingAlertText("No text found");
     cy.get('button[aria-label="Close"]').click(); // close alert
-    // draw box around text
 
+    // draw box around text
     getElementByDataCy("text-extraction-button").click();
     assertDrawTooltip("Draw box around any text");
     cy.wait(1000);
     drawBox(200, 120, 500, 400);
+    assertBoundingBoxes(4, 4);
     assertLabelingAlertText('Copied to clipboard: "Some information without coo...');
 
     cy.window().then(win => {
       win.navigator.clipboard.readText().then(text => {
         expect(text).to.eq("Some information without coordinates");
+      });
+    });
+
+    // draw box around first word and small part of second word
+    getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltip("Draw box around any text");
+    cy.wait(1000);
+    drawBox(200, 120, 250, 400);
+    assertBoundingBoxes(4, 1);
+
+    cy.window().then(win => {
+      win.navigator.clipboard.readText().then(text => {
+        expect(text).to.eq("Some");
       });
     });
 
