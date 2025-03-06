@@ -155,7 +155,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     const floatValue = parseFloatWithThousandsSeparator(value);
     // verify coordinates are in bounding box
     if (
-      floatValue &&
+      floatValue !== null &&
       boundingBox[referenceSystem][direction].Min < floatValue &&
       floatValue < boundingBox[referenceSystem][direction].Max
     ) {
