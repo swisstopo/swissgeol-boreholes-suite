@@ -1,20 +1,16 @@
 import { FC, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import {
-  Alert,
-  Box,
-  Button,
-  ButtonGroup,
-  CircularProgress,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import { ChevronLeft, ChevronRight, FileIcon, PanelBottom, PanelRight, Plus, X } from "lucide-react";
-import { extractData, getDataExtractionFileInfo, getFiles, uploadFile } from "../../../api/file/file.ts";
+import { ChevronLeft, ChevronRight, PanelBottom, PanelRight } from "lucide-react";
+import {
+  extractCoordinates,
+  extractText,
+  getDataExtractionFileInfo,
+  getFiles,
+  uploadFile,
+} from "../../../api/file/file.ts";
 import {
   DataExtractionResponse,
   File as FileInterface,
@@ -23,9 +19,11 @@ import {
 } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
-import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
+import { TextExtractionButton } from "../../../components/buttons/buttons.tsx";
+import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
+import { LabelingHeader } from "./labelingHeader.tsx";
 import {
   ExtractionRequest,
   ExtractionState,
@@ -33,25 +31,29 @@ import {
   PanelPosition,
   useLabelingContext,
 } from "./labelingInterfaces.tsx";
-
-const labelingButtonStyles = {
-  boxShadow: theme.shadows[1],
-  height: "44px",
-};
+import { labelingButtonStyles } from "./labelingStyles.ts";
 
 export const LabelingAlert = styled(Alert)({
   ...labelingButtonStyles,
+  maxWidth: "100%",
+  display: "flex",
+  alignItems: "center",
   " & .MuiAlert-icon": {
     padding: "0",
     alignItems: "center",
     justifyContent: "center",
   },
   " & .MuiAlert-message": {
-    padding: "0",
-    display: "flex",
-    alignItems: "center",
+    flex: 1,
+    padding: 0,
+    minWidth: 0,
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    maxWidth: "100%",
   },
   " & .MuiAlert-action": {
+    flexShrink: 0,
     alignItems: "center",
     justifyContent: "center",
     padding: "0 0 0 16px",
@@ -81,11 +83,14 @@ const LabelingPanel: FC = () => {
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (alertIsOpen && autoHideDuration !== null) {
-      setTimeout(() => {
+      timer = setTimeout(() => {
         closeAlert();
       }, autoHideDuration);
     }
+    // Clear timeout on unmount
+    return () => clearTimeout(timer);
   }, [alertIsOpen, autoHideDuration, closeAlert]);
 
   const loadFiles = useCallback(async () => {
@@ -119,9 +124,18 @@ const LabelingPanel: FC = () => {
     [boreholeId, loadFiles, showAlert, t],
   );
 
-  const handleFileInputClick = () => {
-    fileInputRef.current?.click();
-  };
+  const setTextToClipboard = useCallback(
+    async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        const successText = `${t("copiedToClipboard")}: "${text}"`;
+        showAlert(successText.length < 50 ? successText : successText.substring(0, 50) + "...", "info");
+      } catch (err) {
+        showAlert(t("errorCopyingToClipboard"), "error");
+      }
+    },
+    [showAlert, t],
+  );
 
   const triggerDataExtraction = useCallback(
     (extent: number[]) => {
@@ -143,7 +157,8 @@ const LabelingPanel: FC = () => {
         setDrawTooltipLabel(undefined);
         const abortController = new AbortController();
         setAbortController(abortController);
-        extractData(request, abortController.signal)
+        const extractFunction = extractionObject.type === "coordinates" ? extractCoordinates : extractText;
+        extractFunction(request, abortController.signal)
           .then(response => {
             if (extractionObject.type) {
               setExtractionState(ExtractionState.success);
@@ -151,6 +166,9 @@ const LabelingPanel: FC = () => {
                 ...extractionObject,
                 value: response[extractionObject.type],
               });
+            }
+            if (extractionObject.type === "text") {
+              setTextToClipboard(response[extractionObject.type].toString());
             }
           })
           .catch(error => {
@@ -164,7 +182,7 @@ const LabelingPanel: FC = () => {
           });
       }
     },
-    [activePage, extractionObject, fileInfo, setExtractionObject, setExtractionState, showAlert, t],
+    [activePage, extractionObject, fileInfo, setExtractionObject, setExtractionState, setTextToClipboard, showAlert, t],
   );
 
   useEffect(() => {
@@ -213,8 +231,9 @@ const LabelingPanel: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePage, selectedFile]);
 
+  const isExtractionLoading = extractionState === ExtractionState.loading;
   return (
-    <Box
+    <Stack
       sx={{
         backgroundColor: theme.palette.ai.background,
         border: `1px solid ${theme.palette.ai.background}`,
@@ -225,6 +244,13 @@ const LabelingPanel: FC = () => {
         position: "relative",
       }}
       data-cy="labeling-panel">
+      <LabelingHeader
+        selectedFile={selectedFile}
+        setSelectedFile={setSelectedFile}
+        setActivePage={setActivePage}
+        files={files}
+        fileInputRef={fileInputRef}
+      />
       <input
         type="file"
         ref={fileInputRef}
@@ -296,20 +322,6 @@ const LabelingPanel: FC = () => {
             )}
           </ButtonGroup>
         )}
-        <Box>
-          {alertIsOpen ? (
-            <LabelingAlert data-cy="labeling-alert" variant="filled" severity={severity} onClose={closeAlert}>
-              {text}
-            </LabelingAlert>
-          ) : (
-            extractionState === ExtractionState.loading && (
-              <Button onClick={() => cancelRequest()} variant="text" endIcon={<X />} sx={labelingButtonStyles}>
-                <CircularProgress sx={{ marginRight: "15px", width: "15px !important", height: "15px !important" }} />
-                {t("analyze")}
-              </Button>
-            )
-          )}
-        </Box>
         <ToggleButtonGroup
           value={panelPosition}
           onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
@@ -327,34 +339,29 @@ const LabelingPanel: FC = () => {
       </Stack>
       {selectedFile ? (
         <Box sx={{ height: "100%", width: "100%", position: "relative" }}>
-          <Stack
-            direction="row"
+          <Box
             sx={{
               position: "absolute",
               top: theme.spacing(2),
               left: theme.spacing(2),
               zIndex: "500",
-              gap: 1,
             }}>
-            <ButtonSelect
-              fieldName="labeling-file"
-              startIcon={<FileIcon />}
-              items={[
-                ...(files?.map(file => ({ key: file.id, value: file.name })) || []),
-                { key: -1, value: t("addFile"), startIcon: <Plus /> },
-              ]}
-              selectedItem={{ key: selectedFile?.id, value: selectedFile?.name }}
-              onItemSelected={item => {
-                setActivePage(1);
-                if (item.key === -1) {
-                  handleFileInputClick();
-                } else {
-                  setSelectedFile(files?.find(file => file.id === item.key));
-                }
+            <TextExtractionButton
+              onClick={() => {
+                closeAlert();
+                setExtractionObject({ type: "text" });
+                setDrawTooltipLabel("drawTextBox");
               }}
-              sx={labelingButtonStyles}
             />
-          </Stack>
+          </Box>
+          <FloatingExtractionFeedback
+            isExtractionLoading={isExtractionLoading}
+            cancelRequest={cancelRequest}
+            text={text}
+            severity={severity}
+            closeAlert={closeAlert}
+            alertIsOpen={alertIsOpen}
+          />
           <LabelingDrawContainer
             fileInfo={fileInfo}
             onDrawEnd={setExtractionExtent}
@@ -370,7 +377,7 @@ const LabelingPanel: FC = () => {
           showAlert={showAlert}
         />
       )}
-    </Box>
+    </Stack>
   );
 };
 

@@ -79,7 +79,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
   };
 
   const updateTooltipPosition = (event: MapBrowserEvent<PointerEvent>) => {
-    if (tooltipRef.current) {
+    if (tooltipRef?.current) {
       const [x, y] = event.pixel;
       tooltipRef.current.style.left = x + "px";
       tooltipRef.current.style.top = y + "px";
@@ -87,12 +87,12 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
   };
 
   const handleMouseLeave = () => {
-    if (tooltipRef.current) {
+    if (tooltipRef?.current) {
       tooltipRef.current.style.visibility = "hidden";
     }
   };
   const handleMouseEnter = () => {
-    if (tooltipRef.current) {
+    if (tooltipRef?.current) {
       tooltipRef.current.style.visibility = "visible";
     }
   };
@@ -117,9 +117,17 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
           const tmpMap = map;
           if (tmpMap) {
             tmpMap.removeInteraction(dragBox);
+            tmpMap
+              .getInteractions()
+              .getArray()
+              .forEach(interaction => {
+                if (interaction instanceof DragBox) {
+                  tmpMap.removeInteraction(interaction);
+                }
+              });
             tmpMap.getTargetElement().style.cursor = "";
 
-            if (tooltipRef.current) {
+            if (tooltipRef?.current) {
               tooltipRef.current.style.visibility = "hidden";
               tmpMap.un("pointermove", updateTooltipPosition);
               tmpMap.getTargetElement().removeEventListener("mouseleave", handleMouseLeave);
@@ -133,7 +141,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
         tmpMap.addInteraction(dragBox);
         tmpMap.getTargetElement().style.cursor = "crosshair";
 
-        if (tooltipRef.current) {
+        if (tooltipRef?.current) {
           tooltipRef.current.innerHTML = t(drawTooltipLabel);
           tooltipRef.current.style.visibility = "visible";
           tmpMap.getTargetElement().addEventListener("mouseleave", handleMouseLeave);
