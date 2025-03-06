@@ -162,8 +162,8 @@ describe("Tests for the wateringress editor.", () => {
       // Ensure depths have correct values in display
       cy.get("@fromDepthDisplay").contains("24");
       cy.get("@toDepthDisplay").contains("55");
-      cy.get("@fromDepthMaslDisplay").contains("3976");
-      cy.get("@toDepthMaslDisplay").contains("3945");
+      cy.get("@fromDepthMaslDisplay").contains("3'976");
+      cy.get("@toDepthMaslDisplay").contains("3'945");
 
       startEditing();
 
@@ -196,8 +196,8 @@ describe("Tests for the wateringress editor.", () => {
       // Double check values in display form
       cy.get("@fromDepthDisplay").contains("500");
       cy.get("@toDepthDisplay").contains("300");
-      cy.get("@fromDepthMaslDisplay").contains("2222");
-      cy.get("@toDepthMaslDisplay").contains("1555");
+      cy.get("@fromDepthMaslDisplay").contains("2'222");
+      cy.get("@toDepthMaslDisplay").contains("1'555");
     });
   });
 });

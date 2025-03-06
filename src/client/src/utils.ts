@@ -3,15 +3,15 @@ export function capitalizeFirstLetter(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-export const formatWithThousandSeparator = (value: number | null): string => {
+export const formatWithThousandSeparator = (value: number | null, minDecimals = 0): string => {
   if (value == null) return "-";
 
   // Format number using de-CH
   const formatted = new Intl.NumberFormat("de-CH", {
     useGrouping: true,
-    minimumFractionDigits: 2,
+    minimumFractionDigits: minDecimals,
+    maximumFractionDigits: 4,
   }).format(value);
-
   // Ensure thousand separators are always a standard single quote (')
   return formatted.replace(/’/g, "'");
 };
