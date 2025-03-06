@@ -12,6 +12,17 @@ export async function fetchCreatePngs(fileName) {
   });
 }
 
+export async function fetchPageBoundingBoxes(fileName, pageNumber) {
+  return await fetch("/dataextraction/api/V1/bounding_boxes", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getAuthorizationHeader(store.getState().core_user.authentication),
+    },
+    body: JSON.stringify({ filename: fileName, page_number: pageNumber }),
+  });
+}
+
 export async function fetchExtractData(request, abortSignal) {
   return await fetch("/dataextraction/api/V1/extract_data", {
     method: "POST",
