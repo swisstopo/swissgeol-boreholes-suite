@@ -2,6 +2,7 @@ import { ExtractionRequest, ExtractionResponse } from "../../pages/detail/labeli
 import { ApiError } from "../apiInterfaces.ts";
 import { fetchCreatePngs, fetchExtractData } from "../dataextraction";
 import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2";
+import { processFile } from "../ocr.ts";
 import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
 export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
@@ -17,7 +18,9 @@ export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
         throw new ApiError("errorDuringBoreholeFileUpload", response.status);
       }
     } else {
-      return (await response.json()) as FileResponse;
+      const uploadedFile = (await response.json()) as FileResponse;
+      processFile({ file: file.name }); // process file with ocr
+      return uploadedFile;
     }
   } else {
     throw new ApiError("fileMaxSizeExceeded", 500);
