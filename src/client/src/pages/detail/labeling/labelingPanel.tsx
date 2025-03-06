@@ -156,8 +156,6 @@ const LabelingPanel: FC = () => {
           bbox: bbox,
           format: extractionObject.type,
         };
-        console.log(bbox);
-        console.log(extent);
         setExtractionState(ExtractionState.loading);
         setDrawTooltipLabel(undefined);
         const abortController = new AbortController();
@@ -375,6 +373,7 @@ const LabelingPanel: FC = () => {
             onDrawEnd={setExtractionExtent}
             drawTooltipLabel={drawTooltipLabel}
             boundingBoxes={pageBoundingBoxes}
+            extractionType={extractionObject?.type}
           />
         </Box>
       ) : (

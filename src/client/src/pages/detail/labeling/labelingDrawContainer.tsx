@@ -19,7 +19,7 @@ import { loadImage } from "../../../api/file/file.ts";
 import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import MapControls from "../../../components/buttons/mapControls";
-import { ExtractionBoundingBox } from "./labelingInterfaces.tsx";
+import { ExtractionBoundingBox, ExtractionType } from "./labelingInterfaces.tsx";
 
 const drawingStyle = () =>
   new Style({
@@ -47,6 +47,7 @@ interface LabelingDrawContainerProps {
   onDrawEnd: (extent: number[]) => void;
   boundingBoxes: ExtractionBoundingBox[];
   drawTooltipLabel?: string;
+  extractionType?: ExtractionType;
 }
 
 export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
@@ -54,6 +55,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
   onDrawEnd,
   boundingBoxes,
   drawTooltipLabel,
+  extractionType,
 }) => {
   const { t } = useTranslation();
   const [map, setMap] = useState<Map>();
@@ -155,15 +157,17 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
         boundingBoxSource?.clear();
         const dragBox = new DragBox();
         dragBox.on("boxstart", () => {
-          // Add all transparent bounding boxes to map once the selection starts
-          boundingBoxes.forEach(box => {
-            const bboxExtent = [box.x0, -box.y1, box.x1, -box.y0];
-            boundingBoxSource.addFeature(
-              new Feature({
-                geometry: fromExtent(bboxExtent),
-              }),
-            );
-          });
+          if (extractionType === "text") {
+            // Add all transparent bounding boxes to map once the selection starts
+            boundingBoxes.forEach(box => {
+              const bboxExtent = [box.x0, -box.y1, box.x1, -box.y0];
+              boundingBoxSource.addFeature(
+                new Feature({
+                  geometry: fromExtent(bboxExtent),
+                }),
+              );
+            });
+          }
         });
 
         dragBox.on("boxdrag", () => {
@@ -216,7 +220,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
         setMap(tmpMap);
       }
     }
-  }, [drawTooltipLabel, map, t]);
+  }, [boundingBoxes, drawTooltipLabel, map, t]);
 
   useEffect(() => {
     if (fileInfo) {
