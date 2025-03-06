@@ -280,7 +280,7 @@ public class BoreholeGeometryControllerTest
 
         var depthInMasl = result.Value as double?;
         Assert.IsNotNull(depthInMasl.Value);
-        Assert.IsTrue(depthInMasl.Value < borehole.ElevationZ, "Returned depth should be below borehole elevation.");
+        Assert.IsTrue(depthInMasl.Value < borehole.ReferenceElevation, "Returned depth should be below borehole elevation.");
     }
 
     [TestMethod]
@@ -304,13 +304,17 @@ public class BoreholeGeometryControllerTest
     [TestMethod]
     public async Task GetDepthInMaslWithNoGeometryAndPositiveDepthMD()
     {
+        // Get borehole without geometry and ensure it has a reference elevation
         var borehole = await context.Boreholes.FindAsync(boreholeIdWithoutGeometry).ConfigureAwait(false);
+        borehole.ReferenceElevation = 5000;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
         IActionResult response = await controller.GetDepthInMasl(boreholeIdWithoutGeometry, 355);
         ObjectResult result = (ObjectResult)response;
         ActionResultAssert.IsOk(result);
 
         var depthInMasl = result.Value as double?;
         Assert.IsNotNull(depthInMasl.Value);
-        Assert.IsTrue(depthInMasl.Value < borehole.ElevationZ, "Returned depth should be below borehole elevation.");
+        Assert.IsTrue(depthInMasl.Value < borehole.ReferenceElevation, "Returned depth should be below borehole elevation.");
     }
 }
