@@ -171,9 +171,9 @@ const HydrotestInput = props => {
         return {
           id: r.id,
           parameterId: r.parameterId,
-          value: parseFloatWithThousandsSeparator(r.value?.toString() ?? ""),
-          minValue: parseFloatWithThousandsSeparator(r.minValue?.toString() ?? ""),
-          maxValue: parseFloatWithThousandsSeparator(r.maxValue?.toString() ?? ""),
+          value: parseFloatWithThousandsSeparator(r.value?.toString()),
+          minValue: parseFloatWithThousandsSeparator(r.minValue?.toString()),
+          maxValue: parseFloatWithThousandsSeparator(r.maxValue?.toString()),
         };
       });
     }

@@ -24,7 +24,10 @@ export const parseIfString = (value: string | number) => {
  * @param {string} numericString The string to parse.
  * @returns The parsed float number.
  */
-export const parseFloatWithThousandsSeparator = (numericString: string) => parseFloat(numericString.replace(/'/g, ""));
+export const parseFloatWithThousandsSeparator = (numericString?: string) => {
+  if (!numericString) return null;
+  return parseFloat(numericString.replace(/'/g, ""));
+};
 
 /**
  * Get the maximum precision from two numeric strings.
