@@ -12,21 +12,25 @@ import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandS
 
 const inLV95XBounds = (value: string): boolean => {
   const coordinate = parseFloatWithThousandsSeparator(value);
+  if (!coordinate) return false;
   return boundingBox.LV95.X.Min < coordinate && coordinate < boundingBox.LV95.X.Max;
 };
 
 const inLV95YBounds = (value: string): boolean => {
   const coordinate = parseFloatWithThousandsSeparator(value);
+  if (!coordinate) return false;
   return boundingBox.LV95.Y.Min < coordinate && coordinate < boundingBox.LV95.Y.Max;
 };
 
 const inLV03XBounds = (value: string): boolean => {
   const coordinate = parseFloatWithThousandsSeparator(value);
+  if (!coordinate) return false;
   return boundingBox.LV03.X.Min < coordinate && coordinate < boundingBox.LV03.X.Max;
 };
 
 const inLV03YBounds = (value: string): boolean => {
   const coordinate = parseFloatWithThousandsSeparator(value);
+  if (!coordinate) return false;
   return boundingBox.LV03.Y.Min < coordinate && coordinate < boundingBox.LV03.Y.Max;
 };
 
