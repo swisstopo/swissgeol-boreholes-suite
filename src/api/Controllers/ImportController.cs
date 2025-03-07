@@ -26,6 +26,7 @@ public class ImportController : ControllerBase
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
+    private readonly IBoreholeLockService boreholeLockService;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
 
     private static readonly JsonSerializerOptions jsonImportOptions = new()
@@ -35,13 +36,14 @@ public class ImportController : ControllerBase
         Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
     };
 
-    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService)
+    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService, IBoreholeLockService boreholeLockService)
     {
         this.context = context;
         this.logger = logger;
         this.locationService = locationService;
         this.coordinateService = coordinateService;
         this.boreholeFileCloudService = boreholeFileCloudService;
+        this.boreholeLockService = boreholeLockService;
     }
 
     /// <summary>
@@ -56,6 +58,11 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadCsvFileAsync(int workgroupId, IFormFile boreholesFile)
     {
+        if (await boreholeLockService.IsUserLackingWorkgroupRoleAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
         InitializeImport(workgroupId, "CSV");
         if (!ValidateFile(boreholesFile, FileTypeChecker.IsCsv))
             return BadRequest("Invalid or empty CSV file uploaded.");
@@ -168,6 +175,11 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile boreholesFile)
     {
+        if (await boreholeLockService.IsUserLackingWorkgroupRoleAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
         InitializeImport(workgroupId, "JSON");
         if (!ValidateFile(boreholesFile, FileTypeChecker.IsJson))
             return BadRequest("Invalid or empty JSON file uploaded.");
@@ -191,6 +203,11 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadZipFileAsync(int workgroupId, IFormFile boreholesFile)
     {
+        if (await boreholeLockService.IsUserLackingWorkgroupRoleAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
         InitializeImport(workgroupId, "ZIP");
         if (!ValidateFile(boreholesFile, FileTypeChecker.IsZip))
             return BadRequest("Invalid or empty ZIP file uploaded.");

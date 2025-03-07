@@ -49,4 +49,22 @@ public interface IBoreholeLockService
     /// <param name="user">The <see cref="User"/> to check against.</param>
     /// <returns><c>true</c> if the user is part of the borehole's workgroup; otherwise, <c>false</c>.</returns>
     bool HasUserWorkgroupPermissions(Borehole borehole, User user);
+
+    /// <summary>
+    /// Check if the user with <paramref name="subjectId"/> is lacking the <paramref name="expectedRole"/> on the workgroup with <paramref name="workgroupId"/>.
+    /// </summary>
+    /// <param name="subjectId">The <see cref="User.SubjectId"/> of the user to check.</param>
+    /// <param name="workgroupId">The <see cref="Workgroup.Id"/> to check.</param>
+    /// <param name="expectedRole">The expected <see cref="Role"/>.</param>
+    /// <returns><c>true</c> if the user does not have the expected role on the workgroup; otherwise, <c>false</c>.</returns>
+    Task<bool> IsUserLackingWorkgroupRoleAsync(string? subjectId, int workgroupId, Role expectedRole);
+
+    /// <summary>
+    /// Check if the <paramref name="user"/> is lacking the <paramref name="expectedRole"/> on the workgroup with <paramref name="workgroupId"/>.
+    /// </summary>
+    /// <param name="user">The <see cref="User"/> to check.</param>
+    /// <param name="workgroupId">The <see cref="Workgroup.Id"/> to check.</param>
+    /// <param name="expectedRole">The expected <see cref="Role"/>.</param>
+    /// <returns><c>true</c> if the user does not have the expected role on the workgroup; otherwise, <c>false</c>.</returns>
+    bool IsUserLackingWorkgroupRole(User user, int workgroupId, Role expectedRole);
 }

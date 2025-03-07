@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Reflection;
 using static BDMS.Helpers;
 
 namespace BDMS;
@@ -14,6 +15,7 @@ public class BoreholeLockServiceTest
     private const string EditorSubjectId = "sub_editor";
     private const string ViewerSubjectId = "sub_viewer";
     private const int AdminUserId = 1;
+    private const int DefaultWorkgroupId = 1;
 
     private BoreholeLockService boreholeLockService;
     private BdmsContext context;
@@ -153,6 +155,75 @@ public class BoreholeLockServiceTest
 
         var result = await boreholeLockService.HasUserWorkgroupPermissionsAsync(editorBorehole.Id, ViewerSubjectId).ConfigureAwait(false);
         Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void IsUserLackingWorkgroupRoleNullUser()
+    {
+        Assert.IsTrue(boreholeLockService.IsUserLackingWorkgroupRole(null, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public void IsUserLackingWorkgroupRoleNoWorkgroups()
+    {
+        var userWithoutWorkgroups = new User();
+        Assert.AreEqual(null, userWithoutWorkgroups.WorkgroupRoles);
+
+        Assert.IsTrue(boreholeLockService.IsUserLackingWorkgroupRole(userWithoutWorkgroups, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public void IsUserLackingWorkgroupRoleNotPartOfWorkgroup()
+    {
+        var user = new User();
+        var workgroupRoles = new List<UserWorkgroupRole> { new UserWorkgroupRole { WorkgroupId = 2, Role = Role.Editor } };
+
+        SetUserWorkgroupRoles(user, workgroupRoles);
+
+        Assert.IsTrue(boreholeLockService.IsUserLackingWorkgroupRole(user, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public void IsUserLackingWorkgroupRoleWrongRole()
+    {
+        var user = new User();
+        var workgroupRoles = new List<UserWorkgroupRole> { new UserWorkgroupRole { WorkgroupId = 1, Role = Role.View } };
+
+        SetUserWorkgroupRoles(user, workgroupRoles);
+
+        Assert.IsTrue(boreholeLockService.IsUserLackingWorkgroupRole(user, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public void IsUserLackingWorkgroupRole()
+    {
+        var user = new User();
+        var workgroupRoles = new List<UserWorkgroupRole> { new UserWorkgroupRole { WorkgroupId = 1, Role = Role.Editor } };
+
+        SetUserWorkgroupRoles(user, workgroupRoles);
+
+        Assert.IsFalse(boreholeLockService.IsUserLackingWorkgroupRole(user, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public void IsUserLackingWorkgroupRoleAdminUser()
+    {
+        var user = new User { IsAdmin = true };
+
+        Assert.IsFalse(boreholeLockService.IsUserLackingWorkgroupRole(user, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public async Task IsUserLackingWorkgroupRoleAsync()
+    {
+        Assert.IsFalse(await boreholeLockService.IsUserLackingWorkgroupRoleAsync(AdminSubjectId, DefaultWorkgroupId, Role.Editor));
+    }
+
+    private void SetUserWorkgroupRoles(User user, IEnumerable<UserWorkgroupRole> workgroupRoles)
+    {
+        // Use reflection to set the readonly property
+        var workgroupRolesField = typeof(User).GetField("<WorkgroupRoles>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+        workgroupRolesField.SetValue(user, workgroupRoles);
     }
 
     private Borehole GetLockedBorehole(bool lockedByAdmin)
