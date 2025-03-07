@@ -1,8 +1,11 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.Globalization;
+using System.Reflection;
 
 namespace BDMS.ExternSync;
 
@@ -14,7 +17,7 @@ public static class SyncContextExtensions
     /// <summary>
     /// Gets and opens the <see cref="NpgsqlConnection"/> for the specified <paramref name="context"/>.
     /// </summary>
-    public static async Task<NpgsqlConnection> GetAndOpenDbConnectionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
+    internal static async Task<NpgsqlConnection> GetAndOpenDbConnectionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
     {
         var dbConnection = (NpgsqlConnection)context.Database.GetDbConnection();
         if (dbConnection.State != ConnectionState.Open)
@@ -28,7 +31,7 @@ public static class SyncContextExtensions
     /// <summary>
     /// Gets the database schema version for the specified <paramref name="context"/>.
     /// </summary>
-    public static async Task<string?> GetDbSchemaVersionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
+    internal static async Task<string?> GetDbSchemaVersionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
     {
         var migrations = await context.Database.GetAppliedMigrationsAsync(cancellationToken).ConfigureAwait(false);
         return migrations.LastOrDefault();
@@ -37,56 +40,110 @@ public static class SyncContextExtensions
     /// <summary>
     /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="dbConnection"/>.
     /// </summary>
-    public static DbContextOptions<BdmsContext> GetDbContextOptions(DbConnection dbConnection) =>
+    internal static DbContextOptions<BdmsContext> GetDbContextOptions(DbConnection dbConnection) =>
         new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(dbConnection, BdmsContextExtensions.SetDbContextOptions).Options;
 
     /// <summary>
     /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="connectionString"/>.
     /// </summary>
-    public static DbContextOptions<BdmsContext> GetDbContextOptions(string connectionString) =>
+    internal static DbContextOptions<BdmsContext> GetDbContextOptions(string connectionString) =>
         new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(connectionString, BdmsContextExtensions.SetDbContextOptions).Options;
 
     /// <summary>
-    /// Gets all the <see cref="Borehole"/>s with publication status 'published'.
+    /// Filters the given <paramref name="boreholes"/> and returns only those with publication status published.
     /// </summary>
-    public static IEnumerable<Borehole> GetWithPublicationStatusPublished(this IEnumerable<Borehole> boreholes)
+    internal static IEnumerable<Borehole> WithPublicationStatusPublished(this IEnumerable<Borehole> boreholes)
     {
-        var publishedBoreholes = boreholes.Where(b => b.Workflows.OrderByDescending(b => b.Id)
-            .FirstOrDefault(w => w.Role == Role.Publisher && w.Finished != null) != null);
-
-        foreach (var publishedBorehole in publishedBoreholes)
+        foreach (var borehole in boreholes.Where(b => b.IsPublicationStatusPublished()))
         {
-            yield return publishedBorehole;
+            yield return borehole;
         }
     }
 
     /// <summary>
-    /// Sets the publication <paramref name="status"/> for the given <paramref name="boreholes"/>.
+    /// Checks whether the given <paramref name="borehole"/> is in publication status published.
     /// </summary>
-    /// <param name="boreholes">The <see cref="Borehole"/>s.</param>
-    /// <param name="user">The <see cref="User"/> to be assigned to each <see cref="Workflow"/> entry.</param>
-    /// <param name="status">The <see cref="Role"/>/Status to be set.</param>
-    /// <returns></returns>
-    internal static IEnumerable<Borehole> SetBorholePublicationStatus(this IEnumerable<Borehole> boreholes, User user, Role status)
+    internal static bool IsPublicationStatusPublished(this Borehole borehole)
     {
-        foreach (var borehole in boreholes)
+        return borehole.Workflows.OrderByDescending(b => b.Id)
+            .FirstOrDefault(w => w.Role == Role.Publisher && w.Finished != null) != null;
+    }
+
+    /// <summary>
+    /// Removes duplicated <see cref="Borehole"/>s from <paramref name="boreholes"/> which already exists in <paramref name="existingBoreholes"/>.
+    /// To determine if a <see cref="Borehole"/> is duplicated, the coordinates and depth get checked against
+    /// <see cref="BoreholeExtensions.IsWithingPreDefinedTolerance(Borehole, IEnumerable{Borehole})"/>.
+    /// </summary>
+    internal static IEnumerable<Borehole> RemoveDuplicates(this IEnumerable<Borehole> boreholes, IEnumerable<Borehole> existingBoreholes)
+    {
+        foreach (var borehole in boreholes.Where(b => !b.IsWithingPreDefinedTolerance(existingBoreholes)))
         {
-            yield return borehole.SetBorholePublicationStatus(user, status);
+            yield return borehole;
         }
+    }
+
+    /// <summary>
+    /// Recursivly traverses the given <paramref name="item"/> and all its properties and
+    /// collections of type <typeparamref name="T"/> and executes <paramref name="action"/> on every object.
+    /// </summary>
+    /// <typeparam name="T">The type which should be traversed recursivly.</typeparam>
+    /// <param name="item">The item to be processed recursivly.</param>
+    /// <param name="action">The action to be executed on every <typeparamref name="T"/> object.</param>
+    /// <param name="visited">An empty <see cref="HashSet{T}"/> which is used to track the visited items
+    /// in order to avoid infinite loops.</param>
+    /// <returns>The updated <paramref name="item"/>.</returns>
+    internal static T ProcessRecursive<T>(this T item, Action<T> action, HashSet<T> visited)
+        where T : class
+    {
+        if (item == null || visited.Contains(item)) return item!;
+
+        visited.Add(item);
+
+        action(item);
+
+        foreach (var property in item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        {
+            if (!property.CanRead) continue;
+
+            var propertyValue = property.GetValue(item);
+            if (propertyValue == null) continue;
+
+            if (property.PropertyType.GetInterface(nameof(T)) != null)
+            {
+                // If property itself implements T
+                ProcessRecursive((T)propertyValue, action, visited);
+            }
+            else if (typeof(IEnumerable).IsAssignableFrom(property.PropertyType))
+            {
+                foreach (var collectionItem in ((IEnumerable)propertyValue).OfType<T>())
+                {
+                    // If the property is an IEnumerable of T objects
+                    ProcessRecursive(collectionItem, action, visited);
+                }
+            }
+        }
+
+        return item;
     }
 
     /// <summary>
     /// Sets the publication <paramref name="status"/> for the given <see cref="Borehole"/>.
+    /// Please note that all previous <see cref="Workflow"/> entries/histroy gets cleared!
+    /// This may not be the desired behavior for every use case but complies with the requirements
+    /// when syncing <see cref="Borehole"/>s from a context to another in this project.
     /// </summary>
-    /// <param name="borehole">The <see cref="Borehole"/>.</param>
-    /// <param name="user">The <see cref="User"/> to be assigned to each <see cref="Workflow"/> entry.</param>
-    /// <param name="status">The <see cref="Role"/>/Status to be set.</param>
-    internal static Borehole SetBorholePublicationStatus(this Borehole borehole, User user, Role status)
+    /// <param name="borehole">The <see cref="Borehole"/> to set the publication status on.</param>
+    /// <param name="status">The <see cref="Role"/>/Status to be set. <see cref="Role.View"/>
+    /// is not a valid publication status.</param>
+    /// <exception cref="NotSupportedException">If the <paramref name="status"/> is not supported.</exception>
+    internal static Borehole SetBorholePublicationStatus(this Borehole borehole, Role status)
     {
         ArgumentNullException.ThrowIfNull(borehole);
 
         if (status == Role.View)
-            throw new InvalidOperationException("There is no supported boreholes publication state for this role.");
+        {
+            throw new NotSupportedException($"The given status <{status}> is not supported.");
+        }
 
         // Remove all previous workflow entries/history.
         borehole.Workflows.Clear();
@@ -98,7 +155,6 @@ public static class SyncContextExtensions
                 Role = (Role)i,
                 Started = DateTime.Now.ToUniversalTime(),
                 Finished = DateTime.Now.ToUniversalTime(),
-                User = user,
             });
         }
 
@@ -111,10 +167,132 @@ public static class SyncContextExtensions
                 Role = (Role)(int)status + 1,
                 Started = null,
                 Finished = null,
-                User = user,
             });
         }
 
         return borehole;
+    }
+
+    /// <summary>
+    /// Recursivly updates <see cref="IChangeTracking"/> information for all the given
+    /// <paramref name="items"/> with the specified <paramref name="user"/>.
+    /// </summary>
+    internal static void UpdateChangeTracking(this IEnumerable<IChangeTracking> items, User user)
+    {
+        foreach (var item in items)
+        {
+            HashSet<IChangeTracking> visitedItems = [];
+            item.ProcessRecursive(i => i.UpdateChangeTracking(user), visitedItems);
+        }
+    }
+
+    /// <summary>
+    /// Updates <see cref="IChangeTracking"/> information for the given
+    /// <paramref name="item"/> with the specified <paramref name="user"/>.
+    /// </summary>
+    internal static void UpdateChangeTracking(this IChangeTracking item, User user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        item.Created = DateTime.Now.ToUniversalTime();
+        item.CreatedBy = null;
+        item.CreatedById = user.Id;
+        item.Updated = DateTime.Now.ToUniversalTime();
+        item.UpdatedBy = null;
+        item.UpdatedById = user.Id;
+    }
+
+    /// <summary>
+    /// Clears all the backreferences (circular references) from the given <paramref name="boreholes"/>
+    /// which may lead to unexpected results when copying a <see cref="Borehole"/> from one
+    /// <see cref="BdmsContext"/> to another.
+    /// </summary>
+    internal static IEnumerable<Borehole> ClearNavigationProperties(this IEnumerable<Borehole> boreholes)
+    {
+        foreach (var borehole in boreholes)
+        {
+            yield return borehole.ClearNavigationProperties();
+        }
+    }
+
+    private static Borehole ClearNavigationProperties(this Borehole borehole)
+    {
+        foreach (var file in borehole.BoreholeFiles?.Select(boreholeFile => boreholeFile.File))
+        {
+            file.Boreholes.Clear();
+            file.BoreholeFiles.Clear();
+        }
+
+        borehole.Observations?.ClearNavigationProperties();
+
+        foreach (var completion in borehole.Completions)
+        {
+            completion.Backfills?.ClearNavigationProperties();
+            completion.Instrumentations?.ClearNavigationProperties();
+            completion.Casings?.ClearNavigationProperties();
+        }
+
+        return borehole;
+    }
+
+    private static void ClearNavigationProperties(this IEnumerable<Casing> casings)
+    {
+        foreach (var casing in casings)
+        {
+            casing.ClearNavigationProperties();
+        }
+    }
+
+    private static void ClearNavigationProperties(this IEnumerable<ICasingReference> casingsReferences)
+    {
+        foreach (var casingReference in casingsReferences)
+        {
+            casingReference.Casing?.ClearNavigationProperties();
+        }
+    }
+
+    private static void ClearNavigationProperties(this Casing casing)
+    {
+        casing.Backfills?.Clear();
+        casing.Observations?.Clear();
+        casing.Instrumentations?.Clear();
+    }
+
+    /// <summary>
+    /// Recursivly updates all the <see cref="IUserAttached{TUser, TUserId}"/> <paramref name="items"/> with the given <paramref name="user"/>.
+    /// </summary>
+    internal static void UpdateAttachedUser(this IEnumerable<IUserAttached<User, int>> items, User user) =>
+        items.UpdateAttachedUser(user, user.Id);
+
+    /// <summary>
+    /// Recursivly updates all the <see cref="IUserAttached{TUser, TUserId}"/> <paramref name="items"/> with the given <paramref name="user"/>.
+    /// </summary>
+    internal static void UpdateAttachedUser(this IEnumerable<IUserAttached<User?, int?>> items, User user) =>
+        items.UpdateAttachedUser(user, user.Id);
+
+    /// <summary>
+    /// Recursivly updates all the <see cref="IUserAttached{TUser, TUserId}"/> <paramref name="items"/> with the given
+    /// <paramref name="user"/> and <paramref name="userId"/>.
+    /// </summary>
+    private static void UpdateAttachedUser<TUser, TUserId>(this IEnumerable<IUserAttached<TUser, TUserId>> items, TUser user, int userId)
+        where TUser : new()
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(userId);
+
+        void UpdateUserAttachedItem(IUserAttached<TUser, TUserId> userAttachedItem)
+        {
+            var targetUserIdType = Nullable.GetUnderlyingType(typeof(TUserId)) ?? typeof(TUserId);
+            var convertedUserId = (TUserId)Convert.ChangeType(userId, targetUserIdType, CultureInfo.InvariantCulture);
+
+            userAttachedItem.User = default!;
+            userAttachedItem.UserId = convertedUserId;
+        }
+
+        foreach (var item in items)
+        {
+            HashSet<IUserAttached<TUser, TUserId>> visitedItems = [];
+            item.ProcessRecursive(UpdateUserAttachedItem, visitedItems);
+        }
     }
 }

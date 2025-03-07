@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace BDMS.Models;
 
-internal static class IIdentifyableExtensions
+public static class IIdentifyableExtensions
 {
     /// <summary>
     /// Sets the <see cref="IIdentifyable.Id"/> property of the object to 0. Entity Framework interprets this as a added object.

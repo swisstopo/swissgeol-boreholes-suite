@@ -1,4 +1,5 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
@@ -7,7 +8,8 @@ namespace BDMS.ExternSync.Tasks;
 /// <summary>
 /// Checks whether source and target databases have the same schema version and no pending migrations.
 /// </summary>
-public class CheckDatabaseStateTask(ISyncContext syncContext, ILogger<CheckDatabaseStateTask> logger) : SyncTask(syncContext, logger)
+public class CheckDatabaseStateTask(ISyncContext syncContext, ILogger<CheckDatabaseStateTask> logger, IConfiguration configuration)
+    : SyncTask(syncContext, logger, configuration)
 {
     /// <inheritdoc/>
     protected override async Task RunTaskAsync(CancellationToken cancellationToken)

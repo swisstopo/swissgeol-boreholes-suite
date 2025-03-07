@@ -1,4 +1,5 @@
 ﻿using BDMS.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static BDMS.ExternSync.TestSyncContextExtensions;
 
@@ -11,19 +12,36 @@ public class SyncContextExtensionsTest
     public async Task SetBorholePublicationStatusAsync()
     {
         using var context = await CreateDbContextAsync(useInMemory: false, seedTestData: true);
-        AssertBoreholePublicationStatus(await SetBoreholePublicationStatusAsync(context, Role.Editor), Role.Editor);
-        AssertBoreholePublicationStatus(await SetBoreholePublicationStatusAsync(context, Role.Controller), Role.Controller);
-        AssertBoreholePublicationStatus(await SetBoreholePublicationStatusAsync(context, Role.Validator), Role.Validator);
-        AssertBoreholePublicationStatus(await SetBoreholePublicationStatusAsync(context, Role.Publisher), Role.Publisher);
+
+        var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
+        var borehole = context.Boreholes.Single(b => b.Id == 1_000_010);
+        var user = context.Users.Single(u => u.Id == 1);
+
+        async Task<Borehole> SetBorholePublicationStatusAsync(Role status) =>
+            await context.SetBorholePublicationStatusAsync(borehole.Id, user.Id, status, cancellationToken);
+
+        AssertBoreholePublicationStatus(await SetBorholePublicationStatusAsync(Role.Editor), Role.Editor, user);
+        AssertBoreholePublicationStatus(await SetBorholePublicationStatusAsync(Role.Controller), Role.Controller, user);
+        AssertBoreholePublicationStatus(await SetBorholePublicationStatusAsync(Role.Validator), Role.Validator, user);
+        AssertBoreholePublicationStatus(await SetBorholePublicationStatusAsync(Role.Publisher), Role.Publisher, user);
     }
 
     [TestMethod]
     public void SetBorholePublicationStatusForInvalid()
     {
-        var exception = Assert.ThrowsException<InvalidOperationException>(
-            () => Mock.Of<Borehole>().SetBorholePublicationStatus(Mock.Of<User>(), Role.View));
+        var exception = Assert.ThrowsException<NotSupportedException>(
+            () => Mock.Of<Borehole>().SetBorholePublicationStatus(Role.View));
 
-        StringAssert.Contains(exception.Message, "no supported boreholes publication state");
+        Assert.AreEqual("The given status <View> is not supported.", exception.Message);
+    }
+
+    [TestMethod]
+    public void SetBorholePublicationStatusForNull()
+    {
+        var exception = Assert.ThrowsException<ArgumentNullException>(
+            () => (default(Borehole)!).SetBorholePublicationStatus(Role.Publisher));
+
+        Assert.AreEqual("Value cannot be null. (Parameter 'borehole')", exception.Message);
     }
 
     [TestMethod]
@@ -31,28 +49,52 @@ public class SyncContextExtensionsTest
     {
         using var context = await CreateDbContextAsync(useInMemory: false, seedTestData: true);
 
-        // Set the publication status for some boreholes. By default all seeded
-        // boreholes have the publication status 'change in progress'.
+        // Set the publication status for some boreholes. By default all seeded boreholes havethe publication status 'change in progress'.
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
-        await context.SetBorholePublicationStatusAsync(1000001, 1, Role.Editor, cancellationToken);
-        await context.SetBorholePublicationStatusAsync(1000002, 1, Role.Controller, cancellationToken);
-        await context.SetBorholePublicationStatusAsync(1000003, 1, Role.Publisher, cancellationToken);
-        await context.SetBorholePublicationStatusAsync(1000004, 1, Role.Validator, cancellationToken);
-        await context.SetBorholePublicationStatusAsync(1000005, 1, Role.Publisher, cancellationToken);
-        await context.SetBorholePublicationStatusAsync(1000006, 1, Role.Publisher, cancellationToken);
+        await context.SetBorholePublicationStatusAsync(1_000_001, 1, Role.Editor, cancellationToken);
+        await context.SetBorholePublicationStatusAsync(1_000_020, 1, Role.Controller, cancellationToken);
+        await context.SetBorholePublicationStatusAsync(1_000_300, 1, Role.Publisher, cancellationToken);
+        await context.SetBorholePublicationStatusAsync(1_000_444, 1, Role.Validator, cancellationToken);
+        await context.SetBorholePublicationStatusAsync(1_001_555, 1, Role.Publisher, cancellationToken);
+        await context.SetBorholePublicationStatusAsync(1_000_666, 1, Role.Publisher, cancellationToken);
 
-        var boreholes = context.Boreholes.GetWithPublicationStatusPublished().ToList();
+        var boreholes = context.Boreholes.WithPublicationStatusPublished().ToList();
 
         Assert.AreEqual(3, boreholes.Count);
-        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1000003));
-        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1000005));
-        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1000006));
+        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_300));
+        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_001_555));
+        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_666));
     }
 
-    private static async Task<Borehole> SetBoreholePublicationStatusAsync(BdmsContext context, Role status) =>
-        await context.SetBorholePublicationStatusAsync(1000010, 1, status, Mock.Of<CancellationTokenSource>().Token);
+    [TestMethod]
+    public void RemoveDuplicates()
+    {
+        var boreholeOriginal = new Borehole { TotalDepth = 1, LocationX = 15.14, LocationY = 15.14, LocationXLV03 = 15.14, LocationYLV03 = 15.14 };
+        var boreholeDuplicate = new Borehole { TotalDepth = 1, LocationX = 15.14, LocationY = 15.14, LocationXLV03 = 15.14, LocationYLV03 = 15.14 };
+        var boreholeDifferent = new Borehole { TotalDepth = 2, LocationX = 20.21, LocationY = 20.21, LocationXLV03 = 20.21, LocationYLV03 = 20.21 };
 
-    private static void AssertBoreholePublicationStatus(Borehole borehole, Role expectedStatus)
+        var deduplicated = new[] { boreholeDuplicate, boreholeDifferent }.RemoveDuplicates([boreholeOriginal]).ToList();
+        var expected = new[] { boreholeDifferent };
+
+        CollectionAssert.AreEquivalent(expected, deduplicated);
+    }
+
+    [TestMethod]
+    public void RemoveDuplicatesForIdentical()
+    {
+        var boreholeOriginal = new Borehole { TotalDepth = 1, LocationX = 15.14, LocationY = 15.14, LocationXLV03 = 15.14, LocationYLV03 = 15.14 };
+        var boreholeDuplicate = new Borehole { TotalDepth = 1, LocationX = 15.14, LocationY = 15.14, LocationXLV03 = 15.14, LocationYLV03 = 15.14 };
+
+        var deduplicated = new[] { boreholeDuplicate }.RemoveDuplicates([boreholeOriginal]).ToList();
+
+        CollectionAssert.AreEquivalent(Enumerable.Empty<Borehole>().ToList(), deduplicated);
+    }
+
+    [TestMethod]
+    public void RemoveDuplicatesForEmpty() =>
+        CollectionAssert.AreEquivalent(Enumerable.Empty<Borehole>().ToList(), Enumerable.Empty<Borehole>().RemoveDuplicates([]).ToList());
+
+    private static void AssertBoreholePublicationStatus(Borehole borehole, Role expectedStatus, User expectedUser)
     {
         // Please note that there are different patterns regarding the last workflow entry
         // depending on the borehole publication state.
@@ -60,8 +102,9 @@ public class SyncContextExtensionsTest
         Assert.AreEqual(expectedWorkflowCount, borehole.Workflows.Count);
 
         var lastWorkflow = borehole.Workflows.OrderByDescending(x => x.Id).First();
-        Assert.AreEqual(1, lastWorkflow.User.Id);
-        Assert.AreEqual(1000010, lastWorkflow.Borehole.Id);
+        Assert.AreEqual(expectedUser.Id, lastWorkflow.User.Id);
+        Assert.AreEqual(expectedUser.Id, lastWorkflow.UserId);
+        Assert.AreEqual(borehole.Id, lastWorkflow.Borehole.Id);
 
         if (expectedStatus != Role.Publisher)
         {
@@ -77,8 +120,9 @@ public class SyncContextExtensionsTest
         }
 
         var secondLastWorkflow = borehole.Workflows.OrderByDescending(x => x.Id).ElementAt(1);
-        Assert.AreEqual(1, secondLastWorkflow.User.Id);
-        Assert.AreEqual(1000010, secondLastWorkflow.Borehole.Id);
+        Assert.AreEqual(expectedUser.Id, secondLastWorkflow.User.Id);
+        Assert.AreEqual(expectedUser.Id, secondLastWorkflow.UserId);
+        Assert.AreEqual(borehole.Id, secondLastWorkflow.Borehole.Id);
 
         if (expectedStatus != Role.Publisher)
         {

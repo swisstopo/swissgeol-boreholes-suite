@@ -1,3 +1,4 @@
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace BDMS.ExternSync.Tasks;
@@ -5,7 +6,8 @@ namespace BDMS.ExternSync.Tasks;
 /// <summary>
 /// Collects some information about the source and target databases and checks if they are not the same.
 /// </summary>
-public class CollectInformationTask(ISyncContext syncContext, ILogger<CollectInformationTask> logger) : SyncTask(syncContext, logger)
+public class CollectInformationTask(ISyncContext syncContext, ILogger<CollectInformationTask> logger, IConfiguration configuration)
+    : SyncTask(syncContext, logger, configuration)
 {
     /// <inheritdoc/>
     protected override async Task RunTaskAsync(CancellationToken cancellationToken)
@@ -20,9 +22,15 @@ public class CollectInformationTask(ISyncContext syncContext, ILogger<CollectInf
         // Log configuration options (environment)
         Logger.LogInformation(
             "Configuration options:\n" +
-            "{MigrateTargetDatabaseEnvName}: <{MigrateTargetDatabase}>",
+            "{MigrateTargetDatabaseEnvName}: <{MigrateTargetDatabase}>" +
+            "{TargetDefaultWorkgroupNameEnvName}: <{TargetDefaultWorkgroupName}>" +
+            "{TargetDefaultUserSubEnvName}: <{TargetDefaultUserSub}>",
             SyncContextConstants.MigrateTargetDatabaseEnvName,
-            Configuration.GetValue<bool>(SyncContextConstants.MigrateTargetDatabaseEnvName));
+            Configuration.GetValue<bool>(SyncContextConstants.MigrateTargetDatabaseEnvName),
+            SyncContextConstants.TargetDefaultWorkgroupNameEnvName,
+            Configuration.GetValue<string>(SyncContextConstants.TargetDefaultWorkgroupNameEnvName),
+            SyncContextConstants.TargetDefaultUserSubEnvName,
+            Configuration.GetValue<string>(SyncContextConstants.TargetDefaultUserSubEnvName));
     }
 
     /// <inheritdoc/>
