@@ -128,8 +128,7 @@ services:
     extra_hosts:
       - "localhost:host-gateway"
   dataextraction:
-    # Todo change this to `latest` from repo once the feature branch is merged.
-    image: docker.io/swisstopo/swissgeol-boreholes-dataextraction.git:api-word-bounding-boxes
+    image: ghcr.io/swisstopo/swissgeol-boreholes-dataextraction-api:v1.0.25
     restart: unless-stopped
     ports:
       - 8000:8000
