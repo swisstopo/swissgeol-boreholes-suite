@@ -139,4 +139,86 @@ public static class BoreholeGeometryExtensions
     /// </summary>
     internal static Vector3D ToVector3D(double azimuth, double inclination)
         => new Vector3D(Math.Sin(inclination) * Math.Sin(azimuth), Math.Sin(inclination) * Math.Cos(azimuth), Math.Cos(inclination));
+
+    internal static double GetDepthMDFromTVD(this List<BoreholeGeometryElement> geometry, double depthTVD)
+    {
+        if (geometry.Count < 2)
+        {
+            return depthTVD;
+        }
+
+        // If it's exactly on first data point, return the MD
+        if (geometry[0].Z == depthTVD) return geometry[0].MD;
+
+        int upperIndex = -1;
+        for (int i = 1; i < geometry.Count; i++)
+        {
+            // If it's exactly on a data point, return the MD
+            if (geometry[i].Z == depthTVD) return geometry[i].MD;
+
+            if (geometry[i - 1].Z <= depthTVD && geometry[i].Z >= depthTVD)
+            {
+                upperIndex = i;
+                break;
+            }
+        }
+
+        if (upperIndex == -1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(depthTVD), "TVD value out of range.");
+        }
+
+        return InterpolateTVDMD(geometry, depthTVD, upperIndex);
+    }
+
+    public static double InterpolateTVDMD(this List<BoreholeGeometryElement> geometry, double depthTVD, int upperIndex)
+    {
+        var a = geometry[upperIndex - 1];
+        var b = geometry[upperIndex];
+        var ab = b.ToVector3D() - a.ToVector3D();
+        var distance = ab.Length();
+        var halfDistance = distance / 2;
+        var deltaMD = b.MD - a.MD;
+        double beta;
+        Vector3D aDirection;
+
+        if (a.HAZI.HasValue && a.DEVI.HasValue && b.HAZI.HasValue && b.DEVI.HasValue)
+        {
+            var aIncRad = Degrees.ToRadians(a.DEVI.Value);
+            var aAziRad = Degrees.ToRadians(a.HAZI.Value);
+            var bIncRad = Degrees.ToRadians(b.DEVI.Value);
+            var bAziRad = Degrees.ToRadians(b.HAZI.Value);
+            beta = Math.Acos(Math.Cos(bIncRad - aIncRad) - (Math.Sin(aIncRad) * Math.Sin(bIncRad) * (1 - Math.Cos(bAziRad - aAziRad))));
+            aDirection = ToVector3D(aAziRad, aIncRad);
+        }
+        else
+        {
+            aDirection = (b.ToVector3D() - geometry[Math.Max(upperIndex - 2, 0)].ToVector3D()).Normalize();
+            var factor = distance / deltaMD;
+            beta = Math.Abs(factor - 1) < 1e-14 ? 0 : 2.8284271247461903 * Math.Sqrt(5 - (2.23606797749979 * Math.Sqrt((6 * factor) - 1)));
+        }
+
+        if (beta == 0)
+        {
+            // Straight line interpolation
+            return a.MD + ((depthTVD - a.Z) / (b.Z - a.Z) * deltaMD);
+        }
+        else
+        {
+            var radius = halfDistance / Math.Sin(beta / 2);
+            var m = halfDistance / Math.Tan(beta / 2);
+            var i = ab.Normalize();
+            var j = i.Cross(aDirection.Cross(i)).Normalize();
+
+            // Correct `alpha` computation to mirror `InterpolateDepthTVD`
+            var alpha = ((depthTVD - a.Z) - m) / radius;
+            alpha = Math.Acos(alpha); // Use `Acos` instead of `Asin` to match interpolation logic
+
+            var x = (Math.Sin(alpha) * radius) + halfDistance;
+            var y = (Math.Cos(alpha) * radius) - m;
+
+            // Use correct directional scaling
+            return a.MD + (x * i.Z) + (y * j.Z);
+        }
+    }
 }

@@ -32,6 +32,32 @@ public class HelperTest
         new BoreholeGeometryElement { MD = 600, X = -103.01243364944339, Y = 238.99044298089785, Z = 179.57135812693264, HAZI = 180, DEVI = 35 },
     };
 
+    private static readonly List<BoreholeGeometryElement> geometryDecreasingZOnly = new List<BoreholeGeometryElement>
+    {
+        // Straight down section
+        new BoreholeGeometryElement { MD = 0, X = 0, Y = 0, Z = 0, HAZI = 0, DEVI = 0 },
+        new BoreholeGeometryElement { MD = 10, X = 0, Y = 0, Z = 10, HAZI = 0, DEVI = 0 },
+        new BoreholeGeometryElement { MD = 20, X = 0, Y = 0, Z = 20, HAZI = 0, DEVI = 0 },
+        new BoreholeGeometryElement { MD = 30, X = 0, Y = 0, Z = 30, HAZI = 0, DEVI = 0 },
+
+        // Arcs
+        new BoreholeGeometryElement { MD = 142, X = 36.1716308363097, Y = 20.883700800371177, Z = 130, HAZI = 60, DEVI = 45 },
+        new BoreholeGeometryElement { MD = 364, X = 52.053181040446169, Y = 193.24627113072842, Z = 230, HAZI = 330, DEVI = 90 },
+
+        // Duplicate value
+        new BoreholeGeometryElement { MD = 443.358445652955155, X = 4.7944823332390314, Y = 245.05958917392837, Z = 260, HAZI = 300, DEVI = 135 },
+        new BoreholeGeometryElement { MD = 443.358445652955155, X = 4.7944823332390314, Y = 245.05958917392837, Z = 260, HAZI = 300, DEVI = 135 },
+
+        // Straight segment
+        new BoreholeGeometryElement { MD = 470.548864848786464, X = -11.739573430547424, Y = 254.60553071994676, Z = 310, HAZI = 300, DEVI = 135 },
+
+        // Almost straight segment
+        new BoreholeGeometryElement { MD = 500, X = -31.358445652955155, Y = 264.77495204832314, Z = 330, HAZI = 295, DEVI = 130 },
+
+        // Last segment is an arc
+        new BoreholeGeometryElement { MD = 600, X = -103.01243364944339, Y = 238.99044298089785, Z = 379, HAZI = 180, DEVI = 35 },
+    };
+
     private static readonly List<BoreholeGeometryElement> geometryOnlyMDXYZ = geometry
         .Select(e => new BoreholeGeometryElement { MD = e.MD, X = e.X, Y = e.Y, Z = e.Z })
         .ToList();
@@ -112,5 +138,30 @@ public class HelperTest
     public void GetDepthTVDTooHigh()
     {
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => geometry.GetDepthTVD(double.MaxValue));
+    }
+
+    [TestMethod]
+    public void GetDepthMDFromTVDOnDataPoint()
+    {
+        Assert.AreEqual(10, geometry.GetDepthMDFromTVD(10));
+    }
+
+    [TestMethod]
+    public void GetDepthMDOnDuplicateDataPoint()
+    {
+        Assert.AreEqual(443.358445652955155, geometryDecreasingZOnly.GetDepthMDFromTVD(260));
+    }
+
+    [TestMethod]
+    public void GetDepthMDStraightSegment()
+    {
+        Assert.AreEqual(15, geometry.GetDepthMDFromTVD(15));
+        Assert.AreEqual(465.1107810096202, geometryDecreasingZOnly.GetDepthMDFromTVD(300));
+    }
+
+    [TestMethod]
+    public void GetDepthMDArcSegment()
+    {
+        Assert.AreEqual(57.820431832038, Math.Round(geometryDecreasingZOnly.GetDepthMDFromTVD(129), 12)); // MD expected to be < 142
     }
 }
