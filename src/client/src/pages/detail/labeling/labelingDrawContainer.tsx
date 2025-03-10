@@ -126,7 +126,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
       feature.setStyle(
         new Style({
           fill: new Fill({
-            color: isIntersecting ? theme.palette.ai.mainTransparent : "transparent",
+            color: isIntersecting ? theme.palette.ai.textHighlights : "transparent",
           }),
         }),
       );
@@ -292,6 +292,11 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
         style: transparentBoundingBoxStyle,
       });
       boundingBoxLayer.set("name", "boundingBoxLayer");
+
+      boundingBoxLayer.on("prerender", function (event) {
+        const context = event.context as CanvasRenderingContext2D;
+        context.globalCompositeOperation = "xor";
+      });
 
       const initMap = new Map({
         layers: [imageLayer, drawingLayer, boundingBoxLayer],
