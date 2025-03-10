@@ -1,3 +1,4 @@
+import { User } from "../apiInterfaces.ts";
 import { BoreholeV2 } from "../borehole.ts";
 
 export const maxFileSizeKB = 210_000_000;
@@ -15,6 +16,10 @@ export interface File {
 }
 
 export interface BoreholeFile {
+  user: User;
+  attached: string;
+  description: string;
+  public: boolean;
   boreholeId: number;
   borehole: BoreholeV2 | null;
   fileId: number;

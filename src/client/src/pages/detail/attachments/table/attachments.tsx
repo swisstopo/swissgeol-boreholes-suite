@@ -1,16 +1,17 @@
-import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, FC, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { Box, Button, Input } from "@mui/material";
+import { Box, Button, Input, Stack, Typography } from "@mui/material";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
 import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import { FullPageCentered, StackFullWidth } from "../../../../components/styledComponents.ts";
 import { DetailContext } from "../../detailContext.tsx";
-import FilesTableComponent from "./filesTableComponent";
+import { FilesTable } from "./filesTable.tsx";
 
-const EditorBoreholeFilesTable: FC = () => {
+export const Attachments: FC = () => {
   const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
   const { id } = useParams<{ id: string }>();
@@ -44,7 +45,7 @@ const EditorBoreholeFilesTable: FC = () => {
   };
 
   const patch = (
-    id: number,
+    id: string,
     fid: number,
     currentDescription: string,
     currentIsPublic: boolean,
@@ -76,17 +77,30 @@ const EditorBoreholeFilesTable: FC = () => {
     }
   };
 
-  return id ? (
+  return (
     <Box
       sx={{
-        overflowY: "hidden",
-        padding: 3,
-        flex: "1 1 100%",
+        height: "100%",
+        maxWidth: "100%",
+        px: 3,
+        pb: 10,
+        pt: 3,
         backgroundColor: theme.palette.background.default,
         border: `1px solid ${theme.palette.border.light}`,
+        flex: "1 1.5 100%",
       }}>
-      {editingEnabled && (
-        <Box sx={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+      <StackFullWidth
+        direction="column"
+        sx={{
+          height: "100%",
+        }}>
+        <Stack
+          direction="row"
+          justifyContent="flex-end"
+          mb={3}
+          sx={{
+            visibility: editingEnabled ? "visible" : "hidden",
+          }}>
           <form ref={formRef}>
             <Button
               data-cy="attachments-upload-button"
@@ -113,24 +127,27 @@ const EditorBoreholeFilesTable: FC = () => {
               />
             </Button>
           </form>
-        </Box>
-      )}
-      <FilesTableComponent
-        detachFile={(id: number, fid: number) => {
-          detachFile(id, fid).then(() => {
-            loadFiles();
-          });
-        }}
-        editor
-        files={files}
-        id={id}
-        patchFile={patch}
-        reload={loadFiles}
-      />
+        </Stack>
+
+        {files && files.length > 0 ? (
+          <Box sx={{ height: "100%" }}>
+            <FilesTable
+              detachFile={(id: string, fid: number) => {
+                detachFile(id, fid).then(() => {
+                  loadFiles();
+                });
+              }}
+              editor
+              files={files}
+              patchFile={patch}
+            />
+          </Box>
+        ) : (
+          <FullPageCentered>
+            <Typography variant="fullPageMessage">{t("noAttachments")}</Typography>
+          </FullPageCentered>
+        )}
+      </StackFullWidth>
     </Box>
-  ) : (
-    "nothing selected"
   );
 };
-
-export default EditorBoreholeFilesTable;

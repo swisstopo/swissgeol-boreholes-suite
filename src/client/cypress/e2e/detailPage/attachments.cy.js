@@ -1,4 +1,5 @@
 import { saveWithSaveBar } from "../helpers/buttonHelpers.js";
+import { checkRowWithText, verifyRowContains, verifyTableLength } from "../helpers/dataGridHelpers.js";
 import { evaluateInput, setInput } from "../helpers/formHelpers.js";
 import {
   createBorehole,
@@ -32,8 +33,8 @@ describe("Tests for 'Attachments' edit page.", () => {
       uploadLoudSpatulaFile();
 
       // check list of attachments
-      cy.get("tbody").children().should("have.length", 1);
-      cy.get("tbody").children().contains("td", "text/plain");
+      verifyTableLength(1);
+      verifyRowContains("text/plain", 0);
 
       // create file "IRATETRINITY.pdf" for input
       selectInputFile("IRATETRINITY.pdf", "application/pdf");
@@ -41,60 +42,73 @@ describe("Tests for 'Attachments' edit page.", () => {
       // upload and verify file IRATETRINITY.pdf
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
-      cy.get("tbody").children().should("have.length", 2);
-      cy.get("tbody").children().contains("td", "text/plain");
-      cy.get("tbody").children().contains("td", "application/pdf");
+
+      verifyTableLength(2);
+      verifyRowContains("application/pdf", 1);
 
       // Upload and verify file "IRATETRINITY.pdf" for the second time but with different file name.
       selectInputFile("IRATETRINITY_2.pdf", "application/pdf");
       getElementByDataCy("attachments-upload-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
-      cy.get("tbody").children().should("have.length", 3);
-      cy.get("tbody").children().contains("td", "text/plain");
-      cy.get("tbody").children().contains("td", "application/pdf");
+
+      verifyTableLength(3);
+      verifyRowContains("application/pdf", 2);
 
       // Upload and verify file "WHITE   SPACE.pdf" to test file names with white spaces.
       selectInputFile("WHITE   SPACE.pdf", "application/pdf");
       cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
-      cy.get("tbody").children().should("have.length", 4);
-      cy.get("tbody").children().contains("td", "text/plain");
-      cy.get("tbody").children().contains("td", "application/pdf");
+      verifyTableLength(4);
+      verifyRowContains("application/pdf", 3);
 
       // Ensure files does not exist in download folder before download. If so, delete them.
       deleteDownloadedFile("IRATETRINITY_2.pdf");
       deleteDownloadedFile("WHITE___SPACE.pdf");
 
       // Download recently uploaded file
-      cy.get("tbody").children().contains("span", "IRATETRINITY_2.pdf").click();
+      getElementByDataCy("'download-IRATETRINITY_2.pdf'").click();
       cy.wait("@download-file");
 
       // Check if the file is present in download folder.
       readDownloadedFile("IRATETRINITY_2.pdf");
 
       // Download recently uploaded file
-      cy.get("tbody").children().contains("span", "WHITE___SPACE.pdf").click();
+      getElementByDataCy("'download-WHITE___SPACE.pdf'").click();
       cy.wait("@download-file");
 
       // Check if the file is present in download folder.
       readDownloadedFile("WHITE___SPACE.pdf");
 
+      // edit attachment description and public status
+      stopBoreholeEditing();
+      cy.get('[class*="lucide-lock-open"]').should("not.exist");
+      cy.get('[class*="lucide-lock"]').should("exist");
+      startBoreholeEditing();
+      getElementByDataCy("'input-IRATETRINITY_2.pdf'").type("a brand new description");
+      checkRowWithText("IRATETRINITY.pdf"); // edit public status
+
+      // stop editing and verify table content
+      stopBoreholeEditing();
+      verifyRowContains("a brand new description", 2);
+      verifyRowContains("IRATETRINITY_2.pdf", 2);
+
+      cy.get('[class*="lucide-lock-open"]').should("exist");
+      cy.get('[class*="lucide-lock"]').should("exist");
+      startBoreholeEditing();
+
       // delete attachments
       getElementByDataCy("attachments-detach-button").children().first().click();
       cy.wait(["@delete-file", "@getAllAttachments"]);
-      cy.get("tbody").children().should("have.length", 3);
-      cy.get('[data-cy="attachments-detach-button"]').children().first().click();
+      verifyTableLength(3);
+      getElementByDataCy("attachments-detach-button").children().first().click();
       cy.wait(["@delete-file", "@getAllAttachments"]);
-      cy.get("tbody").children().should("have.length", 2);
-      cy.get('[data-cy="attachments-detach-button"]').children().first().click();
+      verifyTableLength(2);
+      getElementByDataCy("attachments-detach-button").children().first().click();
       cy.wait(["@delete-file", "@getAllAttachments"]);
-      cy.get("tbody").children().should("have.length", 1);
-      cy.get('[data-cy="attachments-detach-button"]').children().first().click();
+      verifyTableLength(1);
+      getElementByDataCy("attachments-detach-button").children().first().click();
       cy.wait(["@delete-file", "@getAllAttachments"]);
-      cy.get("tbody").children().should("have.length", 0);
-
-      // stop editing
-      stopBoreholeEditing();
+      verifyTableLength(0);
 
       // reset test data
       deleteBorehole(boreholeId);
@@ -109,7 +123,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     });
     getElementByDataCy("attachments-menu-item").click();
     uploadLoudSpatulaFile();
-    cy.get("tbody").children().should("have.length", 1);
+    verifyTableLength(1);
     getElementByDataCy("borehole-menu-item").click();
 
     // change something and save
@@ -118,7 +132,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
     // navigate back to attachments and return
     getElementByDataCy("attachments-menu-item").click();
-    cy.get("tbody").children().should("have.length", 1);
+    verifyTableLength(1);
 
     getElementByDataCy("borehole-menu-item").click();
     evaluateInput("totalDepth", "465");
