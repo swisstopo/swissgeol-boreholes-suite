@@ -113,10 +113,10 @@ function assertBoundingBoxes(totalCount, visibleCount) {
       const style = feature.getStyle();
       return style?.getFill()?.getColor();
     });
-    expect(features.length).to.equal(totalCount); // layer contains 4 bounding boxes for each word
+    expect(features.length).to.equal(totalCount); // layer always contains all bounding boxes, even if they are not visible
 
     const expectedColors = Array.from({ length: totalCount }, (_, i) =>
-      i < visibleCount ? "rgba(91, 33, 182, 0.2)" : "transparent",
+      i < visibleCount ? "rgba(164, 106, 255, 0.5)" : "transparent",
     );
     expect(featureColors).to.deep.equal(expectedColors);
   });
