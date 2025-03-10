@@ -19,6 +19,7 @@
 - Detail page side navigation items are greyed out if there is no applicable content.
 - Content tabs of completion and borehole sections are greyed out if there is no applicable content.
 - The pressure unit in the hydrotest module is now displayed as `kPa` instead of `Pa`.
+- The values in the hydrotest results are now displayed with thousand separators.
 
 ### Fixed
 

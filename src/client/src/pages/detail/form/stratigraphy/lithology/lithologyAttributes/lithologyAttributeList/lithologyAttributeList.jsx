@@ -3,10 +3,10 @@ import { useTranslation } from "react-i18next";
 import { NumericFormat } from "react-number-format";
 import { Form, Input, TextArea } from "semantic-ui-react";
 import _ from "lodash";
+import { parseIfString } from "../../../../../../../components/form/formUtils.ts";
 import DateField from "../../../../../../../components/legacyComponents/dateField.jsx";
 import DomainDropdown from "../../../../../../../components/legacyComponents/domain/dropdown/domainDropdown.jsx";
 import DomainTree from "../../../../../../../components/legacyComponents/domain/tree/domainTree.jsx";
-import { parseIfString } from "../../../../../../../components/legacyComponents/formUtils.ts";
 import TranslationText from "../../../../../../../components/legacyComponents/translationText.jsx";
 import * as Styled from "./styles.js";
 

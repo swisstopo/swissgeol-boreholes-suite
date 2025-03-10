@@ -10,7 +10,7 @@ import {
   FormInput,
   FormInputDisplayOnly,
 } from "../../../../components/form/form.ts";
-import { parseFloatWithThousandsSeparator } from "../../../../components/legacyComponents/formUtils.ts";
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { UseFormWithSaveBar } from "../../../../hooks/useFormWithSaveBar.ts";
 import { BoreholeDetailProps, BoreholeFormInputs } from "./boreholePanelInterfaces.ts";

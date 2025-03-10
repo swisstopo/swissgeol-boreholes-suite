@@ -56,8 +56,8 @@ describe("Instrumentation crud tests", () => {
     saveForm();
 
     // check if instrumentation is saved
-    cy.contains("123456");
-    cy.contains("987654");
+    cy.contains("123'456");
+    cy.contains("987'654");
     cy.contains("Inst-1");
     cy.contains("Lorem.");
     cy.contains("suction pump");
