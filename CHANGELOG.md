@@ -14,16 +14,17 @@
 ### Changed
 
 - The settings are now displayed in tabs.
-- Detail page side navigation points are greyed out if there is no applicable content.
 - A spinner is now displayed during the file download when exporting data.
 - In the data extraction panel the boxes can now be drawn with click and drag instead of two clicks.
+- Detail page side navigation items are greyed out if there is no applicable content.
+- Content tabs of completion and borehole sections are greyed out if there is no applicable content.
 - The pressure unit in the hydrotest module is now displayed as `kPa` instead of `Pa`.
 - The values in the hydrotest results are now displayed with thousand separators.
 
 ### Fixed
 
 - When hovering over the main side navigation icons, an incorrect background color was displayed for the hovered icon.
-- Before export check if the user has the correct role and is in the same workgroup as the borehole.
+- Before export or import check if the user has the correct role and is in the same workgroup as the borehole.
 
 ## v2.1.1052 - 2025-02-04
 

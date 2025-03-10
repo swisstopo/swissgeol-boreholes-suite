@@ -3,8 +3,11 @@ import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { User, Workgroup } from "./apiInterfaces.ts";
+import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2";
+import { BoreholeFile } from "./file/fileInterfaces.ts";
+import { Section } from "./section.ts";
 import { Stratigraphy } from "./stratigraphy.ts";
 
 export interface BasicIdentifier {
@@ -72,6 +75,9 @@ export interface BoreholeV2 {
   lockedById: number | null;
   completions: Completion[] | null;
   observations: Observation[] | null;
+  sections: Section[] | null;
+  boreholeGeometry: BoreholeGeometry[] | null;
+  boreholeFiles: BoreholeFile[] | null;
 }
 
 const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");

@@ -12,9 +12,9 @@ import {
   uploadFile,
 } from "../../../api/file/file.ts";
 import {
+  BoreholeFile,
   DataExtractionResponse,
   File as FileInterface,
-  FileResponse,
   maxFileSizeKB,
 } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -96,12 +96,12 @@ const LabelingPanel: FC = () => {
   const loadFiles = useCallback(async () => {
     if (boreholeId) {
       setIsLoadingFiles(true);
-      getFiles<FileResponse>(Number(boreholeId))
+      getFiles<BoreholeFile>(Number(boreholeId))
         .then(response =>
           setFiles(
             response
-              .filter((fileResponse: FileResponse) => fileResponse.file.type === labelingFileFormat)
-              .map((fileResponse: FileResponse) => fileResponse.file),
+              .filter((fileResponse: BoreholeFile) => fileResponse.file.type === labelingFileFormat)
+              .map((fileResponse: BoreholeFile) => fileResponse.file),
           ),
         )
         .finally(() => {
@@ -112,7 +112,7 @@ const LabelingPanel: FC = () => {
 
   const addFile = useCallback(
     async (file: File) => {
-      uploadFile<FileResponse>(Number(boreholeId), file)
+      uploadFile<BoreholeFile>(Number(boreholeId), file)
         .then(fileResponse => {
           setSelectedFile(fileResponse.file);
           loadFiles();
