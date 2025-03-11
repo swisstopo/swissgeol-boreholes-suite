@@ -1,4 +1,4 @@
-﻿using Npgsql;
+using Npgsql;
 
 namespace BDMS.ExternSync;
 
@@ -24,4 +24,9 @@ public static class SyncContextConstants
     /// services with different connection strings.
     /// </remarks>
     public const string TargetBdmsContextName = "TargetBdmsContext";
+
+    /// <summary>
+    /// The environment variable name which indicates whether or not to migrate (schema migration) the target database.
+    /// </summary>
+    public const string MigrateTargetDatabaseEnvName = "MIGRATE_TARGET_DATABASE";
 }

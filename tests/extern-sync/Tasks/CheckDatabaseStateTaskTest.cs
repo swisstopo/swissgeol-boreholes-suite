@@ -1,7 +1,8 @@
-using BDMS.ExternSync.Tasks;
+﻿using BDMS.ExternSync.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using static BDMS.ExternSync.TestSyncContextHelpers;
 
 namespace BDMS.ExternSync;
 
@@ -20,7 +21,7 @@ public class CheckDatabaseStateTaskTest
     public async Task CheckDbSchemaVersionSucceedsForSameSchemaVersion()
     {
         // Get two database context with the same schema version
-        using var syncTask = new CheckDatabaseStateTask(syncContext, new Mock<ILogger<CheckDatabaseStateTask>>().Object);
+        using var syncTask = new CheckDatabaseStateTask(syncContext, new Mock<ILogger<CheckDatabaseStateTask>>().Object, GetDefaultConfiguration());
 
         await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token);
     }
@@ -33,7 +34,7 @@ public class CheckDatabaseStateTaskTest
             $"VALUES ('20990131060000_ENTOURAGEPOINT', '1.2.3');";
 
         await syncContext.Target.Database.ExecuteSqlRawAsync(insertStatement);
-        using var syncTask = new CheckDatabaseStateTask(syncContext, new Mock<ILogger<CheckDatabaseStateTask>>().Object);
+        using var syncTask = new CheckDatabaseStateTask(syncContext, new Mock<ILogger<CheckDatabaseStateTask>>().Object, GetDefaultConfiguration());
 
         var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
             async () => await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token));
