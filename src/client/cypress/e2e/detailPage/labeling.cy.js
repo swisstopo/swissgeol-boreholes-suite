@@ -79,7 +79,7 @@ function toggleLabelingPanelWithoutDocuments() {
   cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.");
 }
 
-function selectLabelingAttament() {
+function selectLabelingAttachment() {
   cy.get('[data-cy="labeling-file-dropzone"]').selectFile("cypress/fixtures/labeling_attachment.pdf", {
     force: true,
     mimeType: "application/pdf",
@@ -200,7 +200,7 @@ describe("Test labeling tool", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
-    selectLabelingAttament();
+    selectLabelingAttachment();
     assertPageCount(1, 3);
 
     clickCoordinateLabelingButton();
@@ -244,7 +244,7 @@ describe("Test labeling tool", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
-    selectLabelingAttament();
+    selectLabelingAttachment();
     assertPageCount(1, 3);
 
     clickCoordinateLabelingButton();
@@ -286,7 +286,7 @@ describe("Test labeling tool", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
-    selectLabelingAttament();
+    selectLabelingAttachment();
     getElementByDataCy("labeling-page-next").click();
     getElementByDataCy("labeling-page-next").click();
     waitForLabelingImageLoaded();
@@ -339,7 +339,7 @@ describe("Test labeling tool", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
-    selectLabelingAttament();
+    selectLabelingAttachment();
     assertPageCount(1, 3);
 
     cy.get('[data-cy="labeling-page-next"]').click();
@@ -360,5 +360,16 @@ describe("Test labeling tool", () => {
 
     clickCoordinateLabelingButton();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
+  });
+
+  it("displays warning message when fetching bounding boxes fails.", () => {
+    cy.intercept("POST", "/dataextraction/api/V1/bounding_boxes", req => req.destroy());
+    goToRouteAndAcceptTerms("/");
+    newEditableBorehole().as("borehole_id");
+    toggleLabelingPanelWithoutDocuments();
+    selectLabelingAttachment();
+
+    cy.get(".MuiAlert-message").contains("An error occurred while fetching the bounding boxes.");
+    cy.get('[aria-label="Close"]').click();
   });
 });

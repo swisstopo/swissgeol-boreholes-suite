@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { Alert, Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { ChevronLeft, ChevronRight, PanelBottom, PanelRight } from "lucide-react";
+import { ApiError } from "../../../api/apiInterfaces.ts";
 import {
   extractCoordinates,
   extractText,
@@ -232,13 +233,21 @@ const LabelingPanel: FC = () => {
       }
       if (fileInfo?.fileName !== fileName) {
         setFileInfo(fileInfoResponse);
-        const boundingBoxResponse = await fetchExtractionBoundingBoxes(selectedFile.nameUuid, newActivePage);
-        setPageBoundingBoxes(boundingBoxResponse.bounding_boxes);
+        try {
+          const boundingBoxResponse = await fetchExtractionBoundingBoxes(selectedFile.nameUuid, newActivePage);
+          setPageBoundingBoxes(boundingBoxResponse.bounding_boxes);
+        } catch (error) {
+          if (error instanceof ApiError) {
+            showAlert(t(error.message), "warning");
+          } else {
+            showAlert(t("errorDataExtractionFetchBoundingBoxes"), "warning");
+          }
+        }
       }
     };
 
     fetchExtractionData();
-  }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName]);
+  }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName, showAlert, t]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
   return (

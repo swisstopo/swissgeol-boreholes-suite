@@ -202,7 +202,10 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
                   tmpMap.removeInteraction(interaction);
                 }
               });
-            tmpMap.getTargetElement().style.cursor = "";
+            const targetElement = tmpMap.getTargetElement();
+            if (targetElement) {
+              targetElement.style.cursor = "";
+            }
 
             if (tooltipRef?.current) {
               tooltipRef.current.style.visibility = "hidden";
