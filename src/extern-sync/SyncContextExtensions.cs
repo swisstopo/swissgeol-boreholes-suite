@@ -1,4 +1,4 @@
-﻿using BDMS.Models;
+using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Data;
@@ -155,5 +155,42 @@ public static class SyncContextExtensions
         }
 
         return borehole;
+    }
+    /// <summary>
+    /// Recursively updates all the <see cref="IUserAttached{TUser, TUserId}"/> <paramref name="items"/> with the given <paramref name="user"/>.
+    /// </summary>
+    internal static void UpdateAttachedUser(this IEnumerable<IUserAttached<User, int>> items, User user) =>
+        items.UpdateAttachedUser(user, user.Id);
+
+    /// <summary>
+    /// Recursively updates all the <see cref="IUserAttached{TUser, TUserId}"/> <paramref name="items"/> with the given <paramref name="user"/>.
+    /// </summary>
+    internal static void UpdateAttachedUser(this IEnumerable<IUserAttached<User?, int?>> items, User user) =>
+        items.UpdateAttachedUser(user, user.Id);
+
+    /// <summary>
+    /// Recursively updates all the <see cref="IUserAttached{TUser, TUserId}"/> <paramref name="items"/> with the given
+    /// <paramref name="user"/> and <paramref name="userId"/>.
+    /// </summary>
+    private static void UpdateAttachedUser<TUser, TUserId>(this IEnumerable<IUserAttached<TUser, TUserId>> items, TUser user, int userId)
+        where TUser : new()
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(userId);
+
+        void UpdateUserAttachedItem(IUserAttached<TUser, TUserId> userAttachedItem)
+        {
+            var targetUserIdType = Nullable.GetUnderlyingType(typeof(TUserId)) ?? typeof(TUserId);
+            var convertedUserId = (TUserId)Convert.ChangeType(userId, targetUserIdType, CultureInfo.InvariantCulture);
+
+            userAttachedItem.User = default!;
+            userAttachedItem.UserId = convertedUserId;
+        }
+
+        foreach (var item in items)
+        {
+            HashSet<IUserAttached<TUser, TUserId>> visitedItems = [];
+            item.ProcessRecursive(UpdateUserAttachedItem, visitedItems);
+        }
     }
 }

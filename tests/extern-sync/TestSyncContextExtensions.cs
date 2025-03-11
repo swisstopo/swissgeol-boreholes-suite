@@ -62,6 +62,7 @@ internal static class TestSyncContextExtensions
         var user = await context.Users.SingleAsync(u => u.Id == userId, cancellationToken);
 
         borehole.SetBoreholePublicationStatus(status);
+        borehole.Workflows.UpdateAttachedUser(user);
         await context.SaveChangesAsync(cancellationToken);
         return borehole;
     }
