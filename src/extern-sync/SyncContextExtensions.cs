@@ -67,6 +67,50 @@ public static class SyncContextExtensions
     }
 
     /// <summary>
+    /// Recursively traverses the given <paramref name="item"/> and all its properties and
+    /// collections of type <typeparamref name="T"/> and executes <paramref name="action"/> on every object.
+    /// </summary>
+    /// <typeparam name="T">The type which should be traversed recursively.</typeparam>
+    /// <param name="item">The item to be processed recursively.</param>
+    /// <param name="action">The action to be executed on every <typeparamref name="T"/> object.</param>
+    /// <param name="visited">An empty <see cref="HashSet{T}"/> which is used to track the visited items
+    /// in order to avoid infinite loops.</param>
+    /// <returns>The updated <paramref name="item"/>.</returns>
+    internal static T ProcessRecursive<T>(this T item, Action<T> action, HashSet<T> visited)
+        where T : class
+    {
+        if (item == null || visited.Contains(item)) return item!;
+
+        visited.Add(item);
+
+        action(item);
+
+        foreach (var property in item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        {
+            if (!property.CanRead) continue;
+
+            var propertyValue = property.GetValue(item);
+            if (propertyValue == null) continue;
+
+            if (property.PropertyType.GetInterfaces().Contains(typeof(T)))
+            {
+                // If property itself implements T
+                ProcessRecursive((T)propertyValue, action, visited);
+            }
+            else if (typeof(IEnumerable).IsAssignableFrom(property.PropertyType))
+            {
+                foreach (var collectionItem in ((IEnumerable)propertyValue).OfType<T>())
+                {
+                    // If the property is an IEnumerable of T objects
+                    ProcessRecursive(collectionItem, action, visited);
+                }
+            }
+        }
+
+        return item;
+    }
+
+    /// <summary>
     /// Sets the publication <paramref name="status"/> for the given <see cref="Borehole"/>.
     /// Please note that all previous <see cref="Workflow"/> entries/histroy gets cleared!
     /// This may not be the desired behavior for every use case but complies with the requirements
