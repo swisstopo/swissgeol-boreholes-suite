@@ -20,11 +20,13 @@
 - Content tabs of completion and borehole sections are greyed out if there is no applicable content.
 - The pressure unit in the hydrotest module is now displayed as `kPa` instead of `Pa`.
 - The values in the hydrotest results are now displayed with thousand separators.
+- Attachments are now displayed in a table following new UI design.
 
 ### Fixed
 
 - When hovering over the main side navigation icons, an incorrect background color was displayed for the hovered icon.
 - Before export or import check if the user has the correct role and is in the same workgroup as the borehole.
+- Attachments page was missing scrollbars.
 
 ## v2.1.1052 - 2025-02-04
 
