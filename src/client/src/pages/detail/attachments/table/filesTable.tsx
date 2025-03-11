@@ -30,8 +30,6 @@ export const FilesTable: FC<FilesTableProps> = ({ editor, files, patchFile, deta
   const { id } = useParams<{ id: string }>();
   const { editingEnabled } = useContext(DetailContext);
 
-  console.log(files);
-
   const renderCellCheckbox = useCallback(
     (params: GridRenderCellParams) => {
       return (
