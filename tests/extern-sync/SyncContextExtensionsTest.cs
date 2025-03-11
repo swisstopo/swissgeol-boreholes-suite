@@ -65,6 +65,34 @@ public class SyncContextExtensionsTest
         Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_666));
     }
 
+    [TestMethod]
+    public void RemoveDuplicates()
+    {
+        var boreholeOriginal = new Borehole { TotalDepth = 1, LocationX = 15.14, LocationY = 15.14, LocationXLV03 = 15.14, LocationYLV03 = 15.14 };
+        var boreholeDuplicate = new Borehole { TotalDepth = 1, LocationX = 15.14, LocationY = 15.14, LocationXLV03 = 15.14, LocationYLV03 = 15.14 };
+        var boreholeDifferent = new Borehole { TotalDepth = 2, LocationX = 20.21, LocationY = 20.21, LocationXLV03 = 20.21, LocationYLV03 = 20.21 };
+
+        var deduplicated = new[] { boreholeDuplicate, boreholeDifferent }.RemoveDuplicates([boreholeOriginal]).ToList();
+        var expected = new[] { boreholeDifferent };
+
+        CollectionAssert.AreEquivalent(expected, deduplicated);
+    }
+
+    [TestMethod]
+    public void RemoveDuplicatesForIdentical()
+    {
+        var boreholeOriginal = new Borehole { TotalDepth = 1, LocationX = 15.14, LocationY = 15.14, LocationXLV03 = 15.14, LocationYLV03 = 15.14 };
+        var boreholeDuplicate = new Borehole { TotalDepth = 1, LocationX = 15.14, LocationY = 15.14, LocationXLV03 = 15.14, LocationYLV03 = 15.14 };
+
+        var deduplicated = new[] { boreholeDuplicate }.RemoveDuplicates([boreholeOriginal]).ToList();
+
+        CollectionAssert.AreEquivalent(Enumerable.Empty<Borehole>().ToList(), deduplicated);
+    }
+
+    [TestMethod]
+    public void RemoveDuplicatesForEmpty() =>
+        CollectionAssert.AreEquivalent(Enumerable.Empty<Borehole>().ToList(), Enumerable.Empty<Borehole>().RemoveDuplicates([]).ToList());
+
     private static void AssertBoreholePublicationStatus(Borehole borehole, Role expectedStatus, User expectedUser)
     {
         // Please note that there are different patterns regarding the last workflow entry

@@ -1,0 +1,172 @@
+﻿using BDMS.ExternSync.Tasks;
+using BDMS.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
+using static BDMS.ExternSync.TestSyncContextHelpers;
+
+namespace BDMS.ExternSync;
+
+[TestClass]
+public class SyncBoreholesTaskTest
+{
+    [TestMethod]
+    public async Task SyncBoreholes()
+    {
+        using var syncContext = await TestSyncContext.BuildAsync(seedTestDataInSourceContext: true);
+        using var syncTask = new SyncBoreholesTask(syncContext, new Mock<ILogger<SyncBoreholesTask>>().Object, GetDefaultConfiguration());
+
+        // Set the publication status for some boreholes. By default all seeded boreholes have the publication
+        // status 'change in progress'.
+        var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
+        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_001, 1, Role.Editor, cancellationToken);
+        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_202, 1, Role.Controller, cancellationToken);
+        await syncContext.Source.SetBoreholePublicationStatusAsync(1_001_404, 1, Role.Validator, cancellationToken);
+
+        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_022, 1, Role.Publisher, cancellationToken);
+        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_099, 1, Role.Publisher, cancellationToken);
+        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_101, 1, Role.Publisher, cancellationToken);
+
+        await syncContext.Source.FixCasingReferencesAsync(cancellationToken);
+
+        await syncTask.ExecuteAndValidateAsync(cancellationToken);
+
+        // Get boreholes with publication status 'published' from both sources.
+        var (originalBoreholes, syncedBoreholes) = GetPublishedBoreholes(syncContext.Source, syncContext.Target);
+
+        Assert.AreEqual(3, originalBoreholes.Count());
+        Assert.AreEqual(3, syncedBoreholes.Count());
+
+        // Serialize synced objects from both sources and compare all the data.
+        foreach (var syncedBorehole in syncedBoreholes)
+        {
+            var originalBorehole = originalBoreholes.Single(b => b.Name == syncedBorehole.Name);
+            var original = originalBorehole.SortBoreholeContent().SerializeToJson();
+            var synced = syncedBorehole.SortBoreholeContent().SerializeToJson();
+            Assert.AreEqual(original, synced);
+        }
+
+        // Validate casings. Casing details are already asserted by comparing serialized JSON output.
+        Assert.AreEqual(8, originalBoreholes.SelectMany(b => b.Completions.Select(c => c.Casings)).Count());
+        Assert.AreEqual(8, syncedBoreholes.SelectMany(b => b.Completions.Select(c => c.Casings)).Count());
+        Assert.IsTrue(syncedBoreholes.ValidateCasingReferences());
+
+        // Validate files. File details are already asserted by comparing serialized JSON output.
+        Assert.AreEqual(3, originalBoreholes.Select(b => b.Files).Count());
+        Assert.AreEqual(3, syncedBoreholes.Select(b => b.Files).Count());
+
+        // Validate workgroup
+        foreach (var syncedBorehole in syncedBoreholes)
+        {
+            var originalBorehole = originalBoreholes.Single(b => b.Name == syncedBorehole.Name);
+            Assert.AreEqual(originalBorehole.Workgroup.Name, syncedBorehole.Workgroup.Name);
+        }
+    }
+
+    [TestMethod]
+    public async Task SyncBoreholesForEmpty()
+    {
+        using var syncContext = await TestSyncContext.BuildAsync(useInMemory: true);
+        using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), GetDefaultConfiguration());
+
+        var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
+        await syncTask.ExecuteAndValidateAsync(cancellationToken);
+
+        // Get boreholes with publication status 'published' from both sources.
+        var (publishedSourceBoreholes, publishedTargetBoreholes) = GetPublishedBoreholes(syncContext.Source, syncContext.Target);
+
+        // Expect an empty result set on both sources.
+        Assert.AreEqual(0, publishedSourceBoreholes.Count());
+        Assert.AreEqual(0, publishedTargetBoreholes.Count());
+    }
+
+    [TestMethod]
+    public async Task SyncBoreholesForUndefinedDefaultWorkgroup()
+    {
+        using var syncContext = await TestSyncContext.BuildAsync(useInMemory: true);
+        var noTargetWorkgroupConfiguration = CreateConfiguration(null, "Default", false);
+        using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), noTargetWorkgroupConfiguration);
+
+        // Add a fake published borehole to the source context
+        var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
+        syncContext.Source.Boreholes.Add(publishedBorehole);
+        await syncContext.Source.SaveChangesAsync();
+
+        var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+            async () => await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token));
+
+        StringAssert.Contains(exception.Message, "Environment variable <TARGET_DEFAULT_WORKGROUP_NAME> was not set.");
+    }
+
+    [TestMethod]
+    public async Task SyncBoreholesForMissingDefaultWorkgroupInTargetDatabase()
+    {
+        using var syncContext = await TestSyncContext.BuildAsync(useInMemory: true);
+        using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), GetDefaultConfiguration());
+
+        // Add a fake published borehole to the source context
+        var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
+        syncContext.Source.Boreholes.Add(publishedBorehole);
+        await syncContext.Source.SaveChangesAsync();
+
+        var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+            async () => await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token));
+
+        StringAssert.Contains(exception.Message, "No suitable default workgroup was found at target database.");
+        StringAssert.Contains(exception.Message, "Was looking for a workgroup named <Default>.");
+    }
+
+    [TestMethod]
+    public async Task SyncBoreholesForUndefinedDefaultUser()
+    {
+        using var syncContext = await TestSyncContext.BuildAsync(useInMemory: true);
+        var noTargetUserConfiguration = CreateConfiguration("SHARPHUNT", null, false);
+        using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), noTargetUserConfiguration);
+
+        // Add a fake published borehole to the source context
+        var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
+        syncContext.Source.Boreholes.Add(publishedBorehole);
+        await syncContext.Source.SaveChangesAsync();
+
+        // Add a fake default workgroup to the target context
+        var defaultWorkgroup = new Workgroup { Name = "SHARPHUNT" };
+        syncContext.Target.Workgroups.Add(defaultWorkgroup);
+        await syncContext.Target.SaveChangesAsync();
+
+        var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+            async () => await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token));
+
+        StringAssert.Contains(exception.Message, "Environment variable <TARGET_DEFAULT_USER_SUB> was not set.");
+    }
+
+    [TestMethod]
+    public async Task SyncBoreholesForMissingDefaultUserInTargetDatabase()
+    {
+        using var syncContext = await TestSyncContext.BuildAsync(useInMemory: true);
+        using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), GetDefaultConfiguration());
+
+        // Add a fake published borehole to the source context
+        var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
+        syncContext.Source.Boreholes.Add(publishedBorehole);
+        await syncContext.Source.SaveChangesAsync();
+
+        // Add a fake default workgroup to the target context
+        var defaultWorkgroup = new Workgroup { Name = "Default" };
+        syncContext.Target.Workgroups.Add(defaultWorkgroup);
+        await syncContext.Target.SaveChangesAsync();
+
+        var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+            async () => await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token));
+
+        StringAssert.Contains(exception.Message, "No suitable default user was found at target database.");
+        StringAssert.Contains(exception.Message, "Was looking for a user with sub id <sub_admin>.");
+    }
+
+    private static (IEnumerable<Borehole> SourceBoreholes, IEnumerable<Borehole> TargetBoreholes) GetPublishedBoreholes(
+        BdmsContext sourceContext, BdmsContext targetContext)
+    {
+        return (
+            sourceContext.Boreholes.AsNoTracking().GetAllWithIncludes().WithPublicationStatusPublished(),
+            targetContext.Boreholes.AsNoTracking().GetAllWithIncludes().WithPublicationStatusPublished());
+    }
+}

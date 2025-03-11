@@ -1,4 +1,6 @@
-﻿using static BDMS.ExternSync.TestSyncContextExtensions;
+﻿using Testcontainers.PostgreSql;
+using static BDMS.ExternSync.SyncContextExtensions;
+using static BDMS.ExternSync.TestSyncContextExtensions;
 
 namespace BDMS.ExternSync;
 
@@ -9,6 +11,9 @@ namespace BDMS.ExternSync;
 /// </summary>
 internal class TestSyncContext : ISyncContext, IDisposable
 {
+    private const string SourceConnectionString = "Host=localhost;Port=5432;Database=bdms;Username=SPAWNPLOW;Password=YELLOWSPATULA";
+    private const string TargetConnectionString = "Host=localhost;Port=5433;Database=WAXDIONYSUS;Username=CHOCOLATESLAW;Password=FRUGALCLUSTER";
+
     private bool disposedValue;
 
     /// <inheritdoc/>
@@ -34,14 +39,27 @@ internal class TestSyncContext : ISyncContext, IDisposable
     /// when source and target database contexts are created. This allows to execute
     /// raw SQL queries but comes with a performance penalty. When set to <c>true</c>
     /// an in-memory database is used instead.</param>
-    /// <param name="seedTestData">Seeds some test data. This option only works when using a real
+    /// <param name="seedTestDataInSourceContext">Seeds some test data. This option only works when using a real
     /// PostgreSQL database (<paramref name="useInMemory"/> != <c>true</c>).</param>
-    public static async Task<TestSyncContext> BuildAsync(bool useInMemory = false, bool seedTestData = false)
+    public static async Task<TestSyncContext> BuildAsync(bool useInMemory = false, bool seedTestDataInSourceContext = false)
     {
-        var source = CreateDbContextAsync(useInMemory, seedTestData);
-        var target = CreateDbContextAsync(useInMemory, seedTestData);
+        var source = CreateDbContextAsync(useInMemory, seedTestDataInSourceContext);
+        var target = CreateDbContextAsync(useInMemory, seedTestData: false);
         await Task.WhenAll(source, target).ConfigureAwait(false);
         return new TestSyncContext(source.Result, target.Result);
+    }
+
+    /// <summary>
+    /// Gets a new instance of the <see cref="TestSyncContext"/> class using already running source and target
+    /// databases created with the respective Docker compose 'docker-compose.services.yml'. This one is recommended
+    /// to be used while in development to speed up implementation. The <see cref="PostgreSqlContainer"/> test containers
+    /// which are used in <see cref="BuildAsync(bool, bool)"/> take about 2 to 3 minutes until they are seeded and ready.
+    /// </summary>
+    public static TestSyncContext GetUsingExistingDatabases()
+    {
+        return new TestSyncContext(
+            new BdmsContext(GetDbContextOptions(SourceConnectionString)),
+            new BdmsContext(GetDbContextOptions(TargetConnectionString)));
     }
 
     /// <summary>

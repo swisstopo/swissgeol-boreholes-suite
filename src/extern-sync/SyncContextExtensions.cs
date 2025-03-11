@@ -1,8 +1,11 @@
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.Globalization;
+using System.Reflection;
 
 namespace BDMS.ExternSync;
 
@@ -14,7 +17,7 @@ public static class SyncContextExtensions
     /// <summary>
     /// Gets and opens the <see cref="NpgsqlConnection"/> for the specified <paramref name="context"/>.
     /// </summary>
-    public static async Task<NpgsqlConnection> GetAndOpenDbConnectionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
+    internal static async Task<NpgsqlConnection> GetAndOpenDbConnectionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
     {
         var dbConnection = (NpgsqlConnection)context.Database.GetDbConnection();
         if (dbConnection.State != ConnectionState.Open)
@@ -28,7 +31,7 @@ public static class SyncContextExtensions
     /// <summary>
     /// Gets the database schema version for the specified <paramref name="context"/>.
     /// </summary>
-    public static async Task<string?> GetDbSchemaVersionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
+    internal static async Task<string?> GetDbSchemaVersionAsync(this BdmsContext context, CancellationToken cancellationToken = default)
     {
         var migrations = await context.Database.GetAppliedMigrationsAsync(cancellationToken).ConfigureAwait(false);
         return migrations.LastOrDefault();
@@ -37,13 +40,13 @@ public static class SyncContextExtensions
     /// <summary>
     /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="dbConnection"/>.
     /// </summary>
-    public static DbContextOptions<BdmsContext> GetDbContextOptions(DbConnection dbConnection) =>
+    internal static DbContextOptions<BdmsContext> GetDbContextOptions(DbConnection dbConnection) =>
         new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(dbConnection, BdmsContextExtensions.SetDbContextOptions).Options;
 
     /// <summary>
     /// Gets the <see cref="DbContextOptions{BdmsContext}"/> for the specified <paramref name="connectionString"/>.
     /// </summary>
-    public static DbContextOptions<BdmsContext> GetDbContextOptions(string connectionString) =>
+    internal static DbContextOptions<BdmsContext> GetDbContextOptions(string connectionString) =>
         new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(connectionString, BdmsContextExtensions.SetDbContextOptions).Options;
 
     /// <summary>
@@ -64,6 +67,30 @@ public static class SyncContextExtensions
     {
         return borehole.Workflows.OrderByDescending(b => b.Id)
             .FirstOrDefault(w => w.Role == Role.Publisher && w.Finished != null) != null;
+    }
+
+    /// <summary>
+    /// Removes duplicated <see cref="Borehole"/>s from <paramref name="boreholes"/> which already exists in <paramref name="existingBoreholes"/>.
+    /// To determine if a <see cref="Borehole"/> is duplicated, the coordinates and depth get checked against
+    /// <see cref="BoreholeExtensions.IsWithingPreDefinedTolerance(Borehole, IEnumerable{Borehole})"/>.
+    /// </summary>
+    internal static IEnumerable<Borehole> RemoveDuplicates(this IEnumerable<Borehole> boreholes, IEnumerable<Borehole> existingBoreholes)
+    {
+        foreach (var borehole in boreholes.Where(b => !b.IsWithingPreDefinedTolerance(existingBoreholes)))
+        {
+            yield return borehole;
+        }
+    }
+
+    /// <summary>
+    /// Recursively marks the given <paramref name="items"/> and all their dependencies as new.
+    /// </summary>
+    internal static void MarkAsNew(this IEnumerable<IIdentifyable> items)
+    {
+        foreach (var item in items)
+        {
+            item.ProcessRecursive(identifyable => identifyable.Id = 0, []);
+        }
     }
 
     /// <summary>
@@ -156,6 +183,93 @@ public static class SyncContextExtensions
 
         return borehole;
     }
+
+    /// <summary>
+    /// Recursively updates <see cref="IChangeTracking"/> information for all the given
+    /// <paramref name="items"/> with the specified <paramref name="user"/>.
+    /// </summary>
+    internal static void UpdateChangeTracking(this IEnumerable<IChangeTracking> items, User user)
+    {
+        foreach (var item in items)
+        {
+            HashSet<IChangeTracking> visitedItems = [];
+            item.ProcessRecursive(i => i.UpdateChangeTracking(user), visitedItems);
+        }
+    }
+
+    /// <summary>
+    /// Updates <see cref="IChangeTracking"/> information for the given
+    /// <paramref name="item"/> with the specified <paramref name="user"/>.
+    /// </summary>
+    internal static void UpdateChangeTracking(this IChangeTracking item, User user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        item.Created = DateTime.Now.ToUniversalTime();
+        item.CreatedBy = null;
+        item.CreatedById = user.Id;
+        item.Updated = DateTime.Now.ToUniversalTime();
+        item.UpdatedBy = null;
+        item.UpdatedById = user.Id;
+    }
+
+    /// <summary>
+    /// Clears all the backreferences (circular references) from the given <paramref name="boreholes"/>
+    /// which may lead to unexpected results when copying a <see cref="Borehole"/> from one
+    /// <see cref="BdmsContext"/> to another.
+    /// </summary>
+    internal static IEnumerable<Borehole> ClearNavigationProperties(this IEnumerable<Borehole> boreholes)
+    {
+        foreach (var borehole in boreholes)
+        {
+            yield return borehole.ClearNavigationProperties();
+        }
+    }
+
+    private static Borehole ClearNavigationProperties(this Borehole borehole)
+    {
+        foreach (var file in borehole.BoreholeFiles?.Select(boreholeFile => boreholeFile.File))
+        {
+            file.Boreholes.Clear();
+            file.BoreholeFiles.Clear();
+        }
+
+        borehole.Observations?.ClearNavigationProperties();
+
+        foreach (var completion in borehole.Completions)
+        {
+            completion.Backfills?.ClearNavigationProperties();
+            completion.Instrumentations?.ClearNavigationProperties();
+            completion.Casings?.ClearNavigationProperties();
+        }
+
+        return borehole;
+    }
+
+    private static void ClearNavigationProperties(this IEnumerable<Casing> casings)
+    {
+        foreach (var casing in casings)
+        {
+            casing.ClearNavigationProperties();
+        }
+    }
+
+    private static void ClearNavigationProperties(this IEnumerable<ICasingReference> casingsReferences)
+    {
+        foreach (var casingReference in casingsReferences)
+        {
+            casingReference.Casing?.ClearNavigationProperties();
+        }
+    }
+
+    private static void ClearNavigationProperties(this Casing casing)
+    {
+        casing.Backfills?.Clear();
+        casing.Observations?.Clear();
+        casing.Instrumentations?.Clear();
+        casing.Completion = null;
+    }
+
     /// <summary>
     /// Recursively updates all the <see cref="IUserAttached{TUser, TUserId}"/> <paramref name="items"/> with the given <paramref name="user"/>.
     /// </summary>

@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace BDMS.ExternSync.Tasks;
@@ -22,9 +22,15 @@ public class CollectInformationTask(ISyncContext syncContext, ILogger<CollectInf
         // Log configuration options (environment)
         Logger.LogInformation(
             "Configuration options:\n" +
-            "{MigrateTargetDatabaseEnvName}: <{MigrateTargetDatabase}>",
+            "{MigrateTargetDatabaseEnvName}: <{MigrateTargetDatabase}>; " +
+            "{TargetDefaultWorkgroupNameEnvName}: <{TargetDefaultWorkgroupName}>; " +
+            "{TargetDefaultUserSubEnvName}: <{TargetDefaultUserSub}>",
             SyncContextConstants.MigrateTargetDatabaseEnvName,
-            Configuration.GetValue<bool>(SyncContextConstants.MigrateTargetDatabaseEnvName));
+            Configuration.GetValue<bool>(SyncContextConstants.MigrateTargetDatabaseEnvName),
+            SyncContextConstants.TargetDefaultWorkgroupNameEnvName,
+            Configuration.GetValue<string>(SyncContextConstants.TargetDefaultWorkgroupNameEnvName),
+            SyncContextConstants.TargetDefaultUserSubEnvName,
+            Configuration.GetValue<string>(SyncContextConstants.TargetDefaultUserSubEnvName));
     }
 
     /// <inheritdoc/>

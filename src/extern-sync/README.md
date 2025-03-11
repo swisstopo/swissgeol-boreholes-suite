@@ -12,6 +12,8 @@ The application is configured using environment variables. The following environ
 
 - `CONNECTIONSTRINGS__SourceBdmsContext`: The connection string of the source database.
 - `CONNECTIONSTRINGS__TargetBdmsContext`: The connection string of the target database.
+- `TARGET_DEFAULT_WORKGROUP_NAME`: The default workgroup name to assign the borehole to if there is no matching workgroup in the target database.
+- `TARGET_DEFAULT_USER_SUB`: The default user subject/identifier to assign the synced boreholes to.
 - `MIGRATE_TARGET_DATABASE`: A flag to indicate whether the target database should be migrated if necessary. If not set, it defaults to `false`.
 
 ## 🧪 Unit Tests
