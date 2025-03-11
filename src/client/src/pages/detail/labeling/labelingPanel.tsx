@@ -220,21 +220,24 @@ const LabelingPanel: FC = () => {
   }, [extractionObject, extractionState, setExtractionObject, setExtractionState]);
 
   useEffect(() => {
-    if (selectedFile) {
-      getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
-        let newActivePage = activePage;
-        if (fileInfo?.count !== response.count) {
-          newActivePage = 1;
-          setActivePage(newActivePage);
-        }
-        if (fileInfo?.fileName !== response.fileName) {
-          setFileInfo(response);
-          fetchExtractionBoundingBoxes(selectedFile.nameUuid, newActivePage).then(res => {
-            setPageBoundingBoxes(res.bounding_boxes);
-          });
-        }
-      });
-    }
+    if (!selectedFile) return;
+
+    const fetchExtractionData = async () => {
+      const fileInfoResponse = await getDataExtractionFileInfo(selectedFile.id, activePage);
+      const { fileName, count } = fileInfoResponse;
+      let newActivePage = activePage;
+      if (fileInfo?.count !== count) {
+        newActivePage = 1;
+        setActivePage(newActivePage);
+      }
+      if (fileInfo?.fileName !== fileName) {
+        setFileInfo(fileInfoResponse);
+        const boundingBoxResponse = await fetchExtractionBoundingBoxes(selectedFile.nameUuid, newActivePage);
+        setPageBoundingBoxes(boundingBoxResponse.bounding_boxes);
+      }
+    };
+
+    fetchExtractionData();
   }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
