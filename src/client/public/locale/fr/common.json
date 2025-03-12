@@ -103,6 +103,7 @@
   "csvFormatExplanation": "Le fichier CSV-UTF8 doit contenir les en-têtes de colonne suivants",
   "csvOptionalExplanation": "Les titres de colonnes entre crochets sont facultatifs",
   "cuttings": "Déblais de forage (cuttings / carotte)",
+  "dataCollectionConsent": "Consentement à la collecte de données (facultatif)",
   "dataExtraction": "Extraction de données",
   "dataImport": "Importer des données",
   "date": "Date",
