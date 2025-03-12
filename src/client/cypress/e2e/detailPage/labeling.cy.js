@@ -298,6 +298,7 @@ describe("Test labeling tool", () => {
     toggleLabelingPanelWithoutDocuments();
     selectLabelingAttachment();
     getElementByDataCy("labeling-page-next").click();
+    waitForLabelingImageLoaded();
     getElementByDataCy("labeling-page-next").click();
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
@@ -346,6 +347,7 @@ describe("Test labeling tool", () => {
 
     // can switch between text extraction and coordinate extraction
     clickCoordinateLabelingButton();
+    cy.wait("@extraction-file-info");
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
@@ -369,7 +371,7 @@ describe("Test labeling tool", () => {
     cy.wait(1000);
 
     clickCoordinateLabelingButton();
-
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(180, 125, 400, 185);
     assertLabelingAlertText("No coordinates found");
