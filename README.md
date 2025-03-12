@@ -1,6 +1,6 @@
 [![.github/workflows/ci.yml](https://github.com/swisstopo/swissgeol-boreholes-suite/actions/workflows/ci.yml/badge.svg)](https://github.com/swisstopo/swissgeol-boreholes-suite/actions/workflows/ci.yml) [![Release](https://github.com/swisstopo/swissgeol-boreholes-suite/actions/workflows/release.yml/badge.svg)](https://github.com/swisstopo/swissgeol-boreholes-suite/actions/workflows/release.yml) [![Latest Release](https://img.shields.io/github/v/release/geoadmin/suite-bdms)](https://github.com/swisstopo/swissgeol-boreholes-suite/releases/latest) [![License](https://img.shields.io/github/license/geoadmin/suite-bdms)](https://github.com/swisstopo/swissgeol-boreholes-suite/blob/main/LICENSE)
 
-# borholes.swissgeol.ch
+# boreholes.swissgeol.ch
 
 Webapplikation zur einfachen strukturierten und harmonisierten Erfassung von geologischen Bohrdaten.
 
