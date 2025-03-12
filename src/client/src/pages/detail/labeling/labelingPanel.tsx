@@ -21,7 +21,7 @@ import {
 } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
-import { TextExtractionButton } from "../../../components/buttons/buttons.tsx";
+import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import LabelingFileSelector from "./labelingFileSelector.tsx";

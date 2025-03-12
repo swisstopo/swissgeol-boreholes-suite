@@ -1,16 +1,18 @@
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import { ButtonProps, IconButton, Tooltip } from "@mui/material";
+import { Box, Button, ButtonProps, IconButton, Tooltip } from "@mui/material";
 import { Sparkles } from "lucide-react";
+import SelectTextIcon from "../../assets/icons/selectText.svg?react";
 import SidebarDown from "../../assets/icons/sidebarDown.svg?react";
 import SidebarLeft from "../../assets/icons/sidebarLeft.svg?react";
 import SidebarRight from "../../assets/icons/sidebarRight.svg?react";
 import SidebarUp from "../../assets/icons/sidebarUp.svg?react";
+import { theme } from "../../AppTheme.ts";
 
-export const LabelingButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const CoordinateExtractionButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { t } = useTranslation();
   return (
-    <Tooltip title={t("dataExtraction")}>
+    <Tooltip title={t("extractCoordinates")}>
       <IconButton
         ref={ref}
         {...props}
@@ -25,12 +27,12 @@ export const LabelingButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
   );
 });
 
-interface LabelingToggleButtonProps extends ButtonProps {
+interface SidePanelToggleButtonProps extends ButtonProps {
   panelOpen: boolean;
   panelPosition: "right" | "bottom";
 }
 
-export const LabelingToggleButton = forwardRef<HTMLButtonElement, LabelingToggleButtonProps>((props, ref) => {
+export const SidePanelToggleButton = forwardRef<HTMLButtonElement, SidePanelToggleButtonProps>((props, ref) => {
   const { panelOpen, panelPosition, ...defaultProps } = props;
   const { t } = useTranslation();
 
@@ -50,7 +52,7 @@ export const LabelingToggleButton = forwardRef<HTMLButtonElement, LabelingToggle
   };
 
   return (
-    <Tooltip title={t("dataExtraction")}>
+    <Tooltip title={t("openSidepanel")}>
       <IconButton
         ref={ref}
         {...defaultProps}
@@ -70,3 +72,31 @@ export const LabelingToggleButton = forwardRef<HTMLButtonElement, LabelingToggle
     </Tooltip>
   );
 });
+
+export const TextExtractionButton = ({ onClick }: { onClick: () => void }) => {
+  const { t } = useTranslation();
+  return (
+    <Tooltip title={t("extractText")}>
+      <Button
+        data-cy="text-extraction-button"
+        variant="text"
+        onClick={onClick}
+        sx={{
+          p: 0.5,
+          boxShadow: 1,
+          height: "44px",
+        }}>
+        <Box
+          sx={{
+            p: 1,
+            lineHeight: 1,
+            borderRadius: 1,
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+          }}>
+          <SelectTextIcon />
+        </Box>
+      </Button>
+    </Tooltip>
+  );
+};
