@@ -22,7 +22,7 @@ export const BdmsAuthProvider = props => {
     fetch("/api/v2/settings")
       .then(res => (res.ok ? res.json() : Promise.reject(Error("Failed to get settings from API"))))
       .then(setSettings)
-      .catch(setSettings(undefined));
+      .catch(() => setSettings(undefined));
   }, []);
 
   useEffect(() => {
