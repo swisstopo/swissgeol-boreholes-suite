@@ -213,6 +213,7 @@ const LabelingPanel: FC = () => {
 
   useEffect(() => {
     if (extractionState === ExtractionState.start) {
+      closeAlert();
       setExtractionState(ExtractionState.drawing);
       if (extractionObject?.type === "coordinates") {
         setDrawTooltipLabel("drawCoordinateBox");
@@ -366,8 +367,8 @@ const LabelingPanel: FC = () => {
             }}>
             <TextExtractionButton
               onClick={() => {
-                closeAlert();
                 setExtractionObject({ type: "text" });
+                setExtractionState(ExtractionState.start);
                 setDrawTooltipLabel("drawTextBox");
               }}
             />
