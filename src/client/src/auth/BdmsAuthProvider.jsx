@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ReactGA from "react-ga4";
 import { AuthProvider as OidcAuthProvider } from "react-oidc-context";
 import { CircularProgress } from "@mui/material";
 import { WebStorageStateStore } from "oidc-client-ts";
@@ -9,18 +10,25 @@ import { CognitoUserManager } from "./CognitoUserManager";
 import { SplashScreen } from "./SplashScreen";
 
 export const BdmsAuthProvider = props => {
-  const [serverConfig, setServerConfig] = useState(undefined);
+  const [settings, setSettings] = useState(undefined);
   const [oidcConfig, setOidcConfig] = useState(undefined);
 
   useEffect(() => {
-    fetch("/api/v2/settings/auth")
-      .then(res => (res.ok ? res.json() : Promise.reject(Error("Failed to get auth settings from API"))))
-      .then(setServerConfig)
-      .catch(setServerConfig(undefined));
+    fetch("/api/v2/settings")
+      .then(res => (res.ok ? res.json() : Promise.reject(Error("Failed to get settings from API"))))
+      .then(setSettings)
+      .catch(setSettings(undefined));
   }, []);
 
   useEffect(() => {
-    if (!serverConfig) return;
+    if (!settings) return;
+
+    if (settings?.googleAnalyticsTrackingId) {
+      ReactGA.initialize(settings.googleAnalyticsTrackingId);
+      ReactGA.send({ hitType: "pageview" });
+    }
+
+    const serverConfig = settings.authSettings;
 
     const oidcClientSettings = {
       authority: serverConfig.authority,
@@ -46,7 +54,7 @@ export const BdmsAuthProvider = props => {
         anonymousModeEnabled: serverConfig.anonymousModeEnabled,
       },
     });
-  }, [serverConfig]);
+  }, [settings]);
 
   if (!oidcConfig) {
     return (
