@@ -23,6 +23,10 @@ function assertDrawTooltip(content) {
   cy.get('[data-cy="labeling-draw-tooltip"]').contains(content);
 }
 
+function assertDrawTooltipInvisible() {
+  cy.get('[data-cy="labeling-draw-tooltip"]').should("not.visible");
+}
+
 const drawBox = (x1, y1, x2, y2) => {
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 });
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 });
@@ -120,6 +124,10 @@ function assertBoundingBoxes(totalCount, visibleCount) {
     );
     expect(featureColors).to.deep.equal(expectedColors);
   });
+}
+
+function moveMouseOntoMap() {
+  cy.get('[data-cy="labeling-panel"]').realMouseMove(400, 120, { position: "topLeft" });
 }
 
 describe("Test labeling tool", () => {
@@ -221,7 +229,8 @@ describe("Test labeling tool", () => {
     hasAiStyle("locationYLV03");
     hasError("locationYLV03", false);
     isDisabled("locationYLV03");
-
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 140, 600, 250);
     assertBoundingBoxes(0, 0); // no bounding box preview for coordinate extraction
@@ -264,6 +273,7 @@ describe("Test labeling tool", () => {
     cy.wait(1000);
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
     cy.wait(1000);
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 120, 600, 300);
     cy.wait("@location");
@@ -292,6 +302,8 @@ describe("Test labeling tool", () => {
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
     getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
 
     // draw box around empty space
@@ -303,6 +315,8 @@ describe("Test labeling tool", () => {
 
     // draw box around text
     getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
     cy.wait(1000);
     drawBox(200, 120, 500, 400);
@@ -317,6 +331,8 @@ describe("Test labeling tool", () => {
 
     // draw box around first word and small part of second word
     getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
     cy.wait(1000);
     drawBox(200, 120, 250, 400);
@@ -330,8 +346,12 @@ describe("Test labeling tool", () => {
 
     // can switch between text extraction and coordinate extraction
     clickCoordinateLabelingButton();
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
   });
 
