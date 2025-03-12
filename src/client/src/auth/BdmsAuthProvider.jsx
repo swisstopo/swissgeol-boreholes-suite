@@ -9,6 +9,11 @@ import { BdmsAuthContext } from "./BdmsAuthContext";
 import { CognitoUserManager } from "./CognitoUserManager";
 import { SplashScreen } from "./SplashScreen";
 
+/**
+ * Fetches app settings, configures authentication, and initializes Google Analytics if needed.
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - The child components that require authentication.
+ */
 export const BdmsAuthProvider = props => {
   const [settings, setSettings] = useState(undefined);
   const [oidcConfig, setOidcConfig] = useState(undefined);
