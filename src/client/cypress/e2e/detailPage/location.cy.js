@@ -82,15 +82,21 @@ describe("Tests for 'Location' edit page.", () => {
       cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
       cy.get("@nameInput").should("have.value", "PHOTOCAT");
 
+      // changing alternate name should not change original name
       cy.get("@nameInput").clear().type("PHOTOMOUSE");
       cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
       cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
 
+      // changing original name should not update alternate name if they are different
+      cy.get("@originalNameInput").clear().type("PHOTOPIGEON");
+      cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
+      cy.get("@originalNameInput").should("have.value", "PHOTOPIGEON");
+
       cy.get("@nameInput").clear();
       saveWithSaveBar();
       // should be reset to original name if alternate name is empty
-      cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
-      cy.get("@nameInput").should("have.value", "PHOTOCAT");
+      cy.get("@originalNameInput").should("have.value", "PHOTOPIGEON");
+      cy.get("@nameInput").should("have.value", "PHOTOPIGEON");
     });
   });
 
