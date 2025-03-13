@@ -98,7 +98,7 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
       formMethods.setValue("country", country);
       formMethods.setValue("canton", canton);
       formMethods.setValue("municipality", municipality);
-      formMethods.setValue("originalReferenceSystem", ReferenceSystemCode.LV95);
+      formMethods.setValue("originalReferenceSystem" as const, ReferenceSystemCode.LV95);
       handleCoordinateTransformation(
         ReferenceSystemKey.LV95,
         ReferenceSystemKey.LV03,
