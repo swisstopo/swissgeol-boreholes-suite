@@ -89,7 +89,7 @@ public class SyncBoreholesTaskTest
 
         // Add a fake published borehole to the source context
         var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
-        syncContext.Source.Boreholes.Add(publishedBorehole);
+        await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
         var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
@@ -106,7 +106,7 @@ public class SyncBoreholesTaskTest
 
         // Add a fake published borehole to the source context
         var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
-        syncContext.Source.Boreholes.Add(publishedBorehole);
+        await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
         var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
@@ -125,12 +125,12 @@ public class SyncBoreholesTaskTest
 
         // Add a fake published borehole to the source context
         var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
-        syncContext.Source.Boreholes.Add(publishedBorehole);
+        await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
         // Add a fake default workgroup to the target context
         var defaultWorkgroup = new Workgroup { Name = "SHARPHUNT" };
-        syncContext.Target.Workgroups.Add(defaultWorkgroup);
+        await syncContext.Target.Workgroups.AddAsync(defaultWorkgroup);
         await syncContext.Target.SaveChangesAsync();
 
         var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
@@ -147,12 +147,12 @@ public class SyncBoreholesTaskTest
 
         // Add a fake published borehole to the source context
         var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
-        syncContext.Source.Boreholes.Add(publishedBorehole);
+        await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
         // Add a fake default workgroup to the target context
         var defaultWorkgroup = new Workgroup { Name = "Default" };
-        syncContext.Target.Workgroups.Add(defaultWorkgroup);
+        await syncContext.Target.Workgroups.AddAsync(defaultWorkgroup);
         await syncContext.Target.SaveChangesAsync();
 
         var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
