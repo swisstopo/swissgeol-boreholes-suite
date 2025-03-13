@@ -219,7 +219,7 @@ const LabelingPanel: FC = () => {
         setDrawTooltipLabel("drawCoordinateBox");
       }
     }
-  }, [extractionObject, extractionState, setExtractionObject, setExtractionState]);
+  }, [closeAlert, extractionObject, extractionState, setExtractionObject, setExtractionState]);
 
   useEffect(() => {
     if (!selectedFile) return;
