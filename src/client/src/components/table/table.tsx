@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   DataGrid,
   GridColDef,
+  GridColumnResizeParams,
   GridEventListener,
   GridFilterModel,
   GridPaginationModel,
@@ -41,6 +42,7 @@ interface TableProps {
   isDisabled?: boolean;
   showQuickFilter?: boolean;
   rowAutoHeight?: boolean;
+  onColumnResize?: (params: GridColumnResizeParams) => void;
 }
 
 export const Table: FC<TableProps> = ({
@@ -66,6 +68,7 @@ export const Table: FC<TableProps> = ({
   isDisabled = false,
   showQuickFilter = true,
   rowAutoHeight = false,
+  onColumnResize,
 }) => {
   const { i18n } = useTranslation();
 
@@ -116,6 +119,7 @@ export const Table: FC<TableProps> = ({
       onSortModelChange={onSortModelChange}
       paginationModel={paginationModel}
       onPaginationModelChange={onPaginationModelChange}
+      onColumnResize={onColumnResize}
       apiRef={apiRef}
       paginationMode={paginationMode}
       sortingMode={sortingMode}
