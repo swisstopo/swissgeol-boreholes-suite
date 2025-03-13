@@ -6,7 +6,7 @@ describe("General app tests", () => {
     cy.session("logged out", () => cy.visit("/"));
 
     // Fail GET of auth setting to prevent auto login.
-    cy.intercept("/api/v2/settings/auth", req => req.destroy());
+    cy.intercept("/api/v2/settings", req => req.destroy());
 
     cy.visit("/");
     cy.contains("Welcome to");

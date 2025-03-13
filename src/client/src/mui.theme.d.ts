@@ -53,6 +53,7 @@ declare module "@mui/material/styles" {
       header: string;
       main: string;
       mainTransparent: string;
+      textHighlights: string;
       mainEnd: string;
       active: string;
       activeEnd: string;

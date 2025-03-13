@@ -4,9 +4,11 @@ import { useParams } from "react-router-dom";
 import { Alert, Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { ChevronLeft, ChevronRight, PanelBottom, PanelRight } from "lucide-react";
+import { ApiError } from "../../../api/apiInterfaces.ts";
 import {
   extractCoordinates,
   extractText,
+  fetchExtractionBoundingBoxes,
   getDataExtractionFileInfo,
   getFiles,
   uploadFile,
@@ -25,6 +27,7 @@ import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
 import { LabelingHeader } from "./labelingHeader.tsx";
 import {
+  ExtractionBoundingBox,
   ExtractionRequest,
   ExtractionState,
   labelingFileFormat,
@@ -75,6 +78,7 @@ const LabelingPanel: FC = () => {
   const [files, setFiles] = useState<FileInterface[]>();
   const [selectedFile, setSelectedFile] = useState<FileInterface>();
   const [fileInfo, setFileInfo] = useState<DataExtractionResponse>();
+  const [pageBoundingBoxes, setPageBoundingBoxes] = useState<ExtractionBoundingBox[]>([]);
   const [activePage, setActivePage] = useState<number>(1);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
   const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
@@ -217,19 +221,33 @@ const LabelingPanel: FC = () => {
   }, [extractionObject, extractionState, setExtractionObject, setExtractionState]);
 
   useEffect(() => {
-    if (selectedFile) {
-      getDataExtractionFileInfo(selectedFile.id, activePage).then(response => {
-        if (fileInfo?.count !== response.count) {
-          setActivePage(1);
+    if (!selectedFile) return;
+
+    const fetchExtractionData = async () => {
+      const fileInfoResponse = await getDataExtractionFileInfo(selectedFile.id, activePage);
+      const { fileName, count } = fileInfoResponse;
+      let newActivePage = activePage;
+      if (fileInfo?.count !== count) {
+        newActivePage = 1;
+        setActivePage(newActivePage);
+      }
+      if (fileInfo?.fileName !== fileName) {
+        setFileInfo(fileInfoResponse);
+        try {
+          const boundingBoxResponse = await fetchExtractionBoundingBoxes(selectedFile.nameUuid, newActivePage);
+          setPageBoundingBoxes(boundingBoxResponse.bounding_boxes);
+        } catch (error) {
+          if (error instanceof ApiError) {
+            showAlert(t(error.message), "warning");
+          } else {
+            showAlert(t("errorDataExtractionFetchBoundingBoxes"), "warning");
+          }
         }
-        if (fileInfo !== response) {
-          setFileInfo(response);
-        }
-      });
-    }
-    // Adding fileInfo to dependencies would cause an infinite loop
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePage, selectedFile]);
+      }
+    };
+
+    fetchExtractionData();
+  }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName, showAlert, t]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
   return (
@@ -366,6 +384,8 @@ const LabelingPanel: FC = () => {
             fileInfo={fileInfo}
             onDrawEnd={setExtractionExtent}
             drawTooltipLabel={drawTooltipLabel}
+            boundingBoxes={pageBoundingBoxes}
+            extractionType={extractionObject?.type}
           />
         </Box>
       ) : (
