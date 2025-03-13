@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import { getTerms } from "../api-lib";
+import { useSettings } from "../api/useSettings";
 import { DisclaimerDialog } from "./disclaimerDialog";
 import { de, en, fr, it } from "./disclaimerFallback";
 
@@ -14,9 +16,11 @@ interface Terms {
 
 export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
   const [hasAccepted, setHasAccepted] = useState(false);
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
   const [terms, setTerms] = useState<Terms>({ en: en, de: de, fr: fr, it: it });
   const [isFetching, setIsFetching] = useState(true);
   const { i18n } = useTranslation();
+  const settings = useSettings();
 
   useEffect(() => {
     // @ts-expect-error : The getTerms function is not typed
@@ -34,7 +38,15 @@ export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
     });
   }, []);
 
-  const handleDialogClose = () => {
+  useEffect(() => {
+    if (hasAccepted && analyticsEnabled && settings?.googleAnalyticsTrackingId) {
+      ReactGA.initialize(settings.googleAnalyticsTrackingId);
+      ReactGA.send("pageview");
+    }
+  }, [hasAccepted, analyticsEnabled, settings]);
+
+  const handleDialogClose = (analyticsEnabled: boolean) => {
+    setAnalyticsEnabled(analyticsEnabled);
     setHasAccepted(true);
   };
 
