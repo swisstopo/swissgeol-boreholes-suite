@@ -32,16 +32,6 @@ const drawingStyle = () =>
     }),
   });
 
-const transparentBoundingBoxStyle = () =>
-  new Style({
-    stroke: new Stroke({
-      color: "transparent",
-    }),
-    fill: new Fill({
-      color: "transparent",
-    }),
-  });
-
 interface LabelingDrawContainerProps {
   fileInfo?: DataExtractionResponse;
   onDrawEnd: (extent: number[]) => void;
@@ -209,6 +199,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
         dragBox.on("boxend", () => {
           const boxFeature = new Feature({
             geometry: fromExtent(dragBox.getGeometry().getExtent()),
+            style: drawingStyle,
           });
           drawingSource.addFeature(boxFeature);
           const tmpMap = map;
@@ -305,7 +296,6 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
       const boundingBoxSource = new VectorSource();
       const boundingBoxLayer = new VectorLayer({
         source: boundingBoxSource,
-        style: transparentBoundingBoxStyle,
       });
       boundingBoxLayer.set("name", "boundingBoxLayer");
 
