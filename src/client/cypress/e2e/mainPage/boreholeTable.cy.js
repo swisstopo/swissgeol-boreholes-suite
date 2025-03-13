@@ -50,6 +50,12 @@ describe("Borehole editor table tests", () => {
     verifyRowContains("borehole", 0);
     verifyRowContains("borehole", 1);
     verifyRowContains("borehole", 2);
+
+    // sort by drilling purpose
+    sortBy("Drilling purpose");
+    verifyRowContains("geotechnics", 0);
+    verifyRowContains("geotechnics", 1);
+    verifyRowContains("geotechnics", 2);
   });
 
   it("preserves column sorting and active page when navigating", () => {
