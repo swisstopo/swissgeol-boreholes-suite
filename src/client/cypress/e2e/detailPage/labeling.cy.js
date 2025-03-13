@@ -124,7 +124,7 @@ function assertBoundingBoxes(totalCount, highlightedArea) {
 function assertClipboardContent(expectedText) {
   cy.window().should(win =>
     win.navigator.clipboard.readText().then(text => {
-      expect(text).to.equal(expectedText); // ✅ Cypress will retry this
+      expect(text).to.equal(expectedText);
     }),
   );
 }
