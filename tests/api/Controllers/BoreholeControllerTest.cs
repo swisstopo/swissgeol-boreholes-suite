@@ -584,7 +584,7 @@ public class BoreholeControllerTest
         var borehole = context.Boreholes
             .GetAllWithIncludes()
             .AsNoTracking()
-            .ToList()
+            .AsEnumerable()
             .FirstOrDefault(b =>
                 b.Stratigraphies != null &&
                 b.Stratigraphies.Any() &&
