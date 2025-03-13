@@ -1,5 +1,6 @@
 import { RefObject } from "react";
 import { BoreholeV2, Identifier } from "../../../../api/borehole.ts";
+import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 
@@ -33,9 +34,6 @@ interface LocationFormBaseInputs {
   locationPrecisionId: number | null;
 }
 
-export interface BoreholeFile {
-  fileId: number;
-}
 export interface LocationFormInputs extends LocationFormBaseInputs {
   locationXLV03: string;
   locationYLV03: string;
