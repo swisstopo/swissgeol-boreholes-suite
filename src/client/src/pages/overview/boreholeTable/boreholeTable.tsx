@@ -6,7 +6,6 @@ import {
   GridCellCheckboxRenderer,
   GridColDef,
   GridColumnHeaderParams,
-  GridColumnResizeParams,
   GridEventListener,
   GridHeaderCheckbox,
   GridPaginationModel,
@@ -38,8 +37,6 @@ export interface BoreholeTableProps {
   setHover: React.Dispatch<React.SetStateAction<number | null>>;
   rowToHighlight: number | null;
   isBusy: boolean;
-  columnWidths?: Record<string, number>;
-  setColumnWidths?: (widths: Record<string, number>) => void;
 }
 
 export const BoreholeTable: FC<BoreholeTableProps> = ({
@@ -65,27 +62,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const rowCountRef = useRef(boreholes?.length || 0);
   const scrollPositionRef = useRef(tableScrollPosition);
   const [filteredIds, setFilteredIds] = useState<number[]>([]);
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
-
-  // This useEffect ensures that user-defined column widths are applied when re-rendering the table.
-  useEffect(() => {
-    if (apiRef.current) {
-      Object.entries(columnWidths).forEach(([field, width]) => {
-        apiRef.current.setColumnWidth(field, width);
-      });
-    }
-  }, [apiRef, columnWidths]);
-
-  const handleColumnResize = useCallback(
-    (params: GridColumnResizeParams) => {
-      const updatedWidths = {
-        ...columnWidths,
-        [params.colDef.field]: params.width,
-      };
-      setColumnWidths(updatedWidths);
-    },
-    [columnWidths],
-  );
 
   // This useEffect makes sure that the table selection model is only updated when the
   // filtered_borehole_ids have changed and not whenever the boreholes.data changes,
@@ -168,8 +144,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     {
       field: "alternate_name",
       headerName: t("name"),
-      width: columnWidths["alternate_name"] || undefined, // is undefined until user manually sets width
-      flex: columnWidths["alternate_name"] ? undefined : 1,
+      flex: 1,
     },
     {
       field: "borehole_type",
@@ -181,15 +156,13 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         return "";
       },
       headerName: t("borehole_type"),
-      width: columnWidths["borehole_type"] || undefined, // is undefined until user manually sets width
-      flex: columnWidths["borehole_type"] ? undefined : 1,
+      flex: 1,
     },
     {
       field: "total_depth",
       valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.total_depth * 100) / 100, 2),
       headerName: t("totaldepth"),
-      width: columnWidths["total_depth"] || undefined, // is undefined until user manually sets width
-      flex: columnWidths["total_depth"] ? undefined : 1,
+      flex: 1,
     },
     {
       field: "purpose",
@@ -199,29 +172,25 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         return domain ? domain[i18n.language] : "";
       },
       headerName: t("purpose"),
-      width: columnWidths["extended"] || undefined, // is undefined until user manually sets width
-      flex: columnWidths["extended"] ? undefined : 1,
+      flex: 1,
     },
     {
       field: "reference_elevation",
       valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.reference_elevation * 100) / 100, 2),
       headerName: t("reference_elevation"),
-      width: columnWidths["reference_elevation"] || undefined, // is undefined until user manually sets width
-      flex: columnWidths["reference_elevation"] ? undefined : 1,
+      flex: 1,
     },
     {
       field: "location_x",
       valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.location_x * 100) / 100, 2),
       headerName: t("location_x"),
-      width: columnWidths["location_x"] || undefined, // is undefined until user manually sets width
-      flex: columnWidths["location_x"] ? undefined : 1,
+      flex: 1,
     },
     {
       field: "location_y",
       valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.location_y * 100) / 100, 2),
       headerName: t("location_y"),
-      width: columnWidths["location_y"] || undefined, // is undefined until user manually sets width
-      flex: columnWidths["location_y"] ? undefined : 1,
+      flex: 1,
     },
     {
       field: "lock",
@@ -253,8 +222,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         return value.name;
       },
       headerName: t("workgroup"),
-      width: columnWidths["workgroup"] || undefined, // is undefined until user manually sets width
-      flex: columnWidths["workgroup"] ? undefined : 1,
+      flex: 1,
     });
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
@@ -332,7 +300,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       columns={columns}
       dataCy={"borehole-table"}
       apiRef={apiRef}
-      onColumnResize={handleColumnResize}
       onRowClick={handleRowClick}
       getRowClassName={getRowClassName}
       sortModel={sortModel}
