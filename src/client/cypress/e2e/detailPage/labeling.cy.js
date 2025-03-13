@@ -137,7 +137,7 @@ function assertClipboardContent(expectedText) {
 }
 
 function moveMouseOntoMap() {
-  cy.get('[data-cy="labeling-panel"]').realMouseMove(400, 120, { position: "topLeft" });
+  cy.get('[data-cy="labeling-panel"]').realMouseMove(400, 400, { position: "topLeft" });
 }
 
 describe("Test labeling tool", () => {
@@ -314,6 +314,7 @@ describe("Test labeling tool", () => {
     getElementByDataCy("labeling-page-next").click();
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
+    cy.wait("@extraction-file-info");
     getElementByDataCy("text-extraction-button").click();
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
