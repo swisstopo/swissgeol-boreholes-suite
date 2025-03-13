@@ -183,6 +183,7 @@
   "errorBulkEditing": "An error occurred while bulk editing:",
   "errorCopyingToClipboard": "Text could not be copied to the clipboard",
   "errorDataExtraction": "The data extraction has failed.",
+  "errorDataExtractionFetchBoundingBoxes": "An error occurred while fetching the bounding boxes.",
   "errorDataExtractionFileLoading": "An error occurred while loading the data extraction file.",
   "errorDuplicatedUploadPerBorehole": "This file has already been uploaded for this borehole and cannot be uploaded a second time.",
   "errorDuringBoreholeFileUpload": "An error occurred during the upload.",

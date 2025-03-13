@@ -183,6 +183,7 @@
   "errorBulkEditing": "Bei der Mehrfachbearbeitung ist ein Fehler aufgetreten:",
   "errorCopyingToClipboard": "Text konnte nicht in die Zwischenablage kopiert werden",
   "errorDataExtraction": "Die Datenextraktion ist fehlgeschlagen.",
+  "errorDataExtractionFetchBoundingBoxes": "Beim Laden der Textboundingboxes ist ein Fehler aufgetreten.",
   "errorDataExtractionFileLoading": "Beim Laden der Datenextraktionsdatei ist ein Fehler aufgetreten.",
   "errorDuplicatedUploadPerBorehole": "Diese Datei wurde bereits für diese Bohrung hochgeladen und kann nicht ein zweites Mal hochgeladen werden.",
   "errorDuringBoreholeFileUpload": "Beim Hochladen ist ein Fehler aufgetreten.",

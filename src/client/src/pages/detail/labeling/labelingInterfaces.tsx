@@ -36,6 +36,9 @@ export interface Coordinate {
   north: number | string;
   projection: ReferenceSystemKey;
 }
+export interface BoundingBoxResponse {
+  bounding_boxes: ExtractionBoundingBox[];
+}
 
 export type ExtractionResponse = {
   [key in ExtractionType]: string | number | Coordinate;
