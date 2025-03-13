@@ -66,7 +66,7 @@ public class BoreholeFileCloudServiceTest
         fileName = fileName.Replace(" ", "_");
 
         // Get borehole with file linked from db
-        var borehole = GetBoreholesWithIncludes(context.Boreholes).Single(b => b.Id == minBoreholeId);
+        var borehole = context.Boreholes.GetAllWithIncludes().Single(b => b.Id == minBoreholeId);
 
         // Check if fileName whitespace is replaced with underscore
         Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, fileName);
@@ -84,7 +84,7 @@ public class BoreholeFileCloudServiceTest
         await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(firstPdfFormFile.OpenReadStream(), firstPdfFormFile.FileName, firstPdfFormFile.ContentType, minBoreholeId).ConfigureAwait(false);
 
         // Get borehole with file linked from db
-        var borehole = GetBoreholesWithIncludes(context.Boreholes).Single(b => b.Id == minBoreholeId);
+        var borehole = context.Boreholes.GetAllWithIncludes().Single(b => b.Id == minBoreholeId);
 
         // Check if file is linked to borehole
         Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, fileName);
