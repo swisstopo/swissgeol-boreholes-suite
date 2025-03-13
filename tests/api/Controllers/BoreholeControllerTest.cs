@@ -504,8 +504,11 @@ public class BoreholeControllerTest
 
         Assert.AreNotEqual(originalFieldMeasurement.Id, copiedFieldMeasurement.Id);
         Assert.AreNotSame(originalFieldMeasurement.FieldMeasurementResults, copiedFieldMeasurement.FieldMeasurementResults);
-        Assert.AreNotEqual(originalFieldMeasurement.FieldMeasurementResults.First().Id, copiedFieldMeasurement.FieldMeasurementResults.First().Id);
-        Assert.AreEqual(originalFieldMeasurement.FieldMeasurementResults.First().Value, copiedFieldMeasurement.FieldMeasurementResults.First().Value);
+
+        var originalFieldMeasurementResult = originalFieldMeasurement.FieldMeasurementResults.OrderByDescending(x => x.Id).First();
+        var copiedFieldMeasurementResult = copiedFieldMeasurement.FieldMeasurementResults.OrderByDescending(x => x.Id).First();
+        Assert.AreNotEqual(originalFieldMeasurementResult.Id, copiedFieldMeasurementResult.Id);
+        Assert.AreEqual(originalFieldMeasurementResult.Value, copiedFieldMeasurementResult.Value);
 
         var originalSection = originalBorehole.Sections.First();
         var copiedSection = copiedBorehole.Sections.First();
@@ -524,7 +527,7 @@ public class BoreholeControllerTest
 
     private Borehole GetBorehole(int id)
     {
-        return GetBoreholesWithIncludes(context.Boreholes).Single(b => b.Id == id);
+        return context.Boreholes.GetAllWithIncludes().Single(b => b.Id == id);
     }
 
     private Borehole GetBoreholeToAdd()
@@ -617,7 +620,7 @@ public class BoreholeControllerTest
 
     private void LoadBoreholeWithIncludes()
     {
-        List<Borehole> boreholes = GetBoreholesWithIncludes(context.Boreholes).ToList();
+        List<Borehole> boreholes = context.Boreholes.GetAllWithIncludes().ToList();
 
         foreach (var bh in boreholes)
         {

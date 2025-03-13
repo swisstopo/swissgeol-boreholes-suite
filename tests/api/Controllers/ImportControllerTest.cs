@@ -108,7 +108,7 @@ public class ImportControllerTest
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(2, okResult.Value);
 
-        var boreholes = await GetBoreholesWithIncludes(context.Boreholes).ToListAsync().ConfigureAwait(false);
+        var boreholes = await context.Boreholes.GetAllWithIncludes().ToListAsync().ConfigureAwait(false);
 
         var borehole = boreholes.Find(b => b.OriginalName == "PURPLETOLL");
 
@@ -554,7 +554,7 @@ public class ImportControllerTest
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(2, okResult.Value);
-        var uploadedBoreholesWithAttachment = await GetBoreholesWithIncludes(context.Boreholes).Where(b => b.OriginalName.StartsWith("Carmen Catnip")).ToListAsync();
+        var uploadedBoreholesWithAttachment = await context.Boreholes.GetAllWithIncludes().Where(b => b.OriginalName.StartsWith("Carmen Catnip")).ToListAsync();
         Assert.AreEqual(uploadedBoreholesWithAttachment.SelectMany(b => b.Files!).Count(), 3);
 
         var firstBoreholes = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Cheese");
@@ -638,7 +638,7 @@ public class ImportControllerTest
         Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
-        var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_6");
+        var borehole = context.Boreholes.GetAllWithIncludes().Single(b => b.OriginalName == "Unit_Test_6");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Unit_Test_6_a", borehole.Name);
         Assert.AreEqual(null, borehole.IsPublic);
@@ -686,7 +686,7 @@ public class ImportControllerTest
         Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
-        var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_2");
+        var borehole = context.Boreholes.GetAllWithIncludes().Single(b => b.OriginalName == "Unit_Test_2");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual(null, borehole.Name);
         Assert.AreEqual(null, borehole.IsPublic);
@@ -725,7 +725,7 @@ public class ImportControllerTest
         Assert.AreEqual(7, okResult.Value);
 
         // Assert imported values
-        var boreholeLV95 = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_2");
+        var boreholeLV95 = context.Boreholes.GetAllWithIncludes().Single(b => b.OriginalName == "Unit_Test_2");
         Assert.AreEqual(ReferenceSystem.LV95, boreholeLV95.OriginalReferenceSystem);
         Assert.AreEqual(2000010.12, boreholeLV95.LocationX);
         Assert.AreEqual(1000010.1, boreholeLV95.LocationY);
@@ -734,7 +734,7 @@ public class ImportControllerTest
         Assert.AreEqual(2, boreholeLV95.PrecisionLocationXLV03);
         Assert.AreEqual(2, boreholeLV95.PrecisionLocationYLV03);
 
-        var boreholeLV03 = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_6");
+        var boreholeLV03 = context.Boreholes.GetAllWithIncludes().Single(b => b.OriginalName == "Unit_Test_6");
         Assert.AreEqual(ReferenceSystem.LV03, boreholeLV03.OriginalReferenceSystem.Value);
         Assert.AreEqual(20050.12, boreholeLV03.LocationXLV03);
         Assert.AreEqual(10050.12345, boreholeLV03.LocationYLV03);
@@ -743,7 +743,7 @@ public class ImportControllerTest
         Assert.AreEqual(5, boreholeLV03.PrecisionLocationX);
         Assert.AreEqual(5, boreholeLV03.PrecisionLocationY);
 
-        var boreholeWithZeros = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_7");
+        var boreholeWithZeros = context.Boreholes.GetAllWithIncludes().Single(b => b.OriginalName == "Unit_Test_7");
         Assert.AreEqual(ReferenceSystem.LV03, boreholeWithZeros.OriginalReferenceSystem.Value);
         Assert.AreEqual(20060.000, boreholeWithZeros.LocationXLV03);
         Assert.AreEqual(10060.0000, boreholeWithZeros.LocationYLV03);

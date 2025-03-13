@@ -230,7 +230,7 @@ public class BoreholeLockServiceTest
     {
         bool LockedCondition(Borehole borehole) => lockedByAdmin ? borehole.LockedById == AdminUserId : borehole.LockedById != AdminUserId;
 
-        return GetBoreholesWithIncludes(context.Boreholes)
+        return context.Boreholes.GetAllWithIncludes()
             .Where(b => b.Workflows.Any(w => w.UserId == AdminUserId))
             .AsEnumerable()
             .First(b => b.Locked.HasValue && LockedCondition(b));

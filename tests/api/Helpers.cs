@@ -104,47 +104,6 @@ internal static class Helpers
     }
 
     /// <summary>
-    /// Extends the provided <see cref="IQueryable"/> of type <see cref="Borehole"/> with all includes.
-    /// </summary>
-    /// <param name="query">The <see cref="IQueryable"/> of type <see cref="Borehole"/> to be extended.</param>
-    /// <returns>The extended <see cref="IQueryable"/> of type <see cref="Borehole"/> with all includes.</returns>
-    internal static IQueryable<Borehole> GetBoreholesWithIncludes(IQueryable<Borehole> query)
-    {
-        return query
-            .Include(b => b.BoreholeFiles).ThenInclude(bf => bf.File)
-            .Include(b => b.Files)
-            .Include(b => b.Workflows)
-            .Include(b => b.Workgroup)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.ColorCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.DebrisCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.GrainAngularityCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.GrainShapeCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.OrganicComponentCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.Uscs3Codelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
-            .Include(b => b.Completions).ThenInclude(c => c.Casings).ThenInclude(c => c.CasingElements)
-            .Include(b => b.Completions).ThenInclude(c => c.Instrumentations)
-            .Include(b => b.Completions).ThenInclude(c => c.Backfills)
-            .Include(b => b.Observations)
-            .Include(b => b.Sections).ThenInclude(s => s.SectionElements)
-            .Include(b => b.BoreholeGeometry)
-            .Include(b => b.BoreholeCodelists)
-            .Include(b => b.CreatedBy)
-            .Include(b => b.UpdatedBy)
-            .Include(b => b.LockedBy)
-            .Include(b => b.Type);
-    }
-
-    /// <summary>
     /// Extends the provided <see cref="IQueryable"/> of type <see cref="Layer"/> with all includes.
     /// </summary>
     /// <param name="query">The <see cref="IQueryable"/> of type <see cref="Layer"/> to be extended.</param>
