@@ -23,7 +23,7 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
 
         // Remove boreholes already available at the target database by comparing the depth and
         // coordinates of each borehole if they are within a pre-defined radius.
-        var boreholesAtDestination = Target.Boreholes.AsNoTracking();
+        var boreholesAtDestination = await Target.Boreholes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         publishedBoreholes = [.. publishedBoreholes.RemoveDuplicates(boreholesAtDestination)];
 
         // Skip this sync task if there are no published boreholes available.

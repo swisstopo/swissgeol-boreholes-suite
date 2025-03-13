@@ -61,7 +61,7 @@ internal static class TestSyncContextExtensions
     /// <param name="context">The database context to be used.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to set the publication state on.</param>
     /// <param name="userId">The <see cref="User.Id"/> to be assigned to each <see cref="Workflow"/> entry.</param>
-    /// <param name="status">The <see cref="Role"/>/Status to be set.</param>
+    /// <param name="status">The <see cref="Role"/> to be set.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The updated <see cref="Borehole"/> entity.</returns>
     internal static async Task<Borehole> SetBoreholePublicationStatusAsync(this BdmsContext context, int boreholeId, int userId, Role status, CancellationToken cancellationToken)

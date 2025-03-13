@@ -70,13 +70,13 @@ public static class SyncContextExtensions
     }
 
     /// <summary>
-    /// Removes duplicated <see cref="Borehole"/>s from <paramref name="boreholes"/> which already exists in <paramref name="existingBoreholes"/>.
-    /// To determine if a <see cref="Borehole"/> is duplicated, the coordinates and depth get checked against
-    /// <see cref="BoreholeExtensions.IsWithingPreDefinedTolerance(Borehole, IEnumerable{Borehole})"/>.
+    /// Removes duplicated <see cref="Borehole"/>s from <paramref name="boreholes"/> which already exists in
+    /// <paramref name="existingBoreholes"/>. To determine if a <see cref="Borehole"/> is duplicated, the coordinates
+    /// and depth get checked against <see cref="BoreholeExtensions.IsWithinPredefinedTolerance(Borehole, IEnumerable{Borehole})"/>.
     /// </summary>
-    internal static IEnumerable<Borehole> RemoveDuplicates(this IEnumerable<Borehole> boreholes, IEnumerable<Borehole> existingBoreholes)
+    internal static IEnumerable<Borehole> RemoveDuplicates(this IEnumerable<Borehole> boreholes, IList<Borehole> existingBoreholes)
     {
-        foreach (var borehole in boreholes.Where(b => !b.IsWithingPreDefinedTolerance(existingBoreholes)))
+        foreach (var borehole in boreholes.Where(b => !b.IsWithinPredefinedTolerance(existingBoreholes)))
         {
             yield return borehole;
         }
@@ -144,7 +144,7 @@ public static class SyncContextExtensions
     /// when syncing <see cref="Borehole"/>s from a context to another in this project.
     /// </summary>
     /// <param name="borehole">The <see cref="Borehole"/> to set the publication status on.</param>
-    /// <param name="status">The <see cref="Role"/>/Status to be set. <see cref="Role.View"/>
+    /// <param name="status">The <see cref="Role"/> to be set. <see cref="Role.View"/>
     /// is not a valid publication status.</param>
     /// <exception cref="NotSupportedException">If the <paramref name="status"/> is not supported.</exception>
     internal static Borehole SetBoreholePublicationStatus(this Borehole borehole, Role status)
@@ -192,8 +192,7 @@ public static class SyncContextExtensions
     {
         foreach (var item in items)
         {
-            HashSet<IChangeTracking> visitedItems = [];
-            item.ProcessRecursive(i => i.UpdateChangeTracking(user), visitedItems);
+            item.ProcessRecursive(i => i.UpdateChangeTracking(user), []);
         }
     }
 
@@ -303,8 +302,7 @@ public static class SyncContextExtensions
 
         foreach (var item in items)
         {
-            HashSet<IUserAttached<TUser, TUserId>> visitedItems = [];
-            item.ProcessRecursive(UpdateUserAttachedItem, visitedItems);
+            item.ProcessRecursive(UpdateUserAttachedItem, []);
         }
     }
 }

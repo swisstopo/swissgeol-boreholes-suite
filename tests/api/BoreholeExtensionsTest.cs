@@ -7,7 +7,7 @@ namespace BDMS;
 public class BoreholeExtensionsTest
 {
     [TestMethod]
-    public void IsWithingPreDefinedTolerance()
+    public void IsWithinPredefinedTolerance()
     {
         var boreholeMaster = new Borehole { TotalDepth = 100, LocationX = 2617360.73, LocationY = 1221773.39, LocationXLV03 = 617360.35, LocationYLV03 = 221773.17 };
         var boreholeWithinSameDepth = new Borehole { TotalDepth = 100, LocationX = 2617360.95, LocationY = 1221773.89, LocationXLV03 = 617360.57, LocationYLV03 = 221773.67 };
@@ -16,11 +16,11 @@ public class BoreholeExtensionsTest
         var boreholeNotWithingSameDepth = new Borehole { TotalDepth = 100, LocationX = 2617333.35, LocationY = 1221764.47, LocationXLV03 = 617332.97, LocationYLV03 = 221764.25 };
         var boreholeNotWithingNotSameDepth = new Borehole { TotalDepth = 100.1, LocationX = 2617333.35, LocationY = 1221764.47, LocationXLV03 = 617332.97, LocationYLV03 = 221764.25 };
 
-        Assert.IsTrue(boreholeMaster.IsWithingPreDefinedTolerance([boreholeWithinSameDepth]));
+        Assert.IsTrue(boreholeMaster.IsWithinPredefinedTolerance([boreholeWithinSameDepth]));
 
-        Assert.IsFalse(boreholeMaster.IsWithingPreDefinedTolerance([boreholeWithinNotSameDepth]));
-        Assert.IsFalse(boreholeMaster.IsWithingPreDefinedTolerance([boreholeNotWithingSameDepth]));
-        Assert.IsFalse(boreholeMaster.IsWithingPreDefinedTolerance([boreholeNotWithingNotSameDepth]));
+        Assert.IsFalse(boreholeMaster.IsWithinPredefinedTolerance([boreholeWithinNotSameDepth]));
+        Assert.IsFalse(boreholeMaster.IsWithinPredefinedTolerance([boreholeNotWithingSameDepth]));
+        Assert.IsFalse(boreholeMaster.IsWithinPredefinedTolerance([boreholeNotWithingNotSameDepth]));
     }
 
     [TestMethod]

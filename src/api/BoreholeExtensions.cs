@@ -61,7 +61,7 @@ public static class BoreholeExtensions
     /// The <see cref="Borehole.TotalDepth"/> must be exactly the same to create a match.
     /// </summary>
     /// <returns><c>true</c> if there are any matches. Otherwise <c>false</c>.</returns>
-    public static bool IsWithingPreDefinedTolerance(this Borehole borehole, IEnumerable<Borehole> boreholes)
+    public static bool IsWithinPredefinedTolerance(this Borehole borehole, IEnumerable<Borehole> boreholes)
     {
         return boreholes.Any(b =>
             CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&

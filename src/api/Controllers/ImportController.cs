@@ -491,7 +491,7 @@ public class ImportController : ControllerBase
     {
         var boreholesFromDb = context.Boreholes.Where(b => b.WorkgroupId == workgroupId).AsNoTracking();
 
-        if (borehole.IsWithingPreDefinedTolerance(boreholesFromDb))
+        if (borehole.IsWithinPredefinedTolerance(boreholesFromDb))
         {
             AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", errorType);
         }
