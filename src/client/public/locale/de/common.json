@@ -103,6 +103,7 @@
   "csvFormatExplanation": "Das CSV-UTF8 File sollte die folgenden Spaltenüberschriften enthalten",
   "csvOptionalExplanation": "Spaltenüberschriften in eckigen Klammern sind optional",
   "cuttings": "Bohrgut (Bohrklein, Kern)",
+  "dataCollectionConsent": "Einwilligung zur Datenerfassung (optional)",
   "dataExtraction": "Datenextraktion",
   "dataImport": "Datenimport",
   "date": "Datum",

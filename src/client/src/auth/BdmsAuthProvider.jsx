@@ -2,25 +2,26 @@ import { useEffect, useState } from "react";
 import { AuthProvider as OidcAuthProvider } from "react-oidc-context";
 import { CircularProgress } from "@mui/material";
 import { WebStorageStateStore } from "oidc-client-ts";
+import { useSettings } from "../api/useSettings";
 import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
 import { AuthOverlay } from "./AuthOverlay";
 import { BdmsAuthContext } from "./BdmsAuthContext";
 import { CognitoUserManager } from "./CognitoUserManager";
 import { SplashScreen } from "./SplashScreen";
 
+/**
+ * Fetches app settings, configures authentication, and initializes Google Analytics if needed.
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - The child components that require authentication.
+ */
 export const BdmsAuthProvider = props => {
-  const [serverConfig, setServerConfig] = useState(undefined);
   const [oidcConfig, setOidcConfig] = useState(undefined);
+  const settings = useSettings();
 
   useEffect(() => {
-    fetch("/api/v2/settings/auth")
-      .then(res => (res.ok ? res.json() : Promise.reject(Error("Failed to get auth settings from API"))))
-      .then(setServerConfig)
-      .catch(setServerConfig(undefined));
-  }, []);
+    if (!settings?.authSettings) return;
 
-  useEffect(() => {
-    if (!serverConfig) return;
+    const serverConfig = settings.authSettings;
 
     const oidcClientSettings = {
       authority: serverConfig.authority,
@@ -46,7 +47,7 @@ export const BdmsAuthProvider = props => {
         anonymousModeEnabled: serverConfig.anonymousModeEnabled,
       },
     });
-  }, [serverConfig]);
+  }, [settings]);
 
   if (!oidcConfig) {
     return (
