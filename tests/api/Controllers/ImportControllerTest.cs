@@ -108,10 +108,7 @@ public class ImportControllerTest
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(2, okResult.Value);
 
-        var boreholes = await context.Boreholes.GetAllWithIncludes().ToListAsync().ConfigureAwait(false);
-
-        var borehole = boreholes.Find(b => b.OriginalName == "PURPLETOLL");
-
+        var borehole = await context.Boreholes.GetAllWithIncludes().SingleAsync(b => b.OriginalName == "PURPLETOLL").ConfigureAwait(false);
         Assert.IsNotNull(borehole.CreatedById, nameof(Borehole.CreatedById).ShouldNotBeNullMessage());
         Assert.IsNotNull(borehole.Created, nameof(Borehole.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(borehole.UpdatedById, nameof(Borehole.UpdatedById).ShouldNotBeNullMessage());

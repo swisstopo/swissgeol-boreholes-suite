@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Text;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -86,12 +85,10 @@ public class BoreholeControllerTest
     {
         var id = 1_000_257;
 
-        LoadBoreholeWithIncludes();
-
         var newBorehole = GetBoreholeToAdd();
         newBorehole.Id = id;
 
-        var boreholeToEdit = context.Boreholes.Single(c => c.Id == id);
+        var boreholeToEdit = GetBorehole(id);
         Assert.AreEqual(1, boreholeToEdit.Stratigraphies.Count);
         Assert.AreEqual(0, boreholeToEdit.Workflows.Count);
         Assert.AreEqual(0, boreholeToEdit.BoreholeFiles.Count);
@@ -406,8 +403,8 @@ public class BoreholeControllerTest
 
         Assert.AreEqual($"{originalBorehole.OriginalName} (Copy)", copiedBorehole.OriginalName);
         Assert.AreEqual($"{originalBorehole.Name} (Copy)", copiedBorehole.Name);
-        Assert.AreEqual(originalBorehole.CreatedBy.SubjectId, copiedBorehole.CreatedBy.SubjectId);
-        Assert.AreEqual(originalBorehole.UpdatedBy.SubjectId, copiedBorehole.UpdatedBy.SubjectId);
+        Assert.AreEqual(originalBorehole.CreatedBy?.SubjectId, copiedBorehole.CreatedBy?.SubjectId);
+        Assert.AreEqual(originalBorehole.UpdatedBy?.SubjectId, copiedBorehole.UpdatedBy?.SubjectId);
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
         Assert.AreEqual(1, copiedBorehole.Workflows.Count);
         Assert.AreEqual(Role.Editor, copiedBorehole.Workflows.First().Role);
@@ -432,8 +429,8 @@ public class BoreholeControllerTest
 
             Assert.AreNotEqual(originalDescription.Id, copiedDescription.Id);
             Assert.AreEqual(originalDescription.Description, copiedDescription.Description);
-            Assert.AreEqual(originalDescription.CreatedBy.SubjectId, copiedDescription.CreatedBy.SubjectId);
-            Assert.AreEqual(originalDescription.UpdatedBy.SubjectId, copiedDescription.UpdatedBy.SubjectId);
+            Assert.AreEqual(originalDescription.CreatedBy?.SubjectId, copiedDescription.CreatedBy?.SubjectId);
+            Assert.AreEqual(originalDescription.UpdatedBy?.SubjectId, copiedDescription.UpdatedBy?.SubjectId);
             Assert.AreEqual(originalDescription.Created, copiedDescription.Created);
             Assert.AreEqual(originalDescription.Updated, copiedDescription.Updated);
         }
@@ -446,8 +443,8 @@ public class BoreholeControllerTest
 
             Assert.AreNotEqual(originalDescription.Id, copiedDescription.Id);
             Assert.AreEqual(originalDescription.Description, copiedDescription.Description);
-            Assert.AreEqual(originalDescription.CreatedBy.SubjectId, copiedDescription.CreatedBy.SubjectId);
-            Assert.AreEqual(originalDescription.UpdatedBy.SubjectId, copiedDescription.UpdatedBy.SubjectId);
+            Assert.AreEqual(originalDescription.CreatedBy?.SubjectId, copiedDescription.CreatedBy?.SubjectId);
+            Assert.AreEqual(originalDescription.UpdatedBy?.SubjectId, copiedDescription.UpdatedBy?.SubjectId);
             Assert.AreEqual(originalDescription.Created, copiedDescription.Created);
             Assert.AreEqual(originalDescription.Updated, copiedDescription.Updated);
         }
@@ -527,7 +524,7 @@ public class BoreholeControllerTest
 
     private Borehole GetBorehole(int id)
     {
-        return context.Boreholes.GetAllWithIncludes().Single(b => b.Id == id);
+        return context.Boreholes.GetAllWithIncludes().AsNoTracking().Single(b => b.Id == id);
     }
 
     private Borehole GetBoreholeToAdd()
@@ -584,11 +581,11 @@ public class BoreholeControllerTest
     // Get the id of a borehole with certain conditions.
     private int GetBoreholeIdToCopy()
     {
-        LoadBoreholeWithIncludes();
-        var boreholes = context.Boreholes.ToList();
-
-        var borehole = boreholes
-            .Where(b =>
+        var borehole = context.Boreholes
+            .GetAllWithIncludes()
+            .AsNoTracking()
+            .ToList()
+            .FirstOrDefault(b =>
                 b.Stratigraphies != null &&
                 b.Stratigraphies.Any() &&
                 b.Stratigraphies.First().Layers != null &&
@@ -610,30 +607,11 @@ public class BoreholeControllerTest
                 b.BoreholeGeometry.Any() &&
                 b.BoreholeFiles.First().File != null &&
                 b.Canton != null &&
-                b.Stratigraphies.First().ChronostratigraphyLayers.First().ChronostratigraphyId != null)
-            .FirstOrDefault();
+                b.Stratigraphies.First().ChronostratigraphyLayers.First().ChronostratigraphyId != null);
 
         Assert.IsNotNull(borehole != null, "Precondition: No borehole for conditions found.");
 
         return borehole.Id;
-    }
-
-    private void LoadBoreholeWithIncludes()
-    {
-        List<Borehole> boreholes = context.Boreholes.GetAllWithIncludes().ToList();
-
-        foreach (var bh in boreholes)
-        {
-            if (bh.Observations != null)
-            {
-                context.Entry(bh)
-                    .Collection(b => b.Observations!)
-                    .Query()
-                    .OfType<FieldMeasurement>()
-                    .Include(f => f.FieldMeasurementResults)
-                    .Load();
-            }
-        }
     }
 
     [TestMethod]
