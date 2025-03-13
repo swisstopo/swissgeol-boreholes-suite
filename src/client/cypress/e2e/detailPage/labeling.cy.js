@@ -24,6 +24,7 @@ function assertDrawTooltip(content) {
 }
 
 const drawBox = (x1, y1, x2, y2) => {
+  cy.wait(1000);
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 });
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 });
 
@@ -56,12 +57,13 @@ const waitForLabelingImageLoaded = () => {
   cy.wait("@extraction-file-info");
   cy.wait("@load-extraction-file");
   cy.window().then(win => {
-    const layers = win.labelingImage.getLayers().getArray();
-    expect(
-      layers.some(layer => {
-        return layer.constructor.name === "ImageLayer";
-      }),
-    ).to.be.true;
+    cy.wrap(win.labelingImage.getLayers().getArray()).then(layers => {
+      expect(
+        layers.some(layer => {
+          return layer.constructor.name === "ImageLayer";
+        }),
+      ).to.be.true;
+    });
   });
 };
 
@@ -119,6 +121,21 @@ function assertBoundingBoxes(totalCount, visibleCount) {
       i < visibleCount ? "rgba(91, 33, 182, 0.2)" : "transparent",
     );
     expect(featureColors).to.deep.equal(expectedColors);
+  });
+}
+
+function assertClipboardContent(expectedText) {
+  cy.window().then(win => {
+    const checkClipboard = () =>
+      win.navigator.clipboard.readText().then(text => {
+        if (text !== expectedText) {
+          throw new Error("Clipboard text not updated yet");
+        }
+      });
+
+    cy.wrap(null).should(() => {
+      checkClipboard();
+    });
   });
 }
 
@@ -287,7 +304,10 @@ describe("Test labeling tool", () => {
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
     selectLabelingAttachment();
+    assertPageCount(1, 3);
     getElementByDataCy("labeling-page-next").click();
+    waitForLabelingImageLoaded();
+    assertPageCount(2, 3);
     getElementByDataCy("labeling-page-next").click();
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
@@ -295,7 +315,6 @@ describe("Test labeling tool", () => {
     assertDrawTooltip("Draw box around any text");
 
     // draw box around empty space
-    cy.wait(1000);
     drawBox(200, 400, 500, 500);
     assertBoundingBoxes(4, 0);
     assertLabelingAlertText("No text found");
@@ -304,29 +323,17 @@ describe("Test labeling tool", () => {
     // draw box around text
     getElementByDataCy("text-extraction-button").click();
     assertDrawTooltip("Draw box around any text");
-    cy.wait(1000);
     drawBox(200, 120, 500, 400);
     assertBoundingBoxes(4, 4);
     assertLabelingAlertText('Copied to clipboard: "Some information without coo...');
-
-    cy.window().then(win => {
-      win.navigator.clipboard.readText().then(text => {
-        expect(text).to.eq("Some information without coordinates");
-      });
-    });
+    assertClipboardContent("Some information without coordinates");
 
     // draw box around first word and small part of second word
     getElementByDataCy("text-extraction-button").click();
     assertDrawTooltip("Draw box around any text");
-    cy.wait(1000);
     drawBox(200, 120, 250, 400);
     assertBoundingBoxes(4, 1);
-
-    cy.window().then(win => {
-      win.navigator.clipboard.readText().then(text => {
-        expect(text).to.eq("Some");
-      });
-    });
+    assertClipboardContent("Some");
 
     // can switch between text extraction and coordinate extraction
     clickCoordinateLabelingButton();
