@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 import { MapBrowserEvent, View } from "ol";
 import { defaults as defaultControls } from "ol/control/defaults";
-import { Extent, getCenter } from "ol/extent";
+import { containsCoordinate, Extent, getCenter } from "ol/extent";
 import Feature from "ol/Feature";
 import { Geometry } from "ol/geom";
 import { fromExtent } from "ol/geom/Polygon";
@@ -19,6 +19,7 @@ import { loadImage } from "../../../api/file/file.ts";
 import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import MapControls from "../../../components/buttons/mapControls";
+import { ExtractionBoundingBox, ExtractionType } from "./labelingInterfaces.tsx";
 
 const drawingStyle = () =>
   new Style({
@@ -31,18 +32,35 @@ const drawingStyle = () =>
     }),
   });
 
+const transparentBoundingBoxStyle = () =>
+  new Style({
+    stroke: new Stroke({
+      color: "transparent",
+    }),
+    fill: new Fill({
+      color: "transparent",
+    }),
+  });
+
 interface LabelingDrawContainerProps {
   fileInfo?: DataExtractionResponse;
   onDrawEnd: (extent: number[]) => void;
+  boundingBoxes: ExtractionBoundingBox[];
   drawTooltipLabel?: string;
+  extractionType?: ExtractionType;
 }
 
-export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo, onDrawEnd, drawTooltipLabel }) => {
+export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
+  fileInfo,
+  onDrawEnd,
+  boundingBoxes,
+  drawTooltipLabel,
+  extractionType,
+}) => {
   const { t } = useTranslation();
   const [map, setMap] = useState<Map>();
   const [extent, setExtent] = useState<Extent>();
   const tooltipRef = useRef<HTMLDivElement>();
-
   const zoomIn = () => {
     if (map) {
       const view = map.getView();
@@ -97,6 +115,24 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
     }
   };
 
+  const highlightIntersectingFeatures = (boundingBoxSource: VectorSource, targetFeature: Feature) => {
+    const targetExtent = targetFeature.getGeometry()?.getExtent();
+    if (!targetExtent) return;
+
+    boundingBoxSource.getFeatures().forEach(feature => {
+      const centroid = getCenter(feature.getGeometry()?.getExtent() ?? []);
+      const isIntersecting = centroid && containsCoordinate(targetExtent, centroid);
+
+      feature.setStyle(
+        new Style({
+          fill: new Fill({
+            color: isIntersecting ? theme.palette.ai.mainTransparent : "transparent",
+          }),
+        }),
+      );
+    });
+  };
+
   useEffect(() => {
     // @ts-expect-error - Attach map object to window to make it accessible for E2E testing
     window.labelingImage = map;
@@ -105,10 +141,52 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
   useEffect(() => {
     if (map && drawTooltipLabel) {
       const layers = map.getLayers().getArray();
-      const drawingSource = (layers[1] as VectorLayer<Feature<Geometry>>).getSource();
-      if (drawingSource) {
+
+      const drawingLayer = layers.find(
+        layer => layer instanceof VectorLayer && layer.get("name") === "drawingLayer",
+      ) as VectorLayer<Feature<Geometry>>;
+      const drawingSource = drawingLayer?.getSource() as VectorSource | undefined;
+
+      const boundingBoxLayer = layers.find(
+        layer => layer instanceof VectorLayer && layer.get("name") === "boundingBoxLayer",
+      ) as VectorLayer<Feature<Geometry>>;
+      const boundingBoxSource = boundingBoxLayer?.getSource() as VectorSource | undefined;
+
+      if (drawingSource && boundingBoxSource) {
         drawingSource.clear();
+        boundingBoxSource?.clear();
+        map
+          .getInteractions()
+          .getArray()
+          .forEach(interaction => {
+            if (interaction instanceof DragBox) {
+              map.removeInteraction(interaction);
+            }
+          }); // Fix bug where sometimes two interactions where added on initial render
+
         const dragBox = new DragBox();
+        dragBox.on("boxstart", () => {
+          if (extractionType === "text") {
+            // Add all transparent bounding boxes to map once the selection starts
+            boundingBoxes.forEach(box => {
+              const bboxExtent = [box.x0, -box.y1, box.x1, -box.y0];
+              boundingBoxSource.addFeature(
+                new Feature({
+                  geometry: fromExtent(bboxExtent),
+                }),
+              );
+            });
+          }
+        });
+
+        dragBox.on("boxdrag", () => {
+          // Update style of intersecting bounding boxes when draging the selectionbox
+          const boxFeature = new Feature({
+            geometry: fromExtent(dragBox.getGeometry().getExtent()),
+          });
+          highlightIntersectingFeatures(boundingBoxSource, boxFeature);
+        });
+
         dragBox.on("boxend", () => {
           const boxFeature = new Feature({
             geometry: fromExtent(dragBox.getGeometry().getExtent()),
@@ -116,7 +194,6 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
           drawingSource.addFeature(boxFeature);
           const tmpMap = map;
           if (tmpMap) {
-            tmpMap.removeInteraction(dragBox);
             tmpMap
               .getInteractions()
               .getArray()
@@ -125,7 +202,10 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
                   tmpMap.removeInteraction(interaction);
                 }
               });
-            tmpMap.getTargetElement().style.cursor = "";
+            const targetElement = tmpMap.getTargetElement();
+            if (targetElement) {
+              targetElement.style.cursor = "";
+            }
 
             if (tooltipRef?.current) {
               tooltipRef.current.style.visibility = "hidden";
@@ -151,7 +231,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
         setMap(tmpMap);
       }
     }
-  }, [drawTooltipLabel, map, t]);
+  }, [boundingBoxes, drawTooltipLabel, extractionType, map, t]);
 
   useEffect(() => {
     if (fileInfo) {
@@ -207,9 +287,17 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({ fileInfo
         source: drawingSource,
         style: drawingStyle,
       });
+      drawingLayer.set("name", "drawingLayer");
+
+      const boundingBoxSource = new VectorSource();
+      const boundingBoxLayer = new VectorLayer({
+        source: boundingBoxSource,
+        style: transparentBoundingBoxStyle,
+      });
+      boundingBoxLayer.set("name", "boundingBoxLayer");
 
       const initMap = new Map({
-        layers: [imageLayer, drawingLayer],
+        layers: [imageLayer, drawingLayer, boundingBoxLayer],
         target: "map",
         controls: defaultControls({
           attribution: false,

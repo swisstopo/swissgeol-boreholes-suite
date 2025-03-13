@@ -1,6 +1,10 @@
-import { ExtractionRequest, ExtractionResponse } from "../../pages/detail/labeling/labelingInterfaces.tsx";
+import {
+  BoundingBoxResponse,
+  ExtractionRequest,
+  ExtractionResponse,
+} from "../../pages/detail/labeling/labelingInterfaces.tsx";
 import { ApiError } from "../apiInterfaces.ts";
-import { fetchCreatePngs, fetchExtractData } from "../dataextraction";
+import { fetchCreatePngs, fetchExtractData, fetchPageBoundingBoxes } from "../dataextraction";
 import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2";
 import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
@@ -8,7 +12,6 @@ export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
   if (file && file.size <= maxFileSizeKB) {
     const formData = new FormData();
     formData.append("file", file);
-
     const response = await upload(`boreholefile/upload?boreholeId=${boreholeId}`, "POST", formData);
     if (!response.ok) {
       if (response.status === 400) {
@@ -75,18 +78,26 @@ export async function getDataExtractionFileInfo(
 
 export async function loadImage(fileName: string) {
   const response = await fetchApiV2Base("boreholefile/dataextraction/" + fileName, "GET");
-  if (response.ok) {
-    return response.blob();
-  } else {
+  if (!response.ok) {
     throw new ApiError(response.statusText, response.status);
+  } else {
+    return response.blob();
   }
 }
 
 export async function createExtractionPngs(fileName: string) {
   const response = await fetchCreatePngs(fileName);
   if (!response.ok) {
-    throw new ApiError("errorDataExtractionFileLoading", 500);
+    throw new ApiError("errorDataExtractionFileLoading", response.status);
   }
+}
+
+export async function fetchExtractionBoundingBoxes(fileName: string, pageNumber: number): Promise<BoundingBoxResponse> {
+  const response = await fetchPageBoundingBoxes(fileName, pageNumber);
+  if (!response.ok) {
+    throw new ApiError("errorDataExtractionFetchBoundingBoxes", response.status);
+  }
+  return await response.json();
 }
 
 async function fetchAndHandleExtractionResponse(
