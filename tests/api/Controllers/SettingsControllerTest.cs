@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BDMS.Tests.Controllers;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class SettingsControllerTest
