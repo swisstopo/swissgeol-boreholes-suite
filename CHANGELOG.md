@@ -11,6 +11,7 @@
 - Enable auto setting of depth in MASL in hydro module.
 - Added functionality to copy extracted text to clipboard in the labeling panel.
 - Added highlighting of words that will be included in text extraction.
+- Added data collection with consent option.
 
 ### Changed
 

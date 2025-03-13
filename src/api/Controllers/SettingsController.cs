@@ -8,12 +8,9 @@ namespace BDMS.Controllers;
 [ApiController]
 [AllowAnonymous]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class SettingsController(IConfiguration serverConfiguration) : ControllerBase
+public class SettingsController(IConfiguration configuration) : ControllerBase
 {
-    private readonly IConfiguration configuration = serverConfiguration;
-
-    [HttpGet("auth")]
-    [SwaggerResponse(StatusCodes.Status200OK, "The current AuthSettings of the application.")]
-    public AuthSettings? GetAuth()
-        => configuration.GetRequiredSection("Auth").Get<AuthSettings>();
+    [HttpGet]
+    [SwaggerResponse(StatusCodes.Status200OK, "The current settings of the application.")]
+    public Settings? Get() => new(configuration.GetValue<string>("GoogleAnalytics:TrackingId"), configuration.GetRequiredSection("Auth").Get<AuthSettings>());
 }

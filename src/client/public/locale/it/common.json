@@ -103,6 +103,7 @@
   "csvFormatExplanation": "Il file CSV-UTF8 deve contenere le seguenti intestazioni di colonna",
   "csvOptionalExplanation": "Le intestazioni di colonna tra parentesi quadre sono facoltative",
   "cuttings": "Detriti di perforazione generati dallo scalpello (cuttings / carota)",
+  "dataCollectionConsent": "Consenso alla raccolta dei dati (facoltativo)",
   "dataExtraction": "Estrazione dei dati",
   "dataImport": "Importazione dei dati",
   "date": "Data",

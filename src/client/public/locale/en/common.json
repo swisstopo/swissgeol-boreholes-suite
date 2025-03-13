@@ -85,7 +85,6 @@
   "conditions": "Groundwater conditions",
   "confirm": "Confirm",
   "confirmRemoveRoles": "Do you want to remove all roles of the user \"{{name}}\" in the workgroup \"{{workgroupName}}\"?",
-
   "consistance": "Consistency",
   "coordinates": "Coordinates",
   "coordinatesNotFound": "No coordinates found",
@@ -104,6 +103,7 @@
   "csvFormatExplanation": "The CSV-UTF8 file should contain the following column headings",
   "csvOptionalExplanation": "Column headings in square brackets are optional",
   "cuttings": "Borehole cuttings / core",
+  "dataCollectionConsent": "Consent to data collection (optional)",
   "dataExtraction": "Data extraction",
   "dataImport": "Data import",
   "date": "Date",
