@@ -1,6 +1,7 @@
 import { RefObject } from "react";
 import { BoreholeV2, Identifier } from "../../../../api/borehole.ts";
 import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
+import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 
 export interface LocationBaseProps {
   borehole: BoreholeV2;
@@ -24,7 +25,7 @@ interface LocationFormBaseInputs {
   referenceElevation: number | string | null; // Number with thousands separator then parsed to number
   referenceElevationPrecisionId: number | null;
   referenceElevationTypeId: number | null;
-  originalReferenceSystem: number | null;
+  originalReferenceSystem: ReferenceSystemCode | null;
   hrsId?: number;
   country: string;
   canton: string;
