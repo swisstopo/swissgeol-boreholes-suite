@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1110 - 2025-03-14
+
 ### Added
 
 - Added a table displaying all the users in the admin settings.
