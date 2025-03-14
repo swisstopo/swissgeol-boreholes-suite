@@ -129,7 +129,7 @@ export const DetailPage: FC = () => {
         <SidebarBox>
           <DetailSideNav borehole={borehole} />
         </SidebarBox>
-        <Stack width="100%" direction="column">
+        <Stack width="100%" direction="column" sx={{ overflowX: "auto" }}>
           <Box
             sx={{
               display: "flex",

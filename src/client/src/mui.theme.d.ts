@@ -10,6 +10,12 @@ declare module "@mui/material/IconButton" {
   }
 }
 
+declare module "@mui/material/Typography" {
+  interface TypographyPropsVariantOverrides {
+    fullPageMessage: true;
+  }
+}
+
 declare module "@mui/material/styles" {
   export interface AppThemePalette {
     action: {

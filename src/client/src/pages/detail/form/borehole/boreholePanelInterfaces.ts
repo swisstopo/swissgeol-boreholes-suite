@@ -1,5 +1,5 @@
 import { BoreholeV2 } from "../../../../api/borehole.ts";
-import { BoreholeFile } from "../location/locationPanelInterfaces.tsx";
+import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 
 export interface BoreholeGeneralProps {
   borehole: BoreholeV2;

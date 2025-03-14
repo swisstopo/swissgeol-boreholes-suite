@@ -7,7 +7,7 @@ import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
-import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
+import { Attachments } from "./attachments/table/attachments.tsx";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
@@ -121,7 +121,7 @@ export const DetailPageContent = ({
                 );
               }}
             />
-            <Route exact path={"/:id/attachments"} render={() => <EditorBoreholeFilesTable />} />
+            <Route exact path={"/:id/attachments"} render={() => <Attachments />} />
             <Route exact path={"/:id/hydrogeology/wateringress"} render={() => <WaterIngress />} />
             <Route
               exact

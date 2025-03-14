@@ -7,6 +7,7 @@ import {
   GridEventListener,
   GridFilterModel,
   GridPaginationModel,
+  GridRowIdGetter,
   GridRowParams,
   GridRowSelectionModel,
   GridSortModel,
@@ -16,12 +17,13 @@ import {
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
 import { BoreholeAttributes } from "../../api-lib/ReduxStateInterfaces.ts";
 import { User, Workgroup } from "../../api/apiInterfaces.ts";
+import { BoreholeFile } from "../../api/file/fileInterfaces.ts";
 import { muiLocales } from "../../mui.locales.ts";
 import { TablePaginationActions } from "../../pages/overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "../../pages/settings/admin/quickfilterStyles.ts";
 
 interface TableProps {
-  rows: User[] | Workgroup[] | BoreholeAttributes[];
+  rows: User[] | Workgroup[] | BoreholeAttributes[] | BoreholeFile[];
   columns: GridColDef[];
   filterModel?: GridFilterModel;
   onFilterModelChange?: (model: GridFilterModel) => void;
@@ -36,6 +38,7 @@ interface TableProps {
   isLoading?: boolean;
   rowCount?: number;
   rowSelectionModel?: GridRowSelectionModel;
+  disableColumnSorting?: boolean;
   paginationMode?: "server" | "client";
   sortingMode?: "server" | "client";
   checkboxSelection?: boolean;
@@ -43,6 +46,7 @@ interface TableProps {
   isDisabled?: boolean;
   showQuickFilter?: boolean;
   rowAutoHeight?: boolean;
+  getRowId?: GridRowIdGetter;
 }
 
 export const Table: FC<TableProps> = ({
@@ -61,6 +65,8 @@ export const Table: FC<TableProps> = ({
   isLoading,
   rowCount,
   rowSelectionModel,
+  getRowId,
+  disableColumnSorting = false,
   paginationMode = "client",
   sortingMode = "client",
   checkboxSelection = false,
@@ -160,8 +166,10 @@ export const Table: FC<TableProps> = ({
       paginationMode={paginationMode}
       sortingMode={sortingMode}
       checkboxSelection={checkboxSelection}
+      disableColumnSorting={disableColumnSorting}
       isRowSelectable={isRowSelectable}
       rowSelectionModel={rowSelectionModel}
+      getRowId={getRowId}
     />
   );
 };
