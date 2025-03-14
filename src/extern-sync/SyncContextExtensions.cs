@@ -1,4 +1,4 @@
-﻿using BDMS.Models;
+using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Collections;
@@ -146,46 +146,27 @@ public static class SyncContextExtensions
     }
 
     /// <summary>
-    /// Sets the publication <paramref name="status"/> for the given <see cref="Borehole"/>.
-    /// Please note that all previous <see cref="Workflow"/> entries/histroy gets cleared!
-    /// This may not be the desired behavior for every use case but complies with the requirements
-    /// when syncing <see cref="Borehole"/>s from a context to another in this project.
+    /// Sets the publication status for this <paramref name="borehole"/> to 'published'.
     /// </summary>
-    /// <param name="borehole">The <see cref="Borehole"/> to set the publication status on.</param>
-    /// <param name="status">The <see cref="Role"/> to be set. <see cref="Role.View"/>
-    /// is not a valid publication status.</param>
-    /// <exception cref="NotSupportedException">If the <paramref name="status"/> is not supported.</exception>
-    internal static Borehole SetBoreholePublicationStatus(this Borehole borehole, Role status)
+    /// <remarks>
+    /// Please note that all previous <see cref="Workflow"/> entries/ the entire history gets cleared!
+    /// This may not be the desired behavior for every use case but fits the requirements when syncing
+    /// <see cref="Borehole"/>s from a context to another in this project.
+    /// </remarks>
+    /// <param name="borehole">The <see cref="Borehole"/> to set the publication status 'published' on.</param>
+    /// <returns>The updated <see cref="Borehole"/>.</returns>
+    internal static Borehole SetBoreholePublicationStatusPublished(this Borehole borehole)
     {
-        ArgumentNullException.ThrowIfNull(borehole);
-
-        if (status == Role.View)
-        {
-            throw new NotSupportedException($"The given status <{status}> is not supported.");
-        }
-
         // Remove all previous workflow entries/history.
         borehole.Workflows.Clear();
 
-        for (int i = 1; i <= (int)status; i++)
+        for (int i = 1; i <= (int)Role.Publisher; i++)
         {
             borehole.Workflows.Add(new Workflow
             {
                 Role = (Role)i,
                 Started = DateTime.Now.ToUniversalTime(),
                 Finished = DateTime.Now.ToUniversalTime(),
-            });
-        }
-
-        // For all states except 'published', the next state is already
-        // created (but without started and finished dates).
-        if (status != Role.Publisher)
-        {
-            borehole.Workflows.Add(new Workflow
-            {
-                Role = (Role)(int)status + 1,
-                Started = null,
-                Finished = null,
             });
         }
 

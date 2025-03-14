@@ -56,6 +56,53 @@ internal static class TestSyncContextExtensions
     }
 
     /// <summary>
+    /// Sets the publication <paramref name="status"/> for this <paramref name="borehole"/>.
+    /// </summary>
+    /// <param name="borehole">The <see cref="Borehole"/> to set the publication status on.</param>
+    /// <param name="status">The <see cref="Role"/> to be set. <see cref="Role.View"/>
+    /// is not a valid publication status.</param>
+    internal static Borehole SetBoreholePublicationStatus(this Borehole borehole, Role status)
+    {
+        ArgumentNullException.ThrowIfNull(borehole);
+
+        if (status == Role.View)
+        {
+            throw new NotSupportedException($"The given status <{status}> is not supported.");
+        }
+
+        if (status == Role.Publisher)
+        {
+            return borehole.SetBoreholePublicationStatusPublished();
+        }
+        else
+        {
+            // Remove all previous workflow entries/history.
+            borehole.Workflows.Clear();
+
+            for (int i = 1; i <= (int)status; i++)
+            {
+                borehole.Workflows.Add(new Workflow
+                {
+                    Role = (Role)i,
+                    Started = DateTime.Now.ToUniversalTime(),
+                    Finished = DateTime.Now.ToUniversalTime(),
+                });
+            }
+
+            // For all states except 'published', the next state is already
+            // created (but without started and finished dates).
+            borehole.Workflows.Add(new Workflow
+            {
+                Role = (Role)(int)status + 1,
+                Started = null,
+                Finished = null,
+            });
+
+            return borehole;
+        }
+    }
+
+    /// <summary>
     /// Sets the publication <paramref name="status"/> for the specified <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="context">The database context to be used.</param>

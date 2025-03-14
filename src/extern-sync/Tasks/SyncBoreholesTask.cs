@@ -74,7 +74,7 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
             publishedBorehole.WorkgroupId = targetWorkgroup.Id;
 
             // Set publication status
-            publishedBorehole.SetBoreholePublicationStatus(Role.Publisher);
+            publishedBorehole.SetBoreholePublicationStatusPublished();
             publishedBorehole.Workflows.UpdateAttachedUser(targetDefaultUser);
 
             // Ensure unlocked borehole

@@ -139,8 +139,8 @@ public class SyncContextExtensionsTest
 
     private static void AssertBoreholePublicationStatus(Borehole borehole, Role expectedStatus, User expectedUser)
     {
-        // Please note that there are different patterns regarding the last workflow entry
-        // depending on the borehole publication state.
+        // Please note that there are different patterns regarding the last workflow entry depending on
+        // the boreholes publication state.
         var expectedWorkflowCount = expectedStatus == Role.Publisher ? (int)expectedStatus : (int)expectedStatus + 1;
         Assert.AreEqual(expectedWorkflowCount, borehole.Workflows.Count);
 
