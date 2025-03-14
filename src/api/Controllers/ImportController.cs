@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime;
-using BDMS.Authentication;
+﻿using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -475,9 +474,12 @@ public class ImportController : ControllerBase
         if (borehole.LocationY == null && borehole.LocationYLV03 == null) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"), errorType);
     }
 
-    private void ValidateDuplicateInFile(Borehole borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, ValidationErrorType errorType)
+    private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, ValidationErrorType errorType)
     {
-        if (borehole.IsWithinPredefinedTolerance(boreholesFromFile.Except([borehole])))
+        if (boreholesFromFile.Count(b =>
+            BoreholeExtensions.CompareToWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
+            BoreholeExtensions.CompareToWithTolerance(b.LocationX, borehole.LocationX, 2) &&
+            BoreholeExtensions.CompareToWithTolerance(b.LocationY, borehole.LocationY, 2)) > 1)
         {
             AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", errorType);
         }
