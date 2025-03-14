@@ -28,6 +28,7 @@
 - When hovering over the main side navigation icons, an incorrect background color was displayed for the hovered icon.
 - Before export or import check if the user has the correct role and is in the same workgroup as the borehole.
 - Fix sorting by drilling purpose in borehole table.
+- Fix unexpected reset of column width in borehole table.
 - Stop automatic update of alternate name when it is different from the original name.
 
 ## v2.1.1052 - 2025-02-04
