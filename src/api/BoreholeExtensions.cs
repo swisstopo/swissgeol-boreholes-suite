@@ -1,6 +1,5 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
-using static BDMS.ImportHelpers;
 
 namespace BDMS;
 
@@ -64,9 +63,23 @@ public static class BoreholeExtensions
     public static bool IsWithinPredefinedTolerance(this Borehole borehole, IEnumerable<Borehole> boreholes)
     {
         return boreholes.Any(b =>
-            CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
-            (CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, borehole.LocationX, 2)) &&
-            (CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, borehole.LocationY, 2)));
+            CompareToWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
+            (CompareToWithTolerance(b.LocationX, borehole.LocationX, 2) || CompareToWithTolerance(b.LocationXLV03, borehole.LocationX, 2)) &&
+            (CompareToWithTolerance(b.LocationY, borehole.LocationY, 2) || CompareToWithTolerance(b.LocationYLV03, borehole.LocationY, 2)));
+    }
+
+    /// <summary>
+    /// Compares this <paramref name="value"/> to the specified <paramref name="valueToCompare"/> using the
+    /// specified <paramref name="tolerance"/>.
+    /// </summary>
+    /// <returns><c>true</c> if both values are within the specified <paramref name="tolerance"/>.
+    /// Otherwise <c>false</c>.</returns>
+    internal static bool CompareToWithTolerance(this double? value, double? valueToCompare, double tolerance)
+    {
+        if (value == null && valueToCompare == null) return true;
+        if (value == null || valueToCompare == null) return false;
+
+        return Math.Abs(value.Value - valueToCompare.Value) <= tolerance;
     }
 
     /// <summary>

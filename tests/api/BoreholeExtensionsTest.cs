@@ -24,6 +24,19 @@ public class BoreholeExtensionsTest
     }
 
     [TestMethod]
+    public void CompareToWithTolerance()
+    {
+        Assert.IsTrue(BoreholeExtensions.CompareToWithTolerance(null, null, 0.0));
+        Assert.IsTrue(BoreholeExtensions.CompareToWithTolerance(2_100_000.0, 2_099_998.0, 2.0));
+
+        Assert.IsFalse(BoreholeExtensions.CompareToWithTolerance(2_100_000.0, 2_000_098.0, 1.99999));
+        Assert.IsFalse(BoreholeExtensions.CompareToWithTolerance(2_100_002.0, 2_000_000.0, 1.99999));
+        Assert.IsFalse(BoreholeExtensions.CompareToWithTolerance(2_100_0020.0, 2_000_000.0, 200000));
+        Assert.IsFalse(BoreholeExtensions.CompareToWithTolerance(null, 2_000_000.0, 0.0));
+        Assert.IsFalse(BoreholeExtensions.CompareToWithTolerance(2_000_000.0, null, 20.0));
+    }
+
+    [TestMethod]
     public void ValidateCasingReferences()
     {
         var casingSanBitter = new Casing { Id = 1 };

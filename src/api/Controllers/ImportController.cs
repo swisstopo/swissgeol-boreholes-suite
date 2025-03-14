@@ -13,7 +13,6 @@ using System.IO.Compression;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static BDMS.ImportHelpers;
 
 namespace BDMS.Controllers;
 
@@ -478,10 +477,7 @@ public class ImportController : ControllerBase
 
     private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, ValidationErrorType errorType)
     {
-        if (boreholesFromFile.Count(b =>
-            CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
-            CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) &&
-            CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2)) > 1)
+        if (borehole.IsWithinPredefinedTolerance(boreholesFromFile))
         {
             AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", errorType);
         }
