@@ -52,8 +52,9 @@ public class SyncContextExtensionsTest
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
         await context.SetBoreholePublicationStatusAsync(1_000_001, 1, Role.Editor, cancellationToken);
         await context.SetBoreholePublicationStatusAsync(1_000_020, 1, Role.Controller, cancellationToken);
-        await context.SetBoreholePublicationStatusAsync(1_000_300, 1, Role.Publisher, cancellationToken);
         await context.SetBoreholePublicationStatusAsync(1_000_444, 1, Role.Validator, cancellationToken);
+
+        await context.SetBoreholePublicationStatusAsync(1_000_300, 1, Role.Publisher, cancellationToken);
         await context.SetBoreholePublicationStatusAsync(1_001_555, 1, Role.Publisher, cancellationToken);
         await context.SetBoreholePublicationStatusAsync(1_000_666, 1, Role.Publisher, cancellationToken);
 
@@ -63,6 +64,49 @@ public class SyncContextExtensionsTest
         Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_300));
         Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_001_555));
         Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_666));
+    }
+
+    [TestMethod]
+    public void IsPublicationStatusPublished()
+    {
+        var boreholePublished = new Borehole
+        {
+            Workflows =
+            {
+                new Workflow { Id = 1, Role = Role.Editor, Started = default(DateTime), Finished = default(DateTime) },
+                new Workflow { Id = 2, Role = Role.Controller, Started = default(DateTime), Finished = default(DateTime) },
+                new Workflow { Id = 3, Role = Role.Validator, Started = default(DateTime), Finished = default(DateTime) },
+                new Workflow { Id = 4, Role = Role.Publisher, Started = default(DateTime), Finished = default(DateTime) },
+            },
+        };
+
+        var boreholePublishedAndReset = new Borehole
+        {
+            Workflows =
+            {
+                new Workflow { Id = 1, Role = Role.Editor, Started = default(DateTime), Finished = default(DateTime) },
+                new Workflow { Id = 2, Role = Role.Controller, Started = default(DateTime), Finished = default(DateTime) },
+                new Workflow { Id = 3, Role = Role.Validator, Started = default(DateTime), Finished = default(DateTime) },
+                new Workflow { Id = 4, Role = Role.Publisher, Started = default(DateTime), Finished = default(DateTime) },
+                new Workflow { Id = 5, Role = Role.Editor, Started = default(DateTime), Finished = null },
+            },
+        };
+
+        var boreholeNotYetPublished = new Borehole
+        {
+            Workflows =
+            {
+                new Workflow { Id = 1, Role = Role.Editor, Started = default(DateTime), Finished = default(DateTime) },
+                new Workflow { Id = 2, Role = Role.Controller, Started = default(DateTime), Finished = default(DateTime) },
+                new Workflow { Id = 3, Role = Role.Validator, Started = default(DateTime), Finished = default(DateTime) },
+                new Workflow { Id = 4, Role = Role.Publisher, Started = default(DateTime), Finished = null },
+            },
+        };
+
+        Assert.IsTrue(boreholePublished.IsPublicationStatusPublished());
+
+        Assert.IsFalse(boreholePublishedAndReset.IsPublicationStatusPublished());
+        Assert.IsFalse(boreholeNotYetPublished.IsPublicationStatusPublished());
     }
 
     [TestMethod]

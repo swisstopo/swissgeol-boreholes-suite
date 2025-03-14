@@ -63,10 +63,18 @@ public static class SyncContextExtensions
     /// <summary>
     /// Checks whether the given <paramref name="borehole"/> is in publication status published.
     /// </summary>
+    /// <remarks>
+    /// A <see cref="Borehole"/> is in publication status published if the most recent <see cref="Workflow"/> (the one
+    /// with the highest <see cref="Workflow.Id"/>) is in <see cref="Role.Publisher"/> and both <see cref="Workflow.Started"/>
+    /// and <see cref="Workflow.Finished"/> are not <c>Null</c>.
+    /// </remarks>
     internal static bool IsPublicationStatusPublished(this Borehole borehole)
     {
-        return borehole.Workflows.OrderByDescending(b => b.Id)
-            .FirstOrDefault(w => w.Role == Role.Publisher && w.Finished != null) != null;
+        var latestWorkflowEntry = borehole.Workflows.OrderByDescending(b => b.Id).FirstOrDefault();
+
+        return latestWorkflowEntry?.Role == Role.Publisher &&
+            latestWorkflowEntry.Started.HasValue &&
+            latestWorkflowEntry.Finished.HasValue;
     }
 
     /// <summary>
