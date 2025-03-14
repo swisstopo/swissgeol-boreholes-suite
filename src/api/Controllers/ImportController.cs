@@ -475,9 +475,9 @@ public class ImportController : ControllerBase
         if (borehole.LocationY == null && borehole.LocationYLV03 == null) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"), errorType);
     }
 
-    private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, ValidationErrorType errorType)
+    private void ValidateDuplicateInFile(Borehole borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, ValidationErrorType errorType)
     {
-        if (borehole.IsWithinPredefinedTolerance(boreholesFromFile))
+        if (borehole.IsWithinPredefinedTolerance(boreholesFromFile.Except([borehole])))
         {
             AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", errorType);
         }
