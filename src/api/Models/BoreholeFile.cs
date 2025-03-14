@@ -6,7 +6,7 @@ namespace BDMS.Models;
 /// Join table entity for a <see cref="Models.File"/> attached to a <see cref="Models.Borehole"/>.
 /// </summary>
 [Table("borehole_files")]
-public class BoreholeFile : IChangeTracking
+public class BoreholeFile : IChangeTracking, IUserAttached<User?, int?>
 {
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/> id.
