@@ -24,6 +24,7 @@ function assertDrawTooltip(content) {
 }
 
 const drawBox = (x1, y1, x2, y2) => {
+  cy.wait(1000);
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 });
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 });
 
@@ -56,12 +57,13 @@ const waitForLabelingImageLoaded = () => {
   cy.wait("@extraction-file-info");
   cy.wait("@load-extraction-file");
   cy.window().then(win => {
-    const layers = win.labelingImage.getLayers().getArray();
-    expect(
-      layers.some(layer => {
-        return layer.constructor.name === "ImageLayer";
-      }),
-    ).to.be.true;
+    cy.wrap(win.labelingImage.getLayers().getArray()).then(layers => {
+      expect(
+        layers.some(layer => {
+          return layer.constructor.name === "ImageLayer";
+        }),
+      ).to.be.true;
+    });
   });
 };
 
@@ -79,7 +81,7 @@ function toggleLabelingPanelWithoutDocuments() {
   cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.");
 }
 
-function selectLabelingAttament() {
+function selectLabelingAttachment() {
   cy.get('[data-cy="labeling-file-dropzone"]').selectFile("cypress/fixtures/labeling_attachment.pdf", {
     force: true,
     mimeType: "application/pdf",
@@ -102,6 +104,39 @@ function assertLabelingAlertText(expectedText) {
       cy.log("Actual Alert Text:", actualText); // Logs the found text in Cypress
       expect(actualText.trim()).to.equal(expectedText);
     });
+}
+
+function assertBoundingBoxes(totalCount, visibleCount) {
+  cy.window().then(win => {
+    const layers = win.labelingImage.getLayers().getArray();
+    const boundingBoxLayer = layers.find(layer => layer.get("name") === "boundingBoxLayer");
+    const features = boundingBoxLayer.getSource().getFeatures();
+    const featureColors = features.map(feature => {
+      const style = feature.getStyle();
+      return style?.getFill()?.getColor();
+    });
+    expect(features.length).to.equal(totalCount); // layer always contains all bounding boxes, even if they are not visible
+
+    const expectedColors = Array.from({ length: totalCount }, (_, i) =>
+      i < visibleCount ? "rgba(91, 33, 182, 0.2)" : "transparent",
+    );
+    expect(featureColors).to.deep.equal(expectedColors);
+  });
+}
+
+function assertClipboardContent(expectedText) {
+  cy.window().then(win => {
+    const checkClipboard = () =>
+      win.navigator.clipboard.readText().then(text => {
+        if (text !== expectedText) {
+          throw new Error("Clipboard text not updated yet");
+        }
+      });
+
+    cy.wrap(null).should(() => {
+      checkClipboard();
+    });
+  });
 }
 
 describe("Test labeling tool", () => {
@@ -182,7 +217,7 @@ describe("Test labeling tool", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
-    selectLabelingAttament();
+    selectLabelingAttachment();
     assertPageCount(1, 3);
 
     clickCoordinateLabelingButton();
@@ -206,6 +241,7 @@ describe("Test labeling tool", () => {
 
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 140, 600, 250);
+    assertBoundingBoxes(0, 0); // no bounding box preview for coordinate extraction
     evaluateSelect("originalReferenceSystem", "20104001");
     evaluateCoordinate("locationX", "2'646'359.7");
     hasError("locationX", false);
@@ -225,7 +261,7 @@ describe("Test labeling tool", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
-    selectLabelingAttament();
+    selectLabelingAttachment();
     assertPageCount(1, 3);
 
     clickCoordinateLabelingButton();
@@ -263,12 +299,15 @@ describe("Test labeling tool", () => {
     isDisabled("locationY", true);
   });
 
-  it("can copy text to clipboard", () => {
+  it("can copy text to clipboard and show word bounding box preview", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
-    selectLabelingAttament();
+    selectLabelingAttachment();
+    assertPageCount(1, 3);
     getElementByDataCy("labeling-page-next").click();
+    waitForLabelingImageLoaded();
+    assertPageCount(2, 3);
     getElementByDataCy("labeling-page-next").click();
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
@@ -276,23 +315,25 @@ describe("Test labeling tool", () => {
     assertDrawTooltip("Draw box around any text");
 
     // draw box around empty space
-    cy.wait(1000);
     drawBox(200, 400, 500, 500);
+    assertBoundingBoxes(4, 0);
     assertLabelingAlertText("No text found");
     cy.get('button[aria-label="Close"]').click(); // close alert
-    // draw box around text
 
+    // draw box around text
     getElementByDataCy("text-extraction-button").click();
     assertDrawTooltip("Draw box around any text");
-    cy.wait(1000);
     drawBox(200, 120, 500, 400);
+    assertBoundingBoxes(4, 4);
     assertLabelingAlertText('Copied to clipboard: "Some information without coo...');
+    assertClipboardContent("Some information without coordinates");
 
-    cy.window().then(win => {
-      win.navigator.clipboard.readText().then(text => {
-        expect(text).to.eq("Some information without coordinates");
-      });
-    });
+    // draw box around first word and small part of second word
+    getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltip("Draw box around any text");
+    drawBox(200, 120, 250, 400);
+    assertBoundingBoxes(4, 1);
+    assertClipboardContent("Some");
 
     // can switch between text extraction and coordinate extraction
     clickCoordinateLabelingButton();
@@ -305,7 +346,7 @@ describe("Test labeling tool", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
-    selectLabelingAttament();
+    selectLabelingAttachment();
     assertPageCount(1, 3);
 
     cy.get('[data-cy="labeling-page-next"]').click();
@@ -326,5 +367,16 @@ describe("Test labeling tool", () => {
 
     clickCoordinateLabelingButton();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
+  });
+
+  it("displays warning message when fetching bounding boxes fails.", () => {
+    cy.intercept("POST", "/dataextraction/api/V1/bounding_boxes", req => req.destroy());
+    goToRouteAndAcceptTerms("/");
+    newEditableBorehole().as("borehole_id");
+    toggleLabelingPanelWithoutDocuments();
+    selectLabelingAttachment();
+
+    cy.get(".MuiAlert-message").contains("An error occurred while fetching the bounding boxes.");
+    cy.get('[aria-label="Close"]').click();
   });
 });

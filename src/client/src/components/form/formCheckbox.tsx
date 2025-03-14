@@ -9,9 +9,10 @@ export interface FormCheckboxProps {
   checked: boolean;
   disabled?: boolean;
   sx?: SxProps;
+  onChange?: (value: boolean) => void;
 }
 
-export const FormCheckbox: FC<FormCheckboxProps> = ({ fieldName, label, checked, disabled, sx }) => {
+export const FormCheckbox: FC<FormCheckboxProps> = ({ fieldName, label, checked, disabled, sx, onChange }) => {
   const { t } = useTranslation();
   const { register } = useFormContext();
 
@@ -24,6 +25,7 @@ export const FormCheckbox: FC<FormCheckboxProps> = ({ fieldName, label, checked,
           {...register(fieldName)}
           disabled={disabled || false}
           defaultChecked={checked || false}
+          onChange={e => onChange?.(e.target.checked)}
         />
       }
       label={t(label)}

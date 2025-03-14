@@ -141,7 +141,11 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       renderHeader: renderHeaderCheckbox,
       renderCell: renderCellCheckbox,
     },
-    { field: "alternate_name", headerName: t("name"), flex: 1 },
+    {
+      field: "alternate_name",
+      headerName: t("name"),
+      flex: 1,
+    },
     {
       field: "borehole_type",
       valueGetter: (value: number) => {
@@ -161,13 +165,11 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       flex: 1,
     },
     {
-      field: "extended",
-      valueGetter: (value: { purpose: number }) => {
-        const domain = domains?.data?.find((d: { id: number }) => d.id === value.purpose);
-        if (domain) {
-          return domain[i18n.language];
-        }
-        return "";
+      field: "purpose",
+      valueGetter: (value, row) => {
+        if (!row.extended) return "";
+        const domain = domains?.data?.find((d: { id: number }) => d.id === row.extended.purpose);
+        return domain ? domain[i18n.language] : "";
       },
       headerName: t("purpose"),
       flex: 1,

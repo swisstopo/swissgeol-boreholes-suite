@@ -85,7 +85,6 @@
   "conditions": "Groundwater conditions",
   "confirm": "Confirm",
   "confirmRemoveRoles": "Do you want to remove all roles of the user \"{{name}}\" in the workgroup \"{{workgroupName}}\"?",
-
   "consistance": "Consistency",
   "coordinates": "Coordinates",
   "coordinatesNotFound": "No coordinates found",
@@ -104,6 +103,7 @@
   "csvFormatExplanation": "The CSV-UTF8 file should contain the following column headings",
   "csvOptionalExplanation": "Column headings in square brackets are optional",
   "cuttings": "Borehole cuttings / core",
+  "dataCollectionConsent": "Consent to data collection (optional)",
   "dataExtraction": "Data extraction",
   "dataImport": "Data import",
   "date": "Date",
@@ -183,6 +183,7 @@
   "errorBulkEditing": "An error occurred while bulk editing:",
   "errorCopyingToClipboard": "Text could not be copied to the clipboard",
   "errorDataExtraction": "The data extraction has failed.",
+  "errorDataExtractionFetchBoundingBoxes": "An error occurred while fetching the bounding boxes.",
   "errorDataExtractionFileLoading": "An error occurred while loading the data extraction file.",
   "errorDuplicatedUploadPerBorehole": "This file has already been uploaded for this borehole and cannot be uploaded a second time.",
   "errorDuringBoreholeFileUpload": "An error occurred during the upload.",
