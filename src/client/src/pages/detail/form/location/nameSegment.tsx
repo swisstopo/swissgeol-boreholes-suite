@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
 import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
@@ -12,13 +12,26 @@ interface NameSegmentProps extends LocationBaseProps {
 const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
   const auth = useAuth();
   const originalName = formMethods.watch("originalName");
-  const { dirtyFields, isDirty } = formMethods.formState;
+  const alternateName = formMethods.watch("name");
+  const { defaultValues } = formMethods.formState;
+  const [shouldSyncNames, setShouldSyncNames] = useState(true);
+
+  const defaultNamesEqual = defaultValues?.originalName === defaultValues?.name;
+  useEffect(() => {
+    setShouldSyncNames(defaultNamesEqual || defaultValues?.name === "");
+  }, [defaultNamesEqual, defaultValues?.name]);
 
   useEffect(() => {
-    if (dirtyFields.originalName || (!isDirty && formMethods.getValues("name") === "")) {
+    if (alternateName !== formMethods.getValues("originalName")) {
+      setShouldSyncNames(false);
+    }
+  }, [alternateName, formMethods]);
+
+  useEffect(() => {
+    if (shouldSyncNames) {
       formMethods.setValue("name", originalName);
     }
-  }, [borehole?.name, dirtyFields.originalName, formMethods, formMethods.setValue, isDirty, originalName]);
+  }, [originalName, formMethods, shouldSyncNames]);
 
   return (
     <Card>

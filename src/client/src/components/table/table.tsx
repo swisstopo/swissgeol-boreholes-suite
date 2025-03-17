@@ -1,8 +1,9 @@
-import { FC, MutableRefObject } from "react";
+import { FC, MutableRefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   DataGrid,
   GridColDef,
+  GridColumnResizeParams,
   GridEventListener,
   GridFilterModel,
   GridPaginationModel,
@@ -11,6 +12,7 @@ import {
   GridRowSelectionModel,
   GridSortModel,
   GridToolbar,
+  useGridApiRef,
 } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
 import { BoreholeAttributes } from "../../api-lib/ReduxStateInterfaces.ts";
@@ -74,6 +76,29 @@ export const Table: FC<TableProps> = ({
   rowAutoHeight = false,
 }) => {
   const { i18n } = useTranslation();
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+  const internalApiRef = useGridApiRef();
+  const effectiveApiRef = apiRef ?? internalApiRef;
+
+  // Ensure user-defined column widths are persisted when table re-renders
+  useEffect(() => {
+    if (effectiveApiRef.current) {
+      Object.entries(columnWidths).forEach(([field, width]) => {
+        effectiveApiRef.current.setColumnWidth(field, width);
+      });
+    }
+  }, [apiRef, columnWidths, effectiveApiRef]);
+
+  const handleColumnResize = useCallback(
+    (params: GridColumnResizeParams) => {
+      const updatedWidths = {
+        ...columnWidths,
+        [params.colDef.field]: params.width,
+      };
+      setColumnWidths(updatedWidths);
+    },
+    [columnWidths],
+  );
 
   const disabledStyles = {
     cursor: isDisabled ? "default" : "pointer",
@@ -82,6 +107,20 @@ export const Table: FC<TableProps> = ({
   };
 
   const defaultRowClassName = (params: GridRowParams): string => (params.row.isDisabled ? "disabled-row" : "");
+
+  // Apply user-defined column widths to columns
+  const adjustedWidthColumns = columns.map(col => {
+    // If column is not resizable, no need to set width
+    if (col.resizable === false) {
+      return col;
+    }
+
+    return {
+      ...col,
+      width: columnWidths[col.field] || col.width,
+      flex: columnWidths[col.field] ? undefined : 1, // Auto flex if no width
+    };
+  });
 
   return (
     <DataGrid
@@ -92,7 +131,7 @@ export const Table: FC<TableProps> = ({
       loading={isLoading ?? !rows?.length}
       rowCount={rowCount ?? rows?.length}
       rows={rows}
-      columns={columns}
+      columns={adjustedWidthColumns}
       getRowHeight={() => (rowAutoHeight ? "auto" : 44)}
       onRowClick={onRowClick}
       pageSizeOptions={[100]}
@@ -122,6 +161,7 @@ export const Table: FC<TableProps> = ({
       onSortModelChange={onSortModelChange}
       paginationModel={paginationModel}
       onPaginationModelChange={onPaginationModelChange}
+      onColumnResize={handleColumnResize}
       apiRef={apiRef}
       paginationMode={paginationMode}
       sortingMode={sortingMode}

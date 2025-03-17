@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1110 - 2025-03-14
+
 ### Added
 
 - Added a table displaying all the users in the admin settings.
@@ -10,6 +12,7 @@
 - Added a detail view for workgroups in the admin settings.
 - Enable auto setting of depth in MASL in hydro module.
 - Added functionality to copy extracted text to clipboard in the labeling panel.
+- New _extern-sync_ Docker image for syncing published boreholes from a source to a target database.
 - Added highlighting of words that will be included in text extraction.
 - Added data collection with consent option.
 
@@ -30,6 +33,8 @@
 - Before export or import check if the user has the correct role and is in the same workgroup as the borehole.
 - Attachments page was missing scrollbars.
 - Fix sorting by drilling purpose in borehole table.
+- Fix unexpected reset of column width in borehole table.
+- Stop automatic update of alternate name when it is different from the original name.
 
 ## v2.1.1052 - 2025-02-04
 
