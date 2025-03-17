@@ -6,8 +6,9 @@ import { defaults as defaultControls } from "ol/control/defaults";
 import { containsCoordinate, Extent, getCenter } from "ol/extent";
 import Feature from "ol/Feature";
 import { Geometry } from "ol/geom";
-import { fromExtent } from "ol/geom/Polygon";
+import Polygon, { fromExtent } from "ol/geom/Polygon";
 import { DragBox, DragRotate, PinchRotate } from "ol/interaction";
+import BaseLayer from "ol/layer/Base";
 import ImageLayer from "ol/layer/Image";
 import VectorLayer from "ol/layer/Vector";
 import Map from "ol/Map";
@@ -122,22 +123,46 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
     }
   };
 
-  const highlightIntersectingFeatures = (boundingBoxSource: VectorSource, targetFeature: Feature) => {
+  const highlightIntersectingFeatures = (
+    boundingBoxSource: VectorSource,
+    highlightsLayerSource: VectorSource,
+    targetFeature: Feature,
+  ) => {
     const targetExtent = targetFeature.getGeometry()?.getExtent();
     if (!targetExtent) return;
+
+    const intersectingFeatures: Feature[] = [];
 
     boundingBoxSource.getFeatures().forEach(feature => {
       const centroid = getCenter(feature.getGeometry()?.getExtent() ?? []);
       const isIntersecting = centroid && containsCoordinate(targetExtent, centroid);
-
-      feature.setStyle(
-        new Style({
-          fill: new Fill({
-            color: isIntersecting ? theme.palette.ai.mainTransparent : "transparent",
-          }),
-        }),
-      );
+      if (isIntersecting) {
+        intersectingFeatures.push(feature);
+      }
     });
+
+    if (intersectingFeatures.length === 0) return;
+    const mergedCoordinates = intersectingFeatures.flatMap(feature => {
+      const geometry = feature.getGeometry() as Polygon;
+      return geometry.getCoordinates(); // Extract outer rings
+    });
+
+    // Create a new merged Polygon to avoid darkening fill for intersecting bounding boxes
+    const mergedFeature = new Feature(new Polygon(mergedCoordinates));
+    mergedFeature.setStyle(
+      new Style({
+        fill: new Fill({ color: theme.palette.ai.textHighlights }),
+      }),
+    );
+    highlightsLayerSource.clear();
+    highlightsLayerSource.addFeature(mergedFeature);
+  };
+
+  const getSourceFromLayerName = (layers: BaseLayer[], layerName: string): VectorSource | undefined => {
+    const drawingLayer = layers.find(
+      layer => layer instanceof VectorLayer && layer.get("name") === layerName,
+    ) as VectorLayer<Feature<Geometry>>;
+    return drawingLayer?.getSource() as VectorSource | undefined;
   };
 
   useEffect(() => {
@@ -154,19 +179,14 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
     if (map && drawTooltipLabel) {
       const layers = map.getLayers().getArray();
 
-      const drawingLayer = layers.find(
-        layer => layer instanceof VectorLayer && layer.get("name") === "drawingLayer",
-      ) as VectorLayer<Feature<Geometry>>;
-      const drawingSource = drawingLayer?.getSource() as VectorSource | undefined;
+      const drawingSource = getSourceFromLayerName(layers, "drawingLayer");
+      const boundingBoxSource = getSourceFromLayerName(layers, "boundingBoxLayer");
+      const highlightsSource = getSourceFromLayerName(layers, "highlightsLayer");
 
-      const boundingBoxLayer = layers.find(
-        layer => layer instanceof VectorLayer && layer.get("name") === "boundingBoxLayer",
-      ) as VectorLayer<Feature<Geometry>>;
-      const boundingBoxSource = boundingBoxLayer?.getSource() as VectorSource | undefined;
-
-      if (drawingSource && boundingBoxSource) {
+      if (drawingSource && boundingBoxSource && highlightsSource) {
         drawingSource.clear();
-        boundingBoxSource?.clear();
+        boundingBoxSource.clear();
+        highlightsSource.clear();
         map
           .getInteractions()
           .getArray()
@@ -203,7 +223,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
           const boxFeature = new Feature({
             geometry: fromExtent(dragBox.getGeometry().getExtent()),
           });
-          highlightIntersectingFeatures(boundingBoxSource, boxFeature);
+          highlightIntersectingFeatures(boundingBoxSource, highlightsSource, boxFeature);
         });
 
         dragBox.on("boxend", () => {
@@ -309,8 +329,19 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
       });
       boundingBoxLayer.set("name", "boundingBoxLayer");
 
+      const highlightSource = new VectorSource();
+      const highlightsLayer = new VectorLayer({
+        source: highlightSource,
+        style: new Style({
+          fill: new Fill({
+            color: theme.palette.ai.mainTransparent,
+          }),
+        }),
+      });
+      highlightsLayer.set("name", "highlightsLayer");
+
       const initMap = new Map({
-        layers: [imageLayer, drawingLayer, boundingBoxLayer],
+        layers: [imageLayer, drawingLayer, boundingBoxLayer, highlightsLayer],
         target: "map",
         controls: defaultControls({
           attribution: false,

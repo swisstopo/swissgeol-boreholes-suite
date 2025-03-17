@@ -9,6 +9,7 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers.js";
 import "cypress-real-events/support";
+import { getArea } from "ol/sphere.js";
 
 const isFileActive = (fileName, isActive) => {
   cy.contains("span", fileName)
@@ -110,21 +111,17 @@ function assertLabelingAlertText(expectedText) {
     });
 }
 
-function assertBoundingBoxes(totalCount, visibleCount) {
+function assertBoundingBoxes(totalCount, highlightedArea) {
   cy.window().then(win => {
     const layers = win.labelingImage.getLayers().getArray();
     const boundingBoxLayer = layers.find(layer => layer.get("name") === "boundingBoxLayer");
-    const features = boundingBoxLayer.getSource().getFeatures();
-    const featureColors = features.map(feature => {
-      const style = feature.getStyle();
-      return style?.getFill()?.getColor();
-    });
-    expect(features.length).to.equal(totalCount); // layer always contains all bounding boxes, even if they are not visible
-
-    const expectedColors = Array.from({ length: totalCount }, (_, i) =>
-      i < visibleCount ? "rgba(91, 33, 182, 0.2)" : "transparent",
-    );
-    expect(featureColors).to.deep.equal(expectedColors);
+    const highlightsLayer = layers.find(layer => layer.get("name") === "highlightsLayer");
+    const invisibleBoundingBoxes = boundingBoxLayer.getSource().getFeatures();
+    const highlights = highlightsLayer.getSource().getFeatures();
+    expect(invisibleBoundingBoxes.length).to.equal(totalCount); // layer always contains all bounding boxes, even if they are not visible
+    expect(highlights.length).to.equal(highlightedArea === 0 ? 0 : 1); // highlights are combined into one feature
+    highlightedArea !== 0 &&
+      expect(Math.round(Math.abs(getArea(highlights[0].getGeometry())))).to.equal(highlightedArea);
   });
 }
 
@@ -332,7 +329,7 @@ describe("Test labeling tool", () => {
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
     drawBox(200, 120, 500, 400);
-    assertBoundingBoxes(4, 4);
+    assertBoundingBoxes(4, 17227);
     assertLabelingAlertText('Copied to clipboard: "Some information without coo...');
     assertClipboardContent("Some information without coordinates");
 
@@ -342,7 +339,7 @@ describe("Test labeling tool", () => {
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
     drawBox(200, 120, 250, 400);
-    assertBoundingBoxes(4, 1);
+    assertBoundingBoxes(4, 3957);
     assertClipboardContent("Some");
 
     // can switch between text extraction and coordinate extraction

@@ -103,7 +103,7 @@
   "csvFormatExplanation": "The CSV-UTF8 file should contain the following column headings",
   "csvOptionalExplanation": "Column headings in square brackets are optional",
   "cuttings": "Borehole cuttings / core",
-  "dataCollectionConsent": "Consent to data collection (optional)",
+  "dataCollectionConsent": "Consent to data acquisition (optional)",
   "dataImport": "Data import",
   "date": "Date",
   "dateAbandonmentCompletion": "Abandonment date",
