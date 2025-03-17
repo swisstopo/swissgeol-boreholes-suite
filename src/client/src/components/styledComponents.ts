@@ -11,8 +11,6 @@ export const FullPageCentered = styled(Stack)({
   flex: "1 0 0",
   justifyContent: "center",
   alignItems: "center",
-  height: "100%",
-  minHeight: "600px",
 });
 
 export const StackFullWidth = styled(Stack)(() => ({
