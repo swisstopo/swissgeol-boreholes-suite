@@ -152,7 +152,7 @@ export const FilesTable: FC<FilesTableProps> = ({ editor, files, patchFile, deta
   }, [editor, t, editingEnabled, renderCellCheckbox, patchFile, id, detachFile]);
 
   return (
-    <Table
+    <Table<BoreholeFile>
       rows={files}
       columns={columns}
       rowAutoHeight={true}

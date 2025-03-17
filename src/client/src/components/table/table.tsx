@@ -1,4 +1,4 @@
-import { FC, MutableRefObject, useCallback, useEffect, useState } from "react";
+import { MutableRefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   DataGrid,
@@ -15,15 +15,12 @@ import {
   useGridApiRef,
 } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
-import { BoreholeAttributes } from "../../api-lib/ReduxStateInterfaces.ts";
-import { User, Workgroup } from "../../api/apiInterfaces.ts";
-import { BoreholeFile } from "../../api/file/fileInterfaces.ts";
 import { muiLocales } from "../../mui.locales.ts";
 import { TablePaginationActions } from "../../pages/overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "../../pages/settings/admin/quickfilterStyles.ts";
 
-interface TableProps {
-  rows: User[] | Workgroup[] | BoreholeAttributes[] | BoreholeFile[];
+interface TableProps<T> {
+  rows: T[];
   columns: GridColDef[];
   filterModel?: GridFilterModel;
   onFilterModelChange?: (model: GridFilterModel) => void;
@@ -49,7 +46,7 @@ interface TableProps {
   getRowId?: GridRowIdGetter;
 }
 
-export const Table: FC<TableProps> = ({
+export const Table = <T,>({
   rows,
   columns,
   filterModel,
@@ -74,7 +71,7 @@ export const Table: FC<TableProps> = ({
   isDisabled = false,
   showQuickFilter = true,
   rowAutoHeight = false,
-}) => {
+}: TableProps<T>) => {
   const { i18n } = useTranslation();
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const internalApiRef = useGridApiRef();
