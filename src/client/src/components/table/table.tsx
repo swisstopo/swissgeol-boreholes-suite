@@ -82,7 +82,7 @@ export const Table: FC<TableProps> = ({
 
   // Ensure user-defined column widths are persisted when table re-renders
   useEffect(() => {
-    if (effectiveApiRef.current) {
+    if (effectiveApiRef?.current && Object.keys(effectiveApiRef.current).length > 0) {
       Object.entries(columnWidths).forEach(([field, width]) => {
         effectiveApiRef.current.setColumnWidth(field, width);
       });
