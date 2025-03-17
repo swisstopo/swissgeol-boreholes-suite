@@ -141,7 +141,11 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       renderHeader: renderHeaderCheckbox,
       renderCell: renderCellCheckbox,
     },
-    { field: "alternate_name", headerName: t("name"), flex: 1 },
+    {
+      field: "alternate_name",
+      headerName: t("name"),
+      flex: 1,
+    },
     {
       field: "borehole_type",
       valueGetter: (value: number) => {

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace BDMS.ExternSync;
 
@@ -8,7 +9,8 @@ namespace BDMS.ExternSync;
 /// </summary>
 /// <param name="syncContext">The sync context.</param>
 /// <param name="logger">The logger for this instance.</param>
-public abstract class SyncTask(ISyncContext syncContext, ILogger<SyncTask> logger)
+/// <param name="configuration">The configuration object for this instance.</param>
+public abstract class SyncTask(ISyncContext syncContext, ILogger<SyncTask> logger, IConfiguration configuration)
     : IDisposable, ISyncTask
 {
     private bool disposedValue;
@@ -22,6 +24,11 @@ public abstract class SyncTask(ISyncContext syncContext, ILogger<SyncTask> logge
     /// The target database context.
     /// </summary>
     protected BdmsContext Target { get; } = syncContext.Target;
+
+    /// <summary>
+    /// The <see cref="IConfiguration"/> object for this instance.
+    /// </summary>
+    protected IConfiguration Configuration { get; } = configuration;
 
     /// <summary>
     /// The logger for the <see cref="SyncTask"/>.
