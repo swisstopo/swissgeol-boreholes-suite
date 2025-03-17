@@ -25,7 +25,7 @@ function assertDrawTooltip(content) {
 }
 
 function assertDrawTooltipInvisible() {
-  cy.get('[data-cy="labeling-draw-tooltip"]').should("not.visible");
+  cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");
 }
 
 const drawBox = (x1, y1, x2, y2) => {
