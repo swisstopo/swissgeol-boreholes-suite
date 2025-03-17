@@ -1089,18 +1089,6 @@ public class ImportControllerTest
     }
 
     [TestMethod]
-    public void CompareValueWithTolerance()
-    {
-        Assert.AreEqual(true, ImportController.CompareValuesWithTolerance(null, null, 0));
-        Assert.AreEqual(true, ImportController.CompareValuesWithTolerance(2100000, 2099998, 2));
-        Assert.AreEqual(false, ImportController.CompareValuesWithTolerance(2100000, 2000098, 1.99));
-        Assert.AreEqual(false, ImportController.CompareValuesWithTolerance(2100002, 2000000, 1.99));
-        Assert.AreEqual(false, ImportController.CompareValuesWithTolerance(21000020, 2000000, 20));
-        Assert.AreEqual(false, ImportController.CompareValuesWithTolerance(null, 2000000, 0));
-        Assert.AreEqual(false, ImportController.CompareValuesWithTolerance(2000000, null, 2));
-    }
-
-    [TestMethod]
     public async Task UploadShouldIgnoreLocationFields()
     {
         httpClientFactoryMock

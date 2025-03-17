@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 using static BDMS.ExternSync.SyncContextConstants;
 
 using var app = Host.CreateDefaultBuilder(args).ConfigureServices((context, services) =>
@@ -12,15 +13,14 @@ using var app = Host.CreateDefaultBuilder(args).ConfigureServices((context, serv
     string GetConnectionString(string name) =>
         context.Configuration.GetConnectionString(name) ?? throw new InvalidOperationException($"Connection string <{name}> not found.");
 
-    services.AddNpgsqlDataSource(GetConnectionString(SourceBdmsContextName), serviceKey: SourceBdmsContextName);
-    services.AddNpgsqlDataSource(GetConnectionString(TargetBdmsContextName), serviceKey: TargetBdmsContextName);
+    services.AddNpgsqlDataSource(GetConnectionString(SourceBdmsContextName), dataSourceBuilder => dataSourceBuilder.UseNetTopologySuite(), serviceKey: SourceBdmsContextName);
+    services.AddNpgsqlDataSource(GetConnectionString(TargetBdmsContextName), dataSourceBuilder => dataSourceBuilder.UseNetTopologySuite(), serviceKey: TargetBdmsContextName);
     services.AddTransient<ISyncContext, SyncContext>();
 
     // Register tasks. The order specified here is the order in which they will be executed.
     services.AddScoped<ISyncTask, CollectInformationTask>();
-    services.AddScoped<ISyncTask, SetupDatabaseTask>();
-    services.AddScoped<ISyncTask, UpdateSequencesTask>();
-    services.AddScoped<ISyncTask, SynchronizeUsersTask>();
+    services.AddScoped<ISyncTask, CheckDatabaseStateTask>();
+    services.AddScoped<ISyncTask, SyncBoreholesTask>();
 
     // Register task manager
     services.AddScoped<SyncTaskManager>();

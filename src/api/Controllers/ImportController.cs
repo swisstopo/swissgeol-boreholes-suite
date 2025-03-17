@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime;
-using BDMS.Authentication;
+﻿using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -478,61 +477,31 @@ public class ImportController : ControllerBase
     private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, ValidationErrorType errorType)
     {
         if (boreholesFromFile.Count(b =>
-            CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
-            CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) &&
-            CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2)) > 1)
+            BoreholeExtensions.CompareToWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
+            BoreholeExtensions.CompareToWithTolerance(b.LocationX, borehole.LocationX, 2) &&
+            BoreholeExtensions.CompareToWithTolerance(b.LocationY, borehole.LocationY, 2)) > 1)
         {
             AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", errorType);
         }
     }
 
-    private void ValidateDuplicateInDb(BoreholeImport borehole, int workgroupId, int processingIndex, ValidationErrorType errorType)
+    private void ValidateDuplicateInDb(Borehole borehole, int workgroupId, int processingIndex, ValidationErrorType errorType)
     {
-        var boreholesFromDb = context.Boreholes
-            .Where(b => b.WorkgroupId == workgroupId)
-            .AsNoTracking()
-            .Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY, b.LocationXLV03, b.LocationYLV03 })
-            .ToList();
+        var boreholesFromDb = context.Boreholes.Where(b => b.WorkgroupId == workgroupId).AsNoTracking();
 
-        if (boreholesFromDb.Any(b =>
-            CompareValuesWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
-            (CompareValuesWithTolerance(b.LocationX, borehole.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, borehole.LocationX, 2)) &&
-            (CompareValuesWithTolerance(b.LocationY, borehole.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, borehole.LocationY, 2))))
+        if (borehole.IsWithinPredefinedTolerance(boreholesFromDb))
         {
             AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", errorType);
         }
     }
 
-    private void ValidateCasingReferences(BoreholeImport borehole, int processingIndex)
+    private void ValidateCasingReferences(Borehole borehole, int processingIndex)
     {
-        // Get all casing Ids from the borehole's completions
-        var casingIds = borehole.Completions?
-            .SelectMany(c => c.Casings ?? Enumerable.Empty<Casing>())
-            .Select(c => c.Id)
-            .ToHashSet() ?? new HashSet<int>();
-
-        // Aggregate all CasingId references from Observations, Instrumentations, and Backfills
-        var casingReferenceIdsInBorehole = new HashSet<int>(borehole.Observations?.Where(o => o.CasingId.HasValue).Select(o => o.CasingId!.Value) ?? []);
-        casingReferenceIdsInBorehole
-            .UnionWith(borehole.Completions?.SelectMany(c => c.Instrumentations ?? Enumerable.Empty<Instrumentation>())
-            .Where(i => i.CasingId.HasValue)
-            .Select(i => i.CasingId!.Value) ?? []);
-        casingReferenceIdsInBorehole
-            .UnionWith(borehole.Completions?.SelectMany(c => c.Backfills ?? Enumerable.Empty<Backfill>())
-            .Where(b => b.CasingId.HasValue)
-            .Select(b => b.CasingId!.Value) ?? []);
-
-        // Check if any referenced CasingId is not found in the casingIds set
-        var invalidReferences = casingReferenceIdsInBorehole.Except(casingIds).ToList();
-        if (invalidReferences.Count > 0) AddValidationErrorToModelState(processingIndex, $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", ValidationErrorType.Json);
-    }
-
-    internal static bool CompareValuesWithTolerance(double? firstValue, double? secondValue, double tolerance)
-    {
-        if (firstValue == null && secondValue == null) return true;
-        if (firstValue == null || secondValue == null) return false;
-
-        return Math.Abs(firstValue.Value - secondValue.Value) <= tolerance;
+        if (!borehole.ValidateCasingReferences())
+        {
+            AddValidationErrorToModelState(
+                processingIndex, $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", ValidationErrorType.Json);
+        }
     }
 
     private static List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file, List<Codelist> identifierCodelists)
