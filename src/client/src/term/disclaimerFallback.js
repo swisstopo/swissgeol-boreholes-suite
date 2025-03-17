@@ -21,7 +21,7 @@ Liability claims against swisstopo for material or immaterial damage resulting f
 Further legal provisions can be found here: https://www.swissgeol.ch/datenschutz-en/
 
 # Data Collection
-In order to tailor our online offering optimally to your needs, we use the Google Analytics analysis tools. Your behavior on the website is recorded in an anonymized form. Therefore, no personal data is transmitted or stored. If you do not agree with this, you can prevent data collection by these analysis tools and still use this website without any restrictions. For more information, please see our [Legal Notice](https://www.swissgeol.ch/datenschutz).
+In order to tailor our online offering optimally to your needs, we use the Google Analytics analysis tools. Your behavior on the website is recorded in an anonymized form. Therefore, no personal data is transmitted or stored. If you do not agree with this, you can prevent data collection by these analysis tools and still use this website without any restrictions. For more information, please see our [Legal Notice](https://www.swissgeol.ch/datenschutz-en/).
 `;
 
 export const fr = `# Responsabilité
@@ -34,7 +34,7 @@ swisstopo ne saurait être tenu pour responsable des dommages matériels ou imma
 Pour plus d'informations légales, veuillez consulter le lien suivant: https://www.swissgeol.ch/datenschutz-fr/
 
 # Collecte de données
-fin d’adapter au mieux notre offre en ligne à vos besoins, nous utilisons l’outil d’analyse Google Analytics. Votre comportement sur le site Web est enregistré de manière anonyme. Aucune donnée personnelle n’est donc transmise ou enregistrée. Si vous n’êtes pas d’accord, vous pouvez empêcher la collecte de données par ces outils d’analyse tout en continuant à utiliser ce site Web sans aucune restriction. Pour plus d’informations, veuillez consulter notre page [Mentions légales](https://www.swissgeol.ch/datenschutz).
+fin d’adapter au mieux notre offre en ligne à vos besoins, nous utilisons l’outil d’analyse Google Analytics. Votre comportement sur le site Web est enregistré de manière anonyme. Aucune donnée personnelle n’est donc transmise ou enregistrée. Si vous n’êtes pas d’accord, vous pouvez empêcher la collecte de données par ces outils d’analyse tout en continuant à utiliser ce site Web sans aucune restriction. Pour plus d’informations, veuillez consulter notre page [Mentions légales](https://www.swissgeol.ch/datenschutz-fr/).
 `;
 
 export const it = `# Responsabilità
@@ -47,5 +47,5 @@ swisstopo declina ogni responsabilità per danni materiali o immateriali derivan
 Per ulteriori informazioni legali, consultare il seguente link: https://www.swissgeol.ch/datenschutz-it/
 
 # Raccolta dei dati
-Per adeguare al meglio la nostra offerta online alle vostre esigenze, utilizziamo gli strumenti di analisi Google Analytics. Il vostro comportamento sul sito Web viene registrato in forma anonima. Non vengono quindi trasmessi o memorizzati dati personali. Se non siete d’accordo, potete impedire la raccolta dei dati tramite questi strumenti di analisi e continuare comunque a utilizzare questo sito Web senza restrizioni. Per maggiori informazioni consultate la nostra pagina [Note legali](https://www.swissgeol.ch/datenschutz).
+Per adeguare al meglio la nostra offerta online alle vostre esigenze, utilizziamo gli strumenti di analisi Google Analytics. Il vostro comportamento sul sito Web viene registrato in forma anonima. Non vengono quindi trasmessi o memorizzati dati personali. Se non siete d’accordo, potete impedire la raccolta dei dati tramite questi strumenti di analisi e continuare comunque a utilizzare questo sito Web senza restrizioni. Per maggiori informazioni consultate la nostra pagina [Note legali](https://www.swissgeol.ch/datenschutz-it/).
 `;
