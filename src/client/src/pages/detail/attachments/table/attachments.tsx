@@ -52,16 +52,7 @@ export const Attachments: FC = () => {
     field: string,
     value: string | boolean,
   ) => {
-    setFiles(
-      files.map(file => {
-        if (file.fileId === fid) {
-          const val: { [key: string]: string | boolean } = {};
-          val[field] = value;
-          return Object.assign({}, file, val);
-        }
-        return file;
-      }),
-    );
+    setFiles(files.map(file => (file.fileId === fid ? { ...file, [field]: value } : file)));
     if (field === "public") {
       updateFile(id, fid, currentDescription, value as boolean);
     } else {

@@ -114,7 +114,7 @@ export const Table = <T,>({
 
     return {
       ...col,
-      width: columnWidths[col.field] || col.width,
+      width: columnWidths[col.field] ?? col.width,
       flex: columnWidths[col.field] ? undefined : 1, // Auto flex if no width
     };
   });
@@ -122,7 +122,7 @@ export const Table = <T,>({
   return (
     <DataGrid
       sx={{ border: "none !important", ...quickFilterStyles, ...disabledStyles }}
-      data-cy={dataCy || "data-table"}
+      data-cy={dataCy ?? "data-table"}
       columnHeaderHeight={44}
       sortingOrder={["asc", "desc"]}
       loading={isLoading ?? !rows?.length}

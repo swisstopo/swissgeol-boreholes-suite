@@ -30,6 +30,10 @@ export const FilesTable: FC<FilesTableProps> = ({ editor, files, patchFile, deta
   const { id } = useParams<{ id: string }>();
   const { editingEnabled } = useContext(DetailContext);
 
+  const getLockIcon = (isPublic: boolean) => {
+    return <IconButton color={isPublic ? "success" : "error"}>{isPublic ? <LockOpen /> : <Lock />}</IconButton>;
+  };
+
   const renderCellCheckbox = useCallback(
     (params: GridRenderCellParams) => {
       return (
@@ -42,14 +46,8 @@ export const FilesTable: FC<FilesTableProps> = ({ editor, files, patchFile, deta
                 patchFile(id, params.row.fileId, params.row.description, params.row.public, "public", e.target.checked)
               }
             />
-          ) : params.row.public ? (
-            <IconButton color="success">
-              <LockOpen />
-            </IconButton>
           ) : (
-            <IconButton color="error">
-              <Lock />
-            </IconButton>
+            getLockIcon(params.row.public)
           )}
         </Box>
       );
