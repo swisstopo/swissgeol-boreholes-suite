@@ -32,7 +32,7 @@ swisstopo se réserve expressément le droit de modifier en partie ou en totalit
 swisstopo ne saurait être tenu pour responsable des dommages matériels ou immatériels qui pourraient être causés par l’accès aux informations diffusées ou par leur utilisation ou non-utilisation, par le mauvais usage de la connexion ou par des problèmes techniques.
 
 # Acquisition de données
-Nous utilisons l’outil d’analyse Google Analytics et Sentry afin d’adapter au mieux notre site web à vos besoins. Votre comportement sur le site est enregistré de manière anonyme. Aucune donnée personnelle n’est transmise ou stockée. Si vous n’acceptez pas cet état de fait, vous pouvez empêcher la collecte de données par des outils d’analyse et continuer à utiliser ce site web sans restriction.
+Nous utilisons l’outil d’analyse Google Analytics afin d’adapter au mieux notre site web à vos besoins. Votre comportement sur le site est enregistré de manière anonyme. Aucune donnée personnelle n’est transmise ou stockée. Si vous n’acceptez pas cet état de fait, vous pouvez empêcher la collecte de données par des outils d’analyse et continuer à utiliser ce site web sans restriction.
 
 Pour plus d'informations légales, veuillez consulter le lien suivant: https://www.swissgeol.ch/datenschutz-fr/
 `;
@@ -45,7 +45,7 @@ swisstopo si riserva esplicitamente il diritto in qualsiasi momento di modificar
 swisstopo declina ogni responsabilità per danni materiali o immateriali derivanti dall’accesso alle informazioni diffuse, dall’uso o dal mancato uso del sito, oppure che sono riconducibili a un malfunzionamento del collegamento o a disturbi tecnici del sito.
 
 # Acquisizione di dati
-Per poter adattare la nostra offerta web in modo ottimale alle vostre esigenze, uUtilizziamo lo strumento di analisi Google Analytics. Ciò significa, che il vostro comportamento sul sito web viene registrato in forma anonima. Di conseguenza, non vengono trasmessi o memorizzati dati personali. Se non siete dʼaccordo, potete interrompere la raccolta dei dati da parte degli strumenti di analisi e continuare ad utilizzare questo sito web senza restrizioni.
+Per poter adattare la nostra offerta web in modo ottimale alle vostre esigenze, utilizziamo lo strumento di analisi Google Analytics. Ciò significa, che il vostro comportamento sul sito web viene registrato in forma anonima. Di conseguenza, non vengono trasmessi o memorizzati dati personali. Se non siete dʼaccordo, potete interrompere la raccolta dei dati da parte degli strumenti di analisi e continuare ad utilizzare questo sito web senza restrizioni.
 
 Per ulteriori informazioni legali, consultare il seguente link: https://www.swissgeol.ch/datenschutz-it/
 `;
