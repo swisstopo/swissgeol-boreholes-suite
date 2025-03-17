@@ -33,6 +33,7 @@
 - Fix sorting by drilling purpose in borehole table.
 - Fix unexpected reset of column width in borehole table.
 - Stop automatic update of alternate name when it is different from the original name.
+- Copy borehole to the correct workgroup if the user only has edit permissions in a single workgroup.
 
 ## v2.1.1052 - 2025-02-04
 
