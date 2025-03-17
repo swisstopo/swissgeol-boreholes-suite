@@ -1,9 +1,8 @@
 import { FC } from "react";
 import { useParams } from "react-router-dom";
-import { getWaterIngress } from "../../../../api/fetchApiV2.js";
-import DataCards from "../../../../components/dataCard/dataCards.jsx";
-import { sortByDepth } from "../sorter.jsx";
-import { WaterIngress as WaterIngressType } from "./Observation.ts";
+import DataCards from "../../../../../components/dataCard/dataCards.js";
+import { sortByDepth } from "../../sorter.jsx";
+import { getWaterIngress, WaterIngress as WaterIngressType } from "./WaterIngress.ts";
 import WaterIngressDisplay from "./waterIngressDisplay.js";
 import WaterIngressInput from "./waterIngressInput.tsx";
 
@@ -12,14 +11,14 @@ const WaterIngress: FC = () => {
 
   return (
     <DataCards
-      parentId={boreholeId}
+      parentId={parseInt(boreholeId)}
       getData={getWaterIngress}
       cyLabel="waterIngress"
       addLabel="addWaterIngress"
       emptyLabel="msgWateringressEmpty"
       renderInput={(props: { item: WaterIngressType; parentId: number }) => <WaterIngressInput {...props} />}
       renderDisplay={(props: { item: WaterIngressType }) => <WaterIngressDisplay {...props} />}
-      sortDisplayed={(a: object, b: object) => {
+      sortDisplayed={(a, b) => {
         return sortByDepth(a, b, "fromDepthM", "toDepthM");
       }}
     />

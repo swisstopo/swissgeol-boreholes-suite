@@ -1,21 +1,23 @@
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
-import { deleteFieldMeasurement, useDomains } from "../../../../api/fetchApiV2.js";
-import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
-import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
-import { parameterTableHeaderStyles } from "../../../../components/form/formResultTableDisplayStyles";
-import ObservationDisplay from "./observationDisplay.tsx";
-import { getFieldMeasurementParameterUnits } from "./parameterUnits";
+import { useDomains } from "../../../../../api/fetchApiV2.js";
+import { Codelist } from "../../../../../components/Codelist.ts";
+import DataDisplayCard from "../../../../../components/dataCard/dataDisplayCard.tsx";
+import { FormResultTableDisplay } from "../../../../../components/form/formResultTableDisplay.js";
+import { parameterTableHeaderStyles } from "../../../../../components/form/formResultTableDisplayStyles.js";
+import ObservationDisplay from "../observationDisplay.tsx";
+import { getFieldMeasurementParameterUnits } from "../parameterUnits.js";
+import { deleteFieldMeasurement, FieldMeasurement, FieldMeasurementResult } from "./FieldMeasurement.ts";
 
-const FieldMeasurementDisplay = props => {
-  const { item } = props;
+export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }) => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
 
   return (
-    <DataDisplayCard item={item} deleteData={deleteFieldMeasurement}>
+    <DataDisplayCard<FieldMeasurement> item={item} deleteData={deleteFieldMeasurement}>
       <ObservationDisplay observation={item} />
-      <FormResultTableDisplay
+      <FormResultTableDisplay<FieldMeasurementResult>
         title={t("fieldMeasurementResult")}
         results={item?.fieldMeasurementResults}
         renderHeader={styles => (
@@ -28,7 +30,7 @@ const FieldMeasurementDisplay = props => {
         renderBody={(result, index, styles) => (
           <>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.sampleType-formDisplay`}>
-              {domains?.data?.find(d => d.id === result.sampleTypeId)?.[i18n.language] ?? ""}
+              {domains?.data?.find((d: Codelist) => d.id === result.sampleTypeId)?.[i18n.language] ?? ""}
             </TableCell>
             <TableCell
               component="th"
@@ -38,10 +40,10 @@ const FieldMeasurementDisplay = props => {
                 ...parameterTableHeaderStyles,
               }}
               data-cy={`fieldMeasurementResult.${index}.parameter-formDisplay`}>
-              {domains?.data?.find(d => d.id === result.parameterId)?.[i18n.language] ?? ""}
+              {domains?.data?.find((d: Codelist) => d.id === result.parameterId)?.[i18n.language] ?? ""}
             </TableCell>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.value-formDisplay`}>
-              {result?.value && (
+              {result?.value && result?.parameterId && (
                 <>
                   <span>{result?.value + " "}</span>
                   {getFieldMeasurementParameterUnits(result.parameterId, domains.data)}

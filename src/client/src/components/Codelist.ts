@@ -1,8 +1,3 @@
-export interface Domains {
-  // Incomplete type definition, add other properties as needed
-  data: Codelist[];
-}
-
 export interface Codelist {
   order: number;
   id: number;

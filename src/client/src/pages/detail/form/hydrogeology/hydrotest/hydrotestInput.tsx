@@ -1,42 +1,51 @@
-import { useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-import { addHydrotest, updateHydrotest, useDomains, useHydrotestDomains } from "../../../../api/fetchApiV2";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
-import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput } from "../../../../components/form/form";
-import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
-import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
-import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.ts";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { ObservationType } from "./Observation.ts";
-import ObservationInput from "./observationInput.tsx";
-import { getHydrotestParameterUnits } from "./parameterUnits";
+import { useDomains } from "../../../../../api/fetchApiV2";
+import { AddButton, CancelButton, SaveButton } from "../../../../../components/buttons/buttons";
+import { Codelist } from "../../../../../components/Codelist";
+import { DataCardButtonContainer } from "../../../../../components/dataCard/dataCard";
+import { DataCardContext, DataCardSwitchContext } from "../../../../../components/dataCard/dataCardContext";
+import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput } from "../../../../../components/form/form";
+import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
+import { PromptContext } from "../../../../../components/prompt/promptContext";
+import { prepareCasingDataForSubmit } from "../../completion/casingUtils";
+import { getIsoDateIfDefined } from "../hydrogeologyFormUtils";
+import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants";
+import { ObservationType } from "../Observation";
+import ObservationInput from "../observationInput";
+import { getHydrotestParameterUnits } from "../parameterUnits";
+import {
+  addHydrotest,
+  Hydrotest,
+  HydrotestFormData,
+  HydrotestInputProps,
+  updateHydrotest,
+  useHydrotestDomains,
+} from "./Hydrotest";
 
-const HydrotestInput = props => {
-  const { item, parentId } = props;
+export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
   const domains = useDomains();
   const { t } = useTranslation();
-  const formMethods = useForm({
+
+  const formMethods = useForm<HydrotestFormData>({
     mode: "all",
     defaultValues: {
       hydrotestResults: item?.hydrotestResults || [],
     },
   });
+
   const { fields, append, remove } = useFieldArray({
     name: "hydrotestResults",
     control: formMethods.control,
   });
-  const [units, setUnits] = useState({});
-
-  const [hydrotestKindIds, setHydrotestKindIds] = useState(item?.kindCodelists?.map(c => c.id) || []);
+  const [units, setUnits] = useState<Record<number, string>>({});
+  const [hydrotestKindIds, setHydrotestKindIds] = useState<number[]>(item?.kindCodelists?.map(c => c.id) || []);
   const filteredTestKindDomains = useHydrotestDomains(hydrotestKindIds);
 
   useEffect(() => {
@@ -45,9 +54,7 @@ const HydrotestInput = props => {
         showPrompt(t("unsavedChangesMessage", { where: t("hydrotest") }), [
           {
             label: t("cancel"),
-            action: () => {
-              leaveInput(false);
-            },
+            action: () => leaveInput(false),
           },
           {
             label: t("reset"),
@@ -78,18 +85,17 @@ const HydrotestInput = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formMethods.trigger]);
 
-  const getFilteredDomains = (schema, data) => data?.filter(c => c.schema === schema).map(c => c.id);
+  const getFilteredDomains = (schema: string, data: Codelist[]) =>
+    data?.filter(c => c.schema === schema).map(c => c.id) || [];
 
-  const getCompatibleValues = (allowedIds, formValues) => formValues?.filter(c => allowedIds?.includes(c)) || [];
+  const getCompatibleValues = (allowedIds: number[], formValues: number[]) =>
+    formValues?.filter(c => allowedIds.includes(c)) || [];
 
   useEffect(() => {
     if (hydrotestKindIds.length > 0) {
-      // check the compatibility of codelists (flowdirection, evaluationMethod, hydrotestResultParameter) when the hydrotestKinds (and therefore the filteredTestKindDomains) change.
       if (filteredTestKindDomains.data?.length > 0) {
         const formValues = formMethods.getValues();
-
-        // delete flowDirections, evaluationMethods that are not longer compatible with the selected hydrotestKinds.
-        const allowedEvalutationMethodId = getFilteredDomains(
+        const allowedEvaluationMethodIds = getFilteredDomains(
           hydrogeologySchemaConstants.hydrotestEvaluationMethod,
           filteredTestKindDomains.data,
         );
@@ -97,12 +103,14 @@ const HydrotestInput = props => {
           hydrogeologySchemaConstants.hydrotestFlowDirection,
           filteredTestKindDomains.data,
         );
-
-        const compatibleEvaluationMethods = getCompatibleValues(
-          allowedEvalutationMethodId,
-          formValues.evaluationMethodId,
-        );
-        const compatibleFlowDirections = getCompatibleValues(allowedFlowDirectionIds, formValues.flowDirectionId);
+        let compatibleEvaluationMethods: number[] = [];
+        if (formValues.evaluationMethodId) {
+          compatibleEvaluationMethods = getCompatibleValues(allowedEvaluationMethodIds, formValues.evaluationMethodId);
+        }
+        let compatibleFlowDirections: number[] = [];
+        if (formValues.flowDirectionId) {
+          compatibleFlowDirections = getCompatibleValues(allowedFlowDirectionIds, formValues.flowDirectionId);
+        }
 
         // set form values
         formMethods.setValue("evaluationMethodId", compatibleEvaluationMethods);
@@ -115,7 +123,7 @@ const HydrotestInput = props => {
         );
 
         const compatibleHydrotestResults = formValues.hydrotestResults?.filter(
-          r => allowedHydrotestResultParameterIds.includes(r.parameterId) || [],
+          r => (r.parameterId && allowedHydrotestResultParameterIds.includes(r.parameterId)) || [],
         );
 
         formMethods.setValue("hydrotestResults", compatibleHydrotestResults);
@@ -130,26 +138,25 @@ const HydrotestInput = props => {
 
   useEffect(() => {
     formMethods.trigger("hydrotestResults");
-    var currentUnits = {};
-    formMethods.getValues()["hydrotestResults"].forEach((element, index) => {
-      currentUnits = {
-        ...currentUnits,
-        [index]: getHydrotestParameterUnits(element.parameterId, domains.data),
-      };
+    const currentUnits: Record<number, string> = {};
+
+    formMethods.getValues().hydrotestResults.forEach((element, index) => {
+      currentUnits[index] = getHydrotestParameterUnits(element.parameterId, domains.data);
     });
+
     setUnits(currentUnits);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.getValues()["hydrotestResults"]]);
+  }, [formMethods.getValues().hydrotestResults, domains.data]);
 
   useEffect(() => {
-    var currentValues = formMethods.getValues();
+    const currentValues = formMethods.getValues();
     if (currentValues?.testKindId?.toString() !== hydrotestKindIds?.toString()) {
-      setHydrotestKindIds(currentValues?.testKindId);
+      setHydrotestKindIds(currentValues?.testKindId ?? []);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item, formMethods.getValues()["testKindId"]]);
 
-  const prepareFormDataForSubmit = data => {
+  const prepareFormDataForSubmit = (data: HydrotestFormData): Hydrotest => {
     data = prepareCasingDataForSubmit(data);
     data.startTime = getIsoDateIfDefined(data?.startTime);
     data.endTime = getIsoDateIfDefined(data?.endTime);
@@ -178,35 +185,46 @@ const HydrotestInput = props => {
       });
     }
 
-    if (data.reliabilityId === "") {
-      data.reliabilityId = null;
-    }
-
     delete data.testKindId;
     delete data.flowDirectionId;
     delete data.evaluationMethodId;
     delete data.reliability;
-    return data;
+    return data as Hydrotest;
   };
 
-  const submitForm = data => {
-    data = prepareFormDataForSubmit(data);
+  const submitForm = (data: HydrotestFormData) => {
+    const hydrotest: Hydrotest = prepareFormDataForSubmit(data);
 
     if (item.id === 0) {
       addHydrotest({
-        ...data,
+        ...hydrotest,
       }).then(() => {
         triggerReload();
       });
     } else {
       updateHydrotest({
         ...item,
-        ...data,
+        ...hydrotest,
       }).then(() => {
         triggerReload();
       });
     }
   };
+
+  const hasTestKindError = !!formMethods.formState.errors?.testKindId;
+  const hasValidFlowDirectionData =
+    (
+      filteredTestKindDomains.data?.filter(
+        (d: Codelist) => d.schema === hydrogeologySchemaConstants.hydrotestFlowDirection,
+      ) ?? []
+    ).length > 0;
+
+  const hasValidEvaluationMethodData =
+    (
+      filteredTestKindDomains.data?.filter(
+        (d: Codelist) => d.schema === hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+      ) ?? []
+    ).length > 0;
 
   return (
     <>
@@ -227,12 +245,7 @@ const HydrotestInput = props => {
                 fieldName="flowDirectionId"
                 label="flowDirection"
                 selected={item?.flowDirectionCodelists?.map(c => c.id) || []}
-                disabled={
-                  !!formMethods.formState.errors?.testKindId ||
-                  !filteredTestKindDomains?.data?.filter(
-                    d => d.schema === hydrogeologySchemaConstants.hydrotestFlowDirection,
-                  ).length > 0
-                }
+                disabled={hasTestKindError || !hasValidFlowDirectionData}
                 schemaName={hydrogeologySchemaConstants.hydrotestFlowDirection}
                 prefilteredDomains={filteredTestKindDomains?.data}
               />
@@ -242,17 +255,12 @@ const HydrotestInput = props => {
                 fieldName="evaluationMethodId"
                 label="evaluationMethod"
                 selected={item?.evaluationMethodCodelists?.map(c => c.id) || []}
-                disabled={
-                  !!formMethods.formState.errors?.testKindId ||
-                  !filteredTestKindDomains?.data?.filter(
-                    d => d.schema === hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                  ).length > 0
-                }
+                disabled={hasTestKindError || hasValidEvaluationMethodData}
                 schemaName={hydrogeologySchemaConstants.hydrotestEvaluationMethod}
                 prefilteredDomains={filteredTestKindDomains?.data}
               />
             </FormContainer>
-            {formMethods.getValues().testKindId?.length > 0 && (
+            {(formMethods.getValues().testKindId ?? []).length > 0 && (
               <Box
                 sx={{
                   paddingBottom: "8.5px",
@@ -264,7 +272,10 @@ const HydrotestInput = props => {
                   <AddButton
                     label="addHydrotestResult"
                     onClick={() => {
-                      append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
+                      append(
+                        { parameterId: null, value: null, minValue: null, maxValue: null },
+                        { shouldFocus: false },
+                      );
                     }}
                   />
                 </FormContainer>
@@ -278,7 +289,7 @@ const HydrotestInput = props => {
                       schemaName={hydrogeologySchemaConstants.hydrotestResultParameter}
                       prefilteredDomains={filteredTestKindDomains?.data}
                       onUpdate={value => {
-                        setUnits({ ...units, [index]: getHydrotestParameterUnits(value, domains.data) });
+                        setUnits({ ...units, [index]: getHydrotestParameterUnits(value as number, domains.data) });
                       }}
                     />
                     <FormInput
@@ -341,5 +352,3 @@ const HydrotestInput = props => {
     </>
   );
 };
-
-export default HydrotestInput;

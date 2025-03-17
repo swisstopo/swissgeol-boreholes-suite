@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { addBackfill, getCasings, updateBackfill } from "../../../../api/fetchApiV2";
-import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
+import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";

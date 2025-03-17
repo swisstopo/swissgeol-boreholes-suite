@@ -1,6 +1,6 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
-import { Codelist } from "../components/legacyComponents/domain/domainInterface.ts";
+import { Codelist } from "../components/Codelist.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";

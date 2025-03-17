@@ -1,34 +1,39 @@
-import { useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-import { addFieldMeasurement, updateFieldMeasurement, useDomains } from "../../../../api/fetchApiV2";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
-import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
-import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
-import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.ts";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { ObservationType } from "./Observation.ts";
-import ObservationInput from "./observationInput.tsx";
-import { getFieldMeasurementParameterUnits } from "./parameterUnits";
+import { useDomains } from "../../../../../api/fetchApiV2.js";
+import { AddButton, CancelButton, SaveButton } from "../../../../../components/buttons/buttons.tsx";
+import { DataCardButtonContainer } from "../../../../../components/dataCard/dataCard.tsx";
+import { DataCardContext, DataCardSwitchContext } from "../../../../../components/dataCard/dataCardContext.tsx";
+import { FormContainer, FormInput, FormValueType } from "../../../../../components/form/form.js";
+import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.js";
+import { PromptContext } from "../../../../../components/prompt/promptContext.tsx";
+import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
+import { getIsoDateIfDefined } from "../hydrogeologyFormUtils.ts";
+import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
+import { ObservationType } from "../Observation.ts";
+import ObservationInput from "../observationInput.tsx";
+import { getFieldMeasurementParameterUnits } from "../parameterUnits.js";
+import {
+  addFieldMeasurement,
+  FieldMeasurement,
+  FieldMeasurementInputProps,
+  updateFieldMeasurement,
+} from "./FieldMeasurement.ts";
 
-const FieldMeasurementInput = props => {
-  const { item, parentId } = props;
+export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
   const domains = useDomains();
   const { t } = useTranslation();
-  const formMethods = useForm({
+  const formMethods = useForm<FieldMeasurement>({
     mode: "all",
     defaultValues: {
       fieldMeasurementResults: item?.fieldMeasurementResults || [
-        { parameterId: "", value: null, minValue: null, maxValue: null },
+        { parameterId: null, value: null, sampleTypeId: null },
       ],
     },
   });
@@ -36,7 +41,7 @@ const FieldMeasurementInput = props => {
     name: "fieldMeasurementResults",
     control: formMethods.control,
   });
-  const [units, setUnits] = useState({});
+  const [units, setUnits] = useState<Record<number, string>>({});
 
   useEffect(() => {
     if (checkIsDirty) {
@@ -79,18 +84,18 @@ const FieldMeasurementInput = props => {
 
   useEffect(() => {
     formMethods.trigger("fieldMeasurementResults");
-    var currentUnits = {};
+    let currentUnits = {};
     formMethods.getValues()["fieldMeasurementResults"].forEach((element, index) => {
       currentUnits = {
         ...currentUnits,
-        [index]: getFieldMeasurementParameterUnits(element.parameterId, domains.data),
+        [index]: getFieldMeasurementParameterUnits(element.parameterId as number, domains.data),
       };
     });
     setUnits(currentUnits);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formMethods.getValues()["fieldMeasurementResults"]]);
 
-  const submitForm = data => {
+  const submitForm = (data: FieldMeasurement) => {
     data = prepareFormDataForSubmit(data);
     if (item.id === 0) {
       addFieldMeasurement({
@@ -108,7 +113,7 @@ const FieldMeasurementInput = props => {
     }
   };
 
-  const prepareFormDataForSubmit = data => {
+  const prepareFormDataForSubmit = (data: FieldMeasurement) => {
     data = prepareCasingDataForSubmit(data);
     data.startTime = getIsoDateIfDefined(data?.startTime);
     data.endTime = getIsoDateIfDefined(data?.endTime);
@@ -150,7 +155,7 @@ const FieldMeasurementInput = props => {
                 <AddButton
                   label="addFieldMeasurementResult"
                   onClick={() => {
-                    append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
+                    append({ parameterId: null, value: null, sampleTypeId: null }, { shouldFocus: false });
                   }}
                 />
               </FormContainer>
@@ -174,7 +179,7 @@ const FieldMeasurementInput = props => {
                     required={true}
                     schemaName={hydrogeologySchemaConstants.fieldMeasurementParameter}
                     onUpdate={value => {
-                      setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value, domains.data) });
+                      setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value as number, domains.data) });
                     }}
                   />
                   <FormInput

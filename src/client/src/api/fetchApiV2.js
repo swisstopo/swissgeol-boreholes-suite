@@ -200,24 +200,6 @@ export const useDomainSchema = schema =>
     },
   );
 
-export const useHydrotestDomains = testKindIds => {
-  let queryString = "";
-  testKindIds.forEach(id => {
-    queryString += `testKindIds=${id}&`;
-  });
-
-  return useQuery(
-    ["domains", queryString],
-    async () => {
-      return await fetchApiV2(`codelist?${queryString}`, "GET");
-    },
-    {
-      staleTime: 10 * (60 * 1000), // 10 mins
-      cacheTime: 15 * (60 * 1000), // 15 mins
-    },
-  );
-};
-
 export const layerQueryKey = "layers";
 
 export const useLayers = profileId =>
@@ -422,54 +404,6 @@ export const getBoreholeGeometryDepthMasl = async (boreholeId, depthMD) => {
   return await fetchApiV2(`boreholegeometry/getDepthInMasl?boreholeId=${boreholeId}&depthMD=${depthMD}`, "GET");
 };
 
-export const getWaterIngress = async boreholeId => {
-  return await fetchApiV2(`wateringress?boreholeId=${boreholeId}`, "GET");
-};
-
-export const addWaterIngress = async wateringress => {
-  return await fetchApiV2("wateringress", "POST", wateringress);
-};
-
-export const updateWaterIngress = async wateringress => {
-  return await fetchApiV2("wateringress", "PUT", wateringress);
-};
-
-export const deleteWaterIngress = async id => {
-  return await fetchApiV2(`wateringress?id=${id}`, "DELETE");
-};
-
-export const getGroundwaterLevelMeasurements = async boreholeId => {
-  return await fetchApiV2(`groundwaterlevelmeasurement?boreholeId=${boreholeId}`, "GET");
-};
-
-export const addGroundwaterLevelMeasurement = async groundwaterLevelMeasurement => {
-  return await fetchApiV2("groundwaterlevelmeasurement", "POST", groundwaterLevelMeasurement);
-};
-
-export const updateGroundwaterLevelMeasurement = async groundwaterLevelMeasurement => {
-  return await fetchApiV2("groundwaterlevelmeasurement", "PUT", groundwaterLevelMeasurement);
-};
-
-export const deleteGroundwaterLevelMeasurement = async id => {
-  return await fetchApiV2(`groundwaterlevelmeasurement?id=${id}`, "DELETE");
-};
-
-export const getFieldMeasurements = async boreholeId => {
-  return await fetchApiV2(`fieldmeasurement?boreholeId=${boreholeId}`, "GET");
-};
-
-export const addFieldMeasurement = async fieldmeasurement => {
-  return await fetchApiV2("fieldmeasurement", "POST", fieldmeasurement);
-};
-
-export const updateFieldMeasurement = async fieldmeasurement => {
-  return await fetchApiV2("fieldmeasurement", "PUT", fieldmeasurement);
-};
-
-export const deleteFieldMeasurement = async id => {
-  return await fetchApiV2(`fieldmeasurement?id=${id}`, "DELETE");
-};
-
 export const getCompletions = async boreholeId => {
   return await fetchApiV2(`completion?boreholeId=${boreholeId}`, "GET");
 };
@@ -488,22 +422,6 @@ export const copyCompletion = async completionId => {
 
 export const deleteCompletion = async id => {
   return await fetchApiV2(`completion?id=${id}`, "DELETE");
-};
-
-export const getHydrotests = async boreholeId => {
-  return await fetchApiV2(`hydrotest?boreholeId=${boreholeId}`, "GET");
-};
-
-export const addHydrotest = async hydrotest => {
-  return await fetchApiV2("hydrotest", "POST", hydrotest);
-};
-
-export const updateHydrotest = async hydrotest => {
-  return await fetchApiV2("hydrotest", "PUT", hydrotest);
-};
-
-export const deleteHydrotest = async id => {
-  return await fetchApiV2(`hydrotest?id=${id}`, "DELETE");
 };
 
 export const getInstrumentation = async completionId => {
