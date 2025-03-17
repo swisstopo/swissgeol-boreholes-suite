@@ -30,8 +30,8 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
   };
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={handleClose}
       maxWidth="md"
       PaperProps={{
@@ -39,8 +39,7 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
           width: 700,
           maxWidth: "none",
         },
-      }}
-    >
+      }}>
       <Stack sx={{ width: "100%", borderRadius: 1 }}>
         <DialogHeaderContainer>
           <Stack direction="row">
