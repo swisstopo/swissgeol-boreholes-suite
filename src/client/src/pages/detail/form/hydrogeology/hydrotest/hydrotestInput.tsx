@@ -184,6 +184,9 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
         };
       });
     }
+    if (data.reliabilityId === "") {
+      data.reliabilityId = null;
+    }
 
     delete data.testKindId;
     delete data.flowDirectionId;
@@ -255,7 +258,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
                 fieldName="evaluationMethodId"
                 label="evaluationMethod"
                 selected={item?.evaluationMethodCodelists?.map(c => c.id) || []}
-                disabled={hasTestKindError || hasValidEvaluationMethodData}
+                disabled={hasTestKindError || !hasValidEvaluationMethodData}
                 schemaName={hydrogeologySchemaConstants.hydrotestEvaluationMethod}
                 prefilteredDomains={filteredTestKindDomains?.data}
               />
