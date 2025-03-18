@@ -101,7 +101,7 @@ const CasingInput = props => {
     translationKey: "casing",
   });
 
-  useValidateFormOnMount(formMethods);
+  useValidateFormOnMount({ formMethods });
 
   useEffect(() => {
     formMethods.trigger("casingElements");

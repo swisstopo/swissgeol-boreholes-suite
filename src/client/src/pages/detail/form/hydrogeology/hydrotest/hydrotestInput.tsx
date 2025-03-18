@@ -65,7 +65,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     translationKey: "hydrotest",
   });
 
-  useValidateFormOnMount(formMethods);
+  useValidateFormOnMount({ formMethods });
 
   const getFilteredDomains = (schema: string, data: Codelist[]) =>
     data?.filter(c => c.schema === schema).map(c => c.id) || [];
