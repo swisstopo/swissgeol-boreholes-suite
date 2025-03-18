@@ -2,9 +2,12 @@
 
 ## [Unreleased]
 
-### Fixed
+### Changed
+- Attachments are now displayed in a table following new UI design.
 
-- Tooltips in the labeling area where not completed and would sometimes overlap with text to be selected.
+### Fixed
+- Attachments page was missing scrollbars.
+- Tooltips in the labeling area where not complete and would sometimes overlap with text to be selected.
 
 ## v2.1.1116 - 2025-03-17
 
