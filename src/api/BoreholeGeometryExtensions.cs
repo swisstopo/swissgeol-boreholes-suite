@@ -7,26 +7,28 @@ namespace BDMS;
 public static class BoreholeGeometryExtensions
 {
     /// <summary>
-    /// Get the TVD of <paramref name="depthMD"/> according to the <paramref name="geometry"/> if the geometry exists.
+    /// Converts a borehole depth between measured depth (MD) and true vertical depth (TVD).
+    /// Assumes a perfectly vertical borehole if the geometry is insufficient of missing. Otherwise the depth conversion is done with the <paramref name="conversion"/> function.
     /// </summary>
     /// <param name="geometry">The list of <see cref="BoreholeGeometryElement"/> representing the borehole's path geometry.</param>
-    /// <param name="depthMD">The measured depth (MD) at which to calculate the TVD.</param>
-    /// <returns>The TVD at <paramref name="depthMD"/> if the geometry exists; otherwise <see langword="null"/>.</returns>
-    internal static double? GetTVDIfGeometryExists(this List<BoreholeGeometryElement>? geometry, double? depthMD)
+    /// <param name="depth">The depth to convert.</param>
+    /// <param name="conversion">The conversion function to use when the geometry is defined.</param>
+    /// <returns>The converted depth if a conversion is possible; otherwise <see langword="null"/>.</returns>
+    internal static double? ConvertBoreholeDepth(this List<BoreholeGeometryElement>? geometry, double? depth, Func<List<BoreholeGeometryElement>, double, double> conversion)
     {
         if (geometry == null || geometry.Count < 2)
         {
-            if (depthMD != null && depthMD >= 0)
+            if (depth != null && depth >= 0)
             {
                 // Return the depthMD unchanged as if the borehole is perfectly vertical and infinitely long.
-                return depthMD;
+                return depth;
             }
         }
-        else if (depthMD != null)
+        else if (depth != null)
         {
             try
             {
-                return geometry.GetDepthTVD(depthMD.Value);
+                return conversion(geometry, depth.Value);
             }
             catch (ArgumentOutOfRangeException)
             {

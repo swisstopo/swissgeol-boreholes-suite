@@ -14,9 +14,9 @@ public static class BoreholeExtensions
     {
         boreholeGeometries.TryGetValue(borehole.Id, out var boreholeGeometry);
 
-        borehole.TotalDepthTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TotalDepth);
-        borehole.TopBedrockFreshTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TopBedrockFreshMd);
-        borehole.TopBedrockWeatheredTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TopBedrockWeatheredMd);
+        borehole.TotalDepthTvd = boreholeGeometry.ConvertBoreholeDepth(borehole.TotalDepth, BoreholeGeometryExtensions.GetDepthTVD);
+        borehole.TopBedrockFreshTvd = boreholeGeometry.ConvertBoreholeDepth(borehole.TopBedrockFreshMd, BoreholeGeometryExtensions.GetDepthTVD);
+        borehole.TopBedrockWeatheredTvd = boreholeGeometry.ConvertBoreholeDepth(borehole.TopBedrockWeatheredMd, BoreholeGeometryExtensions.GetDepthTVD);
     }
 
     /// <summary>

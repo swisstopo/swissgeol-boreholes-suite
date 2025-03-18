@@ -148,7 +148,7 @@ public class BoreholeGeometryController : ControllerBase
 
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
 
-        var tvd = geometry.GetTVDIfGeometryExists(depthMD);
+        var tvd = geometry.ConvertBoreholeDepth(depthMD, BoreholeGeometryExtensions.GetDepthTVD);
         if (tvd == null)
         {
             logger.LogInformation("Invalid input, could not calculate true vertical depth from measured depth of {DepthMD}", depthMD);
@@ -170,7 +170,7 @@ public class BoreholeGeometryController : ControllerBase
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
-        var tvd = geometry.GetTVDIfGeometryExists(depthMD);
+        var tvd = geometry.ConvertBoreholeDepth(depthMD, BoreholeGeometryExtensions.GetDepthTVD);
         var borehole = await context.Boreholes.FindAsync(boreholeId).ConfigureAwait(false);
 
         if (tvd == null || borehole?.ReferenceElevation == null)
