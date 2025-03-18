@@ -23,10 +23,10 @@ interface DataCardSaveAndCancelButtonsProps<T extends FieldValues> {
   submitForm: (data: T) => void;
 }
 
-export const DataCardSaveAndCancelButtons: FC<DataCardSaveAndCancelButtonsProps<FieldValues>> = ({
+export const DataCardSaveAndCancelButtons = <T extends FieldValues>({
   formMethods,
   submitForm,
-}) => {
+}: DataCardSaveAndCancelButtonsProps<T>) => {
   const { selectCard } = useContext(DataCardContext);
 
   return (
