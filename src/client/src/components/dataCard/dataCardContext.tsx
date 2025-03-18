@@ -62,14 +62,12 @@ export const DataCardProvider = ({ children }: DataCardProviderProps) => {
   const [newCardId, setNewCardId] = useState<number | null>(null);
   const [canSwitch, setCanSwitch] = useState<number>(0);
 
-  const tempCard = { id: 0 };
-
   const leaveInput = useCallback(
     (canLeave: boolean, newCards?: DataCardEntity[]) => {
       if (canLeave) {
         let newDisplayedCards = newCards ? newCards : cards;
         if (newCardId === 0) {
-          newDisplayedCards = [tempCard, ...newDisplayedCards];
+          newDisplayedCards = [{ id: 0 }, ...newDisplayedCards];
         }
         const newSelectedCard = newDisplayedCards.find(c => c.id === newCardId) || null;
 
@@ -80,7 +78,7 @@ export const DataCardProvider = ({ children }: DataCardProviderProps) => {
       setNewCardId(null);
       setCanSwitch(canLeave ? 1 : -1);
     },
-    [cards, newCardId, tempCard],
+    [cards, newCardId],
   );
 
   const setLoadedCards = useCallback(
