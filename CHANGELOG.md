@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Changed
+- Attachments are now displayed in a table following new UI design.
+
+### Fixed
+- Attachments page was missing scrollbars.
+
+
 ## v2.1.1116 - 2025-03-17
 
 ### Changed
