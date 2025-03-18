@@ -1,7 +1,7 @@
 import { RefObject } from "react";
 import { BoreholeV2, Identifier } from "../../../../api/borehole.ts";
-import { Codelist } from "../../../../components/Codelist.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
+import { Codelist } from "../../../../components/Codelist.ts";
 import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 
 export interface LocationBaseProps {
