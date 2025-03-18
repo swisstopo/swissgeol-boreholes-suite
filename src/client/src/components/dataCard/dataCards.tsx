@@ -110,8 +110,8 @@ export const DataCards = <T extends DataCardEntity>({
         cardLabel = `${cyLabel}-card.${index}.edit`;
       }
       return (
-        <DataCardItem key={index}>
-          <DataCard key={index} data-cy={cardLabel}>
+        <DataCardItem key={item.id}>
+          <DataCard key={item.id} data-cy={cardLabel}>
             {editingEnabled && isSelected
               ? renderInput({
                   item: item,

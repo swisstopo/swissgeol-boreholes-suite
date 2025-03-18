@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useMemo, useState } from "react";
 import { DataCardEntity } from "./dataCards.tsx";
 
 interface DataCardContextProps {
@@ -129,23 +129,26 @@ export const DataCardProvider = ({ children }: DataCardProviderProps) => {
 
   return (
     <DataCardContext.Provider
-      value={{
-        cards,
-        displayedCards,
-        selectedCard,
-        shouldReload,
-        triggerReload,
-        setLoadedCards,
-        addCard,
-        selectCard,
-      }}>
+      value={useMemo(
+        () => ({
+          cards,
+          displayedCards,
+          selectedCard,
+          shouldReload,
+          triggerReload,
+          setLoadedCards,
+          addCard,
+          selectCard,
+        }),
+        [cards, displayedCards, selectedCard, shouldReload, triggerReload, setLoadedCards, addCard, selectCard],
+      )}>
       <DataCardSwitchContext.Provider
-        value={{
-          checkIsDirty,
-          switchToCard,
-          leaveInput,
-        }}>
-        <DataCardExternalContext.Provider value={{ resetCanSwitch, triggerCanSwitch, canSwitch }}>
+        value={useMemo(() => ({ checkIsDirty, switchToCard, leaveInput }), [checkIsDirty, switchToCard, leaveInput])}>
+        <DataCardExternalContext.Provider
+          value={useMemo(
+            () => ({ resetCanSwitch, triggerCanSwitch, canSwitch }),
+            [resetCanSwitch, triggerCanSwitch, canSwitch],
+          )}>
           {children}
         </DataCardExternalContext.Provider>
       </DataCardSwitchContext.Provider>

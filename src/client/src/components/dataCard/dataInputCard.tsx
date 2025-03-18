@@ -58,15 +58,13 @@ export const DataInputCard = <T extends FieldValues>({
   useSaveOnCtrlS(formMethods.handleSubmit(submitForm));
 
   return (
-    <>
-      <FormProvider {...formMethods}>
-        <DevTool control={formMethods.control} placement="top-left" />
-        <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <FormContainer pt={1}>{children}</FormContainer>
-          <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
-        </form>
-      </FormProvider>
-    </>
+    <FormProvider {...formMethods}>
+      <DevTool control={formMethods.control} placement="top-left" />
+      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+        <FormContainer pt={1}>{children}</FormContainer>
+        <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
+      </form>
+    </FormProvider>
   );
 };
 

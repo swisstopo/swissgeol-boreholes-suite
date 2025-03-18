@@ -107,75 +107,73 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   };
 
   return (
-    <>
-      <FormProvider {...formMethods}>
-        <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <FormContainer>
-            <ObservationInput observation={item} />
-            <Box
-              sx={{
-                paddingBottom: "8.5px",
-                marginRight: "8px !important",
-                marginTop: "18px !important",
-              }}>
-              <FormContainer direction={"row"} justifyContent={"space-between"}>
-                <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("fieldMeasurementResult")}</Typography>
-                <AddButton
-                  label="addFieldMeasurementResult"
-                  onClick={() => {
-                    append({ parameterId: null, value: null, sampleTypeId: null }, { shouldFocus: false });
+    <FormProvider {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+        <FormContainer>
+          <ObservationInput observation={item} />
+          <Box
+            sx={{
+              paddingBottom: "8.5px",
+              marginRight: "8px !important",
+              marginTop: "18px !important",
+            }}>
+            <FormContainer direction={"row"} justifyContent={"space-between"}>
+              <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("fieldMeasurementResult")}</Typography>
+              <AddButton
+                label="addFieldMeasurementResult"
+                onClick={() => {
+                  append({ parameterId: null, value: null, sampleTypeId: null }, { shouldFocus: false });
+                }}
+              />
+            </FormContainer>
+            {fields.map((field, index) => (
+              <FormContainer
+                direction={"row"}
+                key={field.id}
+                marginTop="8px"
+                data-cy={`fieldMeasurementResult-${index}`}>
+                <FormDomainSelect
+                  fieldName={`fieldMeasurementResults.${index}.sampleTypeId`}
+                  label="fieldMeasurementSampleType"
+                  selected={field.sampleTypeId}
+                  required={true}
+                  schemaName={hydrogeologySchemaConstants.fieldMeasurementSampleType}
+                />
+                <FormDomainSelect
+                  fieldName={`fieldMeasurementResults.${index}.parameterId`}
+                  label="parameter"
+                  selected={field.parameterId}
+                  required={true}
+                  schemaName={hydrogeologySchemaConstants.fieldMeasurementParameter}
+                  onUpdate={value => {
+                    setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value as number, domains.data) });
                   }}
                 />
+                <FormInput
+                  fieldName={`fieldMeasurementResults.${index}.value`}
+                  label="value"
+                  value={field.value}
+                  type={FormValueType.Number}
+                  required={true}
+                  inputProps={{
+                    endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
+                  }}
+                />
+                <IconButton
+                  onClick={() => remove(index)}
+                  color="error"
+                  sx={{
+                    marginTop: "10px !important",
+                  }}>
+                  <Delete />
+                </IconButton>
               </FormContainer>
-              {fields.map((field, index) => (
-                <FormContainer
-                  direction={"row"}
-                  key={field.id}
-                  marginTop="8px"
-                  data-cy={`fieldMeasurementResult-${index}`}>
-                  <FormDomainSelect
-                    fieldName={`fieldMeasurementResults.${index}.sampleTypeId`}
-                    label="fieldMeasurementSampleType"
-                    selected={field.sampleTypeId}
-                    required={true}
-                    schemaName={hydrogeologySchemaConstants.fieldMeasurementSampleType}
-                  />
-                  <FormDomainSelect
-                    fieldName={`fieldMeasurementResults.${index}.parameterId`}
-                    label="parameter"
-                    selected={field.parameterId}
-                    required={true}
-                    schemaName={hydrogeologySchemaConstants.fieldMeasurementParameter}
-                    onUpdate={value => {
-                      setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value as number, domains.data) });
-                    }}
-                  />
-                  <FormInput
-                    fieldName={`fieldMeasurementResults.${index}.value`}
-                    label="value"
-                    value={field.value}
-                    type={FormValueType.Number}
-                    required={true}
-                    inputProps={{
-                      endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
-                    }}
-                  />
-                  <IconButton
-                    onClick={() => remove(index)}
-                    color="error"
-                    sx={{
-                      marginTop: "10px !important",
-                    }}>
-                    <Delete />
-                  </IconButton>
-                </FormContainer>
-              ))}
-            </Box>
-          </FormContainer>
-          <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
-        </form>
-      </FormProvider>
-    </>
+            ))}
+          </Box>
+        </FormContainer>
+        <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
+      </form>
+    </FormProvider>
   );
 };
 

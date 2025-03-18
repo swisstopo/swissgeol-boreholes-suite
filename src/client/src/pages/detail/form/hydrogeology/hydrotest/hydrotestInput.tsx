@@ -195,115 +195,104 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     ).length > 0;
 
   return (
-    <>
-      <FormProvider {...formMethods}>
-        <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <FormContainer>
-            <ObservationInput observation={item} />
-            <FormContainer direction="row">
-              <FormDomainMultiSelect
-                fieldName="testKindId"
-                label="hydrotestKind"
-                tooltipLabel="hydrotestResultsWillBeDeleted"
-                required={true}
-                selected={item?.kindCodelists?.map(c => c.id) || []}
-                schemaName={hydrogeologySchemaConstants.hydrotestKind}
-              />
-              <FormDomainMultiSelect
-                fieldName="flowDirectionId"
-                label="flowDirection"
-                selected={item?.flowDirectionCodelists?.map(c => c.id) || []}
-                disabled={hasTestKindError || !hasValidFlowDirectionData}
-                schemaName={hydrogeologySchemaConstants.hydrotestFlowDirection}
-                prefilteredDomains={filteredTestKindDomains?.data}
-              />
-            </FormContainer>
-            <FormContainer width={"50%"}>
-              <FormDomainMultiSelect
-                fieldName="evaluationMethodId"
-                label="evaluationMethod"
-                selected={item?.evaluationMethodCodelists?.map(c => c.id) || []}
-                disabled={hasTestKindError || !hasValidEvaluationMethodData}
-                schemaName={hydrogeologySchemaConstants.hydrotestEvaluationMethod}
-                prefilteredDomains={filteredTestKindDomains?.data}
-              />
-            </FormContainer>
-            {(formMethods.getValues().testKindId ?? []).length > 0 && (
-              <Box
-                sx={{
-                  paddingBottom: "8.5px",
-                  marginRight: "8px !important",
-                  marginTop: "18px !important",
-                }}>
-                <FormContainer direction={"row"} justifyContent={"space-between"}>
-                  <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("hydrotestResult")}</Typography>
-                  <AddButton
-                    label="addHydrotestResult"
-                    onClick={() => {
-                      append(
-                        { parameterId: null, value: null, minValue: null, maxValue: null },
-                        { shouldFocus: false },
-                      );
+    <FormProvider {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+        <FormContainer>
+          <ObservationInput observation={item} />
+          <FormContainer direction="row">
+            <FormDomainMultiSelect
+              fieldName="testKindId"
+              label="hydrotestKind"
+              tooltipLabel="hydrotestResultsWillBeDeleted"
+              required={true}
+              selected={item?.kindCodelists?.map(c => c.id) || []}
+              schemaName={hydrogeologySchemaConstants.hydrotestKind}
+            />
+            <FormDomainMultiSelect
+              fieldName="flowDirectionId"
+              label="flowDirection"
+              selected={item?.flowDirectionCodelists?.map(c => c.id) || []}
+              disabled={hasTestKindError || !hasValidFlowDirectionData}
+              schemaName={hydrogeologySchemaConstants.hydrotestFlowDirection}
+              prefilteredDomains={filteredTestKindDomains?.data}
+            />
+          </FormContainer>
+          <FormContainer width={"50%"}>
+            <FormDomainMultiSelect
+              fieldName="evaluationMethodId"
+              label="evaluationMethod"
+              selected={item?.evaluationMethodCodelists?.map(c => c.id) || []}
+              disabled={hasTestKindError || !hasValidEvaluationMethodData}
+              schemaName={hydrogeologySchemaConstants.hydrotestEvaluationMethod}
+              prefilteredDomains={filteredTestKindDomains?.data}
+            />
+          </FormContainer>
+          {(formMethods.getValues().testKindId ?? []).length > 0 && (
+            <Box
+              sx={{
+                paddingBottom: "8.5px",
+                marginRight: "8px !important",
+                marginTop: "18px !important",
+              }}>
+              <FormContainer direction={"row"} justifyContent={"space-between"}>
+                <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("hydrotestResult")}</Typography>
+                <AddButton
+                  label="addHydrotestResult"
+                  onClick={() => {
+                    append({ parameterId: null, value: null, minValue: null, maxValue: null }, { shouldFocus: false });
+                  }}
+                />
+              </FormContainer>
+              {fields.map((field, index) => (
+                <FormContainer direction={"row"} key={field.id} marginTop="8px" data-cy={`hydrotestResult-${index}`}>
+                  <FormDomainSelect
+                    fieldName={`hydrotestResults.${index}.parameterId`}
+                    label="parameter"
+                    selected={field.parameterId}
+                    required={true}
+                    schemaName={hydrogeologySchemaConstants.hydrotestResultParameter}
+                    prefilteredDomains={filteredTestKindDomains?.data}
+                    onUpdate={value => {
+                      setUnits({ ...units, [index]: getHydrotestParameterUnits(value as number, domains.data) });
                     }}
                   />
+                  <FormInput
+                    fieldName={`hydrotestResults.${index}.value`}
+                    label="value"
+                    value={field.value}
+                    withThousandSeparator={true}
+                    inputProps={{
+                      endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
+                    }}
+                  />
+                  <FormInput
+                    fieldName={`hydrotestResults.${index}.minValue`}
+                    label="minValue"
+                    value={field.minValue}
+                    withThousandSeparator={true}
+                    inputProps={{
+                      endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
+                    }}
+                  />
+                  <FormInput
+                    fieldName={`hydrotestResults.${index}.maxValue`}
+                    label="maxValue"
+                    value={field.maxValue}
+                    withThousandSeparator={true}
+                    inputProps={{
+                      endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
+                    }}
+                  />
+                  <IconButton onClick={() => remove(index)} color="error">
+                    <Delete />
+                  </IconButton>
                 </FormContainer>
-                {fields.map((field, index) => (
-                  <FormContainer direction={"row"} key={field.id} marginTop="8px" data-cy={`hydrotestResult-${index}`}>
-                    <FormDomainSelect
-                      fieldName={`hydrotestResults.${index}.parameterId`}
-                      label="parameter"
-                      selected={field.parameterId}
-                      required={true}
-                      schemaName={hydrogeologySchemaConstants.hydrotestResultParameter}
-                      prefilteredDomains={filteredTestKindDomains?.data}
-                      onUpdate={value => {
-                        setUnits({ ...units, [index]: getHydrotestParameterUnits(value as number, domains.data) });
-                      }}
-                    />
-                    <FormInput
-                      fieldName={`hydrotestResults.${index}.value`}
-                      label="value"
-                      value={field.value}
-                      withThousandSeparator={true}
-                      inputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>
-                        ),
-                      }}
-                    />
-                    <FormInput
-                      fieldName={`hydrotestResults.${index}.minValue`}
-                      label="minValue"
-                      value={field.minValue}
-                      withThousandSeparator={true}
-                      inputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>
-                        ),
-                      }}
-                    />
-                    <FormInput
-                      fieldName={`hydrotestResults.${index}.maxValue`}
-                      label="maxValue"
-                      value={field.maxValue}
-                      withThousandSeparator={true}
-                      inputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>
-                        ),
-                      }}
-                    />
-                    <IconButton onClick={() => remove(index)} color="error">
-                      <Delete />
-                    </IconButton>
-                  </FormContainer>
-                ))}
-              </Box>
-            )}
-          </FormContainer>
-          <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
-        </form>
-      </FormProvider>
-    </>
+              ))}
+            </Box>
+          )}
+        </FormContainer>
+        <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
+      </form>
+    </FormProvider>
   );
 };
