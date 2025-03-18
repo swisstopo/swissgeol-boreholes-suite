@@ -6,11 +6,12 @@ import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useDomains } from "../../../../../api/fetchApiV2";
 import { AddButton } from "../../../../../components/buttons/buttons";
 import { Codelist } from "../../../../../components/Codelist";
-import { DataCardContext, DataCardSwitchContext } from "../../../../../components/dataCard/dataCardContext";
+import { DataCardContext } from "../../../../../components/dataCard/dataCardContext";
 import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard/saveAndCancelButtons.tsx";
+import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
 import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput } from "../../../../../components/form/form";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
-import { PromptContext } from "../../../../../components/prompt/promptContext";
+import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils";
 import { getIsoDateIfDefined } from "../hydrogeologyFormUtils";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants";
@@ -20,9 +21,7 @@ import { getHydrotestParameterUnits } from "../parameterUnits";
 import { addHydrotest, Hydrotest, HydrotestInputProps, updateHydrotest, useHydrotestDomains } from "./Hydrotest";
 
 export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
-  const { triggerReload, selectCard } = useContext(DataCardContext);
-  const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
-  const { showPrompt } = useContext(PromptContext);
+  const { triggerReload } = useContext(DataCardContext);
   const domains = useDomains();
   const { t } = useTranslation();
 
@@ -41,42 +40,32 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const [hydrotestKindIds, setHydrotestKindIds] = useState<number[]>(item?.kindCodelists?.map(c => c.id) || []);
   const filteredTestKindDomains = useHydrotestDomains(hydrotestKindIds);
 
-  useEffect(() => {
-    if (checkIsDirty) {
-      if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesMessage", { where: t("hydrotest") }), [
-          {
-            label: t("cancel"),
-            action: () => leaveInput(false),
-          },
-          {
-            label: t("reset"),
-            action: () => {
-              formMethods.reset();
-              selectCard(null);
-              leaveInput(true);
-            },
-          },
-          {
-            label: t("save"),
-            disabled: !formMethods.formState.isValid,
-            action: () => {
-              formMethods.handleSubmit(submitForm)();
-            },
-          },
-        ]);
-      } else {
-        leaveInput(true);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkIsDirty]);
+  const submitForm = (data: Hydrotest) => {
+    const hydrotest: Hydrotest = prepareFormDataForSubmit(data);
 
-  // trigger form validation on mount
-  useEffect(() => {
-    formMethods.trigger();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.trigger]);
+    if (item.id === 0) {
+      addHydrotest({
+        ...hydrotest,
+      }).then(() => {
+        triggerReload();
+      });
+    } else {
+      updateHydrotest({
+        ...item,
+        ...hydrotest,
+      }).then(() => {
+        triggerReload();
+      });
+    }
+  };
+
+  useUnsavedChangesPrompt({
+    formMethods,
+    submitForm,
+    translationKey: "hydrotest",
+  });
+
+  useValidateFormOnMount();
 
   const getFilteredDomains = (schema: string, data: Codelist[]) =>
     data?.filter(c => c.schema === schema).map(c => c.id) || [];
@@ -188,25 +177,6 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     delete data.evaluationMethodId;
     delete data.reliability;
     return data;
-  };
-
-  const submitForm = (data: Hydrotest) => {
-    const hydrotest: Hydrotest = prepareFormDataForSubmit(data);
-
-    if (item.id === 0) {
-      addHydrotest({
-        ...hydrotest,
-      }).then(() => {
-        triggerReload();
-      });
-    } else {
-      updateHydrotest({
-        ...item,
-        ...hydrotest,
-      }).then(() => {
-        triggerReload();
-      });
-    }
   };
 
   const hasTestKindError = !!formMethods.formState.errors?.testKindId;

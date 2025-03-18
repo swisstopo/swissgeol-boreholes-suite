@@ -10,6 +10,7 @@ import {
   FormInput,
   FormValueType,
 } from "../../../../components/form/form";
+import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { completionSchemaConstants } from "./completionSchemaConstants.js";
 
@@ -38,11 +39,7 @@ const CompletionHeaderInput = props => {
     ...completion,
   });
 
-  // trigger form validation on mount
-  useEffect(() => {
-    formMethods.trigger();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.trigger]);
+  useValidateFormOnMount();
 
   useEffect(() => {
     setSelectedCompletion(completion);

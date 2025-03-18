@@ -5,11 +5,12 @@ import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useDomains } from "../../../../../api/fetchApiV2.js";
 import { AddButton } from "../../../../../components/buttons/buttons.tsx";
-import { DataCardContext, DataCardSwitchContext } from "../../../../../components/dataCard/dataCardContext.tsx";
+import { DataCardContext } from "../../../../../components/dataCard/dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard/saveAndCancelButtons.tsx";
+import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
 import { FormContainer, FormInput, FormValueType } from "../../../../../components/form/form.js";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.js";
-import { PromptContext } from "../../../../../components/prompt/promptContext.tsx";
+import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
 import { getIsoDateIfDefined } from "../hydrogeologyFormUtils.ts";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
@@ -24,9 +25,7 @@ import {
 } from "./FieldMeasurement.ts";
 
 export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, parentId }) => {
-  const { triggerReload, selectCard } = useContext(DataCardContext);
-  const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
-  const { showPrompt } = useContext(PromptContext);
+  const { triggerReload } = useContext(DataCardContext);
   const domains = useDomains();
   const { t } = useTranslation();
   const formMethods = useForm<FieldMeasurement>({
@@ -42,58 +41,6 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
     control: formMethods.control,
   });
   const [units, setUnits] = useState<Record<number, string>>({});
-
-  useEffect(() => {
-    if (checkIsDirty) {
-      if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesMessage", { where: t("fieldMeasurement") }), [
-          {
-            label: t("cancel"),
-            action: () => {
-              leaveInput(false);
-            },
-          },
-          {
-            label: t("reset"),
-            action: () => {
-              formMethods.reset();
-              selectCard(null);
-              leaveInput(true);
-            },
-          },
-          {
-            label: t("save"),
-            disabled: !formMethods.formState.isValid,
-            action: () => {
-              formMethods.handleSubmit(submitForm)();
-            },
-          },
-        ]);
-      } else {
-        leaveInput(true);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkIsDirty]);
-
-  // trigger form validation on mount
-  useEffect(() => {
-    formMethods.trigger();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.trigger]);
-
-  useEffect(() => {
-    formMethods.trigger("fieldMeasurementResults");
-    let currentUnits = {};
-    formMethods.getValues()["fieldMeasurementResults"].forEach((element, index) => {
-      currentUnits = {
-        ...currentUnits,
-        [index]: getFieldMeasurementParameterUnits(element.parameterId as number, domains.data),
-      };
-    });
-    setUnits(currentUnits);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.getValues()["fieldMeasurementResults"]]);
 
   const submitForm = (data: FieldMeasurement) => {
     data = prepareFormDataForSubmit(data);
@@ -112,6 +59,27 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
       });
     }
   };
+
+  useUnsavedChangesPrompt({
+    formMethods,
+    submitForm,
+    translationKey: "fieldMeasurement",
+  });
+
+  useValidateFormOnMount();
+
+  useEffect(() => {
+    formMethods.trigger("fieldMeasurementResults");
+    let currentUnits = {};
+    formMethods.getValues()["fieldMeasurementResults"].forEach((element, index) => {
+      currentUnits = {
+        ...currentUnits,
+        [index]: getFieldMeasurementParameterUnits(element.parameterId as number, domains.data),
+      };
+    });
+    setUnits(currentUnits);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formMethods.getValues()["fieldMeasurementResults"]]);
 
   const prepareFormDataForSubmit = (data: FieldMeasurement) => {
     data = prepareCasingDataForSubmit(data);

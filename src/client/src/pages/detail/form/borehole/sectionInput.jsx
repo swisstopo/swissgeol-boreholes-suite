@@ -11,6 +11,7 @@ import { DataCardContext } from "../../../../components/dataCard/dataCardContext
 import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
+import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
 import { useFormDirtyStore } from "../../formDirtyStore.ts";
@@ -102,12 +103,6 @@ const SectionInput = ({ item, parentId }) => {
     }
   };
 
-  // trigger form validation on mount
-  useEffect(() => {
-    formMethods.trigger();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.trigger]);
-
   // Track form dirty state
   useEffect(() => {
     setIsFormDirty(Object.keys(formMethods.formState.dirtyFields).length > 0);
@@ -121,6 +116,7 @@ const SectionInput = ({ item, parentId }) => {
   ]);
 
   useSaveOnCtrlS(formMethods.handleSubmit(submitForm));
+  useValidateFormOnMount();
 
   useEffect(() => {
     formMethods.trigger("sectionElements");
