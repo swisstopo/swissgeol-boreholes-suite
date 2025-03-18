@@ -2,6 +2,7 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/Codelist.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
+import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -41,7 +42,7 @@ export interface BoreholeV2 {
   workflows: Workflow[];
   workgroupId: number;
   workgroup: Workgroup;
-  originalReferenceSystem: number;
+  originalReferenceSystem: ReferenceSystemCode;
   precisionLocationYLV03: number;
   precisionLocationXLV03: number;
   precisionLocationY: number;

@@ -14,15 +14,18 @@ const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
   const originalName = formMethods.watch("originalName");
   const alternateName = formMethods.watch("name");
   const { defaultValues } = formMethods.formState;
-  const [shouldSyncNames, setShouldSyncNames] = useState(true);
 
   const defaultNamesEqual = defaultValues?.originalName === defaultValues?.name;
-  useEffect(() => {
-    setShouldSyncNames(defaultNamesEqual || defaultValues?.name === "");
-  }, [defaultNamesEqual, defaultValues?.name]);
+  const syncInitialValue = defaultNamesEqual || defaultValues?.name === "";
+  const [shouldSyncNames, setShouldSyncNames] = useState(syncInitialValue);
 
   useEffect(() => {
-    if (alternateName !== formMethods.getValues("originalName")) {
+    // reload initial state when the default values change on submit
+    setShouldSyncNames(syncInitialValue);
+  }, [defaultValues, syncInitialValue]);
+
+  useEffect(() => {
+    if (alternateName !== "" && alternateName !== formMethods.getValues("originalName")) {
       setShouldSyncNames(false);
     }
   }, [alternateName, formMethods]);
