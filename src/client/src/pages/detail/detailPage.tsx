@@ -5,7 +5,7 @@ import { Box, CircularProgress, Stack } from "@mui/material";
 import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
-import { LabelingToggleButton } from "../../components/buttons/labelingButton.tsx";
+import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
 import { prepareBoreholeDataForSubmit, prepareLocationDataForSubmit } from "../../components/form/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
@@ -129,7 +129,7 @@ export const DetailPage: FC = () => {
         <SidebarBox>
           <DetailSideNav borehole={borehole} />
         </SidebarBox>
-        <Stack width="100%" direction="column">
+        <Stack width="100%" direction="column" sx={{ overflowX: "auto" }}>
           <Box
             sx={{
               display: "flex",
@@ -144,7 +144,7 @@ export const DetailPage: FC = () => {
                 height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
               }}>
               {editingEnabled && (
-                <LabelingToggleButton
+                <SidePanelToggleButton
                   panelOpen={panelOpen}
                   panelPosition={panelPosition}
                   onClick={() => togglePanel()}
