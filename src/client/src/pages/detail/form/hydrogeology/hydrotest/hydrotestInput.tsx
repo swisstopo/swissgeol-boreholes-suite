@@ -93,8 +93,10 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
 
   useEffect(() => {
     if (hydrotestKindIds.length > 0) {
+      // check the compatibility of codelists (flowdirection, evaluationMethod, hydrotestResultParameter) when the hydrotestKinds (and therefore the filteredTestKindDomains) change.
       if (filteredTestKindDomains.data?.length > 0) {
         const formValues = formMethods.getValues();
+        // delete flowDirections, evaluationMethods that are not longer compatible with the selected hydrotestKinds.
         const allowedEvaluationMethodIds = getFilteredDomains(
           hydrogeologySchemaConstants.hydrotestEvaluationMethod,
           filteredTestKindDomains.data,

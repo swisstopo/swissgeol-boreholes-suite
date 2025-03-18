@@ -3,11 +3,7 @@ import { Box, Card, CardProps, Grid, Stack } from "@mui/material";
 import { BoxProps, GridProps, styled } from "@mui/system";
 import { theme } from "../../AppTheme";
 
-interface DataCardContainerProps extends GridProps {
-  children: ReactNode;
-}
-
-interface DataCardItemProps extends GridProps {
+interface DataCardGridProps extends GridProps {
   children: ReactNode;
 }
 
@@ -15,11 +11,11 @@ interface DataCardProps extends CardProps {
   children: ReactNode;
 }
 
-interface DataCardButtonContainerProps extends BoxProps {
+interface DataCardBoxProps extends BoxProps {
   children: ReactNode;
 }
 
-export const DataCardContainer = forwardRef<HTMLDivElement, DataCardContainerProps>(({ children, ...props }, ref) => {
+export const DataCardContainer = forwardRef<HTMLDivElement, DataCardGridProps>(({ children, ...props }, ref) => {
   const StyledTextField = styled(Grid)(() => ({
     flex: "1 0 0",
     alignContent: "flex-start",
@@ -40,7 +36,7 @@ export const DataCardContainer = forwardRef<HTMLDivElement, DataCardContainerPro
   );
 });
 
-export const DataCardItem = forwardRef<HTMLDivElement, DataCardItemProps>(({ children, ...props }, ref) => {
+export const DataCardItem = forwardRef<HTMLDivElement, DataCardGridProps>(({ children, ...props }, ref) => {
   const StyledCard = styled(Grid)(() => ({
     padding: `0 ${theme.spacing(1)} ${theme.spacing(1)} ${theme.spacing(1)} !important`,
   }));
@@ -68,20 +64,18 @@ export const DataCard = forwardRef<HTMLDivElement, DataCardProps>(({ children, .
   );
 });
 
-export const DataCardButtonContainer = forwardRef<HTMLDivElement, DataCardButtonContainerProps>(
-  ({ children, ...props }, ref) => {
-    return (
-      <Box
-        ref={ref}
-        {...props}
-        sx={{
-          flex: "0 1 auto",
-          mt: 2,
-        }}>
-        <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={1}>
-          {children}
-        </Stack>
-      </Box>
-    );
-  },
-);
+export const DataCardButtonContainer = forwardRef<HTMLDivElement, DataCardBoxProps>(({ children, ...props }, ref) => {
+  return (
+    <Box
+      ref={ref}
+      {...props}
+      sx={{
+        flex: "0 1 auto",
+        mt: 2,
+      }}>
+      <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={1}>
+        {children}
+      </Stack>
+    </Box>
+  );
+});

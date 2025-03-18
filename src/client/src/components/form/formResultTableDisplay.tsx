@@ -10,7 +10,7 @@ type TestResults = HydrotestResult | FieldMeasurementResult;
 interface FormResultTableDisplayProps<T extends TestResults> {
   title: string;
   results: T[];
-  renderBody: (result: T, index: number, styles: React.CSSProperties) => ReactNode; // Ensures T is correctly passed
+  renderBody: (result: T, index: number, styles: React.CSSProperties) => ReactNode;
   renderHeader: (styles: React.CSSProperties) => ReactNode;
 }
 

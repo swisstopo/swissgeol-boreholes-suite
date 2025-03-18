@@ -33,15 +33,19 @@ export type DataCardEntity =
 
 interface DataCardsProps<T extends DataCardEntity> {
   parentId: number;
-  getData: (parentId: number) => Promise<T[]>; // Ensure we get a specific subtype
+  getData: (parentId: number) => Promise<T[]>;
   cyLabel: string;
   addLabel: string;
   emptyLabel: string;
-  renderInput: (props: { item: T; parentId: number }) => ReactNode; // Ensure proper typing
+  renderInput: (props: { item: T; parentId: number }) => ReactNode;
   renderDisplay: (props: { item: T; editingEnabled: boolean }) => ReactNode;
   sortDisplayed: (a: T, b: T) => number;
 }
 
+/**
+ * DataCards Component
+ * The parent component must use display: flex, otherwise the DataCards may not be visible.
+ */
 export const DataCards = <T extends DataCardEntity>({
   parentId,
   getData,

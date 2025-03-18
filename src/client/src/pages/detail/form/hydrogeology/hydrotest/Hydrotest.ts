@@ -6,13 +6,8 @@ import { Observation, ObservationType } from "../Observation.ts";
 export interface Hydrotest extends Observation {
   id: number;
   kindCodelists: Codelist[];
-  // kindCodelistIds: number[];
   hydrotestResults: HydrotestResult[];
-  // codelists: Codelist[];
-  // testKindId?: number[];
-  // evaluationMethodId: number[];
   evaluationMethodCodelists?: Codelist[];
-  // flowDirectionId: number[];
   flowDirectionCodelists?: Codelist[];
 }
 

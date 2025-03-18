@@ -10,14 +10,14 @@ const WaterIngress: FC = () => {
   const { id: boreholeId } = useParams<{ id: string }>();
 
   return (
-    <DataCards
+    <DataCards<WaterIngressType>
       parentId={parseInt(boreholeId)}
       getData={getWaterIngress}
       cyLabel="waterIngress"
       addLabel="addWaterIngress"
       emptyLabel="msgWateringressEmpty"
-      renderInput={(props: { item: WaterIngressType; parentId: number }) => <WaterIngressInput {...props} />}
-      renderDisplay={(props: { item: WaterIngressType }) => <WaterIngressDisplay {...props} />}
+      renderInput={props => <WaterIngressInput {...props} />}
+      renderDisplay={props => <WaterIngressDisplay {...props} />}
       sortDisplayed={(a, b) => {
         return sortByDepth(a, b, "fromDepthM", "toDepthM");
       }}
