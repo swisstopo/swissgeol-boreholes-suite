@@ -213,6 +213,7 @@ describe("completion crud tests", () => {
       cy.get("@completion1Id").then(completion1Id => {
         cy.get("@completion2Id").then(completion2Id => {
           goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
+          assertLocationAndHash(boreholeId, completion2Id, "#casing");
           startBoreholeEditing();
           // existing editing to other existing: no prompt should be displayed when no changes have been made
           startEditHeader();
@@ -220,7 +221,7 @@ describe("completion crud tests", () => {
           setHeaderTab(0);
           cy.get('[data-cy="prompt"]').should("not.exist");
           isHeaderTabSelected(0);
-          assertLocationAndHash(boreholeId, completion2Id, "#casing");
+          assertLocationAndHash(boreholeId, completion1Id, "#casing");
 
           // existing editing to other existing: tab switching can be canceled in prompt
           startEditHeader();
