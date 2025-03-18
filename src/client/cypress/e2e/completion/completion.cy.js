@@ -95,6 +95,11 @@ const assertLocationAndHash = (boreholeId, completionId, hash) => {
   });
 };
 
+const assertNewCompletionCreated = boreholeId => {
+  assertLocationAndHash(boreholeId, "new", "");
+  cy.contains("Not specified").should("be.visible");
+};
+
 describe("completion crud tests", () => {
   it("adds, edits, copies and deletes completions", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
@@ -109,8 +114,8 @@ describe("completion crud tests", () => {
 
     // add completion
     addCompletion();
+    assertNewCompletionCreated(id);
     cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
-    cy.contains("Not specified");
     cy.get('[data-cy="save-button"]').should("be.disabled");
     cy.get('[data-cy="cancel-button"]').should("be.enabled");
     cancelEditing();
@@ -118,6 +123,7 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="completion-header-tab-0"]').should("not.exist");
 
     addCompletion();
+    assertNewCompletionCreated(id);
     cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
 
     setInput("name", "Compl-1");
@@ -177,7 +183,7 @@ describe("completion crud tests", () => {
         cy.wait(500);
 
         addCompletion();
-        assertLocationAndHash(boreholeId, "new", "");
+        assertNewCompletionCreated(boreholeId);
         cancelEditing();
         // last completion should be selected when cancelling adding completion
         isHeaderTabSelected(1);
@@ -261,7 +267,7 @@ describe("completion crud tests", () => {
 
           // new to existing: no prompt should be displayed when no changes have been made
           addCompletion();
-          assertLocationAndHash(boreholeId, "new", "");
+          assertNewCompletionCreated(boreholeId);
           cy.get(`[data-cy="name-formInput"]`).click();
           setHeaderTab(0);
           cy.wait("@casing_GET");
@@ -269,7 +275,7 @@ describe("completion crud tests", () => {
 
           // new to existing: save option is disabled if form is invalid
           addCompletion();
-          assertLocationAndHash(boreholeId, "new", "");
+          assertNewCompletionCreated(boreholeId);
           setInput("name", "new completion");
           setHeaderTab(0);
           cy.get('[data-cy="prompt"]').find('[data-cy="save-button"]').should("be.disabled");
@@ -285,7 +291,7 @@ describe("completion crud tests", () => {
 
           // new to existing: changes can be saved in prompt
           addCompletion();
-          assertLocationAndHash(boreholeId, "new", "");
+          assertNewCompletionCreated(boreholeId);
           setInput("name", "new completion");
           setSelect("kindId", 1);
           setHeaderTab(0);
@@ -307,12 +313,11 @@ describe("completion crud tests", () => {
           assertLocationAndHash(boreholeId, completion1Id, "#casing");
           startEditHeader();
           addCompletion();
+          assertNewCompletionCreated(boreholeId);
           evaluateInput("name", "");
           evaluateSelect("kindId", "");
           evaluateInput("abandonDate", "");
           evaluateTextarea("notes", "");
-
-          assertLocationAndHash(boreholeId, "new", "");
 
           // existing editing to new: changes can be reverted in prompt
           setHeaderTab(0);
@@ -321,8 +326,7 @@ describe("completion crud tests", () => {
           setInput("name", "Reset compl-1");
           addCompletion();
           handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
-
-          assertLocationAndHash(boreholeId, "new", "");
+          assertNewCompletionCreated(boreholeId);
           cy.contains("Reset compl-1").should("not.exist");
           cy.contains("Not specified").should("be.visible"); // title of newly added completion
           isHeaderTabSelected(2);
@@ -334,9 +338,7 @@ describe("completion crud tests", () => {
           setInput("name", "Reset compl-1");
           addCompletion();
           handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
-
-          assertLocationAndHash(boreholeId, "new", "");
-          cy.contains("Not specified").should("be.visible");
+          assertNewCompletionCreated(boreholeId);
           isHeaderTabSelected(2);
           cy.contains("Reset compl-1").should("be.visible");
 
