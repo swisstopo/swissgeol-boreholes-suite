@@ -105,72 +105,73 @@ describe("completion crud tests", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/completion`);
+
+      cy.wait("@get-completions-by-boreholeId");
+      cy.contains("No completion available");
+
+      startBoreholeEditing();
+      cy.wait(500);
+
+      // add completion
+      addCompletion();
+      assertNewCompletionCreated(id);
+      cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
+      cy.get('[data-cy="save-button"]').should("be.disabled");
+      cy.get('[data-cy="cancel-button"]').should("be.enabled");
+      cancelEditing();
+      cy.get('[data-cy="addcompletion-button"]').should("be.enabled");
+      cy.get('[data-cy="completion-header-tab-0"]').should("not.exist");
+
+      addCompletion();
+      assertNewCompletionCreated(id);
+      cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
+
+      setInput("name", "Compl-1");
+      setSelect("kindId", 1);
+      cy.get('[data-cy="save-button"]').should("be.enabled");
+
+      setInput("abandonDate", "2012-11-14");
+      setInput("notes", "Lorem.");
+      saveChanges();
+      cy.wait("@backfill_GET");
+      cy.contains("Compl-1");
+      cy.get('[data-cy="addcompletion-button"]').should("be.enabled");
+
+      // copy completion
+      copyCompletion();
+      cy.wait("@get-completions-by-boreholeId");
+      cy.contains("Compl-1");
+      cy.contains("Compl-1 (Clone)");
+      // The casing request is triggered twice; once for the original completion and once for the copied. We have to await
+      // both to make sure that the UI has completed loading. Otherwise, the header cannot yet be toggled open.
+      cy.wait(["@casing_GET", "@casing_GET", "@backfill_GET", "@backfill_GET"]);
+
+      // edit completion
+      startEditHeader();
+      setSelect("kindId", 2);
+      cancelEditing();
+      cy.contains("telescopic");
+      startEditHeader();
+      setInput("name", "Compl-2");
+      toggleCheckbox("isPrimary");
+      saveChanges();
+      cy.wait("@backfill_GET");
+      cy.contains("Compl-2");
+      startEditHeader();
+      evaluateCheckbox("isPrimary", "true");
+      cancelEditing();
+
+      // delete completion
+      deleteCompletion();
+      handlePrompt("Do you really want to delete this completion?", "Cancel");
+      cy.contains("Compl-2");
+      deleteCompletion();
+      handlePrompt("Do you really want to delete this completion?", "Delete");
+      cy.wait(["@get-completions-by-boreholeId", "@backfill_GET", "@backfill_GET"]);
+      cy.get('[data-cy="completion-header-tab-1"]').should("not.exist");
+      isHeaderTabSelected(0);
+      evaluateDisplayValue("mainCompletion", "Yes");
     });
-    cy.wait("@get-completions-by-boreholeId");
-    cy.contains("No completion available");
-
-    startBoreholeEditing();
-    cy.wait(500);
-
-    // add completion
-    addCompletion();
-    assertNewCompletionCreated(id);
-    cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
-    cy.get('[data-cy="save-button"]').should("be.disabled");
-    cy.get('[data-cy="cancel-button"]').should("be.enabled");
-    cancelEditing();
-    cy.get('[data-cy="addcompletion-button"]').should("be.enabled");
-    cy.get('[data-cy="completion-header-tab-0"]').should("not.exist");
-
-    addCompletion();
-    assertNewCompletionCreated(id);
-    cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
-
-    setInput("name", "Compl-1");
-    setSelect("kindId", 1);
-    cy.get('[data-cy="save-button"]').should("be.enabled");
-
-    setInput("abandonDate", "2012-11-14");
-    setInput("notes", "Lorem.");
-    saveChanges();
-    cy.wait("@backfill_GET");
-    cy.contains("Compl-1");
-    cy.get('[data-cy="addcompletion-button"]').should("be.enabled");
-
-    // copy completion
-    copyCompletion();
-    cy.wait("@get-completions-by-boreholeId");
-    cy.contains("Compl-1");
-    cy.contains("Compl-1 (Clone)");
-    // The casing request is triggered twice; once for the original completion and once for the copied. We have to await
-    // both to make sure that the UI has completed loading. Otherwise, the header cannot yet be toggled open.
-    cy.wait(["@casing_GET", "@casing_GET", "@backfill_GET", "@backfill_GET"]);
-
-    // edit completion
-    startEditHeader();
-    setSelect("kindId", 2);
-    cancelEditing();
-    cy.contains("telescopic");
-    startEditHeader();
-    setInput("name", "Compl-2");
-    toggleCheckbox("isPrimary");
-    saveChanges();
-    cy.wait("@backfill_GET");
-    cy.contains("Compl-2");
-    startEditHeader();
-    evaluateCheckbox("isPrimary", "true");
-    cancelEditing();
-
-    // delete completion
-    deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "Cancel");
-    cy.contains("Compl-2");
-    deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "Delete");
-    cy.wait(["@get-completions-by-boreholeId", "@backfill_GET", "@backfill_GET"]);
-    cy.get('[data-cy="completion-header-tab-1"]').should("not.exist");
-    isHeaderTabSelected(0);
-    evaluateDisplayValue("mainCompletion", "Yes");
   });
 
   it("starts and cancels new completion", () => {
