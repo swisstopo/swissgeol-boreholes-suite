@@ -31,7 +31,6 @@ const createBoreholeWithTwoCompletions = () => {
   return createBorehole({ "extended.original_name": "INTEADAL" }).then(boreholeId => {
     cy.wrap(boreholeId).as("boreholeId");
     createCompletion("Compl-1", boreholeId, 16000002, true).as("completion1Id");
-    cy.wait(10); // ensure completion 2 has a later timestamp
     createCompletion("Compl-2", boreholeId, 16000002, false).as("completion2Id");
   });
 };
