@@ -52,7 +52,7 @@ export const DataInputCard = <T extends FieldValues>({
     translationKey: promptLabel,
   });
 
-  useValidateFormOnMount();
+  useValidateFormOnMount(formMethods);
 
   // Save with ctrl+s
   useSaveOnCtrlS(formMethods.handleSubmit(submitForm));

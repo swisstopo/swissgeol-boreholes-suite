@@ -116,7 +116,7 @@ const SectionInput = ({ item, parentId }) => {
   ]);
 
   useSaveOnCtrlS(formMethods.handleSubmit(submitForm));
-  useValidateFormOnMount();
+  useValidateFormOnMount(formMethods);
 
   useEffect(() => {
     formMethods.trigger("sectionElements");

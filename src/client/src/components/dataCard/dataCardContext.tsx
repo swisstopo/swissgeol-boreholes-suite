@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useMemo, useState } from "react";
+import { createContext, ReactNode, useCallback, useMemo, useState } from "react";
 import { DataCardEntity } from "./dataCards.tsx";
 
 interface DataCardContextProps {
@@ -64,68 +64,80 @@ export const DataCardProvider = ({ children }: DataCardProviderProps) => {
 
   const tempCard = { id: 0 };
 
-  const setLoadedCards = (loadedCards: DataCardEntity[]) => {
-    setShouldReload(false);
-    setCards(loadedCards);
+  const leaveInput = useCallback(
+    (canLeave: boolean, newCards?: DataCardEntity[]) => {
+      if (canLeave) {
+        let newDisplayedCards = newCards ? newCards : cards;
+        if (newCardId === 0) {
+          newDisplayedCards = [tempCard, ...newDisplayedCards];
+        }
+        const newSelectedCard = newDisplayedCards.find(c => c.id === newCardId) || null;
 
-    if (checkIsDirty) {
-      leaveInput(true, loadedCards);
-    } else {
-      setDisplayedCards(loadedCards);
-      setSelectedCard(null);
-      setCanSwitch(0);
-    }
-  };
+        setDisplayedCards(newDisplayedCards);
+        setSelectedCard(newSelectedCard);
+      }
+      setCheckIsDirty(false);
+      setNewCardId(null);
+      setCanSwitch(canLeave ? 1 : -1);
+    },
+    [cards, newCardId, tempCard],
+  );
 
-  const addCard = (card: DataCardEntity) => {
-    setDisplayedCards([card, ...displayedCards]);
-    setSelectedCard(card);
-  };
+  const setLoadedCards = useCallback(
+    (loadedCards: DataCardEntity[]) => {
+      setShouldReload(false);
+      setCards(loadedCards);
 
-  const selectCard = (card: DataCardEntity | null) => {
-    if (card === null) {
-      setDisplayedCards(cards);
-    }
-    setSelectedCard(card);
-  };
+      if (checkIsDirty) {
+        leaveInput(true, loadedCards);
+      } else {
+        setDisplayedCards(loadedCards);
+        setSelectedCard(null);
+        setCanSwitch(0);
+      }
+    },
+    [checkIsDirty, leaveInput],
+  );
 
-  const triggerReload = () => {
+  const addCard = useCallback(
+    (card: DataCardEntity) => {
+      setDisplayedCards([card, ...displayedCards]);
+      setSelectedCard(card);
+    },
+    [displayedCards],
+  );
+
+  const selectCard = useCallback(
+    (card: DataCardEntity | null) => {
+      if (card === null) {
+        setDisplayedCards(cards);
+      }
+      setSelectedCard(card);
+    },
+    [cards],
+  );
+
+  const triggerReload = useCallback(() => {
     setShouldReload(true);
-  };
+  }, []);
 
-  const switchToCard = (card: DataCardEntity) => {
+  const switchToCard = useCallback((card: DataCardEntity) => {
     setNewCardId(card?.id ?? null);
     setCheckIsDirty(true);
-  };
+  }, []);
 
-  const leaveInput = (canLeave: boolean, newCards?: DataCardEntity[]) => {
-    if (canLeave) {
-      let newDisplayedCards = newCards ? newCards : cards;
-      if (newCardId === 0) {
-        newDisplayedCards = [tempCard, ...newDisplayedCards];
-      }
-      const newSelectedCard = newDisplayedCards.find(c => c.id === newCardId) || null;
-
-      setDisplayedCards(newDisplayedCards);
-      setSelectedCard(newSelectedCard);
-    }
-    setCheckIsDirty(false);
-    setNewCardId(null);
-    setCanSwitch(canLeave ? 1 : -1);
-  };
-
-  const triggerCanSwitch = () => {
+  const triggerCanSwitch = useCallback(() => {
     if (selectedCard !== null) {
       setCanSwitch(0);
       setCheckIsDirty(true);
     } else {
       setCanSwitch(1);
     }
-  };
+  }, [selectedCard]);
 
-  const resetCanSwitch = () => {
+  const resetCanSwitch = useCallback(() => {
     setCanSwitch(0);
-  };
+  }, []);
 
   return (
     <DataCardContext.Provider

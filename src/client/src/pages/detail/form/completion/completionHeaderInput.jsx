@@ -39,7 +39,7 @@ const CompletionHeaderInput = props => {
     ...completion,
   });
 
-  useValidateFormOnMount();
+  useValidateFormOnMount(formMethods);
 
   useEffect(() => {
     setSelectedCompletion(completion);

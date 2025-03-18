@@ -66,7 +66,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
     translationKey: "fieldMeasurement",
   });
 
-  useValidateFormOnMount();
+  useValidateFormOnMount(formMethods);
 
   useEffect(() => {
     formMethods.trigger("fieldMeasurementResults");
