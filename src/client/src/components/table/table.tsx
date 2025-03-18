@@ -127,7 +127,7 @@ export const Table = <T extends GridValidRowModel>({
       columnHeaderHeight={44}
       sortingOrder={["asc", "desc"]}
       loading={isLoading ?? !rows?.length}
-      rowCount={rowCount ?? rows?.length}
+      rowCount={paginationMode === "server" ? (rowCount ?? rows?.length) : undefined}
       rows={rows}
       columns={adjustedWidthColumns}
       getRowHeight={() => (rowAutoHeight ? "auto" : 44)}
