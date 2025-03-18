@@ -30,8 +30,8 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <Stack sx={{ width: 500, borderRadius: 1 }}>
+    <Dialog open={open} onClose={handleClose} maxWidth="md">
+      <Stack sx={{ width: "100%", borderRadius: 1 }}>
         <DialogHeaderContainer>
           <Stack direction="row">
             <Typography variant="h4" sx={{ flexGrow: 1 }}>
