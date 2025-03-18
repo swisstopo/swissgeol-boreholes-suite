@@ -12,6 +12,7 @@ import {
   GridRowSelectionModel,
   GridSortModel,
   GridToolbar,
+  GridValidRowModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
@@ -19,7 +20,7 @@ import { muiLocales } from "../../mui.locales.ts";
 import { TablePaginationActions } from "../../pages/overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "../../pages/settings/admin/quickfilterStyles.ts";
 
-interface TableProps<T> {
+interface TableProps<T extends GridValidRowModel> {
   rows: T[];
   columns: GridColDef[];
   filterModel?: GridFilterModel;
@@ -29,24 +30,24 @@ interface TableProps<T> {
   paginationModel?: GridPaginationModel;
   onPaginationModelChange?: (model: GridPaginationModel) => void;
   onRowClick?: GridEventListener<"rowClick">;
-  getRowClassName?: (params: GridRowParams) => string;
+  getRowClassName?: (params: GridRowParams<T>) => string;
   dataCy?: string;
   apiRef?: MutableRefObject<GridApiCommunity>;
   isLoading?: boolean;
   rowCount?: number;
   rowSelectionModel?: GridRowSelectionModel;
+  getRowId?: GridRowIdGetter<T>;
+  isRowSelectable?: (params: GridRowParams<T>) => boolean;
   disableColumnSorting?: boolean;
   paginationMode?: "server" | "client";
   sortingMode?: "server" | "client";
   checkboxSelection?: boolean;
-  isRowSelectable?: (params: GridRowParams) => boolean;
   isDisabled?: boolean;
   showQuickFilter?: boolean;
   rowAutoHeight?: boolean;
-  getRowId?: GridRowIdGetter;
 }
 
-export const Table = <T,>({
+export const Table = <T extends GridValidRowModel>({
   rows,
   columns,
   filterModel,
@@ -63,11 +64,11 @@ export const Table = <T,>({
   rowCount,
   rowSelectionModel,
   getRowId,
+  isRowSelectable,
   disableColumnSorting = false,
   paginationMode = "client",
   sortingMode = "client",
   checkboxSelection = false,
-  isRowSelectable,
   isDisabled = false,
   showQuickFilter = true,
   rowAutoHeight = false,
@@ -103,7 +104,7 @@ export const Table = <T,>({
     "& .MuiDataGrid-columnHeader": { cursor: isDisabled ? "default" : "pointer" },
   };
 
-  const defaultRowClassName = (params: GridRowParams): string => (params.row.isDisabled ? "disabled-row" : "");
+  const defaultRowClassName = (params: GridRowParams<T>): string => (params.row.isDisabled ? "disabled-row" : "");
 
   // Apply user-defined column widths to columns
   const adjustedWidthColumns = columns.map(col => {
