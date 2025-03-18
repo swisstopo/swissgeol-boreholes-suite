@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
 import { addCasing, updateCasing } from "../../../../api/fetchApiV2";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.tsx";
+import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext.tsx";
+import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
 import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
@@ -261,20 +261,7 @@ const CasingInput = props => {
                 ))}
             </Box>
           </FormContainer>
-          <DataCardButtonContainer>
-            <CancelButton
-              onClick={() => {
-                formMethods.reset();
-                selectCard(null);
-              }}
-            />
-            <SaveButton
-              disabled={!formMethods.formState.isValid}
-              onClick={() => {
-                formMethods.handleSubmit(submitForm)();
-              }}
-            />
-          </DataCardButtonContainer>
+          <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
         </form>
       </FormProvider>
     </>

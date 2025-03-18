@@ -3,11 +3,10 @@ import { FieldValues, FormProvider, SubmitHandler, useForm } from "react-hook-fo
 import { useTranslation } from "react-i18next";
 import { DevTool } from "../../../hookformDevtools";
 import { useSaveOnCtrlS } from "../../hooks/useSaveOnCtrlS";
-import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
 import { FormContainer } from "../form/form";
 import { PromptContext } from "../prompt/promptContext.tsx";
-import { DataCardButtonContainer } from "./dataCard.js";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext.tsx";
+import { DataCardSaveAndCancelButtons } from "./saveAndCancelButtons.tsx";
 
 interface DataInputCardProps<T extends FieldValues> {
   item: T;
@@ -98,18 +97,7 @@ export const DataInputCard = <T extends FieldValues>({
         <DevTool control={formMethods.control} placement="top-left" />
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
           <FormContainer pt={1}>{children}</FormContainer>
-          <DataCardButtonContainer>
-            <CancelButton
-              onClick={() => {
-                formMethods.reset();
-                selectCard(null);
-              }}
-            />
-            <SaveButton
-              disabled={!formMethods.formState.isValid}
-              onClick={() => formMethods.handleSubmit(submitForm)()}
-            />
-          </DataCardButtonContainer>
+          <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
         </form>
       </FormProvider>
     </>

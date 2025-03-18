@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useDomains } from "../../../../../api/fetchApiV2";
-import { AddButton, CancelButton, SaveButton } from "../../../../../components/buttons/buttons";
+import { AddButton } from "../../../../../components/buttons/buttons";
 import { Codelist } from "../../../../../components/Codelist";
-import { DataCardButtonContainer } from "../../../../../components/dataCard/dataCard";
 import { DataCardContext, DataCardSwitchContext } from "../../../../../components/dataCard/dataCardContext";
+import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard/saveAndCancelButtons.tsx";
 import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput } from "../../../../../components/form/form";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../../components/prompt/promptContext";
@@ -331,20 +331,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
               </Box>
             )}
           </FormContainer>
-          <DataCardButtonContainer>
-            <CancelButton
-              onClick={() => {
-                formMethods.reset();
-                selectCard(null);
-              }}
-            />
-            <SaveButton
-              disabled={!formMethods.formState.isValid}
-              onClick={() => {
-                formMethods.handleSubmit(submitForm)();
-              }}
-            />
-          </DataCardButtonContainer>
+          <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
         </form>
       </FormProvider>
     </>

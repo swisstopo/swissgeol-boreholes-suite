@@ -6,9 +6,9 @@ import { Divider, IconButton } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.tsx";
+import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
+import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
@@ -16,7 +16,7 @@ import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
 import { useFormDirtyStore } from "../../formDirtyStore.ts";
 
 const SectionInput = ({ item, parentId }) => {
-  const { triggerReload, selectCard } = useContext(DataCardContext);
+  const { triggerReload } = useContext(DataCardContext);
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
   const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
@@ -263,21 +263,7 @@ const SectionInput = ({ item, parentId }) => {
                 </FormContainer>
               ))}
           </FormContainer>
-
-          <DataCardButtonContainer>
-            <CancelButton
-              onClick={() => {
-                formMethods.reset();
-                selectCard(null);
-              }}
-            />
-            <SaveButton
-              disabled={!formMethods.formState.isValid}
-              onClick={() => {
-                formMethods.handleSubmit(submitForm)();
-              }}
-            />
-          </DataCardButtonContainer>
+          <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
         </form>
       </FormProvider>
     </>

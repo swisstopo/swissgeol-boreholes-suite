@@ -2,8 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
-import { CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.tsx";
+import { SaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
 import {
   FormCheckbox,
   FormContainer,
@@ -142,20 +141,16 @@ const CompletionHeaderInput = props => {
                 sx={{ flex: "0 0 400px" }}
               />
             </FormContainer>
-            <DataCardButtonContainer>
-              <CancelButton
-                onClick={() => {
-                  formMethods.reset(selectedCompletion);
-                  cancelChanges();
-                }}
-              />
-              <SaveButton
-                disabled={!formMethods.formState.isValid}
-                onClick={() => {
-                  formMethods.handleSubmit(submitForm)();
-                }}
-              />
-            </DataCardButtonContainer>
+            <SaveAndCancelButtons
+              onCancel={() => {
+                formMethods.reset(selectedCompletion);
+                cancelChanges();
+              }}
+              onSave={() => {
+                formMethods.handleSubmit(submitForm)();
+              }}
+              saveDisabled={!formMethods.formState.isValid}
+            />
           </FormContainer>
         </form>
       </FormProvider>
