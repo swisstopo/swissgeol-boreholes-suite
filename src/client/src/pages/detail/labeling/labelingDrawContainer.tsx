@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 import { MapBrowserEvent, View } from "ol";
@@ -97,13 +97,20 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
     }
   };
 
-  const updateTooltipPosition = (event: MapBrowserEvent<PointerEvent>) => {
+  const updateTooltipPosition = useCallback((x: number, y: number) => {
     if (tooltipRef?.current) {
-      const [x, y] = event.pixel;
       tooltipRef.current.style.left = x + "px";
       tooltipRef.current.style.top = y + "px";
     }
-  };
+  }, []);
+
+  const onPointerMove = useCallback(
+    (event: MapBrowserEvent<PointerEvent>) => {
+      const [x, y] = event.pixel;
+      updateTooltipPosition(x, y);
+    },
+    [updateTooltipPosition],
+  );
 
   const handleMouseLeave = () => {
     if (tooltipRef?.current) {
@@ -111,7 +118,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
     }
   };
   const handleMouseEnter = () => {
-    if (tooltipRef?.current) {
+    if (tooltipRef?.current && tooltipRef.current.innerHTML !== "") {
       tooltipRef.current.style.visibility = "visible";
     }
   };
@@ -163,6 +170,11 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
     window.labelingImage = map;
   }, [map]);
 
+  // Initially move tooltip out of view, to prevent wrong positioning when clicking and before pointermove event
+  useEffect(() => {
+    updateTooltipPosition(0, -10000);
+  }, [drawTooltipLabel, updateTooltipPosition]);
+
   useEffect(() => {
     if (map && drawTooltipLabel) {
       const layers = map.getLayers().getArray();
@@ -186,6 +198,13 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
 
         const dragBox = new DragBox();
         dragBox.on("boxstart", () => {
+          if (tooltipRef?.current) {
+            tmpMap.un("pointermove", onPointerMove);
+            tooltipRef.current.style.visibility = "hidden";
+            tooltipRef.current.innerHTML = "";
+            tmpMap.getTargetElement().removeEventListener("mouseleave", handleMouseLeave);
+            tmpMap.getTargetElement().removeEventListener("mouseenter", handleMouseEnter);
+          }
           if (extractionType === "text") {
             // Add all transparent bounding boxes to map once the selection starts
             boundingBoxes.forEach(box => {
@@ -227,12 +246,6 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
               targetElement.style.cursor = "";
             }
 
-            if (tooltipRef?.current) {
-              tooltipRef.current.style.visibility = "hidden";
-              tmpMap.un("pointermove", updateTooltipPosition);
-              tmpMap.getTargetElement().removeEventListener("mouseleave", handleMouseLeave);
-              tmpMap.getTargetElement().removeEventListener("mouseenter", handleMouseEnter);
-            }
             setMap(tmpMap);
           }
         });
@@ -246,12 +259,12 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
           tooltipRef.current.style.visibility = "visible";
           tmpMap.getTargetElement().addEventListener("mouseleave", handleMouseLeave);
           tmpMap.getTargetElement().addEventListener("mouseenter", handleMouseEnter);
-          tmpMap.on("pointermove", updateTooltipPosition);
+          tmpMap.on("pointermove", onPointerMove);
         }
         setMap(tmpMap);
       }
     }
-  }, [boundingBoxes, drawTooltipLabel, extractionType, map, t]);
+  }, [boundingBoxes, drawTooltipLabel, extractionType, onPointerMove, map, t]);
 
   useEffect(() => {
     if (fileInfo) {
