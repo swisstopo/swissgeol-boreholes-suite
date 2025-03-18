@@ -4,14 +4,6 @@ import { Codelist } from "../../../../../components/Codelist.ts";
 import { Observation, ObservationType } from "../Observation.ts";
 
 export interface Hydrotest extends Observation {
-  id: number;
-  kindCodelists: Codelist[];
-  hydrotestResults: HydrotestResult[];
-  evaluationMethodCodelists?: Codelist[];
-  flowDirectionCodelists?: Codelist[];
-}
-
-export interface HydrotestFormData extends Observation {
   id?: number;
   boreholeId: number;
   hydrotestResults: HydrotestResult[];
@@ -23,6 +15,8 @@ export interface HydrotestFormData extends Observation {
   evaluationMethodCodelistIds: number[];
   flowDirectionCodelistIds: number[];
   kindCodelists?: Codelist[];
+  evaluationMethodCodelists?: Codelist[];
+  flowDirectionCodelists?: Codelist[];
 }
 
 export interface HydrotestResult {

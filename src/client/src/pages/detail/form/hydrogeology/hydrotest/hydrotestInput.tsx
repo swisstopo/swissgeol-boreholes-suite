@@ -17,14 +17,7 @@ import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants";
 import { ObservationType } from "../Observation";
 import ObservationInput from "../observationInput";
 import { getHydrotestParameterUnits } from "../parameterUnits";
-import {
-  addHydrotest,
-  Hydrotest,
-  HydrotestFormData,
-  HydrotestInputProps,
-  updateHydrotest,
-  useHydrotestDomains,
-} from "./Hydrotest";
+import { addHydrotest, Hydrotest, HydrotestInputProps, updateHydrotest, useHydrotestDomains } from "./Hydrotest";
 
 export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
@@ -33,7 +26,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const domains = useDomains();
   const { t } = useTranslation();
 
-  const formMethods = useForm<HydrotestFormData>({
+  const formMethods = useForm<Hydrotest>({
     mode: "all",
     defaultValues: {
       hydrotestResults: item?.hydrotestResults || [],
@@ -158,7 +151,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item, formMethods.getValues()["testKindId"]]);
 
-  const prepareFormDataForSubmit = (data: HydrotestFormData): Hydrotest => {
+  const prepareFormDataForSubmit = (data: Hydrotest): Hydrotest => {
     data = prepareCasingDataForSubmit(data);
     data.startTime = getIsoDateIfDefined(data?.startTime);
     data.endTime = getIsoDateIfDefined(data?.endTime);
@@ -194,10 +187,10 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     delete data.flowDirectionId;
     delete data.evaluationMethodId;
     delete data.reliability;
-    return data as Hydrotest;
+    return data;
   };
 
-  const submitForm = (data: HydrotestFormData) => {
+  const submitForm = (data: Hydrotest) => {
     const hydrotest: Hydrotest = prepareFormDataForSubmit(data);
 
     if (item.id === 0) {
