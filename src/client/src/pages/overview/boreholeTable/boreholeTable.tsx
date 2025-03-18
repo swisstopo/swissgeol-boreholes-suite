@@ -18,7 +18,7 @@ import {
 } from "@mui/x-data-grid";
 import { LockKeyhole } from "lucide-react";
 import _ from "lodash";
-import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { BoreholeAttributes, Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../../api/fetchApiV2";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
@@ -141,7 +141,11 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       renderHeader: renderHeaderCheckbox,
       renderCell: renderCellCheckbox,
     },
-    { field: "alternate_name", headerName: t("name"), flex: 1 },
+    {
+      field: "alternate_name",
+      headerName: t("name"),
+      flex: 1,
+    },
     {
       field: "borehole_type",
       valueGetter: (value: number) => {
@@ -291,7 +295,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   }, [apiRef, isLoading, tableScrollPosition]);
 
   return (
-    <Table
+    <Table<BoreholeAttributes>
       rows={boreholes.data}
       columns={columns}
       dataCy={"borehole-table"}

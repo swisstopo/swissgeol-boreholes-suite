@@ -1,4 +1,18 @@
 services:
+  db-init:
+      image: postgis/postgis:15-3.4-alpine
+      volumes:
+        - ./db-init:/docker-entrypoint-initdb.d
+      environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - SOURCE_DB_HOST=host.docker.internal
+      - SOURCE_DB_PORT=5432
+      - SOURCE_DB_NAME=bdms
+      - SOURCE_DB_SCHEMA=bdms
+      - SOURCE_DB_USERNAME=SPAWNPLOW
+      - SOURCE_DB_PASSWORD=YELLOWSPATULA
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
   extern-sync:
     build:
       context: ../
@@ -9,5 +23,11 @@ services:
     environment:
       - CONNECTIONSTRINGS__SourceBdmsContext=Host=host.docker.internal;Port=5432;Database=bdms;Username=SPAWNPLOW;Password=YELLOWSPATULA
       - CONNECTIONSTRINGS__TargetBdmsContext=Host=host.docker.internal;Port=5433;Database=WAXDIONYSUS;Username=CHOCOLATESLAW;Password=FRUGALCLUSTER
+      - MIGRATE_TARGET_DATABASE=true
+      - TARGET_DEFAULT_WORKGROUP_NAME=Default
+      - TARGET_DEFAULT_USER_SUB=sub_admin
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
     extra_hosts:
       - "host.docker.internal:host-gateway"

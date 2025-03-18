@@ -106,4 +106,4 @@ jobs:
 
       - name: Run extern-sync
         working-directory: src/extern-sync
-        run: docker compose -f docker-compose.yml up --build --exit-code-from extern-sync
+        run: docker compose -f docker-compose.yml up extern-sync --build --exit-code-from extern-sync

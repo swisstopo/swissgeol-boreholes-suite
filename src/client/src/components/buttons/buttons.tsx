@@ -1,11 +1,9 @@
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Button, IconButton } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import { ArrowDownToLine, Check, ChevronLeft, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
-import SelectTextIcon from "../../assets/icons/selectText.svg?react";
-import { theme } from "../../AppTheme.ts";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { ButtonProps } from "./buttonsInterface";
 
@@ -156,30 +154,5 @@ export const ReturnButton = ({ onClick }: { onClick: () => void }) => {
       }}>
       <ChevronLeft />
     </IconButton>
-  );
-};
-
-export const TextExtractionButton = ({ onClick }: { onClick: () => void }) => {
-  return (
-    <Button
-      data-cy="text-extraction-button"
-      variant="text"
-      onClick={onClick}
-      sx={{
-        p: 0.5,
-        boxShadow: 1,
-        height: "44px",
-      }}>
-      <Box
-        sx={{
-          p: 1,
-          lineHeight: 1,
-          borderRadius: 1,
-          backgroundColor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
-        }}>
-        <SelectTextIcon />
-      </Box>
-    </Button>
   );
 };

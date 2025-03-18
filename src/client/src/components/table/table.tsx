@@ -1,25 +1,27 @@
-import { FC, MutableRefObject } from "react";
+import { MutableRefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   DataGrid,
   GridColDef,
+  GridColumnResizeParams,
   GridEventListener,
   GridFilterModel,
   GridPaginationModel,
+  GridRowIdGetter,
   GridRowParams,
   GridRowSelectionModel,
   GridSortModel,
   GridToolbar,
+  GridValidRowModel,
+  useGridApiRef,
 } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
-import { BoreholeAttributes } from "../../api-lib/ReduxStateInterfaces.ts";
-import { User, Workgroup } from "../../api/apiInterfaces.ts";
 import { muiLocales } from "../../mui.locales.ts";
 import { TablePaginationActions } from "../../pages/overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "../../pages/settings/admin/quickfilterStyles.ts";
 
-interface TableProps {
-  rows: User[] | Workgroup[] | BoreholeAttributes[];
+interface TableProps<T extends GridValidRowModel> {
+  rows: T[];
   columns: GridColDef[];
   filterModel?: GridFilterModel;
   onFilterModelChange?: (model: GridFilterModel) => void;
@@ -28,22 +30,24 @@ interface TableProps {
   paginationModel?: GridPaginationModel;
   onPaginationModelChange?: (model: GridPaginationModel) => void;
   onRowClick?: GridEventListener<"rowClick">;
-  getRowClassName?: (params: GridRowParams) => string;
+  getRowClassName?: (params: GridRowParams<T>) => string;
   dataCy?: string;
   apiRef?: MutableRefObject<GridApiCommunity>;
   isLoading?: boolean;
   rowCount?: number;
   rowSelectionModel?: GridRowSelectionModel;
+  getRowId?: GridRowIdGetter<T>;
+  isRowSelectable?: (params: GridRowParams<T>) => boolean;
+  disableColumnSorting?: boolean;
   paginationMode?: "server" | "client";
   sortingMode?: "server" | "client";
   checkboxSelection?: boolean;
-  isRowSelectable?: (params: GridRowParams) => boolean;
   isDisabled?: boolean;
   showQuickFilter?: boolean;
   rowAutoHeight?: boolean;
 }
 
-export const Table: FC<TableProps> = ({
+export const Table = <T extends GridValidRowModel>({
   rows,
   columns,
   filterModel,
@@ -59,15 +63,40 @@ export const Table: FC<TableProps> = ({
   isLoading,
   rowCount,
   rowSelectionModel,
+  getRowId,
+  isRowSelectable,
+  disableColumnSorting = false,
   paginationMode = "client",
   sortingMode = "client",
   checkboxSelection = false,
-  isRowSelectable,
   isDisabled = false,
   showQuickFilter = true,
   rowAutoHeight = false,
-}) => {
+}: TableProps<T>) => {
   const { i18n } = useTranslation();
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+  const internalApiRef = useGridApiRef();
+  const effectiveApiRef = apiRef ?? internalApiRef;
+
+  // Ensure user-defined column widths are persisted when table re-renders
+  useEffect(() => {
+    if (effectiveApiRef?.current && Object.keys(effectiveApiRef.current).length > 0) {
+      Object.entries(columnWidths).forEach(([field, width]) => {
+        effectiveApiRef.current.setColumnWidth(field, width);
+      });
+    }
+  }, [apiRef, columnWidths, effectiveApiRef]);
+
+  const handleColumnResize = useCallback(
+    (params: GridColumnResizeParams) => {
+      const updatedWidths = {
+        ...columnWidths,
+        [params.colDef.field]: params.width,
+      };
+      setColumnWidths(updatedWidths);
+    },
+    [columnWidths],
+  );
 
   const disabledStyles = {
     cursor: isDisabled ? "default" : "pointer",
@@ -75,18 +104,32 @@ export const Table: FC<TableProps> = ({
     "& .MuiDataGrid-columnHeader": { cursor: isDisabled ? "default" : "pointer" },
   };
 
-  const defaultRowClassName = (params: GridRowParams): string => (params.row.isDisabled ? "disabled-row" : "");
+  const defaultRowClassName = (params: GridRowParams<T>): string => (params.row.isDisabled ? "disabled-row" : "");
+
+  // Apply user-defined column widths to columns
+  const adjustedWidthColumns = columns.map(col => {
+    // If column is not resizable, no need to set width
+    if (col.resizable === false) {
+      return col;
+    }
+
+    return {
+      ...col,
+      width: columnWidths[col.field] ?? col.width,
+      flex: columnWidths[col.field] ? undefined : 1, // Auto flex if no width
+    };
+  });
 
   return (
     <DataGrid
       sx={{ border: "none !important", ...quickFilterStyles, ...disabledStyles }}
-      data-cy={dataCy || "data-table"}
+      data-cy={dataCy ?? "data-table"}
       columnHeaderHeight={44}
       sortingOrder={["asc", "desc"]}
       loading={isLoading ?? !rows?.length}
       rowCount={rowCount ?? rows?.length}
       rows={rows}
-      columns={columns}
+      columns={adjustedWidthColumns}
       getRowHeight={() => (rowAutoHeight ? "auto" : 44)}
       onRowClick={onRowClick}
       pageSizeOptions={[100]}
@@ -116,12 +159,15 @@ export const Table: FC<TableProps> = ({
       onSortModelChange={onSortModelChange}
       paginationModel={paginationModel}
       onPaginationModelChange={onPaginationModelChange}
+      onColumnResize={handleColumnResize}
       apiRef={apiRef}
       paginationMode={paginationMode}
       sortingMode={sortingMode}
       checkboxSelection={checkboxSelection}
+      disableColumnSorting={disableColumnSorting}
       isRowSelectable={isRowSelectable}
       rowSelectionModel={rowSelectionModel}
+      getRowId={getRowId}
     />
   );
 };
