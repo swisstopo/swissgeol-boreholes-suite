@@ -143,7 +143,7 @@ export const UserAdministration: FC = () => {
   ];
 
   return (
-    <Table
+    <Table<User>
       rows={users}
       columns={columns}
       onRowClick={handleRowClick}

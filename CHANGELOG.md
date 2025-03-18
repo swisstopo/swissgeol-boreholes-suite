@@ -2,8 +2,11 @@
 
 ## [Unreleased]
 
-### Fixed
+### Changed
+- Attachments are now displayed in a table following new UI design.
 
+### Fixed
+- Attachments page was missing scrollbars.
 - The input field for the alternate name was always overwritten by the original name when loading the location page.
 
 ## v2.1.1116 - 2025-03-17
