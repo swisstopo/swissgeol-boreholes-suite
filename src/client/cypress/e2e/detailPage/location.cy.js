@@ -97,6 +97,38 @@ describe("Tests for 'Location' edit page.", () => {
       // should be reset to original name if alternate name is empty
       cy.get("@originalNameInput").should("have.value", "PHOTOPIGEON");
       cy.get("@nameInput").should("have.value", "PHOTOPIGEON");
+
+      // should keep different alternate name when switching tabs
+      cy.get("@nameInput").clear().type("PHOTOMOUSE");
+      saveWithSaveBar();
+      cy.get('[data-cy="borehole-menu-item"]').click();
+      cy.get('[data-cy="location-menu-item"]').click();
+      cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
+      cy.get("@originalNameInput").should("have.value", "PHOTOPIGEON");
+    });
+  });
+
+  it("does not overwrite alternate name if it is different from original name", () => {
+    createBorehole({ "extended.original_name": "PHOTOSQUIRREL", "custom.alternate_name": "PHOTOMOUSE" }).as(
+      "borehole_id",
+    );
+    cy.get("@borehole_id").then(id => {
+      goToRouteAndAcceptTerms(`/${id}`);
+      cy.get('[data-cy="originalName-formInput"]').within(() => {
+        cy.get("input").as("originalNameInput");
+      });
+      cy.get('[data-cy="name-formInput"]').within(() => {
+        cy.get("input").as("nameInput");
+      });
+
+      cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
+      cy.get("@originalNameInput").should("have.value", "PHOTOSQUIRREL");
+
+      startBoreholeEditing();
+      // changing original name should not update alternate name if they are different
+      cy.get("@originalNameInput").clear().type("PHOTOPIGEON");
+      cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
+      cy.get("@originalNameInput").should("have.value", "PHOTOPIGEON");
     });
   });
 

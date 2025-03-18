@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- The input field for the alternate name was always overwritten by the original name when loading the location page.
+
 ## v2.1.1116 - 2025-03-17
 
 ### Changed
