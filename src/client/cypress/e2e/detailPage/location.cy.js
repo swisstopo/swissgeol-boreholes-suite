@@ -1,6 +1,6 @@
 import { addItem, saveWithSaveBar, stopEditing } from "../helpers/buttonHelpers";
 import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
-import { evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
+import { clearInput, evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
@@ -66,45 +66,41 @@ describe("Tests for 'Location' edit page.", () => {
     );
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
-      cy.get('[data-cy="originalName-formInput"]').within(() => {
-        cy.get("input").as("originalNameInput");
-      });
-      cy.get('[data-cy="name-formInput"]').within(() => {
-        cy.get("input").as("nameInput");
-      });
 
-      cy.get("@originalNameInput").should("have.value", "PHOTOSQUIRREL");
-      cy.get("@nameInput").should("have.value", "PHOTOSQUIRREL");
+      evaluateInput("originalName", "PHOTOSQUIRREL");
+      evaluateInput("name", "PHOTOSQUIRREL");
 
       startBoreholeEditing();
       // changing original name should also change alternate name
-      cy.get("@originalNameInput").clear().type("PHOTOCAT");
-      cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
-      cy.get("@nameInput").should("have.value", "PHOTOCAT");
+      setInput("originalName", "PHOTOCAT");
+      evaluateInput("originalName", "PHOTOCAT");
+      evaluateInput("name", "PHOTOCAT");
 
       // changing alternate name should not change original name
-      cy.get("@nameInput").clear().type("PHOTOMOUSE");
-      cy.get("@originalNameInput").should("have.value", "PHOTOCAT");
-      cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
+      setInput("name", "PHOTOMOUSE");
+      evaluateInput("originalName", "PHOTOCAT");
+      evaluateInput("name", "PHOTOMOUSE");
 
       // changing original name should not update alternate name if they are different
-      cy.get("@originalNameInput").clear().type("PHOTOPIGEON");
-      cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
-      cy.get("@originalNameInput").should("have.value", "PHOTOPIGEON");
+      setInput("originalName", "PHOTOPIGEON");
+      evaluateInput("originalName", "PHOTOPIGEON");
+      evaluateInput("name", "PHOTOMOUSE");
 
-      cy.get("@nameInput").clear();
+      clearInput("name");
+      evaluateInput("originalName", "PHOTOPIGEON");
+      evaluateInput("name", "");
       saveWithSaveBar();
       // should be reset to original name if alternate name is empty
-      cy.get("@originalNameInput").should("have.value", "PHOTOPIGEON");
-      cy.get("@nameInput").should("have.value", "PHOTOPIGEON");
+      evaluateInput("originalName", "PHOTOPIGEON");
+      evaluateInput("name", "PHOTOPIGEON");
 
       // should keep different alternate name when switching tabs
-      cy.get("@nameInput").clear().type("PHOTOMOUSE");
+      setInput("name", "PHOTOMOUSE");
       saveWithSaveBar();
       cy.get('[data-cy="borehole-menu-item"]').click();
       cy.get('[data-cy="location-menu-item"]').click();
-      cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
-      cy.get("@originalNameInput").should("have.value", "PHOTOPIGEON");
+      evaluateInput("originalName", "PHOTOPIGEON");
+      evaluateInput("name", "PHOTOMOUSE");
     });
   });
 
@@ -114,21 +110,15 @@ describe("Tests for 'Location' edit page.", () => {
     );
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}`);
-      cy.get('[data-cy="originalName-formInput"]').within(() => {
-        cy.get("input").as("originalNameInput");
-      });
-      cy.get('[data-cy="name-formInput"]').within(() => {
-        cy.get("input").as("nameInput");
-      });
 
-      cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
-      cy.get("@originalNameInput").should("have.value", "PHOTOSQUIRREL");
+      evaluateInput("originalName", "PHOTOSQUIRREL");
+      evaluateInput("name", "PHOTOMOUSE");
 
       startBoreholeEditing();
       // changing original name should not update alternate name if they are different
-      cy.get("@originalNameInput").clear().type("PHOTOPIGEON");
-      cy.get("@nameInput").should("have.value", "PHOTOMOUSE");
-      cy.get("@originalNameInput").should("have.value", "PHOTOPIGEON");
+      setInput("originalName", "PHOTOPIGEON");
+      evaluateInput("originalName", "PHOTOPIGEON");
+      evaluateInput("name", "PHOTOMOUSE");
     });
   });
 
