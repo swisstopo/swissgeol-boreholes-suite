@@ -45,7 +45,9 @@ const BottomBarContainer = ({
   const history = useHistory();
   const { featureIds } = useContext(FilterContext);
   const { bottomDrawerOpen } = useContext(OverViewContext);
-  const [workgroupId, setWorkgroupId] = useState<number | null>(user.data.workgroups[0]?.id);
+  const [workgroupId, setWorkgroupId] = useState<number | null>(
+    () => user.data.workgroups.find(w => w.roles.includes("EDIT"))?.id ?? null,
+  );
   const [isBusy, setIsBusy] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: boreholes.limit ?? 100,

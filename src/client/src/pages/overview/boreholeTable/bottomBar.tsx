@@ -44,13 +44,11 @@ const BottomBar = ({
   const userIsEditor = user.data.roles.includes("EDIT");
   const auth = useAuth();
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
-  const [currentWorkgroup, setCurrentWorkgroup] = useState<number | null>(null);
   const enabledWorkgroups = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
 
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
     setCopyPromptOpen(true);
-    setCurrentWorkgroup(workgroup);
-    if (workgroup !== currentWorkgroup || !copyPromptOpen) {
+    if (!copyPromptOpen) {
       showPrompt(
         t("selectWorkgroupToCreateCopy"),
         [
@@ -72,7 +70,7 @@ const BottomBar = ({
         />,
       );
     }
-  }, [copyPromptOpen, currentWorkgroup, enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, t, workgroup]);
+  }, [copyPromptOpen, enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, t, workgroup]);
 
   //Ensures prompt content with the WorkgroupSelect is updated when a workgroup is selected.
   useEffect(() => {
