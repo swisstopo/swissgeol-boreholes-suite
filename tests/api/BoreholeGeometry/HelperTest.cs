@@ -135,4 +135,48 @@ public class HelperTest
     {
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => geometry.GetDepthTVD(double.MaxValue));
     }
+
+    [TestMethod]
+    public void GetDepthMDOnDataPoint()
+    {
+        Assert.AreEqual(142, geometry.GetDepthMD(130.83542740959587));
+    }
+
+    [TestMethod]
+    public void GetDepthMDStraightSegment()
+    {
+        Assert.AreEqual(15, geometry.GetDepthMD(15));
+    }
+
+    [TestMethod]
+    public void GetDepthMDArcSegment()
+    {
+        Assert.AreEqual(60.90073047969, Math.Round(geometry.GetDepthMD(57.820431832038), 12));
+        Assert.AreEqual(90.613963216374, Math.Round(geometry.GetDepthMD(84.571740070648), 12));
+        Assert.AreEqual(117.997835339355, Math.Round(geometry.GetDepthMD(109.225886942528), 12));
+    }
+
+    [TestMethod]
+    public void GetDepthMDMultipleIntersections()
+    {
+        Assert.AreEqual(340.073879125045, Math.Round(geometry.GetDepthMD(220), 12));
+    }
+
+    [TestMethod]
+    public void GetDepthMDTooLow()
+    {
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => geometry.GetDepthMD(-42));
+    }
+
+    [TestMethod]
+    public void GetDepthMDTooHigh()
+    {
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => geometry.GetDepthMD(double.MaxValue));
+    }
+
+    [TestMethod]
+    public void GetDepthMDEmptyGeometry()
+    {
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new List<BoreholeGeometryElement>().GetDepthMD(10));
+    }
 }

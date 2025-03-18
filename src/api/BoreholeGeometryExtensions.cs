@@ -131,6 +131,49 @@ public static class BoreholeGeometryExtensions
         }
     }
 
+    /// <summary>
+    /// Get the measured depth of the <paramref name="depthTvd"/> according to the <paramref name="geometry"/>.
+    /// </summary>
+    /// <remarks>If there are multiple possible measured depths for a given TVD, the first is returned.</remarks>
+    /// <exception cref="ArgumentOutOfRangeException">The <paramref name="geometry"/> does not reach <paramref name="depthTvd"/>.</exception>
+    internal static double GetDepthMD(this List<BoreholeGeometryElement> geometry, double depthTvd)
+    {
+        var upperIndex = 1;
+        while (upperIndex < geometry.Count)
+        {
+            var depthMD = InterpolateDepthMD(geometry, depthTvd, upperIndex);
+            if (depthMD.HasValue)
+            {
+                return depthMD.Value;
+            }
+
+            upperIndex++;
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(depthTvd));
+    }
+
+    /// <summary>
+    /// Get the measured depth at the corresponding <paramref name="depthTvd"/> between the points <paramref name="geometry"/>[<paramref name="upperIndex"/> - 1] and <paramref name="geometry"/>[<paramref name="upperIndex"/>].
+    /// If the <paramref name="depthTvd"/> does not intersect the segment between the two points, <see langword="null" /> is returned.
+    /// </summary>
+    /// <remarks>The segment is approximated by a straight line and therefore produces inaccurate results on circular segments.</remarks>
+    internal static double? InterpolateDepthMD(List<BoreholeGeometryElement> geometry, double depthTvd, int upperIndex)
+    {
+        var a = geometry[upperIndex - 1];
+        var b = geometry[upperIndex];
+
+        var t = (depthTvd - a.Z) / (b.Z - a.Z);
+        if (t >= 0 && t <= 1)
+        {
+            return a.MD + (t * (b.MD - a.MD));
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     private static readonly IComparer<BoreholeGeometryElement> geometryMDComparer = Comparer<BoreholeGeometryElement>.Create((a, b) => a.MD.CompareTo(b.MD));
 
     internal static Vector3D ToVector3D(this BoreholeGeometryElement element)
