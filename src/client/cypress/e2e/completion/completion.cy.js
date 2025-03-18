@@ -27,6 +27,15 @@ const toggleHeaderOpen = () => {
     });
 };
 
+const createBoreholeWithTwoCompletions = () => {
+  return createBorehole({ "extended.original_name": "INTEADAL" }).then(boreholeId => {
+    cy.wrap(boreholeId).as("boreholeId");
+    createCompletion("Compl-1", boreholeId, 16000002, true).as("completion1Id");
+    cy.wait(10); // ensure completion 2 has a later timestamp
+    createCompletion("Compl-2", boreholeId, 16000002, false).as("completion2Id");
+  });
+};
+
 const addCompletion = () => {
   addItem("addCompletion");
   cy.wait("@codelist_GET");
@@ -78,6 +87,13 @@ export const isContentTabSelected = tabName => {
   cy.get('[data-cy="completion-content-tab-' + tabName + '"]')
     .invoke("attr", "aria-selected")
     .should("eq", "true");
+};
+
+const assertLocationAndHash = (boreholeId, completionId, hash) => {
+  cy.location().should(location => {
+    expect(location.pathname).to.eq(`/${boreholeId}/completion/${completionId}`);
+    expect(location.hash).to.eq(hash);
+  });
 };
 
 describe("completion crud tests", () => {
@@ -152,243 +168,194 @@ describe("completion crud tests", () => {
     evaluateDisplayValue("mainCompletion", "Yes");
   });
 
-  it("switches tabs", () => {
-    let boreholeId;
-    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
-    cy.get("@borehole_id").then(id => {
-      boreholeId = id;
-      goToRouteAndAcceptTerms(`/${id}/completion`);
-    });
-    cy.wait("@get-completions-by-boreholeId");
-    cy.contains("No completion available");
+  it("starts and cancels new completion", () => {
+    createBoreholeWithTwoCompletions();
+    cy.get("@boreholeId").then(boreholeId => {
+      cy.get("@completion2Id").then(completion2Id => {
+        goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
+        cy.wait("@get-completions-by-boreholeId");
+        startBoreholeEditing();
+        cy.wait(500);
 
-    // start editing session
-    startBoreholeEditing();
-    cy.wait(500);
+        addCompletion();
+        assertLocationAndHash(boreholeId, "new", "");
+        cancelEditing();
+        // last completion should be selected when cancelling adding completion
+        isHeaderTabSelected(1);
+        assertLocationAndHash(boreholeId, completion2Id, "#casing");
+      });
+    });
+  });
 
-    // update url on cancel
-    addCompletion();
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/new`);
-      expect(location.hash).to.eq("");
+  it("verifies hash for completions", () => {
+    createBoreholeWithTwoCompletions();
+    cy.get("@boreholeId").then(boreholeId => {
+      cy.get("@completion1Id").then(completion1Id => {
+        cy.get("@completion2Id").then(completion2Id => {
+          goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion1Id}`);
+          assertLocationAndHash(boreholeId, completion1Id, "#casing");
+          goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
+          assertLocationAndHash(boreholeId, completion2Id, "#casing");
+          isHeaderTabSelected(1);
+          // check hash updates on tab switch
+          setContentTab("instrumentation");
+          assertLocationAndHash(boreholeId, completion2Id, "#instrumentation");
+          setContentTab("backfill");
+          assertLocationAndHash(boreholeId, completion2Id, "#backfill");
+        });
+      });
     });
-    cancelEditing();
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion`);
-      expect(location.hash).to.eq("");
-    });
+  });
 
-    // add completions
-    addCompletion();
-    setInput("name", "Compl-1");
-    setSelect("kindId", 1);
-    saveChanges();
-    let completion1Id;
-    cy.location().should(location => {
-      completion1Id = location.pathname.split("/").pop();
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
-    addCompletion();
-    setInput("name", "Compl-2");
-    setSelect("kindId", 1);
-    saveChanges();
-    let completion2Id;
-    cy.location().should(location => {
-      completion2Id = location.pathname.split("/").pop();
-      expect(completion1Id).to.not.eq(completion2Id);
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion2Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
-    isHeaderTabSelected(1);
+  it("switches tabs between existing completions", () => {
+    createBoreholeWithTwoCompletions();
+    cy.get("@boreholeId").then(boreholeId => {
+      cy.get("@completion1Id").then(completion1Id => {
+        cy.get("@completion2Id").then(completion2Id => {
+          goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
+          startBoreholeEditing();
+          // existing editing to other existing: no prompt should be displayed when no changes have been made
+          startEditHeader();
+          cy.wait(500);
+          setHeaderTab(0);
+          cy.get('[data-cy="prompt"]').should("not.exist");
+          isHeaderTabSelected(0);
+          assertLocationAndHash(boreholeId, completion2Id, "#casing");
 
-    // check hash updates on tab switch
-    setContentTab("instrumentation");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion2Id}`);
-      expect(location.hash).to.eq("#instrumentation");
-    });
-    setContentTab("backfill");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion2Id}`);
-      expect(location.hash).to.eq("#backfill");
-    });
+          // existing editing to other existing: tab switching can be canceled in prompt
+          startEditHeader();
+          setInput("name", "Compl-1 updated");
+          setHeaderTab(1);
+          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Cancel");
+          isHeaderTabSelected(0);
+          assertLocationAndHash(boreholeId, completion1Id, "#casing");
+          evaluateInput("name", "Compl-1 updated");
 
-    // switch tabs
-    // existing editing to other existing: no prompt should be displayed when no changes have been made
-    startEditHeader();
-    cy.wait(500);
-    setHeaderTab(0);
-    cy.get('[data-cy="prompt"]').should("not.exist");
-    isHeaderTabSelected(0);
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
+          // existing editing to other existing: changes can be reverted in prompt
+          setHeaderTab(1);
+          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
+          isHeaderTabSelected(1);
+          cy.contains("Compl-1");
+          assertLocationAndHash(boreholeId, completion2Id, "#casing");
 
-    // existing editing to other existing: tab switching can be canceled in prompt
-    startEditHeader();
-    setInput("name", "Compl-1 updated");
-    setHeaderTab(1);
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Cancel");
-    isHeaderTabSelected(0);
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
-      expect(location.hash).to.eq("#casing");
+          // existing editing to other existing: changes can be saved in prompt
+          startEditHeader();
+          setInput("name", "Compl-2 updated");
+          setHeaderTab(0);
+          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
+          cy.wait("@get-completions-by-boreholeId");
+          isHeaderTabSelected(0);
+          cy.contains("Compl-2 updated");
+        });
+      });
     });
-    evaluateInput("name", "Compl-1 updated");
+  });
 
-    // existing editing to other existing: changes can be reverted in prompt
-    setHeaderTab(1);
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
-    isHeaderTabSelected(1);
-    cy.contains("Compl-1");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion2Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
+  it("switches tabs between new and existing completions", () => {
+    createBoreholeWithTwoCompletions();
+    cy.get("@boreholeId").then(boreholeId => {
+      cy.get("@completion1Id").then(completion1Id => {
+        cy.get("@completion2Id").then(completion2Id => {
+          goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
+          startBoreholeEditing();
 
-    // existing editing to other existing: changes can be saved in prompt
-    startEditHeader();
-    setInput("name", "Compl-2 updated");
-    setHeaderTab(0);
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
-    cy.wait("@get-completions-by-boreholeId");
-    isHeaderTabSelected(0);
-    cy.contains("Compl-2 updated");
+          // new to existing: no prompt should be displayed when no changes have been made
+          addCompletion();
+          assertLocationAndHash(boreholeId, "new", "");
+          cy.get(`[data-cy="name-formInput"]`).click();
+          setHeaderTab(0);
+          cy.wait("@casing_GET");
+          assertLocationAndHash(boreholeId, completion1Id, "#casing");
 
-    // new to existing: no prompt should be displayed when no changes have been made
-    addCompletion();
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/new`);
-      expect(location.hash).to.eq("");
-    });
-    cy.get(`[data-cy="name-formInput"]`).click();
-    setHeaderTab(0);
-    cy.wait("@casing_GET");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
+          // new to existing: save option is disabled if form is invalid
+          addCompletion();
+          assertLocationAndHash(boreholeId, "new", "");
+          setInput("name", "new completion");
+          setHeaderTab(0);
+          cy.get('[data-cy="prompt"]').find('[data-cy="save-button"]').should("be.disabled");
+          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Cancel");
 
-    // new to existing: save option is disabled if form is invalid
-    addCompletion();
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/new`);
-      expect(location.hash).to.eq("");
-    });
-    setInput("name", "new completion");
-    setHeaderTab(0);
-    cy.get('[data-cy="prompt"]').find('[data-cy="save-button"]').should("be.disabled");
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Cancel");
+          // new to existing: changes can be reverted in prompt
+          setSelect("kindId", 1);
+          setHeaderTab(0);
+          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
+          cy.wait("@casing_GET");
+          assertLocationAndHash(boreholeId, completion1Id, "#casing");
+          cy.contains("new completion").should("not.exist");
 
-    // new to existing: changes can be reverted in prompt
-    setSelect("kindId", 1);
-    setHeaderTab(0);
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
-    cy.wait("@casing_GET");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
-    cy.contains("new completion").should("not.exist");
+          // new to existing: changes can be saved in prompt
+          addCompletion();
+          assertLocationAndHash(boreholeId, "new", "");
+          setInput("name", "new completion");
+          setSelect("kindId", 1);
+          setHeaderTab(0);
+          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
+          cy.wait("@casing_GET");
 
-    // new to existing: changes can be saved in prompt
-    addCompletion();
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/new`);
-      expect(location.hash).to.eq("");
-    });
-    setInput("name", "new completion");
-    setSelect("kindId", 1);
-    setHeaderTab(0);
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
-    cy.wait("@casing_GET");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
-    cy.contains("new completion").should("be.visible");
+          assertLocationAndHash(boreholeId, completion1Id, "#casing");
+          cy.contains("new completion").should("be.visible");
 
-    setHeaderTab(2);
-    deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "Delete");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion2Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
+          setHeaderTab(2);
+          deleteCompletion();
+          handlePrompt("Do you really want to delete this completion?", "Delete");
+          assertLocationAndHash(boreholeId, completion2Id, "#casing");
 
-    // existing editing to new: no prompt should be displayed when no changes have been made, form should be reset
-    setHeaderTab(0);
-    cy.wait("@casing_GET");
-    isHeaderTabSelected(0);
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
-    startEditHeader();
-    addCompletion();
-    evaluateInput("name", "");
-    evaluateSelect("kindId", "");
-    evaluateInput("abandonDate", "");
-    evaluateTextarea("notes", "");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/new`);
-      expect(location.hash).to.eq("");
-    });
+          // existing editing to new: no prompt should be displayed when no changes have been made, form should be reset
+          setHeaderTab(0);
+          cy.wait("@casing_GET");
+          isHeaderTabSelected(0);
+          assertLocationAndHash(boreholeId, completion1Id, "#casing");
+          startEditHeader();
+          addCompletion();
+          evaluateInput("name", "");
+          evaluateSelect("kindId", "");
+          evaluateInput("abandonDate", "");
+          evaluateTextarea("notes", "");
 
-    // existing editing to new: changes can be reverted in prompt
-    setHeaderTab(0);
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
-    startEditHeader();
-    setInput("name", "Reset compl-1");
-    addCompletion();
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/new`);
-      expect(location.hash).to.eq("");
-    });
-    cy.contains("Reset compl-1").should("not.exist");
+          assertLocationAndHash(boreholeId, "new", "");
 
-    // existing editing to new: changes can be saved in prompt
-    setHeaderTab(0);
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
-    startEditHeader();
-    setInput("name", "Reset compl-1");
-    addCompletion();
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/new`);
-      expect(location.hash).to.eq("");
-    });
-    cy.contains("Reset compl-1").should("be.visible");
+          // existing editing to new: changes can be reverted in prompt
+          setHeaderTab(0);
+          assertLocationAndHash(boreholeId, completion1Id, "#casing");
+          startEditHeader();
+          setInput("name", "Reset compl-1");
+          addCompletion();
+          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
 
-    // cancel adding new completion: last tab should be selected
-    cancelEditing();
-    isHeaderTabSelected(1);
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion2Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
+          assertLocationAndHash(boreholeId, "new", "");
+          cy.contains("Reset compl-1").should("not.exist");
+          cy.contains("Not specified").should("be.visible"); // title of newly added completion
+          isHeaderTabSelected(2);
+          // existing editing to new: changes can be saved in prompt
 
-    // should update to base url if last completion is deleted
-    deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "Delete");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
-      expect(location.hash).to.eq("#casing");
-    });
-    deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "Delete");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/completion`);
-      expect(location.hash).to.eq("");
+          setHeaderTab(0);
+          assertLocationAndHash(boreholeId, completion1Id, "#casing");
+          startEditHeader();
+          setInput("name", "Reset compl-1");
+          addCompletion();
+          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
+
+          assertLocationAndHash(boreholeId, "new", "");
+          cy.contains("Not specified").should("be.visible");
+          isHeaderTabSelected(2);
+          cy.contains("Reset compl-1").should("be.visible");
+
+          // cancel adding new completion: last tab should be selected
+          cancelEditing();
+
+          // should update to base url if last completion is deleted
+          deleteCompletion();
+          handlePrompt("Do you really want to delete this completion?", "Delete");
+          assertLocationAndHash(boreholeId, completion1Id, "#casing");
+          deleteCompletion();
+          handlePrompt("Do you really want to delete this completion?", "Delete");
+
+          cy.location().should(location => {
+            expect(location.pathname).to.eq(`/${boreholeId}/completion`);
+            expect(location.hash).to.eq("");
+          });
+        });
+      });
     });
   });
 
@@ -607,7 +574,7 @@ describe("completion crud tests", () => {
       .as("borehole_id")
       .then(id => {
         createCompletion("test hash 1", id, 16000002, true).as("completion1_id");
-        createCompletion("test hash 2", id, 16000002, true).as("completion2_id");
+        createCompletion("test hash 2", id, 16000002, false).as("completion2_id");
       });
 
     const forceReload = true;
@@ -616,35 +583,24 @@ describe("completion crud tests", () => {
       cy.get("@completion1_id").then(completion1Id => {
         // Preserves hash when reloading
         goToRouteAndAcceptTerms(`/${id}/completion/${completion1Id}`);
-        cy.location().should(location => {
-          expect(location.hash).to.eq("#casing");
-        });
+
+        assertLocationAndHash(id, completion1Id, "#casing");
         cy.reload(forceReload);
         cy.get('[data-cy="accept-button"]').click();
-        cy.location().should(location => {
-          expect(location.pathname).to.eq(`/${id}/completion/${completion1Id}`);
-          expect(location.hash).to.eq("#casing");
-        });
+
+        assertLocationAndHash(id, completion1Id, "#casing");
         setContentTab("instrumentation");
-        cy.location().should(location => {
-          expect(location.pathname).to.eq(`/${id}/completion/${completion1Id}`);
-          expect(location.hash).to.eq("#instrumentation");
-        });
+
+        assertLocationAndHash(id, completion1Id, "#instrumentation");
         cy.reload(forceReload);
         cy.get('[data-cy="accept-button"]').click();
-        cy.location().should(location => {
-          expect(location.pathname).to.eq(`/${id}/completion/${completion1Id}`);
-          expect(location.hash).to.eq("#instrumentation");
-        });
+        assertLocationAndHash(id, completion1Id, "#instrumentation");
         // Resets hash from #instrumentation to #casing when switching to another completion
         cy.wait(1000);
         cy.contains("test hash 2").click({ force: true });
         cy.wait("@get-casings-by-completionId");
         cy.get("@completion2_id").then(completion2Id => {
-          cy.location().should(location => {
-            expect(location.pathname).to.eq(`/${id}/completion/${completion2Id}`);
-            expect(location.hash).to.eq("#casing");
-          });
+          assertLocationAndHash(id, completion2Id, "#casing");
         });
       });
     });
