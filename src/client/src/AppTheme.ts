@@ -414,7 +414,6 @@ export const theme = createTheme({
       defaultProps: {
         size: "small",
         variant: "outlined",
-        notched: false,
       },
       styleOverrides: {
         root: {
