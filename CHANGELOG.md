@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1116 - 2025-03-17
+
 ### Changed
 
 - Increased Disclaimer dialog width.
