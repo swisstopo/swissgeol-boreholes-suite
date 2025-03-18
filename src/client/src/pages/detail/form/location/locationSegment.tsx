@@ -113,9 +113,9 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
 
   return (
     <Stack direction="column" gap={3}>
-      <Card sx={{ py: 1, px: 1 }}>
+      <Card>
         <Grid container spacing={2}>
-          <Grid xs={12} md={12} lg={labelingPanelOpen ? 12 : 6}>
+          <Grid item xs={12} md={12} lg={labelingPanelOpen ? 12 : 6}>
             <CoordinatesSegment
               borehole={borehole}
               formMethods={formMethods}
@@ -124,7 +124,7 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
               setValuesForCountryCantonMunicipality={setValuesForCountryCantonMunicipality}
             />
           </Grid>
-          <Grid xs={12} md={12} lg={labelingPanelOpen ? 12 : 6}>
+          <Grid item xs={12} md={12} lg={labelingPanelOpen ? 12 : 6}>
             <FormSegmentBox>
               <PointComponent
                 applyChange={(
@@ -144,7 +144,7 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
               />
             </FormSegmentBox>
           </Grid>
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <ElevationSegment borehole={borehole} formMethods={formMethods} />
           </Grid>
         </Grid>
