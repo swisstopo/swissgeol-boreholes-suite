@@ -158,6 +158,29 @@ public class BoreholeGeometryController : ControllerBase
     }
 
     /// <summary>
+    /// Get the measured depth (MD) from the borehole's geometry for the provided true vertical depth (TVD).
+    /// </summary>
+    /// <param name="boreholeId">The id of the <see cref="Borehole"/> to get the MD for.</param>
+    /// <param name="depthTvd">The true vertical depth to get the MD for.</param>
+    /// <returns>The measured depth (MD) in meters.</returns>
+    [HttpGet("[action]")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> GetDepthMD([FromQuery] int boreholeId, [FromQuery] double depthTvd)
+    {
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
+
+        var md = geometry.ConvertBoreholeDepth(depthTvd, BoreholeGeometryExtensions.GetDepthMD);
+        if (md == null)
+        {
+            logger.LogInformation("Invalid input, could not calculate measured depth from true vertical depth of {DepthTVD}", depthTvd);
+        }
+
+        return Ok(md);
+    }
+
+    /// <summary>
     /// Get the depth in meters above sea level (MASL) from the borehole's reference elevation for the provided measured depth.
     /// </summary>
     /// <param name="boreholeId">The id of the <see cref="Borehole"/> to get the MASL for.</param>
