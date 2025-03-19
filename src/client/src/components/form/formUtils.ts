@@ -86,7 +86,7 @@ const formatWithThousandsSeparator = (minDecimals: number, value: number) => {
  */
 export const formatNumberForDisplay = (value: number | null, minDecimals = 0): string => {
   if (value == null) return "-";
-  if (value < 0.001 && getDecimalsFromNumericString(value.toString()) > 3) {
+  if (Math.abs(value) < 0.001 && value !== 0) {
     return formatWithScientificNotation(value);
   }
   return formatWithThousandsSeparator(minDecimals, value);
