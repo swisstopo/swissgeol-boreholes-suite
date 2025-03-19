@@ -1,5 +1,5 @@
 import { getCasings } from "../../../../api/fetchApiV2.js";
-import DataCards from "../../../../components/dataCard/dataCards.jsx";
+import DataCards from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
 import CasingDisplay from "./casingDisplay.jsx";
 import CasingInput from "./casingInput.jsx";

@@ -4,20 +4,19 @@ import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
 import { addCasing, updateCasing } from "../../../../api/fetchApiV2";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
-import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext.jsx";
+import { AddButton } from "../../../../components/buttons/buttons.tsx";
+import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
+import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
+import { useUnsavedChangesPrompt } from "../../../../components/dataCard/useUnsavedChangesPrompt.js";
 import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { extractCasingDepth } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 
 const CasingInput = props => {
   const { item, parentId } = props;
-  const { triggerReload, selectCard } = useContext(DataCardContext);
-  const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
-  const { showPrompt } = useContext(PromptContext);
+  const { triggerReload } = useContext(DataCardContext);
   const { t } = useTranslation();
   const formMethods = useForm({
     mode: "all",
@@ -96,44 +95,13 @@ const CasingInput = props => {
     );
   };
 
-  useEffect(() => {
-    if (checkIsDirty) {
-      if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesMessage", { where: t("casing") }), [
-          {
-            label: t("cancel"),
-            action: () => {
-              leaveInput(false);
-            },
-          },
-          {
-            label: t("reset"),
-            action: () => {
-              formMethods.reset();
-              selectCard(null);
-              leaveInput(true);
-            },
-          },
-          {
-            label: t("save"),
-            disabled: !formMethods.formState.isValid,
-            action: () => {
-              formMethods.handleSubmit(submitForm)();
-            },
-          },
-        ]);
-      } else {
-        leaveInput(true);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkIsDirty]);
+  useUnsavedChangesPrompt({
+    formMethods,
+    submitForm,
+    translationKey: "casing",
+  });
 
-  // trigger form validation on mount
-  useEffect(() => {
-    formMethods.trigger();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.trigger]);
+  useValidateFormOnMount({ formMethods });
 
   useEffect(() => {
     formMethods.trigger("casingElements");
@@ -261,20 +229,7 @@ const CasingInput = props => {
                 ))}
             </Box>
           </FormContainer>
-          <DataCardButtonContainer>
-            <CancelButton
-              onClick={() => {
-                formMethods.reset();
-                selectCard(null);
-              }}
-            />
-            <SaveButton
-              disabled={!formMethods.formState.isValid}
-              onClick={() => {
-                formMethods.handleSubmit(submitForm)();
-              }}
-            />
-          </DataCardButtonContainer>
+          <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
         </form>
       </FormProvider>
     </>

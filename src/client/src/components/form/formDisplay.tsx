@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Stack, SxProps, Typography } from "@mui/material";
 import { Language } from "../../appInterfaces.ts";
 import { formatWithThousandSeparator } from "../../utils.ts";
-import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
+import { Codelist } from "../Codelist.ts";
 import { FormValueType } from "./form";
 
 export interface FormDisplayProps {

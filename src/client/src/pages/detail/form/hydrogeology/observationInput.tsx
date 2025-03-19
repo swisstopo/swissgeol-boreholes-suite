@@ -8,7 +8,7 @@ import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants.ts";
 import { ObservationDepthUnitType, ObservationInputProps } from "./Observation.ts";
 
 const ObservationInput = ({ observation, showDepthInputs = true }: ObservationInputProps) => {
@@ -154,7 +154,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
           <FormDomainSelect
             fieldName="reliabilityId"
             label="reliability"
-            selected={observation.reliabilityId}
+            selected={observation.reliabilityId as number}
             schemaName={hydrogeologySchemaConstants.observationReliability}
           />
         </FormContainer>

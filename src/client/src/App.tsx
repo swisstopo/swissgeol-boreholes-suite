@@ -8,7 +8,7 @@ import { theme } from "./AppTheme";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { AlertProvider } from "./components/alert/alertContext";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx";
-import { DataCardProvider } from "./components/dataCard/dataCardContext.jsx";
+import { DataCardProvider } from "./components/dataCard/dataCardContext.tsx";
 import HeaderComponent from "./components/header/headerComponent.tsx";
 import { Prompt } from "./components/prompt/prompt.tsx";
 import { PromptProvider } from "./components/prompt/promptContext.tsx";

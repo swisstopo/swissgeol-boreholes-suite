@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { IconButton, Stack } from "@mui/material";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { CopyButton, DeleteButton, EditButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.jsx";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { DetailContext } from "../../detailContext.tsx";
 

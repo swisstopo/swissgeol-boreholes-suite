@@ -11,7 +11,7 @@ import {
   updateCompletion,
 } from "../../../../api/fetchApiV2.js";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
+import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";

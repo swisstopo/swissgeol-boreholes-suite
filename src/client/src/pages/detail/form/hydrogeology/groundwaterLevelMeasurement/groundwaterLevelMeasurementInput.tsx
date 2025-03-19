@@ -1,15 +1,23 @@
-import { addGroundwaterLevelMeasurement, updateGroundwaterLevelMeasurement } from "../../../../api/fetchApiV2";
-import DataInputCard from "../../../../components/dataCard/dataInputCard.jsx";
-import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
-import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { prepareCasingDataForSubmit } from "../completion/casingUtils.jsx";
-import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.ts";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { GroundwaterLevelMeasurementInputProps, GwlmFormData, ObservationType } from "./Observation.ts";
-import ObservationInput from "./observationInput.tsx";
+import { FC } from "react";
+import DataInputCard from "../../../../../components/dataCard/dataInputCard.js";
+import { FormContainer, FormInput, FormValueType } from "../../../../../components/form/form.ts";
+import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.tsx";
+import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
+import { getIsoDateIfDefined } from "../hydrogeologyFormUtils.ts";
+import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
+import { ObservationType } from "../Observation.ts";
+import ObservationInput from "../observationInput.tsx";
+import {
+  addGroundwaterLevelMeasurement,
+  GroundwaterLevelMeasurement,
+  updateGroundwaterLevelMeasurement,
+} from "./GroundwaterLevelMeasurement.ts";
 
-const GroundwaterLevelMeasurementInput = ({ item, parentId }: GroundwaterLevelMeasurementInputProps) => {
-  const prepareFormDataForSubmit = (data: GwlmFormData) => {
+const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; parentId: number }> = ({
+  item,
+  parentId,
+}) => {
+  const prepareFormDataForSubmit = (data: GroundwaterLevelMeasurement) => {
     data = prepareCasingDataForSubmit(data);
     data.startTime = getIsoDateIfDefined(data?.startTime);
     data.endTime = getIsoDateIfDefined(data?.endTime);
