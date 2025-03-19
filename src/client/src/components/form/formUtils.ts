@@ -50,7 +50,7 @@ export const getFieldBorderColor = (isReadOnly: boolean) => {
 };
 
 /**
- * Formats a number with scientific notation if the number is less than 0.001 and has more than 3 decimal places.
+ * Formats a number with scientific notation.
  * @param {number} value The number to format.
  * @returns The formatted number.
  */
