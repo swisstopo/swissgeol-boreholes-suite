@@ -1,4 +1,4 @@
-import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
+import { Codelist } from "../../../../components/Codelist.ts";
 
 interface Units {
   [key: number]: string;
@@ -61,18 +61,21 @@ export const FieldMeasurementParameterUnits: Units = {
   7: "mg/L",
 };
 
-export const getHydrotestParameterUnits = (parameterId: number, codelists: Codelist[]): string | null => {
+export const getHydrotestParameterUnits = (parameterId: number | null, codelists: Codelist[]): string => {
+  if (!parameterId) {
+    return "";
+  }
   return getParameterUnit(parameterId, TestResultParameterUnits, codelists);
 };
 
-export const getFieldMeasurementParameterUnits = (parameterId: number, codelists: Codelist[]): string | null => {
+export const getFieldMeasurementParameterUnits = (parameterId: number, codelists: Codelist[]): string => {
   return getParameterUnit(parameterId, FieldMeasurementParameterUnits, codelists);
 };
 
-function getParameterUnit(parameterId: number, units: Units, codelists: Codelist[]): string | null {
+function getParameterUnit(parameterId: number, units: Units, codelists: Codelist[]): string {
   if (!parameterId || !Array.isArray(codelists)) {
-    return null;
+    return "";
   }
   const geolcode = codelists.find((d: Codelist) => d.id === parameterId)?.geolcode;
-  return geolcode !== undefined ? units[geolcode] : null;
+  return geolcode !== undefined ? units[geolcode] : "";
 }

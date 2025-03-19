@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.js";
-import DataCards from "../../../../components/dataCard/dataCards.jsx";
+import DataCards from "../../../../components/dataCard/dataCards.tsx";
 import SectionDisplay from "./sectionDisplay.jsx";
 import SectionInput from "./sectionInput.jsx";
 

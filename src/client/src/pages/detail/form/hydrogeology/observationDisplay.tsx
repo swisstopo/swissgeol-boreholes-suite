@@ -59,7 +59,7 @@ const ObservationDisplay = ({
             }
           />
           <FormContainer direction="row">
-            <FormDisplay label="reliability" value={observation?.reliability} type={FormValueType.Domain} />
+            <FormDisplay label="reliability" value={observation?.reliability ?? null} type={FormValueType.Domain} />
             <FormDisplay label="casingName" value={getCasingNameWithCompletion(observation)} />
           </FormContainer>
           <FormDisplay label="comment" value={observation?.comment} />

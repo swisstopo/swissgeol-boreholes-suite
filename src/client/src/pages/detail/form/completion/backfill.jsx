@@ -1,5 +1,5 @@
 import { getBackfills } from "../../../../api/fetchApiV2.js";
-import DataCards from "../../../../components/dataCard/dataCards.jsx";
+import DataCards from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
 import BackfillDisplay from "./backfillDisplay.jsx";
 import BackfillInput from "./backfillInput.jsx";

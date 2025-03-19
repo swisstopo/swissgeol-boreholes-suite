@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useDomains } from "../../../../api/fetchApiV2";
+import { Codelist } from "../../../../components/Codelist.ts";
 import { FormContainer, FormDomainSelect, FormInput, FormInputDisplayOnly } from "../../../../components/form/form.ts";
-import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 

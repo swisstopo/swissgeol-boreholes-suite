@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { addInstrumentation, getCasings, updateInstrumentation } from "../../../../api/fetchApiV2.js";
-import { DataInputCard } from "../../../../components/dataCard/dataInputCard.jsx";
+import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.jsx";
