@@ -80,7 +80,7 @@ const Completion = () => {
           // Display primary completion first then order by created date
           const sortedResponse = response.sort((a, b) => {
             if (a.isPrimary === b.isPrimary) {
-              return new Date(a.created) - new Date(b.created);
+              return a.created.localeCompare(b.created);
             }
             return a.isPrimary ? -1 : 1;
           });
