@@ -4,7 +4,10 @@ import { Box, Card, CardContent, CardHeader } from "@mui/material";
 import { Check, X } from "lucide-react";
 import { CoordinateExtractionButton } from "../../../../components/buttons/labelingButtons.tsx";
 import { FormContainer, FormCoordinate, FormDomainSelect, FormSelect } from "../../../../components/form/form";
-import { getPrecisionFromString, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
+import {
+  getDecimalsFromNumericString,
+  parseFloatWithThousandsSeparator,
+} from "../../../../components/form/formUtils.js";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { DetailContext } from "../../detailContext.tsx";
@@ -179,8 +182,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       ) {
         const X = sourceSystem === ReferenceSystemKey.LV95 ? coordinates?.LV95.x : coordinates?.LV03.x;
         const Y = sourceSystem === ReferenceSystemKey.LV95 ? coordinates?.LV95.y : coordinates?.LV03.y;
-        const changedCoordinatePrecision = getPrecisionFromString(value);
-        const otherCoordinatePrecision = getPrecisionFromString(
+        const changedCoordinatePrecision = getDecimalsFromNumericString(value);
+        const otherCoordinatePrecision = getDecimalsFromNumericString(
           direction === Direction.X
             ? formMethods.getValues(referenceSystems[referenceSystem].fieldName.Y)
             : formMethods.getValues(referenceSystems[referenceSystem].fieldName.X),

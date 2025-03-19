@@ -7,7 +7,7 @@ import DataDisplayCard from "../../../../../components/dataCard/dataDisplayCard.
 import { FormContainer, FormDisplay, FormValueType } from "../../../../../components/form/form.ts";
 import { FormResultTableDisplay } from "../../../../../components/form/formResultTableDisplay.tsx";
 import { parameterTableHeaderStyles } from "../../../../../components/form/formResultTableDisplayStyles.ts";
-import { formatWithThousandSeparator } from "../../../../../utils.ts";
+import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 import ObservationDisplay from "../observationDisplay.tsx";
 import { getHydrotestParameterUnits } from "../parameterUnits.tsx";
 import { deleteHydrotest, Hydrotest, HydrotestResult } from "./Hydrotest.ts";
@@ -57,7 +57,7 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
               <TableCell sx={styles} data-cy={`hydrotestResult.${index}.value-formDisplay`}>
                 {result?.value && (
                   <>
-                    <span>{formatWithThousandSeparator(result?.value) + " "}</span>
+                    <span>{formatNumberForDisplay(result?.value) + " "}</span>
                     {getHydrotestParameterUnits(result.parameterId, domains.data)}
                   </>
                 )}
@@ -65,7 +65,7 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
               <TableCell sx={styles} data-cy={`hydrotestResult.${index}.minValue-formDisplay`}>
                 {result?.minValue && (
                   <>
-                    <span>{formatWithThousandSeparator(result?.minValue) + " "}</span>
+                    <span>{formatNumberForDisplay(result?.minValue) + " "}</span>
                     {getHydrotestParameterUnits(result.parameterId, domains.data)}
                   </>
                 )}
@@ -73,7 +73,7 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
               <TableCell sx={styles} data-cy={`hydrotestResult.${index}.maxValue-formDisplay`}>
                 {result?.maxValue && (
                   <>
-                    <span>{formatWithThousandSeparator(result?.maxValue) + " "}</span>
+                    <span>{formatNumberForDisplay(result?.maxValue) + " "}</span>
                     {getHydrotestParameterUnits(result.parameterId, domains.data)}
                   </>
                 )}
