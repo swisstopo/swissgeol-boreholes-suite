@@ -22,8 +22,8 @@ import { BoreholeAttributes, Boreholes } from "../../../api-lib/ReduxStateInterf
 import { useDomains } from "../../../api/fetchApiV2";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { formatNumberForDisplay } from "../../../components/form/formUtils.ts";
 import { Table } from "../../../components/table/table.tsx";
-import { formatWithThousandSeparator } from "../../../utils.ts";
 import { OverViewContext } from "../overViewContext.tsx";
 
 export interface BoreholeTableProps {
@@ -160,7 +160,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     },
     {
       field: "total_depth",
-      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.total_depth * 100) / 100, 2),
+      valueGetter: (value, row) => formatNumberForDisplay(Math.round(row.total_depth * 100) / 100, 2),
       headerName: t("totaldepth"),
       flex: 1,
     },
@@ -176,19 +176,19 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     },
     {
       field: "reference_elevation",
-      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.reference_elevation * 100) / 100, 2),
+      valueGetter: (value, row) => formatNumberForDisplay(Math.round(row.reference_elevation * 100) / 100, 2),
       headerName: t("reference_elevation"),
       flex: 1,
     },
     {
       field: "location_x",
-      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.location_x * 100) / 100, 2),
+      valueGetter: (value, row) => formatNumberForDisplay(Math.round(row.location_x * 100) / 100, 2),
       headerName: t("location_x"),
       flex: 1,
     },
     {
       field: "location_y",
-      valueGetter: (value, row) => formatWithThousandSeparator(Math.round(row.location_y * 100) / 100, 2),
+      valueGetter: (value, row) => formatNumberForDisplay(Math.round(row.location_y * 100) / 100, 2),
       headerName: t("location_y"),
       flex: 1,
     },

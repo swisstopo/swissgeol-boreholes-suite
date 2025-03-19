@@ -6,6 +6,7 @@ import { Codelist } from "../../../../../components/Codelist.ts";
 import DataDisplayCard from "../../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormResultTableDisplay } from "../../../../../components/form/formResultTableDisplay.js";
 import { parameterTableHeaderStyles } from "../../../../../components/form/formResultTableDisplayStyles.js";
+import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 import ObservationDisplay from "../observationDisplay.tsx";
 import { getFieldMeasurementParameterUnits } from "../parameterUnits.js";
 import { deleteFieldMeasurement, FieldMeasurement, FieldMeasurementResult } from "./FieldMeasurement.ts";
@@ -45,7 +46,7 @@ export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.value-formDisplay`}>
               {result?.value && result?.parameterId && (
                 <>
-                  <span>{result?.value + " "}</span>
+                  <span>{formatNumberForDisplay(result?.value) + " "}</span>
                   {getFieldMeasurementParameterUnits(result.parameterId, domains.data)}
                 </>
               )}
