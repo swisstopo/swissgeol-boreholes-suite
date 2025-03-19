@@ -30,7 +30,7 @@ export const parseFloatWithThousandsSeparator = (numericString?: string) => {
 };
 
 /**
- * Get the precision from a string.
+ * Get the precision from a numeric string. Works only for strings with a decimal point, not with scientific notation.
  * @param {string} numericString The string to get the precision from.
  * @returns The precision of the string.
  */
@@ -54,7 +54,6 @@ export const getFieldBorderColor = (isReadOnly: boolean) => {
  * @param {number} value The number to format.
  * @returns The formatted number.
  */
-
 const formatWithScientificNotation = (value: number) => {
   const fullExponential = value.toExponential();
   const exponentialFractionDigits = getDecimalsFromNumericString(fullExponential.split("e")[0]);
