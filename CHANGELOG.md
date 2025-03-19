@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1125 - 2025-03-19
+
 ### Changed
 - Attachments are now displayed in a table following new UI design.
 
