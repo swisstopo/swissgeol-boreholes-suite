@@ -78,7 +78,7 @@ describe("Tests for the hydrotest editor.", () => {
     toggleMultiSelect("evaluationMethodId", [2, 1], 5);
     addItem("addHydrotestResult");
     setSelect("hydrotestResults.0.parameterId", 0, 6);
-    setInput("hydrotestResults.0.value", "10.781676"); // should round to 4 decimals
+    setInput("hydrotestResults.0.value", "10.781676"); // should round to 3 decimals
     setInput("hydrotestResults.0.minValue", "0.00005251154"); // should display in scientific notation with 3 decimals
     setInput("hydrotestResults.0.maxValue", "0.0000012"); /// should display in scientific notation with 1 decimal
     saveForm();
