@@ -56,8 +56,8 @@ export const getFieldBorderColor = (isReadOnly: boolean) => {
  */
 
 const formatWithScientificNotation = (value: number) => {
-  const fullExpontential = value.toExponential();
-  const exponentialFractionDigits = getDecimalsFromNumericString(fullExpontential.split("e")[0]);
+  const fullExponential = value.toExponential();
+  const exponentialFractionDigits = getDecimalsFromNumericString(fullExponential.split("e")[0]);
   return value.toExponential(Math.min(exponentialFractionDigits, 3)).replace("e", " x 10");
 };
 
