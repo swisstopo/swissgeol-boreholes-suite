@@ -10,6 +10,7 @@
 - The input field for the alternate name was always overwritten by the original name when loading the location page.
 - Tooltips in the labeling area where not complete and would sometimes overlap with text to be selected.
 - Copy borehole to the correct workgroup if the user only has edit permissions in a single workgroup.
+- Very small numbers were not displayed correctly in hydrogeology result tables.
 
 ## v2.1.1116 - 2025-03-17
 
