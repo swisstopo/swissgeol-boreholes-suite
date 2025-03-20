@@ -393,6 +393,8 @@ public class BoreholeControllerTest
         boreholeId = GetBoreholeIdToCopy();
         var originalBorehole = GetBorehole(boreholeId);
 
+        Assert.IsTrue(originalBorehole.ValidateCasingReferences(), "Precondition: Borehole has invalid casing reference");
+
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
 
