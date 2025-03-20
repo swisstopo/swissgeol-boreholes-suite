@@ -27,11 +27,10 @@ public class BdmsContext : DbContext
 
     public DbSet<User> Users { get; set; }
 
-    public IQueryable<User> UsersWithIncludes => Users
-        .Include(u => u.WorkgroupRoles)
-        .ThenInclude(wr => wr.Workgroup)
-        .Include(u => u.TermsAccepted)
-        .ThenInclude(ta => ta.Term);
+    public IQueryable<User> UsersWithIncludes
+        => Users
+        .Include(u => u.WorkgroupRoles).ThenInclude(wr => wr.Workgroup)
+        .Include(u => u.TermsAccepted).ThenInclude(ta => ta.Term);
 
     public DbSet<UserWorkgroupRole> UserWorkgroupRoles { get; set; }
 
