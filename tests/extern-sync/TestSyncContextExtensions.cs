@@ -201,7 +201,7 @@ internal static class TestSyncContextExtensions
     /// </summary>
     internal static async Task FixCasingReferencesAsync(this BdmsContext context, CancellationToken cancellationToken)
     {
-        var boreholes = context.Boreholes.GetAllWithIncludes().WithPublicationStatusPublished();
+        var boreholes = context.BoreholesWithIncludes.WithPublicationStatusPublished();
 
         foreach (var borehole in boreholes)
         {

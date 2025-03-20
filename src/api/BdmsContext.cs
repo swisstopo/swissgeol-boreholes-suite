@@ -13,6 +13,39 @@ public class BdmsContext : DbContext
 {
     public DbSet<Borehole> Boreholes { get; set; }
 
+    /// <summary>
+    /// Gets a query including all the data which represents a complete <see cref="Borehole"/>.
+    /// In the first place, this extension method is meant to be used to export
+    /// or copy an entire <see cref="Borehole"/> with all its dependencies.
+    /// </summary>
+    public IQueryable<Borehole> BoreholesWithIncludes
+        => Boreholes
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
+        .Include(b => b.Completions).ThenInclude(c => c.Casings).ThenInclude(c => c.CasingElements)
+        .Include(b => b.Completions).ThenInclude(c => c.Instrumentations)
+        .Include(b => b.Completions).ThenInclude(c => c.Backfills)
+        .Include(b => b.Sections).ThenInclude(s => s.SectionElements)
+        .Include(b => b.Observations).ThenInclude(o => (o as FieldMeasurement)!.FieldMeasurementResults)
+        .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestResults)
+        .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestEvaluationMethodCodes)
+        .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestFlowDirectionCodes)
+        .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestKindCodes)
+        .Include(b => b.BoreholeCodelists)
+        .Include(b => b.Workflows)
+        .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
+        .Include(b => b.BoreholeGeometry)
+        .Include(b => b.Workgroup)
+        .Include(b => b.UpdatedBy);
+
     public DbSet<Codelist> Codelists { get; set; }
 
     public DbSet<Config> Configs { get; set; }
