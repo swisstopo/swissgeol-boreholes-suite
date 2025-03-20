@@ -90,6 +90,12 @@ class WorkflowForm extends React.Component {
     }
   }
 
+  expandHistory() {
+    this.setState({
+      expanded: !this.state.expanded,
+    });
+  }
+
   render() {
     const { borehole, id, t, user, workflow, workflows } = this.props;
 
@@ -120,12 +126,15 @@ class WorkflowForm extends React.Component {
           </Typography>
           {filtered.length > 1 ? (
             <div
-              className="link"
-              onClick={() => {
-                this.setState({
-                  expanded: !this.state.expanded,
-                });
+              role="button"
+              tabIndex={0}
+              onClick={() => this.expandHistory()}
+              onKeyDown={e => {
+                if (e.key === "Enter" || e.key === " ") {
+                  this.expandHistory();
+                }
               }}
+              className="link"
               style={{
                 fontSize: "0.8em",
                 paddingBottom: "1em",

@@ -138,14 +138,21 @@ const MapSettings = props => {
     );
   };
 
+  function setMapState() {
+    setState({
+      ...state,
+      map: !state.map,
+    });
+  }
+
   return (
     <>
       <div
-        onClick={() => {
-          setState({
-            ...state,
-            map: !state.map,
-          });
+        role="button"
+        tabIndex={0}
+        onClick={() => setMapState()}
+        onKeyDown={e => {
+          if (e.key === "Enter" || e.key === " ") setMapState();
         }}
         style={{
           flexDirection: "row",

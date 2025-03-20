@@ -11,6 +11,28 @@ class DownloadLink extends React.Component {
     };
   }
 
+  handleKeyDown = event => {
+    if (event.key === "Enter" || event.key === " ") {
+      this.handleClick();
+    }
+  };
+
+  handleClick = () => {
+    if (this.state.downloading === false) {
+      this.setState(
+        {
+          downloading: true,
+        },
+        () =>
+          this.props.onDownload().then(() => {
+            this.setState({
+              downloading: false,
+            });
+          }),
+      );
+    }
+  };
+
   render() {
     const props = this.props;
 
@@ -25,22 +47,11 @@ class DownloadLink extends React.Component {
           ...props.style,
         }}>
         <span
+          role="button"
+          tabIndex={0}
           className={this.state.downloading === false ? "link linker" : null}
-          onClick={() => {
-            if (this.state.downloading === false) {
-              this.setState(
-                {
-                  downloading: true,
-                },
-                () =>
-                  props.onDownload().then(() => {
-                    this.setState({
-                      downloading: false,
-                    });
-                  }),
-              );
-            }
-          }}>
+          onClick={this.handleClick}
+          onKeyDown={this.handleKeyDown}>
           {this.props.caption}
         </span>
         &nbsp;

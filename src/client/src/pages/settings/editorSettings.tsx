@@ -207,6 +207,10 @@ const EditorSettings = () => {
     return selectedData;
   };
 
+  function updateSearchList(idx: number) {
+    setSearchList(searchList.map(obj => (obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj })));
+  }
+
   return (
     <div
       style={{
@@ -232,10 +236,13 @@ const EditorSettings = () => {
       {searchList?.map((filter, idx) => (
         <div key={idx}>
           <div
-            onClick={() => {
-              setSearchList(
-                searchList.map(obj => (obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj })),
-              );
+            role="button"
+            tabIndex={0}
+            onClick={() => updateSearchList(idx)}
+            onKeyDown={e => {
+              if (e.key === "Enter" || e.key === " ") {
+                updateSearchList(idx);
+              }
             }}
             style={{
               flexDirection: "row",
