@@ -538,9 +538,18 @@ public static class BdmsContextExtensions
         {
             var layerCodes = new List<T>();
 
+            // Create a smaller representative sample (not all possible combinations).
+            // This significantly reduces the data volume while maintaining distribution.
+            var random = new Random(layerRange.Count());
+            var codeListSampleSize = Math.Min(3, codelistIds.Count());
+            var codeListSample = codelistIds
+                .OrderBy(_ => random.Next())
+                .Take(codeListSampleSize)
+                .ToList();
+
             foreach (var layerId in layerRange)
             {
-                foreach (var codeId in codelistIds)
+                foreach (var codeId in codeListSample)
                 {
                     layerCodes.Add(new() { LayerId = layerId, CodelistId = codeId });
                 }
