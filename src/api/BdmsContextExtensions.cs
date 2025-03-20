@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using static BDMS.BdmsContextConstants;
 
@@ -43,6 +44,7 @@ public static class BdmsContextExtensions
     /// <summary>
     /// Seed test data.
     /// </summary>
+    [SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Accepted for test data seeding.")]
     public static void SeedData(this BdmsContext context)
     {
         var bulkConfig = new BulkConfig { SqlBulkCopyOptions = SqlBulkCopyOptions.KeepIdentity };
@@ -537,7 +539,7 @@ public static class BdmsContextExtensions
             var layerCodes = new List<T>();
 
             foreach (var layerId in layerRange)
-                {
+            {
                 foreach (var codeId in codelistIds)
                 {
                     layerCodes.Add(new() { LayerId = layerId, CodelistId = codeId });
@@ -938,14 +940,12 @@ public static class BdmsContextExtensions
         var pointCountPerBorehole = 50;
         foreach (var boreholeId in richBoreholeRange)
         {
-#pragma warning disable CA5394 // Do not use insecure randomness
             // Generate a random arced geometry
             Random r = new Random(boreholeId);
             var inc = (r.NextDouble() * Math.PI / 4) + (Math.PI / 4);
             var azi = r.NextDouble() * 2 * Math.PI;
             var radius = (r.NextDouble() * 1000) + 2000;
             var makeAziIncNull = r.NextDouble() < 0.5;
-#pragma warning restore CA5394 // Do not use insecure randomness
 
             // First point is at the borehole location (0, 0, 0)
             geometryElementsToInsert.Add(new BoreholeGeometryElement { Id = boreholeGeometry_ids++, BoreholeId = boreholeId, X = 0, Y = 0, Z = 0 });
