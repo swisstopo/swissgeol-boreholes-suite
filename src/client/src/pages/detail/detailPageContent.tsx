@@ -7,15 +7,15 @@ import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
-import EditorBoreholeFilesTable from "./attachments/table/editorBoreholeFilesTable.tsx";
+import { Attachments } from "./attachments/table/attachments.tsx";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
 import Completion from "./form/completion/completion.jsx";
-import FieldMeasurement from "./form/hydrogeology/fieldMeasurement.jsx";
-import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement.tsx";
-import Hydrotest from "./form/hydrogeology/hydrotest.jsx";
-import WaterIngress from "./form/hydrogeology/waterIngress.tsx";
+import { FieldMeasurement } from "./form/hydrogeology/fieldMeasurement/fieldMeasurement.tsx";
+import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement/groundwaterLevelMeasurement.tsx";
+import Hydrotest from "./form/hydrogeology/hydrotest/hydrotest.tsx";
+import WaterIngress from "./form/hydrogeology/waterIngress/waterIngress.tsx";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
 import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx";
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
@@ -121,7 +121,7 @@ export const DetailPageContent = ({
                 );
               }}
             />
-            <Route exact path={"/:id/attachments"} render={() => <EditorBoreholeFilesTable />} />
+            <Route exact path={"/:id/attachments"} render={() => <Attachments />} />
             <Route exact path={"/:id/hydrogeology/wateringress"} render={() => <WaterIngress />} />
             <Route
               exact

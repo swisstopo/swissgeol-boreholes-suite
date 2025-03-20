@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useDomains } from "../../api/fetchApiV2";
-import { Codelist } from "../legacyComponents/domain/domainInterface.ts";
+import { Codelist } from "../Codelist.ts";
 import { FormMultiSelect } from "./form.ts";
 import { FormMultiSelectProps } from "./formMultiSelect.tsx";
 

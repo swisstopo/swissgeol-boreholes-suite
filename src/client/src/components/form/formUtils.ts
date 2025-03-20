@@ -30,20 +30,11 @@ export const parseFloatWithThousandsSeparator = (numericString?: string) => {
 };
 
 /**
- * Get the maximum precision from two numeric strings.
- * @param {string} numericString1 The first string.
- * @param {string} numericString2 The second string.
- * @returns The maximum precision from the two strings.
- */
-export const getMaxPrecision = (numericString1: string, numericString2: string) =>
-  Math.max(getPrecisionFromString(numericString1), getPrecisionFromString(numericString2));
-
-/**
- * Get the precision from a string.
+ * Get the precision from a numeric string. Works only for strings with a decimal point, not with scientific notation.
  * @param {string} numericString The string to get the precision from.
  * @returns The precision of the string.
  */
-export const getPrecisionFromString = (numericString: string) => numericString.split(".")[1]?.length || 0;
+export const getDecimalsFromNumericString = (numericString: string) => numericString.split(".")[1]?.length || 0;
 
 /**
  * Gets the style definition for the MUI Textfield's border color based on whether the field is readonly.
@@ -56,6 +47,49 @@ export const getFieldBorderColor = (isReadOnly: boolean) => {
       borderColor: isReadOnly ? theme.palette.border.light : theme.palette.border.darker,
     },
   };
+};
+
+/**
+ * Formats a number with scientific notation.
+ * @param {number} value The number to format.
+ * @returns The formatted number.
+ */
+const formatWithScientificNotation = (value: number) => {
+  const fullExponential = value.toExponential();
+  const exponentialFractionDigits = getDecimalsFromNumericString(fullExponential.split("e")[0]);
+  return value.toExponential(Math.min(exponentialFractionDigits, 3)).replace("e", " x 10");
+};
+
+/**
+ * Formats a number with thousands separators.
+ * @param {number} minDecimals The minimum number of decimal places to display.
+ * @param {number} value The number to format.
+ * @returns The formatted number.
+ */
+const formatWithThousandsSeparator = (minDecimals: number, value: number) => {
+  // Format number using de-CH
+  const formatted = new Intl.NumberFormat("de-CH", {
+    useGrouping: true,
+    minimumFractionDigits: minDecimals,
+    maximumFractionDigits: Math.max(3, minDecimals),
+  }).format(value);
+  // Ensure thousand separators are always a standard single quote (')
+  return formatted.replace(/’/g, "'");
+};
+
+/**
+ * Formats a number with thousands separators and a minimum number of decimal places.
+ * If the number is less than 0.001 and has more than 3 decimal places, the number is formatted with scientific notation.
+ * @param {number} value The number to format.
+ * @param {number} minDecimals The minimum number of decimal places to display (defaults to 0).
+ * @returns The formatted number.
+ */
+export const formatNumberForDisplay = (value: number | null, minDecimals = 0): string => {
+  if (value == null) return "-";
+  if (Math.abs(value) < 0.001 && value !== 0) {
+    return formatWithScientificNotation(value);
+  }
+  return formatWithThousandsSeparator(minDecimals, value);
 };
 
 /**
@@ -90,10 +124,10 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   data.locationPrecisionId = data.locationPrecisionId ?? null;
   data.referenceElevationPrecisionId = data.referenceElevationPrecisionId ?? null;
   data.name = data?.name ?? data.originalName;
-  data.precisionLocationX = data?.locationX ? getPrecisionFromString(formInputs.locationX) : null;
-  data.precisionLocationY = data?.locationY ? getPrecisionFromString(formInputs.locationY) : null;
-  data.precisionLocationXLV03 = data?.locationXLV03 ? getPrecisionFromString(formInputs.locationXLV03) : null;
-  data.precisionLocationYLV03 = data?.locationYLV03 ? getPrecisionFromString(formInputs.locationYLV03) : null;
+  data.precisionLocationX = data?.locationX ? getDecimalsFromNumericString(formInputs.locationX) : null;
+  data.precisionLocationY = data?.locationY ? getDecimalsFromNumericString(formInputs.locationY) : null;
+  data.precisionLocationXLV03 = data?.locationXLV03 ? getDecimalsFromNumericString(formInputs.locationXLV03) : null;
+  data.precisionLocationYLV03 = data?.locationYLV03 ? getDecimalsFromNumericString(formInputs.locationYLV03) : null;
   data.locationX = parseValueIfNotNull(data?.locationX);
   data.locationY = parseValueIfNotNull(data?.locationY);
   data.locationXLV03 = parseValueIfNotNull(data?.locationXLV03);

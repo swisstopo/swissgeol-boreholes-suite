@@ -9,6 +9,7 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers.js";
 import "cypress-real-events/support";
+import { getArea } from "ol/sphere.js";
 
 const isFileActive = (fileName, isActive) => {
   cy.contains("span", fileName)
@@ -21,6 +22,10 @@ const isFileActive = (fileName, isActive) => {
 function assertDrawTooltip(content) {
   cy.get('[data-cy="labeling-draw-tooltip"]').should("be.visible");
   cy.get('[data-cy="labeling-draw-tooltip"]').contains(content);
+}
+
+function assertDrawTooltipInvisible() {
+  cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");
 }
 
 const drawBox = (x1, y1, x2, y2) => {
@@ -106,37 +111,30 @@ function assertLabelingAlertText(expectedText) {
     });
 }
 
-function assertBoundingBoxes(totalCount, visibleCount) {
+function assertBoundingBoxes(totalCount, highlightedArea) {
   cy.window().then(win => {
     const layers = win.labelingImage.getLayers().getArray();
     const boundingBoxLayer = layers.find(layer => layer.get("name") === "boundingBoxLayer");
-    const features = boundingBoxLayer.getSource().getFeatures();
-    const featureColors = features.map(feature => {
-      const style = feature.getStyle();
-      return style?.getFill()?.getColor();
-    });
-    expect(features.length).to.equal(totalCount); // layer always contains all bounding boxes, even if they are not visible
-
-    const expectedColors = Array.from({ length: totalCount }, (_, i) =>
-      i < visibleCount ? "rgba(91, 33, 182, 0.2)" : "transparent",
-    );
-    expect(featureColors).to.deep.equal(expectedColors);
+    const highlightsLayer = layers.find(layer => layer.get("name") === "highlightsLayer");
+    const invisibleBoundingBoxes = boundingBoxLayer.getSource().getFeatures();
+    const highlights = highlightsLayer.getSource().getFeatures();
+    expect(invisibleBoundingBoxes.length).to.equal(totalCount); // layer always contains all bounding boxes, even if they are not visible
+    expect(highlights.length).to.equal(highlightedArea === 0 ? 0 : 1); // highlights are combined into one feature
+    highlightedArea !== 0 &&
+      expect(Math.round(Math.abs(getArea(highlights[0].getGeometry())))).to.equal(highlightedArea);
   });
 }
 
 function assertClipboardContent(expectedText) {
-  cy.window().then(win => {
-    const checkClipboard = () =>
-      win.navigator.clipboard.readText().then(text => {
-        if (text !== expectedText) {
-          throw new Error("Clipboard text not updated yet");
-        }
-      });
+  cy.window().should(win =>
+    win.navigator.clipboard.readText().then(text => {
+      expect(text).to.equal(expectedText);
+    }),
+  );
+}
 
-    cy.wrap(null).should(() => {
-      checkClipboard();
-    });
-  });
+function moveMouseOntoMap() {
+  cy.get('[data-cy="labeling-panel"]').realMouseMove(400, 400, { position: "topLeft" });
 }
 
 describe("Test labeling tool", () => {
@@ -238,7 +236,8 @@ describe("Test labeling tool", () => {
     hasAiStyle("locationYLV03");
     hasError("locationYLV03", false);
     isDisabled("locationYLV03");
-
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 140, 600, 250);
     assertBoundingBoxes(0, 0); // no bounding box preview for coordinate extraction
@@ -281,6 +280,7 @@ describe("Test labeling tool", () => {
     cy.wait(1000);
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
     cy.wait(1000);
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 120, 600, 300);
     cy.wait("@location");
@@ -311,7 +311,10 @@ describe("Test labeling tool", () => {
     getElementByDataCy("labeling-page-next").click();
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
+    cy.wait("@extraction-file-info");
     getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
 
     // draw box around empty space
@@ -322,23 +325,32 @@ describe("Test labeling tool", () => {
 
     // draw box around text
     getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
     drawBox(200, 120, 500, 400);
-    assertBoundingBoxes(4, 4);
+    assertBoundingBoxes(4, 17227);
     assertLabelingAlertText('Copied to clipboard: "Some information without coo...');
     assertClipboardContent("Some information without coordinates");
 
     // draw box around first word and small part of second word
     getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
     drawBox(200, 120, 250, 400);
-    assertBoundingBoxes(4, 1);
+    assertBoundingBoxes(4, 3957);
     assertClipboardContent("Some");
 
     // can switch between text extraction and coordinate extraction
     clickCoordinateLabelingButton();
+    cy.wait("@extraction-file-info");
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     getElementByDataCy("text-extraction-button").click();
+    assertDrawTooltipInvisible();
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
   });
 
@@ -356,7 +368,7 @@ describe("Test labeling tool", () => {
     cy.wait(1000);
 
     clickCoordinateLabelingButton();
-
+    moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(180, 125, 400, 185);
     assertLabelingAlertText("No coordinates found");

@@ -1,10 +1,10 @@
-import { deleteGroundwaterLevelMeasurement } from "../../../../api/fetchApiV2.js";
-import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
-import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
-import { GroundwaterLevelMeasurementDisplayProps } from "./Observation.ts";
-import ObservationDisplay from "./observationDisplay.tsx";
+import { FC } from "react";
+import DataDisplayCard from "../../../../../components/dataCard/dataDisplayCard.js";
+import { FormContainer, FormDisplay, FormValueType } from "../../../../../components/form/form.ts";
+import ObservationDisplay from "../observationDisplay.tsx";
+import { deleteGroundwaterLevelMeasurement, GroundwaterLevelMeasurement } from "./GroundwaterLevelMeasurement.ts";
 
-const GroundwaterLevelMeasurementDisplay = ({ item }: GroundwaterLevelMeasurementDisplayProps) => {
+export const GroundwaterLevelMeasurementDisplay: FC<{ item: GroundwaterLevelMeasurement }> = ({ item }) => {
   return (
     <DataDisplayCard item={item} deleteData={deleteGroundwaterLevelMeasurement}>
       <ObservationDisplay observation={item} showDepthInputs={false} />

@@ -46,7 +46,7 @@ const themePalette: AppThemePalette = {
     header: "rgba(28, 40, 52, 0.6)",
     main: "#5B21B6",
     mainTransparent: "rgba(91, 33, 182, 0.2)",
-    textHighlights: "rgba(164, 106, 255, 0.5)",
+    textHighlights: "rgba(91, 33, 182, 0.35)",
     mainEnd: "#8B5CF6",
     active: "#4F46E5",
     activeEnd: "#E53940",
@@ -414,7 +414,6 @@ export const theme = createTheme({
       defaultProps: {
         size: "small",
         variant: "outlined",
-        notched: false,
       },
       styleOverrides: {
         root: {

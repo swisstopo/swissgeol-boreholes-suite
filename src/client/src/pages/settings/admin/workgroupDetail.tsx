@@ -157,7 +157,7 @@ export const WorkgroupDetail: FC = () => {
         />
         <CardContent sx={{ pt: 4, px: 3 }}>
           {workgroupUsers && workgroupUsers?.length > 0 && (
-            <Table
+            <Table<User>
               rows={workgroupUsers}
               columns={columns}
               filterModel={filterModel}

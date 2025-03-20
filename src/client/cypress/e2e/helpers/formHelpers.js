@@ -46,6 +46,20 @@ export const hasAiStyle = (fieldName, hasAiStyle = true, parent = "") => {
 };
 
 /**
+ * Clears the value of an input form element.
+ * @param {string} fieldName The name of the input field.
+ * @param {string} parent (optional) The parent of the form element.
+ */
+export const clearInput = (fieldName, parent) => {
+  const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formInput"]`;
+  cy.get(selector)
+    .click()
+    .then(() => {
+      cy.focused().clear();
+    });
+};
+
+/**
  * Sets the value for an input form element.
  * @param {string} fieldName The name of the input field.
  * @param {string} value The text to type into the input field.

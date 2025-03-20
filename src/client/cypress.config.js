@@ -33,6 +33,10 @@ export default defineConfig({
         return launchOptions;
       });
     },
+    retries: {
+      runMode: 3,
+      openMode: 0,
+    },
   },
   component: {
     devServer: {

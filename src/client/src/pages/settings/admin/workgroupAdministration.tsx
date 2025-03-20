@@ -74,7 +74,7 @@ export const WorkgroupAdministration: FC = () => {
     history.push(`/setting/workgroup/${params.row.id}`);
   };
   return (
-    <Table
+    <Table<Workgroup>
       rows={workgroups}
       columns={columns}
       onRowClick={handleRowClick}

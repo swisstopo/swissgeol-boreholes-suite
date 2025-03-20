@@ -78,9 +78,9 @@ describe("Tests for the hydrotest editor.", () => {
     toggleMultiSelect("evaluationMethodId", [2, 1], 5);
     addItem("addHydrotestResult");
     setSelect("hydrotestResults.0.parameterId", 0, 6);
-    setInput("hydrotestResults.0.value", "10");
-    setInput("hydrotestResults.0.minValue", "5");
-    setInput("hydrotestResults.0.maxValue", "15");
+    setInput("hydrotestResults.0.value", "10.781676"); // should round to 3 decimals
+    setInput("hydrotestResults.0.minValue", "0.00005251154"); // should display in scientific notation with 3 decimals
+    setInput("hydrotestResults.0.maxValue", "0.00000012"); /// should display in scientific notation with 1 decimal
     saveForm();
     cy.wait("@hydrotest_GET");
 
@@ -89,9 +89,9 @@ describe("Tests for the hydrotest editor.", () => {
     evaluateDisplayValue("flowDirection", ["Entnahme", "Injektion"]);
     evaluateDisplayValue("evaluationMethod", ["stationär", "instationär"]);
     evaluateDisplayValue("hydrotestResult.0.parameter", "kf-Wert (gesättigt)");
-    evaluateDisplayValue("hydrotestResult.0.value", "10 m/s");
-    evaluateDisplayValue("hydrotestResult.0.minValue", "5 m/s");
-    evaluateDisplayValue("hydrotestResult.0.maxValue", "15 m/s");
+    evaluateDisplayValue("hydrotestResult.0.value", "10.782 m/s");
+    evaluateDisplayValue("hydrotestResult.0.minValue", "5.251 x 10-5 m/s");
+    evaluateDisplayValue("hydrotestResult.0.maxValue", "1.2 x 10-7 m/s");
 
     startEditing();
     setInput("comment", "Lorem.");
