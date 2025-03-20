@@ -54,6 +54,40 @@ public class BdmsContext : DbContext
 
     public DbSet<Layer> Layers { get; set; }
 
+    /// <summary>
+    /// Extends the provided <see cref="IQueryable"/> of type <see cref="Layer"/> with all includes.
+    /// </summary>
+    public IQueryable<Layer> LayersWithIncludes
+        => Layers
+        .Include(l => l.DescriptionQuality)
+        .Include(l => l.Lithology)
+        .Include(l => l.Plasticity)
+        .Include(l => l.Consistance)
+        .Include(l => l.Alteration)
+        .Include(l => l.Compactness)
+        .Include(l => l.GrainSize1)
+        .Include(l => l.GrainSize2)
+        .Include(l => l.Cohesion)
+        .Include(l => l.Uscs1)
+        .Include(l => l.Uscs2)
+        .Include(l => l.UscsDetermination)
+        .Include(l => l.Lithostratigraphy)
+        .Include(l => l.Humidity)
+        .Include(l => l.Gradation)
+        .Include(l => l.LithologyTopBedrock)
+        .Include(l => l.LayerColorCodes)
+        .Include(l => l.ColorCodelists)
+        .Include(l => l.LayerGrainShapeCodes)
+        .Include(l => l.GrainShapeCodelists)
+        .Include(l => l.LayerDebrisCodes)
+        .Include(l => l.DebrisCodelists)
+        .Include(l => l.LayerGrainAngularityCodes)
+        .Include(l => l.GrainAngularityCodelists)
+        .Include(l => l.LayerUscs3Codes)
+        .Include(l => l.Uscs3Codelists)
+        .Include(l => l.LayerOrganicComponentCodes)
+        .Include(l => l.OrganicComponentCodelists);
+
     public DbSet<Stratigraphy> Stratigraphies { get; set; }
 
     public DbSet<Term> Terms { get; set; }
