@@ -20,3 +20,18 @@ beforeEach(() => {
   interceptApiCalls();
   loginAndResetState();
 });
+
+let testFailures = [];
+
+afterEach(function () {
+  if (this.currentTest.state === "failed") {
+    testFailures.push(this.currentTest.fullTitle());
+  }
+});
+
+after(function () {
+  if (testFailures.length > 0) {
+    console.error(`Tests failed on at least one attempt: ${testFailures}`);
+    throw new Error("One or more tests failed on at least one retry attempt.");
+  }
+});
