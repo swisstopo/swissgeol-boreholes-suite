@@ -130,4 +130,22 @@ public static class BoreholeExtensions
 
         return !casingIdsInBorehole.Except(casingIdsInCompletions).Any();
     }
+
+    /// <summary>
+    /// Maps the <see cref="Casing"/> references in <see cref="Completion.Instrumentations"/>, <see cref="Completion.Backfills"/>
+    /// and <see cref="Borehole.Observations"/> to the casings present in <see cref="Borehole.Completions"/>.
+    /// </summary>
+    public static void MapCasingReferences(this Borehole borehole)
+    {
+        var casings = borehole.Completions?.SelectMany(c => c.Casings ?? Enumerable.Empty<Casing>()).ToDictionary(c => c.Id);
+        if (casings == null) return;
+
+        borehole.Observations?.MapCasings(casings);
+
+        foreach (var completion in borehole.Completions)
+        {
+            completion.Instrumentations?.MapCasings(casings);
+            completion.Backfills?.MapCasings(casings);
+        }
+    }
 }

@@ -282,7 +282,7 @@ public class ImportController : ControllerBase
             borehole.CreatedById = user.Id;
             borehole.UpdatedById = user.Id;
 
-            MapCasingReferences(borehole);
+            borehole.MapCasingReferences();
 
             borehole.Stratigraphies?.MarkAsNew();
             borehole.Completions?.MarkAsNew();
@@ -420,20 +420,6 @@ public class ImportController : ControllerBase
             hydroTest.KindCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.KindCodelistIds!);
             hydroTest.FlowDirectionCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.FlowDirectionCodelistIds!);
             hydroTest.EvaluationMethodCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.EvaluationMethodCodelistIds!);
-        }
-    }
-
-    private static void MapCasingReferences(BoreholeImport borehole)
-    {
-        var casings = borehole.Completions?.SelectMany(c => c.Casings ?? Enumerable.Empty<Casing>()).ToDictionary(c => c.Id);
-        if (casings == null) return;
-
-        borehole.Observations?.MapCasings(casings);
-
-        foreach (var completion in borehole.Completions)
-        {
-            completion.Instrumentations?.MapCasings(casings);
-            completion.Backfills?.MapCasings(casings);
         }
     }
 

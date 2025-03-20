@@ -148,6 +148,9 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         if (borehole == null) return NotFound();
 
         borehole.MarkAsNew();
+
+        borehole.MapCasingReferences();
+
         borehole.Completions?.MarkAsNew();
         borehole.Sections?.MarkAsNew();
 
