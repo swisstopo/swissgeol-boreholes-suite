@@ -288,7 +288,7 @@ describe("Search filter tests", () => {
 
     cy.wait("@edit_list");
     showTableAndWaitForData();
-    verifyPaginationText("1–100 of 229");
+    verifyPaginationText("1–100 of 770");
 
     let uscs3Dropdown = cy.contains("label", "USCS 3").next();
     uscs3Dropdown.scrollIntoView().click({ force: true });
@@ -306,8 +306,8 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    verifyPaginationText("1–39 of 39");
-    cy.get(".MuiDataGrid-row").contains("Darion Rowe").should("exist");
+    verifyPaginationText("1–100 of 108");
+    cy.get(".MuiDataGrid-row").contains("Bruce Rempel").should("exist");
   });
 
   function filterByOriginalLithology() {
