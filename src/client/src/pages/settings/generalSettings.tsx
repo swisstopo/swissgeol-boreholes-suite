@@ -256,7 +256,6 @@ const GeneralSettings = () => {
             {filter.isSelected && handleButtonSelected(filter.name, filter.isSelected) !== null && (
               <GeneralSettingList
                 settingsItems={handleButtonSelected(filter.name, filter.isSelected)}
-                codes={domains}
                 data={setting.data.efilter}
                 listName={filter.name}
                 toggleField={toggleField}

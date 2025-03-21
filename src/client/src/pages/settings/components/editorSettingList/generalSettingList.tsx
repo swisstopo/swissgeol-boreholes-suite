@@ -1,7 +1,8 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Checkbox } from "@mui/material";
 import { Segment } from "semantic-ui-react";
+import { useDomains } from "../../../../api/fetchApiV2";
 import { Codelist } from "../../../../components/Codelist.ts";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { SettingsItem } from "../../data/SettingsItem.ts";
@@ -13,7 +14,6 @@ interface GeneralSettingListProps {
   settingsItems: SettingsItem[];
   toggleField: (field: string, value: boolean) => void;
   listName: string;
-  codes: Codelist[];
   toggleFieldArray: (fields: string[], value: boolean) => void;
   toggleFilterArray: (fields: string[], value: boolean) => void;
 }
@@ -24,18 +24,19 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
   settingsItems,
   toggleField,
   listName,
-  codes,
   toggleFieldArray,
   toggleFilterArray,
 }) => {
   const { t } = useTranslation();
   const [checkedStates, setCheckedStates] = useState<{ [key: string]: boolean }>({});
+  const { data: domains } = useDomains();
 
-  useEffect(() => {
-    const isChecked = (item: SettingsItem) => {
+  const layerKindConfigEntry: Codelist | undefined = domains?.find((c: Codelist) => c.schema === "layer_kind");
+  const conf = layerKindConfigEntry?.conf ? JSON.parse(layerKindConfigEntry?.conf) : "";
+
+  const isChecked = useCallback(
+    (item: SettingsItem) => {
       const isVisible = (field: string) => {
-        const layerKindConfigEntry: Codelist | undefined = codes?.find((c: Codelist) => c.schema === "layer_kind");
-        const conf = layerKindConfigEntry?.conf ? JSON.parse(layerKindConfigEntry?.conf) : "";
         return conf?.fields?.[field] ?? false;
       };
 
@@ -46,14 +47,17 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
       };
 
       return listName === "lithologyfields" ? isVisible(item.value) : getNestedValue(item.value);
-    };
+    },
+    [conf, data, listName],
+  );
 
+  useEffect(() => {
     const initialState: { [key: string]: boolean } = {};
     settingsItems.forEach(item => {
       initialState[item.value] = isChecked(item);
     });
     setCheckedStates(initialState);
-  }, [settingsItems, codes, data, listName]);
+  }, [settingsItems, data, listName, isChecked]);
 
   const sendSelectAll = (shouldSelectAll: boolean) => {
     const newData: string[] = [];
