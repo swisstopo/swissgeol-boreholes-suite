@@ -14,7 +14,7 @@ import { UserDetail } from "./admin/userDetail.tsx";
 import { WorkgroupAdministration } from "./admin/workgroupAdministration.tsx";
 import { WorkgroupAdministrationProvider } from "./admin/workgroupAdministrationContext.tsx";
 import { WorkgroupDetail } from "./admin/workgroupDetail.tsx";
-import EditorSettings from "./editorSettings.tsx";
+import GeneralSettings from "./generalSettings.tsx";
 import { SettingsHeader } from "./settingsHeader.tsx";
 import TermSettings from "./termSettings";
 
@@ -29,7 +29,7 @@ export const SettingsPage = () => {
     const tabsArray = [{ label: t("about"), hash: "about", component: <AboutSettings /> }];
 
     if (!isAnonymousUser) {
-      tabsArray.unshift({ label: t("general"), hash: "general", component: <EditorSettings /> });
+      tabsArray.unshift({ label: t("general"), hash: "general", component: <GeneralSettings /> });
       tabsArray.push({ label: t("terms"), hash: "terms", component: <TermSettings /> });
     }
     if (isAdminUser) {

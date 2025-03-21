@@ -1,15 +1,14 @@
 import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { Box, IconButton, TextField } from "@mui/material";
+import { Box, IconButton, Link, TextField } from "@mui/material";
 import { GridCellCheckboxRenderer, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { Lock, LockOpen, Trash2 } from "lucide-react";
+import { CloudDownload, Lock, LockOpen, Trash2 } from "lucide-react";
 import { downloadFile } from "../../../../api/file/file";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import { Table } from "../../../../components/table/table.tsx";
 import { DetailContext } from "../../detailContext.tsx";
-import DownloadLink from "../downloadlink.jsx";
 
 interface FilesTableProps {
   detachFile: (id: string, fid: number) => void;
@@ -78,7 +77,14 @@ export const FilesTable: FC<FilesTableProps> = ({ editor, files, patchFile, deta
           <Box
             data-cy={`download-${row.file?.name}`}
             sx={{ overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
-            <DownloadLink caption={row.file?.name} onDownload={() => downloadFile(row.fileId)} />
+            <Link
+              onClick={() => {
+                downloadFile(row.fileId);
+              }}
+              variant="body2">
+              {`${row.file?.name} `}
+              <CloudDownload />
+            </Link>
           </Box>
         ),
       },

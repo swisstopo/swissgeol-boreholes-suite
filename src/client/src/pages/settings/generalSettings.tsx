@@ -1,24 +1,24 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Button, Typography } from "@mui/material";
-import { Divider } from "semantic-ui-react";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from "@mui/material";
+import { ChevronDownIcon } from "lucide-react";
 import _ from "lodash";
 import { register } from "ol/proj/proj4";
 import { Options, optionsFromCapabilities } from "ol/source/WMTS";
 import proj4 from "proj4";
 import { patchCodeConfig, patchSettings } from "../../api-lib";
 import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { useDomains } from "../../api/fetchApiV2";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
-import EditorSettingList from "./components/editorSettingList/editorSettingList";
+import GeneralSettingList from "./components/editorSettingList/generalSettingList.tsx";
 import MapSettings from "./components/editorSettingList/mapSettings";
-import { boreholeEditorData } from "./data/boreholeEditorData";
-import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
-import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData";
-import { locationEditorData } from "./data/locationEditorData";
-import { registrationEditorData } from "./data/registrationEditorData";
+import { boreholeEditorData } from "./data/boreholeEditorData.ts";
+import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData.ts";
+import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData.ts";
+import { locationEditorData } from "./data/locationEditorData.ts";
+import { registrationEditorData } from "./data/registrationEditorData.ts";
+import { SettingsItem } from "./data/SettingsItem.ts";
 import { Layer } from "./layerInterface.ts";
 
 const projections = {
@@ -32,12 +32,11 @@ const projections = {
   "EPSG:4150": "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
 };
 
-const EditorSettings = () => {
+const GeneralSettings = () => {
   const { showAlert } = useContext(AlertContext);
   const { i18n, t } = useTranslation();
 
   const setting = useSelector((state: ReduxRootState) => state.setting);
-  const { data: domains } = useDomains();
 
   const dispatch = useDispatch();
   const toggleFieldArray = (filter: string[], enabled: boolean) => {
@@ -189,8 +188,8 @@ const EditorSettings = () => {
     wms: null,
   });
 
-  const handleButtonSelected = (name: string, isSelected: boolean) => {
-    let selectedData;
+  const handleButtonSelected = (name: string, isSelected: boolean): SettingsItem[] => {
+    let selectedData: SettingsItem[];
     if (name === "location" && isSelected) {
       selectedData = locationEditorData;
     } else if (name === "borehole" && isSelected) {
@@ -202,17 +201,17 @@ const EditorSettings = () => {
     } else if (name === "registration" && isSelected) {
       selectedData = registrationEditorData;
     } else {
-      selectedData = null;
+      selectedData = [];
     }
     return selectedData;
   };
 
+  function updateSearchList(idx: number) {
+    setSearchList(searchList.map(obj => (obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj })));
+  }
+
   return (
-    <div
-      style={{
-        padding: "1em",
-        flex: 1,
-      }}>
+    <Box>
       <MapSettings
         setting={setting}
         i18n={i18n}
@@ -230,21 +229,18 @@ const EditorSettings = () => {
         setState={setState}></MapSettings>
 
       {searchList?.map((filter, idx) => (
-        <div key={idx}>
-          <div
-            onClick={() => {
-              setSearchList(
-                searchList.map(obj => (obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj })),
-              );
-            }}
-            style={{
+        <Accordion key={filter.id} expanded={filter.isSelected} onChange={() => updateSearchList(idx)}>
+          <AccordionSummary
+            expandIcon={<ChevronDownIcon />}
+            id={`panel${idx}-header`}
+            sx={{
               flexDirection: "row",
               display: "flex",
               cursor: "pointer",
               backgroundColor: filter.isSelected
                 ? theme.palette.background.lightgrey
                 : theme.palette.background.default,
-              padding: 10,
+              padding: 2,
             }}>
             <Box
               sx={{
@@ -253,32 +249,24 @@ const EditorSettings = () => {
               }}>
               <Typography variant="body1">{t(filter.translationId)}</Typography>
             </Box>
-            <div
-              style={{
-                flex: 1,
-                textAlign: "right",
-              }}>
-              <Button variant="outlined">{filter.isSelected ? t("collapse") : t("expand")}</Button>
-            </div>
-          </div>
-          {filter.isSelected && handleButtonSelected(filter.name, filter.isSelected) !== null ? (
-            <EditorSettingList
-              attribute={handleButtonSelected(filter.name, filter.isSelected)}
-              codes={domains}
-              data={setting.data.efilter}
-              listName={filter.name}
-              toggleField={toggleField}
-              toggleFilter={toggleFilter}
-              toggleFieldArray={toggleFieldArray}
-              toggleFilterArray={toggleFilterArray}
-            />
-          ) : (
-            <Divider style={{ margin: 0 }} />
-          )}
-        </div>
+          </AccordionSummary>
+          <AccordionDetails>
+            {filter.isSelected && handleButtonSelected(filter.name, filter.isSelected) !== null && (
+              <GeneralSettingList
+                settingsItems={handleButtonSelected(filter.name, filter.isSelected)}
+                data={setting.data.efilter}
+                listName={filter.name}
+                toggleField={toggleField}
+                toggleFilter={toggleFilter}
+                toggleFieldArray={toggleFieldArray}
+                toggleFilterArray={toggleFilterArray}
+              />
+            )}
+          </AccordionDetails>
+        </Accordion>
       ))}
-    </div>
+    </Box>
   );
 };
 
-export default EditorSettings;
+export default GeneralSettings;

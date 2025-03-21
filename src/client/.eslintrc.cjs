@@ -9,6 +9,7 @@ module.exports = {
         "plugin:prettier/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
+        "plugin:jsx-a11y/recommended",
     ],
     parser: "@typescript-eslint/parser",
     plugins: ["@typescript-eslint", "react-refresh", "prettier"],

@@ -7,5 +7,6 @@ export interface Codelist {
   en: string;
   fr: string;
   it: string;
+  conf: string;
   [key: string]: string | number;
 }
