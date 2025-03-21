@@ -1,9 +1,17 @@
 import React from "react";
 import { withTranslation } from "react-i18next";
 import { connect } from "react-redux";
-import { Button, CircularProgress, Stack, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button,
+  CircularProgress,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Header, Icon, Label, Modal } from "semantic-ui-react";
-import { RotateCcw, X } from "lucide-react";
+import { ChevronDownIcon, RotateCcw, X } from "lucide-react";
 import _ from "lodash";
 import PropTypes from "prop-types";
 import {
@@ -125,26 +133,76 @@ class WorkflowForm extends React.Component {
             <TranslationText id={"flowPublication"} />
           </Typography>
           {filtered.length > 1 ? (
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => this.expandHistory()}
-              onKeyDown={e => {
-                if (e.key === "Enter" || e.key === " ") {
-                  this.expandHistory();
-                }
-              }}
-              className="link"
-              style={{
-                fontSize: "0.8em",
-                paddingBottom: "1em",
-              }}>
-              {this.state.expanded === false ? (
-                <TranslationText id="showHistory" prepend="+ " />
-              ) : (
-                <TranslationText id="showHistory" prepend="- " />
-              )}
-            </div>
+            <Accordion expanded={this.state.expanded} onChange={() => this.expandHistory()}>
+              <AccordionSummary
+                expandIcon={<ChevronDownIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+                sx={{
+                  fontSize: "0.8em",
+                  paddingBottom: "1em",
+                }}>
+                <Typography>
+                  {this.state.expanded === false ? (
+                    <TranslationText id="showHistory" prepend="+ " />
+                  ) : (
+                    <TranslationText id="showHistory" prepend="- " />
+                  )}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                {filtered.map((flow, idx) => (
+                  <div
+                    key={"wff-cmt-" + idx}
+                    style={{
+                      borderBottom: idx + 1 < filtered.length ? "thin solid rgba(0, 0, 0, 0.30)" : null,
+                      display: idx + 1 < filtered.length && this.state.expanded === false ? "none" : null,
+                      marginBottom: "1em",
+                      padding: "0px 0.5em 0.5em 0.5em",
+                    }}>
+                    <div
+                      style={{
+                        color: "#2185d0",
+                      }}>
+                      {flow.creator.name}{" "}
+                      {flow.creator.id === user.data.id ? (
+                        <span
+                          style={{
+                            color: "#787878",
+                          }}>
+                          {t("you")}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "0.8em",
+                      }}>
+                      <DateText date={flow.finished} fromnow /> - <DateText date={flow.finished} hours />
+                    </div>
+                    <div
+                      style={{
+                        padding: "0.5em 0px",
+                        maxHeight: "120px",
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                      }}>
+                      {flow.notes !== null && flow.notes !== "" ? (
+                        <CommentArea readOnly value={flow.notes} border="none" height={0} />
+                      ) : (
+                        <div
+                          style={{
+                            color: theme.palette.error.main,
+                            fontStyle: "italic",
+                          }}>
+                          {t("noComments")}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </AccordionDetails>
+            </Accordion>
           ) : null}
           <div
             style={{
@@ -160,56 +218,6 @@ class WorkflowForm extends React.Component {
                 overflowX: "hidden",
                 flex: "1 1 100%",
               }}>
-              {filtered.map((flow, idx) => (
-                <div
-                  key={"wff-cmt-" + idx}
-                  style={{
-                    borderBottom: idx + 1 < filtered.length ? "thin solid rgba(0, 0, 0, 0.30)" : null,
-                    display: idx + 1 < filtered.length && this.state.expanded === false ? "none" : null,
-                    marginBottom: "1em",
-                    padding: "0px 0.5em 0.5em 0.5em",
-                  }}>
-                  <div
-                    style={{
-                      color: "#2185d0",
-                    }}>
-                    {flow.creator.name}{" "}
-                    {flow.creator.id === user.data.id ? (
-                      <span
-                        style={{
-                          color: "#787878",
-                        }}>
-                        {t("you")}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "0.8em",
-                    }}>
-                    <DateText date={flow.finished} fromnow /> - <DateText date={flow.finished} hours />
-                  </div>
-                  <div
-                    style={{
-                      padding: "0.5em 0px",
-                      maxHeight: "120px",
-                      overflowY: "auto",
-                      overflowX: "hidden",
-                    }}>
-                    {flow.notes !== null && flow.notes !== "" ? (
-                      <CommentArea readOnly value={flow.notes} border="none" height={0} />
-                    ) : (
-                      <div
-                        style={{
-                          color: theme.palette.error.main,
-                          fontStyle: "italic",
-                        }}>
-                        {t("noComments")}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
               {workflow.data === null || (readOnly === true && workflows.data.length > 1) ? null : (
                 <div>
                   <span>
