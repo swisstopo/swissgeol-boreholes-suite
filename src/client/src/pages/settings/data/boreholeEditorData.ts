@@ -1,59 +1,21 @@
 import { SettingsItem } from "./SettingsItem.ts";
 
-export const boreholeEditorData: SettingsItem[] = [
-  {
-    id: 0,
-    label: "borehole_type",
-    value: "borehole_type",
-  },
-  {
-    id: 2,
-    label: "purpose",
-    value: "extended.purpose",
-  },
-  {
-    id: 7,
-    label: "boreholestatus",
-    value: "extended.status",
-  },
-  {
-    id: 11,
-    label: "totaldepth",
-    value: "length",
-  },
-  {
-    id: 13,
-    label: "top_bedrock_fresh_md",
-    value: "extended.top_bedrock_fresh_md",
-  },
-  {
-    id: 15,
-    label: "qt_depth",
-    value: "qt_depth",
-  },
-  {
-    id: 17,
-    label: "top_bedrock_weathered_md",
-    value: "top_bedrock_weathered_md",
-  },
-  {
-    id: 19,
-    label: "groundwater",
-    value: "extended.groundwater",
-  },
-  {
-    id: 20,
-    label: "lithology_top_bedrock",
-    value: "custom.lit_pet_top_bedrock",
-  },
-  {
-    id: 21,
-    label: "lithostratigraphy_top_bedrock",
-    value: "custom.lit_str_top_bedrock",
-  },
-  {
-    id: 22,
-    label: "chronostratigraphy_top_bedrock",
-    value: "custom.chro_str_top_bedrock",
-  },
+const fields = [
+  { label: "borehole_type" },
+  { label: "purpose", prefix: "extended" },
+  { label: "boreholestatus", prefix: "extended" },
+  { label: "totaldepth", value: "length" },
+  { label: "top_bedrock_fresh_md", prefix: "extended" },
+  { label: "qt_depth" },
+  { label: "top_bedrock_weathered_md" },
+  { label: "groundwater", prefix: "extended" },
+  { label: "lithology_top_bedrock", prefix: "custom", value: "lit_pet_top_bedrock" },
+  { label: "lithostratigraphy_top_bedrock", prefix: "custom", value: "lit_str_top_bedrock" },
+  { label: "chronostratigraphy_top_bedrock", prefix: "custom", value: "chro_str_top_bedrock" },
 ];
+
+export const boreholeEditorData: SettingsItem[] = fields.map((field, index) => ({
+  id: index,
+  label: field.label,
+  value: field.value || (field.prefix ? `${field.prefix}.${field.label}` : field.label),
+}));
