@@ -24,7 +24,20 @@ jobs:
         run: docker compose up --wait minio db api-legacy api dataextraction
 
       - name: Run dotnet tests
-        run: dotnet test BDMS.sln -c Release --no-build --verbosity normal --filter TestCategory!=LongRunning
+        run: dotnet test BDMS.sln -c Release --no-build --verbosity normal --filter TestCategory!=LongRunning --logger trx
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dotnet-test-results
+          path: ${{ github.workspace }}/**/TestResults/**/*
+
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: "${{ github.workspace }}/**/*.trx"
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
