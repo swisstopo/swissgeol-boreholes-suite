@@ -142,12 +142,12 @@ public class LayerControllerTest
         };
 
         var layerToEdit = await context.LayersWithIncludes.AsNoTracking().SingleAsync(x => x.Id == id).ConfigureAwait(false);
-        Assert.AreEqual(0, layerToEdit.Uscs3Codelists.Count);
-        Assert.AreEqual(0, layerToEdit.ColorCodelists.Count);
-        Assert.AreEqual(1, layerToEdit.DebrisCodelists.Count);
+        Assert.AreEqual(4, layerToEdit.Uscs3Codelists.Count);
+        Assert.AreEqual(1, layerToEdit.ColorCodelists.Count);
+        Assert.AreEqual(2, layerToEdit.DebrisCodelists.Count);
         Assert.AreEqual(1, layerToEdit.GrainShapeCodelists.Count);
-        Assert.AreEqual(1, layerToEdit.GrainAngularityCodelists.Count);
-        Assert.AreEqual(0, layerToEdit.OrganicComponentCodelists.Count);
+        Assert.AreEqual(4, layerToEdit.GrainAngularityCodelists.Count);
+        Assert.AreEqual(4, layerToEdit.OrganicComponentCodelists.Count);
 
         // Update Layer
         var response = await controller.EditAsync(layerWithChanges);
