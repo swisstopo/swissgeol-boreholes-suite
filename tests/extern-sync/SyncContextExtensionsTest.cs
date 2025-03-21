@@ -7,11 +7,15 @@ namespace BDMS.ExternSync;
 [TestClass]
 public class SyncContextExtensionsTest
 {
+    private static BdmsContext context;
+
+    [ClassInitialize]
+    public static async Task ClassInitialize(TestContext testContext)
+        => context = await CreateDbContextAsync(useInMemory: false, seedTestData: true);
+
     [TestMethod]
     public async Task SetBoreholePublicationStatusAsync()
     {
-        using var context = await CreateDbContextAsync(useInMemory: false, seedTestData: true);
-
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
         var borehole = context.Boreholes.Single(b => b.Id == 1_000_010);
         var user = context.Users.Single(u => u.Id == 1);
@@ -46,8 +50,6 @@ public class SyncContextExtensionsTest
     [TestMethod]
     public async Task GetWithPublicationStatusPublished()
     {
-        using var context = await CreateDbContextAsync(useInMemory: false, seedTestData: true);
-
         // Set the publication status for some boreholes. By default all seeded boreholes havethe publication status 'change in progress'.
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
         await context.SetBoreholePublicationStatusAsync(1_000_001, 1, Role.Editor, cancellationToken);
