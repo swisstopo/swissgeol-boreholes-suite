@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from "@mui/material";
-import { Divider } from "semantic-ui-react";
 import { ChevronDownIcon } from "lucide-react";
 import _ from "lodash";
 import { register } from "ol/proj/proj4";
@@ -232,7 +231,7 @@ const GeneralSettings = () => {
         setState={setState}></MapSettings>
 
       {searchList?.map((filter, idx) => (
-        <Accordion key={idx} expanded={filter.isSelected} onChange={() => updateSearchList(idx)}>
+        <Accordion key={filter.id} expanded={filter.isSelected} onChange={() => updateSearchList(idx)}>
           <AccordionSummary
             expandIcon={<ChevronDownIcon />}
             id={`panel${idx}-header`}
@@ -254,7 +253,7 @@ const GeneralSettings = () => {
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            {filter.isSelected && handleButtonSelected(filter.name, filter.isSelected) !== null ? (
+            {filter.isSelected && handleButtonSelected(filter.name, filter.isSelected) !== null && (
               <GeneralSettingList
                 settingsItems={handleButtonSelected(filter.name, filter.isSelected)}
                 codes={domains}
@@ -265,8 +264,6 @@ const GeneralSettings = () => {
                 toggleFieldArray={toggleFieldArray}
                 toggleFilterArray={toggleFilterArray}
               />
-            ) : (
-              <Divider style={{ margin: 0 }} />
             )}
           </AccordionDetails>
         </Accordion>

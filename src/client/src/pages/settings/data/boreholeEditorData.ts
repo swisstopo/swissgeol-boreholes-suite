@@ -17,5 +17,5 @@ const fields = [
 export const boreholeEditorData: SettingsItem[] = fields.map((field, index) => ({
   id: index,
   label: field.label,
-  value: field.value || (field.prefix ? `${field.prefix}.${field.label}` : field.label),
+  value: field.value ?? (field.prefix ? `${field.prefix}.${field.label}` : field.label),
 }));

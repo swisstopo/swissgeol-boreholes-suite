@@ -106,8 +106,8 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
           {t("unselectAll")}
         </Button>
       </Segment>
-      {settingsItems?.map((item, index) => (
-        <Segment key={index}>
+      {settingsItems?.map(item => (
+        <Segment key={item.id}>
           <Checkbox
             checked={!!checkedStates[item.value]}
             onChange={e => handleCheckboxChange(item, e.target.checked)}
