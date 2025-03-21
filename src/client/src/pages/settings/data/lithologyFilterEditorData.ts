@@ -1,4 +1,6 @@
-export const lithologyFilterEditorData = [
+import { SettingsItem } from "./SettingsItem.ts";
+
+export const lithologyFilterEditorData: SettingsItem[] = [
   {
     id: 0,
     label: "fromdepth",

@@ -1,4 +1,6 @@
-export const boreholeEditorData = [
+import { SettingsItem } from "./SettingsItem.ts";
+
+export const boreholeEditorData: SettingsItem[] = [
   {
     id: 0,
     label: "borehole_type",

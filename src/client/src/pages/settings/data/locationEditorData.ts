@@ -1,4 +1,6 @@
-export const locationEditorData = [
+import { SettingsItem } from "./SettingsItem.ts";
+
+export const locationEditorData: SettingsItem[] = [
   {
     id: 0,
     label: "borehole_identifier",

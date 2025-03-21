@@ -1,4 +1,6 @@
-export const registrationEditorData = [
+import { SettingsItem } from "./SettingsItem.ts";
+
+export const registrationEditorData: SettingsItem[] = [
   {
     id: 0,
     label: "createdBy",

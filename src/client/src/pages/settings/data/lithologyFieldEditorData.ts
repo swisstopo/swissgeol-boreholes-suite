@@ -1,4 +1,6 @@
-export const lithologyFieldEditorData = [
+import { SettingsItem } from "./SettingsItem.ts";
+
+export const lithologyFieldEditorData: SettingsItem[] = [
   {
     id: 0,
     label: "layer_last",

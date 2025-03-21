@@ -13,13 +13,14 @@ import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { useDomains } from "../../api/fetchApiV2";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
-import GeneralSettingList from "./components/editorSettingList/generalSettingList";
+import GeneralSettingList from "./components/editorSettingList/generalSettingList.tsx";
 import MapSettings from "./components/editorSettingList/mapSettings";
-import { boreholeEditorData } from "./data/boreholeEditorData";
-import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
-import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData";
-import { locationEditorData } from "./data/locationEditorData";
-import { registrationEditorData } from "./data/registrationEditorData";
+import { boreholeEditorData } from "./data/boreholeEditorData.ts";
+import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData.ts";
+import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData.ts";
+import { locationEditorData } from "./data/locationEditorData.ts";
+import { registrationEditorData } from "./data/registrationEditorData.ts";
+import { SettingsItem } from "./data/SettingsItem.ts";
 import { Layer } from "./layerInterface.ts";
 
 const projections = {
@@ -190,8 +191,8 @@ const GeneralSettings = () => {
     wms: null,
   });
 
-  const handleButtonSelected = (name: string, isSelected: boolean) => {
-    let selectedData;
+  const handleButtonSelected = (name: string, isSelected: boolean): SettingsItem[] => {
+    let selectedData: SettingsItem[];
     if (name === "location" && isSelected) {
       selectedData = locationEditorData;
     } else if (name === "borehole" && isSelected) {
@@ -203,7 +204,7 @@ const GeneralSettings = () => {
     } else if (name === "registration" && isSelected) {
       selectedData = registrationEditorData;
     } else {
-      selectedData = null;
+      selectedData = [];
     }
     return selectedData;
   };
@@ -255,7 +256,7 @@ const GeneralSettings = () => {
           <AccordionDetails>
             {filter.isSelected && handleButtonSelected(filter.name, filter.isSelected) !== null ? (
               <GeneralSettingList
-                attribute={handleButtonSelected(filter.name, filter.isSelected)}
+                settingsItems={handleButtonSelected(filter.name, filter.isSelected)}
                 codes={domains}
                 data={setting.data.efilter}
                 listName={filter.name}
