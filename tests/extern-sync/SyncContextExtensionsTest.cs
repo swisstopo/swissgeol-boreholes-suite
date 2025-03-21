@@ -13,6 +13,14 @@ public class SyncContextExtensionsTest
     public static async Task ClassInitialize(TestContext testContext)
         => context = await CreateDbContextAsync(useInMemory: false, seedTestData: true);
 
+    [TestInitialize]
+    public void TestInitialize()
+        => context.Database.BeginTransaction();
+
+    [TestCleanup]
+    public void TestCleanup()
+        => context.Database.RollbackTransaction();
+
     [TestMethod]
     public async Task SetBoreholePublicationStatusAsync()
     {
