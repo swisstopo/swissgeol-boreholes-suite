@@ -23,7 +23,7 @@ public class LayerController : BoreholeControllerBase<Layer>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<Layer>>> GetAsync([FromQuery] int? profileId = null)
     {
-        var layers = GetLayersWithIncludes().AsNoTracking();
+        var layers = Context.LayersWithIncludes.AsNoTracking();
         if (profileId != null)
         {
             layers = layers.Where(l => l.StratigraphyId == profileId);
@@ -40,7 +40,7 @@ public class LayerController : BoreholeControllerBase<Layer>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Layer>> GetByIdAsync(int id)
     {
-        var layer = await GetLayersWithIncludes()
+        var layer = await Context.LayersWithIncludes
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);
@@ -161,39 +161,6 @@ public class LayerController : BoreholeControllerBase<Layer>
         entity.LayerUscs3Codes = uscs3Codes.Select(c => new LayerUscs3Code { Codelist = c, CodelistId = c.Id }).ToList();
 
         return await base.CreateAsync(entity).ConfigureAwait(false);
-    }
-
-    private IQueryable<Layer> GetLayersWithIncludes()
-    {
-        return Context.Layers
-            .Include(l => l.DescriptionQuality)
-            .Include(l => l.Lithology)
-            .Include(l => l.Plasticity)
-            .Include(l => l.Consistance)
-            .Include(l => l.Alteration)
-            .Include(l => l.Compactness)
-            .Include(l => l.GrainSize1)
-            .Include(l => l.GrainSize2)
-            .Include(l => l.Cohesion)
-            .Include(l => l.Uscs1)
-            .Include(l => l.Uscs2)
-            .Include(l => l.UscsDetermination)
-            .Include(l => l.Lithostratigraphy)
-            .Include(l => l.Humidity)
-            .Include(l => l.Gradation)
-            .Include(l => l.LithologyTopBedrock)
-            .Include(l => l.LayerColorCodes)
-            .Include(l => l.ColorCodelists)
-            .Include(l => l.LayerGrainShapeCodes)
-            .Include(l => l.GrainShapeCodelists)
-            .Include(l => l.LayerDebrisCodes)
-            .Include(l => l.DebrisCodelists)
-            .Include(l => l.LayerGrainAngularityCodes)
-            .Include(l => l.GrainAngularityCodelists)
-            .Include(l => l.LayerUscs3Codes)
-            .Include(l => l.Uscs3Codelists)
-            .Include(l => l.LayerOrganicComponentCodes)
-            .Include(l => l.OrganicComponentCodelists);
     }
 
     /// <inheritdoc />

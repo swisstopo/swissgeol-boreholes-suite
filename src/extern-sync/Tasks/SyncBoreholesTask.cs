@@ -15,9 +15,8 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
     protected override async Task RunTaskAsync(CancellationToken cancellationToken)
     {
         // Get published boreholes from the source database.
-        var publishedBoreholes = Source.Boreholes
+        var publishedBoreholes = Source.BoreholesWithIncludes
             .AsNoTrackingWithIdentityResolution()
-            .GetAllWithIncludes()
             .WithPublicationStatusPublished()
             .ToList();
 

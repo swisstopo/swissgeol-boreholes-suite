@@ -166,7 +166,7 @@ public class SyncBoreholesTaskTest
         BdmsContext sourceContext, BdmsContext targetContext)
     {
         return (
-            sourceContext.Boreholes.AsNoTracking().GetAllWithIncludes().WithPublicationStatusPublished(),
-            targetContext.Boreholes.AsNoTracking().GetAllWithIncludes().WithPublicationStatusPublished());
+            sourceContext.BoreholesWithIncludes.AsNoTracking().WithPublicationStatusPublished(),
+            targetContext.BoreholesWithIncludes.AsNoTracking().WithPublicationStatusPublished());
     }
 }

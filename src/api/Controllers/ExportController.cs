@@ -57,7 +57,7 @@ public class ExportController : ControllerBase
     {
         if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
-        var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         if (!await HasUserPermissionsForBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
@@ -75,7 +75,7 @@ public class ExportController : ControllerBase
     {
         if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
-        var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         if (!await HasUserPermissionsForBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
@@ -308,7 +308,7 @@ public class ExportController : ControllerBase
     {
         if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
-        var boreholes = await context.Boreholes.GetAllWithIncludes().AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         if (!await HasUserPermissionsForBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
