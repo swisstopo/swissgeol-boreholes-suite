@@ -35,17 +35,17 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
     const isChecked = (item: SettingsItem) => {
       const isVisible = (field: string) => {
         const layerKindConfigEntry: Codelist | undefined = codes?.find((c: Codelist) => c.schema === "layer_kind");
-
         const conf = layerKindConfigEntry?.conf ? JSON.parse(layerKindConfigEntry?.conf) : "";
         return conf?.fields?.[field] ?? false;
       };
 
-      return listName === "lithologyfields"
-        ? isVisible(item.value)
-        : item.value.split(".").length > 1
-          ? // @ts-expect-error setting values inside efilter have not been typed
-            data?.[item.value.split(".")[0]]?.[item.value.split(".")[1]]
-          : data?.[item.value];
+      const getNestedValue = (settingValue: string) => {
+        const splitStrings = settingValue.split(".");
+        // @ts-expect-error setting values inside efilter have not been typed
+        return splitStrings.length > 1 ? data?.[splitStrings[0]]?.[splitStrings[1]] : data?.[settingValue];
+      };
+
+      return listName === "lithologyfields" ? isVisible(item.value) : getNestedValue(item.value);
     };
 
     const initialState: { [key: string]: boolean } = {};
