@@ -9,7 +9,6 @@ import { Options, optionsFromCapabilities } from "ol/source/WMTS";
 import proj4 from "proj4";
 import { patchCodeConfig, patchSettings } from "../../api-lib";
 import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { useDomains } from "../../api/fetchApiV2";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import GeneralSettingList from "./components/editorSettingList/generalSettingList.tsx";
@@ -38,7 +37,6 @@ const GeneralSettings = () => {
   const { i18n, t } = useTranslation();
 
   const setting = useSelector((state: ReduxRootState) => state.setting);
-  const { data: domains } = useDomains();
 
   const dispatch = useDispatch();
   const toggleFieldArray = (filter: string[], enabled: boolean) => {
