@@ -5,7 +5,7 @@ import { Segment } from "semantic-ui-react";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import * as Styled from "./styles";
 
-const EditorSettingList = props => {
+const GeneralSettingList = props => {
   const { data, toggleFilter, attribute, toggleField, listName, codes, toggleFieldArray, toggleFilterArray } = props;
   const { t } = useTranslation();
   const [checkedStates, setCheckedStates] = useState({});
@@ -97,4 +97,4 @@ const EditorSettingList = props => {
   );
 };
 
-export default EditorSettingList;
+export default GeneralSettingList;
