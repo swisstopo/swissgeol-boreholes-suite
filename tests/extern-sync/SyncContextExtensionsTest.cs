@@ -1,5 +1,6 @@
 ﻿using BDMS.Models;
 using Moq;
+using System.Runtime.CompilerServices;
 using static BDMS.ExternSync.TestSyncContextExtensions;
 
 namespace BDMS.ExternSync;
@@ -19,7 +20,10 @@ public class SyncContextExtensionsTest
 
     [TestCleanup]
     public void TestCleanup()
-        => context.Database.RollbackTransaction();
+    {
+        context.Database.RollbackTransaction();
+        context.ChangeTracker.Clear();
+    }
 
     [TestMethod]
     public async Task SetBoreholePublicationStatusAsync()
