@@ -63,7 +63,7 @@ describe("Tests for filtering data by identifier.", () => {
     // show all options
     cy.get('[class="ui fitted toggle checkbox"]').eq(0).children().first().check({ force: true });
 
-    getDomainDropdown.click({ force: true }).find('[role="option"]').eq(1).click({ force: true });
+    getDomainDropdown().click({ force: true }).find('[role="option"]').eq(1).click({ force: true });
     verifyPaginationText("1–2 of 2");
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });

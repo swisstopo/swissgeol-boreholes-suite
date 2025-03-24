@@ -20,15 +20,15 @@ describe("Tests for 'Location' edit page.", () => {
 
   const verifyNoUnsavedChanges = () => {
     const { saveButton, discardButton } = getButtons();
-    saveButton.should("be.disabled");
-    discardButton.should("be.disabled");
+    saveButton().should("be.disabled");
+    discardButton().should("be.disabled");
     cy.contains("Unsaved changes").should("not.exist");
   };
 
   const verifyUnsavedChanges = () => {
     const { saveButton, discardButton } = getButtons();
-    saveButton.should("not.be.disabled");
-    discardButton.should("not.be.disabled");
+    saveButton().should("not.be.disabled");
+    discardButton().should("not.be.disabled");
     cy.contains("Unsaved changes").should("exist");
   };
 
@@ -142,13 +142,13 @@ describe("Tests for 'Location' edit page.", () => {
       setSelect("restrictionId", 3);
       verifyUnsavedChanges();
       const { saveButton, discardButton } = getButtons();
-      discardButton.click();
+      discardButton().click();
       verifyNoUnsavedChanges();
 
       // save changes
       setSelect("restrictionId", 3);
       verifyUnsavedChanges();
-      saveButton.click();
+      saveButton().click();
       verifyNoUnsavedChanges();
     });
   });

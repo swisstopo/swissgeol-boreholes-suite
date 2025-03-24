@@ -5,10 +5,10 @@ const buttonActiveColor = "rgb(214, 226, 230)";
 
 function drawPolygon() {
   const canvas = () => cy.get("canvas");
-  canvas.trigger("pointerdown", { x: 450, y: 300 }).trigger("pointerup", { x: 450, y: 300 });
-  canvas.trigger("pointerdown", { x: 550, y: 810 }).trigger("pointerup", { x: 550, y: 810 });
-  canvas.trigger("pointerdown", { x: 640, y: 810 }).trigger("pointerup", { x: 640, y: 810 });
-  canvas.trigger("pointerdown", { x: 450, y: 300 }).trigger("pointerup", { x: 450, y: 300 });
+  canvas().trigger("pointerdown", { x: 450, y: 300 }).trigger("pointerup", { x: 450, y: 300 });
+  canvas().trigger("pointerdown", { x: 550, y: 810 }).trigger("pointerup", { x: 550, y: 810 });
+  canvas().trigger("pointerdown", { x: 640, y: 810 }).trigger("pointerup", { x: 640, y: 810 });
+  canvas().trigger("pointerdown", { x: 450, y: 300 }).trigger("pointerup", { x: 450, y: 300 });
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(2000);
 }
