@@ -47,7 +47,14 @@ const ListFilter = props => {
     <Styled.Container>
       {showCheckbox() && (
         <FormControlLabel
-          control={<Switch checked={showAll} color="secondary" onChange={() => setShowAll(!showAll)} />}
+          control={
+            <Switch
+              data-cy={"show-all-fields-switch"}
+              checked={showAll}
+              color="secondary"
+              onChange={() => setShowAll(!showAll)}
+            />
+          }
           label={t("showallfields")}
         />
       )}

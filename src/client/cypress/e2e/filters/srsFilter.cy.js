@@ -58,7 +58,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get('[data-cy="show-filter-button"]').click();
 
     cy.contains("h6", "Location").click();
-    cy.get('[class="ui fitted toggle checkbox"]').eq(0).children().first().check({ force: true });
+    getElementByDataCy("show-all-fields-switch").click();
     cy.get('[data-cy="radiobutton-all"]').click();
     verifyPaginationText("1–100 of 1627");
 

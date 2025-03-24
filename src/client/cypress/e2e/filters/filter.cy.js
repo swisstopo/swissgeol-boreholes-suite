@@ -20,7 +20,7 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Location").click();
-    cy.contains("Show all fields").children().eq(0).click();
+    getElementByDataCy("show-all-fields-switch").click();
     let indentifierDropdown = cy.contains("label", "ID type").next();
 
     indentifierDropdown.click();
@@ -89,7 +89,7 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Registration").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
 
     // input value
     cy.contains("Created by").next().find("input").type("v_ U%r");
@@ -162,7 +162,7 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Location").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
 
     cy.get('[data-cy="national_interest-yes"]').click();
     cy.wait("@edit_list");
@@ -182,7 +182,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
     cy.contains("Lithology").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
     cy.get('[data-cy="striae-yes"]').click();
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 1401");
@@ -252,7 +252,7 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Borehole").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
 
     let boreholeStatusDropdown = cy.contains("label", "Borehole status").next();
 
@@ -270,8 +270,7 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Lithology").click();
-    cy.contains("Show all fields").children(".checkbox").click();
-
+    getElementByDataCy("show-all-fields-switch").click();
     let colorDropdown = cy.contains("label", "Colour").next();
 
     colorDropdown.click();
@@ -312,7 +311,7 @@ describe("Search filter tests", () => {
 
   function filterByOriginalLithology() {
     cy.contains("Lithology").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
     cy.contains("Original lithology").next().find("input").type("Wooden Chair");
   }
 
@@ -328,7 +327,7 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Registration").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
 
     // input values
     cy.contains("Creation date").next().find(".react-datepicker-wrapper .datepicker-input").click();

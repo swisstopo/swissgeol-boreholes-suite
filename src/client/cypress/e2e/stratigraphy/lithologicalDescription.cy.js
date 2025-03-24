@@ -1,5 +1,6 @@
 import { addItem, deleteItem } from "../helpers/buttonHelpers";
 import {
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   newEditableBorehole,
   returnToOverview,
@@ -23,7 +24,7 @@ describe("Tests for the lithological description column.", () => {
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
     cy.get('[data-cy="toDepth"]').click().clear().type(50);
     cy.wait("@update-layer");
     cy.wait("@layer");
@@ -33,7 +34,7 @@ describe("Tests for the lithological description column.", () => {
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
     cy.get('[data-cy="toDepth"]').click().clear().type(62.5);
     cy.wait("@update-layer");
     cy.wait("@layer");
@@ -43,7 +44,7 @@ describe("Tests for the lithological description column.", () => {
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
     cy.get('[data-cy="toDepth"]').click().clear().type(120);
     cy.wait("@update-layer");
     cy.wait("@layer");

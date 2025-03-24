@@ -148,7 +148,14 @@ const LithologyAttributes = props => {
     <Styled.Container disable={!id}>
       {showCheckbox() && (
         <FormControlLabel
-          control={<Switch color="secondary" checked={showAll} onChange={() => setShowAll(!showAll)} />}
+          control={
+            <Switch
+              data-cy={"show-all-fields-switch"}
+              color="secondary"
+              checked={showAll}
+              onChange={() => setShowAll(!showAll)}
+            />
+          }
           label={t("showallfields")}
         />
       )}
