@@ -1,4 +1,3 @@
-import { Button } from "semantic-ui-react";
 import styled from "styled-components";
 
 export const ErrorCard = styled.div`
@@ -12,9 +11,6 @@ export const ErrorCard = styled.div`
 
   min-height: 10em;
   flex: ${props => props.isDelete && "6"};
-  /* :hover {
-    background-color: red;
-  } */
 `;
 
 export const HowToResolveContainer = styled.div`
@@ -37,22 +33,4 @@ export const ErrorMessageContainer = styled.div`
 `;
 export const SolutionContainer = styled.div`
   padding-left: 8px;
-`;
-export const CardButtonContainer = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin: 10px;
-`;
-export const WrenchButtonContainer = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-export const CardButton = styled(Button)`
-  /* color: red; */
-  /* flex: 1; */
 `;
