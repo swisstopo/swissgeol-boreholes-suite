@@ -1,6 +1,5 @@
 ﻿using BDMS.Models;
 using Moq;
-using System.Runtime.CompilerServices;
 using static BDMS.ExternSync.TestSyncContextExtensions;
 
 namespace BDMS.ExternSync;
@@ -21,6 +20,9 @@ public class SyncContextExtensionsTest
     [TestCleanup]
     public void TestCleanup()
     {
+        // Rollback the transaction and clear the ChangeTracker to keep the database clean
+        // for each test. This is important because the context is shared between tests and
+        // creating a new context for each test would be too slow (because of the seeding).
         context.Database.RollbackTransaction();
         context.ChangeTracker.Clear();
     }
@@ -62,7 +64,7 @@ public class SyncContextExtensionsTest
     [TestMethod]
     public async Task GetWithPublicationStatusPublished()
     {
-        // Set the publication status for some boreholes. By default all seeded boreholes havethe publication status 'change in progress'.
+        // Set the publication status for some boreholes. By default all seeded boreholes have the publication status 'change in progress'.
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
         await context.SetBoreholePublicationStatusAsync(1_000_001, 1, Role.Editor, cancellationToken);
         await context.SetBoreholePublicationStatusAsync(1_000_020, 1, Role.Controller, cancellationToken);
