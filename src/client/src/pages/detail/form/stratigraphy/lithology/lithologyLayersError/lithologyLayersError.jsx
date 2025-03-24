@@ -1,10 +1,18 @@
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Icon, Radio } from "semantic-ui-react";
+import { FormControl } from "@mui/base";
+import { FormControlLabel, IconButton, Radio, RadioGroup } from "@mui/material";
+import { Check, TriangleAlert, Wrench } from "lucide-react";
 import { deleteLayer, gapLayer } from "../../../../../../api-lib";
 import { addBedrock, fetchLayerById } from "../../../../../../api/fetchApiV2.js";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
-import TranslationText from "../../../../../../components/legacyComponents/translationText.jsx";
+import {
+  AddButton,
+  BoreholesBaseButton,
+  CancelButton,
+  DeleteButton,
+} from "../../../../../../components/buttons/buttons.js";
+import { DataCardButtonContainer } from "../../../../../../components/dataCard/dataCard.js";
 import ErrorTypes from "./errorTypes";
 import * as Styled from "./styles.js";
 
@@ -63,9 +71,9 @@ const LithologyLayersError = props => {
     )
       return 2;
   };
-  const handleResolvingAction = (e, { value }) => {
+  const handleResolvingAction = (e, data) => {
     e.stopPropagation();
-    setResolvingAction(value);
+    setResolvingAction(parseInt(e.target.value));
   };
   const onCancelClicked = () => {
     setShowSolution();
@@ -126,23 +134,14 @@ const LithologyLayersError = props => {
             isEditable && setShowSolution(id);
           }}>
           <Styled.ErrorMessageContainer>
-            <Icon name="warning sign" />
-            <TranslationText id={error?.messageId} />
+            <TriangleAlert />
+            {t(error?.messageId)}
           </Styled.ErrorMessageContainer>
 
           {isEditable && showSolution !== id && (
-            <Styled.WrenchButtonContainer>
-              <Styled.CardButton
-                basic
-                color="red"
-                icon
-                onClick={() => {
-                  setShowSolution(id);
-                }}
-                size="mini">
-                <Icon name="wrench" />
-              </Styled.CardButton>
-            </Styled.WrenchButtonContainer>
+            <IconButton sx={{ m: 2 }} color={"error"} onClick={() => setShowSolution(id)}>
+              <Wrench />
+            </IconButton>
           )}
         </Styled.Row>
       )}
@@ -150,99 +149,64 @@ const LithologyLayersError = props => {
       {showSolution === id && !isDelete && (
         <Styled.SolutionContainer>
           {error.id !== 5 && <Styled.HowToResolveContainer>{t("errorHowToResolve")}</Styled.HowToResolveContainer>}
-          {error?.solutions?.map((e, index) => (
-            <div key={index} style={{ marginTop: 2 }}>
-              {error.solutions.length > 1 && (
-                <Radio
-                  checked={resolvingAction === resolving(e)}
-                  name="radioGroup"
-                  onChange={handleResolvingAction}
-                  style={{ marginRight: 4 }}
-                  value={resolving(e)}
-                />
+          <FormControl>
+            <RadioGroup value={resolvingAction} onChange={handleResolvingAction}>
+              {error?.solutions?.map(
+                (e, index) =>
+                  error.solutions.length > 1 && (
+                    <FormControlLabel key={e} value={resolving(e)} control={<Radio />} label={t(e)} />
+                  ),
               )}
-              <TranslationText id={e} />
-            </div>
-          ))}
-          <Styled.CardButtonContainer>
-            <Styled.CardButton
-              basic
-              icon
-              size="mini"
-              onClick={() => {
-                onCancelClicked();
-              }}>
-              <Icon name="cancel" />
-              {t("cancel")}
-            </Styled.CardButton>
-            {error?.id !== 5 && (
-              <Styled.CardButton
-                disabled={resolvingAction === null && error?.id !== 0}
-                icon
-                onClick={sendDataToServer}
-                secondary
-                size="mini">
-                {error?.id !== 0 && (
-                  <>
-                    <Icon name="check" />
-                    {t("confirm")}
-                  </>
-                )}
-                {error?.id === 0 && (
-                  <>
-                    <Icon name="add" />
-                    {t("add")}
-                  </>
-                )}
-              </Styled.CardButton>
-            )}
-          </Styled.CardButtonContainer>
+            </RadioGroup>
+          </FormControl>
+          <DataCardButtonContainer>
+            <CancelButton onClick={onCancelClicked} />
+            {error?.id !== 5 &&
+              (error?.id !== 0 ? (
+                <BoreholesBaseButton
+                  variant={"outlined"}
+                  color={"secondary"}
+                  disabled={resolvingAction === null && error?.id !== 0}
+                  onClick={sendDataToServer}
+                  label="confirm"
+                  icon={<Check />}
+                />
+              ) : (
+                <AddButton disabled={resolvingAction === null && error?.id !== 0} onClick={sendDataToServer} />
+              ))}
+          </DataCardButtonContainer>
         </Styled.SolutionContainer>
       )}
 
       {showSolution === id && isDelete && (
         <Styled.SolutionContainer>
           <Styled.ErrorMessageContainer>
-            <Icon name="warning sign" />
-            <TranslationText id={error?.messageId} />
+            <TriangleAlert />
+            {t(error?.messageId)}
           </Styled.ErrorMessageContainer>
-
           <Styled.HowToResolveContainer>{t("deletelayerconfirmation")}</Styled.HowToResolveContainer>
-          {error?.solutions?.map((e, index) => (
-            <div key={index} style={{ marginTop: 2 }}>
-              {(index === 0 ||
-                (layerIndex > 0 && (index === 1 || index === 3)) ||
-                (layerIndex + 1 < layerLength && index === 2)) && (
-                <>
-                  <Radio
-                    checked={resolvingAction === resolving(e)}
-                    name="radioGroup"
-                    onChange={handleResolvingAction}
-                    style={{ marginRight: 4 }}
-                    value={resolving(e)}
-                  />
-                  <TranslationText id={e} />
-                </>
+          <FormControl>
+            <RadioGroup value={resolvingAction} onChange={handleResolvingAction}>
+              {error?.solutions?.map(
+                (e, index) =>
+                  (index === 0 ||
+                    (layerIndex > 0 && (index === 1 || index === 3)) ||
+                    (layerIndex + 1 < layerLength && index === 2)) && (
+                    <FormControlLabel
+                      key={index}
+                      value={resolving(e)}
+                      control={<Radio />}
+                      label={t(e)}
+                      style={{ marginTop: 2 }}
+                    />
+                  ),
               )}
-            </div>
-          ))}
-          <Styled.CardButtonContainer>
-            <Styled.CardButton
-              basic
-              icon
-              onClick={e => {
-                e.stopPropagation();
-                onCancelClicked();
-              }}
-              size="mini">
-              <Icon name="cancel" />
-              {t("cancel")}
-            </Styled.CardButton>
-            <Styled.CardButton disabled={resolvingAction === null} icon negative onClick={sendDataToServer} size="mini">
-              <Icon name="trash" />
-              {t("confirm")}
-            </Styled.CardButton>
-          </Styled.CardButtonContainer>
+            </RadioGroup>
+          </FormControl>
+          <DataCardButtonContainer>
+            <CancelButton onClick={onCancelClicked} />
+            <DeleteButton disabled={resolvingAction === null} onClick={sendDataToServer} />
+          </DataCardButtonContainer>
         </Styled.SolutionContainer>
       )}
     </Styled.ErrorCard>
