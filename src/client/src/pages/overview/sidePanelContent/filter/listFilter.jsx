@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Checkbox, Form, Input, TextArea } from "semantic-ui-react";
+import { FormControlLabel, Switch } from "@mui/material";
+import { Form, Input, TextArea } from "semantic-ui-react";
 import _ from "lodash";
 import DateField from "../../../../components/legacyComponents/dateField.jsx";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown";
@@ -45,10 +46,10 @@ const ListFilter = props => {
   return (
     <Styled.Container>
       {showCheckbox() && (
-        <Styled.CheckboxContainer>
-          {t("showallfields")}
-          <Checkbox checked={showAll} onChange={() => setShowAll(!showAll)} toggle />
-        </Styled.CheckboxContainer>
+        <FormControlLabel
+          control={<Switch checked={showAll} color="secondary" onChange={() => setShowAll(!showAll)} />}
+          label={t("showallfields")}
+        />
       )}
 
       {attribute && (
