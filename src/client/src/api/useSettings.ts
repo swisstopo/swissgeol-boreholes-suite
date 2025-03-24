@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { SettingsContext } from "./SettingsProvider";
+import { SettingsContext } from "./SettingsContext.tsx";
 
 /**
  * Hook to access the application settings throughout the app.

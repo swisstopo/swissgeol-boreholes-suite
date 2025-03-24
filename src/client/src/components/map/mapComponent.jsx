@@ -486,7 +486,7 @@ class MapComponent extends React.Component {
     }, 500);
     this.refreshPoints();
     this.map.updateSize();
-    view.getResolution() < 1 && view.setResolution(1);
+    if (view.getResolution() < 1) view.setResolution(1);
   }
 
   refreshPoints() {
@@ -634,7 +634,7 @@ class MapComponent extends React.Component {
     const view = this.map.getView();
     const extent = this.points.getExtent();
     view.fit(extent, this.map.getSize());
-    view.getResolution() < 1 && view.setResolution(1);
+    if (view.getResolution() < 1) view.setResolution(1);
   };
 
   render() {
