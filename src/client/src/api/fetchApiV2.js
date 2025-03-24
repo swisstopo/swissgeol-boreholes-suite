@@ -183,10 +183,16 @@ export const updateStratigraphy = async stratigraphy => {
 // Enable using react-query outputs across the application.
 
 export const useDomains = () =>
-  useQuery("domains", () => {
-    const domains = fetchApiV2("codelist", "GET");
-    return domains;
-  });
+  useQuery(
+    "domains",
+    () => {
+      return fetchApiV2("codelist", "GET");
+    },
+    {
+      staleTime: 10 * (60 * 1000), // 10 mins
+      cacheTime: 15 * (60 * 1000), // 15 mins
+    },
+  );
 
 export const useDomainSchema = schema =>
   useQuery(
