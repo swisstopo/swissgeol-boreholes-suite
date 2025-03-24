@@ -82,7 +82,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
 
         var skip = (pageNumber - 1) * pageSize;
-        var query = Context.Boreholes.GetAllWithIncludes().AsNoTracking();
+        var query = Context.BoreholesWithIncludes.AsNoTracking();
 
         if (ids != null && ids.Any())
         {
@@ -104,7 +104,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Borehole>> GetByIdAsync(int id)
     {
-        var borehole = await Context.Boreholes.GetAllWithIncludes()
+        var borehole = await Context.BoreholesWithIncludes
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);
@@ -140,7 +140,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return Unauthorized();
         }
 
-        var borehole = await Context.Boreholes.GetAllWithIncludes()
+        var borehole = await Context.BoreholesWithIncludes
             .AsNoTracking()
             .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
