@@ -7,11 +7,29 @@ namespace BDMS.ExternSync;
 [TestClass]
 public class SyncContextExtensionsTest
 {
+    private static BdmsContext context;
+
+    [ClassInitialize]
+    public static async Task ClassInitialize(TestContext testContext)
+        => context = await CreateDbContextAsync(useInMemory: false, seedTestData: true);
+
+    [TestInitialize]
+    public void TestInitialize()
+        => context.Database.BeginTransaction();
+
+    [TestCleanup]
+    public void TestCleanup()
+    {
+        // Rollback the transaction and clear the ChangeTracker to keep the database clean
+        // for each test. This is important because the context is shared between tests and
+        // creating a new context for each test would be too slow (because of the seeding).
+        context.Database.RollbackTransaction();
+        context.ChangeTracker.Clear();
+    }
+
     [TestMethod]
     public async Task SetBoreholePublicationStatusAsync()
     {
-        using var context = await CreateDbContextAsync(useInMemory: false, seedTestData: true);
-
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
         var borehole = context.Boreholes.Single(b => b.Id == 1_000_010);
         var user = context.Users.Single(u => u.Id == 1);
@@ -46,9 +64,7 @@ public class SyncContextExtensionsTest
     [TestMethod]
     public async Task GetWithPublicationStatusPublished()
     {
-        using var context = await CreateDbContextAsync(useInMemory: false, seedTestData: true);
-
-        // Set the publication status for some boreholes. By default all seeded boreholes havethe publication status 'change in progress'.
+        // Set the publication status for some boreholes. By default all seeded boreholes have the publication status 'change in progress'.
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
         await context.SetBoreholePublicationStatusAsync(1_000_001, 1, Role.Editor, cancellationToken);
         await context.SetBoreholePublicationStatusAsync(1_000_020, 1, Role.Controller, cancellationToken);
