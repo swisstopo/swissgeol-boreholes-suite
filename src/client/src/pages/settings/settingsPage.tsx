@@ -7,7 +7,7 @@ import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
-import AboutSettings from "./aboutSettings";
+import { AboutSettings } from "./aboutSettings.tsx";
 import { UserAdministration } from "./admin/userAdministration.tsx";
 import { UserAdministrationProvider } from "./admin/userAdministrationContext.tsx";
 import { UserDetail } from "./admin/userDetail.tsx";
