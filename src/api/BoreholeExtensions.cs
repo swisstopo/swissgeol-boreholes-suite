@@ -148,4 +148,72 @@ public static class BoreholeExtensions
             completion.Backfills?.MapCasings(casings);
         }
     }
+
+    /// <summary>
+    /// Marks the content of this <see cref="Borehole"/> as new entities for Entity Framework.
+    /// </summary>
+    /// <param name="borehole">The borehole object to update.</param>
+    /// <param name="user">The user that is assigned to the new workflow item.</param>
+    /// <param name="workgroupId">The new workgroup for this borehole.</param>
+    public static void MarkBoreholeContentAsNew(this Borehole borehole, User user, int workgroupId)
+    {
+        borehole.MarkAsNew();
+        borehole.Workgroup = null;
+        borehole.WorkgroupId = workgroupId;
+        borehole.LockedBy = null;
+        borehole.LockedById = null;
+
+        // CreatedBy and UpdatedBy are copied by id unless they are overwritten later.
+        borehole.UpdatedBy = null;
+        borehole.CreatedBy = null;
+
+        borehole.MapCasingReferences();
+
+        borehole.Stratigraphies?.MarkAsNew();
+        borehole.Completions?.MarkAsNew();
+        borehole.Sections?.MarkAsNew();
+        borehole.Observations?.MarkAsNew();
+        borehole.BoreholeGeometry?.MarkAsNew();
+
+        // Do not import any workflows but add a new unfinished workflow for the current user.
+        borehole.Workflows.Clear();
+        borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
+
+        // Set the geometry's SRID to LV95 (EPSG:2056)
+        if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
+
+        borehole.Files?.Clear();
+        if (borehole.BoreholeFiles != null)
+        {
+            foreach (var file in borehole.BoreholeFiles)
+            {
+                file.File.MarkAsNew();
+            }
+        }
+
+        foreach (var stratigraphy in borehole.Stratigraphies)
+        {
+            foreach (var layer in stratigraphy.Layers)
+            {
+                // LayerId needs to be reset because it is part of the primary key
+                layer.LayerColorCodes?.ResetLayerIds();
+                layer.LayerDebrisCodes?.ResetLayerIds();
+                layer.LayerGrainShapeCodes?.ResetLayerIds();
+                layer.LayerGrainAngularityCodes?.ResetLayerIds();
+                layer.LayerOrganicComponentCodes?.ResetLayerIds();
+                layer.LayerUscs3Codes?.ResetLayerIds();
+            }
+        }
+
+        foreach (var observation in borehole.Observations)
+        {
+            if (observation is Hydrotest hydrotest)
+            {
+                // HydrotestId needs to be reset because it is part of the primary key
+                hydrotest.HydrotestKindCodes?.ResetHydrotestIds();
+                hydrotest.HydrotestEvaluationMethodCodes?.ResetHydrotestIds();
+                hydrotest.HydrotestFlowDirectionCodes?.ResetHydrotestIds();
+            }
+        }
+    }
 }

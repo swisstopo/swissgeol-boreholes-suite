@@ -147,98 +147,10 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         if (borehole == null) return NotFound();
 
-        borehole.MarkAsNew();
-
-        borehole.MapCasingReferences();
-
-        borehole.Completions?.MarkAsNew();
-        borehole.Sections?.MarkAsNew();
-
-        foreach (var stratigraphy in borehole.Stratigraphies)
-        {
-            stratigraphy.MarkAsNew();
-            foreach (var layer in stratigraphy.Layers)
-            {
-                layer.MarkAsNew();
-                layer.LayerColorCodes?.ResetLayerIds();
-                layer.LayerDebrisCodes?.ResetLayerIds();
-                layer.LayerGrainShapeCodes?.ResetLayerIds();
-                layer.LayerGrainAngularityCodes?.ResetLayerIds();
-                layer.LayerOrganicComponentCodes?.ResetLayerIds();
-                layer.LayerUscs3Codes?.ResetLayerIds();
-            }
-
-            stratigraphy.LithologicalDescriptions?.MarkAsNew();
-            stratigraphy.FaciesDescriptions?.MarkAsNew();
-            stratigraphy.ChronostratigraphyLayers?.MarkAsNew();
-            stratigraphy.LithostratigraphyLayers?.MarkAsNew();
-        }
-
-        foreach (var observation in borehole.Observations)
-        {
-            observation.MarkAsNew();
-            if (observation is FieldMeasurement fieldMeasurement)
-            {
-                if (fieldMeasurement.FieldMeasurementResults != null)
-                {
-                    foreach (var fieldMeasurementResult in fieldMeasurement.FieldMeasurementResults)
-                    {
-                        fieldMeasurementResult.MarkAsNew();
-                    }
-                }
-            }
-
-            if (observation is Hydrotest hydrotest)
-            {
-                if (hydrotest.HydrotestResults != null)
-                {
-                    foreach (var hydrotestResult in hydrotest.HydrotestResults)
-                    {
-                        hydrotestResult.MarkAsNew();
-                    }
-                }
-
-                if (hydrotest.HydrotestKindCodes != null)
-                {
-                    foreach (var hydrotestKindCode in hydrotest.HydrotestKindCodes)
-                    {
-                        hydrotestKindCode.HydrotestId = 0;
-                    }
-                }
-
-                if (hydrotest.HydrotestEvaluationMethodCodes != null)
-                {
-                    foreach (var hydrotestEvaluationMethodCode in hydrotest.HydrotestEvaluationMethodCodes)
-                    {
-                        hydrotestEvaluationMethodCode.HydrotestId = 0;
-                    }
-                }
-
-                if (hydrotest.HydrotestFlowDirectionCodes != null)
-                {
-                    foreach (var hydrotestFlowDirectionCode in hydrotest.HydrotestFlowDirectionCodes)
-                    {
-                        hydrotestFlowDirectionCode.HydrotestId = 0;
-                    }
-                }
-            }
-        }
+        borehole.MarkBoreholeContentAsNew(user, workgroupId);
 
         // Do not copy borehole attachments
         borehole.BoreholeFiles.Clear();
-
-        foreach (var boreholeGeometry in borehole.BoreholeGeometry)
-        {
-            boreholeGeometry.MarkAsNew();
-        }
-
-        borehole.UpdatedBy = null;
-        borehole.Workgroup = null;
-
-        borehole.WorkgroupId = workgroupId;
-
-        borehole.Workflows.Clear();
-        borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id });
 
         borehole.OriginalName += " (Copy)";
         borehole.Name += " (Copy)";

@@ -256,57 +256,28 @@ public class ImportController : ControllerBase
 
     private async Task<ActionResult<int>> ProcessAndSaveBoreholesAsync(int workgroupId, List<BoreholeImport> boreholes)
     {
+        var user = await GetUserAsync().ConfigureAwait(false);
+        if (user == null)
+            return Unauthorized();
+
         ValidateBoreholeImports(workgroupId, boreholes, ValidationErrorType.Json);
         if (!ModelState.IsValid)
             return ValidationProblem();
 
-        await MarkBoreholeContentAsNew(workgroupId, boreholes).ConfigureAwait(false);
+        await MarkBoreholeContentAsNew(user, workgroupId, boreholes).ConfigureAwait(false);
         await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
         return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
     }
 
-    private async Task MarkBoreholeContentAsNew(int workgroupId, List<BoreholeImport>? boreholes)
+    private async Task MarkBoreholeContentAsNew(User user, int workgroupId, List<BoreholeImport>? boreholes)
     {
-        var user = await GetUserAsync().ConfigureAwait(false);
         var hydrotestCodelists = await GetHydrotestCodelistsAsync().ConfigureAwait(false);
 
         foreach (var borehole in boreholes)
         {
-            borehole.MarkAsNew();
-            borehole.Workgroup = null;
-            borehole.WorkgroupId = workgroupId;
-            borehole.LockedBy = null;
-            borehole.LockedById = null;
-            borehole.UpdatedBy = null;
-            borehole.CreatedBy = null;
-            borehole.CreatedById = user.Id;
-            borehole.UpdatedById = user.Id;
-
-            borehole.MapCasingReferences();
-
-            borehole.Stratigraphies?.MarkAsNew();
-            borehole.Completions?.MarkAsNew();
-            borehole.Sections?.MarkAsNew();
-            borehole.Observations?.MarkAsNew();
-            borehole.BoreholeGeometry?.MarkAsNew();
+            borehole.MarkBoreholeContentAsNew(user, workgroupId);
 
             MapHydrotestCodelists(borehole, hydrotestCodelists);
-
-            // Do not import any workflows from the json file but add a new unfinished workflow for the current user.
-            borehole.Workflows.Clear();
-            borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
-
-            // Set the geometry's SRID to LV95 (EPSG:2056)
-            if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
-
-            if (borehole.Files != null) borehole.Files.Clear();
-            if (borehole.BoreholeFiles != null)
-            {
-                foreach (var file in borehole.BoreholeFiles)
-                {
-                    file.File.MarkAsNew();
-                }
-            }
         }
     }
 
