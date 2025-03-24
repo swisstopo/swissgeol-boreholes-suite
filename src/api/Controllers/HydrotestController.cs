@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class HydrotestController : BoreholeControllerBase<Hydrotest>
 {
-    public HydrotestController(BdmsContext context, ILogger<HydrotestController> logger, IBoreholeLockService boreholeLockService)
-        : base(context, logger, boreholeLockService)
+    public HydrotestController(BdmsContext context, ILogger<HydrotestController> logger, IBoreholePermissionService boreholePermissionService)
+        : base(context, logger, boreholePermissionService)
     {
     }
 
@@ -73,7 +73,7 @@ public class HydrotestController : BoreholeControllerBase<Hydrotest>
         }
 
         // Check if associated borehole is locked
-        if (await BoreholeLockService.IsBoreholeLockedAsync(((Hydrotest)hydrotestToDelete).BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), ((Hydrotest)hydrotestToDelete).BoreholeId).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.");
         }
@@ -86,7 +86,7 @@ public class HydrotestController : BoreholeControllerBase<Hydrotest>
     private async Task<ActionResult> ProcessHydrotestAsync(Hydrotest hydrotest)
     {
         // Check if associated borehole is locked
-        if (await BoreholeLockService.IsBoreholeLockedAsync(hydrotest.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), hydrotest.BoreholeId).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.");
         }

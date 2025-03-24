@@ -17,7 +17,7 @@ public class BoreholeGeometryController : ControllerBase
     private const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
     private readonly BdmsContext context;
     private readonly ILogger logger;
-    private readonly IBoreholeLockService boreholeLockService;
+    private readonly IBoreholePermissionService boreholePermissionService;
     private static readonly List<IBoreholeGeometryFormat> geometryFormats = new()
     {
         new XYZFormat(),
@@ -25,11 +25,11 @@ public class BoreholeGeometryController : ControllerBase
         new PitchRollFormat(),
     };
 
-    public BoreholeGeometryController(BdmsContext context, ILogger<BoreholeGeometryElement> logger, IBoreholeLockService boreholeLockService)
+    public BoreholeGeometryController(BdmsContext context, ILogger<BoreholeGeometryElement> logger, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
         this.logger = logger;
-        this.boreholeLockService = boreholeLockService;
+        this.boreholePermissionService = boreholePermissionService;
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class BoreholeGeometryController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> GetAsync([FromQuery] int boreholeId)
     {
-        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         var result = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
         return Ok(result);
@@ -56,7 +56,7 @@ public class BoreholeGeometryController : ControllerBase
     public async Task<IActionResult> DeleteAsync(int boreholeId)
     {
         // Check if associated borehole is locked
-        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.", statusCode: (int)HttpStatusCode.BadRequest);
         }
@@ -92,7 +92,7 @@ public class BoreholeGeometryController : ControllerBase
     public async Task<IActionResult> UploadBoreholeGeometry(int boreholeId, IFormFile geometryFile, [FromForm] string geometryFormat)
     {
         // Check if associated borehole is locked
-        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.", statusCode: (int)HttpStatusCode.BadRequest);
         }
@@ -144,7 +144,7 @@ public class BoreholeGeometryController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> GetDepthTVD([FromQuery] int boreholeId, [FromQuery] double depthMD)
     {
-        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
 
@@ -167,7 +167,7 @@ public class BoreholeGeometryController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> GetDepthInMasl([FromQuery] int boreholeId, [FromQuery] double depthMD)
     {
-        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
         var tvd = geometry.GetTVDIfGeometryExists(depthMD);

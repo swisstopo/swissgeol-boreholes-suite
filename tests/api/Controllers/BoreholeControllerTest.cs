@@ -28,11 +28,11 @@ public class BoreholeControllerTest
 
     private BoreholeController GetTestController(BdmsContext testContext)
     {
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(false);
-        return new BoreholeController(testContext, new Mock<ILogger<BoreholeController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
+        return new BoreholeController(testContext, new Mock<ILogger<BoreholeController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

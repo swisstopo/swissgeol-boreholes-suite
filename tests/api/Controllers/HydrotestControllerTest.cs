@@ -18,11 +18,11 @@ public class HydrotestControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(false);
-        controller = new HydrotestController(context, new Mock<ILogger<HydrotestController>>().Object, boreholeLockServiceMock.Object)
+        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
+        controller = new HydrotestController(context, new Mock<ILogger<HydrotestController>>().Object, boreholePermissionServiceMock.Object)
         {
             ControllerContext = new ControllerContext
             {

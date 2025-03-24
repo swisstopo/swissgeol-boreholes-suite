@@ -17,11 +17,11 @@ public class LithologicalDescriptionControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(false);
-        controller = new LithologicalDescriptionController(context, new Mock<ILogger<LithologicalDescriptionController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
+        controller = new LithologicalDescriptionController(context, new Mock<ILogger<LithologicalDescriptionController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

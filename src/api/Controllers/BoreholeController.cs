@@ -18,8 +18,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
     private const int MaxPageSize = 100;
 
-    public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger, IBoreholeLockService boreholeLockService)
-    : base(context, logger, boreholeLockService)
+    public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger, IBoreholePermissionService boreholePermissionService)
+    : base(context, logger, boreholePermissionService)
     {
     }
 

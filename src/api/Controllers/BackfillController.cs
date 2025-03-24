@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class BackfillController : BoreholeControllerBase<Backfill>
 {
-    public BackfillController(BdmsContext context, ILogger<BackfillController> logger, IBoreholeLockService boreholeLockService)
-        : base(context, logger, boreholeLockService)
+    public BackfillController(BdmsContext context, ILogger<BackfillController> logger, IBoreholePermissionService boreholePermissionService)
+        : base(context, logger, boreholePermissionService)
     {
     }
 

@@ -18,11 +18,11 @@ public class InstrumentationControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(false);
-        controller = new InstrumentationController(context, new Mock<ILogger<InstrumentationController>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
+        controller = new InstrumentationController(context, new Mock<ILogger<InstrumentationController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
