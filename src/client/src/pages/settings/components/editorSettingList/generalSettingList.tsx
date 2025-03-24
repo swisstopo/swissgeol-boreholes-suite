@@ -1,12 +1,11 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Checkbox } from "@mui/material";
-import { Segment } from "semantic-ui-react";
+import { Box, Button, Checkbox } from "@mui/material";
 import { useDomains } from "../../../../api/fetchApiV2";
+import { theme } from "../../../../AppTheme.ts";
 import { Codelist } from "../../../../components/Codelist.ts";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { SettingsItem } from "../../data/SettingsItem.ts";
-import * as Styled from "./styles";
 
 interface GeneralSettingListProps {
   data: { [key: string]: string };
@@ -92,8 +91,8 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
   );
 
   return (
-    <Styled.Container>
-      <Segment>
+    <Box pt={2}>
+      <Box sx={{ py: 1, borderBottom: `1px solid ${theme.palette.border.light}` }}>
         <Button
           variant="outlined"
           sx={{ mr: 1 }}
@@ -109,20 +108,20 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
           }}>
           {t("unselectAll")}
         </Button>
-      </Segment>
+      </Box>
       {settingsItems?.map(item => {
         return (
-          <Segment key={item.id}>
+          <Box key={item.id} sx={{ py: 1, borderBottom: `1px solid ${theme.palette.border.light}` }}>
             <Checkbox
               checked={!!checkedStates[item.value]}
               onChange={e => handleCheckboxChange(item, e.target.checked)}
               data-cy={`checkbox-${item.value}`}
             />
             <TranslationText id={item.label} />
-          </Segment>
+          </Box>
         );
       })}
-    </Styled.Container>
+    </Box>
   );
 };
 
