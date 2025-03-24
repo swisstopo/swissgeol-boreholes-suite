@@ -146,10 +146,10 @@ export const copyItem = parent => {
 export const addItem = itemLabel => {
   cy.get(".MuiCircularProgress-root").should("not.exist");
   const button = () => cy.get(`[data-cy="${itemLabel.toLowerCase()}-button"]`);
-  button.scrollIntoView();
-  button.should("be.visible");
-  button.should("be.enabled");
-  button.click({ force: true });
+  button().scrollIntoView();
+  button().should("be.visible");
+  button().should("be.enabled");
+  button().click({ force: true });
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
   cy.get(".MuiCircularProgress-root").should("not.exist");

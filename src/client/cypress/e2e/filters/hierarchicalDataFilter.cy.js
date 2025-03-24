@@ -17,8 +17,8 @@ describe("Hierachical data filter tests", () => {
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("h6", "Chronostratigraphy").click();
     const periodsDropdown = () => cy.contains("label", "Period").next();
-    periodsDropdown.click();
-    periodsDropdown
+    periodsDropdown().click();
+    periodsDropdown()
       .find("div[role='option']")
       .should("have.length", 13)
       .should(options => {

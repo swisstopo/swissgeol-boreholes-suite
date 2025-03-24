@@ -21,10 +21,9 @@ describe("Search filter tests", () => {
     getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
-    const indentifierDropdown = () => cy.contains("label", "ID type").next();
-
-    indentifierDropdown.click();
-    indentifierDropdown
+    const indentifierDropdown = () => cy.get("label", "ID type").next();
+    indentifierDropdown().click();
+    indentifierDropdown()
       .find("div[role='option']")
       .should("have.length", 12)
       .should(options => {
@@ -34,9 +33,8 @@ describe("Search filter tests", () => {
 
     cy.contains("h6", "Borehole").click();
     const boreholeTypeDropdown = () => cy.contains("label", "Borehole type").next();
-
-    boreholeTypeDropdown.click();
-    boreholeTypeDropdown
+    boreholeTypeDropdown().click();
+    boreholeTypeDropdown()
       .find("div[role='option']")
       .should("have.length", 8)
       .should(options => {
@@ -255,11 +253,12 @@ describe("Search filter tests", () => {
     cy.contains("Show all fields").children(".checkbox").click();
 
     const boreholeStatusDropdown = () => cy.contains("label", "Borehole status").next();
-
-    boreholeStatusDropdown.click();
-    boreholeStatusDropdown.find("div[role='option']").then(options => {
-      cy.wrap(options).contains("decayed").click({ force: true });
-    });
+    boreholeStatusDropdown().click();
+    boreholeStatusDropdown()
+      .find("div[role='option']")
+      .then(options => {
+        cy.wrap(options).contains("decayed").click({ force: true });
+      });
     cy.wait("@edit_list");
 
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "169");
@@ -273,9 +272,8 @@ describe("Search filter tests", () => {
     cy.contains("Show all fields").children(".checkbox").click();
 
     const colorDropdown = () => cy.contains("label", "Colour").next();
-
-    colorDropdown.click();
-    colorDropdown
+    colorDropdown().click();
+    colorDropdown()
       .find("div[role='option']")
       .should("have.length", 25)
       .should(options => {
@@ -291,8 +289,8 @@ describe("Search filter tests", () => {
     verifyPaginationText("1–100 of 770");
 
     const uscs3Dropdown = () => cy.contains("label", "USCS 3").next();
-    uscs3Dropdown.scrollIntoView().click({ force: true });
-    uscs3Dropdown
+    uscs3Dropdown().scrollIntoView().click({ force: true });
+    uscs3Dropdown()
       .find("div[role='option']")
       .should("have.length", 36)
       .should(options => {

@@ -26,8 +26,7 @@ function assertPolygonFilterInactive() {
 }
 
 function assertPolygonFilterActive() {
-  const polygonFilterButton = () => cy.get('[data-cy="polygon-filter-button"]');
-  polygonFilterButton.should("have.css", "background-color", buttonActiveColor);
+  cy.get('[data-cy="polygon-filter-button"]').should("have.css", "background-color", buttonActiveColor);
   cy.get('[data-cy="polygon-filter-chip"]').should("not.exist");
   cy.get('[data-cy="polygon-filter-badge"]').should("not.exist");
 }

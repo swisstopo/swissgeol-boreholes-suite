@@ -12,9 +12,9 @@ describe("Map tests", () => {
 
     // drag map
     const canvas = () => cy.get("canvas");
-    canvas.trigger("pointerdown", { x: 300, y: 300 });
-    canvas.trigger("pointermove", { x: 500, y: 500 });
-    canvas.trigger("pointerup", { x: 500, y: 500 });
+    canvas().trigger("pointerdown", { x: 300, y: 300 });
+    canvas().trigger("pointermove", { x: 500, y: 500 });
+    canvas().trigger("pointerup", { x: 500, y: 500 });
 
     cy.window().then(win => {
       const view = win.olMap.getView();
