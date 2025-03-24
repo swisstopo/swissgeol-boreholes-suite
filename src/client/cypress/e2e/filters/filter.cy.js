@@ -21,7 +21,7 @@ describe("Search filter tests", () => {
     getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
-    const indentifierDropdown = () => cy.get("label", "ID type").next();
+    const indentifierDropdown = () => cy.contains("label", "ID type").next();
     indentifierDropdown().click();
     indentifierDropdown()
       .find("div[role='option']")
