@@ -239,7 +239,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     // Type coordinates for Samaden in LV03
     cy.get("@LV03X-input").clear();
-    cy.get("@LV03Y-input").type("789000");
+    cy.get("@LV03X-input").type("789000");
     cy.get("@LV03Y-input").clear();
     cy.get("@LV03Y-input").type("155000");
 
