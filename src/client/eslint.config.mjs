@@ -20,7 +20,6 @@ const compat = new FlatCompat({
 });
 
 export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.config.mjs", "**/cypress/downloads",  "**/dev","**/.vscode", "server.cjs"]),
-
   {
     extends: fixupConfigRules(compat.extends(
         "eslint:recommended",
@@ -31,6 +30,7 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:cypress/recommended",
+        "plugin:jsx-a11y/recommended",
     )),
     plugins: {
         "@typescript-eslint": fixupPluginRules(typescriptEslint),
@@ -38,7 +38,6 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
         prettier: fixupPluginRules(prettier),
         cypress: fixupPluginRules(cypress),
     },
-
     languageOptions: {
         globals: {
             ...globals.browser,
@@ -55,11 +54,9 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
     },
     rules: {
         "prettier/prettier": "error",
-
         "react-refresh/only-export-components": ["warn", {
             allowConstantExport: true,
         }],
-
         "react/react-in-jsx-scope": "off",
         "react/prop-types": "off",
         "react/display-name": "off",
@@ -77,5 +74,4 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
       '@typescript-eslint/no-unused-expressions': 'off',
     },
   },
-
 ]);

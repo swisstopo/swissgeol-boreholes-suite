@@ -37,7 +37,6 @@ const createBoreholeWithTwoCompletions = () => {
 
 const addCompletion = () => {
   addItem("addCompletion");
-  cy.wait("@codelist_GET");
 };
 
 const startEditHeader = () => {
@@ -383,7 +382,6 @@ describe("completion crud tests", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addcasing");
-    cy.wait("@codelist_GET");
     setInput("name", "casing 1", "casing-card.0.edit");
     setInput("casingElements.0.fromDepth", "0");
     setInput("casingElements.0.toDepth", "10");
@@ -405,7 +403,6 @@ describe("completion crud tests", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addcasing");
-    cy.wait("@codelist_GET");
     setInput("name", "casing 1", "casing-card.0.edit");
     setInput("casingElements.0.fromDepth", "0");
     setInput("casingElements.0.toDepth", "10");

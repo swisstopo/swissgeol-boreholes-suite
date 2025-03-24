@@ -4,7 +4,7 @@ it("checks that the field settings control the field visibility.", () => {
   goToRouteAndAcceptTerms("/");
 
   const waitForSettings = () => {
-    cy.wait(["@setting", "@codes", "@codelist_GET"]);
+    cy.wait(["@setting", "@codes"]);
   };
   getElementByDataCy("settings-button").click();
   getElementByDataCy("general-tab").click();

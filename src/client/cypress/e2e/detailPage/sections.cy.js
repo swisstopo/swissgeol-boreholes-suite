@@ -26,7 +26,6 @@ describe("Section crud tests", () => {
   it("adds, edits and deletes sections", () => {
     // create section
     addItem("addSection");
-    cy.wait("@codelist_GET");
     cy.get('[data-cy="sectionElements.0.delete"]').should("be.disabled");
     cy.get('[data-cy="addsection-button"]').should("be.disabled");
     cy.get('[data-cy="save-button"]').should("be.disabled");
@@ -85,8 +84,6 @@ describe("Section crud tests", () => {
 
     // update section
     startEditing();
-    cy.wait("@codelist_GET");
-
     setInput("name", "section-1 updated");
     setSelect("sectionElements.1.drillingMethodId", 13);
     cy.get('[data-cy="sectionElements.0.delete"]').click();
@@ -112,7 +109,6 @@ describe("Section crud tests", () => {
   it("saves section with ctrl s without resetting content", () => {
     // add section and save with ctrl s
     addItem("addSection");
-    cy.wait("@codelist_GET");
     setInput("name", "A");
     setInput("sectionElements.0.fromDepth", "0");
     setInput("sectionElements.0.toDepth", "1");
@@ -159,7 +155,6 @@ describe("Section crud tests", () => {
 
   it("blocks navigation when there are unsaved changes", () => {
     addItem("addSection");
-    cy.wait("@codelist_GET");
     setInput("name", "AA_CAPYBARA");
     getElementByDataCy("geometry-tab").click();
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
@@ -179,7 +174,6 @@ describe("Section crud tests", () => {
     cy.contains("No sections available");
 
     addItem("addSection");
-    cy.wait("@codelist_GET");
     setInput("name", "AA_CAPYBARA");
     setInput("sectionElements.0.fromDepth", "0");
     setInput("sectionElements.0.toDepth", "1");
@@ -202,7 +196,6 @@ describe("Section crud tests", () => {
 
   it("changes drillingMudSubtype select options based on drillingMudType", () => {
     addItem("addSection");
-    cy.wait("@codelist_GET");
     setInput("name", "A");
     setInput("sectionElements.0.fromDepth", "0");
     setInput("sectionElements.0.toDepth", "1");

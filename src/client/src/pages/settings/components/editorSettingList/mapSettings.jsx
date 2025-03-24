@@ -1,13 +1,22 @@
 import { useContext, useEffect, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { useTranslation } from "react-i18next";
-import { Box, Button, CircularProgress, IconButton, Stack, Typography } from "@mui/material";
-import { Divider, Dropdown, Input, Label, Popup } from "semantic-ui-react";
-import { Plus, Trash2 } from "lucide-react";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { Dropdown, Input, Label, Popup } from "semantic-ui-react";
+import { ChevronDownIcon, Plus, Trash2 } from "lucide-react";
 import _ from "lodash";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
-import { theme } from "../../../../AppTheme";
 import { AlertContext } from "../../../../components/alert/alertContext";
 
 const MapSettings = props => {
@@ -137,33 +146,12 @@ const MapSettings = props => {
       (layer.Identifier && layer.Identifier.toLowerCase().includes(searchLower))
     );
   };
-
   return (
-    <>
-      <div
-        onClick={() => {
-          setState({
-            ...state,
-            map: !state.map,
-          });
-        }}
-        style={{
-          flexDirection: "row",
-          display: "flex",
-          cursor: "pointer",
-          backgroundColor: state.map ? theme.palette.background.lightgrey : theme.palette.background.default,
-          padding: 10,
-        }}>
+    <Accordion>
+      <AccordionSummary sx={{ padding: 2 }} expandIcon={<ChevronDownIcon />}>
         <Typography variant="body1"> {t("map")}</Typography>
-        <div
-          style={{
-            flex: 1,
-            textAlign: "right",
-          }}>
-          <Button variant="outlined">{state.map ? t("collapse") : t("expand")}</Button>
-        </div>
-      </div>
-      {state.map === true ? (
+      </AccordionSummary>
+      <AccordionDetails>
         <Box style={{ margin: 0 }}>
           <Box sx={{ overFlowY: "auto" }}>
             <Stack direction={{ xs: "column", sm: "column", md: "column", lg: "row" }} gap={6} p={2}>
@@ -315,10 +303,8 @@ const MapSettings = props => {
             </Stack>
           </Box>
         </Box>
-      ) : (
-        <Divider style={{ margin: 0 }} />
-      )}
-    </>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 
