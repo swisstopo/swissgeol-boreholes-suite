@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Stack } from "@mui/material";
-import { Loader } from "semantic-ui-react";
+import { CircularProgress, Stack } from "@mui/material";
 import { theme } from "../../../../../AppTheme";
 import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
+import { FullPageCentered } from "../../../../../components/styledComponents.js";
 import { stratigraphyData } from "./data/stratigraphydata.js";
 import LithologyAttributes from "./lithologyAttributes";
 import ProfileHeader from "./lithologyHeader";
@@ -100,7 +100,11 @@ const Lithology = ({ checkLock }) => {
         />
       )}
 
-      {isLoadingData && <Loader active />}
+      {isLoadingData && (
+        <FullPageCentered>
+          <CircularProgress />
+        </FullPageCentered>
+      )}
 
       {!isLoadingData && !selectedStratigraphy && (
         <Styled.Empty data-cy="stratigraphy-message">
