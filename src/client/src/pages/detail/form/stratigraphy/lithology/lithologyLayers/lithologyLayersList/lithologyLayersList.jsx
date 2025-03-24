@@ -5,7 +5,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { Stack, Tooltip, Typography } from "@mui/material";
-import { Icon, Popup } from "semantic-ui-react";
+import { TriangleAlert } from "lucide-react";
 import { useLithostratigraphies } from "../../../../../../../api/fetchApiV2.js";
 import * as Styled from "./styles.js";
 
@@ -75,6 +75,7 @@ const LithologyLayersList = props => {
       setShowBottomPopup(false);
     }
   }, [itemWithValidation]);
+
   useEffect(() => {
     checkHasWarning();
   }, [checkHasWarning]);
@@ -139,6 +140,8 @@ const LithologyLayersList = props => {
 
   const isItemSelected = selectedLayer?.id === itemWithValidation?.id;
 
+  console.log(showTopPopup, showBottomPopup);
+
   return (
     <>
       <Styled.MyCard
@@ -163,24 +166,13 @@ const LithologyLayersList = props => {
           <>
             <Styled.CardInfo id="info">
               <Typography variant="subtitle1">
-                {isTopHasWarning && <Icon name="warning sign" style={{ color: "red" }} />}
-                {showTopPopup ? (
-                  <Popup
-                    basic
-                    content={itemWithValidation?.validation?.invertedDepth ? t("invertedDepth") : t("errrorStartPoint")}
-                    position="bottom left"
-                    trigger={
-                      <div>{itemWithValidation?.validation?.invertedDepth && itemWithValidation?.depth_from} m MD</div>
-                    }
-                  />
-                ) : (
-                  <NumericFormat
-                    value={itemWithValidation?.depth_from}
-                    thousandSeparator="'"
-                    suffix=" m MD"
-                    displayType="text"
-                  />
-                )}
+                {isTopHasWarning && <TriangleAlert />}
+                <NumericFormat
+                  value={itemWithValidation?.depth_from}
+                  thousandSeparator="'"
+                  suffix=" m MD"
+                  displayType="text"
+                />
               </Typography>
               <Typography
                 variant="body1"
@@ -208,25 +200,13 @@ const LithologyLayersList = props => {
                 {secondaryProps}
               </Typography>
               <Typography variant="subtitle1">
-                {isBottomHasWarning && <Icon name="warning sign" style={{ color: "red" }} />}
-                {showBottomPopup ? (
-                  <Popup
-                    basic
-                    content={itemWithValidation?.validation?.invertedDepth ? t("invertedDepth") : t("errorEndPoint")}
-                    hoverable
-                    position="bottom left"
-                    trigger={
-                      <div>{itemWithValidation?.validation?.invertedDepth && itemWithValidation?.depth_to} m MD</div>
-                    }
-                  />
-                ) : (
-                  <NumericFormat
-                    value={itemWithValidation?.depth_to}
-                    thousandSeparator="'"
-                    suffix=" m MD"
-                    displayType="text"
-                  />
-                )}
+                {isBottomHasWarning && <TriangleAlert />}
+                <NumericFormat
+                  value={itemWithValidation?.depth_to}
+                  thousandSeparator="'"
+                  suffix=" m MD"
+                  displayType="text"
+                />
               </Typography>
             </Styled.CardInfo>
             {isEditable && (
