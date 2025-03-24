@@ -388,6 +388,75 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task CopyWithBackfill()
+    {
+        var newBorehole = GetBoreholeToAdd();
+
+        var kindCodelistId = await context.Codelists.Where(c => c.Schema == CompletionSchemas.CompletionKindSchema).Select(c => c.Id).FirstAsync().ConfigureAwait(false);
+        var casingTypeCodelistId = await context.Codelists.Where(c => c.Schema == CompletionSchemas.CasingTypeSchema).Select(c => c.Id).FirstAsync().ConfigureAwait(false);
+        var backfillTypeCodeListId = await context.Codelists.Where(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Select(c => c.Id).FirstAsync().ConfigureAwait(false);
+        var backfillMaterialCodeListId = await context.Codelists.Where(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Select(c => c.Id).FirstAsync().ConfigureAwait(false);
+
+        var kindCodelists = await GetCodelists(context, new List<int> { kindCodelistId }).ConfigureAwait(false);
+        var casingTypeCodelists = await GetCodelists(context, new List<int> { casingTypeCodelistId }).ConfigureAwait(false);
+        var backfillTypeCodelists = await GetCodelists(context, new List<int> { backfillTypeCodeListId }).ConfigureAwait(false);
+        var backfillMaterialCodelists = await GetCodelists(context, new List<int> { backfillMaterialCodeListId }).ConfigureAwait(false);
+
+        var completion = new Completion
+        {
+            Borehole = newBorehole,
+            Name = "Test Completion",
+            Kind = kindCodelists.First(),
+            IsPrimary = true,
+        };
+        newBorehole.Completions = new List<Completion> { completion };
+
+        var casing = new Casing
+        {
+            Completion = completion,
+            Name = "Test Casing",
+            CasingElements = new List<CasingElement>
+            {
+                new CasingElement
+                {
+                    FromDepth = 0,
+                    ToDepth = 10,
+                    Kind = casingTypeCodelists.First(),
+                },
+            },
+        };
+        completion.Casings = new List<Casing> { casing };
+
+        var backfill = new Backfill
+        {
+            Completion = completion,
+            Casing = casing,
+            FromDepth = 0,
+            ToDepth = 5,
+            Kind = backfillTypeCodelists.First(),
+            Material = backfillMaterialCodelists.First(),
+        };
+        completion.Backfills = new List<Backfill> { backfill };
+
+        context.Add(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        Assert.IsTrue(newBorehole.ValidateCasingReferences(), "Invalid casing reference in borehole");
+
+        var result = await controller.CopyAsync(newBorehole.Id, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
+        var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
+        Assert.IsNotNull(copiedBoreholeId);
+        Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
+
+        var response = await controller.GetByIdAsync((int)copiedBoreholeId).ConfigureAwait(false);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Borehole copiedBorehole = (Borehole)okResult.Value!;
+        Assert.IsNotNull(copiedBorehole);
+
+        Assert.IsTrue(copiedBorehole.ValidateCasingReferences(), "Invalid casing reference in copied borehole");
+    }
+
+    [TestMethod]
     public async Task Copy()
     {
         boreholeId = GetBoreholeIdToCopy();
