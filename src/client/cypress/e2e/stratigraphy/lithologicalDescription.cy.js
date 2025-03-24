@@ -97,6 +97,7 @@ describe("Tests for the lithological description column.", () => {
     deleteItem("description-button-box");
     cy.wait("@lithological_description"); // delete request
     cy.wait("@lithological_description"); // updated get request
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000);
 
     // add two lithological descriptions
@@ -108,6 +109,7 @@ describe("Tests for the lithological description column.", () => {
     // stop editing
     cy.get('[data-cy="description-1"] [data-testid="ClearIcon"]').click();
     cy.wait("@lithological_description");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000);
 
     cy.get('[data-cy="add-litho-desc-icon"]').click();
@@ -118,6 +120,8 @@ describe("Tests for the lithological description column.", () => {
     // stop editing
     cy.get('[data-cy="description-2"] [data-testid="ClearIcon"]').click();
     cy.wait("@lithological_description");
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000);
 
     // delete the one in the middle

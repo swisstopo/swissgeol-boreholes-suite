@@ -84,6 +84,7 @@ it("checks that the field settings control the field visibility.", () => {
   getElementByDataCy("general-tab").click();
   cy.contains("Lithology fields").click();
   waitForSettings();
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(500);
 
   // manually check some and verify states

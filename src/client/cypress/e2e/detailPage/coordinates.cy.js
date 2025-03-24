@@ -35,8 +35,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("creates new borehole and adds coordinates", () => {
     // fill inputs for LV95
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     cy.get("@LV95X-input").type("2645123");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     cy.get("@LV95Y-input").type("1245794");
     cy.wait("@location");
@@ -121,6 +123,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="zoom-in-button"]').click({ force: true });
     cy.get('[data-cy="zoom-in-button"]').click({ force: true });
 
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000);
     // click on map
     cy.get('[class="ol-viewport"]').scrollIntoView().click(390, 250, { force: true });
@@ -167,6 +170,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").type("1245794.000");
 
     cy.wait("@location");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(4000);
     cy.get('[data-cy="locationX-formCoordinate"] input').as("LV95X-input");
     cy.get('[data-cy="locationY-formCoordinate"] input').as("LV95Y-input");
@@ -178,6 +182,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     checkDecimalPlaces("@LV03Y-input", 4);
 
     saveWithSaveBar();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(4000);
     // Navigate somewhere else and return
     cy.get('[data-cy="borehole-menu-item"]').click();
@@ -196,6 +201,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     // Add more zeros to LV95Y input
     cy.get("@LV95Y-input").type("00");
     cy.wait("@location");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(4000);
     checkDecimalPlaces("@LV95X-input", 4);
     checkDecimalPlaces("@LV95Y-input", 5);
@@ -209,6 +215,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95X-input").type("2789000");
     cy.get("@LV95Y-input").type("1155000");
     cy.wait("@location");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(4000);
 
     cy.get("@country").should("have.value", "Schweiz");

@@ -29,6 +29,7 @@ function assertDrawTooltipInvisible() {
 }
 
 const drawBox = (x1, y1, x2, y2) => {
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 });
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 });
@@ -277,8 +278,10 @@ describe("Test labeling tool", () => {
       const view = win.labelingImage.getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
@@ -365,6 +368,7 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-page-next"]').click();
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
 
     clickCoordinateLabelingButton();

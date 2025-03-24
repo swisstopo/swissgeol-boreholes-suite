@@ -9,6 +9,7 @@ function drawPolygon() {
   canvas.trigger("pointerdown", { x: 550, y: 810 }).trigger("pointerup", { x: 550, y: 810 });
   canvas.trigger("pointerdown", { x: 640, y: 810 }).trigger("pointerup", { x: 640, y: 810 });
   canvas.trigger("pointerdown", { x: 450, y: 300 }).trigger("pointerup", { x: 450, y: 300 });
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(2000);
 }
 
@@ -34,6 +35,7 @@ function assertPolygonFilterActive() {
 describe("Polygon filter tests", () => {
   it("draws polygon and asserts filtering", () => {
     goToRouteAndAcceptTerms("/");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000);
     cy.wait("@borehole_geojson");
     cy.get('[data-cy="show-filter-button"]').click();
@@ -51,6 +53,7 @@ describe("Polygon filter tests", () => {
     assertPolygonFilterInactive();
     cy.wait("@borehole_geojson");
     // wait for map to redraw
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000);
 
     // Redraw polygon

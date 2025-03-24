@@ -17,6 +17,7 @@ describe("Tests for the data cards in the editor.", () => {
     });
 
     startBoreholeEditing();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500);
 
     //Add card and cancel editing in datacard
@@ -32,6 +33,7 @@ describe("Tests for the data cards in the editor.", () => {
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("not.exist");
 
     startBoreholeEditing();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500);
     addItem("addwateringress");
     cy.wait("@casing_GET");

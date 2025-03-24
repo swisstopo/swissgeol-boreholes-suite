@@ -42,6 +42,7 @@ describe("map settings", () => {
     getElementByDataCy("settings-button").click();
     getElementByDataCy("general-tab").click();
     cy.contains("Map").click();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     cy.get('[data-cy="maps-for-user-box"]').contains(wmtsName);
     cy.get('[data-cy="maps-for-user-box"]').contains(wmsName);
@@ -51,6 +52,7 @@ describe("map settings", () => {
     cy.wait("@setting"); //¯\_(ツ)_/¯
 
     cy.get('[data-cy="maps-for-user-box"]').should("not.contain", wmsName);
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
 
     cy.get('[data-cy="delete-user-map-button"]').eq(0).click();

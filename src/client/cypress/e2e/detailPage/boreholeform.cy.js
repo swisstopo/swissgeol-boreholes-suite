@@ -157,7 +157,7 @@ describe("Test for the borehole form.", () => {
       // can save value for top bedrock intersected which does not correspond to automatically set values
       setYesNoSelect("topBedrockIntersected", "No");
       saveWithSaveBar();
-      cy.wait(1000);
+
       // navigate away and return
       navigateToLocationTab(id);
       navigateToBoreholeTab(id);

@@ -93,6 +93,7 @@ describe("Casing crud tests", () => {
     cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addInstrument");
     cy.wait("@casing_GET");
