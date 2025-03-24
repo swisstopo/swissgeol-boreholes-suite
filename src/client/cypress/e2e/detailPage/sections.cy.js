@@ -19,7 +19,7 @@ describe("Section crud tests", () => {
 
     // start editing session
     startBoreholeEditing();
-
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(30);
   });
 

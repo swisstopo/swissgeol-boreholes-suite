@@ -145,7 +145,7 @@ export const copyItem = parent => {
  */
 export const addItem = itemLabel => {
   cy.get(".MuiCircularProgress-root").should("not.exist");
-  const button = cy.get(`[data-cy="${itemLabel.toLowerCase()}-button"]`);
+  const button = () => cy.get(`[data-cy="${itemLabel.toLowerCase()}-button"]`);
   button.scrollIntoView();
   button.should("be.visible");
   button.should("be.enabled");

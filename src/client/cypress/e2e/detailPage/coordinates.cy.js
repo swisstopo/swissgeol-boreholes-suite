@@ -126,7 +126,8 @@ describe("Tests for editing coordinates of a borehole.", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000);
     // click on map
-    cy.get('[class="ol-viewport"]').scrollIntoView().click(390, 250, { force: true });
+    cy.get('[class="ol-viewport"]').scrollIntoView();
+    cy.get('[class="ol-viewport"]').click(390, 250, { force: true });
 
     cy.wait("@location");
     cy.get('[data-cy="height-button"]').click();
@@ -223,8 +224,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "Samaden");
 
     // Type coordinates for Unterentfelden in LV95
-    cy.get("@LV95X-input").clear().type("2646000");
-    cy.get("@LV95Y-input").clear().type("1247000");
+    cy.get("@LV95X-input").clear();
+    cy.get("@LV95X-input").type("2646000");
+    cy.get("@LV95Y-input").clear();
+    cy.get("@LV95Y-input").type("1247000");
 
     cy.get("@country").should("have.value", "Schweiz");
     cy.get("@canton").should("have.value", "Aargau");
@@ -235,16 +238,20 @@ describe("Tests for editing coordinates of a borehole.", () => {
     handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "Confirm");
 
     // Type coordinates for Samaden in LV03
-    cy.get("@LV03X-input").clear().type("789000");
-    cy.get("@LV03Y-input").clear().type("155000");
+    cy.get("@LV03X-input").clear();
+    cy.get("@LV03Y-input").type("789000");
+    cy.get("@LV03Y-input").clear();
+    cy.get("@LV03Y-input").type("155000");
 
     cy.get("@country").should("have.value", "Schweiz");
     cy.get("@canton").should("have.value", "Graubünden");
     cy.get("@municipality").should("have.value", "Samaden");
 
     // Type coordinates for Unterentfelden in LV03
-    cy.get("@LV03X-input").clear().type("646000");
-    cy.get("@LV03Y-input").clear().type("247000");
+    cy.get("@LV03X-input").clear();
+    cy.get("@LV03X-input").type("646000");
+    cy.get("@LV03Y-input").clear();
+    cy.get("@LV03Y-input").type("247000");
 
     cy.get("@country").should("have.value", "Schweiz");
     cy.get("@canton").should("have.value", "Aargau");

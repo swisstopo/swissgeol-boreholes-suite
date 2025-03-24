@@ -13,8 +13,8 @@ import {
 
 describe("Tests for 'Location' edit page.", () => {
   const getButtons = () => {
-    const saveButton = cy.get('[data-cy="save-button"]');
-    const discardButton = cy.get('[data-cy="discardchanges-button"]');
+    const saveButton = () => cy.get('[data-cy="save-button"]');
+    const discardButton = () => cy.get('[data-cy="discardchanges-button"]');
     return { saveButton, discardButton };
   };
 
@@ -36,7 +36,7 @@ describe("Tests for 'Location' edit page.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole();
 
-    const originalNameInput = cy.contains("label", "Original name").next().children("input");
+    const originalNameInput = () => cy.contains("label", "Original name").next().children("input");
 
     // enter original name
     originalNameInput.type("AAA_SCATORPS");
@@ -173,7 +173,7 @@ describe("Tests for 'Location' edit page.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole();
 
-    const originalNameInput = cy.contains("label", "Original name").next().children("input");
+    const originalNameInput = () => cy.contains("label", "Original name").next().children("input");
     verifyNoUnsavedChanges();
     originalNameInput.type("PHOTOFOX");
     verifyUnsavedChanges();
@@ -190,7 +190,7 @@ describe("Tests for 'Location' edit page.", () => {
     });
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
 
-    const originalNameInput = cy.contains("label", "Original name").next().children("input");
+    const originalNameInput = () => cy.contains("label", "Original name").next().children("input");
     originalNameInput.type("FELIX_THE_RACOON");
     stopEditing();
     handlePrompt(messageUnsavedChanges, "cancel");
@@ -218,7 +218,7 @@ describe("Tests for 'Location' edit page.", () => {
   it("adds edits and deletes borehole identifiers", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    const originalNameInput = cy.contains("label", "Original name").next().children("input");
+    const originalNameInput = () => cy.contains("label", "Original name").next().children("input");
     originalNameInput.type("AAA_FELIX_THE_PANDA");
 
     function saveFormAndReturnToOverview() {

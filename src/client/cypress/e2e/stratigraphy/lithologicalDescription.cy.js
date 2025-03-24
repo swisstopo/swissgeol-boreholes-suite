@@ -24,7 +24,9 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
     cy.contains("Show all fields").children(".checkbox").click();
-    cy.get('[data-cy="toDepth"]').click().clear().type(50);
+    cy.get('[data-cy="toDepth"]').click();
+    cy.get('[data-cy="toDepth"]').clear();
+    cy.get('[data-cy="toDepth"]').type("50");
     cy.wait("@update-layer");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
@@ -34,7 +36,9 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
     cy.contains("Show all fields").children(".checkbox").click();
-    cy.get('[data-cy="toDepth"]').click().clear().type(62.5);
+    cy.get('[data-cy="toDepth"]').click();
+    cy.get('[data-cy="toDepth"]').clear();
+    cy.get('[data-cy="toDepth"]').type("62.5");
     cy.wait("@update-layer");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
@@ -44,7 +48,9 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-2"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
     cy.contains("Show all fields").children(".checkbox").click();
-    cy.get('[data-cy="toDepth"]').click().clear().type(120);
+    cy.get('[data-cy="toDepth"]').click();
+    cy.get('[data-cy="toDepth"]').clear();
+    cy.get('[data-cy="toDepth"]').type("120");
     cy.wait("@update-layer");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ClearIcon"]').click();
@@ -61,7 +67,9 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="description-0"]').contains("0 m");
 
     cy.get('[data-cy="description-0"] [data-testid="ModeEditIcon"] ').click();
-    cy.get('[data-cy="description-textfield"]').find("textarea").first().click().clear().type("A new description.");
+    cy.get('[data-cy="description-textfield"]').find("textarea").first().click();
+    cy.get('[data-cy="description-textfield"]').find("textarea").first().clear();
+    cy.get('[data-cy="description-textfield"]').find("textarea").first().type("A new description.");
 
     // fill quality dropdown
     cy.get('[data-cy="qt-decription-select"]').find('[role="combobox"]').click({ force: true });

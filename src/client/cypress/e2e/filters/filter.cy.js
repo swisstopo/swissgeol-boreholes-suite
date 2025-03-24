@@ -21,7 +21,7 @@ describe("Search filter tests", () => {
     getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
-    let indentifierDropdown = cy.contains("label", "ID type").next();
+    const indentifierDropdown = () => cy.contains("label", "ID type").next();
 
     indentifierDropdown.click();
     indentifierDropdown
@@ -33,7 +33,7 @@ describe("Search filter tests", () => {
       });
 
     cy.contains("h6", "Borehole").click();
-    let boreholeTypeDropdown = cy.contains("label", "Borehole type").next();
+    const boreholeTypeDropdown = () => cy.contains("label", "Borehole type").next();
 
     boreholeTypeDropdown.click();
     boreholeTypeDropdown
@@ -254,7 +254,7 @@ describe("Search filter tests", () => {
     cy.contains("Borehole").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
-    let boreholeStatusDropdown = cy.contains("label", "Borehole status").next();
+    const boreholeStatusDropdown = () => cy.contains("label", "Borehole status").next();
 
     boreholeStatusDropdown.click();
     boreholeStatusDropdown.find("div[role='option']").then(options => {
@@ -272,7 +272,7 @@ describe("Search filter tests", () => {
     cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
-    let colorDropdown = cy.contains("label", "Colour").next();
+    const colorDropdown = () => cy.contains("label", "Colour").next();
 
     colorDropdown.click();
     colorDropdown
@@ -290,7 +290,7 @@ describe("Search filter tests", () => {
     showTableAndWaitForData();
     verifyPaginationText("1–100 of 770");
 
-    let uscs3Dropdown = cy.contains("label", "USCS 3").next();
+    const uscs3Dropdown = () => cy.contains("label", "USCS 3").next();
     uscs3Dropdown.scrollIntoView().click({ force: true });
     uscs3Dropdown
       .find("div[role='option']")

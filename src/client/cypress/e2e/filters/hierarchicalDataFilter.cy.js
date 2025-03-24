@@ -16,7 +16,7 @@ describe("Hierachical data filter tests", () => {
     goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("h6", "Chronostratigraphy").click();
-    let periodsDropdown = cy.contains("label", "Period").next();
+    const periodsDropdown = () => cy.contains("label", "Period").next();
     periodsDropdown.click();
     periodsDropdown
       .find("div[role='option']")
@@ -70,7 +70,11 @@ describe("Hierachical data filter tests", () => {
       .eq(filterValues.length - 2)
       .find('[role="option"]')
       .first()
-      .scrollIntoView()
+      .scrollIntoView();
+    cy.get('[data-cy="hierarchical-data-search"]')
+      .eq(filterValues.length - 2)
+      .find('[role="option"]')
+      .first()
       .click();
     cy.wait("@edit_list");
     cy.get('[data-cy="hierarchical-data-search"]')
@@ -87,7 +91,11 @@ describe("Hierachical data filter tests", () => {
       .eq(filterValues.length - 4)
       .find('[role="option"]')
       .first()
-      .scrollIntoView()
+      .scrollIntoView();
+    cy.get('[data-cy="hierarchical-data-search"]')
+      .eq(filterValues.length - 4)
+      .find('[role="option"]')
+      .first()
       .click();
     cy.wait("@edit_list");
     cy.get('[data-cy="hierarchical-data-search"]')

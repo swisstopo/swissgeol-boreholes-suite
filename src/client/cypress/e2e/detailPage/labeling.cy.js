@@ -36,6 +36,7 @@ const drawBox = (x1, y1, x2, y2) => {
 
   cy.window().then(win => {
     const interactions = win.labelingImage.getInteractions().getArray();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(
       interactions.some(interaction => {
         return interaction.constructor.name === "DragBox";
@@ -51,6 +52,7 @@ const drawBox = (x1, y1, x2, y2) => {
   cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");
   cy.window().then(win => {
     const interactions = win.labelingImage.getInteractions().getArray();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(
       interactions.some(interaction => {
         return interaction.constructor.name === "DragBox";
@@ -64,6 +66,7 @@ const waitForLabelingImageLoaded = () => {
   cy.wait("@load-extraction-file");
   cy.window().then(win => {
     cy.wrap(win.labelingImage.getLayers().getArray()).then(layers => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(
         layers.some(layer => {
           return layer.constructor.name === "ImageLayer";
@@ -121,8 +124,9 @@ function assertBoundingBoxes(totalCount, highlightedArea) {
     const highlights = highlightsLayer.getSource().getFeatures();
     expect(invisibleBoundingBoxes.length).to.equal(totalCount); // layer always contains all bounding boxes, even if they are not visible
     expect(highlights.length).to.equal(highlightedArea === 0 ? 0 : 1); // highlights are combined into one feature
-    highlightedArea !== 0 &&
+    if (highlightedArea !== 0) {
       expect(Math.round(Math.abs(getArea(highlights[0].getGeometry())))).to.equal(highlightedArea);
+    }
   });
 }
 
@@ -208,6 +212,7 @@ describe("Test labeling tool", () => {
     waitForLabelingImageLoaded();
     cy.window().then(win => {
       const interactions = win.labelingImage.getInteractions().getArray();
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
     });
   });

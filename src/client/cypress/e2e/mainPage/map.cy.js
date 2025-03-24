@@ -11,7 +11,7 @@ describe("Map tests", () => {
     cy.get('[data-cy="zoom-in-button"]').click();
 
     // drag map
-    const canvas = cy.get("canvas");
+    const canvas = () => cy.get("canvas");
     canvas.trigger("pointerdown", { x: 300, y: 300 });
     canvas.trigger("pointermove", { x: 500, y: 500 });
     canvas.trigger("pointerup", { x: 500, y: 500 });

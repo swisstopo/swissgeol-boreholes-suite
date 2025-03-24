@@ -61,11 +61,9 @@ const deleteCompletion = () => {
 };
 
 const setHeaderTab = index => {
-  cy.get('[data-cy="completion-header-tab-' + index + '"]')
-    .focus()
-    .click({
-      force: true,
-    });
+  const selector = '[data-cy="completion-header-tab-' + index + '"]';
+  cy.get(selector).focus();
+  cy.get(selector).click({ force: true });
 };
 
 const isHeaderTabSelected = index => {
@@ -74,12 +72,10 @@ const isHeaderTabSelected = index => {
     .should("eq", "true");
 };
 
-export const setContentTab = tabName => {
-  cy.get('[data-cy="completion-content-tab-' + tabName + '"]')
-    .focus()
-    .click({
-      force: true,
-    });
+export const setContentTab = index => {
+  const selector = '[data-cy="completion-content-tab-' + index + '"]';
+  cy.get(selector).focus();
+  cy.get(selector).click({ force: true });
 };
 
 export const isContentTabSelected = tabName => {
