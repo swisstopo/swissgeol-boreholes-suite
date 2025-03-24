@@ -71,7 +71,7 @@ const LithologyLayersError = props => {
     )
       return 2;
   };
-  const handleResolvingAction = (e, data) => {
+  const handleResolvingAction = e => {
     e.stopPropagation();
     setResolvingAction(parseInt(e.target.value));
   };
@@ -152,7 +152,7 @@ const LithologyLayersError = props => {
           <FormControl>
             <RadioGroup value={resolvingAction} onChange={handleResolvingAction}>
               {error?.solutions?.map(
-                (e, index) =>
+                e =>
                   error.solutions.length > 1 && (
                     <FormControlLabel key={e} value={resolving(e)} control={<Radio />} label={t(e)} />
                   ),
