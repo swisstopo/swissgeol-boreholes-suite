@@ -62,7 +62,7 @@ public class GroundwaterLevelMeasurementControllerTest
         IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response;
         Assert.IsNotNull(groundwaterLevelMeasurements);
         Assert.AreEqual(2, groundwaterLevelMeasurements.Count());
-        var groundwaterLevelMeasurement = groundwaterLevelMeasurements.First();
+        var groundwaterLevelMeasurement = groundwaterLevelMeasurements.OrderBy(m => m.Id).First();
 
         Assert.AreEqual(groundwaterLevelMeasurement.Id, 12000022);
         Assert.AreEqual(groundwaterLevelMeasurement.Type, ObservationType.GroundwaterLevelMeasurement);

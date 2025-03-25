@@ -158,6 +158,8 @@ internal static class TestSyncContextExtensions
             {
                 casing.CasingElements = casing.CasingElements.OrderBy(i => i.InnerDiameter).ToList();
             }
+
+            completion.Casings = completion.Casings.OrderBy(c => c.CasingElements.FirstOrDefault()?.InnerDiameter).ToList();
         }
 
         foreach (var section in borehole.Sections)
