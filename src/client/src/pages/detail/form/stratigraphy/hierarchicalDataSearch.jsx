@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Form, Header } from "semantic-ui-react";
+import { Box, MenuItem, TextField } from "@mui/material";
 import { useDomainSchema } from "../../../../api/fetchApiV2.js";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
-import * as Styled from "../../../overview/sidePanelContent/filter/listFilterStyles.js";
+import { FormContainer } from "../../../../components/form/form.js";
 
 const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
   const { i18n, t } = useTranslation();
@@ -27,11 +26,11 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
     [schemaData],
   );
 
-  const handleChange = (event, data) => {
-    if (data.value < 0) {
-      reset(data.value * -1);
+  const handleChange = event => {
+    if (event.target.value < 0) {
+      reset(event.target.value * -1);
     } else {
-      updateSelection(data.value);
+      updateSelection(event.target.value);
     }
   };
 
@@ -100,24 +99,7 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
                 key: "dom-opt-" + entry.id,
                 value: entry.id,
                 text: entry[i18n.language],
-                content: (
-                  <Header
-                    content={
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                        }}>
-                        <div
-                          style={{
-                            flex: "1 1 100%",
-                          }}>
-                          {entry[i18n.language]}
-                        </div>
-                      </div>
-                    }
-                  />
-                ),
+                content: entry[i18n.language],
               };
               if (selectedIds.includes(entry.id)) {
                 selected = entry.id;
@@ -139,14 +121,17 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
   return (
     <>
       {levels.map(level => (
-        <div key={schema + "_" + level.level} data-cy="hierarchical-data-search">
-          <Styled.Label>
-            <TranslationText id={level.label} />
-          </Styled.Label>
-          <Styled.AttributesItem>
-            <Form.Select fluid search={true} onChange={handleChange} options={level.options} value={level.selected} />
-          </Styled.AttributesItem>
-        </div>
+        <Box sx={{ mt: 2 }} key={schema + "_" + level.level} data-cy="hierarchical-data-search">
+          <FormContainer>
+            <TextField select={true} label={t(level.label)} onChange={handleChange} value={level.selected}>
+              {level.options.map(item => (
+                <MenuItem key={item.key} value={item.value}>
+                  {item.text}
+                </MenuItem>
+              ))}
+            </TextField>
+          </FormContainer>
+        </Box>
       ))}
     </>
   );

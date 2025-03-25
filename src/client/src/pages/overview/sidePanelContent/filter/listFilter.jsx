@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FormControlLabel, Switch } from "@mui/material";
+import { Box, FormControlLabel, Switch, Typography } from "@mui/material";
 import { Form, Input, TextArea } from "semantic-ui-react";
 import _ from "lodash";
 import DateField from "../../../../components/legacyComponents/dateField.jsx";
@@ -63,12 +63,12 @@ const ListFilter = props => {
         <Styled.ContainerList>
           {attribute.map((item, key) => (
             <Form autoComplete="false" error key={key}>
-              <Styled.AttributesContainer>
+              <Box>
                 {(item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) &&
                   item.type !== "HierarchicalData" && (
-                    <Styled.Label>
-                      <TranslationText id={item.label} />
-                    </Styled.Label>
+                    <Typography sx={{ fontWeight: "bold", fontSize: "12px", pt: 1 }} variant={"subtitle1"}>
+                      {t(item.label)}
+                    </Typography>
                   )}
                 {item.type === "Input" && (item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) && (
                   <Styled.AttributesItem>
@@ -233,7 +233,7 @@ const ListFilter = props => {
                     />
                   </Styled.AttributesItem>
                 )}
-              </Styled.AttributesContainer>
+              </Box>
             </Form>
           ))}
         </Styled.ContainerList>
