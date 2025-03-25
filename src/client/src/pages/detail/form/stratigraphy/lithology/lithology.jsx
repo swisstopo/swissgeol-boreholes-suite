@@ -147,7 +147,7 @@ const Lithology = ({ checkLock }) => {
                   onUpdated,
                   reloadAttribute,
                   checkLock,
-                  attribute: attributesBasedKind?.profileAttribute,
+                  layerAttributes: attributesBasedKind?.profileAttribute,
                 }}
               />
             </Styled.SecondColumn>

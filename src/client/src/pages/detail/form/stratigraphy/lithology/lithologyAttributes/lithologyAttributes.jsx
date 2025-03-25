@@ -12,16 +12,33 @@ import { DataCardButtonContainer } from "../../../../../../components/dataCard/d
 import LithologyLayerForm from "./lithologyAttributeList/LithologyLayerForm.jsx";
 
 const LithologyAttributes = props => {
-  const { id, isEditable, checkLock, onUpdated, attribute, reloadAttribute, selectedStratigraphyID } = props.data;
-  const formMethods = useForm();
-  const { codes, geocode } = useSelector(state => ({
-    codes: state.core_domain_list,
-    geocode: "Geol",
-  }));
+  const { id, isEditable, onUpdated, layerAttributes, selectedStratigraphyID } = props.data;
   const [showAll, setShowAll] = useState(false);
   const [layer, setLayer] = useState(null);
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+
+  const getDefaultValues = layer => {
+    if (!layer) return {};
+    const attributesMap = {};
+    layerAttributes.forEach(attribute => {
+      if (attribute.type === "Boolean") {
+        attributesMap[attribute.value] = layer[attribute.value] === true ? 1 : layer[attribute.value] === false ? 0 : 2;
+      } else {
+        attributesMap[attribute.value] = layer[attribute.value];
+      }
+    });
+    return attributesMap;
+  };
+
+  const formMethods = useForm({
+    mode: "onChange",
+    defaultValues: getDefaultValues(layer),
+  });
+  const { codes, geocode } = useSelector(state => ({
+    codes: state.core_domain_list,
+    geocode: "Geol",
+  }));
 
   const mapResponseToLayer = useCallback(response => {
     response["uscs_3"] = response.uscs3Codelists.map(x => x.id);
@@ -36,14 +53,14 @@ const LithologyAttributes = props => {
   useEffect(() => {
     fetchLayerById(id).then(mapResponseToLayer);
     setShowAll(false);
-  }, [mapResponseToLayer]);
+  }, [id, mapResponseToLayer]);
 
   const onSave = () => {
     formMethods.handleSubmit(updateChange)();
   };
 
   const onCancel = () => {
-    formMethods.reset();
+    formMethods.reset(getDefaultValues(layer));
   };
 
   const updateChange = () => {
@@ -64,7 +81,7 @@ const LithologyAttributes = props => {
 
     updateLayer(updatedLayer).then(response => {
       mapResponseToLayer(response);
-      onUpdated(attribute);
+      onUpdated(layerAttributes);
       queryClient.invalidateQueries({
         queryKey: [layerQueryKey, selectedStratigraphyID],
       });
@@ -90,15 +107,15 @@ const LithologyAttributes = props => {
   const showCheckbox = () => {
     let isVisibleCounter = 0;
 
-    for (let i = 0; i < attribute?.length; i++) {
-      if (isVisibleFunction(attribute[i]?.isVisibleValue)) {
+    for (let i = 0; i < layerAttributes?.length; i++) {
+      if (isVisibleFunction(layerAttributes[i]?.isVisibleValue)) {
         isVisibleCounter++;
-      } else if (attribute[i]?.isVisible) {
+      } else if (layerAttributes[i]?.isVisible) {
         isVisibleCounter++;
       }
     }
 
-    if (isVisibleCounter === attribute?.length) {
+    if (isVisibleCounter === layerAttributes?.length) {
       return false;
     } else return true;
   };
@@ -120,22 +137,25 @@ const LithologyAttributes = props => {
             />
           )}
           <Box sx={{ flexGrow: 1 }} />
-          <DataCardButtonContainer>
-            <SaveButton onClick={onSave} />
-            <CancelButton onClick={onCancel} />
-          </DataCardButtonContainer>
+          {isEditable && (
+            <DataCardButtonContainer>
+              <SaveButton onClick={onSave} />
+              <CancelButton onClick={onCancel} />
+            </DataCardButtonContainer>
+          )}
         </Stack>
         <Box sx={{ overflow: "auto", flex: 1, scrollbarGutter: "stable" }}>
-          {attribute && (
+          {layerAttributes && (
             <>
               <DevTool control={formMethods.control} placement="top-left" />
               <FormProvider {...formMethods}>
                 <LithologyLayerForm
-                  attribute={attribute}
+                  attributes={layerAttributes}
                   showAll={showAll}
                   layer={layer}
                   isVisibleFunction={isVisibleFunction}
                   isEditable={isEditable}
+                  formMethods={formMethods}
                 />
               </FormProvider>
             </>

@@ -24,6 +24,12 @@ export const verifyRowWithContentAlsoContains = (rowContent, alsoContains) => {
     });
 };
 
+export const clickOnNextPage = () => {
+  cy.get('[aria-label="next page"]').scrollIntoView();
+  cy.get('[aria-label="next page"]').click();
+  waitForTableData();
+};
+
 export const verifyTableLength = length => {
   if (length === 0) {
     cy.get(".MuiDataGrid-row").should("not.exist");
