@@ -10,6 +10,8 @@ import {
 } from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by identifier.", () => {
+  const getDomainDropdown = () => cy.get('[data-cy="domain-dropdown"]').first();
+
   it("can filter by identifier", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
@@ -29,12 +31,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     verifyPaginationText("1–100 of 1627");
 
-    cy.get('[data-cy="domain-dropdown"]')
-      .first()
-      .click({ force: true })
-      .find('[role="option"]')
-      .eq(1)
-      .click({ force: true });
+    getDomainDropdown().click({ force: true }).find('[role="option"]').eq(1).click({ force: true });
 
     verifyPaginationText("1–1 of 1");
     // click reset label
@@ -67,12 +64,7 @@ describe("Tests for filtering data by identifier.", () => {
     // show all options
     getElementByDataCy("show-all-fields-switch").click();
 
-    cy.get('[data-cy="domain-dropdown"]')
-      .first()
-      .click({ force: true })
-      .find('[role="option"]')
-      .eq(1)
-      .click({ force: true });
+    getDomainDropdown().click({ force: true }).find('[role="option"]').eq(1).click({ force: true });
     verifyPaginationText("1–2 of 2");
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });

@@ -56,7 +56,7 @@ export function UseFormWithSaveBar<T extends FieldValues>({
     submit: () => resetAndSubmitForm(),
     reset: () => {
       formMethods.reset();
-      incrementResetKey && incrementResetKey();
+      if (incrementResetKey) incrementResetKey();
     },
   }));
 }

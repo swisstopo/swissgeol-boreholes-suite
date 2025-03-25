@@ -134,6 +134,7 @@ const LabelingPanel: FC = () => {
         await navigator.clipboard.writeText(text);
         const successText = `${t("copiedToClipboard")}: "${text}"`;
         showAlert(successText.length < 50 ? successText : successText.substring(0, 50) + "...", "info");
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         showAlert(t("errorCopyingToClipboard"), "error");
       }

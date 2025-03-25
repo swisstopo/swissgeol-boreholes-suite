@@ -1,0 +1,22 @@
+[
+  {
+    "Name": "Boreholes",
+    "Projects": [
+      {
+        "Path": "src\\api\\BDMS.csproj",
+        "Action": "Start",
+        "DebugTarget": "BDMS"
+      },
+      {
+        "Path": "src\\client\\BDMS.Client.esproj",
+        "Action": "Start",
+        "DebugTarget": "localhost (Edge)"
+      },
+      {
+        "Path": "docker-compose.dcproj",
+        "Action": "StartWithoutDebugging",
+        "DebugTarget": "Docker Compose"
+      }
+    ]
+  }
+]

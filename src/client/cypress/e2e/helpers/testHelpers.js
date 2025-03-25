@@ -366,6 +366,7 @@ export const loginAndResetState = () => {
 };
 
 export const delayedType = (element, string) => {
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(500);
   element.type(string, { delay: 10 });
 };
@@ -713,6 +714,7 @@ export const createBaseSelector = parent => {
 export const selectLanguage = language => {
   cy.get('[data-cy="language-button-select"]').click({ force: true });
   cy.get(`[data-cy="${language.toLowerCase()}-button-select-item"]`).click({ force: true });
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
 };
 
@@ -728,5 +730,6 @@ export const selectInputFile = (fileName, mimeType) => {
     },
     { force: true },
   );
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
 };

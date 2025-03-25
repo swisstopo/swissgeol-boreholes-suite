@@ -60,11 +60,9 @@ const deleteCompletion = () => {
 };
 
 const setHeaderTab = index => {
-  cy.get('[data-cy="completion-header-tab-' + index + '"]')
-    .focus()
-    .click({
-      force: true,
-    });
+  const selector = '[data-cy="completion-header-tab-' + index + '"]';
+  cy.get(selector).focus();
+  cy.get(selector).click({ force: true });
 };
 
 const isHeaderTabSelected = index => {
@@ -73,12 +71,10 @@ const isHeaderTabSelected = index => {
     .should("eq", "true");
 };
 
-export const setContentTab = tabName => {
-  cy.get('[data-cy="completion-content-tab-' + tabName + '"]')
-    .focus()
-    .click({
-      force: true,
-    });
+export const setContentTab = index => {
+  const selector = '[data-cy="completion-content-tab-' + index + '"]';
+  cy.get(selector).focus();
+  cy.get(selector).click({ force: true });
 };
 
 export const isContentTabSelected = tabName => {
@@ -109,6 +105,7 @@ describe("completion crud tests", () => {
       cy.contains("No completion available");
 
       startBoreholeEditing();
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(500);
 
       // add completion
@@ -180,6 +177,7 @@ describe("completion crud tests", () => {
         goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
         cy.wait("@get-completions-by-boreholeId");
         startBoreholeEditing();
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(500);
 
         addCompletion();
@@ -222,6 +220,7 @@ describe("completion crud tests", () => {
           startBoreholeEditing();
           // existing editing to other existing: no prompt should be displayed when no changes have been made
           startEditHeader();
+          // eslint-disable-next-line cypress/no-unnecessary-waiting
           cy.wait(500);
           setHeaderTab(0);
           cy.get('[data-cy="prompt"]').should("not.exist");
@@ -379,6 +378,8 @@ describe("completion crud tests", () => {
     startBoreholeEditing();
 
     // cancel switching content tabs
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addcasing");
     setInput("name", "casing 1", "casing-card.0.edit");
@@ -398,6 +399,8 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="casing-card.0"]').should("not.exist");
 
     // save when switching content tabs
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addcasing");
     setInput("name", "casing 1", "casing-card.0.edit");
@@ -413,6 +416,8 @@ describe("completion crud tests", () => {
     // cancel switching header tabs when content changes are present
     setContentTab("backfill");
     cy.wait("@backfill_GET");
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addBackfill");
     cy.wait("@casing_GET");
@@ -436,6 +441,8 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="backfill-card.0"]').should("not.exist");
 
     // save content changes when switching header tabs
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addBackfill");
     cy.wait("@casing_GET");
@@ -454,6 +461,8 @@ describe("completion crud tests", () => {
     // cancel header changes, no prompt should be displayed for content changes because tab switching was already canceled
     setContentTab("instrumentation");
     cy.wait("@instrumentation_GET");
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addInstrument");
     cy.wait("@casing_GET");
@@ -477,6 +486,8 @@ describe("completion crud tests", () => {
     // reset header changes, cancel content changes
     addCompletion();
     handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Cancel");
     isHeaderTabSelected(0);
@@ -490,6 +501,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
     handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Reset");
     isHeaderTabSelected(1);
@@ -500,6 +512,7 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="instrumentation-card.0"]').should("not.exist");
 
     //reset header changes, save content changes
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addInstrument");
     cy.wait("@casing_GET");
@@ -512,6 +525,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
     handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Save");
     isHeaderTabSelected(1);
@@ -529,6 +543,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
     handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Cancel");
     isHeaderTabSelected(0);
@@ -541,6 +556,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated again", "completion-header");
     addCompletion();
     handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Reset");
     isHeaderTabSelected(1);
@@ -560,6 +576,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated again and again", "completion-header");
     addCompletion();
     handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Save");
     isHeaderTabSelected(1);
@@ -596,6 +613,7 @@ describe("completion crud tests", () => {
         cy.get('[data-cy="accept-button"]').click();
         assertLocationAndHash(id, completion1Id, "#instrumentation");
         // Resets hash from #instrumentation to #casing when switching to another completion
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(1000);
         cy.contains("test hash 2").click({ force: true });
         cy.wait("@get-casings-by-completionId");

@@ -39,10 +39,11 @@ export const DataDisplayCard = <T extends DataCardEntity>({ item, deleteData, ch
                   icon: <Trash2 />,
                   variant: "contained",
                   action: () => {
-                    item?.id &&
+                    if (item?.id) {
                       deleteData(item.id).then(() => {
                         triggerReload();
                       });
+                    }
                   },
                 },
               ]);

@@ -25,7 +25,9 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
     getElementByDataCy("show-all-fields-switch").click();
-    cy.get('[data-cy="toDepth"]').click().clear().type(50);
+    cy.get('[data-cy="toDepth"]').click();
+    cy.get('[data-cy="toDepth"]').clear();
+    cy.get('[data-cy="toDepth"]').type("50");
     cy.wait("@update-layer");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
@@ -35,7 +37,9 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
     getElementByDataCy("show-all-fields-switch").click();
-    cy.get('[data-cy="toDepth"]').click().clear().type(62.5);
+    cy.get('[data-cy="toDepth"]').click();
+    cy.get('[data-cy="toDepth"]').clear();
+    cy.get('[data-cy="toDepth"]').type("62.5");
     cy.wait("@update-layer");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
@@ -45,7 +49,9 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-2"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
     getElementByDataCy("show-all-fields-switch").click();
-    cy.get('[data-cy="toDepth"]').click().clear().type(120);
+    cy.get('[data-cy="toDepth"]').click();
+    cy.get('[data-cy="toDepth"]').clear();
+    cy.get('[data-cy="toDepth"]').type("120");
     cy.wait("@update-layer");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ClearIcon"]').click();
@@ -62,7 +68,9 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="description-0"]').contains("0 m");
 
     cy.get('[data-cy="description-0"] [data-testid="ModeEditIcon"] ').click();
-    cy.get('[data-cy="description-textfield"]').find("textarea").first().click().clear().type("A new description.");
+    cy.get('[data-cy="description-textfield"]').find("textarea").first().click();
+    cy.get('[data-cy="description-textfield"]').find("textarea").first().clear();
+    cy.get('[data-cy="description-textfield"]').find("textarea").first().type("A new description.");
 
     // fill quality dropdown
     cy.get('[data-cy="qt-decription-select"]').find('[role="combobox"]').click({ force: true });
@@ -98,6 +106,7 @@ describe("Tests for the lithological description column.", () => {
     deleteItem("description-button-box");
     cy.wait("@lithological_description"); // delete request
     cy.wait("@lithological_description"); // updated get request
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000);
 
     // add two lithological descriptions
@@ -109,6 +118,7 @@ describe("Tests for the lithological description column.", () => {
     // stop editing
     cy.get('[data-cy="description-1"] [data-testid="ClearIcon"]').click();
     cy.wait("@lithological_description");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000);
 
     cy.get('[data-cy="add-litho-desc-icon"]').click();
@@ -119,6 +129,8 @@ describe("Tests for the lithological description column.", () => {
     // stop editing
     cy.get('[data-cy="description-2"] [data-testid="ClearIcon"]').click();
     cy.wait("@lithological_description");
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000);
 
     // delete the one in the middle

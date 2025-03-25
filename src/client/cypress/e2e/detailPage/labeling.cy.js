@@ -29,12 +29,14 @@ function assertDrawTooltipInvisible() {
 }
 
 const drawBox = (x1, y1, x2, y2) => {
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 });
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 });
 
   cy.window().then(win => {
     const interactions = win.labelingImage.getInteractions().getArray();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(
       interactions.some(interaction => {
         return interaction.constructor.name === "DragBox";
@@ -50,6 +52,7 @@ const drawBox = (x1, y1, x2, y2) => {
   cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");
   cy.window().then(win => {
     const interactions = win.labelingImage.getInteractions().getArray();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(
       interactions.some(interaction => {
         return interaction.constructor.name === "DragBox";
@@ -63,6 +66,7 @@ const waitForLabelingImageLoaded = () => {
   cy.wait("@load-extraction-file");
   cy.window().then(win => {
     cy.wrap(win.labelingImage.getLayers().getArray()).then(layers => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(
         layers.some(layer => {
           return layer.constructor.name === "ImageLayer";
@@ -120,8 +124,9 @@ function assertBoundingBoxes(totalCount, highlightedArea) {
     const highlights = highlightsLayer.getSource().getFeatures();
     expect(invisibleBoundingBoxes.length).to.equal(totalCount); // layer always contains all bounding boxes, even if they are not visible
     expect(highlights.length).to.equal(highlightedArea === 0 ? 0 : 1); // highlights are combined into one feature
-    highlightedArea !== 0 &&
+    if (highlightedArea !== 0) {
       expect(Math.round(Math.abs(getArea(highlights[0].getGeometry())))).to.equal(highlightedArea);
+    }
   });
 }
 
@@ -207,6 +212,7 @@ describe("Test labeling tool", () => {
     waitForLabelingImageLoaded();
     cy.window().then(win => {
       const interactions = win.labelingImage.getInteractions().getArray();
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
     });
   });
@@ -277,8 +283,10 @@ describe("Test labeling tool", () => {
       const view = win.labelingImage.getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
@@ -365,6 +373,7 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-page-next"]').click();
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
 
     clickCoordinateLabelingButton();

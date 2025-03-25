@@ -94,7 +94,7 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
     (x: string, y: string, height: number, country: string, canton: string, municipality: string) => {
       formMethods.setValue("locationX", x);
       formMethods.setValue("locationY", y);
-      height && formMethods.setValue("elevationZ", height);
+      if (height) formMethods.setValue("elevationZ", height);
       formMethods.setValue("country", country);
       formMethods.setValue("canton", canton);
       formMethods.setValue("municipality", municipality);

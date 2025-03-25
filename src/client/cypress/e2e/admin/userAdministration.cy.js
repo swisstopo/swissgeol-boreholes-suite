@@ -35,14 +35,11 @@ describe("User administration settings tests", () => {
     verifyRowContains("viewer", 0);
 
     // filter with quick filter
-    cy.get(".MuiDataGrid-toolbarQuickFilter input")
-      .click()
-      .then(() => {
-        cy.focused().clear();
-        cy.get(".MuiDataGrid-toolbarQuickFilter input").type("editor", {
-          delay: 10,
-        });
-      });
+    cy.get(".MuiDataGrid-toolbarQuickFilter input").click();
+    cy.focused().clear();
+    cy.get(".MuiDataGrid-toolbarQuickFilter input").type("editor", {
+      delay: 10,
+    });
     verifyTableLength(8);
     verifyRowContains("editor", 0);
     verifyRowContains("example@example.com", 0);

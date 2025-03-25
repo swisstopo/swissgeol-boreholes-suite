@@ -13,33 +13,33 @@ import {
 
 describe("Tests for 'Location' edit page.", () => {
   const getButtons = () => {
-    const saveButton = cy.get('[data-cy="save-button"]');
-    const discardButton = cy.get('[data-cy="discardchanges-button"]');
+    const saveButton = () => cy.get('[data-cy="save-button"]');
+    const discardButton = () => cy.get('[data-cy="discardchanges-button"]');
     return { saveButton, discardButton };
   };
 
   const verifyNoUnsavedChanges = () => {
     const { saveButton, discardButton } = getButtons();
-    saveButton.should("be.disabled");
-    discardButton.should("be.disabled");
+    saveButton().should("be.disabled");
+    discardButton().should("be.disabled");
     cy.contains("Unsaved changes").should("not.exist");
   };
 
   const verifyUnsavedChanges = () => {
     const { saveButton, discardButton } = getButtons();
-    saveButton.should("not.be.disabled");
-    discardButton.should("not.be.disabled");
+    saveButton().should("not.be.disabled");
+    discardButton().should("not.be.disabled");
     cy.contains("Unsaved changes").should("exist");
   };
+
+  const originalNameInput = () => cy.contains("label", "Original name").next().children("input");
 
   it("creates and deletes a borehole.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole();
 
-    const originalNameInput = cy.contains("label", "Original name").next().children("input");
-
     // enter original name
-    originalNameInput.type("AAA_SCATORPS");
+    originalNameInput().type("AAA_SCATORPS");
 
     // save borehole
     saveWithSaveBar();
@@ -142,13 +142,13 @@ describe("Tests for 'Location' edit page.", () => {
       setSelect("restrictionId", 3);
       verifyUnsavedChanges();
       const { saveButton, discardButton } = getButtons();
-      discardButton.click();
+      discardButton().click();
       verifyNoUnsavedChanges();
 
       // save changes
       setSelect("restrictionId", 3);
       verifyUnsavedChanges();
-      saveButton.click();
+      saveButton().click();
       verifyNoUnsavedChanges();
     });
   });
@@ -173,9 +173,8 @@ describe("Tests for 'Location' edit page.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole();
 
-    const originalNameInput = cy.contains("label", "Original name").next().children("input");
     verifyNoUnsavedChanges();
-    originalNameInput.type("PHOTOFOX");
+    originalNameInput().type("PHOTOFOX");
     verifyUnsavedChanges();
     cy.get("body").type("{ctrl}s");
     verifyNoUnsavedChanges();
@@ -190,8 +189,7 @@ describe("Tests for 'Location' edit page.", () => {
     });
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
 
-    const originalNameInput = cy.contains("label", "Original name").next().children("input");
-    originalNameInput.type("FELIX_THE_RACOON");
+    originalNameInput().type("FELIX_THE_RACOON");
     stopEditing();
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.get('[data-cy="editingstop-button"]').should("exist");
@@ -200,7 +198,7 @@ describe("Tests for 'Location' edit page.", () => {
     cy.get('[data-cy="editingstop-button"]').should("not.exist");
 
     startBoreholeEditing();
-    originalNameInput.type("FELIX_THE_BROOM");
+    originalNameInput().type("FELIX_THE_BROOM");
 
     cy.get('[data-cy="borehole-menu-item"]').click();
     handlePrompt(messageUnsavedChanges, "cancel");
@@ -218,8 +216,7 @@ describe("Tests for 'Location' edit page.", () => {
   it("adds edits and deletes borehole identifiers", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    const originalNameInput = cy.contains("label", "Original name").next().children("input");
-    originalNameInput.type("AAA_FELIX_THE_PANDA");
+    originalNameInput().type("AAA_FELIX_THE_PANDA");
 
     function saveFormAndReturnToOverview() {
       saveWithSaveBar();

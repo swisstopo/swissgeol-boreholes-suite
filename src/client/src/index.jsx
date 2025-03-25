@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import i18n from "./i18n";
 import "./index.css";
 import "ol/ol.css";
-import { SettingsProvider } from "./api/SettingsProvider";
+import { SettingsProvider } from "./api/SettingsContext.js";
 import App from "./App";
 import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.jsx";
 import "semantic-ui-css/semantic.css";

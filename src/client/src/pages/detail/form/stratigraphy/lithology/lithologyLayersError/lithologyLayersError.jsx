@@ -131,7 +131,7 @@ const LithologyLayersError = props => {
       {!isDelete && (
         <Styled.Row
           onClick={() => {
-            isEditable && setShowSolution(id);
+            if (isEditable) setShowSolution(id);
           }}>
           <Styled.ErrorMessageContainer>
             <TriangleAlert />

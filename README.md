@@ -14,20 +14,11 @@ Folgende Komponenten müssen auf dem Entwicklungsrechner installiert sein:
 ✔️ Node.js 20 LTS  
 ✔️ Optional, um die Onlinehilfe zu erstellen: [MkDocs](https://www.mkdocs.org/)
 
-Damit die Launch Settings für _docker-compose_ korrekt geladen werden, mit Rechtsklick auf dem Projekt _Manage Docker Compose Launch Settings_ öffnen, warten bis alle Services geladen sind und dann speichern.
-
 ### Entwicklung mit Visual Studio 2022
 
 Es wird eine lokale Installation von Node.js benötigt. Diese kann mit Visual Studio 2022 oder mit [nvm](https://github.com/coreybutler/nvm-windows/releases) installiert werden, um mehrere Node Version zu verwalten. Anschliessend kann mit `nvm use` die im Projekt verwendete Node Version aktiviert werden.
 
-In VS 2022 müssen mehrere Startup-Projects angewählt werden, um die komplette Applikation lauffähig zu haben. Unter _Configure Startup Projects..._ muss _Multiple startup projects_ ausgewählt und entsprechend konfiguriert werden:
-
-| Project        | Action                  |
-| :------------- | :---------------------- |
-| BDMS           | Start                   |
-| BDMS.Client    | Start                   |
-| BDMS.Test      | None                    |
-| docker-compose | Start without debugging |
+Das Projekt kann mit dem Launch Profile _Boreholes_ gestartet werden.
 
 ### Entwicklung mit Docker
 
