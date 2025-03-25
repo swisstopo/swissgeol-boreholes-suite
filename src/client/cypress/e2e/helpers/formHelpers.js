@@ -195,7 +195,7 @@ export const evaluateYesNoSelect = (fieldName, expectedValue, parent) => {
 /**
  * Evaluates the state of a select form element.
  * @param {string} fieldName The name of the select field.
- * @param {string} expectedValue The expected value of the select.
+ * @param {string} expectedValue The expected value of the select (a code for the selected option).
  * @param {string} parent (optional) The parent of the form element.
  */
 export const evaluateSelect = (fieldName, expectedValue, parent) => {
@@ -206,6 +206,19 @@ export const evaluateSelect = (fieldName, expectedValue, parent) => {
       expectedValue,
     );
   });
+};
+
+/**
+ * Evaluates the state of a select form element.
+ * @param {string} fieldName The name of the select field.
+ * @param {string / null} expectedText The text that should be displayed in the select.
+ */
+export const evaluateSelectText = (fieldName, expectedText) => {
+  if (expectedText === null) {
+    cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiSelect-nativeInput").should("be.empty");
+    return;
+  }
+  cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiSelect-select").should("have.text", expectedText);
 };
 
 /**

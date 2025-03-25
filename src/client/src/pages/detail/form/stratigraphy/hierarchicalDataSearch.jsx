@@ -76,15 +76,8 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
           options.push({
             key: "dom-opt-z",
             value: -(index + 1),
-            text: "",
-            content: (
-              <span
-                style={{
-                  color: "red",
-                }}>
-                {t("reset")}
-              </span>
-            ),
+            italic: true,
+            text: t("reset"),
           });
         }
 
@@ -123,10 +116,15 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
       {levels.map(level => (
         <Box sx={{ mt: 2 }} key={schema + "_" + level.level} data-cy="hierarchical-data-search">
           <FormContainer>
-            <TextField select={true} label={t(level.label)} onChange={handleChange} value={level.selected}>
+            <TextField
+              select={true}
+              label={t(level.label)}
+              onChange={handleChange}
+              value={level.selected}
+              data-cy={`${level.label}-formSelect`}>
               {level.options.map(item => (
                 <MenuItem key={item.key} value={item.value}>
-                  {item.text}
+                  {item.italic ? <em>{item.text}</em> : item.text}
                 </MenuItem>
               ))}
             </TextField>

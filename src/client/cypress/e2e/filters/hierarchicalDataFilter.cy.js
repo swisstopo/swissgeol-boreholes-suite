@@ -1,3 +1,4 @@
+import { evaluateSelectText, setSelect } from "../helpers/formHelpers.js";
 import { goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("Hierachical data filter tests", () => {
@@ -16,10 +17,8 @@ describe("Hierachical data filter tests", () => {
     goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("h6", "Chronostratigraphy").click();
-    const periodsDropdown = () => cy.contains("label", "Period").next();
-    periodsDropdown().click();
-    periodsDropdown()
-      .find("div[role='option']")
+    cy.contains("label", "Period").next().click();
+    cy.get(".MuiMenuItem-root")
       .should("have.length", 13)
       .should(options => {
         expect(options[0]).to.have.text("Reset");
@@ -40,72 +39,47 @@ describe("Hierachical data filter tests", () => {
 
   it("check hierarchical filtering", () => {
     const filterValues = [
-      "Phanerozoic",
-      "Cenozoic",
-      "Neogene",
-      "Miocene",
-      "Early Miocene",
-      "Burdigalian",
-      "late Burdigalian",
+      { period: "eon", value: "Phanerozoic" },
+      { period: "era", value: "Cenozoic" },
+      { period: "period", value: "Neogene" },
+      { period: "epoch", value: "Miocene" },
+      { period: "subepoch", value: "Early Miocene" },
+      { period: "age", value: "Burdigalian" },
+      { period: "subage", value: "late Burdigalian" },
     ];
     goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("h6", "Chronostratigraphy").click();
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 1)
-      .find("input")
-      .type(filterValues[filterValues.length - 1] + "{enter}");
-    cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .find("div.divider.text")
-      .should("have.length", filterValues.length)
-      .each((el, i) => {
-        expect(el).to.have.text(filterValues[i]);
-      });
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 2)
-      .find("div.dropdown")
-      .click();
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 2)
-      .find('[role="option"]')
-      .first()
-      .scrollIntoView();
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 2)
-      .find('[role="option"]')
-      .first()
-      .click();
-    cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .find("div.divider.text")
-      .should("have.length", filterValues.length - 2)
-      .each((el, i) => {
-        expect(el).to.have.text(filterValues[i]);
-      });
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 4)
-      .find("div.dropdown")
-      .click();
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 4)
-      .find('[role="option"]')
-      .first()
-      .scrollIntoView();
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 4)
-      .find('[role="option"]')
-      .first()
-      .click();
-    cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .find("div.divider.text")
-      .should("have.length", filterValues.length - 4)
-      .each((el, i) => {
-        expect(el).to.have.text(filterValues[i]);
-      });
+    setSelect("subage", 1); //  "late Burdigalian",
+    cy.wait(["@edit_list", "@borehole_geojson"]);
+    filterValues.forEach(filter => {
+      evaluateSelectText(filter.period, filter.value);
+    });
+
+    // Reset age select
+    setSelect("age", 0);
+    cy.wait(["@edit_list", "@borehole_geojson"]);
+
+    let reducedFilterValues = filterValues.slice(0, filterValues.length - 2);
+    // Verify that 2 levels are removed
+    reducedFilterValues.forEach(filter => {
+      evaluateSelectText(filter.period, filter.value);
+    });
+
+    // Reset period select
+    setSelect("period", 0);
+    cy.wait(["@edit_list", "@borehole_geojson"]);
+
+    reducedFilterValues = filterValues.slice(0, filterValues.length - 4);
+    // Verify that 4 levels are removed
+    reducedFilterValues.forEach(filter => {
+      evaluateSelectText(filter.period, filter.value);
+    });
+    // Reset all filters and verify they're cleared
     cy.contains("button", "Reset").click();
     cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]').find("div.divider.text").should("have.length", 0);
+    filterValues.forEach(filter => {
+      evaluateSelectText(filter.period, null);
+    });
   });
 });
