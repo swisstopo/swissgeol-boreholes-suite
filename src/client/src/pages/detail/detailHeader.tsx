@@ -96,6 +96,17 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
     history.push("/");
   };
 
+  const handleReturnClick = () => {
+    if (editingEnabled) {
+      if (isFormDirty) {
+        stopEditingWithUnsavedChanges();
+      } else {
+        stopEditing();
+      }
+    }
+    history.push("/");
+  };
+
   // get unfinished or latest workflow
   const workflows = borehole?.workflows.sort((a, b) => new Date(b.finished).getTime() - new Date(a.finished).getTime());
   const currentWorkflow = workflows?.find(workflow => workflow.finished == null) || workflows[0];
@@ -103,14 +114,7 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
   return (
     <DetailHeaderStack direction="row" alignItems="center">
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={3}>
-        <ReturnButton
-          onClick={() => {
-            {
-              editingEnabled && (isFormDirty ? stopEditingWithUnsavedChanges() : stopEditing());
-              history.push("/");
-            }
-          }}
-        />
+        <ReturnButton onClick={handleReturnClick} />
         <Stack>
           <Typography variant="h2"> {borehole?.name}</Typography>
           {!auth.anonymousModeEnabled && (

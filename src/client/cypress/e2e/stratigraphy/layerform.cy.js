@@ -24,19 +24,20 @@ describe("Tests for the layer form.", () => {
     cy.wait("@get-layer-by-id");
 
     // fill all dropdowns with two values
-    cy.get('[aria-multiselectable="true"]')
-      .should("have.length", 6)
-      .each(el => {
-        cy.wrap(el).scrollIntoView().click({ force: true }).find('[role="option"]').last().scrollIntoView().click();
-        cy.wait("@update-layer");
-      });
+    cy.get('[aria-multiselectable="true"]').should("have.length", 6);
+    cy.get('[aria-multiselectable="true"]').each(el => {
+      cy.wrap(el).scrollIntoView();
+      cy.wrap(el).click({ force: true });
+      cy.wrap(el).find('[role="option"]').last().click();
+      cy.wait("@update-layer");
+    });
 
-    cy.get('[aria-multiselectable="true"]')
-      .should("have.length", 6)
-      .each(el => {
-        cy.wrap(el).scrollIntoView().click({ force: true }).find('[role="option"]').eq(1).click();
-        cy.wait("@update-layer");
-      });
+    cy.get('[aria-multiselectable="true"]').each(el => {
+      cy.wrap(el).scrollIntoView();
+      cy.wrap(el).click({ force: true });
+      cy.wrap(el).find('[role="option"]').eq(1).click();
+      cy.wait("@update-layer");
+    });
 
     const expectedValues = [
       "fat clay",
@@ -64,12 +65,12 @@ describe("Tests for the layer form.", () => {
     });
 
     // click reset on all multiselect dropdowns
-    cy.get('[aria-multiselectable="true"]')
-      .should("have.length", 6)
-      .each(el => {
-        cy.wrap(el).scrollIntoView().click({ force: true }).find('[role="option"]').eq(0).click();
-        cy.wait("@update-layer");
-      });
+    cy.get('[aria-multiselectable="true"]').each(el => {
+      cy.wrap(el).scrollIntoView();
+      cy.wrap(el).click({ force: true });
+      cy.wrap(el).find('[role="option"]').eq(0).click();
+      cy.wait("@update-layer");
+    });
 
     // click somewhere else to close the last dropdown
     cy.get('[data-cy="notes"]').click();

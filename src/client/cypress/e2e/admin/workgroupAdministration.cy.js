@@ -46,14 +46,11 @@ describe("User administration settings tests", () => {
     verifyRowContains("Default", 3);
 
     // filter with quick filter
-    cy.get(".MuiDataGrid-toolbarQuickFilter input")
-      .click()
-      .then(() => {
-        cy.focused().clear();
-        cy.get(".MuiDataGrid-toolbarQuickFilter input").type("inactive", {
-          delay: 10,
-        });
-      });
+    cy.get(".MuiDataGrid-toolbarQuickFilter input").click();
+    cy.focused().clear();
+    cy.get(".MuiDataGrid-toolbarQuickFilter input").type("inactive", {
+      delay: 10,
+    });
 
     verifyTableLength(4);
     verifyRowContains("World", 0);

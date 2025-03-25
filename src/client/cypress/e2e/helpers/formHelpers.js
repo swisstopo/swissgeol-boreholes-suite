@@ -52,11 +52,8 @@ export const hasAiStyle = (fieldName, hasAiStyle = true, parent = "") => {
  */
 export const clearInput = (fieldName, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formInput"]`;
-  cy.get(selector)
-    .click()
-    .then(() => {
-      cy.focused().clear();
-    });
+  cy.get(selector).click();
+  cy.focused().clear();
 };
 
 /**
@@ -67,14 +64,11 @@ export const clearInput = (fieldName, parent) => {
  */
 export const setInput = (fieldName, value, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formInput"]`;
-  cy.get(selector)
-    .click()
-    .then(() => {
-      cy.focused().clear();
-      cy.get(selector).type(value, {
-        delay: 10,
-      });
-    });
+  cy.get(selector).click();
+  cy.focused().clear();
+  cy.get(selector).type(value, {
+    delay: 10,
+  });
 };
 
 /**
@@ -299,14 +293,11 @@ export const evaluateDisplayValue = (fieldName, expectedValue, parent) => {
  */
 export const setCoordinate = (fieldName, value, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formCoordinate"]`;
-  cy.get(selector)
-    .click()
-    .then(() => {
-      cy.focused().clear();
-      cy.get(selector).type(value, {
-        delay: 10,
-      });
-    });
+  cy.get(selector).click();
+  cy.focused().clear();
+  cy.get(selector).type(value, {
+    delay: 10,
+  });
 };
 
 /**

@@ -52,6 +52,7 @@ describe("Tests for the field measurement editor.", () => {
 
       // add another field measurement result
       startEditing();
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(500);
       addItem("addFieldMeasurementResult");
 

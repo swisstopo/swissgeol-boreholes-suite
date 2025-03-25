@@ -19,7 +19,7 @@ describe("Section crud tests", () => {
 
     // start editing session
     startBoreholeEditing();
-
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(30);
   });
 
@@ -179,6 +179,7 @@ describe("Section crud tests", () => {
     setInput("sectionElements.0.toDepth", "1");
     saveForm();
     cy.wait("@section_POST");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(100);
     getElementByDataCy("geometry-tab").click();
     cy.location().should(location => {
