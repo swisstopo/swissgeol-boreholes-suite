@@ -1,21 +1,22 @@
 import { evaluateSelectText, setSelect } from "../helpers/formHelpers.js";
-import { goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
+import { getElementByDataCy, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("Hierachical data filter tests", () => {
   it("check visible filters", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
     cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 7);
     cy.contains("h6", "Lithostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
     cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 3);
+    getElementByDataCy("reset-filter-button").click();
   });
 
   it("check sorting of filter values", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
     cy.contains("label", "Period").next().click();
     cy.get(".MuiMenuItem-root")
@@ -48,10 +49,11 @@ describe("Hierachical data filter tests", () => {
       { period: "subage", value: "late Burdigalian" },
     ];
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
     setSelect("subage", 1); //  "late Burdigalian",
     cy.wait(["@edit_list", "@borehole_geojson"]);
+    getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
     filterValues.forEach(filter => {
       evaluateSelectText(filter.period, filter.value);
     });
@@ -59,6 +61,7 @@ describe("Hierachical data filter tests", () => {
     // Reset age select
     setSelect("age", 0);
     cy.wait(["@edit_list", "@borehole_geojson"]);
+    getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
 
     let reducedFilterValues = filterValues.slice(0, filterValues.length - 2);
     // Verify that 2 levels are removed
@@ -69,6 +72,7 @@ describe("Hierachical data filter tests", () => {
     // Reset period select
     setSelect("period", 0);
     cy.wait(["@edit_list", "@borehole_geojson"]);
+    getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
 
     reducedFilterValues = filterValues.slice(0, filterValues.length - 4);
     // Verify that 4 levels are removed
@@ -78,6 +82,7 @@ describe("Hierachical data filter tests", () => {
     // Reset all filters and verify they're cleared
     cy.contains("button", "Reset").click();
     cy.wait("@edit_list");
+    getElementByDataCy("filter-chip-chronostratigraphy_id").should("not.exist");
     filterValues.forEach(filter => {
       evaluateSelectText(filter.period, null);
     });
