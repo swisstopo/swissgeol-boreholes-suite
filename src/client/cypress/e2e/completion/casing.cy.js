@@ -38,7 +38,6 @@ describe("Casing crud tests", () => {
   it("adds, edits and deletes casings", () => {
     // create casing
     addItem("addcasing");
-    cy.wait("@codelist_GET");
     cy.get('[data-cy="casingElements.0.delete"]').should("be.disabled");
 
     setInput("name", "casing-1");
@@ -78,7 +77,6 @@ describe("Casing crud tests", () => {
 
     // update casing
     startEditing();
-    cy.wait("@codelist_GET");
 
     setInput("name", "casing-1 updated");
     setSelect("casingElements.0.materialId", 6);
@@ -93,6 +91,7 @@ describe("Casing crud tests", () => {
     cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addInstrument");
     cy.wait("@casing_GET");
@@ -171,7 +170,6 @@ describe("Casing crud tests", () => {
   it("checks for unsaved changes when switching between cards", () => {
     addItem("addcasing");
     cy.get('[data-cy="addcasing-button"]').should("be.disabled");
-    cy.wait("@codelist_GET");
     setInput("name", "casing 1");
     setInput("casingElements.0.fromDepth", "5");
     setInput("casingElements.0.toDepth", "10");

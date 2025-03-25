@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
 
-const shortenedVersion = import.meta.env.VITE_APP_VERSION.split("+")[0];
+const shortenedVersion = `${import.meta.env.VITE_APP_VERSION}`.split("+")[0];
 
 export const VersionTag = () => (
   <Box>

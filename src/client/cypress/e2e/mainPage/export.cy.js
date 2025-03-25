@@ -324,6 +324,7 @@ describe("Test for exporting boreholes.", () => {
       cy.get('[data-cy="locationX-formCoordinate"] input').type("2646000 ");
       cy.get('[data-cy="locationY-formCoordinate"] input').type("1247000 ");
       cy.wait("@location");
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(4000);
       saveWithSaveBar();
 

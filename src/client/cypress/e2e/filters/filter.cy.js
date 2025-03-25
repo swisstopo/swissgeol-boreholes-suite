@@ -21,10 +21,9 @@ describe("Search filter tests", () => {
     getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
-    let indentifierDropdown = cy.contains("label", "ID type").next();
-
-    indentifierDropdown.click();
-    indentifierDropdown
+    const indentifierDropdown = () => cy.contains("label", "ID type").next();
+    indentifierDropdown().click();
+    indentifierDropdown()
       .find("div[role='option']")
       .should("have.length", 12)
       .should(options => {
@@ -33,10 +32,9 @@ describe("Search filter tests", () => {
       });
 
     cy.contains("h6", "Borehole").click();
-    let boreholeTypeDropdown = cy.contains("label", "Borehole type").next();
-
-    boreholeTypeDropdown.click();
-    boreholeTypeDropdown
+    const boreholeTypeDropdown = () => cy.contains("label", "Borehole type").next();
+    boreholeTypeDropdown().click();
+    boreholeTypeDropdown()
       .find("div[role='option']")
       .should("have.length", 8)
       .should(options => {
@@ -254,12 +252,13 @@ describe("Search filter tests", () => {
     cy.contains("Borehole").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
-    let boreholeStatusDropdown = cy.contains("label", "Borehole status").next();
-
-    boreholeStatusDropdown.click();
-    boreholeStatusDropdown.find("div[role='option']").then(options => {
-      cy.wrap(options).contains("decayed").click({ force: true });
-    });
+    const boreholeStatusDropdown = () => cy.contains("label", "Borehole status").next();
+    boreholeStatusDropdown().click();
+    boreholeStatusDropdown()
+      .find("div[role='option']")
+      .then(options => {
+        cy.wrap(options).contains("decayed").click({ force: true });
+      });
     cy.wait("@edit_list");
 
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "169");
@@ -272,10 +271,9 @@ describe("Search filter tests", () => {
     cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
-    let colorDropdown = cy.contains("label", "Colour").next();
-
-    colorDropdown.click();
-    colorDropdown
+    const colorDropdown = () => cy.contains("label", "Colour").next();
+    colorDropdown().click();
+    colorDropdown()
       .find("div[role='option']")
       .should("have.length", 25)
       .should(options => {
@@ -288,11 +286,11 @@ describe("Search filter tests", () => {
 
     cy.wait("@edit_list");
     showTableAndWaitForData();
-    verifyPaginationText("1–100 of 229");
+    verifyPaginationText("1–100 of 770");
 
-    let uscs3Dropdown = cy.contains("label", "USCS 3").next();
-    uscs3Dropdown.scrollIntoView().click({ force: true });
-    uscs3Dropdown
+    const uscs3Dropdown = () => cy.contains("label", "USCS 3").next();
+    uscs3Dropdown().scrollIntoView().click({ force: true });
+    uscs3Dropdown()
       .find("div[role='option']")
       .should("have.length", 36)
       .should(options => {
@@ -306,8 +304,8 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    verifyPaginationText("1–39 of 39");
-    cy.get(".MuiDataGrid-row").contains("Darion Rowe").should("exist");
+    verifyPaginationText("1–100 of 108");
+    cy.get(".MuiDataGrid-row").contains("Bruce Rempel").should("exist");
   });
 
   function filterByOriginalLithology() {

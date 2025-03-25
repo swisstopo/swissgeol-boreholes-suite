@@ -1,5 +1,6 @@
 ﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -140,13 +141,13 @@ public class LayerControllerTest
             Uscs3CodelistIds = new List<int> { 23101017, 23101018, 23101001 },
         };
 
-        var layerToEdit = GetLayersWithIncludes(context.Layers).Single(c => c.Id == id);
-        Assert.AreEqual(0, layerToEdit.Uscs3Codelists.Count);
-        Assert.AreEqual(0, layerToEdit.ColorCodelists.Count);
-        Assert.AreEqual(1, layerToEdit.DebrisCodelists.Count);
+        var layerToEdit = await context.LayersWithIncludes.AsNoTracking().SingleAsync(x => x.Id == id).ConfigureAwait(false);
+        Assert.AreEqual(4, layerToEdit.Uscs3Codelists.Count);
+        Assert.AreEqual(1, layerToEdit.ColorCodelists.Count);
+        Assert.AreEqual(2, layerToEdit.DebrisCodelists.Count);
         Assert.AreEqual(1, layerToEdit.GrainShapeCodelists.Count);
-        Assert.AreEqual(1, layerToEdit.GrainAngularityCodelists.Count);
-        Assert.AreEqual(0, layerToEdit.OrganicComponentCodelists.Count);
+        Assert.AreEqual(4, layerToEdit.GrainAngularityCodelists.Count);
+        Assert.AreEqual(4, layerToEdit.OrganicComponentCodelists.Count);
 
         // Update Layer
         var response = await controller.EditAsync(layerWithChanges);
@@ -307,7 +308,7 @@ public class LayerControllerTest
         var response = await controller.CreateAsync(layerToAdd);
         var okResult = response.Result as OkObjectResult;
 
-        var addedLayer = GetLayersWithIncludes(context.Layers).Single(c => c.Id == layerToAdd.Id);
+        var addedLayer = await context.LayersWithIncludes.SingleAsync(x => x.Id == layerToAdd.Id).ConfigureAwait(false);
 
         Assert.AreEqual(layerToAdd.AlterationId, addedLayer.AlterationId);
         Assert.AreEqual(layerToAdd.CohesionId, addedLayer.CohesionId);
@@ -348,6 +349,7 @@ public class LayerControllerTest
 
         var layerColorCode = addedLayer.LayerColorCodes.Single(c => c.CodelistId == firstColorCodeListId);
         Assert.IsNotNull(layerColorCode.Codelist);
+
         layerColorCode = addedLayer.LayerColorCodes.Single(c => c.CodelistId == secondColorCodeListId);
         Assert.IsNotNull(layerColorCode.Codelist);
     }

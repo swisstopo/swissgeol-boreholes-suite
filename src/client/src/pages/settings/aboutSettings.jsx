@@ -67,12 +67,12 @@ class AboutSettings extends React.Component {
             <a
               href={
                 "https://github.com/swisstopo/swissgeol-boreholes-suite/releases/tag/v" +
-                import.meta.env.VITE_APP_VERSION.split("+")[0]
+                `${import.meta.env.VITE_APP_VERSION}`.split("+")[0]
               }
               rel="noopener noreferrer"
               target="_BLANK"
               data-cy="version">
-              {import.meta.env.VITE_APP_VERSION}
+              {`${import.meta.env.VITE_APP_VERSION}`}
             </a>
           </span>
         </div>

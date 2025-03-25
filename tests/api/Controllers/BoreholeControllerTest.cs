@@ -599,7 +599,7 @@ public class BoreholeControllerTest
 
     private Borehole GetBorehole(int id)
     {
-        return context.Boreholes.GetAllWithIncludes().AsNoTracking().Single(b => b.Id == id);
+        return context.BoreholesWithIncludes.AsNoTracking().Single(b => b.Id == id);
     }
 
     private Borehole GetBoreholeToAdd()
@@ -656,8 +656,7 @@ public class BoreholeControllerTest
     // Get the id of a borehole with certain conditions.
     private int GetBoreholeIdToCopy()
     {
-        var borehole = context.Boreholes
-            .GetAllWithIncludes()
+        var borehole = context.BoreholesWithIncludes
             .AsNoTracking()
             .AsEnumerable()
             .FirstOrDefault(b =>

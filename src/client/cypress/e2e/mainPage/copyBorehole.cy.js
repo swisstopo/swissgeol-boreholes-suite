@@ -7,8 +7,8 @@ describe("Test copying of boreholes", () => {
 
     goToRouteAndAcceptTerms("/");
     showTableAndWaitForData();
-    cy.get(".MuiDataGrid-checkboxInput").eq(1).scrollIntoView().click();
-
+    cy.get(".MuiDataGrid-checkboxInput").eq(1).scrollIntoView();
+    cy.get(".MuiDataGrid-checkboxInput").eq(1).click();
     cy.contains("button", "Create a copy").click();
 
     cy.get(".MuiDialogContentText-root").should("contain.text", "Select a workgroup to create a copy.");

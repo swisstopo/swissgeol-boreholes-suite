@@ -50,12 +50,12 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 20);
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
-    cy.get('[data-cy="workgroup-formSelect"]')
-      .should("have.length", 1)
-      .each(el => {
-        cy.wrap(el).scrollIntoView().click();
-        cy.get('[role="option"]').eq(0).click({ force: true });
-      });
+    cy.get('[data-cy="workgroup-formSelect"]').should("have.length", 1);
+    cy.get('[data-cy="workgroup-formSelect"]').each(el => {
+      cy.wrap(el).scrollIntoView();
+      cy.wrap(el).click();
+      cy.get('[role="option"]').eq(0).click({ force: true });
+    });
   });
 
   it("fills all bulkedit fields and saves.", () => {
@@ -68,17 +68,18 @@ describe("Test the borehole bulk edit feature.", () => {
     // select all bulk edit fields and insert values
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
-    cy.get("input[type=text]")
-      .should("have.length", 1)
-      .each(($input, index) => {
-        cy.wrap($input).scrollIntoView().clear().type(`A${index}`);
-      });
+    cy.get("input[type=text]").should("have.length", 1);
+    cy.get("input[type=text]").each(($input, index) => {
+      cy.wrap($input).scrollIntoView();
+      cy.wrap($input).clear();
+      cy.wrap($input).type(`A${index}`);
+    });
 
-    cy.get('input[type="date"]')
-      .should("have.length", 1)
-      .each($input => {
-        cy.wrap($input).clear().type("2024-09-25");
-      });
+    cy.get('input[type="date"]').should("have.length", 1);
+    cy.get('input[type="date"]').each($input => {
+      cy.wrap($input).clear();
+      cy.wrap($input).type("2024-09-25");
+    });
 
     cy.get('input[type="date"]')
       .should("have.length", 1)
@@ -86,11 +87,12 @@ describe("Test the borehole bulk edit feature.", () => {
         cy.wrap($input).should("have.value", "2024-09-25");
       });
 
-    cy.get("input[type=number]")
-      .should("have.length", 3)
-      .each(($input, index) => {
-        cy.wrap($input).scrollIntoView().clear().type(`${index}`);
-      });
+    cy.get("input[type=number]").should("have.length", 3);
+    cy.get("input[type=number]").each(($input, index) => {
+      cy.wrap($input).scrollIntoView();
+      cy.wrap($input).clear();
+      cy.wrap($input).type(`${index}`);
+    });
 
     cy.get('[role="combobox"]').each(el => {
       cy.wrap(el).click();
@@ -105,29 +107,29 @@ describe("Test the borehole bulk edit feature.", () => {
     startBulkEditing();
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
-    cy.get("input[type=text]")
-      .should("have.length", 1)
-      .each($input => {
-        cy.wrap($input).scrollIntoView().should("have.value", "");
-      });
+    cy.get("input[type=text]").should("have.length", 1);
+    cy.get("input[type=text]").each($input => {
+      cy.wrap($input).scrollIntoView();
+      cy.wrap($input).should("have.value", "");
+    });
 
-    cy.get('input[type="date"]')
-      .should("have.length", 1)
-      .each($input => {
-        cy.wrap($input).scrollIntoView().should("have.value", "");
-      });
+    cy.get('input[type="date"]').should("have.length", 1);
+    cy.get('input[type="date"]').each($input => {
+      cy.wrap($input).scrollIntoView();
+      cy.wrap($input).should("have.value", "");
+    });
 
-    cy.get("input[type=number]")
-      .should("have.length", 3)
-      .each($input => {
-        cy.wrap($input).scrollIntoView().should("have.value", "");
-      });
+    cy.get("input[type=number]").should("have.length", 3);
+    cy.get("input[type=number]").each($input => {
+      cy.wrap($input).scrollIntoView();
+      cy.wrap($input).should("have.value", "");
+    });
 
-    cy.get("input.MuiSelect-nativeInput")
-      .should("have.length", 14)
-      .each($input => {
-        cy.wrap($input).scrollIntoView().should("have.value", "");
-      });
+    cy.get("input.MuiSelect-nativeInput").should("have.length", 14);
+    cy.get("input.MuiSelect-nativeInput").each($input => {
+      cy.wrap($input).scrollIntoView();
+      cy.wrap($input).should("have.value", "");
+    });
   });
 
   it("can reset bulkedit fields", () => {
@@ -147,19 +149,17 @@ describe("Test the borehole bulk edit feature.", () => {
     let visibleCount = 0;
 
     // expect 4 visible reset buttons
-    cy.get('[data-cy="bulk-edit-reset-button"]')
-      .each(button => {
-        cy.wrap(button)
-          .scrollIntoView()
-          .then($el => {
-            if ($el.css("visibility") !== "hidden") {
-              visibleCount += 1;
-            }
-          });
-      })
-      .then(() => {
-        expect(visibleCount).to.equal(4);
+    cy.get('[data-cy="bulk-edit-reset-button"]').each(button => {
+      cy.wrap(button).scrollIntoView();
+      cy.wrap(button).then($el => {
+        if ($el.css("visibility") !== "hidden") {
+          visibleCount += 1;
+        }
       });
+    });
+    cy.then(() => {
+      expect(visibleCount).to.equal(4);
+    });
 
     cy.get("h6").contains("Project name").scrollIntoView();
     evaluateInput("custom.project_name", "new name");

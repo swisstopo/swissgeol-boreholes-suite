@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using static BDMS.BdmsContextConstants;
 
@@ -43,6 +44,7 @@ public static class BdmsContextExtensions
     /// <summary>
     /// Seed test data.
     /// </summary>
+    [SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Accepted for test data seeding.")]
     public static void SeedData(this BdmsContext context)
     {
         var bulkConfig = new BulkConfig { SqlBulkCopyOptions = SqlBulkCopyOptions.KeepIdentity };
@@ -528,56 +530,43 @@ public static class BdmsContextExtensions
 
         context.BulkInsert(lithostratigraphiesToInsert, bulkConfig);
 
-        // Seed layer codelist join tables
+        // Seed layer codelist join tables (without using Faker)
         var layerRange = Enumerable.Range(7_000_000, 20_000);
 
-        List<(int LayerId, int CodelistId)> GetCombinations(IEnumerable<int> codelistIds)
-        {
-            return layerRange.SelectMany(layerId => codelistIds.Select(codelistId => (LayerId: layerId, CodelistId: codelistId))).Distinct().ToList();
-        }
-
-        // Generate all combinations of LayerId and CodelistId for each code list
-        var colorCombinations = GetCombinations(colorIds);
-        var debrisCombinations = GetCombinations(debrisIds);
-        var grainShapeCombinations = GetCombinations(grainShapeIds);
-        var grainAngularityCombinations = GetCombinations(grainAngularityIds);
-        var organicComponentCombinations = GetCombinations(organicComponentIds);
-        var uscs3Combinations = GetCombinations(uscsIds);
-
-        Faker<T> CreateFaker<T>(List<(int LayerId, int CodelistId)> combinations)
-            where T : class, ILayerCode,
-            new() => new Faker<T>()
-                .StrictMode(false)
-                .Rules((f, o) =>
-                {
-                    var combination = f.PickRandom(combinations);
-                    combinations.Remove(combination);
-                    o.LayerId = combination.LayerId;
-                    o.CodelistId = combination.CodelistId;
-                    o.Layer = default!;
-                    o.Codelist = default!;
-                });
-
-        var fakeLayerColorCodes = CreateFaker<LayerColorCode>(colorCombinations);
-        var fakeLayerDebrisCodes = CreateFaker<LayerDebrisCode>(debrisCombinations);
-        var fakeLayerGrainShapeCodes = CreateFaker<LayerGrainShapeCode>(grainShapeCombinations);
-        var fakeLayerGrainAngularityCodes = CreateFaker<LayerGrainAngularityCode>(grainAngularityCombinations);
-        var fakeLayerOrganicComponentCodes = CreateFaker<LayerOrganicComponentCode>(organicComponentCombinations);
-        var fakeLayerUscs3Codes = CreateFaker<LayerUscs3Code>(uscs3Combinations);
-
-        void SeedCodelists<T>(Faker<T> faker)
+        void SeedLayerCodeRelationships<T>(IEnumerable<int> codelistIds)
             where T : class, ILayerCode, new()
         {
-            T SeededData(int seed) => faker.UseSeed(seed).Generate();
-            context.BulkInsert(Enumerable.Range(0, 10_000).Select(SeededData), bulkConfig);
+            var layerCodes = new List<T>();
+
+            // Create a smaller representative sample (not all possible combinations).
+            // This significantly reduces the data volume while maintaining distribution.
+            var random = new Random(layerRange.Count());
+            var codeListSampleSize = Math.Min(5, codelistIds.Count());
+
+            foreach (var layerId in layerRange)
+            {
+                // Select a smaller subset of codes for each layer.
+                // This is more realistic than assigning every code to every layer.
+                var codeListSample = codelistIds
+                    .OrderBy(_ => random.Next())
+                    .Take(random.Next(1, codeListSampleSize + 1))
+                    .ToList();
+
+                foreach (var codeId in codeListSample)
+                {
+                    layerCodes.Add(new() { LayerId = layerId, CodelistId = codeId });
+                }
+            }
+
+            context.BulkInsert(layerCodes, bulkConfig);
         }
 
-        SeedCodelists(fakeLayerColorCodes);
-        SeedCodelists(fakeLayerDebrisCodes);
-        SeedCodelists(fakeLayerGrainShapeCodes);
-        SeedCodelists(fakeLayerGrainAngularityCodes);
-        SeedCodelists(fakeLayerOrganicComponentCodes);
-        SeedCodelists(fakeLayerUscs3Codes);
+        SeedLayerCodeRelationships<LayerColorCode>(colorIds);
+        SeedLayerCodeRelationships<LayerDebrisCode>(debrisIds);
+        SeedLayerCodeRelationships<LayerGrainShapeCode>(grainShapeIds);
+        SeedLayerCodeRelationships<LayerGrainAngularityCode>(grainAngularityIds);
+        SeedLayerCodeRelationships<LayerOrganicComponentCode>(organicComponentIds);
+        SeedLayerCodeRelationships<LayerUscs3Code>(uscsIds);
 
         // Seed completions
         var completion_ids = 14_000_000;
@@ -976,14 +965,12 @@ public static class BdmsContextExtensions
         var pointCountPerBorehole = 50;
         foreach (var boreholeId in richBoreholeRange)
         {
-#pragma warning disable CA5394 // Do not use insecure randomness
             // Generate a random arced geometry
             Random r = new Random(boreholeId);
             var inc = (r.NextDouble() * Math.PI / 4) + (Math.PI / 4);
             var azi = r.NextDouble() * 2 * Math.PI;
             var radius = (r.NextDouble() * 1000) + 2000;
             var makeAziIncNull = r.NextDouble() < 0.5;
-#pragma warning restore CA5394 // Do not use insecure randomness
 
             // First point is at the borehole location (0, 0, 0)
             geometryElementsToInsert.Add(new BoreholeGeometryElement { Id = boreholeGeometry_ids++, BoreholeId = boreholeId, X = 0, Y = 0, Z = 0 });

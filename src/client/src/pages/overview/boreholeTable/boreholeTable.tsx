@@ -215,7 +215,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   ];
 
   // Add workgroup column if not in anonymous mode
-  !auth.anonymousModeEnabled &&
+  if (!auth.anonymousModeEnabled) {
     columns.splice(2, 0, {
       field: "workgroup",
       valueGetter: (value: { name: string }) => {
@@ -224,6 +224,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       headerName: t("workgroup"),
       flex: 1,
     });
+  }
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
     history.push(`/${params.row.id}/location`);

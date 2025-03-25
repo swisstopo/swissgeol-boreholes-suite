@@ -131,12 +131,22 @@ internal static class TestSyncContextExtensions
     /// </summary>
     internal static Borehole SortBoreholeContent(this Borehole borehole)
     {
-        foreach (var stratigrphy in borehole.Stratigraphies)
+        foreach (var stratigraphy in borehole.Stratigraphies)
         {
-            stratigrphy.LithologicalDescriptions = stratigrphy.LithologicalDescriptions?.OrderBy(l => l.FromDepth).ToList();
-            stratigrphy.FaciesDescriptions = stratigrphy.FaciesDescriptions?.OrderBy(f => f.FromDepth).ToList();
-            stratigrphy.ChronostratigraphyLayers = stratigrphy.ChronostratigraphyLayers?.OrderBy(c => c.FromDepth).ToList();
-            stratigrphy.LithostratigraphyLayers = stratigrphy.LithostratigraphyLayers?.OrderBy(l => l.FromDepth).ToList();
+            stratigraphy.LithologicalDescriptions = stratigraphy.LithologicalDescriptions?.OrderBy(l => l.FromDepth).ToList();
+            stratigraphy.FaciesDescriptions = stratigraphy.FaciesDescriptions?.OrderBy(f => f.FromDepth).ToList();
+            stratigraphy.ChronostratigraphyLayers = stratigraphy.ChronostratigraphyLayers?.OrderBy(c => c.FromDepth).ToList();
+            stratigraphy.LithostratigraphyLayers = stratigraphy.LithostratigraphyLayers?.OrderBy(l => l.FromDepth).ToList();
+
+            foreach (var layer in stratigraphy.Layers)
+            {
+                layer.LayerColorCodes = layer.LayerColorCodes.OrderBy(l => l.CodelistId).ToList();
+                layer.LayerDebrisCodes = layer.LayerDebrisCodes.OrderBy(l => l.CodelistId).ToList();
+                layer.LayerGrainShapeCodes = layer.LayerGrainShapeCodes.OrderBy(l => l.CodelistId).ToList();
+                layer.LayerGrainAngularityCodes = layer.LayerGrainAngularityCodes.OrderBy(l => l.CodelistId).ToList();
+                layer.LayerOrganicComponentCodes = layer.LayerOrganicComponentCodes.OrderBy(l => l.CodelistId).ToList();
+                layer.LayerUscs3Codes = layer.LayerUscs3Codes.OrderBy(l => l.CodelistId).ToList();
+            }
         }
 
         foreach (var completion in borehole.Completions)
@@ -201,7 +211,7 @@ internal static class TestSyncContextExtensions
     /// </summary>
     internal static async Task FixCasingReferencesAsync(this BdmsContext context, CancellationToken cancellationToken)
     {
-        var boreholes = context.Boreholes.GetAllWithIncludes().WithPublicationStatusPublished();
+        var boreholes = context.BoreholesWithIncludes.WithPublicationStatusPublished();
 
         foreach (var borehole in boreholes)
         {

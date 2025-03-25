@@ -10,6 +10,12 @@ import {
 } from "../helpers/dataGridHelpers";
 import { goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers.js";
 
+const clickOnNextPage = () => {
+  cy.get('[aria-label="next page"]').scrollIntoView();
+  cy.get('[aria-label="next page"]').click();
+  waitForTableData();
+};
+
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
     goToRouteAndAcceptTerms("/");
@@ -67,14 +73,10 @@ describe("Borehole editor table tests", () => {
     verifyRowContains("Zena Rath", 0);
 
     // navigate to page 4
-    cy.get('[aria-label="next page"]').scrollIntoView().click();
-    waitForTableData();
-    cy.get('[aria-label="next page"]').scrollIntoView().click();
-    waitForTableData();
-    cy.get('[aria-label="next page"]').scrollIntoView().click();
-    waitForTableData();
-    cy.get('[aria-label="next page"]').scrollIntoView().click();
-    waitForTableData();
+    clickOnNextPage();
+    clickOnNextPage();
+    clickOnNextPage();
+    clickOnNextPage();
 
     // verify current page is 4
     verifyPaginationText("401–500 of 1626");
@@ -108,8 +110,7 @@ describe("Borehole editor table tests", () => {
     cy.contains("1476 selected").should("be.visible");
 
     // navigate to next page
-    cy.get('[aria-label="next page"]').scrollIntoView().click();
-    waitForTableData();
+    clickOnNextPage();
     cy.contains("1476 selected").should("be.visible");
 
     // uncheck another row
@@ -125,7 +126,8 @@ describe("Borehole editor table tests", () => {
     cy.contains("1 selected").should("be.visible");
 
     // navigate to previous page
-    cy.get('[aria-label="previous page"]').scrollIntoView().click();
+    cy.get('[aria-label="previous page"]').scrollIntoView();
+    cy.get('[aria-label="previous page"]').click();
     waitForTableData();
     cy.contains("1 selected").should("be.visible");
 
@@ -148,8 +150,7 @@ describe("Borehole editor table tests", () => {
     cy.contains("298 selected").should("be.visible"); // does not select locked rows
 
     // navigate to next page
-    cy.get('[aria-label="next page"]').scrollIntoView().click();
-    waitForTableData();
+    clickOnNextPage();
     cy.contains("298 selected").should("be.visible");
   });
 });

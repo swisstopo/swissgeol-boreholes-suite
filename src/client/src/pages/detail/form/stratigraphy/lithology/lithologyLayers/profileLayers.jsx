@@ -175,13 +175,15 @@ const ProfileLayers = props => {
     } else {
       setSelectedDescription(null);
       const newFromDepth = query?.data?.at(-1)?.toDepth ?? 0;
-      layersWithValidation?.data?.length
-        ? mutation.mutate({
-            stratigraphyId: selectedStratigraphyID,
-            fromDepth: newFromDepth,
-            toDepth: layersWithValidation?.data.find(l => l.depth_from === newFromDepth)?.depth_to,
-          })
-        : showAlert(t("first_add_lithology"), "error");
+      if (layersWithValidation?.data?.length) {
+        mutation.mutate({
+          stratigraphyId: selectedStratigraphyID,
+          fromDepth: newFromDepth,
+          toDepth: layersWithValidation?.data.find(l => l.depth_from === newFromDepth)?.depth_to,
+        });
+      } else {
+        showAlert(t("first_add_lithology"), "error");
+      }
     }
   };
 
