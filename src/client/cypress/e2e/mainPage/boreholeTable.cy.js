@@ -1,5 +1,6 @@
 import {
   checkRowWithText,
+  clickOnNextPage,
   clickOnRowWithText,
   showTableAndWaitForData,
   sortBy,
@@ -9,12 +10,6 @@ import {
   waitForTableData,
 } from "../helpers/dataGridHelpers";
 import { getElementByDataCy, goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers.js";
-
-const clickOnNextPage = () => {
-  cy.get('[aria-label="next page"]').scrollIntoView();
-  cy.get('[aria-label="next page"]').click();
-  waitForTableData();
-};
 
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
