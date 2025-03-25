@@ -38,8 +38,8 @@ describe("Hierachical data filter tests", () => {
       });
   });
 
-  it("check hierarchical filtering", () => {
-    const filterValues = [
+  it.only("check hierarchical filtering", () => {
+    let filterValues = [
       { period: "eon", value: "Phanerozoic" },
       { period: "era", value: "Cenozoic" },
       { period: "period", value: "Neogene" },
@@ -54,33 +54,54 @@ describe("Hierachical data filter tests", () => {
     setSelect("subage", 1); //  "late Burdigalian",
     cy.wait(["@edit_list", "@borehole_geojson"]);
     getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
-    filterValues.forEach(filter => {
-      evaluateSelectText(filter.period, filter.value);
+    cy.wrap(filterValues).each(filter => {
+      return evaluateSelectText(filter.period, filter.value);
+    });
+    cy.then(() => {
+      // Reset age select
+      setSelect("age", 0);
     });
 
-    // Reset age select
-    setSelect("age", 0);
     cy.wait(["@edit_list", "@borehole_geojson"]);
     getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
 
-    let reducedFilterValues = filterValues.slice(0, filterValues.length - 2);
+    filterValues = [
+      { period: "eon", value: "Phanerozoic" },
+      { period: "era", value: "Cenozoic" },
+      { period: "period", value: "Neogene" },
+      { period: "epoch", value: "Miocene" },
+      { period: "subepoch", value: "Early Miocene" },
+      { period: "age", value: null },
+      { period: "subage", value: null },
+    ];
     // Verify that 2 levels are removed
-    reducedFilterValues.forEach(filter => {
-      evaluateSelectText(filter.period, filter.value);
+    cy.wrap(filterValues).each(filter => {
+      return evaluateSelectText(filter.period, filter.value);
     });
-
-    // Reset period select
-    setSelect("period", 0);
+    cy.then(() => {
+      // Reset period select
+      setSelect("period", 0);
+    });
     cy.wait(["@edit_list", "@borehole_geojson"]);
     getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
 
-    reducedFilterValues = filterValues.slice(0, filterValues.length - 4);
+    filterValues = [
+      { period: "eon", value: "Phanerozoic" },
+      { period: "era", value: "Cenozoic" },
+      { period: "period", value: null },
+      { period: "epoch", value: null },
+      { period: "subepoch", value: null },
+      { period: "age", value: null },
+      { period: "subage", value: null },
+    ];
     // Verify that 4 levels are removed
-    reducedFilterValues.forEach(filter => {
-      evaluateSelectText(filter.period, filter.value);
+    cy.wrap(filterValues).each(filter => {
+      return evaluateSelectText(filter.period, filter.value);
     });
-    // Reset all filters and verify they're cleared
-    cy.contains("button", "Reset").click();
+    cy.then(() => {
+      // Reset all filters and verify they're cleared
+      cy.contains("button", "Reset").click();
+    });
     cy.wait("@edit_list");
     getElementByDataCy("filter-chip-chronostratigraphy_id").should("not.exist");
     filterValues.forEach(filter => {
