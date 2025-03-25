@@ -385,6 +385,8 @@ public class BoreholeControllerTest
         Assert.AreEqual(waterIngress.Comment, copiedWaterIngress.Comment);
         Assert.AreEqual(waterIngress.QuantityId, copiedWaterIngress.QuantityId);
         Assert.AreEqual(waterIngress.ConditionsId, copiedWaterIngress.ConditionsId);
+
+        Assert.IsTrue(copiedBorehole.ValidateCasingReferences(), "Invalid casing reference in copied borehole");
     }
 
     [TestMethod]
@@ -591,6 +593,8 @@ public class BoreholeControllerTest
 
         Assert.AreNotEqual(originalBoreholeGeometry.Id, copiedBoreholeGeometry.Id);
         Assert.AreEqual(originalBoreholeGeometry.X, copiedBoreholeGeometry.X);
+
+        Assert.IsTrue(copiedBorehole.ValidateCasingReferences(), "Invalid casing reference in copied borehole");
     }
 
     private Borehole GetBorehole(int id)
