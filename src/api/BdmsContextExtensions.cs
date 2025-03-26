@@ -669,7 +669,11 @@ public static class BdmsContextExtensions
             .RuleFor(i => i.StatusId, f => f.PickRandom(instrumentStatusIds))
             .RuleFor(i => i.Status, _ => default!)
             .RuleFor(i => i.Notes, f => f.Random.Words(4))
-            .RuleFor(i => i.CasingId, f => f.PickRandom(casings.Select(c => c.Id)))
+            .RuleFor(i => i.CasingId, (f, o) =>
+            {
+                var validCasings = casings.Where(c => c.CompletionId == o.CompletionId).ToList();
+                return validCasings.Count == 0 ? null : f.PickRandom(validCasings.Select(c => c.Id));
+            })
             .RuleFor(i => i.Casing, _ => default!)
             .RuleFor(i => i.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(i => i.CreatedById, f => f.PickRandom(userRange))
@@ -704,7 +708,11 @@ public static class BdmsContextExtensions
             .RuleFor(b => b.MaterialId, f => f.PickRandom(backfillMaterialIds))
             .RuleFor(b => b.Material, _ => default!)
             .RuleFor(i => i.Notes, f => f.Random.Words(4))
-            .RuleFor(i => i.CasingId, f => f.PickRandom(casings.Select(c => c.Id)))
+            .RuleFor(i => i.CasingId, (f, o) =>
+            {
+                var validCasings = casings.Where(c => c.CompletionId == o.CompletionId).ToList();
+                return validCasings.Count == 0 ? null : f.PickRandom(validCasings.Select(c => c.Id));
+            })
             .RuleFor(i => i.Casing, _ => default!)
             .RuleFor(i => i.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(i => i.CreatedById, f => f.PickRandom(userRange))
@@ -752,7 +760,12 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ReliabilityId, f => f.PickRandom(waterIngressReliabilityIds))
             .RuleFor(o => o.Reliability, _ => default!)
             .RuleFor(o => o.Type, f => f.PickRandom<ObservationType>())
-            .RuleFor(i => i.CasingId, f => f.PickRandom(casings.Select(c => c.Id)))
+            .RuleFor(i => i.CasingId, (f, o) =>
+            {
+                var completion = f.PickRandom(completions.Where(c => c.BoreholeId == o.BoreholeId));
+                var validCasings = casings.Where(c => c.CompletionId == completion.Id).ToList();
+                return validCasings.Count == 0 ? null : f.PickRandom(validCasings.Select(c => c.Id));
+            })
             .RuleFor(i => i.Casing, _ => default!)
             .RuleFor(o => o.Id, f => observation_ids++);
 
