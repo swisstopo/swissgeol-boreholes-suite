@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
-import { Checkbox } from "semantic-ui-react";
+import { FormControlLabel, Switch } from "@mui/material";
 import _ from "lodash";
 import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.js";
 import LithologyAttributeList from "./lithologyAttributeList/lithologyAttributeList.jsx";
@@ -147,12 +147,18 @@ const LithologyAttributes = props => {
   return (
     <Styled.Container disable={!id}>
       {showCheckbox() && (
-        <Styled.CheckboxContainer>
-          {t("showallfields")}
-          <Checkbox checked={showAll} onChange={() => setShowAll(!showAll)} toggle />
-        </Styled.CheckboxContainer>
+        <FormControlLabel
+          control={
+            <Switch
+              data-cy={"show-all-fields-switch"}
+              color="secondary"
+              checked={showAll}
+              onChange={() => setShowAll(!showAll)}
+            />
+          }
+          label={t("showallfields")}
+        />
       )}
-
       {attribute && (
         <LithologyAttributeList
           data={{

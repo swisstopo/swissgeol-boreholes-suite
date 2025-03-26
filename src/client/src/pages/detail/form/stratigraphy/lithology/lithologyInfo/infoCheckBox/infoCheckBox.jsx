@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { Stack } from "@mui/material";
-import { Checkbox } from "semantic-ui-react";
+import { FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2.js";
 import { CopyButton, DeleteButton } from "../../../../../../../components/buttons/buttons";
@@ -16,17 +15,20 @@ const InfoCheckBox = props => {
   return (
     <Styled.CheckBoxContainer>
       <Styled.FormContainer size="small">
-        <Checkbox
-          checked={profileInfo && profileInfo?.isPrimary}
-          label=""
-          onChange={(ev, data) => {
-            if (data.checked === true) {
-              updateChange("isPrimary", data.checked, false);
-            }
-          }}
-          toggle
+        <FormControlLabel
+          control={
+            <Switch
+              color="secondary"
+              checked={profileInfo && profileInfo?.isPrimary}
+              onChange={ev => {
+                if (!profileInfo?.isPrimary) {
+                  updateChange("isPrimary", ev.target.checked, false);
+                }
+              }}
+            />
+          }
+          label={t("mainStratigraphy")}
         />
-        {t("mainStratigraphy")}
       </Styled.FormContainer>
       {isEditable && (
         <Stack direction="row" data-cy="clone-and-delete-buttons" gap={2} mr={1}>

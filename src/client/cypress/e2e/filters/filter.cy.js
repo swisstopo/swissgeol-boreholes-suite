@@ -20,8 +20,8 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Location").click();
-    cy.contains("Show all fields").children().eq(0).click();
-    const indentifierDropdown = () => cy.contains("label", "ID type").next();
+    getElementByDataCy("show-all-fields-switch").click();
+    const indentifierDropdown = () => cy.contains("h6", "ID type").next();
     indentifierDropdown().click();
     indentifierDropdown()
       .find("div[role='option']")
@@ -32,7 +32,7 @@ describe("Search filter tests", () => {
       });
 
     cy.contains("h6", "Borehole").click();
-    const boreholeTypeDropdown = () => cy.contains("label", "Borehole type").next();
+    const boreholeTypeDropdown = () => cy.contains("h6", "Borehole type").next();
     boreholeTypeDropdown().click();
     boreholeTypeDropdown()
       .find("div[role='option']")
@@ -87,7 +87,7 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Registration").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
 
     // input value
     cy.contains("Created by").next().find("input").type("v_ U%r");
@@ -160,7 +160,7 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Location").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
 
     cy.get('[data-cy="national_interest-yes"]').click();
     cy.wait("@edit_list");
@@ -180,7 +180,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
     cy.contains("Lithology").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
     cy.get('[data-cy="striae-yes"]').click();
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 1401");
@@ -250,9 +250,9 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Borehole").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
 
-    const boreholeStatusDropdown = () => cy.contains("label", "Borehole status").next();
+    const boreholeStatusDropdown = () => cy.contains("h6", "Borehole status").next();
     boreholeStatusDropdown().click();
     boreholeStatusDropdown()
       .find("div[role='option']")
@@ -269,9 +269,8 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Lithology").click();
-    cy.contains("Show all fields").children(".checkbox").click();
-
-    const colorDropdown = () => cy.contains("label", "Colour").next();
+    getElementByDataCy("show-all-fields-switch").click();
+    const colorDropdown = () => cy.contains("h6", "Colour").next();
     colorDropdown().click();
     colorDropdown()
       .find("div[role='option']")
@@ -288,7 +287,7 @@ describe("Search filter tests", () => {
     showTableAndWaitForData();
     verifyPaginationText("1–100 of 770");
 
-    const uscs3Dropdown = () => cy.contains("label", "USCS 3").next();
+    const uscs3Dropdown = () => cy.contains("h6", "USCS 3").next();
     uscs3Dropdown().scrollIntoView().click({ force: true });
     uscs3Dropdown()
       .find("div[role='option']")
@@ -310,7 +309,7 @@ describe("Search filter tests", () => {
 
   function filterByOriginalLithology() {
     cy.contains("Lithology").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
     cy.contains("Original lithology").next().find("input").type("Wooden Chair");
   }
 
@@ -322,11 +321,12 @@ describe("Search filter tests", () => {
     showTableAndWaitForData();
     verifyPaginationText("1–21 of 21");
   });
+
   it("filters boreholes by creation date", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Registration").click();
-    cy.contains("Show all fields").children(".checkbox").click();
+    getElementByDataCy("show-all-fields-switch").click();
 
     // input values
     cy.contains("Creation date").next().find(".react-datepicker-wrapper .datepicker-input").click();

@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Card } from "@mui/material";
-import { Button, Icon, Label } from "semantic-ui-react";
+import { Box, Button, Card, Stack, Typography } from "@mui/material";
+import { MapPin, MoveVertical } from "lucide-react";
 import _ from "lodash";
 import { Map, View } from "ol";
 import { defaults as defaultControls } from "ol/control";
@@ -22,6 +22,7 @@ import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import MapControls from "../buttons/mapControls.jsx";
+import { DataCardButtonContainer } from "../dataCard/dataCard.js";
 import { projections } from "./mapProjections.js";
 import { detailMapStyleFunction } from "./mapStyleFunctions.js";
 
@@ -330,28 +331,28 @@ class PointComponent extends React.Component {
               flex: "1 1 100%",
               width: "300px",
             }}>
-            <Label color="black">
-              <Icon name="map marker" />
+            <Stack direction={"row"}>
+              <MapPin />
               {_.isArray(this.state.point)
                 ? "E" +
                   _.round(this.state.point[0], 2).toLocaleString() +
                   " N" +
                   _.round(this.state.point[1], 2).toLocaleString()
                 : "n/p"}
-              <Label.Detail>{this.srs}</Label.Detail>
-            </Label>
+              <Typography>{this.srs}</Typography>
+            </Stack>
             {_.compact([this.state.municipality, this.state.canton]).length > 0 ? (
-              <Label color="black">{_.compact([this.state.municipality, this.state.canton]).join(", ")}</Label>
+              <Box>{_.compact([this.state.municipality, this.state.canton]).join(", ")}</Box>
             ) : null}
             {this.state.height !== null ? (
-              <Label color="blue">
-                <Icon name="resize vertical" /> {this.state.height} m
-              </Label>
+              <Stack direction={"row"}>
+                <MoveVertical />
+                {this.state.height} m
+              </Stack>
             ) : null}
           </Box>
-          <Button.Group size="mini">
+          <DataCardButtonContainer>
             <Button
-              type="button" // This is needed because semantic UI Buttons default to submit-buttons inside a form
               data-cy="apply-button"
               disabled={!_.isArray(this.state.point) || this.state.address || !isEditable}
               loading={this.state.address}
@@ -366,15 +367,12 @@ class PointComponent extends React.Component {
                     this.state.municipality,
                   );
                 }
-              }}
-              size="mini">
+              }}>
               Apply
             </Button>
             <Button
-              type="button" // This is needed because semantic UI Buttons default to submit-buttons inside a form
               disabled={!_.isArray(this.state.point)}
               data-cy="height-button"
-              icon
               onClick={() => {
                 if (_.isFunction(this.props.applyChange)) {
                   getHeight(this.state.point[0], this.state.point[1]).then(response => {
@@ -383,11 +381,10 @@ class PointComponent extends React.Component {
                     });
                   });
                 }
-              }}
-              size="mini">
-              <Icon name="resize vertical" />
+              }}>
+              <MoveVertical />
             </Button>
-          </Button.Group>
+          </DataCardButtonContainer>
         </Box>
       </Card>
     );

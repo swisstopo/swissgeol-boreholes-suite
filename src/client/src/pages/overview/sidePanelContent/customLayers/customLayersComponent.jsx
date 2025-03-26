@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Box, Stack } from "@mui/material";
-import { Button, Checkbox, Icon } from "semantic-ui-react";
+import { Box, Checkbox, FormControlLabel, Stack } from "@mui/material";
+import { Button, Icon } from "semantic-ui-react";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 
 export const CustomLayersComponent = ({
@@ -36,13 +36,17 @@ export const CustomLayersComponent = ({
                 padding: "0.5em 0px",
               }}>
               <Box>
-                <Checkbox
-                  checked={layer.visibility}
-                  disabled={isFetching === true}
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={layer.visibility}
+                      disabled={isFetching === true}
+                      onChange={() => {
+                        toggleVisibility(layer);
+                      }}
+                    />
+                  }
                   label={layer.Title}
-                  onChange={() => {
-                    toggleVisibility(layer);
-                  }}
                 />
               </Box>
               <Box>

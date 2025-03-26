@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Checkbox, Form, Input, TextArea } from "semantic-ui-react";
+import { Box, FormControlLabel, Switch, Typography } from "@mui/material";
+import { Form, Input, TextArea } from "semantic-ui-react";
 import _ from "lodash";
 import DateField from "../../../../components/legacyComponents/dateField.jsx";
 import DomainDropdown from "../../../../components/legacyComponents/domain/dropdown/domainDropdown";
@@ -45,22 +46,29 @@ const ListFilter = props => {
   return (
     <Styled.Container>
       {showCheckbox() && (
-        <Styled.CheckboxContainer>
-          {t("showallfields")}
-          <Checkbox checked={showAll} onChange={() => setShowAll(!showAll)} toggle />
-        </Styled.CheckboxContainer>
+        <FormControlLabel
+          control={
+            <Switch
+              data-cy={"show-all-fields-switch"}
+              checked={showAll}
+              color="secondary"
+              onChange={() => setShowAll(!showAll)}
+            />
+          }
+          label={t("showallfields")}
+        />
       )}
 
       {attribute && (
         <Styled.ContainerList>
           {attribute.map((item, key) => (
             <Form autoComplete="false" error key={key}>
-              <Styled.AttributesContainer>
+              <Box>
                 {(item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) &&
                   item.type !== "HierarchicalData" && (
-                    <Styled.Label>
-                      <TranslationText id={item.label} />
-                    </Styled.Label>
+                    <Typography sx={{ fontWeight: "bold", fontSize: "12px", pt: 1 }} variant={"subtitle1"}>
+                      {t(item.label)}
+                    </Typography>
                   )}
                 {item.type === "Input" && (item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) && (
                   <Styled.AttributesItem>
@@ -225,7 +233,7 @@ const ListFilter = props => {
                     />
                   </Styled.AttributesItem>
                 )}
-              </Styled.AttributesContainer>
+              </Box>
             </Form>
           ))}
         </Styled.ContainerList>

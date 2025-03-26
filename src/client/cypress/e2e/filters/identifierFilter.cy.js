@@ -2,6 +2,7 @@ import { addItem, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { checkAllVisibleRows, verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 import {
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   newEditableBorehole,
   returnToOverview,
@@ -26,7 +27,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     cy.contains("h6", "Location").click();
     // show all options
-    cy.get('[class="ui fitted toggle checkbox"]').eq(0).children().first().check({ force: true });
+    getElementByDataCy("show-all-fields-switch").click();
 
     verifyPaginationText("1–100 of 1627");
 
@@ -61,7 +62,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     cy.contains("h6", "Location").click();
     // show all options
-    cy.get('[class="ui fitted toggle checkbox"]').eq(0).children().first().check({ force: true });
+    getElementByDataCy("show-all-fields-switch").click();
 
     getDomainDropdown().click({ force: true }).find('[role="option"]').eq(1).click({ force: true });
     verifyPaginationText("1–2 of 2");

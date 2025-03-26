@@ -33,7 +33,7 @@ export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref)
     <BoreholesBaseButton
       ref={ref}
       {...props}
-      label={props.label}
+      label={props.label ?? "add"}
       variant={props.variant ?? "outlined"}
       color={props.color ?? "secondary"}
       icon={<Plus />}

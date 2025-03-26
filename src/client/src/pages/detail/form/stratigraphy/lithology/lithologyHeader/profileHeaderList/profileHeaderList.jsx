@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Icon } from "semantic-ui-react";
+import { Check } from "lucide-react";
 import DateText from "../../../../../../../components/legacyComponents/dateText.js";
 import * as Styled from "./styles.js";
 
@@ -20,7 +20,7 @@ const ProfileHeaderList = props => {
             borderBottom: item.id === selectedStratigraphy?.id && "2px solid black",
           }}>
           <Styled.ItemName>
-            {item.primary && <Icon name="check" />}
+            {item.primary && <Check />}
             {item.name === null || item.name === "" ? t("common:np") : item.name}
           </Styled.ItemName>
           <Styled.ItemDate>

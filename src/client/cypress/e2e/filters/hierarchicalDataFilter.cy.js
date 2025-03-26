@@ -1,25 +1,25 @@
-import { goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
+import { evaluateSelectText, setSelect } from "../helpers/formHelpers.js";
+import { getElementByDataCy, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("Hierachical data filter tests", () => {
   it("check visible filters", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
     cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 7);
     cy.contains("h6", "Lithostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
     cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 3);
+    getElementByDataCy("reset-filter-button").click();
   });
 
   it("check sorting of filter values", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
-    const periodsDropdown = () => cy.contains("label", "Period").next();
-    periodsDropdown().click();
-    periodsDropdown()
-      .find("div[role='option']")
+    cy.contains("label", "Period").next().click();
+    cy.get(".MuiMenuItem-root")
       .should("have.length", 13)
       .should(options => {
         expect(options[0]).to.have.text("Reset");
@@ -39,73 +39,73 @@ describe("Hierachical data filter tests", () => {
   });
 
   it("check hierarchical filtering", () => {
-    const filterValues = [
-      "Phanerozoic",
-      "Cenozoic",
-      "Neogene",
-      "Miocene",
-      "Early Miocene",
-      "Burdigalian",
-      "late Burdigalian",
+    let filterValues = [
+      { period: "eon", value: "Phanerozoic" },
+      { period: "era", value: "Cenozoic" },
+      { period: "period", value: "Neogene" },
+      { period: "epoch", value: "Miocene" },
+      { period: "subepoch", value: "Early Miocene" },
+      { period: "age", value: "Burdigalian" },
+      { period: "subage", value: "late Burdigalian" },
     ];
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
+    getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 1)
-      .find("input")
-      .type(filterValues[filterValues.length - 1] + "{enter}");
+    setSelect("subage", 1); //  "late Burdigalian",
+    cy.wait(["@edit_list", "@borehole_geojson"]);
+    getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
+    cy.wrap(filterValues).each(filter => {
+      return evaluateSelectText(filter.period, filter.value);
+    });
+    cy.then(() => {
+      // Reset age select
+      setSelect("age", 0);
+    });
+
+    cy.wait(["@edit_list", "@borehole_geojson"]);
+    getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
+
+    filterValues = [
+      { period: "eon", value: "Phanerozoic" },
+      { period: "era", value: "Cenozoic" },
+      { period: "period", value: "Neogene" },
+      { period: "epoch", value: "Miocene" },
+      { period: "subepoch", value: "Early Miocene" },
+      { period: "age", value: null },
+      { period: "subage", value: null },
+    ];
+    // Verify that 2 levels are removed
+    cy.wrap(filterValues).each(filter => {
+      return evaluateSelectText(filter.period, filter.value);
+    });
+    cy.then(() => {
+      // Reset period select
+      setSelect("period", 0);
+    });
+    cy.wait(["@edit_list", "@borehole_geojson"]);
+    getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
+
+    filterValues = [
+      { period: "eon", value: "Phanerozoic" },
+      { period: "era", value: "Cenozoic" },
+      { period: "period", value: null },
+      { period: "epoch", value: null },
+      { period: "subepoch", value: null },
+      { period: "age", value: null },
+      { period: "subage", value: null },
+    ];
+    // Verify that 4 levels are removed
+    cy.wrap(filterValues).each(filter => {
+      return evaluateSelectText(filter.period, filter.value);
+    });
+    cy.then(() => {
+      // Reset all filters and verify they're cleared
+      cy.contains("button", "Reset").click();
+    });
     cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .find("div.divider.text")
-      .should("have.length", filterValues.length)
-      .each((el, i) => {
-        expect(el).to.have.text(filterValues[i]);
-      });
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 2)
-      .find("div.dropdown")
-      .click();
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 2)
-      .find('[role="option"]')
-      .first()
-      .scrollIntoView();
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 2)
-      .find('[role="option"]')
-      .first()
-      .click();
-    cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .find("div.divider.text")
-      .should("have.length", filterValues.length - 2)
-      .each((el, i) => {
-        expect(el).to.have.text(filterValues[i]);
-      });
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 4)
-      .find("div.dropdown")
-      .click();
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 4)
-      .find('[role="option"]')
-      .first()
-      .scrollIntoView();
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .eq(filterValues.length - 4)
-      .find('[role="option"]')
-      .first()
-      .click();
-    cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .find("div.divider.text")
-      .should("have.length", filterValues.length - 4)
-      .each((el, i) => {
-        expect(el).to.have.text(filterValues[i]);
-      });
-    cy.contains("button", "Reset").click();
-    cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]').find("div.divider.text").should("have.length", 0);
+    getElementByDataCy("filter-chip-chronostratigraphy_id").should("not.exist");
+    filterValues.forEach(filter => {
+      evaluateSelectText(filter.period, null);
+    });
   });
 });
