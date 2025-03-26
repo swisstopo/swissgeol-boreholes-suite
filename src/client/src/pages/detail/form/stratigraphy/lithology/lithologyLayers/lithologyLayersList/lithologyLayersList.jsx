@@ -139,9 +139,6 @@ const LithologyLayersList = props => {
   }, [item, i18n.language, t, uselessStrings]);
 
   const isItemSelected = selectedLayer?.id === itemWithValidation?.id;
-
-  console.log(showTopPopup, showBottomPopup);
-
   return (
     <>
       <Styled.MyCard

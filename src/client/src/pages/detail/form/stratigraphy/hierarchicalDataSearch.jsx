@@ -27,7 +27,7 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
   );
 
   const handleChange = event => {
-    if (event.target.value < 0) {
+    if (Number(event.target.value) < 0) {
       reset(event.target.value * -1);
     } else {
       updateSelection(event.target.value);
