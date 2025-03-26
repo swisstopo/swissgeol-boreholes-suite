@@ -73,12 +73,13 @@ export const SidePanelToggleButton = forwardRef<HTMLButtonElement, SidePanelTogg
   );
 });
 
-export const TextExtractionButton = ({ onClick }: { onClick: () => void }) => {
+export const TextExtractionButton = ({ onClick, disabled }: { onClick: () => void; disabled: boolean }) => {
   const { t } = useTranslation();
   return (
     <Tooltip title={t("extractText")}>
       <Button
         data-cy="text-extraction-button"
+        disabled={disabled}
         variant="text"
         onClick={onClick}
         sx={{
@@ -91,7 +92,7 @@ export const TextExtractionButton = ({ onClick }: { onClick: () => void }) => {
             p: 1,
             lineHeight: 1,
             borderRadius: 1,
-            backgroundColor: theme.palette.primary.main,
+            backgroundColor: disabled ? theme.palette.action.disabled : theme.palette.primary.main,
             color: theme.palette.primary.contrastText,
           }}>
           <SelectTextIcon />
