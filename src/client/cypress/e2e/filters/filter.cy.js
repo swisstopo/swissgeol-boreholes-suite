@@ -350,7 +350,7 @@ describe("Search filter tests", () => {
     verifyPaginationText("1–3 of 3");
   });
 
-  it.only("filters boreholes by workgroup", () => {
+  it("filters boreholes by workgroup", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     showTableAndWaitForData();
