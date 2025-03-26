@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- The text extraction button is now disabled when the text extraction is in progress.
+
 ## v2.1.1125 - 2025-03-19
 
 ### Changed
