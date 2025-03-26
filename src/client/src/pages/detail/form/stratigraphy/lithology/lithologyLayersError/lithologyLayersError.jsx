@@ -193,7 +193,7 @@ const LithologyLayersError = props => {
                     (layerIndex > 0 && (index === 1 || index === 3)) ||
                     (layerIndex + 1 < layerLength && index === 2)) && (
                     <FormControlLabel
-                      key={index}
+                      key={e}
                       value={resolving(e)}
                       control={<Radio />}
                       label={t(e)}

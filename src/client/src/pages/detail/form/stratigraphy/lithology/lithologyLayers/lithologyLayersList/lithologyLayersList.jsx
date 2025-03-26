@@ -15,8 +15,6 @@ const LithologyLayersList = props => {
   const { t, i18n } = props;
   const [isTopHasWarning, setIsTopHasWarning] = useState(false);
   const [isBottomHasWarning, setIsBottomHasWarning] = useState(false);
-  const [showTopPopup, setShowTopPopup] = useState(false);
-  const [showBottomPopup, setShowBottomPopup] = useState(false);
 
   const { data: lithostrati } = useLithostratigraphies(item?.stratigraphyId);
   const [lithostratiColor, setLithostratiColor] = useState([255, 255, 255]);
@@ -45,15 +43,6 @@ const LithologyLayersList = props => {
     } else {
       setIsTopHasWarning(false);
     }
-    if (
-      itemWithValidation?.depth_from === null ||
-      itemWithValidation?.validation?.missingFrom ||
-      itemWithValidation?.validation?.invertedDepth
-    ) {
-      setShowTopPopup(true);
-    } else {
-      setShowTopPopup(false);
-    }
 
     if (
       itemWithValidation?.depth_to === null ||
@@ -64,15 +53,6 @@ const LithologyLayersList = props => {
       setIsBottomHasWarning(true);
     } else {
       setIsBottomHasWarning(false);
-    }
-    if (
-      itemWithValidation?.depth_to === null ||
-      itemWithValidation?.validation?.missingTo ||
-      itemWithValidation?.validation?.invertedDepth
-    ) {
-      setShowBottomPopup(true);
-    } else {
-      setShowBottomPopup(false);
     }
   }, [itemWithValidation]);
 
