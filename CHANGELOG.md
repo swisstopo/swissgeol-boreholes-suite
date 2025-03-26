@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard changes button.
+
 ## v2.1.1125 - 2025-03-19
 
 ### Changed
@@ -13,7 +16,6 @@
 - Tooltips in the labeling area where not complete and would sometimes overlap with text to be selected.
 - Copy borehole to the correct workgroup if the user only has edit permissions in a single workgroup.
 - Very small numbers were not displayed correctly in hydrogeology result tables.
-- When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard changes button.
 
 ## v2.1.1116 - 2025-03-17
 
