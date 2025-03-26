@@ -133,50 +133,6 @@ const filters = (
       }
       return copy;
     }
-    case "SEARCH_EDITOR_FILTER_RESET_IDENTIFIER": {
-      const copy = {
-        ...state,
-        filter: {
-          ...state.filter,
-        },
-      };
-      copy.filter.borehole_identifier = null;
-      copy.filter.identifier_value = "";
-      return copy;
-    }
-    case "SEARCH_EDITOR_FILTER_RESET_RESTRICTION": {
-      const copy = {
-        ...state,
-        filter: {
-          ...state.filter,
-        },
-      };
-      copy.filter.restriction_until_from = "";
-      copy.filter.restriction_until_to = "";
-      return copy;
-    }
-    case "SEARCH_EDITOR_FILTER_RESET_ELEVATION": {
-      const copy = {
-        ...state,
-        filter: {
-          ...state.filter,
-        },
-      };
-      copy.filter.elevation_z_from = "";
-      copy.filter.elevation_z_to = "";
-      return copy;
-    }
-    case "SEARCH_EDITOR_FILTER_RESET_TOP_BEDROCK": {
-      const copy = {
-        ...state,
-        filter: {
-          ...state.filter,
-        },
-      };
-      copy.filter.top_bedrock_fresh_md_from = "";
-      copy.filter.top_bedrock_fresh_md_to = "";
-      return copy;
-    }
     case "SEARCH_EDITOR_FILTER_REFRESH": {
       const copy = {
         ...state,
@@ -187,17 +143,6 @@ const filters = (
       copy.filter.refresh = copy.filter.refresh + 1;
       return copy;
     }
-    case "SEARCH_EDITOR_FILTER_RESET_DEPTH": {
-      const copy = {
-        ...state,
-        filter: {
-          ...state.filter,
-        },
-      };
-      copy.filter.length_from = "";
-      copy.filter.length_to = "";
-      return copy;
-    }
 
     case "SEARCH_EDITOR_FILTER_RESET": {
       return {
@@ -206,40 +151,6 @@ const filters = (
           ...initialState.filter,
         },
       };
-    }
-    case "SEARCH_EDITOR_PROJECT_CHANGED": {
-      return {
-        ...state,
-        filter: {
-          ...state.filter,
-          project: action.id,
-        },
-      };
-    }
-    case "SEARCH_EDITOR_LASTUPDATE_CHANGED": {
-      return {
-        ...state,
-        filter: {
-          ...state.filter,
-          last_update: action.date,
-        },
-      };
-    }
-    case "SEARCH_EDITOR_CREATION_CHANGED": {
-      return {
-        ...state,
-        filter: {
-          ...state.filter,
-          creation: action.date,
-        },
-      };
-    }
-
-    case "SEARCH_EDITOR_FILTER_RESET_CREATED_DATE": {
-      const copy = { ...state };
-      copy.filter.created_date_from = null;
-      copy.filter.created_date_to = null;
-      return copy;
     }
     default:
       return state;

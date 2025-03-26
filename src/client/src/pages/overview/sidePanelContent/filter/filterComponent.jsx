@@ -19,8 +19,8 @@ import { LocationSearchData } from "./filterData/LocationSearchData.js";
 import { registrationSearchData } from "./filterData/registrationSearchData.js";
 import { FilterReset } from "./filterReset.tsx";
 import ListFilter from "./listFilter.jsx";
-import StatusFilter from "./statusFilter.jsx";
-import WorkgroupRadioGroup from "./workgroupRadioGroup.jsx";
+import { StatusFilter } from "./statusFilter.tsx";
+import { WorkgroupFilter } from "./workgroupFilter.tsx";
 
 class FilterComponent extends React.Component {
   static contextType = FilterContext;
@@ -163,24 +163,7 @@ class FilterComponent extends React.Component {
   }));
 
   render() {
-    const {
-      toggleDrawer,
-      search,
-      user,
-      t,
-      setFilter,
-      settings,
-      resetBoreInc,
-      resetBoreIncDir,
-      resetDrillDiameter,
-      resetDrilling,
-      resetElevation,
-      resetRestriction,
-      resetTotBedrock,
-      resetDepth,
-      onChange,
-      resetCreatedDate,
-    } = this.props;
+    const { toggleDrawer, search, user, t, setFilter, settings } = this.props;
     const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled } = this.context;
 
     return (
@@ -257,49 +240,27 @@ class FilterComponent extends React.Component {
                 </AccordionSummary>
                 {filter?.name === "workgroup" && filter?.isSelected && (
                   <this.StyledAccordionDetails>
-                    <WorkgroupRadioGroup
-                      filter={search.filter.workgroup}
+                    <WorkgroupFilter
                       onChange={workgroup => {
                         setFilter("workgroup", workgroup);
                       }}
                       workgroups={user.data.workgroups}
+                      selectedWorkgroup={search.filter.workgroup}
                     />
                   </this.StyledAccordionDetails>
                 )}
                 {filter?.name === "status" && filter?.isSelected && (
                   <this.StyledAccordionDetails>
-                    <StatusFilter
-                      onChange={onChange}
-                      resetBoreInc={resetBoreInc}
-                      resetBoreIncDir={resetBoreIncDir}
-                      resetDrillDiameter={resetDrillDiameter}
-                      resetDrilling={resetDrilling}
-                      resetElevation={resetElevation}
-                      resetRestriction={resetRestriction}
-                      resetTotBedrock={resetTotBedrock}
-                      search={search}
-                      setFilter={setFilter}
-                      settings={settings.data.efilter}
-                      resetCreatedDate={resetCreatedDate}
-                    />
+                    <StatusFilter selectedRole={search.filter.role} setFilter={setFilter} />
                   </this.StyledAccordionDetails>
                 )}
                 <this.StyledAccordionDetails>
                   {this.handleButtonSelected() !== null && filter?.isSelected && (
                     <ListFilter
                       attribute={this.handleButtonSelected()}
-                      resetBoreInc={resetBoreInc}
-                      resetBoreIncDir={resetBoreIncDir}
-                      resetDepth={resetDepth}
-                      resetDrillDiameter={resetDrillDiameter}
-                      resetDrilling={resetDrilling}
-                      resetElevation={resetElevation}
-                      resetRestriction={resetRestriction}
-                      resetTotBedrock={resetTotBedrock}
                       search={search}
                       setFilter={setFilter}
                       settings={settings.data.efilter}
-                      resetCreatedDate={resetCreatedDate}
                     />
                   )}
                 </this.StyledAccordionDetails>
@@ -315,17 +276,9 @@ class FilterComponent extends React.Component {
 
 FilterComponent.propTypes = {
   onChange: PropTypes.func,
-  resetBoreInc: PropTypes.func,
-  resetBoreIncDir: PropTypes.func,
-  resetDrillDiameter: PropTypes.func,
-  resetDrilling: PropTypes.func,
-  resetElevation: PropTypes.func,
-  resetRestriction: PropTypes.func,
-  resetTotBedrock: PropTypes.func,
   search: PropTypes.object,
   setFilter: PropTypes.func,
   settings: PropTypes.object,
-  resetCreatedDate: PropTypes.func,
 };
 
 const mapStateToProps = state => {
@@ -345,51 +298,6 @@ const mapDispatchToProps = dispatch => {
         type: "SEARCH_EDITOR_FILTER_CHANGED",
         key: key,
         value: value,
-      });
-    },
-    resetRestriction: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_RESTRICTION",
-      });
-    },
-    resetElevation: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_ELEVATION",
-      });
-    },
-    resetTotBedrock: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_TOP_BEDROCK",
-      });
-    },
-    resetDrilling: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_DRILLING",
-      });
-    },
-    resetDrillDiameter: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_DRILL_DIAMETER",
-      });
-    },
-    resetBoreInc: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC",
-      });
-    },
-    resetBoreIncDir: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR",
-      });
-    },
-    resetDepth: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_DEPTH",
-      });
-    },
-    resetCreatedDate: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_CREATED_DATE",
       });
     },
     reset: () => {
