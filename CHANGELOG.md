@@ -5,6 +5,9 @@
 ### Changed
 - The text extraction button is now disabled when the text extraction is in progress.
 
+### Fixed
+- Copying a borehole did not update its casing references to the copied casings.
+
 ## v2.1.1125 - 2025-03-19
 
 ### Changed
