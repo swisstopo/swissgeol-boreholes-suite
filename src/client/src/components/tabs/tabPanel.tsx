@@ -1,5 +1,8 @@
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
+import { Box } from "@mui/system";
+import { AddWorkgroupDialog } from "../../pages/settings/admin/dialogs/AddWorkgroupDialog.tsx";
+import { AddButton } from "../buttons/buttons.tsx";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../styledTabComponents.tsx";
 
 interface Tab {
@@ -13,6 +16,7 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
   const history = useHistory();
   const location = useLocation();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
 
   // Initialize and update activeIndex based on the current URL hash
   useEffect(() => {
@@ -34,14 +38,23 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
     }
   };
 
+  const addWorkgroup = () => {
+    setWorkgroupDialogOpen(true);
+  };
+
   return (
     <>
       <BoreholeTabs value={activeIndex} onChange={handleIndexChange}>
         {tabs.map(tab => (
           <BoreholeTab data-cy={`${tab.hash}-tab`} label={tab.label} key={tab.hash} hasContent={tab.hasContent} />
         ))}
+        <Box sx={{ flexGrow: 1 }}></Box>
+        {location.hash === "#workgroups" && (
+          <AddButton label={"addWorkgroup"} variant={"contained"} onClick={addWorkgroup} />
+        )}
       </BoreholeTabs>
       <BoreholeTabContentBox flex="1 0 0">{tabs[activeIndex].component}</BoreholeTabContentBox>
+      <AddWorkgroupDialog open={workgroupDialogOpen} setOpen={setWorkgroupDialogOpen} />
     </>
   );
 };

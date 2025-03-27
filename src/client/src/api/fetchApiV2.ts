@@ -88,7 +88,16 @@ export async function fetchApiV2WithApiError(
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
     return await readApiResponse(response);
-  } else {
+  }
+  try {
+    // handle throwing alert with error details
+    const responseContent = await readApiResponse(response);
+    const responseDetail = JSON.parse(responseContent).detail;
+    throw new ApiError(responseDetail || "errorWhileFetchingData", response.status);
+  } catch (e) {
+    if (e instanceof ApiError) {
+      throw e;
+    }
     throw new ApiError("errorWhileFetchingData", response.status);
   }
 }

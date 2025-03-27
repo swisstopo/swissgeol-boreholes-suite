@@ -25,7 +25,7 @@ export interface Workgroup {
   createdAt?: Date | string;
   settings?: string;
   boreholeCount: number;
-  roles: Role[];
+  roles?: Role[];
 }
 
 export interface WorkgroupRole {
