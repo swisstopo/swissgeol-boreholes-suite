@@ -278,6 +278,7 @@ describe("Test labeling tool", () => {
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 140, 600, 250);
+    cy.wait(["@location", "@location", "@location", "@geodesy", "@geodesy"]);
     assertBoundingBoxes(0, 0); // no bounding box preview for coordinate extraction
     evaluateSelect("originalReferenceSystem", "20104001");
     assertInputsHaveNoError();
