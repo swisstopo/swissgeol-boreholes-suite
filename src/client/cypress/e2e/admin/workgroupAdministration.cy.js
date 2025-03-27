@@ -210,7 +210,7 @@ describe("User administration settings tests", () => {
 
     // verify user detail page still visible
     cy.location().should(location => {
-      expect(location.pathname).to.eq("/setting/workgroup/2");
+      expect(location.pathname).to.eq("/setting#workgroups");
     });
     cy.contains("Reggae");
   });

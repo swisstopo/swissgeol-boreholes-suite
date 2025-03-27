@@ -268,7 +268,7 @@ describe("User administration settings tests", () => {
 
     // verify user detail page still visible
     cy.location().should(location => {
-      expect(location.pathname).to.eq("/setting/user/7");
+      expect(location.pathname).to.eq("/setting#users");
     });
     cy.contains("U. be_deleted");
   });
