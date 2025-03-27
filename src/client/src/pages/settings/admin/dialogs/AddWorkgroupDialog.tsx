@@ -38,7 +38,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({ open, setOpen 
       setWorkgroupName("");
       setOpen(false);
     }
-  }, [isSuccess, showAlert, t]);
+  }, [setOpen, workgroupName, isSuccess, showAlert, t]);
 
   return (
     <Dialog open={open}>
