@@ -9,7 +9,7 @@ import {
   deleteCompletion,
   getCompletions,
   updateCompletion,
-} from "../../../../api/fetchApiV2.js";
+} from "../../../../api/fetchApiV2.ts";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";

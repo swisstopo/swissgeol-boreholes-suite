@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "react-query";
 import {
   Dialog,
   DialogActions,
@@ -11,6 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { EntityType, Role, User, Workgroup } from "../../../../api/apiInterfaces.ts";
 import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
 

@@ -19,7 +19,7 @@ import {
   getBoreholeGeometryFormats,
   useBoreholeGeometry,
   useBoreholeGeometryMutations,
-} from "../../../../api/fetchApiV2.js";
+} from "../../../../api/fetchApiV2.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FormSelect } from "../../../../components/form/form";

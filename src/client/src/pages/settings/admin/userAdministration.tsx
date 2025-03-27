@@ -1,9 +1,9 @@
 import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "react-query";
 import { useHistory } from "react-router-dom";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
 import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
+import { useQueryClient } from "@tanstack/react-query";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { updateUser, usersQueryKey, useUsers } from "../../../api/user.ts";
 import { Table } from "../../../components/table/table.tsx";
@@ -26,8 +26,6 @@ export const UserAdministration: FC = () => {
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
   useEffect(() => {
-    console.log("set selected user null");
-
     setSelectedUser(null);
   }, [setSelectedUser]);
 

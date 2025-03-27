@@ -1,4 +1,4 @@
-import { createStratigraphy } from "../../../../../../../api/fetchApiV2.js";
+import { createStratigraphy } from "../../../../../../../api/fetchApiV2.ts";
 
 let createdNewStratigraphy = false;
 export const createNewStratigraphy = async boreholeId => {

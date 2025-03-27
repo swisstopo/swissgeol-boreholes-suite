@@ -6,7 +6,7 @@ import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSeg
 import { User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
-import { download, fetchApiV2, upload } from "./fetchApiV2";
+import { download, fetchApiV2, upload } from "./fetchApiV2.ts";
 import { BoreholeFile } from "./file/fileInterfaces.ts";
 import { Section } from "./section.ts";
 import { Stratigraphy } from "./stratigraphy.ts";

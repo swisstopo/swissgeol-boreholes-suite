@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "react-query";
 import { useHistory } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { User, Workgroup } from "../api/apiInterfaces.ts";
 import { deleteUser, usersQueryKey } from "../api/user.ts";
 import { deleteWorkgroup, workgroupQueryKey } from "../api/workgroup.ts";

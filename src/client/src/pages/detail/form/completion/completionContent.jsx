@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { Stack } from "@mui/material";
 import PropTypes from "prop-types";
-import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.js";
+import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import Backfill from "./backfill.jsx";

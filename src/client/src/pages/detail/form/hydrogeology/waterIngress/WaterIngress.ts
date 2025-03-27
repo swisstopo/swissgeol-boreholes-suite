@@ -1,4 +1,4 @@
-import { fetchApiV2 } from "../../../../../api/fetchApiV2";
+import { fetchApiV2 } from "../../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../../components/Codelist.ts";
 import { Observation } from "../Observation.ts";
 

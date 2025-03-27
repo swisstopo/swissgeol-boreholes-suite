@@ -42,7 +42,6 @@ export const WorkgroupDetail: FC = () => {
       if (!workgroup) {
         history.push("/setting#workgroups");
       } else {
-        console.log("set workgoup");
         setSelectedWorkgroup(workgroup);
       }
     };

@@ -19,7 +19,7 @@ import {
 import { LockKeyhole } from "lucide-react";
 import _ from "lodash";
 import { BoreholeAttributes, Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { useDomains } from "../../../api/fetchApiV2";
+import { useDomains } from "../../../api/fetchApiV2.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { formatNumberForDisplay } from "../../../components/form/formUtils.ts";

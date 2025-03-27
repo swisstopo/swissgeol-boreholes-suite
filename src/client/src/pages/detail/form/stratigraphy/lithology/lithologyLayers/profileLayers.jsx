@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { withTranslation } from "react-i18next";
-import { useMutation, useQueryClient } from "react-query";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {
   Box,
@@ -15,6 +14,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   addFaciesDescription,
   addLithologicalDescription,
@@ -27,7 +27,7 @@ import {
   useFaciesDescription,
   useLayers,
   useLithoDescription,
-} from "../../../../../../api/fetchApiV2.js";
+} from "../../../../../../api/fetchApiV2.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { createLayerApi, getData } from "./api";
 import DescriptionLayers from "./descriptionLayers/descriptionLayers.jsx";

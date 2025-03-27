@@ -52,9 +52,6 @@ export const UserDetail: FC = () => {
       if (!user) {
         history.push("/setting#users");
       } else {
-        console.log("set user");
-        console.log(user);
-
         setSelectedUser(user);
 
         // Get the transformed array of unique workgroups with roles
@@ -77,9 +74,6 @@ export const UserDetail: FC = () => {
 
       // Optimistically update the user in the state
       const updatedUser = { ...selectedUser, isAdmin: event.target.checked };
-      console.log("set user from checkbox");
-      console.log(updatedUser);
-
       setSelectedUser({ ...updatedUser });
 
       await callApiWithRollback(updateUser, [updatedUser], rollback);

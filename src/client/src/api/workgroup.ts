@@ -1,6 +1,6 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
-import { fetchApiV2 } from "./fetchApiV2";
+import { fetchApiV2 } from "./fetchApiV2.ts";
 
 export const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2("workgroup", "GET");
 

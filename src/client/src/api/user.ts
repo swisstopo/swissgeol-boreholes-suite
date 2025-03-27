@@ -1,6 +1,6 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { User } from "./apiInterfaces.ts";
-import { fetchApiV2WithApiError } from "./fetchApiV2";
+import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
 export const fetchUser = async (id: number): Promise<User> => await fetchApiV2WithApiError(`user/${id}`, "GET");
 

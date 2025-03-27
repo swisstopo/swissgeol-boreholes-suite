@@ -1,9 +1,9 @@
 import React from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { Redirect, Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { theme } from "./AppTheme";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { AlertProvider } from "./components/alert/alertContext";

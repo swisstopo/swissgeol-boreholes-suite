@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, MenuItem, TextField } from "@mui/material";
-import { useDomainSchema } from "../../../../api/fetchApiV2.js";
+import { useDomainSchema } from "../../../../api/fetchApiV2.ts";
 import { FormContainer } from "../../../../components/form/form.js";
 
 const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
