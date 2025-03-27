@@ -226,11 +226,12 @@ public class ImportController : ControllerBase
         if (!ModelState.IsValid)
             return ValidationProblem();
 
+        var boreholeFiles = boreholes.Select(b => (b, b.BoreholeFiles?.ToList())).ToList(); // Copy files for re-upload because they are cleared on save.
         ActionResult<int> result = await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
         if (!ModelState.IsValid)
             return ValidationProblem();
 
-        await UploadAttachmentsAsync(zipArchive, boreholes).ConfigureAwait(false);
+        await UploadAttachmentsAsync(zipArchive, boreholeFiles).ConfigureAwait(false);
         return !ModelState.IsValid ? ValidationProblem() : result;
     }
 
@@ -264,6 +265,12 @@ public class ImportController : ControllerBase
         if (!ModelState.IsValid)
             return ValidationProblem();
 
+        foreach (var borehole in boreholes)
+        {
+            // Attachments are re-uploaded when importing from a zip file.
+            borehole.BoreholeFiles?.Clear();
+        }
+
         await MarkBoreholeContentAsNew(user, workgroupId, boreholes).ConfigureAwait(false);
         await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
         return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
@@ -281,22 +288,20 @@ public class ImportController : ControllerBase
         }
     }
 
-    private async Task UploadAttachmentsAsync(ZipArchive zipArchive, List<BoreholeImport> boreholes)
+    private async Task UploadAttachmentsAsync(ZipArchive zipArchive, List<(BoreholeImport Borehole, List<BoreholeFile>? Files)> boreholeFiles)
     {
-        if (boreholes.Count < 1) return;
-
-        foreach (var borehole in boreholes.Select((value, index) => (value, index)))
+        for (var i = 0; i < boreholeFiles.Count; i++)
         {
-            if (borehole.value.BoreholeFiles != null && borehole.value.BoreholeFiles.Count > 0)
+            var (borehole, files) = boreholeFiles[i];
+            if (files != null && files.Count > 0)
             {
-                var filesToProcess = borehole.value.BoreholeFiles.ToList(); // save a copy of the files to keep the file information during processing.
-                foreach (var fileToProcess in filesToProcess)
+                foreach (var fileToProcess in files)
                 {
                     var fileName = $"{fileToProcess.File.NameUuid}_{fileToProcess.File.Name}";
                     var attachment = zipArchive.Entries.FirstOrDefault(e => e.FullName == fileName);
                     if (attachment == null)
                     {
-                        AddValidationErrorToModelState(borehole.index, $"Attachment with the name <{fileName}> is referenced in JSON file but was not not found in ZIP archive.", ValidationErrorType.Attachment);
+                        AddValidationErrorToModelState(i, $"Attachment with the name <{fileName}> is referenced in JSON file but was not not found in ZIP archive.", ValidationErrorType.Attachment);
                         continue;
                     }
 
@@ -304,24 +309,22 @@ public class ImportController : ControllerBase
                     await attachment.Open().CopyToAsync(memoryStream).ConfigureAwait(false);
                     memoryStream.Position = 0;
 
-                    // Remove original file information from borehole object
-                    borehole.value.BoreholeFiles.Remove(fileToProcess);
-                    await UploadFormFileAsync(memoryStream, fileToProcess.File.Name, GetContentType(attachment.Name), borehole).ConfigureAwait(false);
+                    await UploadFormFileAsync(memoryStream, fileToProcess.File.Name, GetContentType(attachment.Name), borehole, i).ConfigureAwait(false);
                 }
             }
         }
     }
 
-    private async Task UploadFormFileAsync(Stream fileStream, string fileName, string contentType, (BoreholeImport Value, int Index) borehole)
+    private async Task UploadFormFileAsync(Stream fileStream, string fileName, string contentType, Borehole borehole, int index)
     {
         try
         {
-            await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, fileName, contentType, borehole.Value.Id).ConfigureAwait(false);
+            await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, fileName, contentType, borehole.Id).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred while uploading the file: {FileName}", fileName);
-            AddValidationErrorToModelState(borehole.Index, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), ValidationErrorType.Attachment);
+            AddValidationErrorToModelState(index, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), ValidationErrorType.Attachment);
         }
     }
 

@@ -561,6 +561,28 @@ public class ImportControllerTest
     }
 
     [TestMethod]
+    public async Task UploadZipForInvalidUserShouldSaveDatasetAndAttachmentsAsync()
+    {
+        var invalidUser = await context.Users.FirstOrDefaultAsync(u => u.Id == 123456);
+        Assert.IsNull(invalidUser);
+
+        var zipPath = "boreholes_with_attachments_invalid_user.zip";
+        var boreholeZipFile = GetFormFileByExistingFile(zipPath);
+
+        ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+        var uploadedBoreholesWithAttachment = await context.BoreholesWithIncludes.Where(b => b.OriginalName == "Redhold Namfix").ToListAsync();
+        Assert.AreEqual(1, uploadedBoreholesWithAttachment.Count);
+
+        var borehole = uploadedBoreholesWithAttachment.Single();
+        Assert.AreEqual(1, borehole.Files.Count);
+        Assert.AreEqual("boreholes.png", borehole.Files.Single().Name);
+    }
+
+    [TestMethod]
     public async Task UploadJsonWithNoJsonFileShouldReturnError()
     {
         var boreholeJsonFile = GetFormFileByExistingFile("not_a_json_file.csv");
