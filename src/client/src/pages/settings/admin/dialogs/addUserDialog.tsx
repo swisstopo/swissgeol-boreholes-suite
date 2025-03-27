@@ -1,9 +1,9 @@
-import { FC, useContext } from "react";
+import { FC } from "react";
 import { EntityType, Role, User, WorkgroupRole } from "../../../../api/apiInterfaces.ts";
-import { fetchUsers } from "../../../../api/user.ts";
+import { usersQueryKey, useUsers } from "../../../../api/user.ts";
 import { setWorkgroupRole } from "../../../../api/workgroup.ts";
 import { useApiRequest } from "../../../../hooks/useApiRequest.ts";
-import { UserAdministrationContext } from "../userAdministrationContext.tsx";
+import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
 import { RoleAssignmentDialog } from "./roleAssignmentDialog.tsx";
 
 interface AddUserDialogProps {
@@ -21,8 +21,10 @@ export const AddUserDialog: FC<AddUserDialogProps> = ({
   workgroupUsers,
   setWorkgroupUsers,
 }) => {
-  const { users, setUsers } = useContext(UserAdministrationContext);
+  const { data: users, isError, error } = useUsers();
   const { callApiWithRollback } = useApiRequest();
+
+  useShowAlertOnError(isError, error);
 
   const addRoleToExistingUser = (userId: number, newWorkgroupRole: WorkgroupRole) => {
     const newWorkgroupUsers = workgroupUsers.map(user => {
@@ -38,7 +40,7 @@ export const AddUserDialog: FC<AddUserDialogProps> = ({
   };
 
   const addNewUserToWorkgroup = (userId: number, newWorkgroupRole: WorkgroupRole) => {
-    const newUser = users.find(usr => usr.id === userId);
+    const newUser = users?.find((usr: User) => usr.id === userId);
     if (newUser) {
       newUser.workgroupRoles = [newWorkgroupRole];
       setWorkgroupUsers([...workgroupUsers, newUser]);
@@ -70,15 +72,15 @@ export const AddUserDialog: FC<AddUserDialogProps> = ({
     await callApiWithRollback(setWorkgroupRole, [userId, workgroupId, role, true], rollback);
   };
 
+  if (!users) return;
   return (
     <RoleAssignmentDialog<User>
       open={open}
       setOpen={setOpen}
-      fetchFunction={fetchUsers}
       addEntity={addUser}
       entityType={EntityType.user}
       entities={users}
-      setEntities={setUsers}
+      entityQueryKey={usersQueryKey}
     />
   );
 };

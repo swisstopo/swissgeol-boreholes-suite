@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useContext } from "react";
+import { FC, MouseEvent, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
@@ -16,13 +16,17 @@ export const SettingsHeader: FC = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const { callApiWithRollback } = useApiRequest();
-  const { users, setUsers, selectedUser, setSelectedUser } = useContext(UserAdministrationContext);
-  const { workgroups, setWorkgroups, selectedWorkgroup, setSelectedWorkgroup } =
-    useContext(WorkgroupAdministrationContext);
-  const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
-  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts(setSelectedWorkgroup, workgroups, setWorkgroups);
+  const { selectedUser, setSelectedUser } = useContext(UserAdministrationContext);
+  const { selectedWorkgroup, setSelectedWorkgroup } = useContext(WorkgroupAdministrationContext);
+  const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser);
+  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts(setSelectedWorkgroup);
+
+  useEffect(() => {
+    console.log(selectedUser);
+  }, [selectedUser]);
 
   const selectedEntity = selectedUser ?? selectedWorkgroup;
+  console.log(selectedEntity);
 
   const updateUserActiveStateWithRollback = async (isDisabled: boolean) => {
     // Define rollback function to revert the state if the API call fails

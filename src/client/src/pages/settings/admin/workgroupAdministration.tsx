@@ -4,35 +4,33 @@ import { useHistory } from "react-router-dom";
 import { Chip, Stack } from "@mui/material";
 import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Role, Workgroup } from "../../../api/apiInterfaces.ts";
-import { fetchWorkgroups } from "../../../api/workgroup.ts";
+import { useUsers } from "../../../api/user.ts";
+import { useWorkgroups } from "../../../api/workgroup.ts";
 import { Table } from "../../../components/table/table.tsx";
-import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { useDeleteWorkgroupPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
-import { UserAdministrationContext } from "./userAdministrationContext.tsx";
+import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.ts";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
 export const WorkgroupAdministration: FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { users } = useContext(UserAdministrationContext);
-  const { workgroups, setWorkgroups, setSelectedWorkgroup, workgroupTableSortModel, setworkgroupTableSortModel } =
+  const { data: workgroups, isError: isWorkgroupsError, error: workgroupsError } = useWorkgroups();
+  const { data: users, isError: isUsersError, error: usersError } = useUsers();
+  const { setSelectedWorkgroup, workgroupTableSortModel, setworkgroupTableSortModel } =
     useContext(WorkgroupAdministrationContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
-  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts(setSelectedWorkgroup, workgroups, setWorkgroups);
+
+  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts(setSelectedWorkgroup);
   const { workgroupNameColumn, boreholeCountColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
 
-  const { callApiWithErrorHandling } = useApiRequest();
+  useShowAlertOnError(isWorkgroupsError, workgroupsError);
+  useShowAlertOnError(isUsersError, usersError);
 
   useEffect(() => {
     setSelectedWorkgroup(null);
-    const getWorkgroups = async () => {
-      const workgroups: Workgroup[] = await callApiWithErrorHandling(fetchWorkgroups, []);
-      setWorkgroups(workgroups);
-    };
-    getWorkgroups();
-  }, [callApiWithErrorHandling, setSelectedWorkgroup, setWorkgroups, t]);
+  }, [setSelectedWorkgroup]);
 
   const userWorkgroupRoles = useMemo(() => users?.map(user => user.workgroupRoles).flat() ?? [], [users]);
 
@@ -53,7 +51,7 @@ export const WorkgroupAdministration: FC = () => {
 
   const handleDeleteWorkgroup = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
-    const workgroupToDelete = workgroups.find(wgp => wgp.id === id);
+    const workgroupToDelete = workgroups?.find(wgp => wgp.id === id);
     showDeleteWorkgroupWarning(workgroupToDelete);
   };
 
@@ -73,6 +71,9 @@ export const WorkgroupAdministration: FC = () => {
   const handleRowClick: GridEventListener<"rowClick"> = params => {
     history.push(`/setting/workgroup/${params.row.id}`);
   };
+
+  if (!workgroups) return;
+
   return (
     <Table<Workgroup>
       rows={workgroups}

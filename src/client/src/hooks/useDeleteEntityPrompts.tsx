@@ -1,22 +1,23 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "react-query";
 import { useHistory } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { User, Workgroup } from "../api/apiInterfaces.ts";
-import { deleteUser } from "../api/user.ts";
-import { deleteWorkgroup } from "../api/workgroup.ts";
+import { deleteUser, usersQueryKey } from "../api/user.ts";
+import { deleteWorkgroup, workgroupQueryKey } from "../api/workgroup.ts";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
 import { useApiRequest } from "./useApiRequest.ts";
 
 export const useDeleteEntityPrompts = <T extends User | Workgroup>(
   deleteEntity: (id: number) => Promise<void>,
   setSelectedEntity: (entity: T | null) => void,
-  entities: T[],
-  setEntities: (entities: T[]) => void,
+  entityQueryKey: string,
 ) => {
   const history = useHistory();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
+  const queryClient = useQueryClient();
   const { callApiWithRollback } = useApiRequest();
 
   // Type guard for User
@@ -64,7 +65,9 @@ export const useDeleteEntityPrompts = <T extends User | Workgroup>(
       history.push(getReturnUrl());
     };
 
-    setEntities(entities.filter(e => e.id !== entity.id));
+    queryClient.invalidateQueries({
+      queryKey: [entityQueryKey],
+    });
     history.push(`/setting#${entity.name}s`);
 
     await callApiWithRollback(deleteEntity, [entity.id], rollback);
@@ -117,31 +120,21 @@ export const useDeleteEntityPrompts = <T extends User | Workgroup>(
   return { showDeleteEntityWarning };
 };
 
-export const useDeleteWorkgroupPrompts = (
-  setSelectedWorkgroup: (arg: Workgroup | null) => void,
-  workgroups: Workgroup[],
-  setWorkgroups: (arg: Workgroup[]) => void,
-) => {
+export const useDeleteWorkgroupPrompts = (setSelectedWorkgroup: (arg: Workgroup | null) => void) => {
   const { showDeleteEntityWarning: showDeleteWorkgroupWarning } = useDeleteEntityPrompts(
     deleteWorkgroup,
     setSelectedWorkgroup,
-    workgroups,
-    setWorkgroups,
+    workgroupQueryKey,
   );
 
   return { showDeleteWorkgroupWarning };
 };
 
-export const useDeleteUserPrompts = (
-  setSelectedUser: (arg: User | null) => void,
-  users: User[],
-  setUsers: (arg: User[]) => void,
-) => {
+export const useDeleteUserPrompts = (setSelectedUser: (arg: User | null) => void) => {
   const { showDeleteEntityWarning: showDeleteUserWarning } = useDeleteEntityPrompts(
     deleteUser,
     setSelectedUser,
-    users,
-    setUsers,
+    usersQueryKey,
   );
   return { showDeleteUserWarning };
 };

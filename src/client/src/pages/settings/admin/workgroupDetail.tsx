@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
 import { User, Workgroup, WorkgroupRole } from "../../../api/apiInterfaces.ts";
+import { useUsers } from "../../../api/user.ts";
 import { fetchWorkgroupById, removeAllWorkgroupRolesForUser } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
@@ -12,8 +13,8 @@ import { FormInputDisplayOnly } from "../../../components/form/form.ts";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
+import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.ts";
 import { AddUserDialog } from "./dialogs/addUserDialog.tsx";
-import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
@@ -24,7 +25,7 @@ export const WorkgroupDetail: FC = () => {
   const { t } = useTranslation();
   const [workgroupUsers, setWorkgroupUsers] = useState<User[]>();
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
-  const { users } = useContext(UserAdministrationContext);
+  const { data: users, isError, error } = useUsers();
   const [userDialogOpen, setUserDialogOpen] = useState(false);
 
   const { selectedWorkgroup, setSelectedWorkgroup, workgroupDetailTableSortModel, setWorkgroupDetailTableSortModel } =
@@ -33,12 +34,15 @@ export const WorkgroupDetail: FC = () => {
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
+  useShowAlertOnError(isError, error);
+
   useEffect(() => {
     const getWorkgroup = async () => {
       const workgroup: Workgroup = await callApiWithErrorHandling(fetchWorkgroupById, [parseInt(id)]);
       if (!workgroup) {
         history.push("/setting#workgroups");
       } else {
+        console.log("set workgoup");
         setSelectedWorkgroup(workgroup);
       }
     };
@@ -58,7 +62,7 @@ export const WorkgroupDetail: FC = () => {
 
   const handleRemoveUserFromWorkgroup = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
-    const user = users.find(user => user.id === id);
+    const user = users?.find(user => user.id === id);
     if (!user) return;
     showPrompt(t("confirmRemoveRoles", { name: user.name, workgroupName: selectedWorkgroup.name }), [
       {

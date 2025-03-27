@@ -1,7 +1,8 @@
+import { useQuery } from "react-query";
 import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
 import { fetchApiV2 } from "./fetchApiV2";
 
-export const fetchWorkgroups = async () => await fetchApiV2("workgroup", "GET");
+export const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2("workgroup", "GET");
 
 export const fetchWorkgroupById = async (id: number) => await fetchApiV2(`workgroup/${id}`, "GET");
 
@@ -42,3 +43,11 @@ export const removeAllWorkgroupRolesForUser = async (userId: number, workgroupId
   }
   return await fetchApiV2("workgroup/setRoles", "POST", workgroupRoles);
 };
+
+export const workgroupQueryKey = "workgroups";
+
+export const useWorkgroups = () =>
+  useQuery({
+    queryKey: [workgroupQueryKey],
+    queryFn: () => fetchWorkgroups(),
+  });

@@ -12,7 +12,7 @@ import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
-import { AddWorkgroupDialog } from "./dialogs/addWorkgroupDialog.tsx";
+import { AddWorkgroupRoleDialog } from "./dialogs/addWorkgroupRoleDialog.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
@@ -52,6 +52,9 @@ export const UserDetail: FC = () => {
       if (!user) {
         history.push("/setting#users");
       } else {
+        console.log("set user");
+        console.log(user);
+
         setSelectedUser(user);
 
         // Get the transformed array of unique workgroups with roles
@@ -74,6 +77,9 @@ export const UserDetail: FC = () => {
 
       // Optimistically update the user in the state
       const updatedUser = { ...selectedUser, isAdmin: event.target.checked };
+      console.log("set user from checkbox");
+      console.log(updatedUser);
+
       setSelectedUser({ ...updatedUser });
 
       await callApiWithRollback(updateUser, [updatedUser], rollback);
@@ -196,7 +202,7 @@ export const UserDetail: FC = () => {
           )}
         </CardContent>
       </Card>
-      <AddWorkgroupDialog
+      <AddWorkgroupRoleDialog
         open={workgroupDialogOpen}
         setOpen={setWorkgroupDialogOpen}
         userId={id}
