@@ -3,7 +3,6 @@ import { Redirect, Route, BrowserRouter as Router, Switch } from "react-router-d
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { theme } from "./AppTheme";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { AlertProvider } from "./components/alert/alertContext";
@@ -93,7 +92,6 @@ class App extends React.Component {
                               </Switch>
                             </Router>
                           </AppBox>
-                          <ReactQueryDevtools />
                         </QueryClientProvider>
                       </OverviewProvider>
                     </FilterProvider>
