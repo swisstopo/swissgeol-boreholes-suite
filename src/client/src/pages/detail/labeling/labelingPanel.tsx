@@ -367,6 +367,7 @@ const LabelingPanel: FC = () => {
               zIndex: "500",
             }}>
             <TextExtractionButton
+              disabled={extractionObject?.type == "text" && extractionState === ExtractionState.drawing}
               onClick={() => {
                 setExtractionObject({ type: "text" });
                 setExtractionState(ExtractionState.start);
