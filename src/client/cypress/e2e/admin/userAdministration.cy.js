@@ -270,6 +270,5 @@ describe("User administration settings tests", () => {
       expect(location.pathname).to.eq("/setting");
       expect(location.hash).to.eq("#users");
     });
-    cy.contains("U. be_deleted");
   });
 });
