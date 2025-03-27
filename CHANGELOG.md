@@ -7,6 +7,7 @@
 
 ### Fixed
 - Copying a borehole did not update its casing references to the copied casings.
+- Importing a borehole with attachments assigned to a non-existent user id resulted in an error.
 
 ## v2.1.1125 - 2025-03-19
 
