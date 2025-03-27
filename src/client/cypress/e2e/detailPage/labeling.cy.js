@@ -288,6 +288,16 @@ describe("Test labeling tool", () => {
     evaluateCoordinate("locationXLV03", "646'358.97");
     evaluateCoordinate("locationYLV03", "249'017.66");
 
+    // wait for end of map animation before proceeding
+    cy.window().then(win => {
+      const view = win.pointOlMap.getView();
+      const resolution = view.getResolution();
+      cy.wrap(resolution).as("resolution");
+    });
+    cy.get("@resolution").then(resolution => {
+      expect(resolution).to.equal(1);
+    });
+
     // can reset the form
     discardChanges();
     assertInputsHaveNormalStyle();
