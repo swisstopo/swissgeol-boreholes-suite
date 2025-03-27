@@ -2,7 +2,6 @@ import { FC } from "react";
 import { EntityType, Role, Workgroup } from "../../../../api/apiInterfaces.ts";
 import { setWorkgroupRole, useWorkgroups, workgroupQueryKey } from "../../../../api/workgroup.ts";
 import { useApiRequest } from "../../../../hooks/useApiRequest.ts";
-import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
 import { RoleAssignmentDialog } from "./roleAssignmentDialog.tsx";
 
 interface AddWorkgroupRoleDialogProps {
@@ -20,10 +19,8 @@ export const AddWorkgroupRoleDialog: FC<AddWorkgroupRoleDialogProps> = ({
   userWorkgroups,
   setUserWorkgroups,
 }) => {
-  const { data: workgroups, isError, error } = useWorkgroups();
+  const { data: workgroups } = useWorkgroups();
   const { callApiWithRollback } = useApiRequest();
-
-  useShowAlertOnError(isError, error);
 
   const addRoleToExistingWorkgroup = (workgroupId: number, role: Role) => {
     setUserWorkgroups(

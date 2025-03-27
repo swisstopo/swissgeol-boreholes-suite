@@ -5,9 +5,8 @@ import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
 import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
-import { updateUser, usersQueryKey, useUsers } from "../../../api/user.ts";
+import { usersQueryKey, useUserMutations, useUsers } from "../../../api/user.ts";
 import { Table } from "../../../components/table/table.tsx";
-import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { useDeleteUserPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
 import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.ts";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
@@ -17,19 +16,21 @@ export const UserAdministration: FC = () => {
   const { t } = useTranslation();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const history = useHistory();
-  const { callApiWithErrorHandling } = useApiRequest();
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { setSelectedUser, userTableSortModel, setUserTableSortModel } = useContext(UserAdministrationContext);
-  const { data: users, isError, error } = useUsers();
+  const { data: users } = useUsers();
   const queryClient = useQueryClient();
-  const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser);
+  const { showDeleteUserWarning } = useDeleteUserPrompts();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
+  const {
+    update: { mutate: update, isError: isUpdateError, error: updateError },
+  } = useUserMutations();
 
   useEffect(() => {
     setSelectedUser(null);
   }, [setSelectedUser]);
 
-  useShowAlertOnError(isError, error);
+  useShowAlertOnError(isUpdateError, updateError);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
     const handleCheckBoxClick = async (event: ChangeEvent<HTMLInputElement>, id: number) => {
@@ -40,8 +41,7 @@ export const UserAdministration: FC = () => {
           queryKey: [usersQueryKey],
         });
         const updatedUser = { ...user, isAdmin: event.target.checked };
-
-        await callApiWithErrorHandling(updateUser, [updatedUser]);
+        update(updatedUser);
       }
     };
 

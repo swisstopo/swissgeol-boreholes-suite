@@ -3,7 +3,6 @@ import { EntityType, Role, User, WorkgroupRole } from "../../../../api/apiInterf
 import { usersQueryKey, useUsers } from "../../../../api/user.ts";
 import { setWorkgroupRole } from "../../../../api/workgroup.ts";
 import { useApiRequest } from "../../../../hooks/useApiRequest.ts";
-import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
 import { RoleAssignmentDialog } from "./roleAssignmentDialog.tsx";
 
 interface AddUserDialogProps {
@@ -21,10 +20,8 @@ export const AddUserDialog: FC<AddUserDialogProps> = ({
   workgroupUsers,
   setWorkgroupUsers,
 }) => {
-  const { data: users, isError, error } = useUsers();
+  const { data: users } = useUsers();
   const { callApiWithRollback } = useApiRequest();
-
-  useShowAlertOnError(isError, error);
 
   const addRoleToExistingUser = (userId: number, newWorkgroupRole: WorkgroupRole) => {
     const newWorkgroupUsers = workgroupUsers.map(user => {

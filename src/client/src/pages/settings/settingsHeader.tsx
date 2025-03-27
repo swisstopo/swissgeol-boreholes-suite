@@ -18,8 +18,8 @@ export const SettingsHeader: FC = () => {
   const { callApiWithRollback } = useApiRequest();
   const { selectedUser, setSelectedUser } = useContext(UserAdministrationContext);
   const { selectedWorkgroup, setSelectedWorkgroup } = useContext(WorkgroupAdministrationContext);
-  const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser);
-  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts(setSelectedWorkgroup);
+  const { showDeleteUserWarning } = useDeleteUserPrompts();
+  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts();
 
   useEffect(() => {}, [selectedUser]);
 

@@ -13,7 +13,6 @@ import { FormInputDisplayOnly } from "../../../components/form/form.ts";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
-import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.ts";
 import { AddUserDialog } from "./dialogs/addUserDialog.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
@@ -25,7 +24,7 @@ export const WorkgroupDetail: FC = () => {
   const { t } = useTranslation();
   const [workgroupUsers, setWorkgroupUsers] = useState<User[]>();
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
-  const { data: users, isError, error } = useUsers();
+  const { data: users } = useUsers();
   const [userDialogOpen, setUserDialogOpen] = useState(false);
 
   const { selectedWorkgroup, setSelectedWorkgroup, workgroupDetailTableSortModel, setWorkgroupDetailTableSortModel } =
@@ -33,8 +32,6 @@ export const WorkgroupDetail: FC = () => {
   const { showPrompt } = useContext(PromptContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
-
-  useShowAlertOnError(isError, error);
 
   useEffect(() => {
     const getWorkgroup = async () => {

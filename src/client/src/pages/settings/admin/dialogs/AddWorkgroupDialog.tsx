@@ -13,7 +13,7 @@ interface AddWorkgroupDialogProps {
 }
 
 export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({ open, setOpen }) => {
-  const [workgroupName, setWorkgroupName] = useState("");
+  const [workgroupName, setWorkgroupName] = useState<string | null>(null);
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
 
@@ -22,6 +22,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({ open, setOpen 
   } = useWorkgroupMutations();
 
   const addWorkgroup = async () => {
+    if (!workgroupName) return;
     const workgroup: Workgroup = {
       id: 0,
       name: workgroupName,
@@ -33,9 +34,9 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({ open, setOpen 
 
   useShowAlertOnError(isError, error);
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && workgroupName) {
       showAlert(t("workgroupWithNameAdded", { name: workgroupName }), "success");
-      setWorkgroupName("");
+      setWorkgroupName(null);
       setOpen(false);
     }
   }, [setOpen, workgroupName, isSuccess, showAlert, t]);

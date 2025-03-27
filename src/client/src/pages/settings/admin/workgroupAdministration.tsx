@@ -8,25 +8,20 @@ import { useUsers } from "../../../api/user.ts";
 import { useWorkgroups } from "../../../api/workgroup.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { useDeleteWorkgroupPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
-import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.ts";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
 export const WorkgroupAdministration: FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { data: workgroups, isError: isWorkgroupsError, error: workgroupsError } = useWorkgroups();
-  const { data: users, isError: isUsersError, error: usersError } = useUsers();
+  const { data: workgroups } = useWorkgroups();
+  const { data: users } = useUsers();
   const { setSelectedWorkgroup, workgroupTableSortModel, setworkgroupTableSortModel } =
     useContext(WorkgroupAdministrationContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
-
-  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts(setSelectedWorkgroup);
+  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts();
   const { workgroupNameColumn, boreholeCountColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
-
-  useShowAlertOnError(isWorkgroupsError, workgroupsError);
-  useShowAlertOnError(isUsersError, usersError);
 
   useEffect(() => {
     setSelectedWorkgroup(null);
