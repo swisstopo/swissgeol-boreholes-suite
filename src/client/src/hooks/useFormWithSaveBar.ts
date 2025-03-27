@@ -2,6 +2,7 @@ import { ForwardedRef, useCallback, useEffect, useImperativeHandle } from "react
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
+import { useLabelingContext } from "../pages/detail/labeling/labelingInterfaces.tsx";
 import { useBlockNavigation } from "./useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "./useSaveOnCtrlS.ts";
 
@@ -21,6 +22,7 @@ export function UseFormWithSaveBar<T extends FieldValues>({
   const history = useHistory();
   const { handleBlockedNavigation } = useBlockNavigation();
   const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
+  const { setExtractionObject } = useLabelingContext();
 
   // Block navigation if form is dirty
   history.block(nextLocation => {
@@ -45,8 +47,9 @@ export function UseFormWithSaveBar<T extends FieldValues>({
   const resetAndSubmitForm = useCallback(() => {
     const currentValues = formMethods.getValues();
     formMethods.reset(currentValues);
+    setExtractionObject(undefined);
     formMethods.handleSubmit(onSubmit)();
-  }, [formMethods, onSubmit]);
+  }, [formMethods, onSubmit, setExtractionObject]);
 
   // Save with ctrl+s
   useSaveOnCtrlS(resetAndSubmitForm);
@@ -56,6 +59,7 @@ export function UseFormWithSaveBar<T extends FieldValues>({
     submit: () => resetAndSubmitForm(),
     reset: () => {
       formMethods.reset();
+      setExtractionObject(undefined);
       if (incrementResetKey) incrementResetKey();
     },
   }));
