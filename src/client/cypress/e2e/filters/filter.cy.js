@@ -238,9 +238,9 @@ describe("Search filter tests", () => {
       returnToOverview();
       getElementByDataCy("show-filter-button").click();
       cy.contains("Status").click();
-      getElementByDataCy("boreholes-number-preview").should("have.text", "1'626");
-      getElementByDataCy("statuseditor").click();
       getElementByDataCy("boreholes-number-preview").should("have.text", "1'627");
+      getElementByDataCy("statuseditor").click();
+      getElementByDataCy("boreholes-number-preview").should("have.text", "1'626");
       getElementByDataCy("statuscontroller").click();
       getElementByDataCy("boreholes-number-preview").should("have.text", "1");
     });
