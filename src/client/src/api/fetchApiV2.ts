@@ -244,6 +244,16 @@ export const useDomainSchema = (schema: string) =>
     gcTime: 15 * (60 * 1000), // 15 mins
   });
 
+export const useCantons = () =>
+  useQuery({
+    queryKey: ["cantons"],
+    queryFn: () => {
+      return fetchApiV2("canton", "GET");
+    },
+    staleTime: 10 * (60 * 1000), // 10 mins
+    gcTime: 15 * (60 * 1000), // 15 mins
+  });
+
 export const layerQueryKey = "layers";
 
 export const useLayers = (profileId?: number) =>

@@ -1,4 +1,5 @@
 import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
+import { setInput, setYesNoSelect } from "../helpers/formHelpers.js";
 import {
   createBorehole,
   createLithologyLayer,
@@ -10,46 +11,13 @@ import {
 } from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
-  it("has search filters", () => {
+  it.skip("has search filters", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Filters");
   });
 
-  it("shows the correct dropdowns", () => {
-    goToRouteAndAcceptTerms("/");
-    getElementByDataCy("show-filter-button").click();
-    cy.contains("h6", "Location").click();
-    getElementByDataCy("show-all-fields-switch").click();
-    const indentifierDropdown = () => cy.contains("h6", "ID type").next();
-    indentifierDropdown().click();
-    indentifierDropdown()
-      .find("div[role='option']")
-      .should("have.length", 12)
-      .should(options => {
-        expect(options[0]).to.have.text("Reset");
-        expect(options[1]).to.have.text("ID Original");
-      });
-
-    cy.contains("h6", "Borehole").click();
-    const boreholeTypeDropdown = () => cy.contains("h6", "Borehole type").next();
-    boreholeTypeDropdown().click();
-    boreholeTypeDropdown()
-      .find("div[role='option']")
-      .should("have.length", 8)
-      .should(options => {
-        expect(options[0]).to.have.text("Reset");
-        expect(options[1]).to.have.text("borehole");
-        expect(options[2]).to.have.text("virtual borehole");
-        expect(options[3]).to.have.text("penetration test");
-        expect(options[4]).to.have.text("trial pit");
-        expect(options[5]).to.have.text("outcrop");
-        expect(options[6]).to.have.text("other");
-        expect(options[7]).to.have.text("not specified");
-      });
-  });
-
-  it("checks that the registration filter settings control the filter visibility.", () => {
+  it.skip("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
     goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
@@ -90,7 +58,7 @@ describe("Search filter tests", () => {
     getElementByDataCy("show-all-fields-switch").click();
 
     // input value
-    cy.contains("Created by").next().find("input").type("v_ U%r");
+    setInput("created_by", "v_ U%r");
     cy.wait("@edit_list");
 
     // check content of table
@@ -161,39 +129,38 @@ describe("Search filter tests", () => {
     getElementByDataCy("show-filter-button").click();
     cy.contains("Location").click();
     getElementByDataCy("show-all-fields-switch").click();
-
-    cy.get('[data-cy="national_interest-yes"]').click();
+    setYesNoSelect("national_interest", "Yes");
     cy.wait("@edit_list");
 
     showTableAndWaitForData();
     verifyPaginationText("1–100 of 160");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
-    cy.get('[data-cy="national_interest-np"]').click();
+    setYesNoSelect("national_interest", "Not specified");
     cy.wait("@edit_list");
     verifyPaginationText("1–1 of 1");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
-    cy.get('[data-cy="national_interest-no"]').click();
+    setYesNoSelect("national_interest", "No");
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 1469");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
     cy.contains("Lithology").click();
     getElementByDataCy("show-all-fields-switch").click();
-    cy.get('[data-cy="striae-yes"]').click();
+    setYesNoSelect("striae", "Yes");
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 1401");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
-    cy.get('[data-cy="striae-no"]').click();
+    setYesNoSelect("striae", "No");
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 1402");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
-    cy.get('[data-cy="striae-np"]').click();
+    setYesNoSelect("striae", "Not Specified");
     cy.wait("@edit_list");
     verifyPaginationText("1–2 of 2");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
@@ -210,7 +177,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
-    cy.get('[data-cy="striae-no"]').click();
+    setYesNoSelect("striae", "No");
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 1555");
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");

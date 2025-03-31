@@ -25,6 +25,7 @@ export interface FormInputProps {
   inputProps?: InputProps;
   onUpdate?: (value: string) => void;
   withThousandSeparator?: boolean;
+  placeholder?: string;
 }
 
 export const FormInput: FC<FormInputProps> = ({
@@ -43,6 +44,7 @@ export const FormInput: FC<FormInputProps> = ({
   inputProps,
   onUpdate,
   withThousandSeparator,
+  placeholder,
 }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(DetailContext);
@@ -73,6 +75,7 @@ export const FormInput: FC<FormInputProps> = ({
       className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
       type={type || FormValueType.Text}
       multiline={multiline || false}
+      placeholder={placeholder && t(placeholder)}
       rows={rows}
       label={t(label)}
       {...register(fieldName, {
