@@ -121,6 +121,7 @@ describe("User administration settings tests", () => {
 
     // go to detail view and try to delete
     clickOnRowWithText("controller");
+    cy.contains("Controller");
     getElementByDataCy("deleteuser-button").click();
     handlePrompt(messageForActiveNonDeletableUser, "Cancel");
 
@@ -155,6 +156,7 @@ describe("User administration settings tests", () => {
     handlePrompt(messageForActiveDeletableUser, "Cancel");
     clickOnRowWithText("user_that_can");
     cy.wait("@get-user");
+    cy.contains("U. be_deleted");
     getElementByDataCy("deleteuser-button").click();
     handlePrompt(messageForActiveDeletableUser, "Cancel");
     getElementByDataCy("inactivate-button").click();
@@ -261,6 +263,7 @@ describe("User administration settings tests", () => {
   it("displays error message when deleting user fails.", () => {
     cy.intercept("DELETE", "api/v2/user/7", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/user/7"); // deletable user
+    cy.contains("U.be_deleted");
     getElementByDataCy("deleteuser-button").click();
     getElementByDataCy("delete-button").click();
     cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
