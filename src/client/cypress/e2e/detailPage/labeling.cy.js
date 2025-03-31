@@ -299,6 +299,8 @@ describe("Test labeling tool", () => {
     });
 
     // can reset the form
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(2000); // otherwise test is flaky ¯\_(ツ)_/¯
     discardChanges();
     assertInputsHaveNormalStyle();
     assertEmptyInputsForLV95HaveError();
