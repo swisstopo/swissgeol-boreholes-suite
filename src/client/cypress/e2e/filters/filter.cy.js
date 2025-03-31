@@ -233,16 +233,16 @@ describe("Search filter tests", () => {
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/status`);
       startBoreholeEditing();
-      cy.get('[data-cy="workflow_submit"]').click();
-      cy.get('[data-cy="workflow_dialog_submit"]').click();
+      getElementByDataCy("workflow_submit").click();
+      getElementByDataCy("workflow_dialog_submit").click();
       returnToOverview();
       getElementByDataCy("show-filter-button").click();
       cy.contains("Status").click();
-      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'627");
-      cy.get('[data-cy="statuseditor"]').click();
-      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
-      cy.get('[data-cy="statuscontroller"]').click();
-      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1");
+      getElementByDataCy("boreholes-number-preview").should("have.text", "1'627");
+      getElementByDataCy("statuseditor").click();
+      getElementByDataCy("boreholes-number-preview").should("have.text", "1'626");
+      getElementByDataCy("statuscontroller").click();
+      getElementByDataCy("boreholes-number-preview").should("have.text", "1");
     });
   });
 
