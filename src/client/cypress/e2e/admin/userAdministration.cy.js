@@ -121,7 +121,7 @@ describe("User administration settings tests", () => {
 
     // go to detail view and try to delete
     clickOnRowWithText("controller");
-    cy.contains("Controller");
+    cy.contains("C. user");
     getElementByDataCy("deleteuser-button").click();
     handlePrompt(messageForActiveNonDeletableUser, "Cancel");
 
