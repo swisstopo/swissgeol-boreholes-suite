@@ -5,7 +5,6 @@ import { Workgroup } from "../../../../api/apiInterfaces.ts";
 import { useWorkgroupMutations } from "../../../../api/workgroup.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
-import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
 
 interface AddWorkgroupDialogProps {
   open: boolean;
@@ -18,7 +17,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({ open, setOpen 
   const { t } = useTranslation();
 
   const {
-    add: { mutate: add, isError, error, isSuccess },
+    add: { mutate: add, isSuccess },
   } = useWorkgroupMutations();
 
   const addWorkgroup = async () => {
@@ -32,7 +31,6 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({ open, setOpen 
     add(workgroup);
   };
 
-  useShowAlertOnError(isError, error);
   useEffect(() => {
     if (isSuccess && workgroupName) {
       showAlert(t("workgroupWithNameAdded", { name: workgroupName }), "success");

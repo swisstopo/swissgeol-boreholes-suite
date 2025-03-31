@@ -59,6 +59,19 @@ export const useWorkgroups = () => {
   return query;
 };
 
+export const useSelectedWorkgroup = (id: number) => {
+  const query = useQuery({
+    queryKey: [workgroupQueryKey, id],
+    queryFn: async () => {
+      return await fetchWorkgroupById(id);
+    },
+    enabled: !!id,
+  });
+
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
+
 export const useWorkgroupMutations = () => {
   const queryClient = useQueryClient();
   const useAddWorkgroup = useMutation({
@@ -82,6 +95,9 @@ export const useWorkgroupMutations = () => {
       });
     },
   });
+
+  useShowAlertOnError(useAddWorkgroup.isError, useAddWorkgroup.error);
+  useShowAlertOnError(useDeleteWorkgroup.isError, useDeleteWorkgroup.error);
 
   return {
     add: useAddWorkgroup,

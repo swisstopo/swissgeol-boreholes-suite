@@ -1,11 +1,11 @@
 import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
 import { User, Workgroup, WorkgroupRole } from "../../../api/apiInterfaces.ts";
-import { fetchUser, updateUser } from "../../../api/user.ts";
+import { useSelectedUser, useUserMutations } from "../../../api/user.ts";
 import { removeAllWorkgroupRolesForUser } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
@@ -23,11 +23,13 @@ export const UserDetail: FC = () => {
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const { workgroupNameColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
-  const { selectedUser, setSelectedUser, userDetailTableSortModel, setUserDetailTableSortModel } =
-    useContext(UserAdministrationContext);
+  const { userDetailTableSortModel, setUserDetailTableSortModel } = useContext(UserAdministrationContext);
   const { showPrompt } = useContext(PromptContext);
-  const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
-  const history = useHistory();
+  const { callApiWithRollback } = useApiRequest();
+  const { data: selectedUser } = useSelectedUser(parseInt(id));
+  const {
+    update: { mutate: updateUser },
+  } = useUserMutations();
 
   const getUniqueWorkgroups = (user: User) => {
     const { workgroupRoles } = user;
@@ -47,19 +49,11 @@ export const UserDetail: FC = () => {
   };
 
   useEffect(() => {
-    const getUser = async () => {
-      const user: User = await callApiWithErrorHandling(fetchUser, [parseInt(id)]);
-      if (!user) {
-        history.push("/setting#users");
-      } else {
-        setSelectedUser(user);
-
-        // Get the transformed array of unique workgroups with roles
-        setUserWorkgroups(getUniqueWorkgroups(user));
-      }
-    };
-    getUser();
-  }, [callApiWithErrorHandling, history, id, setSelectedUser]);
+    // Get the transformed array of unique workgroups with roles
+    if (selectedUser) {
+      setUserWorkgroups(getUniqueWorkgroups(selectedUser));
+    }
+  }, [selectedUser]);
 
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 
@@ -69,14 +63,9 @@ export const UserDetail: FC = () => {
   const handleCheckboxChange = async (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
     if (selectedUser) {
-      // Define rollback function to revert the state if the API call fails
-      const rollback = () => setSelectedUser({ ...selectedUser });
-
       // Optimistically update the user in the state
       const updatedUser = { ...selectedUser, isAdmin: event.target.checked };
-      setSelectedUser({ ...updatedUser });
-
-      await callApiWithRollback(updateUser, [updatedUser], rollback);
+      updateUser(updatedUser);
     }
   };
 

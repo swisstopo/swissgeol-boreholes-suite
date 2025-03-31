@@ -1,10 +1,7 @@
 import { createContext, FC, PropsWithChildren, useMemo, useState } from "react";
 import { GridSortModel } from "@mui/x-data-grid";
-import { User } from "../../../api/apiInterfaces.ts";
 
 export interface UserAdministrationContextProps {
-  selectedUser: User | null;
-  setSelectedUser: (user: User | null) => void;
   userTableSortModel: GridSortModel;
   setUserTableSortModel: (model: GridSortModel) => void;
   userDetailTableSortModel: GridSortModel;
@@ -12,8 +9,6 @@ export interface UserAdministrationContextProps {
 }
 
 export const UserAdministrationContext = createContext<UserAdministrationContextProps>({
-  selectedUser: null,
-  setSelectedUser: () => {},
   userTableSortModel: [],
   setUserTableSortModel: () => {},
   userDetailTableSortModel: [],
@@ -21,7 +16,6 @@ export const UserAdministrationContext = createContext<UserAdministrationContext
 });
 
 export const UserAdministrationProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userTableSortModel, setUserTableSortModel] = useState<GridSortModel>([{ field: "lastName", sort: "asc" }]);
   const [userDetailTableSortModel, setUserDetailTableSortModel] = useState<GridSortModel>([
     { field: "name", sort: "asc" },
@@ -30,14 +24,12 @@ export const UserAdministrationProvider: FC<PropsWithChildren> = ({ children }) 
     <UserAdministrationContext.Provider
       value={useMemo(
         () => ({
-          selectedUser,
-          setSelectedUser,
           userTableSortModel,
           setUserTableSortModel,
           userDetailTableSortModel,
           setUserDetailTableSortModel,
         }),
-        [selectedUser, userDetailTableSortModel, userTableSortModel],
+        [userDetailTableSortModel, userTableSortModel],
       )}>
       {children}
     </UserAdministrationContext.Provider>
