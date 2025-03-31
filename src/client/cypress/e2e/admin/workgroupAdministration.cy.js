@@ -69,6 +69,7 @@ describe("User administration settings tests", () => {
     setSelect("workgroup", 2); // Workgroup called "World";
     setSelect("role", 4); // "Publisher";
     getElementByDataCy("add-button").click();
+    cy.wait("@set_workgroup_roles");
     getElementByDataCy("backButton").click();
     getElementByDataCy("workgroups-tab").click();
 
