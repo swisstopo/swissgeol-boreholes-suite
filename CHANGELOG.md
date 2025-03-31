@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Added a button to add workgroups in the workgroup administration.
+
 ### Changed
 - The text extraction button is now disabled when the text extraction is in progress.
 
