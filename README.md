@@ -91,5 +91,5 @@ Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten Ã
 #### API
 
 - Neue Endpoints werden immer im .NET API erstellt. Das Python Legacy API wird nicht erweitert.
-- Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) (siehe [fetchApiV2.js](src/client/src/api/fetchApiV2.js)) oder wo sinnvoll mit `useQuery` von `react-query` gemacht.
+- Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) (siehe [fetchApiV2.ts](src/client/src/api/fetchApiV2.ts)) oder wo sinnvoll mit `useQuery` von `react-query` gemacht.
 - Wenn Abfragen aus dem Redux Store in neuen Komponenten gebraucht werden, sollten die React hooks `useSelector` und `useDispatch` verwendet werden.

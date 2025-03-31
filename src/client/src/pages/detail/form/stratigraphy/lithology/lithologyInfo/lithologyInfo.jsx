@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import _ from "lodash";
-import { fetchStratigraphy } from "../../../../../../api/fetchApiV2.js";
+import { fetchStratigraphy } from "../../../../../../api/fetchApiV2.ts";
 import { sendProfile } from "./api";
 import InfoCheckBox from "./infoCheckBox";
 import InfoList from "./infoList";

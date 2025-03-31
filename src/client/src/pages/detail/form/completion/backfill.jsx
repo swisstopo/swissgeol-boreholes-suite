@@ -1,4 +1,4 @@
-import { getBackfills } from "../../../../api/fetchApiV2.js";
+import { getBackfills } from "../../../../api/fetchApiV2.ts";
 import DataCards from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
 import BackfillDisplay from "./backfillDisplay.jsx";

@@ -531,6 +531,7 @@
   "waterIngress": "Infiltrazione d'acqua",
   "welcomeMessage": "Benvenuti su",
   "workgroup": "Gruppo di lavoro",
+  "workgroupWithNameAdded": "Il gruppo di lavoro \"{{name}}\" è stato aggiunto",
   "workgroups": "Gruppi di lavoro",
   "yes": "Sì",
   "you": "Tu",

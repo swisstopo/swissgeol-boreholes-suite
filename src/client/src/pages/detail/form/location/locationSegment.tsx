@@ -1,7 +1,7 @@
 import { useCallback, useContext, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, Grid, Stack } from "@mui/material";
-import { fetchApiV2 } from "../../../../api/fetchApiV2";
+import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
 import PointComponent from "../../../../components/map/pointComponent";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { DetailContext } from "../../detailContext.tsx";

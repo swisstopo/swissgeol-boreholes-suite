@@ -536,6 +536,7 @@
   "waterIngress": "Water ingress",
   "welcomeMessage": "Welcome to",
   "workgroup": "Workgroup",
+  "workgroupWithNameAdded": "Workgroup \"{{name}}\" was added",
   "workgroups": "Workgroups",
   "yes": "Yes",
   "you": "You",

@@ -3,7 +3,7 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-import { useDomains } from "../../../../../api/fetchApiV2";
+import { useDomains } from "../../../../../api/fetchApiV2.ts";
 import { AddButton } from "../../../../../components/buttons/buttons";
 import { Codelist } from "../../../../../components/Codelist";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext";

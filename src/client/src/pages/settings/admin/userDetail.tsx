@@ -12,7 +12,7 @@ import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
 import { useApiRequest } from "../../../hooks/useApiRequest.ts";
-import { AddWorkgroupDialog } from "./dialogs/addWorkgroupDialog.tsx";
+import { AddWorkgroupRoleDialog } from "./dialogs/addWorkgroupRoleDialog.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
@@ -196,7 +196,7 @@ export const UserDetail: FC = () => {
           )}
         </CardContent>
       </Card>
-      <AddWorkgroupDialog
+      <AddWorkgroupRoleDialog
         open={workgroupDialogOpen}
         setOpen={setWorkgroupDialogOpen}
         userId={id}

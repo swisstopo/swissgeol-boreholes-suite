@@ -1,11 +1,14 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
-import { fetchApiV2 } from "./fetchApiV2";
+import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
-export const fetchWorkgroups = async () => await fetchApiV2("workgroup", "GET");
+export const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2("workgroup", "GET");
 
 export const fetchWorkgroupById = async (id: number) => await fetchApiV2(`workgroup/${id}`, "GET");
 
-export const createWorkgroup = async (workgroup: Workgroup) => await fetchApiV2("workgroup", "POST", workgroup);
+export const createWorkgroup = async (workgroup: Workgroup) =>
+  await fetchApiV2WithApiError("workgroup", "POST", workgroup);
 
 export const updateWorkgroup = async (workgroup: Workgroup) => {
   if (workgroup.disabledAt) {
@@ -41,4 +44,47 @@ export const removeAllWorkgroupRolesForUser = async (userId: number, workgroupId
     });
   }
   return await fetchApiV2("workgroup/setRoles", "POST", workgroupRoles);
+};
+
+export const workgroupQueryKey = "workgroups";
+
+export const useWorkgroups = () => {
+  const query = useQuery({
+    queryKey: [workgroupQueryKey],
+    queryFn: fetchWorkgroups,
+  });
+
+  // integrate error alert into query
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
+
+export const useWorkgroupMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddWorkgroup = useMutation({
+    mutationFn: async (workgroup: Workgroup) => {
+      return await createWorkgroup(workgroup);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [workgroupQueryKey],
+      });
+    },
+  });
+
+  const useDeleteWorkgroup = useMutation({
+    mutationFn: async (workgroupId: number) => {
+      return await deleteWorkgroup(workgroupId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [workgroupQueryKey],
+      });
+    },
+  });
+
+  return {
+    add: useAddWorkgroup,
+    delete: useDeleteWorkgroup,
+  };
 };

@@ -1,4 +1,4 @@
-import { getCasings } from "../../../../api/fetchApiV2.js";
+import { getCasings } from "../../../../api/fetchApiV2.ts";
 import DataCards from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
 import CasingDisplay from "./casingDisplay.jsx";

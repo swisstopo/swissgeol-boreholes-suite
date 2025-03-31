@@ -5,7 +5,7 @@ import {
 } from "../../pages/detail/labeling/labelingInterfaces.tsx";
 import { ApiError } from "../apiInterfaces.ts";
 import { fetchCreatePngs, fetchExtractData, fetchPageBoundingBoxes } from "../dataextraction";
-import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2";
+import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2.ts";
 import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
 export async function uploadFile<FileResponse>(boreholeId: number, file: File) {

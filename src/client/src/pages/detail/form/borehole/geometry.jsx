@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { Card, CardActions, CardContent, CircularProgress, Grid, Typography } from "@mui/material/";
-import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2.js";
+import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2.ts";
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { DetailContext } from "../../detailContext.tsx";

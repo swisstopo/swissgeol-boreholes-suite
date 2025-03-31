@@ -25,7 +25,7 @@ export interface Workgroup {
   createdAt?: Date | string;
   settings?: string;
   boreholeCount: number;
-  roles: Role[];
+  roles?: Role[];
 }
 
 export interface WorkgroupRole {
@@ -74,4 +74,67 @@ export interface User {
 export enum EntityType {
   user = "User",
   workgroup = "Workgroup",
+}
+
+export interface Layer {
+  id: number;
+  updatedBy?: User;
+  createdBy?: User;
+}
+
+export interface Stratigraphy {
+  id: number;
+  boreholeId: number;
+  updatedBy?: User;
+  createdBy?: User;
+}
+
+export interface LithologicalDescription {
+  id?: number;
+  stratigraphyId: number;
+}
+
+export interface FaciesDescription {
+  id?: number;
+  stratigraphyId: number;
+}
+
+export interface Chronostratigraphy {
+  id?: number;
+  stratigraphyId: number;
+}
+
+export interface Lithostratigraphy {
+  id?: number;
+  stratigraphyId: number;
+}
+
+export interface Completion {
+  id?: number;
+  boreholeId: number;
+}
+
+export interface Instrumentation {
+  id?: number;
+  completionId: number;
+}
+
+export interface Backfill {
+  id?: number;
+  completionId: number;
+}
+
+export interface Casing {
+  id?: number;
+  completionId?: number;
+  boreholeId?: number;
+}
+
+export interface Section {
+  id?: number;
+  boreholeId: number;
+}
+
+export interface GeometryFormat {
+  csvHeader: string;
 }

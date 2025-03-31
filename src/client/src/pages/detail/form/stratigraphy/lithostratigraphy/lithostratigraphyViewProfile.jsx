@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Box, LinearProgress } from "@mui/material";
-import { useLithostratigraphies } from "../../../../../api/fetchApiV2.js";
+import { useLithostratigraphies } from "../../../../../api/fetchApiV2.ts";
 
 const handleColor = layer =>
   `rgb(${(JSON.parse(layer?.lithostratigraphy?.conf ?? null)?.color ?? [255, 255, 255]).join()})`;

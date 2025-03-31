@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { withTranslation } from "react-i18next";
-import { useMutation, useQueryClient } from "react-query";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {
   Box,
@@ -15,6 +14,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   addFaciesDescription,
   addLithologicalDescription,
@@ -27,7 +27,7 @@ import {
   useFaciesDescription,
   useLayers,
   useLithoDescription,
-} from "../../../../../../api/fetchApiV2.js";
+} from "../../../../../../api/fetchApiV2.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { createLayerApi, getData } from "./api";
 import DescriptionLayers from "./descriptionLayers/descriptionLayers.jsx";
@@ -51,83 +51,71 @@ const ProfileLayers = props => {
   const lithoDescQuery = useLithoDescription(selectedStratigraphyID);
   const faciesDescQuery = useFaciesDescription(selectedStratigraphyID);
 
-  const addLithologicalDescriptionMutation = useMutation(
-    async params => {
+  const addLithologicalDescriptionMutation = useMutation({
+    mutationFn: async params => {
       return await addLithologicalDescription(params);
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [lithologicalDescriptionQueryKey],
-        });
-      },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [lithologicalDescriptionQueryKey],
+      });
     },
-  );
+  });
 
-  const deleteLithologicalDescriptionMutation = useMutation(
-    async id => {
+  const deleteLithologicalDescriptionMutation = useMutation({
+    mutationFn: async id => {
       return await deleteLithologicalDescription(id);
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [lithologicalDescriptionQueryKey],
-        });
-      },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [lithologicalDescriptionQueryKey],
+      });
     },
-  );
+  });
 
-  const updateLithologicalDescriptionMutation = useMutation(
-    async params => {
+  const updateLithologicalDescriptionMutation = useMutation({
+    mutationFn: async params => {
       return await updateLithologicalDescription(params);
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [lithologicalDescriptionQueryKey],
-        });
-      },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [lithologicalDescriptionQueryKey],
+      });
     },
-  );
+  });
 
-  const addFaciesDescriptionMutation = useMutation(
-    async params => {
+  const addFaciesDescriptionMutation = useMutation({
+    mutationFn: async params => {
       return await addFaciesDescription(params);
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [faciesDescriptionQueryKey],
-        });
-      },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [faciesDescriptionQueryKey],
+      });
     },
-  );
+  });
 
-  const deleteFaciesDescriptionMutation = useMutation(
-    async id => {
+  const deleteFaciesDescriptionMutation = useMutation({
+    mutationFn: async id => {
       return await deleteFaciesDescription(id);
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [faciesDescriptionQueryKey],
-        });
-      },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [faciesDescriptionQueryKey],
+      });
     },
-  );
+  });
 
-  const updateFaciesDescriptionMutation = useMutation(
-    async params => {
+  const updateFaciesDescriptionMutation = useMutation({
+    mutationFn: async params => {
       return await updateFaciesDescription(params);
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [faciesDescriptionQueryKey],
-        });
-      },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [faciesDescriptionQueryKey],
+      });
     },
-  );
+  });
 
   const setData = useCallback(stratigraphyID => {
     // Todo: use get layers from new api.

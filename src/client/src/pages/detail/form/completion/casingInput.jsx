@@ -3,7 +3,7 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
-import { addCasing, updateCasing } from "../../../../api/fetchApiV2";
+import { addCasing, updateCasing } from "../../../../api/fetchApiV2.js";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
