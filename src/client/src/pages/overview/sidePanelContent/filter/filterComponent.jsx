@@ -279,6 +279,9 @@ FilterComponent.propTypes = {
   search: PropTypes.object,
   setFilter: PropTypes.func,
   settings: PropTypes.object,
+  toggleDrawer: PropTypes.func,
+  user: PropTypes.object,
+  t: PropTypes.func,
 };
 
 const mapStateToProps = state => {
