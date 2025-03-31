@@ -9,6 +9,7 @@
 - The text extraction button is now disabled when the text extraction is in progress.
 
 ### Fixed
+- When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard changes button.
 - Copying a borehole did not update its casing references to the copied casings.
 - Importing a borehole with attachments assigned to a non-existent user id resulted in an error.
 
