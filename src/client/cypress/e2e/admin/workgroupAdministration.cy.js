@@ -7,7 +7,7 @@ import {
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers.js";
-import { evaluateInput, setSelect } from "../helpers/formHelpers.js";
+import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers.js";
 import { getElementByDataCy, goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers.js";
 
 describe("User administration settings tests", () => {
@@ -120,6 +120,21 @@ describe("User administration settings tests", () => {
     cy.wait("@update-workgroup");
     getElementByDataCy("deleteworkgroup-button").click();
     handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
+  });
+
+  it("can add a new workgroup.", () => {
+    goToRouteAndAcceptTerms("//setting#workgroups");
+    getElementByDataCy("addworkgroup-button").click();
+    setInput("workgroup", "Coconut");
+    getElementByDataCy("add-button").click();
+
+    cy.get(".MuiAlert-message").contains('Workgroup "Coconut" was added');
+    cy.get('[aria-label="Close"]').click(); // close alert
+    verifyTableLength(7);
+    verifyRowWithContentAlsoContains("Coconut", "Active");
+    clickOnRowWithText("Coconut");
+    getElementByDataCy("deleteworkgroup-button").click();
+    getElementByDataCy("delete-button").click();
   });
 
   it("adds and deletes users from workgroup.", () => {

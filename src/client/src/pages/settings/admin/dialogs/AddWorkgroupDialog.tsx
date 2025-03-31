@@ -54,7 +54,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({ open, setOpen 
               label={t("name")}
               name={"workgroupName"}
               value={workgroupName}
-              data-cy={"addWorkgrou-formInput"}
+              data-cy={"workgroup-formInput"}
               onChange={event => {
                 setWorkgroupName(event.target.value);
               }}></TextField>
