@@ -7,6 +7,7 @@
 
 ### Changed
 - The text extraction button is now disabled when the text extraction is in progress.
+- Update legal links in disclaimer for all languages.
 
 ### Fixed
 - Copying a borehole did not update its casing references to the copied casings.
