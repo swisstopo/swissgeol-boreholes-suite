@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useChronostratigraphies, useChronostratigraphyMutations } from "../../../../../api/fetchApiV2.js";
+import { useChronostratigraphies, useChronostratigraphyMutations } from "../../../../../api/fetchApiV2.ts";
 import HierarchicalDataEditProfile from "../hierarchicalDataEditProfile.jsx";
 
 /**

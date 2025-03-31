@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
 import { FormControlLabel, Switch } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import _ from "lodash";
-import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.js";
+import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.ts";
 import LithologyAttributeList from "./lithologyAttributeList/lithologyAttributeList.jsx";
 import * as Styled from "./styles.js";
 

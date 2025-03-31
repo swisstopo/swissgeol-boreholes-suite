@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addInstrumentation, getCasings, updateInstrumentation } from "../../../../api/fetchApiV2.js";
+import { addInstrumentation, getCasings, updateInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Box, Button, Link, Stack } from "@mui/material";
 import { importBoreholesCsv, importBoreholesJson, importBoreholesZip } from "../../../../api/borehole.ts";
-import { downloadCodelistCsv } from "../../../../api/fetchApiV2";
+import { downloadCodelistCsv } from "../../../../api/fetchApiV2.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import { ErrorResponse, NewBoreholeProps } from "../commons/actionsInterfaces.ts";

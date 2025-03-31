@@ -17,7 +17,7 @@ import XYZ from "ol/source/XYZ";
 import proj4 from "proj4";
 import PropTypes from "prop-types";
 import { getHeight } from "../../api-lib";
-import { fetchApiV2 } from "../../api/fetchApiV2.js";
+import { fetchApiV2 } from "../../api/fetchApiV2.ts";
 import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";

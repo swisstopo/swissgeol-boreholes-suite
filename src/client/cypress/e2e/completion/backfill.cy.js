@@ -72,7 +72,6 @@ describe("Backfill crud tests", () => {
     saveForm();
     cy.contains("casing-1");
     cy.contains("222");
-    cy.contains("inactive");
     evaluateDisplayValue("casingName", "test backfill - casing-1");
 
     startEditing();

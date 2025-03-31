@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useContext } from "react";
+import { FC, MouseEvent, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
@@ -16,11 +16,12 @@ export const SettingsHeader: FC = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const { callApiWithRollback } = useApiRequest();
-  const { users, setUsers, selectedUser, setSelectedUser } = useContext(UserAdministrationContext);
-  const { workgroups, setWorkgroups, selectedWorkgroup, setSelectedWorkgroup } =
-    useContext(WorkgroupAdministrationContext);
-  const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
-  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts(setSelectedWorkgroup, workgroups, setWorkgroups);
+  const { selectedUser, setSelectedUser } = useContext(UserAdministrationContext);
+  const { selectedWorkgroup, setSelectedWorkgroup } = useContext(WorkgroupAdministrationContext);
+  const { showDeleteUserWarning } = useDeleteUserPrompts();
+  const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts();
+
+  useEffect(() => {}, [selectedUser]);
 
   const selectedEntity = selectedUser ?? selectedWorkgroup;
 

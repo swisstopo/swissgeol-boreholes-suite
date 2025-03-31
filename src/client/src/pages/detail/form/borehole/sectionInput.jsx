@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import { Divider, IconButton } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
-import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.js";
+import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.ts";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
