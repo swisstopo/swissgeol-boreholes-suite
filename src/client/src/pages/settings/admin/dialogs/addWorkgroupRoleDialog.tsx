@@ -1,11 +1,10 @@
-import { FC, useContext } from "react";
+import { FC } from "react";
 import { EntityType, Role, Workgroup } from "../../../../api/apiInterfaces.ts";
-import { fetchWorkgroups, setWorkgroupRole } from "../../../../api/workgroup.ts";
+import { setWorkgroupRole, useWorkgroups, workgroupQueryKey } from "../../../../api/workgroup.ts";
 import { useApiRequest } from "../../../../hooks/useApiRequest.ts";
-import { WorkgroupAdministrationContext } from "../workgroupAdministrationContext.tsx";
 import { RoleAssignmentDialog } from "./roleAssignmentDialog.tsx";
 
-interface AddWorkgroupDialogProps {
+interface AddWorkgroupRoleDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   userId: string;
@@ -13,14 +12,14 @@ interface AddWorkgroupDialogProps {
   setUserWorkgroups: (userWorkgroups: Workgroup[]) => void;
 }
 
-export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
+export const AddWorkgroupRoleDialog: FC<AddWorkgroupRoleDialogProps> = ({
   open,
   setOpen,
   userId,
   userWorkgroups,
   setUserWorkgroups,
 }) => {
-  const { workgroups, setWorkgroups } = useContext(WorkgroupAdministrationContext);
+  const { data: workgroups } = useWorkgroups();
   const { callApiWithRollback } = useApiRequest();
 
   const addRoleToExistingWorkgroup = (workgroupId: number, role: Role) => {
@@ -38,7 +37,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
   };
 
   const addNewWorkgroupToUser = (workgroupId: number, role: Role) => {
-    const newWorkgroup = workgroups.find(wgp => wgp.id === workgroupId);
+    const newWorkgroup = workgroups?.find(wgp => wgp.id === workgroupId);
     if (newWorkgroup) {
       newWorkgroup.roles = [role];
       setUserWorkgroups([...userWorkgroups, newWorkgroup]);
@@ -64,15 +63,15 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({
     await callApiWithRollback(setWorkgroupRole, [userId, workgroupId, role, true], rollback);
   };
 
+  if (!workgroups) return;
   return (
     <RoleAssignmentDialog<Workgroup>
       open={open}
       setOpen={setOpen}
-      fetchFunction={fetchWorkgroups}
+      entityQueryKey={workgroupQueryKey}
       addEntity={addWorkgroup}
       entityType={EntityType.workgroup}
       entities={workgroups}
-      setEntities={setWorkgroups}
     />
   );
 };

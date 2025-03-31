@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2 } from "lucide-react";
-import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2.js";
+import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2.ts";
 import { CopyButton, DeleteButton } from "../../../../../../../components/buttons/buttons";
 import { PromptContext } from "../../../../../../../components/prompt/promptContext";
 import * as Styled from "./styles.js";

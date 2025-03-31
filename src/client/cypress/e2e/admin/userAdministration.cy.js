@@ -266,10 +266,9 @@ describe("User administration settings tests", () => {
     cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
     cy.get('[aria-label="Close"]').click(); // close alert
 
-    // verify user detail page still visible
     cy.location().should(location => {
-      expect(location.pathname).to.eq("/setting/user/7");
+      expect(location.pathname).to.eq("/setting");
+      expect(location.hash).to.eq("#users");
     });
-    cy.contains("U. be_deleted");
   });
 });

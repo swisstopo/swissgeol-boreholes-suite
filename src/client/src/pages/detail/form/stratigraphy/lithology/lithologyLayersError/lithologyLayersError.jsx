@@ -4,7 +4,7 @@ import { FormControl } from "@mui/base";
 import { FormControlLabel, IconButton, Radio, RadioGroup } from "@mui/material";
 import { Check, TriangleAlert, Wrench } from "lucide-react";
 import { deleteLayer, gapLayer } from "../../../../../../api-lib";
-import { addBedrock, fetchLayerById } from "../../../../../../api/fetchApiV2.js";
+import { addBedrock, fetchLayerById } from "../../../../../../api/fetchApiV2.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import {
   AddButton,

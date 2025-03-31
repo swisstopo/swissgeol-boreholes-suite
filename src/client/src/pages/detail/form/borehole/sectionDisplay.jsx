@@ -1,5 +1,5 @@
 import { Divider } from "@mui/material";
-import { deleteSection, useDomains } from "../../../../api/fetchApiV2.js";
+import { deleteSection, useDomains } from "../../../../api/fetchApiV2.ts";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 

@@ -3,11 +3,12 @@ import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
 import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
+import { useQueryClient } from "@tanstack/react-query";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
-import { fetchUsers, updateUser } from "../../../api/user.ts";
+import { usersQueryKey, useUserMutations, useUsers } from "../../../api/user.ts";
 import { Table } from "../../../components/table/table.tsx";
-import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { useDeleteUserPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
+import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.ts";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
@@ -15,35 +16,32 @@ export const UserAdministration: FC = () => {
   const { t } = useTranslation();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const history = useHistory();
-  const { callApiWithErrorHandling, callApiWithRollback } = useApiRequest();
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
-  const { users, setUsers, setSelectedUser, userTableSortModel, setUserTableSortModel } =
-    useContext(UserAdministrationContext);
-  const { showDeleteUserWarning } = useDeleteUserPrompts(setSelectedUser, users, setUsers);
+  const { setSelectedUser, userTableSortModel, setUserTableSortModel } = useContext(UserAdministrationContext);
+  const { data: users } = useUsers();
+  const queryClient = useQueryClient();
+  const { showDeleteUserWarning } = useDeleteUserPrompts();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
+  const {
+    update: { mutate: update, isError: isUpdateError, error: updateError },
+  } = useUserMutations();
 
   useEffect(() => {
     setSelectedUser(null);
-    const getUsers = async () => {
-      const users: User[] = await callApiWithErrorHandling(fetchUsers, []);
-      setUsers(users);
-    };
-    getUsers();
-  }, [callApiWithErrorHandling, setSelectedUser, setUsers, t]);
+  }, [setSelectedUser]);
+
+  useShowAlertOnError(isUpdateError, updateError);
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
     const handleCheckBoxClick = async (event: ChangeEvent<HTMLInputElement>, id: number) => {
       event.stopPropagation();
-      const user = users.find(user => user.id === id);
+      const user = users?.find(user => user.id === id);
       if (user) {
-        // Define rollback function to revert the state if the API call fails
-        const rollback = () => setUsers([...users]);
-
-        // Optimistically update the user in the state
+        queryClient.invalidateQueries({
+          queryKey: [usersQueryKey],
+        });
         const updatedUser = { ...user, isAdmin: event.target.checked };
-        setUsers([...users.map(user => (user.id === id ? updatedUser : user))]);
-
-        await callApiWithRollback(updateUser, [updatedUser], rollback);
+        update(updatedUser);
       }
     };
 
@@ -112,7 +110,7 @@ export const UserAdministration: FC = () => {
 
   const handleDeleteUser = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
-    const user = users.find(user => user.id === id);
+    const user = users?.find(user => user.id === id);
     showDeleteUserWarning(user);
   };
 
@@ -142,6 +140,7 @@ export const UserAdministration: FC = () => {
     getDeleteColumn(handleDeleteUser),
   ];
 
+  if (!users) return;
   return (
     <Table<User>
       rows={users}

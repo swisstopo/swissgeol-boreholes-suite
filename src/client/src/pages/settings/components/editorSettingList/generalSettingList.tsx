@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, Checkbox } from "@mui/material";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { useDomains } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { Codelist } from "../../../../components/Codelist.ts";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";

@@ -10,45 +10,37 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { EntityType, Role, User, Workgroup } from "../../../../api/apiInterfaces.ts";
 import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
-import { useApiRequest } from "../../../../hooks/useApiRequest.ts";
 
 interface RoleAssignmentDialogProps<T> {
   open: boolean;
   setOpen: (open: boolean) => void;
-  fetchFunction: () => Promise<T[]>;
   addEntity: (id: string, role: Role) => Promise<void>;
   entityType: EntityType;
   entities: T[];
-  setEntities: (entities: T[]) => void;
+  entityQueryKey: string;
 }
 
 export const RoleAssignmentDialog = <T,>({
   open,
   setOpen,
-  fetchFunction,
   addEntity,
   entityType,
   entities,
-  setEntities,
+  entityQueryKey,
 }: RoleAssignmentDialogProps<T>) => {
   const { t } = useTranslation();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [role, setRole] = useState<Role | null>(null);
-  const { callApiWithErrorHandling } = useApiRequest();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    const getEntities = async () => {
-      const results: T[] = await callApiWithErrorHandling(fetchFunction, []);
-      if (!results) {
-        setOpen(false);
-      } else {
-        setEntities(results);
-      }
-    };
-    getEntities();
-  }, [callApiWithErrorHandling, setOpen, setEntities, fetchFunction]);
+    queryClient.invalidateQueries({
+      queryKey: [entityQueryKey],
+    });
+  }, [entityQueryKey, queryClient]);
 
   const resetDialog = () => {
     setOpen(false);

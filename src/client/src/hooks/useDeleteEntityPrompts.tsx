@@ -2,22 +2,21 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
+import { UseMutateFunction, useQueryClient } from "@tanstack/react-query";
 import { User, Workgroup } from "../api/apiInterfaces.ts";
-import { deleteUser } from "../api/user.ts";
-import { deleteWorkgroup } from "../api/workgroup.ts";
+import { usersQueryKey, useUserMutations } from "../api/user.ts";
+import { useWorkgroupMutations, workgroupQueryKey } from "../api/workgroup.ts";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
-import { useApiRequest } from "./useApiRequest.ts";
+import { useShowAlertOnError } from "./useShowAlertOnError.ts";
 
-export const useDeleteEntityPrompts = <T extends User | Workgroup>(
-  deleteEntity: (id: number) => Promise<void>,
-  setSelectedEntity: (entity: T | null) => void,
-  entities: T[],
-  setEntities: (entities: T[]) => void,
+export const useDeleteEntityPrompts = (
+  deleteEntity: UseMutateFunction<unknown, unknown, number>,
+  entityQueryKey: string,
 ) => {
   const history = useHistory();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
-  const { callApiWithRollback } = useApiRequest();
+  const queryClient = useQueryClient();
 
   // Type guard for User
   function isUser(entity: User | Workgroup): entity is User {
@@ -52,22 +51,17 @@ export const useDeleteEntityPrompts = <T extends User | Workgroup>(
   };
 
   const deleteEntityWithRollback = async (entity: User | Workgroup) => {
-    const rollback = () => {
-      setSelectedEntity({ ...entity } as T);
-      const getReturnUrl = () => {
-        if (isUser(entity)) {
-          return `/setting/user/${entity.id}`;
-        } else if (isWorkgroup(entity)) {
-          return `/setting/workgroup/${entity.id}`;
-        } else return `/setting`;
-      };
-      history.push(getReturnUrl());
-    };
+    queryClient.invalidateQueries({
+      queryKey: [entityQueryKey],
+    });
 
-    setEntities(entities.filter(e => e.id !== entity.id));
-    history.push(`/setting#${entity.name}s`);
+    if (isUser(entity)) {
+      history.push(`/setting#users`);
+    } else if (isWorkgroup(entity)) {
+      history.push(`/setting#workgroups`);
+    } else return `/setting`;
 
-    await callApiWithRollback(deleteEntity, [entity.id], rollback);
+    deleteEntity(entity.id);
   };
 
   const isEntityDeletable = (entity: User | Workgroup) => {
@@ -117,31 +111,25 @@ export const useDeleteEntityPrompts = <T extends User | Workgroup>(
   return { showDeleteEntityWarning };
 };
 
-export const useDeleteWorkgroupPrompts = (
-  setSelectedWorkgroup: (arg: Workgroup | null) => void,
-  workgroups: Workgroup[],
-  setWorkgroups: (arg: Workgroup[]) => void,
-) => {
+export const useDeleteWorkgroupPrompts = () => {
+  const {
+    delete: { mutate: deleteWorkgroup, isError, error },
+  } = useWorkgroupMutations();
+  useShowAlertOnError(isError, error);
+
   const { showDeleteEntityWarning: showDeleteWorkgroupWarning } = useDeleteEntityPrompts(
     deleteWorkgroup,
-    setSelectedWorkgroup,
-    workgroups,
-    setWorkgroups,
+    workgroupQueryKey,
   );
 
   return { showDeleteWorkgroupWarning };
 };
 
-export const useDeleteUserPrompts = (
-  setSelectedUser: (arg: User | null) => void,
-  users: User[],
-  setUsers: (arg: User[]) => void,
-) => {
-  const { showDeleteEntityWarning: showDeleteUserWarning } = useDeleteEntityPrompts(
-    deleteUser,
-    setSelectedUser,
-    users,
-    setUsers,
-  );
+export const useDeleteUserPrompts = () => {
+  const {
+    delete: { mutate: deleteUser, isError, error },
+  } = useUserMutations();
+  useShowAlertOnError(isError, error);
+  const { showDeleteEntityWarning: showDeleteUserWarning } = useDeleteEntityPrompts(deleteUser, usersQueryKey);
   return { showDeleteUserWarning };
 };

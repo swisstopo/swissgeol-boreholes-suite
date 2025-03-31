@@ -1,5 +1,5 @@
-import { useQuery } from "react-query";
-import { fetchApiV2 } from "../../../../../api/fetchApiV2";
+import { useQuery } from "@tanstack/react-query";
+import { fetchApiV2 } from "../../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../../components/Codelist.ts";
 import { Observation, ObservationType } from "../Observation.ts";
 
@@ -54,14 +54,12 @@ export const useHydrotestDomains = (testKindIds: number[]) => {
     queryString += `testKindIds=${id}&`;
   });
 
-  return useQuery(
-    ["domains", queryString],
-    async () => {
+  return useQuery({
+    queryKey: ["domains", queryString],
+    queryFn: async () => {
       return await fetchApiV2(`codelist?${queryString}`, "GET");
     },
-    {
-      staleTime: 10 * (60 * 1000), // 10 mins
-      cacheTime: 15 * (60 * 1000), // 15 mins
-    },
-  );
+    staleTime: 10 * (60 * 1000), // 10 mins
+    gcTime: 15 * (60 * 1000), // 15 mins
+  });
 };

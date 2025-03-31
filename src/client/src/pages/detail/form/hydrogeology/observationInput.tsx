@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
+import { Casing } from "../../../../api/apiInterfaces.ts";
 import { getBoreholeGeometryDepthMasl, getCasingsByBoreholeId } from "../../../../api/fetchApiV2.js";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
@@ -14,7 +15,7 @@ import { ObservationDepthUnitType, ObservationInputProps } from "./Observation.t
 const ObservationInput = ({ observation, showDepthInputs = true }: ObservationInputProps) => {
   const { t } = useTranslation();
   const { setValue: setFormValue } = useFormContext();
-  const [casings, setCasings] = useState([]);
+  const [casings, setCasings] = useState<Casing[]>([]);
   const { id: boreholeId } = useParams<{ id: string }>();
   const getCasingOptions = useGetCasingOptions();
 
@@ -34,7 +35,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
 
   useEffect(() => {
     if (boreholeId) {
-      getCasingsByBoreholeId(boreholeId).then(casings => {
+      getCasingsByBoreholeId(Number(boreholeId)).then(casings => {
         setCasings(casings);
       });
     }
@@ -56,7 +57,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
         if (depthMD == null) {
           return null;
         } else {
-          const response = await getBoreholeGeometryDepthMasl(boreholeId, depthMD);
+          const response = await getBoreholeGeometryDepthMasl(Number(boreholeId), depthMD);
           return response ?? null;
         }
       };

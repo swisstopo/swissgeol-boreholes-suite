@@ -1,4 +1,4 @@
-import { getInstrumentation } from "../../../../api/fetchApiV2.js";
+import { getInstrumentation } from "../../../../api/fetchApiV2.ts";
 import DataCards from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
 import InstrumentationDisplay from "./instrumentationDisplay.jsx";
