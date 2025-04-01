@@ -118,7 +118,7 @@ export const boreholeSearchData = [
   },
   {
     id: 31,
-    type: "Domain",
+    type: "Dropdown",
     label: "lithology_top_bedrock",
     value: "lithology_top_bedrock",
     schema: "custom.lithology_top_bedrock",
@@ -126,7 +126,7 @@ export const boreholeSearchData = [
   },
   {
     id: 32,
-    type: "Domain",
+    type: "Dropdown",
     label: "lithostratigraphy_top_bedrock",
     value: "lithostratigraphy_top_bedrock",
     schema: "custom.lithostratigraphy_top_bedrock",
@@ -141,7 +141,7 @@ export const boreholeSearchData = [
   },
   {
     id: 33,
-    type: "Domain",
+    type: "Dropdown",
     label: "chronostratigraphy_top_bedrock",
     value: "chronostratigraphy_top_bedrock",
     schema: "custom.chronostratigraphy_top_bedrock",

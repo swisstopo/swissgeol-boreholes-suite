@@ -55,7 +55,7 @@ export const lithologySearchData = [
   },
   {
     id: 5,
-    type: "Domain",
+    type: "Dropdown",
     label: "lithology",
     value: "lithology",
     schema: "custom.lithology_top_bedrock",
