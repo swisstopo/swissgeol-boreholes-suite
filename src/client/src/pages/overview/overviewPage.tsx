@@ -30,8 +30,6 @@ export const OverviewPage = () => {
     setSideDrawerOpen(open);
   };
 
-  console.log("rerender overview");
-
   const sideDrawerComponentMap = {
     filters: (
       <FormProvider {...formMethods}>
