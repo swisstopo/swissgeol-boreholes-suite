@@ -2,7 +2,7 @@ import { forwardRef, useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Box, Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
-import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.js";
+import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.ts";
 import {
   FormBooleanSelect,
   FormContainer,
