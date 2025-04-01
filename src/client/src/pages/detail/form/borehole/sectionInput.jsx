@@ -78,12 +78,14 @@ const SectionInput = ({ item, parentId }) => {
 
   // define methods for data submission
   const prepareFormDataForSubmit = data => {
+    const parseValueIfNotNull = value => (value ? parseFloatWithThousandsSeparator(String(value)) : null);
+    data.totalDepth = parseValueIfNotNull(data?.totalDepth);
     data.sectionElements = data.sectionElements.map((element, i) => {
       element.order = i;
-      element.fromDepth = parseFloatWithThousandsSeparator(element.fromDepth);
-      element.toDepth = parseFloatWithThousandsSeparator(element.toDepth);
-      element.drillingDiameter = parseFloatWithThousandsSeparator(element.drillingDiameter);
-      element.drillingCoreDiameter = parseFloatWithThousandsSeparator(element.drillingCoreDiameter);
+      element.fromDepth = parseValueIfNotNull(element.fromDepth);
+      element.toDepth = parseValueIfNotNull(element.toDepth);
+      element.drillingDiameter = parseValueIfNotNull(element.drillingDiameter);
+      element.drillingCoreDiameter = parseValueIfNotNull(element.drillingCoreDiameter);
       return Object.fromEntries(Object.entries(element).map(([k, v]) => [k, v === "" ? null : v]));
     });
     data.boreholeId = parentId;
