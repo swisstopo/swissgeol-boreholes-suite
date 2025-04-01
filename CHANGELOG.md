@@ -8,7 +8,7 @@
 ### Changed
 - The text extraction button is now disabled when the text extraction is in progress.
 - Update legal links in disclaimer for all languages.
-- Number inputs in the borehole sections and layer descriptions are now displayed with thousand separators.
+- Number inputs in the borehole sections, hydrogeology, completion and layer descriptions are now displayed with thousand separators.
 
 ### Fixed
 - When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard changes button.
