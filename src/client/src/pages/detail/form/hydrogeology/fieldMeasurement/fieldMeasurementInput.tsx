@@ -8,8 +8,9 @@ import { AddButton } from "../../../../../components/buttons/buttons.tsx";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard/saveAndCancelButtons.tsx";
 import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
-import { FormContainer, FormInput, FormValueType } from "../../../../../components/form/form.js";
+import { FormContainer, FormInput } from "../../../../../components/form/form.js";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.js";
+import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
@@ -91,7 +92,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
           id: r.id,
           sampleTypeId: r.sampleTypeId,
           parameterId: r.parameterId,
-          value: r.value,
+          value: parseFloatWithThousandsSeparator(r.value),
         };
       });
     }
@@ -145,7 +146,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
                   fieldName={`fieldMeasurementResults.${index}.value`}
                   label="value"
                   value={field.value}
-                  type={FormValueType.Number}
+                  withThousandSeparator={true}
                   required={true}
                   inputProps={{
                     endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
