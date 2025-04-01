@@ -10,6 +10,7 @@
 - Update legal links in disclaimer for all languages.
 - Number inputs in the borehole sections and layer descriptions are now displayed with thousand separators.
 - Bump data extraction API version to v1.0.30.
+- Inputs in filters now have the new UI style.
 
 ### Fixed
 - When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard changes button.
