@@ -11,6 +11,7 @@ import { DataCardContext } from "../../../../components/dataCard/dataCardContext
 import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
@@ -77,8 +78,17 @@ const SectionInput = ({ item, parentId }) => {
 
   // define methods for data submission
   const prepareFormDataForSubmit = data => {
+    const parseValueIfNotNull = value => {
+      if (value === "0" || value === 0) return 0;
+      if (!value) return null;
+      return parseFloatWithThousandsSeparator(String(value));
+    };
     data.sectionElements = data.sectionElements.map((element, i) => {
       element.order = i;
+      element.fromDepth = parseValueIfNotNull(element.fromDepth);
+      element.toDepth = parseValueIfNotNull(element.toDepth);
+      element.drillingDiameter = parseValueIfNotNull(element.drillingDiameter);
+      element.drillingCoreDiameter = parseValueIfNotNull(element.drillingCoreDiameter);
       return Object.fromEntries(Object.entries(element).map(([k, v]) => [k, v === "" ? null : v]));
     });
     data.boreholeId = parentId;
@@ -140,14 +150,14 @@ const SectionInput = ({ item, parentId }) => {
                         fieldName={`sectionElements.${index}.fromDepth`}
                         label="fromdepth"
                         value={field.fromDepth}
-                        type={FormValueType.Number}
+                        withThousandSeparator={true}
                         required={true}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.toDepth`}
                         label="todepth"
                         value={field.toDepth}
-                        type={FormValueType.Number}
+                        withThousandSeparator={true}
                         required={true}
                       />
                     </FormContainer>
@@ -214,13 +224,13 @@ const SectionInput = ({ item, parentId }) => {
                         fieldName={`sectionElements.${index}.drillingDiameter`}
                         label="drill_diameter"
                         value={field.drillingDiameter}
-                        type={FormValueType.Number}
+                        withThousandSeparator={true}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingCoreDiameter`}
                         label="drill_core_diameter"
                         value={field.drillingCoreDiameter}
-                        type={FormValueType.Number}
+                        withThousandSeparator={true}
                       />
                     </FormContainer>
                     <FormContainer direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
