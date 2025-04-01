@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { addInstrumentation, getCasings, updateInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
-import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormSelect } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants.js";
 
@@ -12,6 +13,8 @@ const InstrumentationInput = ({ item, parentId }) => {
 
   const prepareFormDataForSubmit = data => {
     data = prepareCasingDataForSubmit(data);
+    data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth);
+    data.toDepth = parseFloatWithThousandsSeparator(data.toDepth);
     data.completionId = parentId;
     return data;
   };
@@ -36,14 +39,14 @@ const InstrumentationInput = ({ item, parentId }) => {
           fieldName="fromDepth"
           label="fromdepth"
           value={item.fromDepth}
-          type={FormValueType.Number}
+          withThousandSeparator={true}
           required={true}
         />
         <FormInput
           fieldName="toDepth"
           label="todepth"
           value={item.toDepth}
-          type={FormValueType.Number}
+          withThousandSeparator={true}
           required={true}
         />
       </FormContainer>
