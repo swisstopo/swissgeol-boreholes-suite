@@ -10,7 +10,7 @@ import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/sa
 import { useUnsavedChangesPrompt } from "../../../../components/dataCard/useUnsavedChangesPrompt.js";
 import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
+import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { extractCasingDepth } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants";
@@ -78,11 +78,10 @@ const CasingInput = props => {
   };
 
   const updateDepth = () => {
-    var depths = extractCasingDepth(formMethods.getValues());
-
+    const depths = extractCasingDepth(formMethods.getValues());
     if (depths.min !== formMethods.getValues()["fromDepth"] || depths.max !== formMethods.getValues()["toDepth"]) {
-      formMethods.setValue("fromDepth", depths.min || 0);
-      formMethods.setValue("toDepth", depths.max || 0);
+      formMethods.setValue("fromDepth", formatNumberForDisplay(depths.min));
+      formMethods.setValue("toDepth", formatNumberForDisplay(depths.max));
     }
   };
 
@@ -122,20 +121,8 @@ const CasingInput = props => {
           <FormContainer>
             <FormInput fieldName="name" label="name" value={item.name} required={true} />
             <FormContainer direction="row">
-              <FormInput
-                fieldName="fromDepth"
-                label="fromdepth"
-                value={item.fromDepth}
-                withThousandSeparator={true}
-                disabled={true}
-              />
-              <FormInput
-                fieldName="toDepth"
-                label="todepth"
-                value={item.toDepth}
-                withThousandSeparator={true}
-                disabled={true}
-              />
+              <FormInput fieldName="fromDepth" label="fromdepth" disabled={true} />
+              <FormInput fieldName="toDepth" label="todepth" disabled={true} />
             </FormContainer>
             <FormContainer direction="row">
               <FormInput
