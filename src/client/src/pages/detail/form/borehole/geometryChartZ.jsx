@@ -85,14 +85,13 @@ const GeometryChartZ = ({ data, paddingTop = 35 }) => {
     thousands: "'",
     grouping: [3],
   });
-
   useEffect(() => {
     d3.select(axisXRef.current).call(d3.axisBottom(x).tickFormat(numberFormatLocale.format(",.0f")));
-  }, [axisXRef, x]);
+  }, [axisXRef, x, numberFormatLocale]);
 
   useEffect(() => {
     d3.select(axisYRef.current).call(d3.axisLeft(y).tickFormat(numberFormatLocale.format(",.0f")));
-  }, [axisYRef, y]);
+  }, [axisYRef, y, numberFormatLocale]);
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`}>
