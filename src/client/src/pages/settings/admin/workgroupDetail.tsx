@@ -1,49 +1,38 @@
 import { FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
-import { User, Workgroup, WorkgroupRole } from "../../../api/apiInterfaces.ts";
+import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { useUsers } from "../../../api/user.ts";
-import { fetchWorkgroupById, removeAllWorkgroupRolesForUser } from "../../../api/workgroup.ts";
+import { useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { FormInputDisplayOnly } from "../../../components/form/form.ts";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
-import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { AddUserDialog } from "./dialogs/addUserDialog.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
 export const WorkgroupDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { callApiWithRollback, callApiWithErrorHandling } = useApiRequest();
-  const history = useHistory();
   const { t } = useTranslation();
   const [workgroupUsers, setWorkgroupUsers] = useState<User[]>();
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { data: users } = useUsers();
   const [userDialogOpen, setUserDialogOpen] = useState(false);
 
-  const { selectedWorkgroup, setSelectedWorkgroup, workgroupDetailTableSortModel, setWorkgroupDetailTableSortModel } =
+  const { workgroupDetailTableSortModel, setWorkgroupDetailTableSortModel } =
     useContext(WorkgroupAdministrationContext);
+  const { data: selectedWorkgroup } = useSelectedWorkgroup(parseInt(id));
+  const {
+    removeAllRoles: { mutate: removeAllWorkgroupRolesForUser },
+  } = useWorkgroupMutations();
   const { showPrompt } = useContext(PromptContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
-
-  useEffect(() => {
-    const getWorkgroup = async () => {
-      const workgroup: Workgroup = await callApiWithErrorHandling(fetchWorkgroupById, [parseInt(id)]);
-      if (!workgroup) {
-        history.push("/setting#workgroups");
-      } else {
-        setSelectedWorkgroup(workgroup);
-      }
-    };
-    getWorkgroup();
-  }, [callApiWithErrorHandling, history, id, setSelectedWorkgroup]);
 
   useEffect(() => {
     if (users) {
@@ -70,27 +59,15 @@ export const WorkgroupDetail: FC = () => {
         icon: <Trash2 />,
         variant: "contained",
         action: () => {
-          removeAllWorkgroupRolesWithRollback(user);
+          if (!selectedWorkgroup || !user?.workgroupRoles || user.workgroupRoles.length <= 0) return;
+          removeAllWorkgroupRolesForUser({
+            userId: user.id,
+            workgroupId: selectedWorkgroup.id,
+            roles: user.workgroupRoles?.map(r => r.role),
+          });
         },
       },
     ]);
-  };
-
-  const removeAllWorkgroupRolesWithRollback = async (user: User) => {
-    // Define rollback function to revert the state if the API call fails
-    const rollback = () => {
-      setWorkgroupUsers([...workgroupUsers!]);
-    };
-
-    // Optimistically update the workgroup table
-    setWorkgroupUsers([...workgroupUsers!.filter(usr => usr.id != user.id)]);
-
-    if (!selectedWorkgroup) return;
-    await callApiWithRollback(
-      removeAllWorkgroupRolesForUser,
-      [user.id, selectedWorkgroup.id, user.workgroupRoles?.map(r => r.role) ?? []],
-      rollback,
-    );
   };
 
   const addUser = () => {
@@ -175,8 +152,6 @@ export const WorkgroupDetail: FC = () => {
         open={userDialogOpen}
         setOpen={setUserDialogOpen}
         workgroupId={parseInt(id)} //
-        setWorkgroupUsers={setWorkgroupUsers}
-        workgroupUsers={workgroupUsers ?? []}
       />
     </Stack>
   );
