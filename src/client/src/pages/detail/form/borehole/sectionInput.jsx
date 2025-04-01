@@ -79,7 +79,7 @@ const SectionInput = ({ item, parentId }) => {
   // define methods for data submission
   const prepareFormDataForSubmit = data => {
     const parseValueIfNotNull = value => {
-      if (value === "0") return 0;
+      if (value === "0" || value === 0) return 0;
       if (!value) return null;
       return parseFloatWithThousandsSeparator(String(value));
     };
