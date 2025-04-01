@@ -92,7 +92,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
           item =>
             (item.isVisible || isVisibleFunction(item.isVisibleValue) || showAllActiveFields[inputConfig?.name]) && (
               <Box key={item.value}>
-                <FormContainer mt={item?.label ? 1 : -4}>
+                <FormContainer mt={item?.label ? -0.5 : -4}>
                   {item.type === "Input" && (
                     <TextField
                       label={item?.label && t(item.label)}
@@ -122,7 +122,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
                     <FormInput
                       readonly={false}
                       fieldName={item?.value}
-                      label={item?.label ?? ""}
+                      label={item?.label ? `${item.label}_filter_title` : ""}
                       placeholder={item?.placeholder}
                       type={FormValueType.Date}
                       onUpdate={value => {
