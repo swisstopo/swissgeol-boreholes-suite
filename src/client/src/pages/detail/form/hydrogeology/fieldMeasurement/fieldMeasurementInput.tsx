@@ -12,9 +12,8 @@ import { FormContainer, FormInput, FormValueType } from "../../../../../componen
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.js";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
-import { getIsoDateIfDefined } from "../hydrogeologyFormUtils.ts";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
-import { ObservationType } from "../Observation.ts";
+import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
 import ObservationInput from "../observationInput.tsx";
 import { getFieldMeasurementParameterUnits } from "../parameterUnits.js";
 import {
@@ -83,15 +82,8 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
 
   const prepareFormDataForSubmit = (data: FieldMeasurement) => {
     data = prepareCasingDataForSubmit(data);
-    data.startTime = getIsoDateIfDefined(data?.startTime);
-    data.endTime = getIsoDateIfDefined(data?.endTime);
+    data = prepareObservationDataForSubmit(data, parentId);
     data.type = ObservationType.fieldMeasurement;
-    data.boreholeId = parentId;
-
-    if (data.reliabilityId === "") {
-      data.reliabilityId = null;
-    }
-    delete data.reliability;
 
     if (data.fieldMeasurementResults) {
       data.fieldMeasurementResults = data.fieldMeasurementResults.map(r => {

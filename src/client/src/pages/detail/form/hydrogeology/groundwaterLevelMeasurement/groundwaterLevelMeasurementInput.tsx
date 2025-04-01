@@ -3,9 +3,8 @@ import DataInputCard from "../../../../../components/dataCard/dataInputCard.js";
 import { FormContainer, FormInput, FormValueType } from "../../../../../components/form/form.ts";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
-import { getIsoDateIfDefined } from "../hydrogeologyFormUtils.ts";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
-import { ObservationType } from "../Observation.ts";
+import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
 import ObservationInput from "../observationInput.tsx";
 import {
   addGroundwaterLevelMeasurement,
@@ -19,18 +18,12 @@ const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; 
 }) => {
   const prepareFormDataForSubmit = (data: GroundwaterLevelMeasurement) => {
     data = prepareCasingDataForSubmit(data);
-    data.startTime = getIsoDateIfDefined(data?.startTime);
-    data.endTime = getIsoDateIfDefined(data?.endTime);
+    data = prepareObservationDataForSubmit(data, parentId);
     data.type = ObservationType.groundwaterLevelMeasurement;
-    data.boreholeId = parentId;
 
     if (data.casingId == null) {
       data.casingId = item.casingId;
     }
-    if (data.reliabilityId === "") {
-      data.reliabilityId = null;
-    }
-    delete data.reliability;
 
     return data;
   };
