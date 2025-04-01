@@ -10,6 +10,7 @@ import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/sa
 import { useUnsavedChangesPrompt } from "../../../../components/dataCard/useUnsavedChangesPrompt.js";
 import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { extractCasingDepth } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants";
@@ -41,12 +42,17 @@ const CasingInput = props => {
     if (data?.dateFinish === "") {
       data.dateFinish = null;
     }
+    data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth);
+    data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth);
+
     data.casingElements = data.casingElements.map(element => {
       return {
         ...element,
         materialId: element.materialId === "" ? null : element.materialId,
-        innerDiameter: element.innerDiameter === "" ? null : element.innerDiameter,
-        outerDiameter: element.outerDiameter === "" ? null : element.outerDiameter,
+        innerDiameter: parseFloatWithThousandsSeparator(element.innerDiameter),
+        outerDiameter: parseFloatWithThousandsSeparator(element.outerDiameter),
+        fromDepth: parseFloatWithThousandsSeparator(element.fromDepth),
+        toDepth: parseFloatWithThousandsSeparator(element.toDepth),
       };
     });
     data.completionId = parentId;
@@ -120,14 +126,14 @@ const CasingInput = props => {
                 fieldName="fromDepth"
                 label="fromdepth"
                 value={item.fromDepth}
-                type={FormValueType.Number}
+                withThousandSeparator={true}
                 disabled={true}
               />
               <FormInput
                 fieldName="toDepth"
                 label="todepth"
                 value={item.toDepth}
-                type={FormValueType.Number}
+                withThousandSeparator={true}
                 disabled={true}
               />
             </FormContainer>
@@ -174,7 +180,7 @@ const CasingInput = props => {
                             fieldName={`casingElements.${index}.fromDepth`}
                             label="fromdepth"
                             value={field.fromDepth}
-                            type={FormValueType.Number}
+                            withThousandSeparator={true}
                             required={true}
                             onUpdate={updateDepth}
                           />
@@ -182,7 +188,7 @@ const CasingInput = props => {
                             fieldName={`casingElements.${index}.toDepth`}
                             label="todepth"
                             value={field.toDepth}
-                            type={FormValueType.Number}
+                            withThousandSeparator={true}
                             required={true}
                             onUpdate={updateDepth}
                           />
@@ -205,13 +211,13 @@ const CasingInput = props => {
                             fieldName={`casingElements.${index}.innerDiameter`}
                             label="casingInnerDiameter"
                             value={field.innerDiameter}
-                            type={FormValueType.Number}
+                            withThousandSeparator={true}
                           />
                           <FormInput
                             fieldName={`casingElements.${index}.outerDiameter`}
                             label="casingOuterDiameter"
                             value={field.outerDiameter}
-                            type={FormValueType.Number}
+                            withThousandSeparator={true}
                           />
                         </FormContainer>
                       </FormContainer>
