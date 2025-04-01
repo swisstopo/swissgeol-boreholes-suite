@@ -14,6 +14,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace BDMS.Controllers;
 
@@ -38,6 +39,10 @@ public class ExportController : ControllerBase
         WriteIndented = true,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
         Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
+        TypeInfoResolver = new DefaultJsonTypeInfoResolver
+        {
+            Modifiers = { JsonExportHelper.RequireIncludeInExportAttribute },
+        },
     };
 
     public ExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService, ILogger<ExportController> logger, IBoreholeLockService boreholeLockService)
