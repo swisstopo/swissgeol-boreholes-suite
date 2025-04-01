@@ -43,7 +43,7 @@ const CasingInput = props => {
       data.dateFinish = null;
     }
     data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth);
-    data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth);
+    data.toDepth = parseFloatWithThousandsSeparator(data.toDepth);
 
     data.casingElements = data.casingElements.map(element => {
       return {
