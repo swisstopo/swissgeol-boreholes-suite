@@ -13,6 +13,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { formatNumberForDisplay } from "../../../../components/form/formUtils.js";
+import { NumericFormatWithThousandSeparator } from "../../../../components/form/numericFormatWithThousandSeparator.js";
 import { DetailContext } from "../../detailContext.tsx";
 
 const State = Object.freeze({
@@ -185,13 +187,16 @@ const LayerCard = ({
         right: "0",
       }}>
       {[State.DISPLAY, State.EDITABLE].includes(cardState) && height >= minPixelHeightForDepthLabels && (
-        <Typography>{layer?.fromDepth ?? "-"} m MD</Typography>
+        <Typography>{formatNumberForDisplay(layer?.fromDepth) ?? "-"} m MD</Typography>
       )}
       {State.EDITING === cardState && (
         <TextField
           sx={{ margin: "0.8rem 0" }}
           label={t("fromdepth")}
           defaultValue={fromDepth ?? layer.fromDepth}
+          InputProps={{
+            inputComponent: NumericFormatWithThousandSeparator,
+          }}
           error={!!fromDepthErrorMessage}
           helperText={fromDepthErrorMessage}
           onBlur={e => handleFromDepth(e.target.value)}
@@ -246,13 +251,16 @@ const LayerCard = ({
         bottom: "0",
       }}>
       {[State.DISPLAY, State.EDITABLE].includes(cardState) && height >= minPixelHeightForDepthLabels && (
-        <Typography>{layer?.toDepth ?? "-"} m MD</Typography>
+        <Typography>{formatNumberForDisplay(layer?.toDepth) ?? "-"} m MD</Typography>
       )}
       {State.EDITING === cardState && (
         <TextField
           sx={{ margin: "0.8rem 0" }}
           label={t("todepth")}
           defaultValue={toDepth ?? layer.toDepth}
+          InputProps={{
+            inputComponent: NumericFormatWithThousandSeparator,
+          }}
           error={!!toDepthErrorMessage}
           helperText={toDepthErrorMessage}
           onBlur={e => handleToDepth(e.target.value)}
