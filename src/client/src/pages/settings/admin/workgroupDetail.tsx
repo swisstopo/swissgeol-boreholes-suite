@@ -6,20 +6,18 @@ import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-g
 import { Trash2, X } from "lucide-react";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { useUsers } from "../../../api/user.ts";
-import { removeAllWorkgroupRolesForUser, useSelectedWorkgroup } from "../../../api/workgroup.ts";
+import { useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { FormInputDisplayOnly } from "../../../components/form/form.ts";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
-import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { AddUserDialog } from "./dialogs/addUserDialog.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
 export const WorkgroupDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { callApiWithRollback } = useApiRequest();
   const { t } = useTranslation();
   const [workgroupUsers, setWorkgroupUsers] = useState<User[]>();
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
@@ -29,6 +27,9 @@ export const WorkgroupDetail: FC = () => {
   const { workgroupDetailTableSortModel, setWorkgroupDetailTableSortModel } =
     useContext(WorkgroupAdministrationContext);
   const { data: selectedWorkgroup } = useSelectedWorkgroup(parseInt(id));
+  const {
+    removeAllRoles: { mutate: removeAllWorkgroupRolesForUser },
+  } = useWorkgroupMutations();
   const { showPrompt } = useContext(PromptContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
@@ -58,27 +59,15 @@ export const WorkgroupDetail: FC = () => {
         icon: <Trash2 />,
         variant: "contained",
         action: () => {
-          removeAllWorkgroupRolesWithRollback(user);
+          if (!selectedWorkgroup || !user?.workgroupRoles || user.workgroupRoles.length <= 0) return;
+          removeAllWorkgroupRolesForUser({
+            userId: user.id,
+            workgroupId: selectedWorkgroup.id,
+            roles: user.workgroupRoles?.map(r => r.role),
+          });
         },
       },
     ]);
-  };
-
-  const removeAllWorkgroupRolesWithRollback = async (user: User) => {
-    // Define rollback function to revert the state if the API call fails
-    const rollback = () => {
-      setWorkgroupUsers([...workgroupUsers!]);
-    };
-
-    // Optimistically update the workgroup table
-    setWorkgroupUsers([...workgroupUsers!.filter(usr => usr.id != user.id)]);
-
-    if (!selectedWorkgroup) return;
-    await callApiWithRollback(
-      removeAllWorkgroupRolesForUser,
-      [user.id, selectedWorkgroup.id, user.workgroupRoles?.map(r => r.role) ?? []],
-      rollback,
-    );
   };
 
   const addUser = () => {

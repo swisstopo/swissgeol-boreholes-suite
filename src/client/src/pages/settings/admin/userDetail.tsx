@@ -6,12 +6,11 @@ import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-g
 import { Trash2, X } from "lucide-react";
 import { User, Workgroup, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { useSelectedUser, useUserMutations } from "../../../api/user.ts";
-import { removeAllWorkgroupRolesForUser } from "../../../api/workgroup.ts";
+import { useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
-import { useApiRequest } from "../../../hooks/useApiRequest.ts";
 import { AddWorkgroupRoleDialog } from "./dialogs/addWorkgroupRoleDialog.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
@@ -25,11 +24,13 @@ export const UserDetail: FC = () => {
   const { workgroupNameColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { userDetailTableSortModel, setUserDetailTableSortModel } = useContext(UserAdministrationContext);
   const { showPrompt } = useContext(PromptContext);
-  const { callApiWithRollback } = useApiRequest();
   const { data: selectedUser } = useSelectedUser(parseInt(id));
   const {
     update: { mutate: updateUser },
   } = useUserMutations();
+  const {
+    removeAllRoles: { mutate: removeAllWorkgroupRolesForUser },
+  } = useWorkgroupMutations();
 
   const getUniqueWorkgroups = (user: User) => {
     const { workgroupRoles } = user;
@@ -89,23 +90,6 @@ export const UserDetail: FC = () => {
     );
   };
 
-  const removeAllWorkgroupRolesWithRollback = async (workgroup: Workgroup) => {
-    // Define rollback function to revert the state if the API call fails
-    const rollback = () => {
-      setUserWorkgroups([...userWorkgroups!]);
-    };
-
-    // Optimistically update the workgroup table
-    setUserWorkgroups([...userWorkgroups!.filter(wgp => wgp.id != workgroup.id)]);
-
-    if (!selectedUser) return;
-    await callApiWithRollback(
-      removeAllWorkgroupRolesForUser,
-      [selectedUser.id, workgroup.id, workgroup.roles],
-      rollback,
-    );
-  };
-
   const handleRemoveAllWorkgroupRoles = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
     if (!userWorkgroups || !selectedUser) return;
@@ -121,7 +105,12 @@ export const UserDetail: FC = () => {
         icon: <Trash2 />,
         variant: "contained",
         action: () => {
-          removeAllWorkgroupRolesWithRollback(userWorkgroup);
+          if (!selectedUser || !userWorkgroup?.roles) return;
+          removeAllWorkgroupRolesForUser({
+            userId: selectedUser.id,
+            workgroupId: userWorkgroup.id,
+            roles: userWorkgroup.roles,
+          });
         },
       },
     ]);

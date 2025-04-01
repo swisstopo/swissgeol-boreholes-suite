@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
 import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { usersQueryKey } from "./user.ts";
 
 export const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2("workgroup", "GET");
 
@@ -33,7 +34,11 @@ export const setWorkgroupRole = async (userId: number, workgroupId: number, role
   return await fetchApiV2("workgroup/setRoles", "POST", workgroupRole);
 };
 
-export const removeAllWorkgroupRolesForUser = async (userId: number, workgroupId: number, roles: Role[]) => {
+export const removeAllWorkgroupRolesForUser = async (
+  userId: number,
+  workgroupId: number,
+  roles: Role[],
+): Promise<void> => {
   const workgroupRoles: WorkgroupRole[] = [];
   for (const role of roles) {
     workgroupRoles.push({
@@ -95,6 +100,18 @@ export const useWorkgroupMutations = () => {
     },
   });
 
+  const useRemoveAllWorkgroupRoles = useMutation({
+    mutationFn: async ({ userId, workgroupId, roles }: { userId: number; workgroupId: number; roles: Role[] }) => {
+      return await removeAllWorkgroupRolesForUser(userId, workgroupId, roles);
+    },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
+      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, variables.workgroupId] });
+      queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
+      queryClient.invalidateQueries({ queryKey: [usersQueryKey, variables.userId] });
+    },
+  });
+
   const useDeleteWorkgroup = useMutation({
     mutationFn: async (workgroupId: number) => {
       return await deleteWorkgroup(workgroupId);
@@ -108,11 +125,13 @@ export const useWorkgroupMutations = () => {
 
   useShowAlertOnError(useAddWorkgroup.isError, useAddWorkgroup.error);
   useShowAlertOnError(useUpdateWorkgroup.isError, useUpdateWorkgroup.error);
+  useShowAlertOnError(useRemoveAllWorkgroupRoles.isError, useRemoveAllWorkgroupRoles.error);
   useShowAlertOnError(useDeleteWorkgroup.isError, useDeleteWorkgroup.error);
 
   return {
     add: useAddWorkgroup,
     update: useUpdateWorkgroup,
+    removeAllRoles: useRemoveAllWorkgroupRoles,
     delete: useDeleteWorkgroup,
   };
 };
