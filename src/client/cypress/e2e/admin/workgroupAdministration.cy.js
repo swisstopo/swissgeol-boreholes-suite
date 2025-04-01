@@ -69,6 +69,7 @@ describe("User administration settings tests", () => {
     setSelect("workgroup", 2); // Workgroup called "World";
     setSelect("role", 4); // "Publisher";
     getElementByDataCy("add-button").click();
+    cy.wait("@set_workgroup_roles");
     getElementByDataCy("backButton").click();
     getElementByDataCy("workgroups-tab").click();
 
@@ -96,6 +97,7 @@ describe("User administration settings tests", () => {
 
     // Admin user should have role editor in workgroup World
     getElementByDataCy("Publisher-chip").should("be.visible");
+    cy.contains("World");
 
     // Set workgroup World active
     getElementByDataCy("workgroup-detail").should("have.css", "opacity", "0.5");
@@ -133,6 +135,7 @@ describe("User administration settings tests", () => {
     verifyTableLength(7);
     verifyRowWithContentAlsoContains("Coconut", "Active");
     clickOnRowWithText("Coconut");
+    cy.contains("Coconut");
     getElementByDataCy("deleteworkgroup-button").click();
     getElementByDataCy("delete-button").click();
   });
@@ -218,6 +221,7 @@ describe("User administration settings tests", () => {
   it("displays error message when deleting workgroup fails.", () => {
     cy.intercept("DELETE", "api/v2/workgroup/2", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/workgroup/2"); // workgroup "Reggae"
+    cy.contains("Reggae");
     getElementByDataCy("deleteworkgroup-button").click();
     getElementByDataCy("delete-button").click();
     cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);

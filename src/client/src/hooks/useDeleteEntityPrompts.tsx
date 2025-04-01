@@ -7,7 +7,6 @@ import { User, Workgroup } from "../api/apiInterfaces.ts";
 import { usersQueryKey, useUserMutations } from "../api/user.ts";
 import { useWorkgroupMutations, workgroupQueryKey } from "../api/workgroup.ts";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
-import { useShowAlertOnError } from "./useShowAlertOnError.ts";
 
 export const useDeleteEntityPrompts = (
   deleteEntity: UseMutateFunction<unknown, unknown, number>,
@@ -113,9 +112,8 @@ export const useDeleteEntityPrompts = (
 
 export const useDeleteWorkgroupPrompts = () => {
   const {
-    delete: { mutate: deleteWorkgroup, isError, error },
+    delete: { mutate: deleteWorkgroup },
   } = useWorkgroupMutations();
-  useShowAlertOnError(isError, error);
 
   const { showDeleteEntityWarning: showDeleteWorkgroupWarning } = useDeleteEntityPrompts(
     deleteWorkgroup,
@@ -127,9 +125,8 @@ export const useDeleteWorkgroupPrompts = () => {
 
 export const useDeleteUserPrompts = () => {
   const {
-    delete: { mutate: deleteUser, isError, error },
+    delete: { mutate: deleteUser },
   } = useUserMutations();
-  useShowAlertOnError(isError, error);
   const { showDeleteEntityWarning: showDeleteUserWarning } = useDeleteEntityPrompts(deleteUser, usersQueryKey);
   return { showDeleteUserWarning };
 };

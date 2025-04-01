@@ -40,6 +40,7 @@ export const interceptApiCalls = () => {
   cy.intercept("PUT", "/api/v2/user").as("update-user");
   cy.intercept("GET", "/api/v2/user").as("get-user");
   cy.intercept("PUT", "/api/v2/workgroup").as("update-workgroup");
+  cy.intercept("POST", "/api/v2/workgroup/setRoles").as("set_workgroup_roles");
 
   cy.intercept("/api/v2/lithologicaldescription*").as("lithological_description");
   cy.intercept("/api/v2/chronostratigraphy*", req => {
