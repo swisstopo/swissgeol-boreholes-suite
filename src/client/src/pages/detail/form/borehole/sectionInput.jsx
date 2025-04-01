@@ -78,8 +78,11 @@ const SectionInput = ({ item, parentId }) => {
 
   // define methods for data submission
   const prepareFormDataForSubmit = data => {
-    const parseValueIfNotNull = value => (value ? parseFloatWithThousandsSeparator(String(value)) : null);
-    data.totalDepth = parseValueIfNotNull(data?.totalDepth);
+    const parseValueIfNotNull = value => {
+      if (value === "0") return 0;
+      if (!value) return null;
+      return parseFloatWithThousandsSeparator(String(value));
+    };
     data.sectionElements = data.sectionElements.map((element, i) => {
       element.order = i;
       element.fromDepth = parseValueIfNotNull(element.fromDepth);
