@@ -85,6 +85,16 @@ export const useWorkgroupMutations = () => {
     },
   });
 
+  const useUpdateWorkgroup = useMutation({
+    mutationFn: async (workgroup: Workgroup) => {
+      return await updateWorkgroup(workgroup);
+    },
+    onSettled: (_data, _error, useUpdateWorkgroup) => {
+      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
+      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, useUpdateWorkgroup.id] });
+    },
+  });
+
   const useDeleteWorkgroup = useMutation({
     mutationFn: async (workgroupId: number) => {
       return await deleteWorkgroup(workgroupId);
@@ -97,10 +107,12 @@ export const useWorkgroupMutations = () => {
   });
 
   useShowAlertOnError(useAddWorkgroup.isError, useAddWorkgroup.error);
+  useShowAlertOnError(useUpdateWorkgroup.isError, useUpdateWorkgroup.error);
   useShowAlertOnError(useDeleteWorkgroup.isError, useDeleteWorkgroup.error);
 
   return {
     add: useAddWorkgroup,
+    update: useUpdateWorkgroup,
     delete: useDeleteWorkgroup,
   };
 };

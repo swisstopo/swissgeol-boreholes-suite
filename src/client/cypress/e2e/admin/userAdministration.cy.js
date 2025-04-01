@@ -263,7 +263,7 @@ describe("User administration settings tests", () => {
   it("displays error message when deleting user fails.", () => {
     cy.intercept("DELETE", "api/v2/user/7", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/user/7"); // deletable user
-    cy.contains("U.be_deleted");
+    cy.contains("U. be_deleted");
     getElementByDataCy("deleteuser-button").click();
     getElementByDataCy("delete-button").click();
     cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);

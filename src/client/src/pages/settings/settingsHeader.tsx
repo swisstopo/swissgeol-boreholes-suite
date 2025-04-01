@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useSelectedUser, useUserMutations } from "../../api/user.ts";
-import { updateWorkgroup, useSelectedWorkgroup } from "../../api/workgroup.ts";
+import { useSelectedWorkgroup, useWorkgroupMutations } from "../../api/workgroup.ts";
 import { DeleteButton, ReturnButton } from "../../components/buttons/buttons.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { useDeleteUserPrompts, useDeleteWorkgroupPrompts } from "../../hooks/useDeleteEntityPrompts.tsx";
@@ -18,6 +18,10 @@ export const SettingsHeader: FC = () => {
   const {
     update: { mutate: updateUser },
   } = useUserMutations();
+
+  const {
+    update: { mutate: updateWorkgroup },
+  } = useWorkgroupMutations();
 
   const userId = location.pathname.split("user/")[1];
   const workgroupId = location.pathname.split("workgroup/")[1];
