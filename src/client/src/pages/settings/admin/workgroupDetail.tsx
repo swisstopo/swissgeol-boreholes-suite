@@ -152,8 +152,6 @@ export const WorkgroupDetail: FC = () => {
         open={userDialogOpen}
         setOpen={setUserDialogOpen}
         workgroupId={parseInt(id)} //
-        setWorkgroupUsers={setWorkgroupUsers}
-        workgroupUsers={workgroupUsers ?? []}
       />
     </Stack>
   );

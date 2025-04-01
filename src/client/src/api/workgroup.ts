@@ -112,6 +112,28 @@ export const useWorkgroupMutations = () => {
     },
   });
 
+  const useSetWorkgroupRole = useMutation({
+    mutationFn: async ({
+      userId,
+      workgroupId,
+      role,
+      isActive,
+    }: {
+      userId: number;
+      workgroupId: number;
+      role: Role;
+      isActive: boolean;
+    }) => {
+      return await setWorkgroupRole(userId, workgroupId, role, isActive);
+    },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
+      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, variables.workgroupId] });
+      queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
+      queryClient.invalidateQueries({ queryKey: [usersQueryKey, variables.userId] });
+    },
+  });
+
   const useDeleteWorkgroup = useMutation({
     mutationFn: async (workgroupId: number) => {
       return await deleteWorkgroup(workgroupId);
@@ -126,11 +148,13 @@ export const useWorkgroupMutations = () => {
   useShowAlertOnError(useAddWorkgroup.isError, useAddWorkgroup.error);
   useShowAlertOnError(useUpdateWorkgroup.isError, useUpdateWorkgroup.error);
   useShowAlertOnError(useRemoveAllWorkgroupRoles.isError, useRemoveAllWorkgroupRoles.error);
+  useShowAlertOnError(useSetWorkgroupRole.isError, useSetWorkgroupRole.error);
   useShowAlertOnError(useDeleteWorkgroup.isError, useDeleteWorkgroup.error);
 
   return {
     add: useAddWorkgroup,
     update: useUpdateWorkgroup,
+    setWorkgroupRole: useSetWorkgroupRole,
     removeAllRoles: useRemoveAllWorkgroupRoles,
     delete: useDeleteWorkgroup,
   };
