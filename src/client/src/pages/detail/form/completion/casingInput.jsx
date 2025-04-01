@@ -14,6 +14,7 @@ import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { extractCasingDepth } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants";
+import { prepareEntityDataForSubmit } from "./completionUtils.js";
 
 const CasingInput = props => {
   const { item, parentId } = props;
@@ -36,14 +37,13 @@ const CasingInput = props => {
   });
 
   const prepareFormDataForSubmit = data => {
+    data = prepareEntityDataForSubmit(data, parentId);
     if (data?.dateStart === "") {
       data.dateStart = null;
     }
     if (data?.dateFinish === "") {
       data.dateFinish = null;
     }
-    data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth);
-    data.toDepth = parseFloatWithThousandsSeparator(data.toDepth);
 
     data.casingElements = data.casingElements.map(element => {
       return {
@@ -55,7 +55,6 @@ const CasingInput = props => {
         toDepth: parseFloatWithThousandsSeparator(element.toDepth),
       };
     });
-    data.completionId = parentId;
     return data;
   };
 

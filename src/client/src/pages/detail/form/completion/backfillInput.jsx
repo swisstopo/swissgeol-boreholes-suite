@@ -3,9 +3,9 @@ import { addBackfill, getCasings, updateBackfill } from "../../../../api/fetchAp
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
 import { completionSchemaConstants } from "./completionSchemaConstants";
+import { prepareEntityDataForSubmit } from "./completionUtils.js";
 
 const BackfillInput = ({ item, parentId }) => {
   const [casings, setCasings] = useState([]);
@@ -13,9 +13,7 @@ const BackfillInput = ({ item, parentId }) => {
 
   const prepareFormDataForSubmit = data => {
     data = prepareCasingDataForSubmit(data);
-    data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth);
-    data.toDepth = parseFloatWithThousandsSeparator(data.toDepth);
-    data.completionId = parentId;
+    data = prepareEntityDataForSubmit(data, parentId);
     return data;
   };
 
