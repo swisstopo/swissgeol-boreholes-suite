@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MenuItem, Stack, TextField } from "@mui/material";
 import { useDomains } from "../../../../../../../api/fetchApiV2.ts";
+import { formatNumberForDisplay } from "../../../../../../../components/form/formUtils.js";
 
 const DescriptionInput = props => {
   const { item, setFromDepth, setDescription, setToDepth, setDescriptionQualityId, selectableDepths, descriptions } =
@@ -74,7 +75,7 @@ const DescriptionInput = props => {
         }}>
         {fromDepthOptions?.map(d => (
           <MenuItem key={d.id} value={d}>
-            {d}
+            {formatNumberForDisplay(d)}
           </MenuItem>
         ))}
       </TextField>
@@ -134,7 +135,7 @@ const DescriptionInput = props => {
           }}>
           {toDepthOptions?.map((d, index) => (
             <MenuItem key={index} value={d}>
-              {d}
+              {formatNumberForDisplay(d)}
             </MenuItem>
           ))}
         </TextField>
