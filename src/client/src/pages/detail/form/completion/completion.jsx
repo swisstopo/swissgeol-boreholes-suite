@@ -78,13 +78,13 @@ const Completion = () => {
       getCompletions(parseInt(boreholeId, 10)).then(response => {
         if (response?.length > 0) {
           // Display primary completion first then order by created date
-          const sortedResponse = response.sort((a, b) => {
+          response.sort((a, b) => {
             if (a.isPrimary === b.isPrimary) {
               return a.created.localeCompare(b.created);
             }
             return a.isPrimary ? -1 : 1;
           });
-          setCompletions(sortedResponse);
+          setCompletions(response);
         } else {
           setCompletions([]);
         }

@@ -107,7 +107,7 @@ export async function upload(url: string, method: string, payload: FormData): Pr
 }
 
 const getFallbackFileName = (url: string): string => {
-  const match = url.match(/export\/(\w+)\?/);
+  const match = /export\/(\w+)\?/.exec(url);
   if (!match) return "export";
   return `export.${match[1]}`;
 };

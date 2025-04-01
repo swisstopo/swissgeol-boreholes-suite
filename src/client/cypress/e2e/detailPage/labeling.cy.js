@@ -10,6 +10,7 @@ import {
 } from "../helpers/testHelpers.js";
 import "cypress-real-events/support";
 import { getArea } from "ol/sphere.js";
+import { discardChanges } from "../helpers/buttonHelpers.js";
 
 const isFileActive = (fileName, isActive) => {
   cy.contains("span", fileName)
@@ -217,52 +218,101 @@ describe("Test labeling tool", () => {
     });
   });
 
-  it("can extract data from image", () => {
+  it("can extract coordinates and reference system from image", () => {
+    function assertInputsHaveAiStyle() {
+      hasAiStyle("originalReferenceSystem");
+      hasAiStyle("locationX");
+      hasAiStyle("locationY");
+      hasAiStyle("locationXLV03");
+      hasAiStyle("locationYLV03");
+    }
+
+    function assertInputsHaveNormalStyle() {
+      hasAiStyle("originalReferenceSystem", false);
+      hasAiStyle("locationX", false);
+      hasAiStyle("locationY", false);
+      hasAiStyle("locationXLV03", false);
+      hasAiStyle("locationYLV03", false);
+    }
+
+    function assertInputsHaveNoError() {
+      hasError("originalReferenceSystem", false);
+      hasError("locationX", false);
+      hasError("locationY", false);
+      hasError("locationXLV03", false);
+      hasError("locationYLV03", false);
+    }
+
+    function assertEmptyInputsForLV95HaveError() {
+      hasError("locationX", true);
+      hasError("locationY", true);
+    }
+
+    function assertLV03InputsAreDisabled() {
+      isDisabled("locationXLV03", true);
+      isDisabled("locationYLV03", true);
+      isDisabled("locationX", false);
+      isDisabled("locationY", false);
+    }
+
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
     selectLabelingAttachment();
     assertPageCount(1, 3);
 
+    // assert initial form styles
+    assertInputsHaveNormalStyle();
+    assertEmptyInputsForLV95HaveError();
+
     clickCoordinateLabelingButton();
+    assertInputsHaveAiStyle();
+    assertInputsHaveNoError();
     evaluateSelect("originalReferenceSystem", "20104001");
-    hasAiStyle("originalReferenceSystem");
-    hasError("originalReferenceSystem", false);
     evaluateCoordinate("locationX", "");
-    hasAiStyle("locationX");
-    hasError("locationX", false);
     evaluateCoordinate("locationY", "");
-    hasAiStyle("locationY");
-    hasError("locationY", false);
     evaluateCoordinate("locationXLV03", "");
-    hasAiStyle("locationXLV03");
-    hasError("locationXLV03", false);
-    isDisabled("locationXLV03");
     evaluateCoordinate("locationYLV03", "");
-    hasAiStyle("locationYLV03");
-    hasError("locationYLV03", false);
-    isDisabled("locationYLV03");
+    assertLV03InputsAreDisabled();
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 140, 600, 250);
+    cy.wait(["@location", "@location", "@location", "@geodesy", "@geodesy"]);
     assertBoundingBoxes(0, 0); // no bounding box preview for coordinate extraction
     evaluateSelect("originalReferenceSystem", "20104001");
+    assertInputsHaveNoError();
+    assertLV03InputsAreDisabled();
     evaluateCoordinate("locationX", "2'646'359.7");
-    hasError("locationX", false);
-    isDisabled("locationX", false);
     evaluateCoordinate("locationY", "1'249'017.82");
-    hasError("locationY", false);
-    isDisabled("locationY", false);
     evaluateCoordinate("locationXLV03", "646'358.97");
-    hasError("locationXLV03", false);
-    isDisabled("locationXLV03", true);
     evaluateCoordinate("locationYLV03", "249'017.66");
-    hasError("locationYLV03", false);
-    isDisabled("locationYLV03", true);
+
+    // wait for end of map animation before proceeding
+    cy.window().then(win => {
+      const view = win.pointOlMap.getView();
+      const resolution = view.getResolution();
+      cy.wrap(resolution).as("resolution");
+    });
+    cy.get("@resolution").then(resolution => {
+      expect(resolution).to.equal(1);
+    });
+
+    // can reset the form
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(2000); // otherwise test is flaky ¯\_(ツ)_/¯
+    discardChanges();
+    assertInputsHaveNormalStyle();
+    assertEmptyInputsForLV95HaveError();
+    assertLV03InputsAreDisabled();
+    evaluateSelect("originalReferenceSystem", "20104001");
+    evaluateCoordinate("locationX", "");
+    evaluateCoordinate("locationY", "");
+    evaluateCoordinate("locationXLV03", "");
+    evaluateCoordinate("locationYLV03", "");
   });
 
-  it("can extract data from rotated and zoomed next page", () => {
+  it("can extract coordinates and reference system from rotated and zoomed next page", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
@@ -307,7 +357,7 @@ describe("Test labeling tool", () => {
     isDisabled("locationY", true);
   });
 
-  it("can copy text to clipboard and show word bounding box preview", () => {
+  it("can copy text to clipboard and show word bounding box previews", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();

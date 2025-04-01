@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Box, Checkbox, FormControlLabel, Stack } from "@mui/material";
-import { Button, Icon } from "semantic-ui-react";
+import { Box, Checkbox, FormControlLabel, IconButton, Stack } from "@mui/material";
+import { CircleArrowDown, CircleArrowUp } from "lucide-react";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 
 export const CustomLayersComponent = ({
@@ -67,28 +67,25 @@ export const CustomLayersComponent = ({
                   />
                 </Stack>
                 <Box>
-                  <Button
-                    circular
-                    compact
-                    disabled={idx === 0 || isFetching === true}
-                    icon
+                  <IconButton
+                    aria-label={"move-up"}
+                    disabled={idx === len || isFetching === true}
                     onClick={() => {
                       moveUp(layer);
                     }}
-                    size="mini">
-                    <Icon name="arrow up" />
-                  </Button>
-                  <Button
-                    circular
-                    compact
+                    data-cy="add-layer-button">
+                    <CircleArrowUp />
+                  </IconButton>
+
+                  <IconButton
+                    aria-label={"move-up"}
                     disabled={idx === len || isFetching === true}
-                    icon
                     onClick={() => {
                       moveDown(layer);
                     }}
-                    size="mini">
-                    <Icon name="arrow down" />
-                  </Button>
+                    data-cy="add-layer-button">
+                    <CircleArrowDown />
+                  </IconButton>
                 </Box>
               </Stack>
             </Box>
