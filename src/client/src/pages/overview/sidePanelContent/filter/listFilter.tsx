@@ -97,6 +97,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
                     <TextField
                       label={item?.label && t(item.label)}
                       placeholder={item?.placeholder && t(item.placeholder)}
+                      data-cy={`${item?.value}-formInput`}
                       defaultValue={(filters?.filter[item.value] as string) ?? null}
                       onBlur={e => {
                         updateChange(item.value, e.target.value);

@@ -1,5 +1,5 @@
 import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { setInput, setYesNoSelect } from "../helpers/formHelpers.js";
+import { setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
 import {
   createBorehole,
   createLithologyLayer,
@@ -11,23 +11,20 @@ import {
 } from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
-  it.skip("has search filters", () => {
+  it("has search filters", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Filters");
   });
 
-  it.skip("checks that the registration filter settings control the filter visibility.", () => {
+  it("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
     goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
-    cy.contains("Show all fields")
-      .next()
-      .within(() => {
-        cy.contains("Created by").should("not.exist");
-        cy.contains("Creation date").should("not.exist");
-      });
+    cy.contains("Show all fields");
+    cy.contains("Created by").should("not.exist");
+    cy.contains("Creation date").should("not.exist");
 
     // turn on registration filters
     getElementByDataCy("settings-button").click();
@@ -218,14 +215,7 @@ describe("Search filter tests", () => {
     getElementByDataCy("show-filter-button").click();
     cy.contains("Borehole").click();
     getElementByDataCy("show-all-fields-switch").click();
-
-    const boreholeStatusDropdown = () => cy.contains("h6", "Borehole status").next();
-    boreholeStatusDropdown().click();
-    boreholeStatusDropdown()
-      .find("div[role='option']")
-      .then(options => {
-        cy.wrap(options).contains("decayed").click({ force: true });
-      });
+    setSelect("status", 2);
     cy.wait("@edit_list");
 
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "169");
@@ -237,36 +227,11 @@ describe("Search filter tests", () => {
     getElementByDataCy("show-filter-button").click();
     cy.contains("Lithology").click();
     getElementByDataCy("show-all-fields-switch").click();
-    const colorDropdown = () => cy.contains("h6", "Colour").next();
-    colorDropdown().click();
-    colorDropdown()
-      .find("div[role='option']")
-      .should("have.length", 25)
-      .should(options => {
-        expect(options[0]).to.have.text("Reset");
-        expect(options[1]).to.have.text("beige");
-      })
-      .then(options => {
-        cy.wrap(options).contains("beige").click({ force: true });
-      });
-
+    setSelect("color", 0);
     cy.wait("@edit_list");
     showTableAndWaitForData();
     verifyPaginationText("1–100 of 770");
-
-    const uscs3Dropdown = () => cy.contains("h6", "USCS 3").next();
-    uscs3Dropdown().scrollIntoView().click({ force: true });
-    uscs3Dropdown()
-      .find("div[role='option']")
-      .should("have.length", 36)
-      .should(options => {
-        expect(options[0]).to.have.text("Reset");
-        expect(options[2]).to.have.text("lean clay");
-      })
-      .then(options => {
-        cy.wrap(options).contains("gravel").click({ force: true });
-      });
-
+    setSelect("uscs_3", 4);
     cy.wait("@edit_list");
 
     // check content of table
@@ -274,16 +239,12 @@ describe("Search filter tests", () => {
     cy.get(".MuiDataGrid-row").contains("Bruce Rempel").should("exist");
   });
 
-  function filterByOriginalLithology() {
-    cy.contains("Lithology").click();
-    getElementByDataCy("show-all-fields-switch").click();
-    cy.contains("Original lithology").next().find("input").type("Wooden Chair");
-  }
-
   it("filters boreholes by original lithology in editor mode", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
-    filterByOriginalLithology();
+    cy.contains("Lithology").click();
+    getElementByDataCy("show-all-fields-switch").click();
+    setInput("original_lithology", "Wooden Chair");
     cy.wait("@edit_list");
     showTableAndWaitForData();
     verifyPaginationText("1–21 of 21");
@@ -295,20 +256,9 @@ describe("Search filter tests", () => {
     cy.contains("Registration").click();
     getElementByDataCy("show-all-fields-switch").click();
 
-    // input values
-    cy.contains("Creation date").next().find(".react-datepicker-wrapper .datepicker-input").click();
-
-    cy.get(".react-datepicker__year-select").select("2021");
-    cy.get(".react-datepicker__month-select").select("November");
-    cy.get(".react-datepicker__day--009").click();
-
+    setInput("created_date_from", "2021-11-09");
     cy.wait("@edit_list");
-
-    cy.contains("Creation date").parent().parent().next().find(".react-datepicker-wrapper .datepicker-input").click();
-
-    cy.get(".react-datepicker__year-select").select("2021");
-    cy.get(".react-datepicker__month-select").select("November");
-    cy.get(".react-datepicker__day--010").click();
+    setInput("created_date_to", "2021-11-10");
 
     cy.wait("@edit_list");
 
@@ -322,7 +272,11 @@ describe("Search filter tests", () => {
     getElementByDataCy("show-filter-button").click();
     showTableAndWaitForData();
     cy.contains("Workgroup").click();
-    cy.contains("Name").click();
     cy.wait("@borehole");
+    getElementByDataCy("filter-chip-workgroup").should("not.exist");
+    getElementByDataCy("Default").click();
+    getElementByDataCy("filter-chip-workgroup").should("exist");
+    getElementByDataCy("all").click();
+    getElementByDataCy("filter-chip-workgroup").should("not.exist");
   });
 });
