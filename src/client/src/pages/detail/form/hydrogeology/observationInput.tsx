@@ -111,14 +111,14 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
               label="fromdepth"
               value={fromDepthM}
               withThousandSeparator={true}
-              onUpdate={(value: string) => setFromDepthM(parseFloatWithThousandsSeparator(value) || 0)}
+              onUpdate={(value: string) => setFromDepthM(parseFloatWithThousandsSeparator(value) ?? 0)}
             />
             <FormInput
               fieldName="toDepthM"
               label="todepth"
               value={toDepthM}
               withThousandSeparator={true}
-              onUpdate={(value: string) => setToDepthM(parseFloatWithThousandsSeparator(value) || 0)}
+              onUpdate={(value: string) => setToDepthM(parseFloatWithThousandsSeparator(value) ?? 0)}
             />
           </FormContainer>
           <FormContainer direction="row">
