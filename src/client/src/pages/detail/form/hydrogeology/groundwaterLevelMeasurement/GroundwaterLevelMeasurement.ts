@@ -2,8 +2,8 @@ import { fetchApiV2 } from "../../../../../api/fetchApiV2.ts";
 import { Observation } from "../Observation.ts";
 
 export interface GroundwaterLevelMeasurement extends Observation {
-  levelM: string;
-  levelMasl: string;
+  levelM: number | null;
+  levelMasl: number | null;
   kindId: number;
   kind: string; // domain name
 }
