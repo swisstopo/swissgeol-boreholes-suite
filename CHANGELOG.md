@@ -8,7 +8,7 @@
 ### Changed
 - The text extraction button is now disabled when the text extraction is in progress.
 - Update legal links in disclaimer for all languages.
-- Number inputs in the borehole sections and layer descriptions are now displayed with thousand separators.
+- Number inputs in the borehole sections, hydrogeology, completion and layer descriptions are now displayed with thousand separators.
 - Bump data extraction API version to v1.0.30.
 - Inputs in filters now have the new UI style.
 

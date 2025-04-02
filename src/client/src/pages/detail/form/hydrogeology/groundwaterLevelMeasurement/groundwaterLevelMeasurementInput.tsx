@@ -1,11 +1,11 @@
 import { FC } from "react";
 import DataInputCard from "../../../../../components/dataCard/dataInputCard.js";
-import { FormContainer, FormInput, FormValueType } from "../../../../../components/form/form.ts";
+import { FormContainer, FormInput } from "../../../../../components/form/form.ts";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.tsx";
+import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
-import { getIsoDateIfDefined } from "../hydrogeologyFormUtils.ts";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
-import { ObservationType } from "../Observation.ts";
+import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
 import ObservationInput from "../observationInput.tsx";
 import {
   addGroundwaterLevelMeasurement,
@@ -19,18 +19,14 @@ const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; 
 }) => {
   const prepareFormDataForSubmit = (data: GroundwaterLevelMeasurement) => {
     data = prepareCasingDataForSubmit(data);
-    data.startTime = getIsoDateIfDefined(data?.startTime);
-    data.endTime = getIsoDateIfDefined(data?.endTime);
+    data = prepareObservationDataForSubmit(data, parentId);
     data.type = ObservationType.groundwaterLevelMeasurement;
-    data.boreholeId = parentId;
+    data.levelM = parseFloatWithThousandsSeparator(data.levelM);
+    data.levelMasl = parseFloatWithThousandsSeparator(data.levelMasl);
 
     if (data.casingId == null) {
       data.casingId = item.casingId;
     }
-    if (data.reliabilityId === "") {
-      data.reliabilityId = null;
-    }
-    delete data.reliability;
 
     return data;
   };
@@ -53,8 +49,8 @@ const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; 
         />
       </FormContainer>
       <FormContainer direction="row">
-        <FormInput fieldName="levelMasl" label="gwlm_levelmasl" value={item.levelMasl} type={FormValueType.Number} />
-        <FormInput fieldName="levelM" label="gwlm_levelm" value={item.levelM} type={FormValueType.Number} />
+        <FormInput fieldName="levelMasl" label="gwlm_levelmasl" value={item.levelMasl} withThousandSeparator={true} />
+        <FormInput fieldName="levelM" label="gwlm_levelm" value={item.levelM} withThousandSeparator={true} />
       </FormContainer>
     </DataInputCard>
   );

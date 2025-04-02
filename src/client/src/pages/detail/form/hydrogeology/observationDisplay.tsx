@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
+import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { useGetCasingName } from "../completion/casingUtils.jsx";
 import { Observation } from "./Observation.ts";
 
@@ -22,7 +23,7 @@ const ObservationDisplay = ({
     const minutes = Math.floor(durationInMinutes % 60);
     let result = "";
     if (hours > 0) {
-      result += hours + " " + (hours === 1 ? t("hour") : t("hours")) + " ";
+      result += formatNumberForDisplay(hours) + " " + (hours === 1 ? t("hour") : t("hours")) + " ";
     }
     if (minutes > 0) {
       result += minutes + " " + (minutes === 1 ? t("minute") : t("minutes"));
