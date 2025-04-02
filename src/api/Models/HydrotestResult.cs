@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
@@ -18,6 +19,7 @@ public class HydrotestResult : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="HydrotestResult"/>'s parameter id.
     /// </summary>
+    [IncludeInExport]
     [Column("parameter")]
     public int ParameterId { get; set; }
 
@@ -29,18 +31,21 @@ public class HydrotestResult : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="HydrotestResult"/>'s value.
     /// </summary>
+    [IncludeInExport]
     [Column("value")]
     public double? Value { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="HydrotestResult"/>'s max value.
     /// </summary>
+    [IncludeInExport]
     [Column("max_value")]
     public double? MaxValue { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="HydrotestResult"/>'s min value.
     /// </summary>
+    [IncludeInExport]
     [Column("min_value")]
     public double? MinValue { get; set; }
 

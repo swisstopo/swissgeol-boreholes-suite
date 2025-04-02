@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using BDMS.Json;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -27,18 +28,21 @@ public class CasingElement : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="CasingElement"/>'s upper depth.
     /// </summary>
+    [IncludeInExport]
     [Column("from_depth")]
     public double FromDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="CasingElement"/>'s lower depth.
     /// </summary>
+    [IncludeInExport]
     [Column("to_depth")]
     public double ToDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s kind id.
     /// </summary>
+    [IncludeInExport]
     [Column("kind_id")]
     public int KindId { get; set; }
 
@@ -50,6 +54,7 @@ public class CasingElement : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Casing"/>'s material.
     /// </summary>
+    [IncludeInExport]
     [Column("material_id")]
     public int? MaterialId { get; set; }
 
@@ -61,12 +66,14 @@ public class CasingElement : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s inner diameter.
     /// </summary>
+    [IncludeInExport]
     [Column("inner_diameter")]
     public double? InnerDiameter { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s outer diameter.
     /// </summary>
+    [IncludeInExport]
     [Column("outer_diameter")]
     public double? OuterDiameter { get; set; }
 

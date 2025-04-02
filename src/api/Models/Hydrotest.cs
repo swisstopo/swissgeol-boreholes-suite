@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
@@ -12,6 +13,7 @@ public class Hydrotest : Observation
     /// Gets or sets the codelist ids with schema name 'hydrotest_kind' of the <see cref="Hydrotest"/>'s many to many codelist relations.
     /// </summary>
     [NotMapped]
+    [IncludeInExport]
     public ICollection<int>? KindCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
@@ -23,6 +25,7 @@ public class Hydrotest : Observation
     /// Gets or sets the codelist ids with schema name 'hydrotest_flowdirection' of the <see cref="Hydrotest"/>'s many to many codelist relations.
     /// </summary>
     [NotMapped]
+    [IncludeInExport]
     public ICollection<int>? FlowDirectionCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
@@ -34,6 +37,7 @@ public class Hydrotest : Observation
     /// Gets or sets the codelist ids with schema name 'hydrotest_evaluationmethod' of the <see cref="Hydrotest"/>'s many to many codelist relations.
     /// </summary>
     [NotMapped]
+    [IncludeInExport]
     public ICollection<int>? EvaluationMethodCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
@@ -62,5 +66,6 @@ public class Hydrotest : Observation
     /// <summary>
     /// Gets the <see cref="HydrotestResult"/>s associated with the <see cref="Hydrotest"/>.
     /// </summary>
+    [IncludeInExport]
     public ICollection<HydrotestResult>? HydrotestResults { get; set; }
 }

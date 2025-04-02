@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 
@@ -28,6 +29,7 @@ public class BoreholeFile : IChangeTracking, IUserAttached<User?, int?>
     /// <summary>
     /// Gets or sets the <see cref="File"/>.
     /// </summary>
+    [IncludeInExport]
     public File File { get; set; }
 
     /// <summary>
@@ -44,6 +46,7 @@ public class BoreholeFile : IChangeTracking, IUserAttached<User?, int?>
     /// <summary>
     /// Gets or sets the timestamp when the <see cref="File"/> was attached to the <see cref="Borehole"/>.
     /// </summary>
+    [IncludeInExport]
     [Column("attached_bfi")]
     public DateTime? Attached { get; set; }
 
@@ -72,12 +75,14 @@ public class BoreholeFile : IChangeTracking, IUserAttached<User?, int?>
     /// <summary>
     /// Gets or sets the <see cref="BoreholeFile"/> description.
     /// </summary>
+    [IncludeInExport]
     [Column("description_bfi")]
     public string? Description { get; set; }
 
     /// <summary>
     /// Gets or sets whether the <see cref="BoreholeFile"/> is publicly visible.
     /// </summary>
+    [IncludeInExport]
     [Column("public_bfi")]
     public bool? Public { get; set; }
 }

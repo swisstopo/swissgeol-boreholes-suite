@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using BDMS.Json;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -10,6 +11,7 @@ namespace BDMS.Models;
 public class Casing : IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("id")]
     public int Id { get; set; }
 
@@ -27,24 +29,28 @@ public class Casing : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s name.
     /// </summary>
+    [IncludeInExport]
     [Column("name")]
     public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s start date.
     /// </summary>
+    [IncludeInExport]
     [Column("date_start")]
     public DateOnly? DateStart { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s finish date.
     /// </summary>
+    [IncludeInExport]
     [Column("date_finish")]
     public DateOnly? DateFinish { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s notes.
     /// </summary>
+    [IncludeInExport]
     [Column("notes")]
     public string? Notes { get; set; }
 
@@ -66,6 +72,7 @@ public class Casing : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="CasingElement"/>s of the <see cref="Casing"/>.
     /// </summary>
+    [IncludeInExport]
     public ICollection<CasingElement> CasingElements { get; set; }
 
     /// <inheritdoc />
