@@ -25,7 +25,8 @@ export const parseIfString = (value: string | number) => {
  * @returns The parsed float number.
  */
 export const parseFloatWithThousandsSeparator = (value?: string | number | null) => {
-  if (value === "0" || value === 0) return 0;
+  if (typeof value === "number") return value;
+  if (value === "0") return 0;
   if (!value) return null;
   const numericString = value.toString();
   return parseFloat(numericString.replace(/'/g, ""));
