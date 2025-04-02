@@ -199,19 +199,19 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
             <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />
           )}
         </Button>
-        {searchList?.map((filter, idx) => {
+        {searchList?.map(filter => {
           const currentFilterInputConfig = searchList.find(l => l.name === filter.name);
           const activeFilterLength = activeFilters?.filter(f =>
             currentFilterInputConfig?.searchData.some(d => d.value === f.key),
           )?.length;
           return (
-            <StyledAccordion key={idx} expanded={filter?.isSelected}>
+            <StyledAccordion key={filter.id} expanded={filter?.isSelected}>
               <AccordionSummary
                 expandIcon={<ChevronDown />}
                 onClick={() => {
                   setSearchList(previousSearchlist =>
                     previousSearchlist.map(obj =>
-                      obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
+                      obj.id === filter.id ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
                     ),
                   );
                 }}>

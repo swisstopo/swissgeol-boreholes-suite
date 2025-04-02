@@ -86,105 +86,104 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
           label={t("showallfields")}
         />
       )}
-      {searchData &&
-        searchData.map(
-          item =>
-            (item.isVisible || isVisibleFunction(item.isVisibleValue) || showAllActiveFields[inputConfig?.name]) && (
-              <Box key={item.value}>
-                <FormContainer mt={item?.label ? -0.5 : -4}>
-                  {item.type === "Input" && (
-                    <TextField
-                      label={item?.label && t(item.label)}
-                      placeholder={item?.placeholder && t(item.placeholder)}
-                      data-cy={`${item?.value}-formInput`}
-                      defaultValue={(filters?.filter[item.value] as string) ?? null}
-                      onBlur={e => {
-                        updateChange(item.value, e.target.value);
+      {searchData?.map(
+        item =>
+          (item.isVisible || isVisibleFunction(item.isVisibleValue) || showAllActiveFields[inputConfig?.name]) && (
+            <Box key={item.value}>
+              <FormContainer mt={item?.label ? -0.5 : -4}>
+                {item.type === "Input" && (
+                  <TextField
+                    label={item?.label && t(item.label)}
+                    placeholder={item?.placeholder && t(item.placeholder)}
+                    data-cy={`${item?.value}-formInput`}
+                    defaultValue={(filters?.filter[item.value] as string) ?? null}
+                    onBlur={e => {
+                      updateChange(item.value, e.target.value);
+                    }}
+                    onChange={e => debouncedChange(item.value, e.target.value)}
+                  />
+                )}
+                {item.type === "Dropdown" && item?.schema && (
+                  <FormDomainSelect
+                    fieldName={item.value}
+                    label={item?.label || item.value}
+                    readonly={false}
+                    selected={_.isNil(filters.filter?.[item.value]) ? null : (filters.filter[item.value] as number)}
+                    canReset={false}
+                    schemaName={item.schema}
+                    onUpdate={value => {
+                      updateChange(item.value, value);
+                    }}
+                  />
+                )}
+                {item.type === "Date" && (
+                  <FormInput
+                    readonly={false}
+                    fieldName={item?.value}
+                    label={item?.label ? `${item.label}_filter_title` : ""}
+                    placeholder={item?.placeholder}
+                    type={FormValueType.Date}
+                    onUpdate={value => {
+                      updateChange(item.value, value);
+                    }}
+                  />
+                )}
+                {item.type === "Radio" && (
+                  <FormBooleanSelect
+                    readonly={false}
+                    canReset={false}
+                    fieldName={item.value}
+                    label={item?.label ?? item.value}
+                    onUpdate={value => {
+                      updateChange(item.value, value);
+                    }}
+                  />
+                )}
+                {item.type === "ReferenceSystem" && (
+                  <FormSelect
+                    canReset={false}
+                    readonly={false}
+                    fieldName={"originalReferenceSystem"}
+                    label="spatial_reference_system"
+                    onUpdate={value => updateChange(item.value, value)}
+                    values={Object.entries(referenceSystems).map(([, value]) => ({
+                      key: value.code,
+                      name: value.name,
+                    }))}
+                  />
+                )}
+                {item.type === "HierarchicalData" && (
+                  <Box mt={3}>
+                    <HierarchicalDataSearch
+                      onSelected={(e: { id: number }) => {
+                        updateChange(item.value, e.id);
                       }}
-                      onChange={e => debouncedChange(item.value, e.target.value)}
+                      schema={item.schema}
+                      labels={item.labels}
+                      selected={_.isNil(filters.filter?.[item.value]) ? null : filters.filter[item.value]}
                     />
-                  )}
-                  {item.type === "Dropdown" && item?.schema && (
-                    <FormDomainSelect
-                      fieldName={item.value}
-                      label={item?.label || item.value}
-                      readonly={false}
-                      selected={_.isNil(filters.filter?.[item.value]) ? null : (filters.filter[item.value] as number)}
-                      canReset={false}
-                      schemaName={item.schema}
-                      onUpdate={value => {
-                        updateChange(item.value, value);
-                      }}
-                    />
-                  )}
-                  {item.type === "Date" && (
-                    <FormInput
-                      readonly={false}
-                      fieldName={item?.value}
-                      label={item?.label ? `${item.label}_filter_title` : ""}
-                      placeholder={item?.placeholder}
-                      type={FormValueType.Date}
-                      onUpdate={value => {
-                        updateChange(item.value, value);
-                      }}
-                    />
-                  )}
-                  {item.type === "Radio" && (
-                    <FormBooleanSelect
-                      readonly={false}
-                      canReset={false}
-                      fieldName={item.value}
-                      label={item?.label ?? item.value}
-                      onUpdate={value => {
-                        updateChange(item.value, value);
-                      }}
-                    />
-                  )}
-                  {item.type === "ReferenceSystem" && (
-                    <FormSelect
-                      canReset={false}
-                      readonly={false}
-                      fieldName={"originalReferenceSystem"}
-                      label="spatial_reference_system"
-                      onUpdate={value => updateChange(item.value, value)}
-                      values={Object.entries(referenceSystems).map(([, value]) => ({
-                        key: value.code,
-                        name: value.name,
-                      }))}
-                    />
-                  )}
-                  {item.type === "HierarchicalData" && (
-                    <Box mt={3}>
-                      <HierarchicalDataSearch
-                        onSelected={(e: { id: number }) => {
-                          updateChange(item.value, e.id);
-                        }}
-                        schema={item.schema}
-                        labels={item.labels}
-                        selected={_.isNil(filters.filter?.[item.value]) ? null : filters.filter[item.value]}
-                      />
-                    </Box>
-                  )}
-                  {item.type === "Canton" && cantons?.length > 0 && (
-                    <FormSelect
-                      canReset={false}
-                      readonly={false}
-                      fieldName="canton"
-                      label={t("canton")}
-                      onUpdate={selected => {
-                        updateChange(item.value, selected);
-                      }}
-                      values={cantons.map((canton: string, idx: number) => ({
-                        key: `mun-opt-${idx}`,
-                        value: canton,
-                        name: canton,
-                      }))}
-                    />
-                  )}
-                </FormContainer>
-              </Box>
-            ),
-        )}
+                  </Box>
+                )}
+                {item.type === "Canton" && cantons?.length > 0 && (
+                  <FormSelect
+                    canReset={false}
+                    readonly={false}
+                    fieldName="canton"
+                    label={t("canton")}
+                    onUpdate={selected => {
+                      updateChange(item.value, selected);
+                    }}
+                    values={cantons.map((canton: string, idx: number) => ({
+                      key: `mun-opt-${idx}`,
+                      value: canton,
+                      name: canton,
+                    }))}
+                  />
+                )}
+              </FormContainer>
+            </Box>
+          ),
+      )}
     </FormContainer>
   );
 };
