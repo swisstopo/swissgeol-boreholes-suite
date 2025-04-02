@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { addBackfill, getCasings, updateBackfill } from "../../../../api/fetchApiV2.js";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
-import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormSelect } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
 import { completionSchemaConstants } from "./completionSchemaConstants";
+import { prepareEntityDataForSubmit } from "./completionUtils.js";
 
 const BackfillInput = ({ item, parentId }) => {
   const [casings, setCasings] = useState([]);
@@ -12,7 +13,7 @@ const BackfillInput = ({ item, parentId }) => {
 
   const prepareFormDataForSubmit = data => {
     data = prepareCasingDataForSubmit(data);
-    data.completionId = parentId;
+    data = prepareEntityDataForSubmit(data, parentId);
     return data;
   };
 
@@ -36,14 +37,14 @@ const BackfillInput = ({ item, parentId }) => {
           fieldName="fromDepth"
           label="fromdepth"
           value={item.fromDepth}
-          type={FormValueType.Number}
+          withThousandSeparator={true}
           required={true}
         />
         <FormInput
           fieldName="toDepth"
           label="todepth"
           value={item.toDepth}
-          type={FormValueType.Number}
+          withThousandSeparator={true}
           required={true}
         />
       </FormContainer>

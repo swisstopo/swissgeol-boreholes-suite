@@ -110,15 +110,15 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
               fieldName="fromDepthM"
               label="fromdepth"
               value={fromDepthM}
-              type={FormValueType.Number}
-              onUpdate={(value: string) => setFromDepthM(parseFloat(value) || 0)}
+              withThousandSeparator={true}
+              onUpdate={(value: string) => setFromDepthM(parseFloatWithThousandsSeparator(value) ?? 0)}
             />
             <FormInput
               fieldName="toDepthM"
               label="todepth"
               value={toDepthM}
-              type={FormValueType.Number}
-              onUpdate={(value: string) => setToDepthM(parseFloat(value) || 0)}
+              withThousandSeparator={true}
+              onUpdate={(value: string) => setToDepthM(parseFloatWithThousandsSeparator(value) ?? 0)}
             />
           </FormContainer>
           <FormContainer direction="row">
@@ -127,7 +127,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
               fieldName="fromDepthMasl"
               label="fromDepthMasl"
               value={fromDepthMasl}
-              type={FormValueType.Number}
+              withThousandSeparator={true}
               disabled={depthUnit === ObservationDepthUnitType.measuredDepth}
             />
             <FormInput
@@ -135,7 +135,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
               fieldName="toDepthMasl"
               label="toDepthMasl"
               value={toDepthMasl}
-              type={FormValueType.Number}
+              withThousandSeparator={true}
               disabled={depthUnit === ObservationDepthUnitType.measuredDepth}
             />
           </FormContainer>

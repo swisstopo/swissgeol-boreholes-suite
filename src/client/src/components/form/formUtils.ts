@@ -21,11 +21,14 @@ export const parseIfString = (value: string | number) => {
 
 /**
  * Parse a string to a float number, removing thousands separators if present.
- * @param {string} numericString The string to parse.
+ * @param {string/ number} value The string or number to parse.
  * @returns The parsed float number.
  */
-export const parseFloatWithThousandsSeparator = (numericString?: string) => {
-  if (!numericString) return null;
+export const parseFloatWithThousandsSeparator = (value?: string | number | null) => {
+  if (typeof value === "number") return value;
+  if (value === "0") return 0;
+  if (!value) return null;
+  const numericString = value.toString();
   return parseFloat(numericString.replace(/'/g, ""));
 };
 
@@ -101,9 +104,6 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   const data = { ...formInputs } as LocationFormSubmission;
 
   const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
-  const parseValueIfNotNull = (value: string | number | null) =>
-    value ? parseFloatWithThousandsSeparator(String(value)) : null;
-
   const getCompleteCodelists = (codelists: Identifier[]) => {
     return codelists
       .map(c => {
@@ -115,8 +115,8 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   };
 
   data.restrictionUntil = data?.restrictionUntil ? ensureDatetime(data.restrictionUntil.toString()) : null;
-  data.elevationZ = parseValueIfNotNull(data?.elevationZ);
-  data.referenceElevation = parseValueIfNotNull(data?.referenceElevation);
+  data.elevationZ = parseFloatWithThousandsSeparator(data?.elevationZ);
+  data.referenceElevation = parseFloatWithThousandsSeparator(data?.referenceElevation);
   data.nationalInterest = data?.nationalInterest === 1 ? true : data?.nationalInterest === 0 ? false : null;
   data.restrictionId = data.restrictionId ?? null;
   data.referenceElevationTypeId = data.referenceElevationTypeId ?? null;
@@ -128,10 +128,10 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   data.precisionLocationY = data?.locationY ? getDecimalsFromNumericString(formInputs.locationY) : null;
   data.precisionLocationXLV03 = data?.locationXLV03 ? getDecimalsFromNumericString(formInputs.locationXLV03) : null;
   data.precisionLocationYLV03 = data?.locationYLV03 ? getDecimalsFromNumericString(formInputs.locationYLV03) : null;
-  data.locationX = parseValueIfNotNull(data?.locationX);
-  data.locationY = parseValueIfNotNull(data?.locationY);
-  data.locationXLV03 = parseValueIfNotNull(data?.locationXLV03);
-  data.locationYLV03 = parseValueIfNotNull(data?.locationYLV03);
+  data.locationX = parseFloatWithThousandsSeparator(data?.locationX);
+  data.locationY = parseFloatWithThousandsSeparator(data?.locationY);
+  data.locationXLV03 = parseFloatWithThousandsSeparator(data?.locationXLV03);
+  data.locationYLV03 = parseFloatWithThousandsSeparator(data?.locationYLV03);
   data.boreholeCodelists = getCompleteCodelists(data.boreholeCodelists);
   data.boreholeFiles = null;
   return data;
@@ -144,11 +144,9 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
  */
 export const prepareBoreholeDataForSubmit = (formInputs: BoreholeFormInputs) => {
   const data = { ...formInputs };
-  const parseValueIfNotNull = (value: string | number | null) =>
-    value ? parseFloatWithThousandsSeparator(String(value)) : null;
-  data.totalDepth = parseValueIfNotNull(data?.totalDepth);
-  data.topBedrockFreshMd = parseValueIfNotNull(data?.topBedrockFreshMd);
-  data.topBedrockWeatheredMd = parseValueIfNotNull(data?.topBedrockWeatheredMd);
+  data.totalDepth = parseFloatWithThousandsSeparator(data?.totalDepth);
+  data.topBedrockFreshMd = parseFloatWithThousandsSeparator(data?.topBedrockFreshMd);
+  data.topBedrockWeatheredMd = parseFloatWithThousandsSeparator(data?.topBedrockWeatheredMd);
   data.hasGroundwater = data?.hasGroundwater === 1 ? true : data?.hasGroundwater === 0 ? false : null;
   data.topBedrockIntersected =
     data?.topBedrockIntersected === 1 ? true : data?.topBedrockIntersected === 0 ? false : null;

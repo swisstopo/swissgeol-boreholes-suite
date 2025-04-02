@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 
 /**
  * Extract the minimum and maximum depth of the casing elements from the casing object
@@ -18,7 +19,7 @@ export const extractCasingDepth = casing => {
       }
     });
   }
-  return { min, max };
+  return { min: parseFloatWithThousandsSeparator(min), max: parseFloatWithThousandsSeparator(max) };
 };
 
 export const useGetCasingName = () => {
