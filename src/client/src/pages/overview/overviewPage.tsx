@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 import { Workgroup } from "../../api-lib/ReduxStateInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
@@ -9,7 +10,7 @@ import { SideDrawer } from "./layout/sideDrawer.tsx";
 import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
 import { ErrorResponse } from "./sidePanelContent/commons/actionsInterfaces.ts";
 import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
-import FilterComponent from "./sidePanelContent/filter/filterComponent.jsx";
+import { FilterComponent } from "./sidePanelContent/filter/filterComponent.tsx";
 import ImportPanel from "./sidePanelContent/importer/importPanel.tsx";
 import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 
@@ -23,13 +24,18 @@ export const OverviewPage = () => {
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
 
   const { showAlert } = useContext(AlertContext);
+  const formMethods = useForm({ mode: "all", shouldUnregister: false });
 
   const toggleSideDrawer = (open: boolean) => {
     setSideDrawerOpen(open);
   };
 
   const sideDrawerComponentMap = {
-    filters: <FilterComponent toggleDrawer={toggleSideDrawer} />,
+    filters: (
+      <FormProvider {...formMethods}>
+        <FilterComponent toggleDrawer={toggleSideDrawer} formMethods={formMethods} />
+      </FormProvider>
+    ),
     newBorehole: (
       <NewBoreholePanel
         toggleDrawer={toggleSideDrawer}
