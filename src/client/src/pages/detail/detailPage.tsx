@@ -143,13 +143,11 @@ export const DetailPage: FC = () => {
                 width: panelOpen && panelPosition === "right" ? "50%" : "100%",
                 height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
               }}>
-              {editingEnabled && (
-                <SidePanelToggleButton
-                  panelOpen={panelOpen}
-                  panelPosition={panelPosition}
-                  onClick={() => togglePanel()}
-                />
-              )}
+              <SidePanelToggleButton
+                panelOpen={panelOpen}
+                panelPosition={panelPosition}
+                onClick={() => togglePanel()}
+              />
               <DetailPageContent
                 editableByCurrentUser={editableByCurrentUser}
                 locationPanelRef={locationPanelRef}
@@ -160,7 +158,7 @@ export const DetailPage: FC = () => {
                 panelOpen={panelOpen}
               />
             </MainContentBox>
-            {editingEnabled && panelOpen && <LabelingPanel />}
+            {panelOpen && <LabelingPanel />}
           </Box>
           {editingEnabled && shouldShowSaveBar && <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} />}
         </Stack>

@@ -1,10 +1,11 @@
-import { FC, useCallback, useRef } from "react";
+import { FC, useCallback, useContext, useRef } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { AlertColor, Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { File as FileIcon } from "lucide-react";
 import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
+import { DetailContext } from "../detailContext.tsx";
 import { labelingFileFormat } from "./labelingInterfaces.tsx";
 
 interface LabelingFileSelectorProps {
@@ -24,6 +25,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
 }) => {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { editingEnabled } = useContext(DetailContext);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -111,12 +113,14 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
             )}
           </Stack>
           <Divider />
-          <AddButton
-            variant="contained"
-            color="primary"
-            label="addFile"
-            onClick={() => fileInputRef.current?.click()}
-          />
+          {editingEnabled && (
+            <AddButton
+              variant="contained"
+              color="primary"
+              label="addFile"
+              onClick={() => fileInputRef.current?.click()}
+            />
+          )}
         </Stack>
       </Stack>
     </Box>
