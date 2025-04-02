@@ -15,6 +15,7 @@
 - When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard changes button.
 - Copying a borehole did not update its casing references to the copied casings.
 - Importing a borehole with attachments assigned to a non-existent user id resulted in an error.
+- When exporting .zip archives for borehole whose names contained dots the .zip extraction was missing.
 
 ## v2.1.1125 - 2025-03-19
 
