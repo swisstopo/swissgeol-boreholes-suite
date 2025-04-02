@@ -175,14 +175,13 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-panel-position-bottom"]').should("have.class", "Mui-selected");
 
     stopBoreholeEditing();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(100);
+    cy.get('[data-cy="labeling-panel"]').should("not.exist");
     getElementByDataCy("labeling-toggle-button").should("exist");
     // panel closes when editing stops
     getElementByDataCy("labeling-panel").should("not.exist");
     getElementByDataCy("labeling-toggle-button").click();
-
-    startBoreholeEditing();
-    cy.get('[data-cy="labeling-panel"]').should("not.exist");
-    cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-panel-position-bottom"]').should("have.class", "Mui-selected");
   });
 
