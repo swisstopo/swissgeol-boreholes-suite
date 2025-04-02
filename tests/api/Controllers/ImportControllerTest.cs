@@ -244,6 +244,12 @@ public class ImportControllerTest
         Assert.IsNotNull(layer.LayerOrganicComponentCodes, nameof(layer.LayerOrganicComponentCodes).ShouldNotBeNullMessage());
         Assert.IsNotNull(layer.LayerUscs3Codes, nameof(layer.LayerUscs3Codes).ShouldNotBeNullMessage());
         Assert.IsNotNull(layer.LayerColorCodes, nameof(layer.LayerColorCodes).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 9104 }, layer.LayerDebrisCodes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerDebrisCodes));
+        CollectionAssert.AreEqual(new List<int> { 21110003 }, layer.LayerGrainShapeCodes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerGrainShapeCodes));
+        CollectionAssert.AreEqual(new List<int> { 21115007 }, layer.LayerGrainAngularityCodes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerGrainAngularityCodes));
+        CollectionAssert.AreEqual(new List<int> { 21108010 }, layer.LayerOrganicComponentCodes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerOrganicComponentCodes));
+        CollectionAssert.AreEqual(new List<int> { 23101010 }, layer.LayerUscs3Codes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerUscs3Codes));
+        CollectionAssert.AreEqual(new List<int> { 21112003 }, layer.LayerColorCodes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerColorCodes));
 
         // Assert stratigraphy’s lithological descriptions
         Assert.AreEqual(2, stratigraphy.LithologicalDescriptions.Count, nameof(stratigraphy.LithologicalDescriptions.Count));

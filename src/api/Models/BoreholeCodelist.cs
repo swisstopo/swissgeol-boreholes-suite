@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
@@ -15,12 +16,14 @@ public class BoreholeCodelist
     [JsonIgnore]
     public Borehole? Borehole { get; set; }
 
+    [IncludeInExport]
     [Column("identifier_id")]
     public int CodelistId { get; set; }
 
     [JsonIgnore]
     public Codelist? Codelist { get; set; }
 
+    [IncludeInExport]
     [Column("identifier_value")]
     public string Value { get; set; }
 }

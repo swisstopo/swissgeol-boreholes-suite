@@ -100,7 +100,7 @@ const ImportPanel = ({
           <BoreholeImportDropzone
             file={file}
             setFile={setFile}
-            acceptedFileTypes={["application/json", "text/csv", ".zip"]}
+            acceptedFileTypes={["application/json", "text/csv", "application/zip", "application/x-zip-compressed"]}
           />
           <Box>
             <Link sx={{ cursor: "pointer" }} variant="subtitle1" onClick={downloadCodelistCsv}>

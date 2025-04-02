@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using BDMS.Json;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -27,24 +28,28 @@ public class Instrumentation : IChangeTracking, IIdentifyable, ICasingReference
     /// <summary>
     /// Gets or sets the <see cref="Instrumentation"/>'s upper depth.
     /// </summary>
+    [IncludeInExport]
     [Column("from_depth")]
     public double? FromDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Instrumentation"/>'s lower depth.
     /// </summary>
+    [IncludeInExport]
     [Column("to_depth")]
     public double? ToDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Instrumentation"/>'s name.
     /// </summary>
+    [IncludeInExport]
     [Column("name")]
     public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the id <see cref="Instrumentation"/>'s kind.
     /// </summary>
+    [IncludeInExport]
     [Column("kind_id")]
     public int? KindId { get; set; }
 
@@ -56,6 +61,7 @@ public class Instrumentation : IChangeTracking, IIdentifyable, ICasingReference
     /// <summary>
     /// Gets or sets the id of the <see cref="Instrumentation"/>'s status.
     /// </summary>
+    [IncludeInExport]
     [Column("status_id")]
     public int? StatusId { get; set; }
 
@@ -67,12 +73,14 @@ public class Instrumentation : IChangeTracking, IIdentifyable, ICasingReference
     /// <summary>
     /// Gets or sets whether or not the <see cref="Instrumentation"/> belongs to an open borehole.
     /// </summary>
+    [IncludeInExport]
     [Column("is_open_borehole")]
     public bool IsOpenBorehole { get; set; }
 
     /// <summary>
     /// Gets or sets id of the <see cref="Instrumentation"/>'s casing.
     /// </summary>
+    [IncludeInExport]
     [Column("casing_id")]
     public int? CasingId { get; set; }
 
@@ -84,6 +92,7 @@ public class Instrumentation : IChangeTracking, IIdentifyable, ICasingReference
     /// <summary>
     /// Gets or sets the <see cref="Instrumentation"/>'s notes.
     /// </summary>
+    [IncludeInExport]
     [Column("notes")]
     public string? Notes { get; set; }
 

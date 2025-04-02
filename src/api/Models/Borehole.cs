@@ -1,7 +1,6 @@
-﻿using NetTopologySuite.Geometries;
+﻿using BDMS.Json;
+using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics;
-using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -12,6 +11,7 @@ namespace BDMS.Models;
 public class Borehole : IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("id_bho")]
     public int Id { get; set; }
 
@@ -23,10 +23,12 @@ public class Borehole : IChangeTracking, IIdentifyable
     public User? CreatedBy { get; set; }
 
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("created_bho")]
     public DateTime? Created { get; set; }
 
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("updated_bho")]
     public DateTime? Updated { get; set; }
 
@@ -68,12 +70,14 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets whether the <see cref="Borehole"/> is public.
     /// </summary>
+    [IncludeInExport]
     [Column("public_bho")]
     public bool? IsPublic { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s type id.
     /// </summary>
+    [IncludeInExport]
     [Column("borehole_type_id")]
     public int? TypeId { get; set; }
 
@@ -85,66 +89,77 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s X-location using LV95 coordinates.
     /// </summary>
+    [IncludeInExport]
     [Column("location_x_bho")]
     public double? LocationX { get; set; }
 
     /// <summary>
     /// Gets or sets the precision for the <see cref="Borehole"/>'s X-location (LV95).
     /// </summary>
+    [IncludeInExport]
     [Column("precision_location_x")]
     public int? PrecisionLocationX { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Y-location using LV95 coordinates.
     /// </summary>
+    [IncludeInExport]
     [Column("location_y_bho")]
     public double? LocationY { get; set; }
 
     /// <summary>
     /// Gets or sets the precision for the <see cref="Borehole"/>'s Y-location (LV95).
     /// </summary>
+    [IncludeInExport]
     [Column("precision_location_y")]
     public int? PrecisionLocationY { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s X-location using LV03 coordinates.
     /// </summary>
+    [IncludeInExport]
     [Column("location_x_lv03_bho")]
     public double? LocationXLV03 { get; set; }
 
     /// <summary>
     /// Gets or sets the precision for the <see cref="Borehole"/>'s X-location (LV03).
     /// </summary>
+    [IncludeInExport]
     [Column("precision_location_x_lv03")]
     public int? PrecisionLocationXLV03 { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Y-location using LV03 coordinates.
     /// </summary>
+    [IncludeInExport]
     [Column("location_y_lv03_bho")]
     public double? LocationYLV03 { get; set; }
 
     /// <summary>
     /// Gets or sets the precision for the <see cref="Borehole"/>'s Y-location (LV03).
     /// </summary>
+    [IncludeInExport]
     [Column("precision_location_y_lv03")]
     public int? PrecisionLocationYLV03 { get; set; }
 
     /// <summary>
     /// Gets or sets the original reference system.
     /// </summary>
+    [IncludeInExport]
     [Column("srs_id_cli")]
     public ReferenceSystem? OriginalReferenceSystem { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Elevation(Z).
     /// </summary>
+    [IncludeInExport]
     [Column("elevation_z_bho")]
     public double? ElevationZ { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s HrsId.
     /// </summary>
+    [IncludeInExport]
     [Column("hrs_id_cli")]
     public int? HrsId { get; set; }
 
@@ -153,12 +168,14 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s total depth.
     /// </summary>
+    [IncludeInExport]
     [Column("total_depth_bho")]
     public double? TotalDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s restriction id.
     /// </summary>
+    [IncludeInExport]
     [Column("restriction_id_cli")]
     public int? RestrictionId { get; set; }
 
@@ -167,30 +184,35 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the timestamp until when a <see cref="Borehole"/> is restricted.
     /// </summary>
+    [IncludeInExport]
     [Column("restriction_until_bho")]
     public DateTime? RestrictionUntil { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s national interest.
     /// </summary>
+    [IncludeInExport]
     [Column("national_interest")]
     public bool? NationalInterest { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s original name.
     /// </summary>
+    [IncludeInExport]
     [Column("original_name_bho")]
     public string? OriginalName { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s alternate name.
     /// </summary>
+    [IncludeInExport]
     [Column("alternate_name_bho")]
     public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s location precision.
     /// </summary>
+    [IncludeInExport]
     [Column("qt_location_id_cli")]
     public int? LocationPrecisionId { get; set; }
 
@@ -199,6 +221,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s elevation precision id.
     /// </summary>
+    [IncludeInExport]
     [Column("qt_elevation_id_cli")]
     public int? ElevationPrecisionId { get; set; }
 
@@ -210,30 +233,35 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s project name.
     /// </summary>
+    [IncludeInExport]
     [Column("project_name_bho")]
     public string? ProjectName { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s country.
     /// </summary>
+    [IncludeInExport]
     [Column("country_bho")]
     public string? Country { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s canton.
     /// </summary>
+    [IncludeInExport]
     [Column("canton_bho")]
     public string? Canton { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s municipality.
     /// </summary>
+    [IncludeInExport]
     [Column("municipality_bho")]
     public string? Municipality { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s purpose id.
     /// </summary>
+    [IncludeInExport]
     [Column("purpose_id_cli")]
     public int? PurposeId { get; set; }
 
@@ -245,6 +273,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s status id.
     /// </summary>
+    [IncludeInExport]
     [Column("status_id_cli")]
     public int? StatusId { get; set; }
 
@@ -256,6 +285,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Depth presicion id.
     /// </summary>
+    [IncludeInExport]
     [Column("qt_depth_id_cli")]
     public int? DepthPrecisionId { get; set; }
 
@@ -267,36 +297,42 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s top bedrock.
     /// </summary>
+    [IncludeInExport]
     [Column("top_bedrock_fresh_md")]
     public double? TopBedrockFreshMd { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s weathered top bedrock.
     /// </summary>
+    [IncludeInExport]
     [Column("top_bedrock_weathered_md")]
     public double? TopBedrockWeatheredMd { get; set; }
 
     /// <summary>
     /// Gets or sets whether the <see cref="Borehole"/> has groundwater.
     /// </summary>
+    [IncludeInExport]
     [Column("groundwater_bho")]
     public bool? HasGroundwater { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s geometry.
     /// </summary>
+    [IncludeInExport]
     [Column("geom_bho")]
     public Point? Geometry { get; set; }
 
     /// <summary>
     /// Gets or sets remarks for  the <see cref="Borehole"/>.
     /// </summary>
+    [IncludeInExport]
     [Column("remarks_bho")]
     public string? Remarks { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s lithology top bedrock id.
     /// </summary>
+    [IncludeInExport]
     [Column("lithology_top_bedrock_id_cli")]
     public int? LithologyTopBedrockId { get; set; }
 
@@ -308,6 +344,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s lithostratigraphy top bedrock id.
     /// </summary>
+    [IncludeInExport]
     [Column("lithostrat_id_cli")]
     public int? LithostratigraphyTopBedrockId { get; set; }
 
@@ -319,6 +356,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s chronostratigraphy top bedrock id.
     /// </summary>
+    [IncludeInExport]
     [Column("chronostrat_id_cli")]
     public int? ChronostratigraphyTopBedrockId { get; set; }
 
@@ -330,12 +368,14 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation.
     /// </summary>
+    [IncludeInExport]
     [Column("reference_elevation_bho")]
     public double? ReferenceElevation { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation precision id.
     /// </summary>
+    [IncludeInExport]
     [Column("qt_reference_elevation_id_cli")]
     public int? ReferenceElevationPrecisionId { get; set; }
 
@@ -347,6 +387,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation type id.
     /// </summary>
+    [IncludeInExport]
     [Column("reference_elevation_type_id_cli")]
     public int? ReferenceElevationTypeId { get; set; }
 
@@ -371,6 +412,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets whether <see cref="Borehole"/>'s top bedrock was intersected.
     /// </summary>
+    [IncludeInExport]
     [Column("top_bedrock_intersected")]
     public bool? TopBedrockIntersected { get; set; }
 
@@ -382,26 +424,31 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s stratigraphies.
     /// </summary>
+    [IncludeInExport]
     public ICollection<Stratigraphy>? Stratigraphies { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s completions.
     /// </summary>
+    [IncludeInExport]
     public ICollection<Completion>? Completions { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s <see cref="Section"/>s.
     /// </summary>
+    [IncludeInExport]
     public ICollection<Section>? Sections { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s <see cref="BoreholeGeometry"/>.
     /// </summary>
+    [IncludeInExport]
     public IList<BoreholeGeometryElement>? BoreholeGeometry { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s observations.
     /// </summary>
+    [IncludeInExport]
     public ICollection<Observation>? Observations { get; set; }
 
     /// <summary>
@@ -417,6 +464,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="BoreholeFile"/> join table entities.
     /// </summary>
+    [IncludeInExport]
     public ICollection<BoreholeFile>? BoreholeFiles { get; set; }
 
     /// <summary>
@@ -427,5 +475,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the<see cref="BoreholeCodelist"/> join table entities.
     /// </summary>
+    [IncludeInExport]
     public IList<BoreholeCodelist>? BoreholeCodelists { get; set; } = new List<BoreholeCodelist>();
 }
