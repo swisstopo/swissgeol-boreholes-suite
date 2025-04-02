@@ -68,6 +68,7 @@ public class ExportController : ControllerBase
 
         if (!await HasUserPermissionsForBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
+        MapLayerCodelists(boreholes);
         return new JsonResult(boreholes, jsonExportOptions);
     }
 
@@ -319,6 +320,8 @@ public class ExportController : ControllerBase
 
         if (!await HasUserPermissionsForBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
+        MapLayerCodelists(boreholes);
+
         try
         {
             var files = await context.BoreholeFiles.Include(f => f.File).AsNoTracking().Where(f => idList.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
@@ -386,6 +389,30 @@ public class ExportController : ControllerBase
             .GroupBy(g => g.BoreholeId)
             .ToDictionaryAsync(group => group.Key, group => group.ToList())
             .ConfigureAwait(false);
+    }
+
+    private static void MapLayerCodelists(IEnumerable<Borehole> boreholes)
+    {
+        foreach (var borehole in boreholes)
+        {
+            MapLayerCodelists(borehole);
+        }
+    }
+
+    private static void MapLayerCodelists(Borehole borehole)
+    {
+        foreach (var stratigraphy in borehole.Stratigraphies)
+        {
+            foreach (var layer in stratigraphy.Layers)
+            {
+                layer.ColorCodelistIds = layer.LayerColorCodes?.Select(code => code.CodelistId).ToList();
+                layer.DebrisCodelistIds = layer.LayerDebrisCodes?.Select(code => code.CodelistId).ToList();
+                layer.GrainAngularityCodelistIds = layer.LayerGrainAngularityCodes?.Select(code => code.CodelistId).ToList();
+                layer.GrainShapeCodelistIds = layer.LayerGrainShapeCodes?.Select(code => code.CodelistId).ToList();
+                layer.OrganicComponentCodelistIds = layer.LayerOrganicComponentCodes?.Select(code => code.CodelistId).ToList();
+                layer.Uscs3CodelistIds = layer.LayerUscs3Codes?.Select(code => code.CodelistId).ToList();
+            }
+        }
     }
 
     private static bool ValidateIds(IEnumerable<int> ids, out List<int> idList)
