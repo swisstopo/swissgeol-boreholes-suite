@@ -9,6 +9,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material/";
+import { formatNumberForDisplay } from "../../../../components/form/formUtils.js";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 
 const GeometryTable = ({ data }) => {
@@ -38,7 +39,7 @@ const GeometryTable = ({ data }) => {
               {data.map((element, index) => (
                 <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                   {Object.keys(element).map(key => (
-                    <TableCell key={key}>{element[key]?.toFixed(3) ?? "-"}</TableCell>
+                    <TableCell key={key}>{formatNumberForDisplay(element[key])}</TableCell>
                   ))}
                 </TableRow>
               ))}
