@@ -1,18 +1,18 @@
-import { createContext, FC, PropsWithChildren, useState } from "react";
+import { createContext, Dispatch, FC, PropsWithChildren, SetStateAction, useState } from "react";
 import Polygon from "ol/geom/Polygon";
 import { ShowAllActiveFields } from "./filterData/filterInterfaces.ts";
 
 interface FilterContextInterface {
   filterPolygon: Polygon | null;
-  setFilterPolygon: (filterPolygon: Polygon | null) => void;
+  setFilterPolygon: Dispatch<SetStateAction<Polygon | null>>;
   polygonSelectionEnabled: boolean;
-  setPolygonSelectionEnabled: (polygonSelectionEnabled: boolean) => void;
+  setPolygonSelectionEnabled: Dispatch<SetStateAction<boolean>>;
   featureIds: number[];
-  setFeatureIds: (featureIds: number[]) => void;
+  setFeatureIds: Dispatch<SetStateAction<number[]>>;
   activeFilterLength: number;
-  setActiveFilterLength: (length: number) => void;
+  setActiveFilterLength: Dispatch<SetStateAction<number>>;
   showAllActiveFields: Partial<ShowAllActiveFields>;
-  setShowAllActiveFields: (showAllActive: Partial<ShowAllActiveFields>) => void;
+  setShowAllActiveFields: Dispatch<SetStateAction<Partial<ShowAllActiveFields>>>;
 }
 
 export const FilterContext = createContext<FilterContextInterface>({

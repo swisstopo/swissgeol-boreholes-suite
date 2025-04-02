@@ -6,7 +6,7 @@ import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
 import { FilterContext } from "./filterContext.tsx";
 import { Filter, FilterChipsProps } from "./filterData/filterInterfaces.ts";
 
-const FilterChips = ({ activeFilters, setFilter, formMethods }: FilterChipsProps) => {
+const FilterChips = ({ activeFilters, setActiveFilters, setFilter, formMethods }: FilterChipsProps) => {
   const { t } = useTranslation();
   const { filterPolygon, setFilterPolygon, setFeatureIds, setPolygonSelectionEnabled } = useContext(FilterContext);
   const boolFilterKeys = ["national_interest", "groundwater", "striae"];
@@ -22,7 +22,7 @@ const FilterChips = ({ activeFilters, setFilter, formMethods }: FilterChipsProps
     } else {
       setFilter(filter.key, "");
     }
-    activeFilters = activeFilters?.filter(f => f !== filter);
+    setActiveFilters(prevFilters => prevFilters?.filter(f => f !== filter));
   };
 
   return (

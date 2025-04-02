@@ -57,7 +57,6 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    // @ts-expect-error, I cant make typescript happy 😭
     setShowAllActiveFields((previous: Partial<ShowAllActiveFields>) => {
       return { ...previous, [inputConfig?.name]: e.target.checked };
     });

@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 export interface SearchData {
@@ -45,6 +46,7 @@ export type ShowAllActiveFields = Record<FilterSectionName, boolean>;
 
 export interface FilterChipsProps {
   activeFilters?: Filter[];
+  setActiveFilters: Dispatch<SetStateAction<Filter[] | undefined>>;
   setFilter: (key: string, value: string | boolean | number | null) => void;
   formMethods: UseFormReturn;
 }

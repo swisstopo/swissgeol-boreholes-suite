@@ -149,7 +149,12 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   return (
     <Stack direction="column" sx={{ height: "100%" }}>
       <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
-      <FilterChips activeFilters={activeFilters} setFilter={setFilter} formMethods={formMethods} />
+      <FilterChips
+        activeFilters={activeFilters}
+        setFilter={setFilter}
+        setActiveFilters={setActiveFilters}
+        formMethods={formMethods}
+      />
       <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
         <Button
           onClick={() => {
