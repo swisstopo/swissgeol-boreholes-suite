@@ -17,8 +17,8 @@ const CasingDisplay = props => {
     <DataDisplayCard item={item} deleteData={deleteCasing}>
       <FormDisplay label="name" value={item?.name} />
       <FormContainer direction="row">
-        <FormDisplay label="fromdepth" value={depth.min} type={FormValueType.Number} />
-        <FormDisplay label="todepth" value={depth.max} type={FormValueType.Number} />
+        <FormDisplay label="fromdepth" value={depth.min} />
+        <FormDisplay label="todepth" value={depth.max} />
       </FormContainer>
       <FormContainer direction="row">
         <FormDisplay label="dateStartCasing" value={item?.dateStart} type={FormValueType.Date} />

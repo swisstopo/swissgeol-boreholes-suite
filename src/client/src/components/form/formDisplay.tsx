@@ -20,7 +20,7 @@ export const FormDisplay: FC<FormDisplayProps> = ({ prefix, label, value, type, 
   const convert = (value: string | number | boolean | Codelist | undefined | null): string => {
     if ((value !== 0 && value == undefined) || value === "") {
       return "-";
-    } else if (type === FormValueType.Number) {
+    } else if (typeof value === "number") {
       return formatNumberForDisplay(value as number);
     } else if (type === FormValueType.Date) {
       const date = new Date(value as string);

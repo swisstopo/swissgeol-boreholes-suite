@@ -15,13 +15,8 @@ const SectionDisplay = ({ item }) => {
         .map((element, index) => (
           <FormContainer key={element.id}>
             <FormContainer direction="row">
-              <FormDisplay
-                prefix={`${index}.`}
-                label="fromdepth"
-                value={element.fromDepth}
-                type={FormValueType.Number}
-              />
-              <FormDisplay prefix={`${index}.`} label="todepth" value={element.toDepth} type={FormValueType.Number} />
+              <FormDisplay prefix={`${index}.`} label="fromdepth" value={element.fromDepth} />
+              <FormDisplay prefix={`${index}.`} label="todepth" value={element.toDepth} />
             </FormContainer>
             <FormContainer direction="row">
               <FormDisplay
@@ -66,18 +61,8 @@ const SectionDisplay = ({ item }) => {
               />
             </FormContainer>
             <FormContainer direction="row">
-              <FormDisplay
-                prefix={`${index}.`}
-                label="drill_diameter"
-                value={element.drillingDiameter}
-                type={FormValueType.Number}
-              />
-              <FormDisplay
-                prefix={`${index}.`}
-                label="drill_core_diameter"
-                value={element.drillingCoreDiameter}
-                type={FormValueType.Number}
-              />
+              <FormDisplay prefix={`${index}.`} label="drill_diameter" value={element.drillingDiameter} />
+              <FormDisplay prefix={`${index}.`} label="drill_core_diameter" value={element.drillingCoreDiameter} />
             </FormContainer>
             <FormDisplay
               prefix={`${index}.`}

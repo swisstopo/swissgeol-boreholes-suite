@@ -10,8 +10,8 @@ const InstrumentationDisplay = props => {
   return (
     <DataDisplayCard item={item} deleteData={deleteInstrumentation}>
       <FormContainer direction="row">
-        <FormDisplay label="fromdepth" value={item?.fromDepth} type={FormValueType.Number} />
-        <FormDisplay label="todepth" value={item?.toDepth} type={FormValueType.Number} />
+        <FormDisplay label="fromdepth" value={item?.fromDepth} />
+        <FormDisplay label="todepth" value={item?.toDepth} />
       </FormContainer>
       <FormContainer direction="row">
         <FormDisplay label="name" value={item?.name} />

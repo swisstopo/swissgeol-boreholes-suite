@@ -12,8 +12,8 @@ export const GroundwaterLevelMeasurementDisplay: FC<{ item: GroundwaterLevelMeas
         <FormDisplay label="gwlm_kind" value={item?.kind} type={FormValueType.Domain} />
       </FormContainer>
       <FormContainer direction="row">
-        <FormDisplay label="gwlm_levelmasl" value={item?.levelMasl} type={FormValueType.Number} />
-        <FormDisplay label="gwlm_levelm" value={item?.levelM} type={FormValueType.Number} />
+        <FormDisplay label="gwlm_levelmasl" value={item?.levelMasl} />
+        <FormDisplay label="gwlm_levelm" value={item?.levelM} />
       </FormContainer>
     </DataDisplayCard>
   );
