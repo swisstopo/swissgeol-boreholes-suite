@@ -15,7 +15,7 @@ import {
 import { referenceSystems } from "../../../detail/form/location/coordinateSegmentConstants.ts";
 import HierarchicalDataSearch from "../../../detail/form/stratigraphy/hierarchicalDataSearch";
 import { FilterContext } from "./filterContext.tsx";
-import { FilterInputConfig, ShowAllActiveFields } from "./filterData/fiterInterfaces.ts";
+import { FilterInputConfig, ShowAllActiveFields } from "./filterData/filterInterfaces.ts";
 
 interface ListFilterProps {
   inputConfig: FilterInputConfig;

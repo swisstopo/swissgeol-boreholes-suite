@@ -1,6 +1,6 @@
 import { createContext, FC, PropsWithChildren, useState } from "react";
 import Polygon from "ol/geom/Polygon";
-import { ShowAllActiveFields } from "./filterData/fiterInterfaces.ts";
+import { ShowAllActiveFields } from "./filterData/filterInterfaces.ts";
 
 interface FilterContextInterface {
   filterPolygon: Polygon | null;

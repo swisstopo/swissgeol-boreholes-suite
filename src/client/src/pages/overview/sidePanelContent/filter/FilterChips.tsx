@@ -4,7 +4,7 @@ import { Box, Chip, Tooltip } from "@mui/material";
 import { CircleX } from "lucide-react";
 import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
 import { FilterContext } from "./filterContext.tsx";
-import { Filter, FilterChipsProps } from "./filterData/fiterInterfaces.ts";
+import { Filter, FilterChipsProps } from "./filterData/filterInterfaces.ts";
 
 const FilterChips = ({ activeFilters, setFilter, formMethods }: FilterChipsProps) => {
   const { t } = useTranslation();

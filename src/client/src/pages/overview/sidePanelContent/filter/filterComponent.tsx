@@ -12,7 +12,7 @@ import FilterChips from "./FilterChips.tsx";
 import { FilterContext } from "./filterContext.tsx";
 import { boreholeSearchData } from "./filterData/boreholeSearchData.js";
 import { chronostratigraphySearchData } from "./filterData/chronostratigraphySearchData.js";
-import { Filter, FilterComponentProps, FilterInputConfig } from "./filterData/fiterInterfaces.ts";
+import { Filter, FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
 import { lithologySearchData } from "./filterData/lithologySearchData.js";
 import { lithostratigraphySearchData } from "./filterData/lithostratigraphySearchData.js";
 import { LocationSearchData } from "./filterData/LocationSearchData.js";
