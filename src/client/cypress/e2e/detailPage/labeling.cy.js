@@ -20,6 +20,13 @@ const isFileActive = (fileName, isActive) => {
     .should(isActive ? "exist" : "not.exist");
 };
 
+const assertSelectContent = fileNames => {
+  cy.get('[data-cy*="button-select-item"]').should("have.length", fileNames.length);
+  fileNames.forEach(fileName => {
+    cy.get('[data-cy*="button-select-item"]').contains(fileName).should("exist");
+  });
+};
+
 function assertDrawTooltip(content) {
   cy.get('[data-cy="labeling-draw-tooltip"]').should("be.visible");
   cy.get('[data-cy="labeling-draw-tooltip"]').contains(content);
@@ -144,21 +151,19 @@ function moveMouseOntoMap() {
 }
 
 describe("Test labeling tool", () => {
-  it("can show labeling panel", () => {
+  it("can show labeling panel ", () => {
     goToRouteAndAcceptTerms("/");
     newUneditableBorehole().as("borehole_id");
-    // only show in editing mode
-    cy.get('[data-cy="labeling-toggle-button"]').should("not.exist");
 
     // panel is closed by default
     startBoreholeEditing();
-    cy.get('[data-cy="labeling-toggle-button"]').should("exist");
-    cy.get('[data-cy="labeling-panel"]').should("not.exist");
+    getElementByDataCy("labeling-toggle-button").should("exist");
+    getElementByDataCy("labeling-panel").should("not.exist");
 
     // panel can be opened and closed
-    cy.get('[data-cy="labeling-toggle-button"]').click();
+    getElementByDataCy("labeling-toggle-button").click();
     cy.get('[data-cy="labeling-panel"]').should("exist");
-    cy.get('[data-cy="labeling-toggle-button"]').click();
+    getElementByDataCy("labeling-toggle-button").click();
     cy.get('[data-cy="labeling-panel"]').should("not.exist");
 
     // panel open state should be reset when editing is stopped, panel position should be preserved
@@ -170,7 +175,11 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-panel-position-bottom"]').should("have.class", "Mui-selected");
 
     stopBoreholeEditing();
-    cy.get('[data-cy="labeling-panel"]').should("not.exist");
+    getElementByDataCy("labeling-toggle-button").should("exist");
+    // panel closes when editing stops
+    getElementByDataCy("labeling-panel").should("not.exist");
+    getElementByDataCy("labeling-toggle-button").click();
+
     startBoreholeEditing();
     cy.get('[data-cy="labeling-panel"]').should("not.exist");
     cy.get('[data-cy="labeling-toggle-button"]').click();
@@ -192,6 +201,7 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-toggle-button"]').click();
     cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
     cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.").should("not.exist");
+    getElementByDataCy("addfile-button").should("exist");
     cy.get('[data-cy="labeling-file-selector"]').contains("borehole_attachment_1.pdf").should("exist");
     cy.get('[data-cy="labeling-file-dropzone"]').attachFile("import/borehole_attachment_3.pdf", {
       subjectType: "drag-n-drop",
@@ -199,6 +209,7 @@ describe("Test labeling tool", () => {
     cy.wait("@get-borehole-files");
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
     cy.get('[data-cy="labeling-file-button-select"]').click();
+    assertSelectContent(["borehole_attachment_1.pdf", "borehole_attachment_3.pdf", "Add document"]);
 
     isFileActive("borehole_attachment_1.pdf", false);
     isFileActive("borehole_attachment_3.pdf", true);
@@ -216,6 +227,34 @@ describe("Test labeling tool", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
     });
+    stopBoreholeEditing();
+    getElementByDataCy("labeling-toggle-button").should("exist");
+    getElementByDataCy("labeling-panel").should("not.exist");
+    getElementByDataCy("labeling-toggle-button").click();
+    getElementByDataCy("labeling-panel").should("exist");
+    getElementByDataCy("labeling-file-selector").contains("Existing documents").should("exist");
+    getElementByDataCy("addfile-button").should("not.exist");
+    getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_1.pdf");
+    getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_3.pdf");
+    getElementByDataCy("labeling-file-selector-button").contains("WOLFHEART.pdf");
+    getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_3.pdf").click();
+    waitForLabelingImageLoaded();
+    getElementByDataCy("text-extraction-button").should("not.exist");
+
+    //can zoom and rotate
+    cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
+    cy.get('[data-cy="rotate-button"]').click();
+    cy.window().then(win => {
+      const view = win.labelingImage.getView();
+      expect(view.getRotation()).to.equal(Math.PI / 2);
+    });
+
+    getElementByDataCy("labeling-file-button-select").click();
+    assertSelectContent(["borehole_attachment_1.pdf", "borehole_attachment_3.pdf", "WOLFHEART.pdf"]);
+    cy.contains("Add document").should("not.exist");
+    // can select different file from dropdown
+    cy.get(".MuiListItem-root").contains("WOLFHEART.pdf").click();
+    getElementByDataCy("labeling-file-button-select").contains("WOLFHEART.pdf");
   });
 
   it("can extract coordinates and reference system from image", () => {

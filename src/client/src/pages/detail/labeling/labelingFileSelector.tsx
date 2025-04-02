@@ -100,6 +100,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
                   key={file.name}
                   startIcon={<FileIcon />}
                   variant="outlined"
+                  data-cy="labeling-file-selector-button"
                   sx={{ justifyContent: "start" }}
                   onClick={event => {
                     event.stopPropagation();
