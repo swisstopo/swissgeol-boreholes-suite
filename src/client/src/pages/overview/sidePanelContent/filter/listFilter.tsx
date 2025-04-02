@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useContext, useMemo } from "react";
+import { ChangeEvent, FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, FormControlLabel, Switch, TextField } from "@mui/material";
 import _ from "lodash";
@@ -52,9 +52,12 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
     return isVisibleCounter !== searchData?.length;
   };
 
-  const updateChange = (attribute: string, value: string | boolean | number | null) => {
-    setFilter(attribute, value);
-  };
+  const updateChange = useCallback(
+    (attribute: string, value: string | boolean | number | null) => {
+      setFilter(attribute, value);
+    },
+    [setFilter],
+  );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setShowAllActiveFields((previous: Partial<ShowAllActiveFields>) => {
