@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useCallback, useContext } from "react";
+import { ChangeEvent, FC, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, FormControlLabel, Switch, TextField } from "@mui/material";
 import _ from "lodash";
@@ -62,12 +62,11 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
     });
   };
 
-  // suppressed warning: React Hook useCallback received a function whose dependencies are unknown. => because of debounce
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedChange = useCallback(
-    _.debounce((filterValue: string, value: string) => {
-      updateChange(filterValue, value);
-    }, 500),
+  const debouncedChange = useMemo(
+    () =>
+      _.debounce((filterValue: string, value: string) => {
+        updateChange(filterValue, value);
+      }, 500),
     [updateChange],
   );
 
