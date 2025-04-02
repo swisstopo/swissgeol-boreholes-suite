@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import { deleteBoreholes } from "../../../api-lib";
-import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { Boreholes, Filters, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { copyBorehole } from "../../../api/borehole.ts";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
@@ -13,17 +13,17 @@ import { BottomDrawer } from "./bottomDrawer.tsx";
 
 interface BottomBarContainerProps {
   boreholes: Boreholes;
-  search: { filter: string };
+  filters: Filters;
   setHover: React.Dispatch<React.SetStateAction<number | null>>;
   loadEditingBoreholes: (
     page: number,
     limit: number,
-    filter: string,
+    filter: Record<string, unknown>,
     orderby: string,
     direction: string,
     featureIds: number[],
   ) => void;
-  multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
+  multipleSelected: (selection: GridRowSelectionModel, filter: Record<string, unknown>) => void;
   rowToHighlight: number | null;
   selectionModel: GridRowSelectionModel;
   setSelectionModel: React.Dispatch<React.SetStateAction<GridRowSelectionModel>>;
@@ -34,7 +34,7 @@ const BottomBarContainer = ({
   boreholes,
   loadEditingBoreholes,
   multipleSelected,
-  search,
+  filters,
   setHover,
   rowToHighlight,
   selectionModel,
@@ -64,12 +64,12 @@ const BottomBarContainer = ({
     loadEditingBoreholes(
       paginationModel.page + 1, // MUI pagination starts at 0, whereas server pagination starts at 1
       paginationModel.pageSize,
-      search.filter,
+      filters.filter,
       sortModel[0]?.field || "alternate_name",
       sortModel[0]?.sort === "desc" ? "DESC" : "ASC",
       featureIds,
     );
-  }, [paginationModel, search, sortModel, loadEditingBoreholes, featureIds]);
+  }, [paginationModel, filters, sortModel, loadEditingBoreholes, featureIds]);
 
   // LayoutEffect prevents cached table data to appear before reload
   useLayoutEffect(() => {
@@ -99,7 +99,7 @@ const BottomBarContainer = ({
         multipleSelected={multipleSelected}
         onCopyBorehole={onCopyBorehole}
         onDeleteMultiple={onDeleteMultiple}
-        search={search}
+        filters={filters}
         boreholes={boreholes}
         workgroup={workgroupId}
         setWorkgroup={setWorkgroupId}

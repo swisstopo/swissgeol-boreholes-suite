@@ -5,7 +5,7 @@ import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import { capitalizeFirstLetter } from "../../../../utils";
 
 interface StatusFilterProps {
-  selectedRole: string;
+  selectedRole?: string;
   setFilter: (key: string, value: string) => void;
 }
 export const StatusFilter: FC<StatusFilterProps> = ({ selectedRole, setFilter }) => {

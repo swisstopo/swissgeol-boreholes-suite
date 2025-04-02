@@ -5,7 +5,7 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ArrowDownToLine, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
-import { Boreholes, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { Boreholes, Filters, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
@@ -17,8 +17,8 @@ import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 interface BottomBarProps {
   boreholes: Boreholes;
   selectionModel: GridRowSelectionModel;
-  multipleSelected: (selection: GridRowSelectionModel, filter: string) => void;
-  search: { filter: string };
+  multipleSelected: (selection: GridRowSelectionModel, filter: Record<string, unknown>) => void;
+  filters: Filters;
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
   workgroup: number | null;
@@ -30,7 +30,7 @@ const BottomBar = ({
   selectionModel,
   multipleSelected,
   onDeleteMultiple,
-  search,
+  filters,
   onCopyBorehole,
   boreholes,
   workgroup,
@@ -79,7 +79,7 @@ const BottomBar = ({
   }, [copyPromptOpen, promptIsOpen, showCopyPromptForSelectedWorkgroup, workgroup]);
 
   function bulkEditSelected() {
-    multipleSelected(selectionModel, search.filter);
+    multipleSelected(selectionModel, filters.filter);
   }
 
   const showPromptExportMoreThan100 = (callback: () => void) => {
