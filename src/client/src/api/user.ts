@@ -29,45 +29,64 @@ export const useUsers = () => {
   return query;
 };
 
+export const useSelectedUser = (id: number) => {
+  const query = useQuery({
+    queryKey: [usersQueryKey, id],
+    queryFn: async () => {
+      return await fetchUser(id);
+    },
+    enabled: !!id,
+  });
+
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
+
 export const useUserMutations = () => {
   const queryClient = useQueryClient();
   const useUpdateUser = useMutation({
     mutationFn: async (user: User) => {
       return await updateUser(user);
     },
-    // Optimistic update
     onMutate: async (updatedUser: User) => {
       await queryClient.cancelQueries({ queryKey: [usersQueryKey] });
       const previousUsers = queryClient.getQueryData<User[]>([usersQueryKey]);
+      const previousSelectedUser = queryClient.getQueryData<User>([usersQueryKey, updatedUser.id]);
       queryClient.setQueryData<User[]>([usersQueryKey], old =>
         old?.map(user => (user.id === updatedUser.id ? { ...user, ...updatedUser } : user)),
       );
-      return { previousUsers };
+      queryClient.setQueryData<User>([usersQueryKey, updatedUser.id], old => ({ ...old, ...updatedUser }));
+      return { previousUsers, previousSelectedUser };
     },
-    // Rollback on error
     onError: (_err, _newUser, context) => {
       if (context?.previousUsers) {
         queryClient.setQueryData([usersQueryKey], context.previousUsers);
       }
+      if (context?.previousSelectedUser) {
+        queryClient.setQueryData([usersQueryKey, _newUser.id], context.previousSelectedUser);
+      }
     },
-    onSettled: () => {
+
+    onSettled: (_data, _error, updatedUser) => {
+      queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
+      queryClient.invalidateQueries({ queryKey: [usersQueryKey, updatedUser.id] });
+    },
+  });
+
+  const useDeleteUser = useMutation({
+    mutationFn: async (userId: number) => {
+      return await deleteUser(userId);
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
     },
   });
 
-  const useDeleteuseUser = useMutation({
-    mutationFn: async (workgroupId: number) => {
-      return await deleteUser(workgroupId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [usersQueryKey],
-      });
-    },
-  });
+  useShowAlertOnError(useUpdateUser.isError, useUpdateUser.error);
+  useShowAlertOnError(useDeleteUser.isError, useDeleteUser.error);
 
   return {
     update: useUpdateUser,
-    delete: useDeleteuseUser,
+    delete: useDeleteUser,
   };
 };

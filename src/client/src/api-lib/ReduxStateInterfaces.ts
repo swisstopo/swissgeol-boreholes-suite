@@ -21,10 +21,10 @@ export interface SettingData {
     explorer: string;
   };
 }
-export interface Filters {
-  filter: string;
-}
 
+export interface Filters {
+  filter: Record<string, unknown>;
+}
 export interface EditorStore {
   mselected: number[];
 }

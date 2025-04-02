@@ -4,20 +4,17 @@ import { Box, Chip, Tooltip } from "@mui/material";
 import { CircleX } from "lucide-react";
 import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
 import { FilterContext } from "./filterContext.tsx";
-import { Filter } from "./FilterInterface.ts";
+import { Filter, FilterChipsProps } from "./filterData/filterInterfaces.ts";
 
-interface FilterChipsProps {
-  activeFilters: Filter[];
-  setFilter: (key: string, value: string | boolean | number | null) => void;
-}
-
-const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
+const FilterChips = ({ activeFilters, setActiveFilters, setFilter, formMethods }: FilterChipsProps) => {
   const { t } = useTranslation();
   const { filterPolygon, setFilterPolygon, setFeatureIds, setPolygonSelectionEnabled } = useContext(FilterContext);
-
   const boolFilterKeys = ["national_interest", "groundwater", "striae"];
 
+  if (!activeFilters) return;
+
   const onRemoveFilter = (filter: Filter) => {
+    formMethods.resetField(filter.key);
     if (boolFilterKeys.includes(filter.key)) {
       setFilter(filter.key, -1);
     } else if (typeof filter.value === "number") {
@@ -25,12 +22,12 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
     } else {
       setFilter(filter.key, "");
     }
-    activeFilters = activeFilters.filter(f => f !== filter);
+    setActiveFilters(prevFilters => prevFilters?.filter(f => f !== filter));
   };
 
   return (
-    <Box sx={{ marginBottom: activeFilters.length > 0 ? "14px" : undefined }}>
-      {activeFilters.map((filter, index) => {
+    <Box sx={{ marginBottom: activeFilters?.length > 0 ? "14px" : undefined }}>
+      {activeFilters?.map((filter, index) => {
         const customFilterLabels: { [key: string]: string } = {
           role: "status",
           status: "boreholestatus",

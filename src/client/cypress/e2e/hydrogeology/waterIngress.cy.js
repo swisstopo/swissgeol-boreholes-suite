@@ -156,7 +156,7 @@ describe("Tests for the wateringress editor.", () => {
       cy.wait("@get-boreholegeometry-depth-masl");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should(
         "have.value",
-        "3976",
+        "3'976",
       );
 
       setInput("toDepthM", 55);
@@ -164,7 +164,7 @@ describe("Tests for the wateringress editor.", () => {
       cy.wait("@get-boreholegeometry-depth-masl");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should(
         "have.value",
-        "3945",
+        "3'945",
       );
 
       saveForm();
@@ -190,13 +190,13 @@ describe("Tests for the wateringress editor.", () => {
       setInput("fromDepthM", 500);
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should(
         "have.value",
-        "3976",
+        "3'976",
       );
 
       setInput("toDepthM", 300);
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should(
         "have.value",
-        "3945",
+        "3'945",
       );
 
       // Manually set depth in MASL

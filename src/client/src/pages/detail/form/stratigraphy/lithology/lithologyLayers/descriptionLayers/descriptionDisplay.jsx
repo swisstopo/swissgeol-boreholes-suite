@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
+import { formatNumberForDisplay } from "../../../../../../../components/form/formUtils.js";
 
 const DescriptionDisplay = props => {
   const { item, layerHeight } = props;
@@ -14,7 +15,7 @@ const DescriptionDisplay = props => {
         sx={{
           fontSize: fontSize + "px",
         }}>
-        {item.fromDepth} m MD
+        {formatNumberForDisplay(item.fromDepth)} m MD
       </Typography>
       {layerHeight >= 10 && (
         <>
@@ -40,7 +41,7 @@ const DescriptionDisplay = props => {
         sx={{
           fontSize: fontSize + "px",
         }}>
-        {item.toDepth} m MD
+        {formatNumberForDisplay(item.toDepth)} m MD
       </Typography>
     </Stack>
   );

@@ -114,6 +114,7 @@ class PointComponent extends React.Component {
     if (this.props.x !== 0 && this.props.y !== 0) {
       this.manageMapInteractions();
     }
+    window.pointOlMap = this.map;
   }
 
   componentDidUpdate(prevProps) {

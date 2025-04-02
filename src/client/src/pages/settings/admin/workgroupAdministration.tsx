@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Chip, Stack } from "@mui/material";
@@ -16,17 +16,11 @@ export const WorkgroupAdministration: FC = () => {
   const history = useHistory();
   const { data: workgroups } = useWorkgroups();
   const { data: users } = useUsers();
-  const { setSelectedWorkgroup, workgroupTableSortModel, setworkgroupTableSortModel } =
-    useContext(WorkgroupAdministrationContext);
+  const { workgroupTableSortModel, setworkgroupTableSortModel } = useContext(WorkgroupAdministrationContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
   const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts();
   const { workgroupNameColumn, boreholeCountColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
-
-  useEffect(() => {
-    setSelectedWorkgroup(null);
-  }, [setSelectedWorkgroup]);
-
   const userWorkgroupRoles = useMemo(() => users?.map(user => user.workgroupRoles).flat() ?? [], [users]);
 
   const renderUserChips = (params: GridRenderCellParams<Workgroup>) => {

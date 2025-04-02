@@ -13,9 +13,8 @@ import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput } fro
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils";
-import { getIsoDateIfDefined } from "../hydrogeologyFormUtils";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants";
-import { ObservationType } from "../Observation";
+import { ObservationType, prepareObservationDataForSubmit } from "../Observation";
 import ObservationInput from "../observationInput";
 import { getHydrotestParameterUnits } from "../parameterUnits";
 import { addHydrotest, Hydrotest, HydrotestInputProps, updateHydrotest, useHydrotestDomains } from "./Hydrotest";
@@ -142,10 +141,8 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
 
   const prepareFormDataForSubmit = (data: Hydrotest): Hydrotest => {
     data = prepareCasingDataForSubmit(data);
-    data.startTime = getIsoDateIfDefined(data?.startTime);
-    data.endTime = getIsoDateIfDefined(data?.endTime);
+    data = prepareObservationDataForSubmit(data, parentId);
     data.type = ObservationType.hydrotest;
-    data.boreholeId = parentId;
 
     if (Array.isArray(data.testKindId)) {
       data.kindCodelistIds = data.testKindId;
@@ -168,14 +165,10 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
         };
       });
     }
-    if (data.reliabilityId === "") {
-      data.reliabilityId = null;
-    }
 
     delete data.testKindId;
     delete data.flowDirectionId;
     delete data.evaluationMethodId;
-    delete data.reliability;
     return data;
   };
 

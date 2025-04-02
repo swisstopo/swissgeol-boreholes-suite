@@ -46,6 +46,7 @@ export const saveForm = parent => {
  * @param {string} parent (optional) The parent of the button.
  */
 export const discardChanges = parent => {
+  cy.contains("Unsaved changes");
   const selector = createBaseSelector(parent) + '[data-cy="discardchanges-button"]';
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });

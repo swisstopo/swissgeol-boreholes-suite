@@ -7,9 +7,15 @@
 
 ### Changed
 - The text extraction button is now disabled when the text extraction is in progress.
+- Update legal links in disclaimer for all languages.
+- Number inputs in the borehole sections, hydrogeology, completion and layer descriptions are now displayed with thousand separators.
+- The borehole geometry charts and tables now display numbers with thousand separators.
+- Bump data extraction API version to v1.0.30.
+- Inputs in filters now have the new UI style.
 - Reduced data of exported JSON files.
 
 ### Fixed
+- When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard changes button.
 - Copying a borehole did not update its casing references to the copied casings.
 - Importing a borehole with attachments assigned to a non-existent user id resulted in an error.
 

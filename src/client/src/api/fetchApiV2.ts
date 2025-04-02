@@ -224,14 +224,18 @@ export const updateStratigraphy = async (stratigraphy: Stratigraphy): Promise<St
 };
 
 // Enable using react-query outputs across the application.
+
+const staleTime10Min = 10 * 60 * 1000;
+const garbageCollectionTime15Min = 15 * 60 * 1000;
+
 export const useDomains = () =>
   useQuery({
     queryKey: ["domains"],
     queryFn: () => {
       return fetchApiV2("codelist", "GET");
     },
-    staleTime: 10 * (60 * 1000), // 10 mins
-    gcTime: 15 * (60 * 1000), // 15 mins
+    staleTime: staleTime10Min,
+    gcTime: garbageCollectionTime15Min,
   });
 
 export const useDomainSchema = (schema: string) =>
@@ -240,8 +244,18 @@ export const useDomainSchema = (schema: string) =>
     queryFn: async () => {
       return await fetchApiV2(`codelist?schema=${schema}`, "GET");
     },
-    staleTime: 10 * (60 * 1000), // 10 mins
-    gcTime: 15 * (60 * 1000), // 15 mins
+    staleTime: staleTime10Min,
+    gcTime: garbageCollectionTime15Min,
+  });
+
+export const useCantons = () =>
+  useQuery({
+    queryKey: ["cantons"],
+    queryFn: () => {
+      return fetchApiV2("canton", "GET");
+    },
+    staleTime: staleTime10Min,
+    gcTime: garbageCollectionTime15Min,
   });
 
 export const layerQueryKey = "layers";

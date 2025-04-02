@@ -114,7 +114,7 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
   return (
     <>
       {levels.map(level => (
-        <Box sx={{ mt: 2 }} key={schema + "_" + level.level} data-cy="hierarchical-data-search">
+        <Box sx={{ mt: 1 }} key={schema + "_" + level.level} data-cy="hierarchical-data-search">
           <FormContainer>
             <TextField
               select={true}

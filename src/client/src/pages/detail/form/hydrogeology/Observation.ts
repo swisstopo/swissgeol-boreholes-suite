@@ -1,3 +1,10 @@
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
+import { FieldMeasurement } from "./fieldMeasurement/FieldMeasurement.ts";
+import { GroundwaterLevelMeasurement } from "./groundwaterLevelMeasurement/GroundwaterLevelMeasurement.ts";
+import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.ts";
+import { Hydrotest } from "./hydrotest/Hydrotest.ts";
+import { WaterIngress } from "./waterIngress/WaterIngress.ts";
+
 export enum ObservationDepthUnitType {
   measuredDepth = 0,
   masl = 1,
@@ -30,4 +37,23 @@ export interface Observation {
 export interface ObservationInputProps {
   observation: Observation;
   showDepthInputs?: boolean;
+}
+
+export function prepareObservationDataForSubmit<
+  T extends FieldMeasurement | WaterIngress | GroundwaterLevelMeasurement | Hydrotest,
+>(data: T, parentId: number): T {
+  if (data.reliabilityId === "") {
+    data.reliabilityId = null;
+  }
+  delete data.reliability;
+  return {
+    ...data,
+    startTime: getIsoDateIfDefined(data?.startTime),
+    endTime: getIsoDateIfDefined(data?.endTime),
+    fromDepthM: parseFloatWithThousandsSeparator(data?.fromDepthM),
+    toDepthM: parseFloatWithThousandsSeparator(data?.toDepthM),
+    fromDepthMasl: parseFloatWithThousandsSeparator(data?.fromDepthMasl),
+    toDepthMasl: parseFloatWithThousandsSeparator(data?.toDepthMasl),
+    boreholeId: parentId,
+  } as T;
 }
