@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace BDMS;
+namespace BDMS.Json;
 
 /// <summary>
 /// JSON converter for type <see href="https://www.npgsql.org/efcore/api/Microsoft.EntityFrameworkCore.LTree.html">LTree</see>.

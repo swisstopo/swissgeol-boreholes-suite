@@ -1,4 +1,5 @@
 ﻿using BDMS.Authentication;
+using BDMS.Json;
 using BDMS.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -12,6 +13,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace BDMS.Controllers;
 
@@ -33,6 +35,10 @@ public class ImportController : ControllerBase
         PropertyNameCaseInsensitive = true,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
         Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
+        TypeInfoResolver = new DefaultJsonTypeInfoResolver
+        {
+            Modifiers = { JsonExportHelper.RequireIncludeInExportAttribute },
+        },
     };
 
     public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService, IBoreholeLockService boreholeLockService)
@@ -285,6 +291,7 @@ public class ImportController : ControllerBase
             borehole.MarkBoreholeContentAsNew(user, workgroupId);
 
             MapHydrotestCodelists(borehole, hydrotestCodelists);
+            MapLayerCodelists(borehole);
         }
     }
 
@@ -394,6 +401,22 @@ public class ImportController : ControllerBase
             hydroTest.KindCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.KindCodelistIds!);
             hydroTest.FlowDirectionCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.FlowDirectionCodelistIds!);
             hydroTest.EvaluationMethodCodelists = GetCodelists(hydrotestCodelists, (List<int>)hydroTest.EvaluationMethodCodelistIds!);
+        }
+    }
+
+    private static void MapLayerCodelists(BoreholeImport borehole)
+    {
+        foreach (var stratigraphy in borehole.Stratigraphies)
+        {
+            foreach (var layer in stratigraphy.Layers)
+            {
+                layer.LayerColorCodes = layer.ColorCodelistIds?.Select(id => new LayerColorCode { CodelistId = id }).ToList();
+                layer.LayerDebrisCodes = layer.DebrisCodelistIds?.Select(id => new LayerDebrisCode { CodelistId = id }).ToList();
+                layer.LayerGrainAngularityCodes = layer.GrainAngularityCodelistIds?.Select(id => new LayerGrainAngularityCode { CodelistId = id }).ToList();
+                layer.LayerGrainShapeCodes = layer.GrainShapeCodelistIds?.Select(id => new LayerGrainShapeCode { CodelistId = id }).ToList();
+                layer.LayerOrganicComponentCodes = layer.OrganicComponentCodelistIds?.Select(id => new LayerOrganicComponentCode { CodelistId = id }).ToList();
+                layer.LayerUscs3Codes = layer.Uscs3CodelistIds?.Select(id => new LayerUscs3Code { CodelistId = id }).ToList();
+            }
         }
     }
 
