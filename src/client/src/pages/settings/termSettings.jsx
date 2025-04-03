@@ -1,21 +1,21 @@
 import React from "react";
 import { withTranslation } from "react-i18next";
 import { connect } from "react-redux";
-import { Button } from "@mui/material";
-import { Form, Modal, TextArea } from "semantic-ui-react";
+import { Box, Button, TextField } from "@mui/material";
+import { Trash2, X } from "lucide-react";
 import Markdown from "markdown-to-jsx";
 import PropTypes from "prop-types";
 import { draftTerms, getTermsDraft, publishTerms } from "../../api-lib/index";
 import TranslationKeys from "../../auth/translationKeys";
-import { CancelButton } from "../../components/buttons/buttons";
+import { PromptContext } from "../../components/prompt/promptContext.js";
 
 class TermSettings extends React.Component {
+  static contextType = PromptContext;
   constructor(props) {
     super(props);
     this.state = {
       saving: false,
       publishing: false,
-      confirmPublication: false,
       dirty: false,
       draft: false,
       id: null,
@@ -81,7 +81,6 @@ class TermSettings extends React.Component {
       this.setState({
         draft: false,
         dirty: false,
-        confirmPublication: false,
       });
     });
   }
@@ -132,30 +131,22 @@ class TermSettings extends React.Component {
                 }}
                 variant="contained"
                 onClick={() => {
-                  this.setState({
-                    confirmPublication: true,
-                  });
+                  this.context.showPrompt(t("disclaimer_publish_message"), [
+                    {
+                      label: t("cancel"),
+                      icon: <X />,
+                      variant: "outlined",
+                    },
+                    {
+                      label: t("publish"),
+                      icon: <Trash2 />,
+                      variant: "contained",
+                      action: () => this.publishTerms(),
+                    },
+                  ]);
                 }}>
                 {t("publish")}
               </Button>
-              <Modal open={this.state.confirmPublication} size="mini">
-                <Modal.Header>{t("disclaimer_publish_title")}</Modal.Header>
-                <Modal.Content>
-                  <p>{t("disclaimer_publish_message")}</p>
-                </Modal.Content>
-                <Modal.Actions>
-                  <CancelButton
-                    onClick={() => {
-                      this.setState({
-                        confirmPublication: false,
-                      });
-                    }}
-                  />
-                  <Button variant="contained" onClick={() => this.publishTerms()}>
-                    {t("publish")}
-                  </Button>
-                </Modal.Actions>
-              </Modal>
               <Button
                 sx={{
                   display: this.state.dirty === true ? null : "none",
@@ -178,9 +169,12 @@ class TermSettings extends React.Component {
             }}>
             <TranslationKeys ignori18n handleSelectedLanguage={this.changeLanguage} />
           </div>
-
-          <Form>
-            <TextArea
+          <Box>
+            <TextField
+              multiline
+              rows={20}
+              variant="outlined"
+              fullWidth
               onChange={e => {
                 let text = {
                   dirty: true,
@@ -188,10 +182,9 @@ class TermSettings extends React.Component {
                 text[this.state.lang] = e.target.value;
                 this.setState(text);
               }}
-              rows={20}
               value={this.state[this.state.lang]}
             />
-          </Form>
+          </Box>
         </div>
         <div
           style={{

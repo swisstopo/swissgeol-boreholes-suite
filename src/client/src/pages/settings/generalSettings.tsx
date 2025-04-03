@@ -12,7 +12,7 @@ import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import GeneralSettingList from "./components/editorSettingList/generalSettingList.tsx";
-import MapSettings from "./components/editorSettingList/mapSettings";
+import { MapSettings } from "./components/editorSettingList/mapSettings";
 import { boreholeEditorData } from "./data/boreholeEditorData.ts";
 import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData.ts";
 import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData.ts";
@@ -119,12 +119,6 @@ const GeneralSettings = () => {
     dispatch(patchSettings("map.explorer", null, config.Identifier));
   };
 
-  const handleAddItem = (value: string) => {
-    dispatch({
-      type: "WMS_ADDED",
-      url: value,
-    });
-  };
   const handleOnChange = (value: string) => {
     dispatch({
       type: "WMS_SELECTED",
@@ -217,10 +211,6 @@ const GeneralSettings = () => {
         i18n={i18n}
         rmExplorerMap={rmExplorerMap}
         addExplorerMap={addExplorerMap}
-        handleAddItem={(value: string) => {
-          setState({ ...state, wmsFetch: false, wms: null, wmts: null });
-          handleAddItem(value);
-        }}
         handleOnChange={(value: string) => {
           setState({ ...state, wmsFetch: false, wms: null, wmts: null });
           handleOnChange(value);
