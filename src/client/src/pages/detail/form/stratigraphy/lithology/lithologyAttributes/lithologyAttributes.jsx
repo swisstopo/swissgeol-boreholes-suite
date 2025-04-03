@@ -12,7 +12,7 @@ import { CancelButton, SaveButton } from "../../../../../../components/buttons/b
 import { DataCardButtonContainer } from "../../../../../../components/dataCard/dataCard.js";
 import { parseValueIfNotNull } from "../../../../../../components/form/formUtils.js";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.js";
-import LithologyLayerForm from "./lithologyAttributeList/LithologyLayerForm.jsx";
+import LithologyLayerForm from "./lithologyAttributeList/lithologyLayerForm.jsx";
 
 const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => {
   const { isEditable, onUpdated, layerAttributes, selectedStratigraphyID } = data;

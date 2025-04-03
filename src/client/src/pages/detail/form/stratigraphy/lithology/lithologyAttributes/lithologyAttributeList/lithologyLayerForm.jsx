@@ -28,10 +28,17 @@ const LithologyLayerForm = ({ attributes, showAll, layer, isVisibleFunction, isE
                 value={layer[item.value]}
                 controlledValue={formMethods.watch(item.value)}
                 withThousandSeparator={item.isNumber}
+                readonly={!isEditable}
               />
             )}
             {item.type === "TextArea" && (item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) && (
-              <FormInput fieldName={item.label} label={item.label} value={layer[item.value]} multiline={true} />
+              <FormInput
+                fieldName={item.label}
+                label={item.label}
+                value={layer[item.value]}
+                multiline={true}
+                readonly={!isEditable}
+              />
             )}
             {item.type === "Boolean" &&
               (item.isVisible || isVisibleFunction(item.isVisibleValue) || (showAll && item.value !== "isLast")) && (
@@ -40,6 +47,7 @@ const LithologyLayerForm = ({ attributes, showAll, layer, isVisibleFunction, isE
                   fieldName={item.value}
                   label={item.label}
                   selected={layer[item.value]}
+                  readonly={!isEditable}
                 />
               )}
             {item.type === "Dropdown" && (item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) && (
@@ -49,7 +57,7 @@ const LithologyLayerForm = ({ attributes, showAll, layer, isVisibleFunction, isE
                     data-cy={item.value}
                     fieldName={item.value}
                     label={item.label}
-                    readOnly={!isEditable}
+                    readonly={!isEditable}
                     selected={_.isNil(layer?.[item.value]) ? null : layer[item.value]}
                     schemaName={item.schema}
                   />
@@ -58,7 +66,7 @@ const LithologyLayerForm = ({ attributes, showAll, layer, isVisibleFunction, isE
                     data-cy={item.value}
                     fieldName={item.value}
                     label={item.label}
-                    readOnly={!isEditable}
+                    readonly={!isEditable}
                     selected={_.isNil(layer?.[item.value]) ? null : layer[item.value]}
                     schemaName={item.schema}
                   />

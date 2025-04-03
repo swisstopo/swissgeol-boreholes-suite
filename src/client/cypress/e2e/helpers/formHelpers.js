@@ -212,13 +212,22 @@ export const evaluateSelect = (fieldName, expectedValue, parent) => {
  * Evaluates the state of a select form element.
  * @param {string} fieldName The name of the select field.
  * @param {string / null} expectedText The text that should be displayed in the select.
+ * @param {boolean} editable Defines whether the select is being evaluated in the editable or uneditable state.
  */
-export const evaluateSelectText = (fieldName, expectedText) => {
-  if (expectedText === null) {
-    cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiSelect-nativeInput").should("be.empty");
-    return;
+export const evaluateSelectText = (fieldName, expectedText, editable = true) => {
+  if (editable) {
+    if (expectedText === null) {
+      cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiSelect-nativeInput").should("be.empty");
+    } else {
+      cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiSelect-select").should("have.text", expectedText);
+    }
+  } else {
+    if (expectedText === null) {
+      cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("be.empty");
+    } else {
+      cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("have.value", expectedText);
+    }
   }
-  cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiSelect-select").should("have.text", expectedText);
 };
 
 /**

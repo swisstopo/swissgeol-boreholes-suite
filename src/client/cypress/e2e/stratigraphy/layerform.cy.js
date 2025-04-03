@@ -19,8 +19,8 @@ import {
 import {
   getElementByDataCy,
   goToRouteAndAcceptTerms,
+  handlePrompt,
   newEditableBorehole,
-  returnToOverview,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -163,7 +163,7 @@ const layerAttributes = [
   },
   {
     value: "notes",
-    type: "TextArea",
+    type: "Input",
     initial: "info-mediaries Berkshire Personal Loan Account Money Market Account",
     updated: "This makes no sense",
   },
@@ -188,14 +188,14 @@ function resetUpdatedValues() {
 }
 
 describe("Tests for the layer form.", () => {
-  it.only("updates the layer form and saves", () => {
-    function evaluateInitialFormState() {
+  it("updates the layer form and saves", () => {
+    function evaluateInitialFormState(editable) {
       layerAttributes.forEach(attribute => {
-        // if (attribute.type === "MultiSelect") {
-        //   evaluateMultiSelect(attribute.value, attribute.initial);
-        // }
+        if (attribute.type === "MultiSelect") {
+          evaluateMultiSelect(attribute.value, attribute.initial);
+        }
         if (attribute.type === "Select") {
-          evaluateSelectText(attribute.value, attribute.initial);
+          evaluateSelectText(attribute.value, attribute.initial, editable);
         }
         if (attribute.type === "Input") {
           evaluateInput(attribute.value, attribute.initial);
@@ -209,14 +209,14 @@ describe("Tests for the layer form.", () => {
       });
     }
 
-    function evaluateUpdatedFormState() {
+    function evaluateUpdatedFormState(editable) {
       layerAttributes.forEach(attribute => {
         if (attribute.updated) {
-          // if (attribute.type === "MultiSelect") {
-          //   evaluateMultiSelect(attribute.value, attribute.updated);
-          // }
+          if (attribute.type === "MultiSelect") {
+            evaluateMultiSelect(attribute.value, attribute.updated);
+          }
           if (attribute.type === "Select") {
-            evaluateSelectText(attribute.value, attribute.updated);
+            evaluateSelectText(attribute.value, attribute.updated, editable);
           }
           if (attribute.type === "Input") {
             evaluateInput(attribute.value, attribute.updated);
@@ -239,6 +239,7 @@ describe("Tests for the layer form.", () => {
     startBoreholeEditing();
     getElementByDataCy("stratigraphy-menu-item").click();
     getElementByDataCy("lithology-menu-item").click();
+    getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
     getElementByDataCy("styled-layer-8").click();
     cy.get(".loading-indicator").should("not.exist");
     cy.get(".MuiCircularProgress-root").should("not.exist");
@@ -246,35 +247,55 @@ describe("Tests for the layer form.", () => {
     resetUpdatedValues(); // remove later
     saveForm(); // remove later
     cy.wait("@update-layer"); // remove later
-    evaluateInitialFormState();
+    getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
+    getElementByDataCy("styled-layer-8").click();
+    cy.get(".loading-indicator").should("not.exist");
+    cy.get(".MuiCircularProgress-root").should("not.exist");
+    getElementByDataCy("show-all-fields-switch").click();
+    evaluateInitialFormState(true);
 
-    // change some inputs then cancel
+    // change some inputs then discard changes
     updateInputsForEachType();
-    evaluateUpdatedFormState();
+    evaluateUpdatedFormState(true);
     cancelEditing();
-    evaluateInitialFormState();
+    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "Cancel");
+    cancelEditing();
+    evaluateUpdatedFormState(true);
+    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "Discard changes");
+    getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
+    getElementByDataCy("styled-layer-8").click();
+    cy.get(".loading-indicator").should("not.exist");
+    cy.get(".MuiCircularProgress-root").should("not.exist");
+    getElementByDataCy("show-all-fields-switch").click();
+    evaluateInitialFormState(true);
 
     // change some inputs then save
     updateInputsForEachType();
     saveForm();
     cy.wait("@update-layer");
-    evaluateUpdatedFormState();
+    getElementByDataCy("styled-layer-9").should("contain", "marble, gravel, fine-medium-coarse");
+    getElementByDataCy("styled-layer-9").click();
+    cy.get(".loading-indicator").should("not.exist");
+    cy.get(".MuiCircularProgress-root").should("not.exist");
+    getElementByDataCy("show-all-fields-switch").click();
+    evaluateUpdatedFormState(true);
 
     // assert updated formvalues presist after saving
     stopBoreholeEditing();
-    getElementByDataCy("styled-layer-8").click();
+    getElementByDataCy("styled-layer-9").click();
     cy.get(".loading-indicator").should("not.exist");
     cy.get(".MuiCircularProgress-root").should("not.exist");
-    evaluateUpdatedFormState();
+    getElementByDataCy("show-all-fields-switch").click();
+    evaluateUpdatedFormState(false);
 
     // reset form values
     startBoreholeEditing();
-    getElementByDataCy("styled-layer-8").click();
+    getElementByDataCy("styled-layer-9").click();
     cy.get(".loading-indicator").should("not.exist");
     cy.get(".MuiCircularProgress-root").should("not.exist");
     getElementByDataCy("show-all-fields-switch").click();
     resetUpdatedValues();
-    evaluateInitialFormState();
+    evaluateInitialFormState(true);
     saveForm();
 
     // assert updated formvalues presist after saving
@@ -282,15 +303,13 @@ describe("Tests for the layer form.", () => {
     getElementByDataCy("styled-layer-8").click();
     cy.get(".loading-indicator").should("not.exist");
     cy.get(".MuiCircularProgress-root").should("not.exist");
-    evaluateInitialFormState();
+    getElementByDataCy("show-all-fields-switch").click();
+    evaluateInitialFormState(false);
   });
 
   it("creates a layer and fills all dropdowns with multiple selection.", () => {
     goToRouteAndAcceptTerms(`/`);
-    // create boreholes
     newEditableBorehole().as("borehole_id");
-
-    // navigate to stratigraphy
     getElementByDataCy("stratigraphy-menu-item").click();
     getElementByDataCy("lithology-menu-item").click();
     addItem("addStratigraphy");
@@ -299,6 +318,7 @@ describe("Tests for the layer form.", () => {
     cy.wait("@layer");
 
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
+    getElementByDataCy("show-all-fields-switch").click();
     cy.wait("@get-layer-by-id");
 
     const multiSelectAttributes = [
@@ -307,63 +327,128 @@ describe("Tests for the layer form.", () => {
         type: "MultiSelect",
         dropdownPosition: [1, 3],
         codeValues: ["23101001", "23101003"],
+        updatedCodeValues: ["23101001", "23101003"],
       },
       {
         value: "grain_shape",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
         codeValues: ["21110002", "21110004"],
+        updatedCodeValues: ["21110004"],
       },
       {
         value: "grain_granularity",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
         codeValues: ["21115001", "21115004"],
+        updatedCodeValues: ["21115004"],
       },
       {
         value: "organic_component",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
         codeValues: ["21108001", "21108003"],
+        updatedCodeValues: ["21108001", "21108003"],
       },
       {
         value: "debris",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
         codeValues: ["9100", "9102"],
+        updatedCodeValues: ["9100", "9102"],
       },
       {
         value: "color",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
         codeValues: ["21112001", "21112003"],
+        updatedCodeValues: ["21112003"],
       },
     ];
 
+    // set values to multiselects
     multiSelectAttributes.forEach(attribute => {
       toggleMultiSelect(attribute.value, attribute.dropdownPosition);
     });
 
+    // verify values
     multiSelectAttributes.forEach(attribute => {
       evaluateMultiSelect(attribute.value, attribute.codeValues);
     });
 
-    // click reset on all multiselect dropdowns
+    cancelEditing();
+    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "Cancel");
+    cancelEditing();
     multiSelectAttributes.forEach(attribute => {
-      toggleMultiSelect(attribute.value, [0]);
+      evaluateMultiSelect(attribute.value, attribute.codeValues);
     });
+    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "Discard changes");
 
-    // verify that the dropdowns are reset
+    // verify all inputs have been reset
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
     multiSelectAttributes.forEach(attribute => {
       evaluateMultiSelect(attribute.value, []);
     });
 
-    cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
+    // set values to multiselects again
+    multiSelectAttributes.forEach(attribute => {
+      toggleMultiSelect(attribute.value, attribute.dropdownPosition);
+    });
 
-    // stop editing
+    saveForm();
+    getElementByDataCy("styled-layer-0").should("contain", "beige, dark brown");
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
+
+    // remove some chips
+    getElementByDataCy("remove-beige-chip").click();
+    getElementByDataCy("remove-cubic-chip").click();
+    getElementByDataCy("remove-sharp-chip").click();
+
+    // verify updated code values
+    multiSelectAttributes.forEach(attribute => {
+      evaluateMultiSelect(attribute.value, attribute.updatedCodeValues);
+    });
+    saveForm();
+    getElementByDataCy("styled-layer-0").should("contain", "dark brown");
     stopBoreholeEditing();
-    returnToOverview();
+    getElementByDataCy("styled-layer-0").should("contain", "dark brown");
+    cy.get('[data-cy="styled-layer-0"]').click();
+    // verify chips are still visible when not editing
+    multiSelectAttributes.forEach(attribute => {
+      evaluateMultiSelect(attribute.value, attribute.updatedCodeValues);
+    });
   });
 
-  it("updates form values when changing layer", () => {});
+  it("updates layer form values when changing layer", () => {
+    goToRouteAndAcceptTerms(`/`);
+    showTableAndWaitForData();
+    clickOnNextPage();
+    waitForTableData();
+    clickOnRowWithText("Anibal Conroy");
+    getElementByDataCy("stratigraphy-menu-item").click();
+    getElementByDataCy("lithology-menu-item").click();
+
+    // click on layer and verify form values
+    getElementByDataCy("styled-layer-8").should("contain", "gneiss, sedimentary, clayey gravel, medium, brown, beige");
+    getElementByDataCy("styled-layer-8").click();
+    evaluateInput("fromDepth", "80");
+    evaluateInput("toDepth", "90");
+    evaluateSelectText("descriptionQualityId", "good", false);
+    evaluateMultiSelect("grain_shape", ["21110003"]);
+    evaluateYesNoSelect("striae", "No");
+    evaluateInput("notes", "hacking Analyst Investment Account index");
+
+    // click on different layer and verify values are updated
+    getElementByDataCy("styled-layer-7").should(
+      "contain",
+      "rock, gabbroic, artificial landfill, coarse, dark green, light green",
+    );
+    getElementByDataCy("styled-layer-7").click();
+    evaluateInput("fromDepth", "70");
+    evaluateInput("toDepth", "80");
+    evaluateSelectText("descriptionQualityId", "very good", false);
+    evaluateMultiSelect("grain_shape", ["21110002"]);
+    evaluateYesNoSelect("striae", "Yes");
+    evaluateInput("notes", "full-range circuit Cambridgeshire Senior");
+  });
 });
