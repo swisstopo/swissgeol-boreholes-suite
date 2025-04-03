@@ -23,13 +23,18 @@ const GeometryChartNE = ({ data }) => {
     .x(d => x(d.x))
     .y(d => y(d.y));
 
+  const numberFormatLocale = d3.formatLocale({
+    decimal: ".",
+    thousands: "'",
+    grouping: [3],
+  });
   useEffect(() => {
-    d3.select(axisXRef.current).call(d3.axisBottom(x));
-  }, [axisXRef, x]);
+    d3.select(axisXRef.current).call(d3.axisBottom(x).tickFormat(numberFormatLocale.format(",.0f")));
+  }, [axisXRef, x, numberFormatLocale]);
 
   useEffect(() => {
-    d3.select(axisYRef.current).call(d3.axisLeft(y));
-  }, [axisYRef, y]);
+    d3.select(axisYRef.current).call(d3.axisLeft(y).tickFormat(numberFormatLocale.format(",.0f")));
+  }, [axisYRef, y, numberFormatLocale]);
 
   return (
     <Box sx={{ position: "relative" }}>
