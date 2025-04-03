@@ -194,7 +194,7 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
             </DataCardButtonContainer>
           )}
         </Stack>
-        <Box sx={{ overflow: "auto", flex: 1, scrollbarGutter: "stable" }}>
+        <Box sx={{ overflow: "auto", flex: 1, scrollbarGutter: "stable", pr: 1 }}>
           {layerAttributes && (
             <>
               <DevTool control={formMethods.control} placement="top-left" />
