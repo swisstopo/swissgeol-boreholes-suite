@@ -23,7 +23,7 @@ export const LabelingHeader: FC<{
   };
 
   const fileSelectionItems: { key: number; value: string; startIcon?: ReactNode }[] =
-    files?.map((file: FileInterface) => ({ key: file.id, value: file.name })) || [];
+    files?.map((file: FileInterface) => ({ key: file.id, value: file.name })) ?? [];
   if (editingEnabled) fileSelectionItems.push({ key: -1, value: t("addFile"), startIcon: <Plus /> });
 
   return (
