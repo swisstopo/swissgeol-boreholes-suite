@@ -187,6 +187,13 @@ function resetUpdatedValues() {
   toggleMultiSelect("uscs_3", [0]);
 }
 
+function clickOnLayerAndWaitForForm(number) {
+  getElementByDataCy(`styled-layer-${number}`).click();
+  cy.get(".loading-indicator").should("not.exist");
+  cy.get(".MuiCircularProgress-root").should("not.exist");
+  getElementByDataCy("show-all-fields-switch").click();
+}
+
 describe("Tests for the layer form.", () => {
   it("updates the layer form and saves", () => {
     function evaluateInitialFormState(editable) {
@@ -240,18 +247,12 @@ describe("Tests for the layer form.", () => {
     getElementByDataCy("stratigraphy-menu-item").click();
     getElementByDataCy("lithology-menu-item").click();
     getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
-    getElementByDataCy("styled-layer-8").click();
-    cy.get(".loading-indicator").should("not.exist");
-    cy.get(".MuiCircularProgress-root").should("not.exist");
-    getElementByDataCy("show-all-fields-switch").click();
-    resetUpdatedValues(); // remove later
-    saveForm(); // remove later
-    cy.wait("@update-layer"); // remove later
+    clickOnLayerAndWaitForForm("8");
+    resetUpdatedValues();
+    saveForm();
+    cy.wait("@update-layer");
     getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
-    getElementByDataCy("styled-layer-8").click();
-    cy.get(".loading-indicator").should("not.exist");
-    cy.get(".MuiCircularProgress-root").should("not.exist");
-    getElementByDataCy("show-all-fields-switch").click();
+    clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(true);
 
     // change some inputs then discard changes
@@ -263,10 +264,7 @@ describe("Tests for the layer form.", () => {
     evaluateUpdatedFormState(true);
     handlePrompt("There are unsaved changes. Do you want to discard all changes?", "Discard changes");
     getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
-    getElementByDataCy("styled-layer-8").click();
-    cy.get(".loading-indicator").should("not.exist");
-    cy.get(".MuiCircularProgress-root").should("not.exist");
-    getElementByDataCy("show-all-fields-switch").click();
+    clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(true);
 
     // change some inputs then save
@@ -274,36 +272,24 @@ describe("Tests for the layer form.", () => {
     saveForm();
     cy.wait("@update-layer");
     getElementByDataCy("styled-layer-9").should("contain", "marble, gravel, fine-medium-coarse");
-    getElementByDataCy("styled-layer-9").click();
-    cy.get(".loading-indicator").should("not.exist");
-    cy.get(".MuiCircularProgress-root").should("not.exist");
-    getElementByDataCy("show-all-fields-switch").click();
+    clickOnLayerAndWaitForForm("9");
     evaluateUpdatedFormState(true);
 
-    // assert updated formvalues presist after saving
+    // assert updated form values persist after saving
     stopBoreholeEditing();
-    getElementByDataCy("styled-layer-9").click();
-    cy.get(".loading-indicator").should("not.exist");
-    cy.get(".MuiCircularProgress-root").should("not.exist");
-    getElementByDataCy("show-all-fields-switch").click();
+    clickOnLayerAndWaitForForm("9");
     evaluateUpdatedFormState(false);
 
     // reset form values
     startBoreholeEditing();
-    getElementByDataCy("styled-layer-9").click();
-    cy.get(".loading-indicator").should("not.exist");
-    cy.get(".MuiCircularProgress-root").should("not.exist");
-    getElementByDataCy("show-all-fields-switch").click();
+    clickOnLayerAndWaitForForm("9");
     resetUpdatedValues();
     evaluateInitialFormState(true);
     saveForm();
 
-    // assert updated formvalues presist after saving
+    // assert updated form values persist after saving
     stopBoreholeEditing();
-    getElementByDataCy("styled-layer-8").click();
-    cy.get(".loading-indicator").should("not.exist");
-    cy.get(".MuiCircularProgress-root").should("not.exist");
-    getElementByDataCy("show-all-fields-switch").click();
+    clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(false);
   });
 
@@ -412,7 +398,7 @@ describe("Tests for the layer form.", () => {
     getElementByDataCy("styled-layer-0").should("contain", "dark brown");
     stopBoreholeEditing();
     getElementByDataCy("styled-layer-0").should("contain", "dark brown");
-    cy.get('[data-cy="styled-layer-0"]').click();
+    getElementByDataCy("styled-layer-0").click();
     // verify chips are still visible when not editing
     multiSelectAttributes.forEach(attribute => {
       evaluateMultiSelect(attribute.value, attribute.updatedCodeValues);
@@ -430,12 +416,12 @@ describe("Tests for the layer form.", () => {
 
     // click on layer and verify form values
     getElementByDataCy("styled-layer-8").should("contain", "gneiss, sedimentary, clayey gravel, medium, brown, beige");
-    getElementByDataCy("styled-layer-8").click();
+    clickOnLayerAndWaitForForm("8");
     evaluateInput("fromDepth", "80");
     evaluateInput("toDepth", "90");
     evaluateSelectText("descriptionQualityId", "good", false);
     evaluateMultiSelect("grain_shape", ["21110003"]);
-    evaluateYesNoSelect("striae", "No");
+    evaluateYesNoSelect("isStriae", "No");
     evaluateInput("notes", "hacking Analyst Investment Account index");
 
     // click on different layer and verify values are updated
@@ -443,12 +429,12 @@ describe("Tests for the layer form.", () => {
       "contain",
       "rock, gabbroic, artificial landfill, coarse, dark green, light green",
     );
-    getElementByDataCy("styled-layer-7").click();
+    clickOnLayerAndWaitForForm("7");
     evaluateInput("fromDepth", "70");
     evaluateInput("toDepth", "80");
     evaluateSelectText("descriptionQualityId", "very good", false);
     evaluateMultiSelect("grain_shape", ["21110002"]);
-    evaluateYesNoSelect("striae", "Yes");
+    evaluateYesNoSelect("isStriae", "Yes", false);
     evaluateInput("notes", "full-range circuit Cambridgeshire Senior");
   });
 });

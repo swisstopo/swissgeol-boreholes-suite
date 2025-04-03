@@ -65,7 +65,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
               key={selectedValue}
               label={label}
               title={tooltipLabel ? t(tooltipLabel) : null}
-              deleteIcon={<CancelIcon onMouseDown={e => e.stopPropagation()} />}
+              deleteIcon={<CancelIcon data-cy={`remove-${label}-chip`} onMouseDown={e => e.stopPropagation()} />}
               onDelete={
                 !readonly
                   ? e => {
