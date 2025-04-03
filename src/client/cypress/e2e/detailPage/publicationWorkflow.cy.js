@@ -1,7 +1,7 @@
 import { createBorehole, goToRouteAndAcceptTerms, handlePrompt, startBoreholeEditing } from "../helpers/testHelpers";
 
 const verifyColorForStatus = (status, color) => {
-  cy.get(`[data-cy="workflow_status_color_${status}"]`).should("have.have.class", `ui ${color} circular label`);
+  cy.get(`[data-cy="workflow_status_color_${status}"]`).should("have.css", "background-color", color);
 };
 
 const statusTitles = {
@@ -31,10 +31,14 @@ describe("Tests the publication workflow.", () => {
       goToRouteAndAcceptTerms(`/${id}/status`);
     });
 
+    const orange = "rgb(234, 88, 12)";
+    const red = "rgb(153, 25, 30)";
+    const green = "rgb(5, 150, 105)";
+
     startBoreholeEditing();
     verifyStatusTextsInHeader(["edit"]);
     verifyStatusTextsNotInHeader(["control", "valid", "public"]);
-    verifyColorForStatus("edit", "orange");
+    verifyColorForStatus("edit", orange);
 
     // Submit for review
     cy.get("[data-cy=workflow_submit]").click();
@@ -43,8 +47,8 @@ describe("Tests the publication workflow.", () => {
 
     verifyStatusTextsInHeader(["edit", "control"]);
     verifyStatusTextsNotInHeader(["valid", "public"]);
-    verifyColorForStatus("edit", "green");
-    verifyColorForStatus("control", "orange");
+    verifyColorForStatus("edit", green);
+    verifyColorForStatus("control", orange);
 
     // Restart workflow
     startBoreholeEditing();
@@ -54,8 +58,8 @@ describe("Tests the publication workflow.", () => {
 
     verifyStatusTextsInHeader(["edit", "control"]);
     verifyStatusTextsNotInHeader(["valid", "public"]);
-    verifyColorForStatus("edit", "orange");
-    verifyColorForStatus("control", "red");
+    verifyColorForStatus("edit", orange);
+    verifyColorForStatus("control", red);
 
     // Submit for review
     startBoreholeEditing();
@@ -65,8 +69,8 @@ describe("Tests the publication workflow.", () => {
 
     verifyStatusTextsInHeader(["edit", "control"]);
     verifyStatusTextsNotInHeader(["valid", "public"]);
-    verifyColorForStatus("edit", "green");
-    verifyColorForStatus("control", "orange");
+    verifyColorForStatus("edit", green);
+    verifyColorForStatus("control", orange);
 
     // Submit for validation
     startBoreholeEditing();
@@ -76,9 +80,9 @@ describe("Tests the publication workflow.", () => {
 
     verifyStatusTextsInHeader(["edit", "control", "valid"]);
     verifyStatusTextsNotInHeader(["public"]);
-    verifyColorForStatus("edit", "green");
-    verifyColorForStatus("control", "green");
-    verifyColorForStatus("valid", "orange");
+    verifyColorForStatus("edit", green);
+    verifyColorForStatus("control", green);
+    verifyColorForStatus("valid", orange);
 
     // Submit for publication
     startBoreholeEditing();
@@ -88,10 +92,10 @@ describe("Tests the publication workflow.", () => {
 
     verifyStatusTextsInHeader(["edit", "control", "valid", "public"]);
 
-    verifyColorForStatus("edit", "green");
-    verifyColorForStatus("control", "green");
-    verifyColorForStatus("valid", "green");
-    verifyColorForStatus("public", "orange");
+    verifyColorForStatus("edit", green);
+    verifyColorForStatus("control", green);
+    verifyColorForStatus("valid", green);
+    verifyColorForStatus("public", orange);
 
     // Publish
     startBoreholeEditing();
@@ -99,7 +103,7 @@ describe("Tests the publication workflow.", () => {
     cy.get('[data-cy="workflow_dialog_submit"]').click();
     cy.wait("@workflow_edit_list");
 
-    verifyColorForStatus("public", "green");
+    verifyColorForStatus("public", green);
 
     // Restart workflow
     startBoreholeEditing();
@@ -107,10 +111,10 @@ describe("Tests the publication workflow.", () => {
     cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
     cy.wait("@workflow_edit_list");
 
-    verifyColorForStatus("edit", "orange");
-    verifyColorForStatus("control", "red");
-    verifyColorForStatus("valid", "red");
-    verifyColorForStatus("public", "red");
+    verifyColorForStatus("edit", orange);
+    verifyColorForStatus("control", red);
+    verifyColorForStatus("valid", red);
+    verifyColorForStatus("public", red);
   });
 
   it("Deletes a borehole if its publication status is not Change in Progress", () => {

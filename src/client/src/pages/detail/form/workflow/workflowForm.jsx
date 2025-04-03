@@ -5,12 +5,16 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Stack,
   Typography,
 } from "@mui/material";
-import { Header, Icon, Label, Modal } from "semantic-ui-react";
 import { ChevronDownIcon, RotateCcw, X } from "lucide-react";
 import _ from "lodash";
 import PropTypes from "prop-types";
@@ -231,13 +235,7 @@ class WorkflowForm extends React.Component {
                     readOnly={readOnly}
                     value={workflow.data.notes}
                   />
-                  {workflow.isPatching === true ? (
-                    <div>
-                      <Icon loading name="spinner" size="small" />
-                      &nbsp;
-                      {t("saving")}
-                    </div>
-                  ) : null}
+                  {workflow.isPatching && <div>{t("saving")}</div>}
                 </div>
               )}
             </div>
@@ -288,10 +286,19 @@ class WorkflowForm extends React.Component {
                               flexDirection: "row",
                             }}>
                             <div>
-                              <Label
-                                circular
+                              <Box
                                 data-cy={`workflow_status_color_${role.toLowerCase()}`}
-                                color={status[role].finished === null ? "orange" : current === true ? "red" : "green"}
+                                sx={{
+                                  height: 20,
+                                  width: 20,
+                                  borderRadius: 5,
+                                  backgroundColor:
+                                    status[role].finished === null
+                                      ? theme.palette.warning.main
+                                      : current === true
+                                        ? theme.palette.error.main
+                                        : theme.palette.success.main,
+                                }}
                               />
                             </div>
                             <div
@@ -413,19 +420,26 @@ class WorkflowForm extends React.Component {
                                         t("submit")
                                       )}
                                     </Button>
-                                    <Modal
+                                    <Dialog
                                       onClose={() => {
                                         this.setState({
                                           modal: 0,
                                         });
                                       }}
                                       open={this.state.modal > 0}
-                                      size="mini">
-                                      <Header content={t(`status-submit-msg-${role.toLowerCase()}`)} />
-                                      <Modal.Content>
-                                        <p>{t("sure")}</p>
-                                      </Modal.Content>
-                                      <Modal.Actions>
+                                      maxWidth="xs"
+                                      fullWidth>
+                                      <DialogTitle>
+                                        <Typography variant="h4">
+                                          {t(`status-submit-msg-${role.toLowerCase()}`)}
+                                        </Typography>
+                                      </DialogTitle>
+                                      <DialogContent>
+                                        <Box pt={2}>
+                                          <Typography>{t("sure")}</Typography>
+                                        </Box>
+                                      </DialogContent>
+                                      <DialogActions>
                                         {this.state.modal < 3 ? (
                                           <Button
                                             variant="contained"
@@ -465,8 +479,8 @@ class WorkflowForm extends React.Component {
                                             )}
                                           </Button>
                                         )}
-                                      </Modal.Actions>
-                                    </Modal>
+                                      </DialogActions>
+                                    </Dialog>
                                   </>
                                 )}
                             </>
@@ -483,10 +497,12 @@ class WorkflowForm extends React.Component {
                             style={{
                               whiteSpace: "nowrap",
                             }}>
-                            <Label
-                              circular
-                              style={{
-                                backgroundColor: theme.palette.background.lightgrey + " !important",
+                            <Box
+                              sx={{
+                                height: 20,
+                                width: 20,
+                                borderRadius: 5,
+                                backgroundColor: theme.palette.background.darkgrey + " !important",
                               }}
                             />
                           </div>
@@ -518,19 +534,24 @@ class WorkflowForm extends React.Component {
           {
             // Modals
           }
-          <Modal
+          <Dialog
             onClose={() => {
               this.setState({
                 modalRestart: false,
               });
             }}
             open={this.state.modalRestart === true}
-            size="mini">
-            <Header content={t(`flowRestart`)} />
-            <Modal.Content>
-              <p>{t("sure")}</p>
-            </Modal.Content>
-            <Modal.Actions>
+            maxWidth="xs"
+            fullWidth>
+            <DialogTitle>
+              <Typography variant="h4">{t(`flowRestart`)}</Typography>
+            </DialogTitle>
+            <DialogContent>
+              <Box pt={2}>
+                <Typography>{t("sure")}</Typography>
+              </Box>
+            </DialogContent>
+            <DialogActions>
               <Button
                 sx={{ width: "100px", mr: 1 }}
                 data-cy="workflow_dialog_confirm_restart"
@@ -557,9 +578,10 @@ class WorkflowForm extends React.Component {
                   this.setState({
                     modalRestart: false,
                   });
-                }}></CancelButton>
-            </Modal.Actions>
-          </Modal>
+                }}
+              />
+            </DialogActions>
+          </Dialog>
         </Stack>
       </Stack>
     );
