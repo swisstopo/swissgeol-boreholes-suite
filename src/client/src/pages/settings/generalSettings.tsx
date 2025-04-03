@@ -119,12 +119,6 @@ const GeneralSettings = () => {
     dispatch(patchSettings("map.explorer", null, config.Identifier));
   };
 
-  const handleAddItem = (value: string) => {
-    dispatch({
-      type: "WMS_ADDED",
-      url: value,
-    });
-  };
   const handleOnChange = (value: string) => {
     dispatch({
       type: "WMS_SELECTED",
