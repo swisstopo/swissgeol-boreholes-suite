@@ -1,3 +1,4 @@
+import { setSelect } from "../helpers/formHelpers.js";
 import { getElementByDataCy, goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers.js";
 
 describe("map settings", () => {
@@ -18,8 +19,7 @@ describe("map settings", () => {
     cy.get('[data-cy="maps-for-user-box"]').contains(wmsName);
 
     // Select WMTS from Dropdown
-    cy.get('[role="combobox"]').click();
-    cy.get('div[role="option"]').last().click();
+    setSelect("capabilities", 1);
 
     // Add WMTS
     cy.get('[data-cy="load-layers-button"]').click();

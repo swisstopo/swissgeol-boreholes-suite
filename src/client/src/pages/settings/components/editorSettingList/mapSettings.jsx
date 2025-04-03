@@ -179,6 +179,7 @@ export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, hand
                       variant="outlined"
                       size="small"
                       sx={{ mt: 0 }}
+                      data-cy={"capabilities-formSelect"}
                       value={setting.selectedWMS}
                       onChange={e => handleOnChange(e.target.value)}>
                       {setting.WMS.map(option => (
