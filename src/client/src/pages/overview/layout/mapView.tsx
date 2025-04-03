@@ -35,7 +35,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const boreholes: Boreholes = useSelector((state: ReduxRootState) => state.core_borehole_editor_list);
   const setting: Setting = useSelector((state: ReduxRootState) => state.setting);
   const editorStore: EditorStore = useSelector((state: ReduxRootState) => state.editor);
-  const search: Filters = useSelector((state: ReduxRootState) => state.filters);
+  const filters: Filters = useSelector((state: ReduxRootState) => state.filters);
   const dispatch = useDispatch();
 
   const lock = (id: string) => {
@@ -46,7 +46,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     history.push("/" + id);
   };
 
-  const multipleSelected = (selection: GridRowSelectionModel, filter: string | null = null) => {
+  const multipleSelected = (selection: GridRowSelectionModel, filter: Record<string, unknown> | null = null) => {
     dispatch({
       type: "EDITOR_MULTIPLE_SELECTED",
       selection: selection,
@@ -81,7 +81,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           loadBoreholes(
             boreholes.page,
             boreholes.limit,
-            search.filter,
+            filters.filter,
             boreholes.orderby,
             boreholes.direction,
             featureIds,
@@ -97,7 +97,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       />
       <MapComponent
         searchState={{
-          ...search,
+          ...filters,
         }}
         highlighted={hover ? [hover] : []}
         hover={(id: React.SetStateAction<number | null>) => {
@@ -125,7 +125,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         boreholes={boreholes}
         loadEditingBoreholes={loadBoreholes}
         multipleSelected={multipleSelected}
-        search={search}
+        filters={filters}
         selectionModel={selectionModel}
         setSelectionModel={setSelectionModel}
         rowToHighlight={rowToHighlight}

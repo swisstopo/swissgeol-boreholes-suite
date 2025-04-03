@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace BDMS.Controllers;
+namespace BDMS.Json;
 
 /// <summary>
 /// Serializes and deserializes <see cref="Observation"/> objects based on their ObservationType.

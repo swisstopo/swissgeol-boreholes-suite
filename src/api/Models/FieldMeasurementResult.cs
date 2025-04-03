@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 
@@ -17,6 +18,7 @@ public class FieldMeasurementResult : IIdentifyable, IChangeTracking
     /// <summary>
     /// Gets or sets the <see cref="FieldMeasurementResult"/>'s sample type id.
     /// </summary>
+    [IncludeInExport]
     [Column("sample_type")]
     public int SampleTypeId { get; set; }
 
@@ -28,6 +30,7 @@ public class FieldMeasurementResult : IIdentifyable, IChangeTracking
     /// <summary>
     /// Gets or sets the <see cref="FieldMeasurementResult"/>'s parameter id.
     /// </summary>
+    [IncludeInExport]
     [Column("parameter")]
     public int ParameterId { get; set; }
 
@@ -39,6 +42,7 @@ public class FieldMeasurementResult : IIdentifyable, IChangeTracking
     /// <summary>
     /// Gets or sets the <see cref="FieldMeasurementResult"/>'s value.
     /// </summary>
+    [IncludeInExport]
     [Column("value")]
     public double Value { get; set; }
 

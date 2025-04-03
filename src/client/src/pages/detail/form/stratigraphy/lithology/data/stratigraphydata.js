@@ -61,7 +61,7 @@ export const stratigraphyData = {
     },
     {
       id: 4,
-      type: "DomainTree",
+      type: "Domain",
       label: "lithology",
       value: "lithologyId",
       schema: "custom.lithology_top_bedrock",
@@ -285,7 +285,7 @@ export const stratigraphyData = {
     },
     {
       id: 27,
-      type: "TextArea",
+      type: "Input",
       label: "notes",
       value: "notes",
       isVisibleValue: "notes",

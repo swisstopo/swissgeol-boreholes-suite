@@ -28,7 +28,7 @@ describe("Tests for filtering data by reference system.", () => {
     returnToOverview();
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("h6", "Location").click();
-    cy.get('[data-cy="spatial-reference-filter"]').should("exist");
+    cy.get('[data-cy="originalReferenceSystem-formSelect"]').should("exist");
 
     goToEditorLocationFilter();
     cy.get("@checkbox").uncheck({ force: true });
@@ -37,7 +37,7 @@ describe("Tests for filtering data by reference system.", () => {
     returnToOverview();
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("h6", "Location").click();
-    cy.get('[data-cy="spatial-reference-filter"]').should("not.exist");
+    cy.get('[data-cy="originalReferenceSystem-formSelect"]').should("not.exist");
   });
 
   it("can filter by reference system", () => {
@@ -59,15 +59,15 @@ describe("Tests for filtering data by reference system.", () => {
 
     cy.contains("h6", "Location").click();
     getElementByDataCy("show-all-fields-switch").click();
-    cy.get('[data-cy="radiobutton-all"]').click();
     verifyPaginationText("1–100 of 1627");
 
-    cy.get('[data-cy="spatial-reference-filter"]').should("exist");
+    cy.get('[data-cy="originalReferenceSystem-formSelect"]').should("exist");
 
-    cy.get('[data-cy="radiobutton-LV95"]').click();
+    setSelect("originalReferenceSystem", 0); // LV95
+
     verifyPaginationText("1–100 of 813");
 
-    cy.get('[data-cy="radiobutton-LV03"]').click();
+    setSelect("originalReferenceSystem", 1); // LV03
     verifyPaginationText("1–100 of 814");
 
     // click reset label

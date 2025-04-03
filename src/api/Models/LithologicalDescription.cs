@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -46,12 +47,14 @@ public class LithologicalDescription : ILayerDescription, IChangeTracking, IIden
     /// <summary>
     /// Gets or sets the <see cref="LithologicalDescription"/>'s description.
     /// </summary>
+    [IncludeInExport]
     [Column("description")]
     public string? Description { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the quality of the <see cref="LithologicalDescription"/>'s description.
     /// </summary>
+    [IncludeInExport]
     [Column("qt_description_id")]
     public int? DescriptionQualityId { get; set; }
 
@@ -61,10 +64,12 @@ public class LithologicalDescription : ILayerDescription, IChangeTracking, IIden
     public Codelist? DescriptionQuality { get; set; }
 
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("depth_from")]
     public double? FromDepth { get; set; }
 
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("depth_to")]
     public double? ToDepth { get; set; }
 }

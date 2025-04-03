@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 
@@ -10,5 +11,6 @@ public class FieldMeasurement : Observation
     /// <summary>
     /// Gets the <see cref="FieldMeasurementResult"/>s associated with the <see cref="FieldMeasurement"/>.
     /// </summary>
+    [IncludeInExport]
     public ICollection<FieldMeasurementResult>? FieldMeasurementResults { get; set; }
 }

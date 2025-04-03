@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 
@@ -10,6 +11,7 @@ public class WaterIngress : Observation
     /// <summary>
     /// Gets or sets the <see cref="WaterIngress"/>'s quantity id.
     /// </summary>
+    [IncludeInExport]
     [Column("quantity")]
     public int QuantityId { get; set; }
 
@@ -21,6 +23,7 @@ public class WaterIngress : Observation
     /// <summary>
     /// Gets or sets the <see cref="WaterIngress"/>'s conditions id.
     /// </summary>
+    [IncludeInExport]
     [Column("conditions")]
     public int? ConditionsId { get; set; }
 

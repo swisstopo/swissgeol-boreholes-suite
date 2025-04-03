@@ -25,12 +25,17 @@ export const WorkgroupFilter: FC<WorkgroupFilterProps> = ({ selectedWorkgroup, o
     <FormControl>
       <RadioGroup onChange={handleChange} value={selectedWorkgroup} defaultValue="all">
         <>
-          <FormControlLabel key={"all"} value={"all"} control={<Radio />} label={capitalizeFirstLetter(t("all"))} />
+          <FormControlLabel
+            key={"all"}
+            value={"all"}
+            control={<Radio data-cy="all" />}
+            label={capitalizeFirstLetter(t("all"))}
+          />
           {workgroups.map(workgroup => (
             <FormControlLabel
               key={workgroup.id}
               value={workgroup.id}
-              control={<Radio />}
+              control={<Radio data-cy={workgroup.workgroup} />}
               label={workgroup.workgroup + (workgroup.disabled !== null ? " ( " + t("disabled") + ")" : "")}
             />
           ))}
