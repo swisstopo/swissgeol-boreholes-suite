@@ -9,25 +9,51 @@ import {
   Button,
   CircularProgress,
   IconButton,
+  MenuItem,
   Stack,
+  TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
-import { Dropdown, Input, Label, Popup } from "semantic-ui-react";
-import { ChevronDownIcon, Plus, Trash2 } from "lucide-react";
+import { InputAdornment } from "@mui/material/";
+import { ChevronDownIcon, Plus, SearchIcon, Trash2 } from "lucide-react";
 import _ from "lodash";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
+import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext";
 
-const MapSettings = props => {
+export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, handleOnChange, state, setState }) => {
   const { showAlert } = useContext(AlertContext);
-  const { setting, i18n, rmExplorerMap, addExplorerMap, handleAddItem, handleOnChange, state, setState } = props;
   const { t } = useTranslation();
   const [mapSettings, setMapSettings] = useState(setting.data.map.explorer);
 
   useEffect(() => {
     setMapSettings(setting.data.map.explorer);
   }, [setting.data.map.explorer]);
+
+  function getSearchInput(stateToUpdate) {
+    return (
+      <TextField
+        variant="outlined"
+        size="small"
+        placeholder="Search..."
+        onChange={e => {
+          setState({
+            ...state,
+            [stateToUpdate]: e.target.value.toLowerCase(),
+          });
+        }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <SearchIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
+    );
+  }
 
   function getIconButton(layer, layerType) {
     return (
@@ -75,24 +101,14 @@ const MapSettings = props => {
               color: "#787878",
               fontSize: "0.8em",
             }}>
-            {layer.queryable === true && layerType === "WMS" ? (
-              <Popup
-                content="Queryable"
-                on="hover"
-                trigger={
-                  <Label
-                    circular
-                    color="green"
-                    empty
-                    size="tiny"
-                    style={{
-                      marginRight: "0.5em",
-                    }}
-                  />
-                }
-              />
-            ) : null}
-            <Highlighter searchWords={[search]} textToHighlight={identifier} />
+            <Stack direction="row" spacing={1}>
+              {layer.queryable === true && layerType === "WMS" && (
+                <Tooltip title="Queryable">
+                  <Box sx={{ height: 8, width: 8, borderRadius: 3, backgroundColor: theme.palette.success.main }} />
+                </Tooltip>
+              )}
+              <Highlighter searchWords={[search]} textToHighlight={identifier} />
+            </Stack>
           </Box>
           <Box sx={{ fontSize: "0.8em" }}>
             <Highlighter searchWords={[search]} textToHighlight={layer.Abstract} />
@@ -157,24 +173,20 @@ const MapSettings = props => {
             <Stack direction={{ xs: "column", sm: "column", md: "column", lg: "row" }} gap={6} p={2}>
               <Box sx={{ flex: "1 1 0", width: { xs: "100%", sm: "100%", md: "100%", lg: 0 } }}>
                 <Stack gap={1}>
-                  <Stack direction="row" alignItems={"center"} gap={1}>
-                    <Dropdown
-                      additionLabel=""
-                      allowAdditions
-                      fluid
-                      onAddItem={(e, { value }) => {
-                        handleAddItem(value);
-                      }}
-                      onChange={(e, { value }) => {
-                        handleOnChange(value);
-                      }}
-                      options={setting.WMS}
-                      placeholder=""
-                      search
-                      selection
-                      style={{ overflow: "hidden", padding: "10px" }}
+                  <Stack direction="row" gap={1}>
+                    <TextField
+                      select
+                      variant="outlined"
+                      size="small"
+                      sx={{ mt: 0 }}
                       value={setting.selectedWMS}
-                    />
+                      onChange={e => handleOnChange(e.target.value)}>
+                      {setting.WMS.map(option => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.text}
+                        </MenuItem>
+                      ))}
+                    </TextField>
                     <Button
                       sx={{ height: "37px", width: "80px", ml: 1 }}
                       variant="contained"
@@ -191,30 +203,8 @@ const MapSettings = props => {
                       {state.wmsFetch ? <CircularProgress size={22} color="inherit" /> : t("load")}
                     </Button>
                   </Stack>
-                  {state.wmts !== null ? (
-                    <Input
-                      icon="search"
-                      onChange={e => {
-                        setState({
-                          ...state,
-                          searchWmts: e.target.value.toLowerCase(),
-                        });
-                      }}
-                      placeholder="Search..."
-                    />
-                  ) : null}
-                  {state.wms !== null ? (
-                    <Input
-                      icon="search"
-                      onChange={e => {
-                        setState({
-                          ...state,
-                          searchWms: e.target.value.toLowerCase(),
-                        });
-                      }}
-                      placeholder="Search..."
-                    />
-                  ) : null}
+                  {state.wmts !== null && getSearchInput("searchWmts")}
+                  {state.wms !== null && getSearchInput("searchWms")}
                   <Box
                     sx={{
                       height: state.wms || state.wmts ? "300px" : 0,
@@ -240,16 +230,7 @@ const MapSettings = props => {
               <Box sx={{ flex: "1 1 0", width: { xs: "100%", sm: "100%", md: "100%", lg: 0 } }}>
                 <Stack direction={"column"} gap={2} py={1} mb={2}>
                   <Typography>{t("usersMap")}</Typography>
-                  <Input
-                    icon="search"
-                    onChange={e => {
-                      setState({
-                        ...state,
-                        searchWmtsUser: e.target.value.toLowerCase(),
-                      });
-                    }}
-                    placeholder="Search..."
-                  />
+                  {getSearchInput("searchWmtsUser")}
                 </Stack>
                 <Box
                   sx={{
@@ -307,5 +288,3 @@ const MapSettings = props => {
     </Accordion>
   );
 };
-
-export default MapSettings;
