@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { Alert, Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
@@ -22,6 +22,7 @@ import {
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
+import { DetailContext } from "../detailContext.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
@@ -85,6 +86,7 @@ const LabelingPanel: FC = () => {
   const [abortController, setAbortController] = useState<AbortController>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
+  const { editingEnabled } = useContext(DetailContext);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -249,7 +251,7 @@ const LabelingPanel: FC = () => {
     };
 
     fetchExtractionData();
-  }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName, showAlert, t]);
+  }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName, showAlert, t, editingEnabled]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
   return (
@@ -366,14 +368,16 @@ const LabelingPanel: FC = () => {
               left: theme.spacing(2),
               zIndex: "500",
             }}>
-            <TextExtractionButton
-              disabled={extractionObject?.type == "text" && extractionState === ExtractionState.drawing}
-              onClick={() => {
-                setExtractionObject({ type: "text" });
-                setExtractionState(ExtractionState.start);
-                setDrawTooltipLabel("drawTextBox");
-              }}
-            />
+            {editingEnabled && (
+              <TextExtractionButton
+                disabled={extractionObject?.type == "text" && extractionState === ExtractionState.drawing}
+                onClick={() => {
+                  setExtractionObject({ type: "text" });
+                  setExtractionState(ExtractionState.start);
+                  setDrawTooltipLabel("drawTextBox");
+                }}
+              />
+            )}
           </Box>
           <FloatingExtractionFeedback
             isExtractionLoading={isExtractionLoading}
