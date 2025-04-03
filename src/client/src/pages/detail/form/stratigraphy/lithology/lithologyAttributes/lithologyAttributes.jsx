@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { Box, Card, FormControlLabel, Stack, Switch } from "@mui/material";
+import { Trash2, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import _ from "lodash";
 import { DevTool } from "../../../../../../../hookformDevtools.js";
@@ -10,6 +11,7 @@ import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../ap
 import { CancelButton, SaveButton } from "../../../../../../components/buttons/buttons.js";
 import { DataCardButtonContainer } from "../../../../../../components/dataCard/dataCard.js";
 import { parseValueIfNotNull } from "../../../../../../components/form/formUtils.js";
+import { PromptContext } from "../../../../../../components/prompt/promptContext.js";
 import LithologyLayerForm from "./lithologyAttributeList/LithologyLayerForm.jsx";
 
 const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => {
@@ -18,6 +20,7 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
   const [layer, setLayer] = useState(null);
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { showPrompt } = useContext(PromptContext);
 
   const getDefaultValues = useCallback(
     layer => {
@@ -68,14 +71,32 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
     setShowAll(false);
   }, [id, mapResponseToLayer]);
 
+  const isFormDirty = formMethods.formState.isDirty;
+
   const onSave = () => {
     formMethods.handleSubmit(updateChange)();
     setSelectedLayer(null);
   };
 
   const onCancel = () => {
-    formMethods.reset(getDefaultValues(layer));
-    setSelectedLayer(null);
+    if (isFormDirty) {
+      showPrompt(t("messageDiscardUnsavedChanges"), [
+        {
+          label: t("cancel"),
+          icon: <X />,
+          variant: "outlined",
+        },
+        {
+          label: t("discardchanges"),
+          icon: <Trash2 />,
+          variant: "contained",
+          action: () => {
+            formMethods.reset(getDefaultValues(layer));
+            setSelectedLayer(null);
+          },
+        },
+      ]);
+    }
   };
 
   function prepareFormDataForSubmit() {
@@ -168,8 +189,8 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
           <Box sx={{ flexGrow: 1 }} />
           {isEditable && (
             <DataCardButtonContainer>
-              <SaveButton onClick={onSave} />
-              <CancelButton onClick={onCancel} />
+              <SaveButton disabled={!isFormDirty} onClick={onSave} />
+              <CancelButton disabled={!isFormDirty} onClick={onCancel} />
             </DataCardButtonContainer>
           )}
         </Stack>
