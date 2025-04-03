@@ -81,72 +81,6 @@
       "notes": "I tried to annihilate it but got bonbon all over it.",
       "layers": [
         {
-          "layerColorCodes": [
-            {
-              "layerId": 7013050,
-              "layer": null,
-              "codelistId": 21112002,
-              "codelist": null
-            },
-            {
-              "layerId": 7013050,
-              "layer": null,
-              "codelistId": 21112024,
-              "codelist": null
-            }
-          ],
-          "layerDebrisCodes": [
-            {
-              "layerId": 7013050,
-              "layer": null,
-              "codelistId": 9102,
-              "codelist": null
-            },
-            {
-              "layerId": 7013050,
-              "layer": null,
-              "codelistId": 9100,
-              "codelist": null
-            }
-          ],
-          "layerGrainShapeCodes": [
-            {
-              "layerId": 7013050,
-              "layer": null,
-              "codelistId": 21110005,
-              "codelist": null
-            }
-          ],
-          "layerGrainAngularityCodes": [
-            {
-              "layerId": 7013050,
-              "layer": null,
-              "codelistId": 21115003,
-              "codelist": null
-            }
-          ],
-          "layerOrganicComponentCodes": [
-            {
-              "layerId": 7013050,
-              "layer": null,
-              "codelistId": 21108005,
-              "codelist": null
-            }
-          ],
-          "layerUscs3Codes": [
-            {
-              "layerId": 7013050,
-              "layer": null,
-              "codelistId": 23101002,
-              "codelist": null
-            },
-            {
-              "layerId": 7013050,
-              "layer": null,
-              "codelistId": 23101035,
-              "codelist": null
-            }
-          ],
           "id": 7013050,
           "stratigraphyId": 6001305,
           "stratigraphy": null,
@@ -196,18 +130,12 @@
           "lithologyTopBedrockId": 15104816,
           "lithologyTopBedrock": null,
           "originalLithology": "24/365 Awesome Frozen Table bypassing interface generate",
-          "colorCodelistIds": [],
-          "colorCodelists": null,
-          "debrisCodelistIds": [],
-          "debrisCodelists": null,
-          "grainShapeCodelistIds": [],
-          "grainShapeCodelists": null,
-          "grainAngularityCodelistIds": [],
-          "grainAngularityCodelists": null,
-          "organicComponentCodelistIds": [],
-          "organicComponentCodelists": null,
-          "uscs3CodelistIds": [],
-          "uscs3Codelists": null
+          "colorCodelistIds": [21112002, 21112024],
+          "debrisCodelistIds": [9102, 9100],
+          "grainShapeCodelistIds": [21110005],
+          "grainAngularityCodelistIds": [21115003],
+          "organicComponentCodelistIds": [21108005],
+          "uscs3CodelistIds": [23101002, 23101035]
         },
         {
           "id": 7013051,

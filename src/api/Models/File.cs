@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 
@@ -33,18 +34,21 @@ public class File : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="File"/>'s name.
     /// </summary>
+    [IncludeInExport]
     [Column("name_fil")]
     public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the unique <see cref="File"/> name.
     /// </summary>
+    [IncludeInExport]
     [Column("name_uuid_fil")]
     public string? NameUuid { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="File"/>'s type.
     /// </summary>
+    [IncludeInExport]
     [Column("type_fil")]
     public string Type { get; set; }
 

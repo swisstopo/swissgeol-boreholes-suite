@@ -12,11 +12,14 @@
 - The borehole geometry charts and tables now display numbers with thousand separators.
 - Bump data extraction API version to v1.0.30.
 - The panel displaying PDF is now also visible when editing is not enabled.
+- Inputs in filters now have the new UI style.
+- Reduced data of exported JSON files.
 
 ### Fixed
 - When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard changes button.
 - Copying a borehole did not update its casing references to the copied casings.
 - Importing a borehole with attachments assigned to a non-existent user id resulted in an error.
+- When exporting .zip archives for boreholes whose names contained dots the .zip extension was missing.
 
 ## v2.1.1125 - 2025-03-19
 

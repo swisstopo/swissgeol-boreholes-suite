@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -44,16 +45,19 @@ public class LithostratigraphyLayer : ILayerDescription, IChangeTracking, IIdent
     public DateTime? Updated { get; set; }
 
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("depth_from")]
     public double? FromDepth { get; set; }
 
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("depth_to")]
     public double? ToDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/> id of the lithostratigraphy.
     /// </summary>
+    [IncludeInExport]
     [Column("lithostratigraphy_id")]
     public int? LithostratigraphyId { get; set; }
 

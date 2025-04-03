@@ -314,6 +314,38 @@ public class ExportControllerTest
     }
 
     [TestMethod]
+    public async Task ExportExcludesPropertiesWithoutAttribute()
+    {
+        var newBorehole = GetBoreholeToAdd();
+
+        context.Add(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var response = await controller.ExportJsonAsync([newBorehole.Id]).ConfigureAwait(false);
+        JsonResult jsonResult = (JsonResult)response!;
+        Assert.IsNotNull(jsonResult.Value);
+
+        // Serialize using export options
+        using var jsonStream = new MemoryStream();
+        await JsonSerializer.SerializeAsync(jsonStream, jsonResult.Value, (JsonSerializerOptions?)jsonResult.SerializerSettings);
+
+        // Deserialize all properties
+        jsonStream.Position = 0;
+        var boreholes = await JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(jsonStream);
+        Assert.AreEqual(1, boreholes.Count);
+
+        var borehole = boreholes.Single();
+        Assert.AreEqual(newBorehole.Id, borehole[nameof(Borehole.Id)].GetInt32());
+        Assert.AreEqual(newBorehole.Name, borehole[nameof(Borehole.Name)].GetString());
+        Assert.IsFalse(borehole.ContainsKey(nameof(Borehole.CreatedBy)));
+        Assert.IsFalse(borehole.ContainsKey(nameof(Borehole.CreatedById)));
+        Assert.IsFalse(borehole.ContainsKey(nameof(Borehole.UpdatedBy)));
+        Assert.IsFalse(borehole.ContainsKey(nameof(Borehole.UpdatedById)));
+        Assert.IsFalse(borehole.ContainsKey(nameof(Borehole.LockedBy)));
+        Assert.IsFalse(borehole.ContainsKey(nameof(Borehole.LockedById)));
+    }
+
+    [TestMethod]
     [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
     [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
     [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 
@@ -26,6 +27,7 @@ public class Section : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Section"/>'s name.
     /// </summary>
+    [IncludeInExport]
     [Column("name")]
     public string Name { get; set; }
 
@@ -54,5 +56,6 @@ public class Section : IChangeTracking, IIdentifyable
     /// <summary>
     /// Get the <see cref="SectionElement"/>s associated with this <see cref="Section"/>.
     /// </summary>
+    [IncludeInExport]
     public IList<SectionElement> SectionElements { get; set; }
 }

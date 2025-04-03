@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using BDMS.Json;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -46,26 +47,31 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets whether the <see cref="Layer"/> is undefined.
     /// </summary>
+    [IncludeInExport]
     [Column("undefined_lay")]
     public bool? IsUndefined { get; set; }
 
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("depth_from_lay")]
     public double? FromDepth { get; set; }
 
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("depth_to_lay")]
     public double? ToDepth { get; set; }
 
     /// <summary>
     /// Gets or sets whether this <see cref="Layer"/> is the last.
     /// </summary>
+    [IncludeInExport]
     [Column("last_lay")]
     public bool? IsLast { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the quality of the <see cref="Layer"/>'s description.
     /// </summary>
+    [IncludeInExport]
     [Column("qt_description_id_cli")]
     public int? DescriptionQualityId { get; set; }
 
@@ -77,6 +83,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s lithology.
     /// </summary>
+    [IncludeInExport]
     [Column("lithology_id_cli")]
     public int? LithologyId { get; set; }
 
@@ -88,6 +95,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s plasticity.
     /// </summary>
+    [IncludeInExport]
     [Column("plasticity_id_cli")]
     public int? PlasticityId { get; set; }
 
@@ -99,6 +107,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s consitance.
     /// </summary>
+    [IncludeInExport]
     [Column("consistance_id_cli")]
     public int? ConsistanceId { get; set; }
 
@@ -110,6 +119,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s alteration.
     /// </summary>
+    [IncludeInExport]
     [Column("alteration_id_cli")]
     public int? AlterationId { get; set; }
 
@@ -121,6 +131,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s compactness.
     /// </summary>
+    [IncludeInExport]
     [Column("compactness_id_cli")]
     public int? CompactnessId { get; set; }
 
@@ -132,6 +143,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s grain size 1.
     /// </summary>
+    [IncludeInExport]
     [Column("grain_size_1_id_cli")]
     public int? GrainSize1Id { get; set; }
 
@@ -143,6 +155,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s grain size 2.
     /// </summary>
+    [IncludeInExport]
     [Column("grain_size_2_id_cli")]
     public int? GrainSize2Id { get; set; }
 
@@ -154,6 +167,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s cohesion.
     /// </summary>
+    [IncludeInExport]
     [Column("cohesion_id_cli")]
     public int? CohesionId { get; set; }
 
@@ -165,6 +179,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s uscs type id 1.
     /// </summary>
+    [IncludeInExport]
     [Column("uscs_1_id_cli")]
     public int? Uscs1Id { get; set; }
 
@@ -176,6 +191,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s uscs type id 2.
     /// </summary>
+    [IncludeInExport]
     [Column("uscs_2_id_cli")]
     public int? Uscs2Id { get; set; }
 
@@ -187,12 +203,14 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s Original Uscs.
     /// </summary>
+    [IncludeInExport]
     [Column("uscs_original_lay")]
     public string? OriginalUscs { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s Uscs determination.
     /// </summary>
+    [IncludeInExport]
     [Column("uscs_determination_id_cli")]
     public int? UscsDeterminationId { get; set; }
 
@@ -204,12 +222,14 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s notes.
     /// </summary>
+    [IncludeInExport]
     [Column("notes_lay")]
     public string? Notes { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s lithostratigraphy.
     /// </summary>
+    [IncludeInExport]
     [Column("lithostratigraphy_id_cli")]
     public int? LithostratigraphyId { get; set; }
 
@@ -221,6 +241,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s humidity.
     /// </summary>
+    [IncludeInExport]
     [Column("humidity_id_cli")]
     public int? HumidityId { get; set; }
 
@@ -232,12 +253,14 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets whether the <see cref="Layer"/> is striae.
     /// </summary>
+    [IncludeInExport]
     [Column("striae_lay")]
     public bool? IsStriae { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s gradation.
     /// </summary>
+    [IncludeInExport]
     [Column("gradation_id_cli")]
     public int? GradationId { get; set; }
 
@@ -249,6 +272,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s lithology top bedrock.
     /// </summary>
+    [IncludeInExport]
     [Column("lithology_top_bedrock_id_cli")]
     public int? LithologyTopBedrockId { get; set; }
 
@@ -260,6 +284,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the original lithology of the <see cref="Layer"/>.
     /// </summary>
+    [IncludeInExport]
     [Column("original_lithology")]
     public string? OriginalLithology { get; set; }
 
@@ -297,6 +322,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// Gets or sets the code list ids with schema name 'colour' of the <see cref="Layer"/>'s many to many code list relations.
     /// </summary>
     [NotMapped]
+    [IncludeInExport]
     public ICollection<int>? ColorCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
@@ -308,6 +334,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// Gets or sets the code list ids with schema name 'debris' of the <see cref="Layer"/>'s many to many code list relations.
     /// </summary>
     [NotMapped]
+    [IncludeInExport]
     public ICollection<int>? DebrisCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
@@ -319,6 +346,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// Gets or sets the code list ids with schema name 'grain_shape' of the <see cref="Layer"/>'s many to many code list relations.
     /// </summary>
     [NotMapped]
+    [IncludeInExport]
     public ICollection<int>? GrainShapeCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
@@ -330,6 +358,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// Gets or sets the code list ids with schema name 'grain_angularity' of the <see cref="Layer"/>'s many to many code list relations.
     /// </summary>
     [NotMapped]
+    [IncludeInExport]
     public ICollection<int>? GrainAngularityCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
@@ -341,6 +370,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// Gets or sets the code list ids with schema name 'organic_components' of the <see cref="Layer"/>'s many to many code list relations.
     /// </summary>
     [NotMapped]
+    [IncludeInExport]
     public ICollection<int>? OrganicComponentCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
@@ -352,6 +382,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// Gets or sets the code list ids with schema name 'uscs3' of the <see cref="Layer"/>'s many to many code list relations.
     /// </summary>
     [NotMapped]
+    [IncludeInExport]
     public ICollection<int>? Uscs3CodelistIds { get; set; } = new List<int>();
 
     /// <summary>

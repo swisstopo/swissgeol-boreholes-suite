@@ -171,65 +171,17 @@
             "lithologyTopBedrockId": 15104470,
             "lithologyTopBedrock": null,
             "originalLithology": "Handmade connect Data Progressive Danish Krone",
-            "layerColorCodes": [
-              {
-                "layerId": 7017730,
-                "layer": null,
-                "codelistId": 21112003,
-                "codelist": null
-              }
-            ],
-            "layerDebrisCodes": [
-              {
-                "layerId": 7017730,
-                "layer": null,
-                "codelistId": 9104,
-                "codelist": null
-              }
-            ],
-            "layerGrainShapeCodes": [
-              {
-                "layerId": 7017730,
-                "layer": null,
-                "codelistId": 21110003,
-                "codelist": null
-              }
-            ],
-            "layerGrainAngularityCodes": [
-              {
-                "layerId": 7017730,
-                "layer": null,
-                "codelistId": 21115007,
-                "codelist": null
-              }
-            ],
-            "layerOrganicComponentCodes": [
-              {
-                "layerId": 7017730,
-                "layer": null,
-                "codelistId": 21108010,
-                "codelist": null
-              }
-            ],
-            "layerUscs3Codes": [
-              {
-                "layerId": 7017730,
-                "layer": null,
-                "codelistId": 23101010,
-                "codelist": null
-              }
-            ],
-            "colorCodelistIds": [],
+            "colorCodelistIds": [21112003],
             "colorCodelists": null,
-            "debrisCodelistIds": [],
+            "debrisCodelistIds": [9104],
             "debrisCodelists": null,
-            "grainShapeCodelistIds": [],
+            "grainShapeCodelistIds": [21110003],
             "grainShapeCodelists": null,
-            "grainAngularityCodelistIds": [],
+            "grainAngularityCodelistIds": [21115007],
             "grainAngularityCodelists": null,
-            "organicComponentCodelistIds": [],
+            "organicComponentCodelistIds": [21108010],
             "organicComponentCodelists": null,
-            "uscs3CodelistIds": [],
+            "uscs3CodelistIds": [23101010],
             "uscs3Codelists": null
           },
           {
@@ -282,27 +234,7 @@
             "lithologyTopBedrockId": 15104873,
             "lithologyTopBedrock": null,
             "originalLithology": "Missouri Technician azure Square Czech Republic",
-            "layerColorCodes": [
-              {
-                "layerId": 7017731,
-                "layer": null,
-                "codelistId": 21112003,
-                "codelist": null
-              }
-            ],
-            "layerDebrisCodes": [],
-            "layerGrainShapeCodes": [],
-            "layerGrainAngularityCodes": [],
-            "layerOrganicComponentCodes": [],
-            "layerUscs3Codes": [
-              {
-                "layerId": 7017731,
-                "layer": null,
-                "codelistId": 23101005,
-                "codelist": null
-              }
-            ],
-            "colorCodelistIds": [],
+            "colorCodelistIds": [21112003],
             "colorCodelists": null,
             "debrisCodelistIds": [],
             "debrisCodelists": null,
@@ -312,7 +244,7 @@
             "grainAngularityCodelists": null,
             "organicComponentCodelistIds": [],
             "organicComponentCodelists": null,
-            "uscs3CodelistIds": [],
+            "uscs3CodelistIds": [23101005],
             "uscs3Codelists": null
           }
         ],
@@ -516,12 +448,6 @@
             "lithologyTopBedrockId": 15104811,
             "lithologyTopBedrock": null,
             "originalLithology": "Tasty teal rich hack transmitting",
-            "layerColorCodes": [],
-            "layerDebrisCodes": [],
-            "layerGrainShapeCodes": [],
-            "layerGrainAngularityCodes": [],
-            "layerOrganicComponentCodes": [],
-            "layerUscs3Codes": [],
             "colorCodelistIds": [],
             "colorCodelists": null,
             "debrisCodelistIds": [],
@@ -585,12 +511,6 @@
             "lithologyTopBedrockId": null,
             "lithologyTopBedrock": null,
             "originalLithology": "target Berkshire JBOD quantifying Handmade Granite Table",
-            "layerColorCodes": [],
-            "layerDebrisCodes": [],
-            "layerGrainShapeCodes": [],
-            "layerGrainAngularityCodes": [],
-            "layerOrganicComponentCodes": [],
-            "layerUscs3Codes": [],
             "colorCodelistIds": [],
             "colorCodelists": null,
             "debrisCodelistIds": [],
@@ -1549,49 +1469,15 @@
             "lithologyTopBedrockId": 15104470,
             "lithologyTopBedrock": null,
             "originalLithology": "Handmade connect Data Progressive Danish Krone",
-            "layerColorCodes": [],
-            "layerDebrisCodes": [
-              {
-                "layerId": 7017730,
-                "layer": null,
-                "codelistId": 9104,
-                "codelist": null
-              }
-            ],
-            "layerGrainShapeCodes": [
-              {
-                "layerId": 7017730,
-                "layer": null,
-                "codelistId": 21110003,
-                "codelist": null
-              }
-            ],
-            "layerGrainAngularityCodes": [
-              {
-                "layerId": 7017730,
-                "layer": null,
-                "codelistId": 21115007,
-                "codelist": null
-              }
-            ],
-            "layerOrganicComponentCodes": [
-              {
-                "layerId": 7017730,
-                "layer": null,
-                "codelistId": 21108010,
-                "codelist": null
-              }
-            ],
-            "layerUscs3Codes": [],
             "colorCodelistIds": [],
             "colorCodelists": null,
-            "debrisCodelistIds": [],
+            "debrisCodelistIds": [9104],
             "debrisCodelists": null,
-            "grainShapeCodelistIds": [],
+            "grainShapeCodelistIds": [21110003],
             "grainShapeCodelists": null,
-            "grainAngularityCodelistIds": [],
+            "grainAngularityCodelistIds": [21115007],
             "grainAngularityCodelists": null,
-            "organicComponentCodelistIds": [],
+            "organicComponentCodelistIds": [21108010],
             "organicComponentCodelists": null,
             "uscs3CodelistIds": [],
             "uscs3Codelists": null
@@ -1646,27 +1532,7 @@
             "lithologyTopBedrockId": 15104873,
             "lithologyTopBedrock": null,
             "originalLithology": "Missouri Technician azure Square Czech Republic",
-            "layerColorCodes": [
-              {
-                "layerId": 7017731,
-                "layer": null,
-                "codelistId": 21112003,
-                "codelist": null
-              }
-            ],
-            "layerDebrisCodes": [],
-            "layerGrainShapeCodes": [],
-            "layerGrainAngularityCodes": [],
-            "layerOrganicComponentCodes": [],
-            "layerUscs3Codes": [
-              {
-                "layerId": 7017731,
-                "layer": null,
-                "codelistId": 23101005,
-                "codelist": null
-              }
-            ],
-            "colorCodelistIds": [],
+            "colorCodelistIds": [21112003],
             "colorCodelists": null,
             "debrisCodelistIds": [],
             "debrisCodelists": null,
@@ -1676,7 +1542,7 @@
             "grainAngularityCodelists": null,
             "organicComponentCodelistIds": [],
             "organicComponentCodelists": null,
-            "uscs3CodelistIds": [],
+            "uscs3CodelistIds": [23101005],
             "uscs3Codelists": null
           }
         ],
@@ -1880,12 +1746,6 @@
             "lithologyTopBedrockId": 15104811,
             "lithologyTopBedrock": null,
             "originalLithology": "Tasty teal rich hack transmitting",
-            "layerColorCodes": [],
-            "layerDebrisCodes": [],
-            "layerGrainShapeCodes": [],
-            "layerGrainAngularityCodes": [],
-            "layerOrganicComponentCodes": [],
-            "layerUscs3Codes": [],
             "colorCodelistIds": [],
             "colorCodelists": null,
             "debrisCodelistIds": [],
@@ -1949,12 +1809,6 @@
             "lithologyTopBedrockId": null,
             "lithologyTopBedrock": null,
             "originalLithology": "target Berkshire JBOD quantifying Handmade Granite Table",
-            "layerColorCodes": [],
-            "layerDebrisCodes": [],
-            "layerGrainShapeCodes": [],
-            "layerGrainAngularityCodes": [],
-            "layerOrganicComponentCodes": [],
-            "layerUscs3Codes": [],
             "colorCodelistIds": [],
             "colorCodelists": null,
             "debrisCodelistIds": [],
