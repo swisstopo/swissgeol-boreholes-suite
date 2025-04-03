@@ -11,6 +11,7 @@
 - Number inputs in the borehole sections, hydrogeology, completion and layer descriptions are now displayed with thousand separators.
 - The borehole geometry charts and tables now display numbers with thousand separators.
 - Bump data extraction API version to v1.0.30.
+- The panel displaying PDF is now also visible when editing is not enabled.
 
 ### Fixed
 - When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard changes button.
