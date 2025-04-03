@@ -10,8 +10,8 @@ const BackfillDisplay = props => {
   return (
     <DataDisplayCard item={item} deleteData={deleteBackfill}>
       <FormContainer direction="row">
-        <FormDisplay label="fromdepth" value={item?.fromDepth} />
-        <FormDisplay label="todepth" value={item?.toDepth} />
+        <FormDisplay label="fromdepth" value={item?.fromDepth} type={FormValueType.Number} />
+        <FormDisplay label="todepth" value={item?.toDepth} type={FormValueType.Number} />
       </FormContainer>
       <FormContainer direction="row">
         <FormDisplay label="kindBackfill" value={item?.kind} type={FormValueType.Domain} />
