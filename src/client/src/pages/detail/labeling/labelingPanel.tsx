@@ -251,7 +251,7 @@ const LabelingPanel: FC = () => {
     };
 
     fetchExtractionData();
-  }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName, showAlert, t]);
+  }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName, showAlert, t, editingEnabled]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
   return (

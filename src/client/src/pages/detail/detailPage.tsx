@@ -90,10 +90,6 @@ export const DetailPage: FC = () => {
   }, [legacyBorehole?.data?.lock, setEditingEnabled]);
 
   useEffect(() => {
-    if (!editingEnabled) {
-      togglePanel(false);
-    }
-
     if (legacyBorehole?.data?.lock?.id && legacyBorehole.data.lock.id !== user.data.id) {
       setEditableByCurrentUser(false);
       return;
