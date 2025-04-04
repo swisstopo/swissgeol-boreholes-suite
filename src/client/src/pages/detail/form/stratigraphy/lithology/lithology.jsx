@@ -140,14 +140,17 @@ const Lithology = ({ checkLock }) => {
           {selectedLayer !== null && (
             <Styled.SecondColumn>
               <LithologyAttributes
+                id={selectedLayer?.id}
+                reloadLayer={reloadLayer}
+                setReloadLayer={setReloadLayer}
+                setSelectedLayer={setSelectedLayer}
                 data={{
-                  id: selectedLayer ? selectedLayer.id : null,
                   selectedStratigraphyID: selectedStratigraphy?.id,
                   isEditable,
                   onUpdated,
                   reloadAttribute,
                   checkLock,
-                  attribute: attributesBasedKind?.profileAttribute,
+                  layerAttributes: attributesBasedKind?.profileAttribute,
                 }}
               />
             </Styled.SecondColumn>

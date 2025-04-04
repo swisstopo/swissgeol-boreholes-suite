@@ -42,7 +42,7 @@ export const stratigraphyData = {
     },
     {
       id: 2,
-      type: "Radio",
+      type: "Boolean",
       label: "layer_last",
       value: "isLast",
       to: false,
@@ -61,7 +61,7 @@ export const stratigraphyData = {
     },
     {
       id: 4,
-      type: "Domain",
+      type: "Dropdown",
       label: "lithology",
       value: "lithologyId",
       schema: "custom.lithology_top_bedrock",
@@ -197,7 +197,7 @@ export const stratigraphyData = {
     },
     {
       id: 18,
-      type: "Radio",
+      type: "Boolean",
       label: "striae",
       value: "isStriae",
       to: false,

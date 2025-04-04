@@ -43,7 +43,6 @@ const LithologyLayersList = props => {
     } else {
       setIsTopHasWarning(false);
     }
-
     if (
       itemWithValidation?.depth_to === null ||
       itemWithValidation?.validation?.bottomOverlap ||

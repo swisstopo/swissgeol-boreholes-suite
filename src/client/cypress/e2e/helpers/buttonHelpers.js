@@ -63,6 +63,21 @@ export const startEditing = parent => {
 };
 
 /**
+ * Starts editing if editing is not already active, this method can be helpful during test development.
+ * @param {string} parent (optional) The parent of the button.
+ */
+
+export const startEditingIfInactive = parent => {
+  const selector = createBaseSelector(parent) + '[data-cy="edit-button"]';
+  cy.get("body").then($body => {
+    // Check if the button exists, is visible, and not disabled
+    if ($body.find(selector).length && $body.find(selector).is(":visible") && !$body.find(selector).is(":disabled")) {
+      cy.get(selector).click({ force: true });
+    }
+  });
+};
+
+/**
  * Clicks on the stop editing button.
  * @param {string} parent (optional) The parent of the button.
  */

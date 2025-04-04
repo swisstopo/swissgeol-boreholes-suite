@@ -1,4 +1,5 @@
-import { addItem, deleteItem } from "../helpers/buttonHelpers";
+import { addItem, deleteItem, saveForm } from "../helpers/buttonHelpers";
+import { setInput } from "../helpers/formHelpers.js";
 import {
   getElementByDataCy,
   goToRouteAndAcceptTerms,
@@ -22,39 +23,39 @@ describe("Tests for the lithological description column.", () => {
     // add three layers
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
+    cy.get('[data-cy="styled-layer-0"]').should("contain", "0 m MD");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
-    getElementByDataCy("show-all-fields-switch").click();
-    cy.get('[data-cy="toDepth"]').click();
-    cy.get('[data-cy="toDepth"]').clear();
-    cy.get('[data-cy="toDepth"]').type("50");
-    cy.wait("@update-layer");
-    cy.wait("@layer");
-    cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
+    setInput("fromDepth", "0");
+    setInput("toDepth", "50");
+    saveForm();
+    cy.wait(["@update-layer", "@layer"]);
+    cy.get('[data-cy="styled-layer-0"]').should("contain", "50 m MD");
 
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
+    cy.get('[data-cy="styled-layer-0"]').should("contain", "0 m MD");
+    cy.get('[data-cy="styled-layer-0"]').should("contain", "50 m MD");
+    cy.get('[data-cy="styled-layer-1"]').should("contain", "50 m MD");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
-    getElementByDataCy("show-all-fields-switch").click();
-    cy.get('[data-cy="toDepth"]').click();
-    cy.get('[data-cy="toDepth"]').clear();
-    cy.get('[data-cy="toDepth"]').type("62.5");
-    cy.wait("@update-layer");
-    cy.wait("@layer");
-    cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
+    setInput("toDepth", "62.5");
+    saveForm();
+    cy.wait(["@update-layer", "@layer"]);
 
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
+    cy.get('[data-cy="styled-layer-0"]').should("contain", "50 m MD");
+    cy.get('[data-cy="styled-layer-1"]').should("contain", "62.5 m MD");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
     getElementByDataCy("show-all-fields-switch").click();
-    cy.get('[data-cy="toDepth"]').click();
-    cy.get('[data-cy="toDepth"]').clear();
-    cy.get('[data-cy="toDepth"]').type("120");
-    cy.wait("@update-layer");
-    cy.wait("@layer");
-    cy.get('[data-cy="styled-layer-2"] [data-testid="ClearIcon"]').click();
+    setInput("toDepth", "120");
+    saveForm();
+    cy.wait(["@update-layer", "@layer"]);
+    cy.get('[data-cy="styled-layer-0"]').should("contain", "50 m MD");
+    cy.get('[data-cy="styled-layer-1"]').should("contain", "62.5 m MD");
+    cy.get('[data-cy="styled-layer-2"]').should("contain", "120 m MD");
 
     // workaround because close button of profile attributes is sometimes not clickable
     cy.get('[data-cy="location-menu-item"]').click();
