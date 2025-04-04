@@ -263,7 +263,6 @@ export const evaluateMultiSelect = (fieldName, expectedValues, parent) => {
         return input.value === "";
       } else {
         var values = input.value.split(",");
-        console.log(fieldName, input.value);
         return values.length === expectedValues.length && values.every(v => expectedValues.includes(v));
       }
     })
