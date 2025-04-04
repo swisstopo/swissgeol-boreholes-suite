@@ -1,19 +1,31 @@
 import { fetchStratigraphy, updateStratigraphy } from "../../../../../../../api/fetchApiV2.ts";
 
-export const sendProfile = async (id, attribute, value) => {
-  let success = false;
-  await fetchStratigraphy(id).then(async stratigraphy => {
-    if (stratigraphy) {
-      stratigraphy[attribute] = value;
-      await updateStratigraphy(stratigraphy).then(response => {
-        if (response) {
-          success = true;
-        }
-      });
-    } else {
-      alert("Failed to get stratigraphy data for update.");
+const updateStratigraphyData = async (id, updateFn) => {
+  try {
+    const stratigraphy = await fetchStratigraphy(id);
+    if (!stratigraphy) {
+      throw new Error("Failed to get stratigraphy data for update.");
     }
-  });
 
-  return success;
+    updateFn(stratigraphy);
+    const response = await updateStratigraphy(stratigraphy);
+    return !!response;
+  } catch (error) {
+    alert(error.message);
+    return false;
+  }
+};
+
+export const updateStratigraphyAttribute = async (id, attribute, value) => {
+  return updateStratigraphyData(id, stratigraphy => {
+    stratigraphy[attribute] = value;
+  });
+};
+
+export const updateStratigraphyAttributes = async (id, attributeValuePairs) => {
+  return updateStratigraphyData(id, stratigraphy => {
+    Object.entries(attributeValuePairs).forEach(([attribute, value]) => {
+      stratigraphy[attribute] = value;
+    });
+  });
 };

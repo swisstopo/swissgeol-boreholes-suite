@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Box } from "@mui/material";
 import _ from "lodash";
-import { fetchStratigraphy } from "../../../../../../api/fetchApiV2.ts";
-import { sendProfile } from "./api";
-import InfoCheckBox from "./infoCheckBox";
-import InfoList from "./infoList";
-import * as Styled from "./styles.js";
+import { fetchStratigraphy } from "../../../../../../../api/fetchApiV2.ts";
+import { FormContainer } from "../../../../../../../components/form/form.ts";
+import { updateStratigraphyAttribute } from "../api/index.js";
+import InfoList from "./InfoList.jsx";
 
 const LithologyInfo = props => {
-  const { selectedStratigraphyID: id, isEditable, onUpdated, attribute, checkLock } = props.data;
+  const { selectedStratigraphyID: id, onUpdated, attribute, checkLock } = props.data;
   const mounted = useRef(false);
   const [state, setState] = useState({
     isPatching: false,
@@ -57,7 +57,7 @@ const LithologyInfo = props => {
     clearTimeout(state.updateAttributeDelay?.[attribute]);
 
     let setDelay = setTimeout(() => {
-      sendProfile(id, attribute, value).then(res => {
+      updateStratigraphyAttribute(id, attribute, value).then(res => {
         if (res) {
           setState(prevState => ({ ...prevState, isPatching: false }));
           if (_.isFunction(onUpdated)) {
@@ -75,27 +75,11 @@ const LithologyInfo = props => {
     });
   };
   return (
-    <Styled.Container>
-      {attribute && (
-        <InfoList
-          data={{
-            attribute,
-            updateChange,
-            isEditable,
-            profileInfo: state.profileInfo,
-          }}
-        />
-      )}
-
-      <InfoCheckBox
-        data={{
-          profileInfo: state.profileInfo,
-          updateChange,
-          isEditable,
-          onUpdated,
-        }}
-      />
-    </Styled.Container>
+    <FormContainer>
+      <Box sx={{ border: "1px solid lightgrey", borderRadius: 1, p: 2 }}>
+        {attribute && <InfoList id={id} onUpdated={onUpdated} profileInfo={state.profileInfo} />}
+      </Box>
+    </FormContainer>
   );
 };
 

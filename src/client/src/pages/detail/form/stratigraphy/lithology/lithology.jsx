@@ -7,7 +7,7 @@ import { FullPageCentered } from "../../../../../components/styledComponents.js"
 import { stratigraphyData } from "./data/stratigraphydata.js";
 import LithologyAttributes from "./lithologyAttributes";
 import ProfileHeader from "./lithologyHeader";
-import LithologyInfo from "./lithologyInfo";
+import LithologyInfo from "./lithologyInfo/infoList/lithologyInfo.jsx";
 import ProfileLayers from "./lithologyLayers";
 import * as Styled from "./styles.js";
 
@@ -118,7 +118,6 @@ const Lithology = ({ checkLock }) => {
             <LithologyInfo
               data={{
                 selectedStratigraphyID: selectedStratigraphy ? selectedStratigraphy.id : null,
-                isEditable,
                 onUpdated,
                 checkLock,
                 attribute: attributesBasedKind?.profileInfo,
