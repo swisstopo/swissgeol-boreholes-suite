@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1156 - 2025-04-04
+
 ### Added
 - Added a button to add workgroups in the workgroup administration.
 
