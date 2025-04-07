@@ -1,61 +1,59 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { FormControlLabel, Switch } from "@mui/material";
+import { Box, Card, FormControlLabel, Stack, Switch } from "@mui/material";
+import { Trash2, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import _ from "lodash";
+import { DevTool } from "../../../../../../../hookformDevtools.js";
 import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.ts";
-import LithologyAttributeList from "./lithologyAttributeList/lithologyAttributeList.jsx";
-import * as Styled from "./styles.js";
+import { CancelButton, SaveButton } from "../../../../../../components/buttons/buttons.js";
+import { DataCardButtonContainer } from "../../../../../../components/dataCard/dataCard.js";
+import { parseValueIfNotNull } from "../../../../../../components/form/formUtils.js";
+import { PromptContext } from "../../../../../../components/prompt/promptContext.js";
+import LithologyLayerForm from "./lithologyAttributeList/lithologyLayerForm.jsx";
 
-const LithologyAttributes = props => {
-  const { id, isEditable, checkLock, onUpdated, attribute, reloadAttribute, selectedStratigraphyID } = props.data;
+const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => {
+  const { isEditable, onUpdated, layerAttributes, selectedStratigraphyID } = data;
+  const [showAll, setShowAll] = useState(false);
+  const [layer, setLayer] = useState(null);
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const { showPrompt } = useContext(PromptContext);
+
+  const getDefaultValues = useCallback(
+    layer => {
+      if (!layer) return {};
+      const attributesMap = {};
+      layerAttributes.forEach(attribute => {
+        if (attribute.type === "Boolean") {
+          attributesMap[attribute.value] =
+            layer[attribute.value] === true ? 1 : layer[attribute.value] === false ? 0 : 2;
+        } else {
+          attributesMap[attribute.value] = layer[attribute.value];
+        }
+      });
+      return attributesMap;
+    },
+    [layerAttributes],
+  );
+
+  const formMethods = useForm({
+    mode: "onChange",
+    defaultValues: getDefaultValues(layer),
+  });
+
+  useEffect(() => {
+    if (layer) {
+      formMethods.reset(getDefaultValues(layer));
+    }
+  }, [layer, getDefaultValues, formMethods]);
 
   const { codes, geocode } = useSelector(state => ({
     codes: state.core_domain_list,
     geocode: "Geol",
   }));
-  const [showAll, setShowAll] = useState(false);
-  const [state, setState] = useState({
-    isPatching: false,
-    layer: {
-      // eslint-disable-next-line no-prototype-builtins
-      id: id?.hasOwnProperty("id") ? id : null,
-      kind: null,
-      depth_from: null,
-      depth_to: null,
-      last: null,
-      description_quality: null,
-      lithology: null,
-      color: [],
-      plasticity: null,
-      humidity: null,
-      consistance: null,
-      alteration: null,
-      compactness: null,
-      jointing: [],
-      organic_component: [],
-      striae: null,
-      grain_size_1: null,
-      grain_size_2: null,
-      grain_shape: [],
-      grain_granularity: [],
-      cohesion: null,
-      uscs_1: null,
-      uscs_2: null,
-      uscs_3: [],
-      uscs_original: "",
-      original_lithology: "",
-      uscs_determination: [],
-      debris: [],
-      layer_lithology_top_bedrock: [],
-      gradation: null,
-      notes: "",
-    },
-  });
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  const mounted = useRef(false);
 
   const mapResponseToLayer = useCallback(response => {
     response["uscs_3"] = response.uscs3Codelists.map(x => x.id);
@@ -64,52 +62,79 @@ const LithologyAttributes = props => {
     response["organic_component"] = response.organicComponentCodelists.map(x => x.id);
     response["debris"] = response.debrisCodelists.map(x => x.id);
     response["color"] = response.colorCodelists.map(x => x.id);
-    setState({
-      isPatching: false,
-      layer: response,
-    });
+    setLayer({ ...response });
   }, []);
 
   useEffect(() => {
-    mounted.current = true;
+    if (!id) return;
+    fetchLayerById(id).then(mapResponseToLayer);
+    setShowAll(false);
+  }, [id, mapResponseToLayer]);
 
-    if (id && mounted.current) {
-      fetchLayerById(id).then(mapResponseToLayer);
-      setShowAll(false);
-    } else if (id === null) {
-      setState({ state: null });
+  const isFormDirty = formMethods.formState.isDirty;
+
+  const onSave = () => {
+    formMethods.handleSubmit(updateChange)();
+    setSelectedLayer(null);
+  };
+
+  const onCancel = () => {
+    if (isFormDirty) {
+      showPrompt(t("messageDiscardUnsavedChanges"), [
+        {
+          label: t("cancel"),
+          icon: <X />,
+          variant: "outlined",
+        },
+        {
+          label: t("discardchanges"),
+          icon: <Trash2 />,
+          variant: "contained",
+          action: () => {
+            formMethods.reset(getDefaultValues(layer));
+            setSelectedLayer(null);
+          },
+        },
+      ]);
     }
-    return () => {
-      mounted.current = false;
+  };
+
+  function prepareFormDataForSubmit() {
+    const updatedLayer = {
+      ...layer,
+      ...formMethods.getValues(),
     };
-  }, [id, reloadAttribute, mapResponseToLayer]);
-
-  const updateChange = (attribute, value, isNumber = false) => {
-    if (!checkLock()) return;
-    setState(prevState => ({ ...prevState, isPatching: true }));
-    _.set(state.layer, attribute, value);
-
-    if (isNumber && /^-?\d*[.,]?\d*$/.test(value)) {
-      value = _.toNumber(value);
-    }
-    var updatedLayer = {
-      ...state.layer,
-      [attribute]: value,
-    };
-
+    layerAttributes.forEach(attribute => {
+      if (attribute.type === "Boolean") {
+        updatedLayer[attribute.value] =
+          updatedLayer[attribute.value] === 1 ? true : updatedLayer[attribute.value] === 0 ? false : null;
+      }
+      if (attribute.type === "Dropdown" && !attribute.multiple) {
+        updatedLayer[attribute.value] = updatedLayer[attribute.value] === "" ? null : updatedLayer[attribute.value];
+      }
+      if (attribute.isNumber) {
+        updatedLayer[attribute.value] = parseValueIfNotNull(updatedLayer?.[attribute.value]);
+      }
+    });
     updatedLayer.colorCodelistIds = updatedLayer.color;
     updatedLayer.debrisCodelistIds = updatedLayer.debris;
     updatedLayer.organicComponentCodelistIds = updatedLayer.organic_component;
     updatedLayer.grainAngularityCodelistIds = updatedLayer.grain_granularity;
     updatedLayer.grainShapeCodelistIds = updatedLayer.grain_shape;
     updatedLayer.uscs3CodelistIds = updatedLayer.uscs_3;
+    return updatedLayer;
+  }
+
+  const updateChange = () => {
+    const updatedLayer = prepareFormDataForSubmit();
 
     updateLayer(updatedLayer).then(response => {
       mapResponseToLayer(response);
-      onUpdated(attribute);
+      onUpdated(layerAttributes);
       queryClient.invalidateQueries({
         queryKey: [layerQueryKey, selectedStratigraphyID],
       });
+      setReloadLayer(reloadLayer => reloadLayer + 1);
     });
   };
 
@@ -132,46 +157,62 @@ const LithologyAttributes = props => {
   const showCheckbox = () => {
     let isVisibleCounter = 0;
 
-    for (let i = 0; i < attribute?.length; i++) {
-      if (isVisibleFunction(attribute[i]?.isVisibleValue)) {
+    for (let i = 0; i < layerAttributes?.length; i++) {
+      if (isVisibleFunction(layerAttributes[i]?.isVisibleValue)) {
         isVisibleCounter++;
-      } else if (attribute[i]?.isVisible) {
+      } else if (layerAttributes[i]?.isVisible) {
         isVisibleCounter++;
       }
     }
 
-    if (isVisibleCounter === attribute?.length) {
+    if (isVisibleCounter === layerAttributes?.length) {
       return false;
     } else return true;
   };
   return (
-    <Styled.Container disable={!id}>
-      {showCheckbox() && (
-        <FormControlLabel
-          control={
-            <Switch
-              data-cy={"show-all-fields-switch"}
-              color="secondary"
-              checked={showAll}
-              onChange={() => setShowAll(!showAll)}
+    <Stack sx={{ backgroundColor: "lightgrey", height: "100%" }}>
+      <Card sx={{ m: 2, p: 2, flex: 1, display: "flex", flexDirection: "column" }}>
+        <Stack direction="row" mb={2}>
+          {showCheckbox() && (
+            <FormControlLabel
+              control={
+                <Switch
+                  data-cy={"show-all-fields-switch"}
+                  color="secondary"
+                  checked={showAll}
+                  onChange={() => setShowAll(!showAll)}
+                />
+              }
+              label={t("showallfields")}
             />
-          }
-          label={t("showallfields")}
-        />
-      )}
-      {attribute && (
-        <LithologyAttributeList
-          data={{
-            attribute,
-            showAll,
-            updateChange,
-            layer: state.layer,
-            isVisibleFunction,
-            isEditable,
-          }}
-        />
-      )}
-    </Styled.Container>
+          )}
+          <Box sx={{ flexGrow: 1 }} />
+          {isEditable && (
+            <DataCardButtonContainer>
+              <SaveButton disabled={!isFormDirty} onClick={onSave} />
+              <CancelButton disabled={!isFormDirty} onClick={onCancel} />
+            </DataCardButtonContainer>
+          )}
+        </Stack>
+        <Box sx={{ overflow: "auto", flex: 1, scrollbarGutter: "stable", pr: 1 }}>
+          {layerAttributes && (
+            <>
+              <DevTool control={formMethods.control} placement="top-left" />
+              <FormProvider {...formMethods} key={layer?.id || "initial"}>
+                <LithologyLayerForm
+                  attributes={layerAttributes}
+                  showAll={showAll}
+                  layer={layer}
+                  isVisibleFunction={isVisibleFunction}
+                  isEditable={isEditable}
+                  formMethods={formMethods}
+                />
+              </FormProvider>
+            </>
+          )}
+        </Box>
+      </Card>
+    </Stack>
   );
 };
 
