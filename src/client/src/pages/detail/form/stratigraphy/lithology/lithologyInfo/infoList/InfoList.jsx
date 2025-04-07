@@ -3,15 +3,14 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Box, FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2 } from "lucide-react";
-import { DevTool } from "../../../../../../../../hookformDevtools.js";
-import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2.ts";
+import { DevTool } from "../../../../../../../../hookformDevtools";
+import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2";
 import { CancelButton, CopyButton, DeleteButton, SaveButton } from "../../../../../../../components/buttons/buttons";
-import { DataCardButtonContainer } from "../../../../../../../components/dataCard/dataCard.js";
-import { FormContainer, FormInput, FormValueType } from "../../../../../../../components/form/form.js";
-import { FormDomainSelect } from "../../../../../../../components/form/formDomainSelect.js";
-import { ensureDatetime } from "../../../../../../../components/form/formUtils.js";
-import { PromptContext } from "../../../../../../../components/prompt/promptContext.js";
-import { DetailContext } from "../../../../../detailContext.js";
+import { DataCardButtonContainer } from "../../../../../../../components/dataCard/dataCard";
+import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../../../../../../../components/form/form";
+import { ensureDatetime } from "../../../../../../../components/form/formUtils";
+import { PromptContext } from "../../../../../../../components/prompt/promptContext";
+import { DetailContext } from "../../../../../detailContext";
 import { updateStratigraphyAttributes } from "../api/index.js";
 
 const InfoList = ({ id, profileInfo, onUpdated }) => {
