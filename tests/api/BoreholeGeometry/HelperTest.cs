@@ -103,6 +103,28 @@ public class HelperTest
     }
 
     [TestMethod]
+    public void GetDepthTVDDistanceLargerThanMD()
+    {
+        var geometryXYZ = new List<BoreholeGeometryElement>
+        {
+            // Almost vertical segment
+            new BoreholeGeometryElement { MD = 0, X = 0, Y = 0, Z = 0 },
+            new BoreholeGeometryElement { MD = 0.5, X = -0.00004, Y = -0.000054, Z = 0.5 },
+
+            // Segment after curve
+            new BoreholeGeometryElement { MD = 541.5, X = 131.460350, Y = -20.340839, Z = 512.722770 },
+            new BoreholeGeometryElement { MD = 542.0, X = 131.728330, Y = -20.381867, Z = 513.142900 },
+        };
+
+        Assert.AreEqual(0.25, geometryXYZ.GetDepthTVD(0.25));
+        Assert.AreEqual(512.932835, Math.Round(geometryXYZ.GetDepthTVD(541.75), 12));
+
+        var deltaMD = Math.Abs(geometryXYZ[3].MD - geometryXYZ[2].MD);
+        var distance = (geometryXYZ[3].ToVector3D() - geometryXYZ[2].ToVector3D()).Length();
+        Assert.IsTrue(distance > deltaMD);
+    }
+
+    [TestMethod]
     public void GetDepthTVDTooLow()
     {
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => geometry.GetDepthTVD(-42));

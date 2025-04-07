@@ -22,6 +22,7 @@
 - Copying a borehole did not update its casing references to the copied casings.
 - Importing a borehole with attachments assigned to a non-existent user id resulted in an error.
 - When exporting .zip archives for boreholes whose names contained dots the .zip extension was missing.
+- Calculations of TVD resulted in an error when the distance between the two coordinates to interpolate was larger than their difference of MD.
 
 ## v2.1.1125 - 2025-03-19
 
