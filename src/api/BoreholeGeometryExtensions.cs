@@ -95,8 +95,10 @@ public static class BoreholeGeometryExtensions
             aDirection = (b.ToVector3D() - geometry[Math.Max(upperIndex - 2, 0)].ToVector3D()).Normalize();
 
             var factor = distance / deltaMD;
-            if (Math.Abs(factor - 1) < 1e-14)
+            if (Math.Abs(factor - 1) < 1e-14 || factor > 1)
             {
+                // Difference of measured and actual distance between coordinates is small or distance between coordinates is larger than measured distance (rounding errors)
+                // Calculate as a straight segment
                 beta = 0;
             }
             else
