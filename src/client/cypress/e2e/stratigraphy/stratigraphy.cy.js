@@ -46,7 +46,7 @@ describe("Tests for stratigraphy", () => {
     addTestStratigraphyValues();
 
     //cancel editing
-    getElementByDataCy("cancel-button-stratigraphy").click();
+    getElementByDataCy("stratigraphy-cancel-button").click();
 
     evaluateInput("name", "");
     evaluateSelect("qualityId", "");
@@ -55,8 +55,8 @@ describe("Tests for stratigraphy", () => {
 
     // Readd input values and save
     addTestStratigraphyValues();
-    getElementByDataCy("save-button-stratigraphy").should("not.be.disabled");
-    getElementByDataCy("save-button-stratigraphy").click({ force: true });
+    getElementByDataCy("stratigraphy-save-button").should("not.be.disabled");
+    getElementByDataCy("stratigraphy-save-button").click({ force: true });
     cy.wait("@stratigraphy_PUT");
 
     evaluateAddedStratigraphy();
@@ -72,7 +72,7 @@ describe("Tests for stratigraphy", () => {
     setInput("name", "Test Stratigraphy - reupdated");
     setInput("date", "2022-02-22");
     setSelect("qualityId", 6);
-    getElementByDataCy("cancel-button-stratigraphy").click();
+    getElementByDataCy("stratigraphy-cancel-button").click();
     evaluateAddedStratigraphy();
 
     // Copy added stratigraphy

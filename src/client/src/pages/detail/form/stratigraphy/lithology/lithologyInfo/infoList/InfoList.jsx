@@ -119,13 +119,13 @@ const InfoList = ({ id, profileInfo, onUpdated }) => {
               </DataCardButtonContainer>
               <DataCardButtonContainer>
                 <CancelButton
-                  data-cy={"cancel-button-stratigraphy"}
+                  dataCy={"stratigraphy-cancel-button"}
                   onClick={() => {
                     formMethods.reset();
                   }}
                 />
                 <SaveButton
-                  data-cy={"save-button-stratigraphy"}
+                  dataCy={"" + "stratigraphy-save-button"}
                   disabled={!formMethods.formState.isValid}
                   onClick={() => {
                     formMethods.handleSubmit(submitForm)();
