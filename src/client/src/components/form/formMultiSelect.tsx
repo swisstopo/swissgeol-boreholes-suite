@@ -58,20 +58,24 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
         }}>
         {selection.map(selectedValue => {
           const selectedOption = values?.find(value => value.key === selectedValue);
+          const label = selectedOption ? selectedOption.name : selectedValue;
           return (
             <Chip
               sx={{ height: "26px" }}
               key={selectedValue}
-              label={selectedOption ? selectedOption.name : selectedValue}
+              label={label}
               title={tooltipLabel ? t(tooltipLabel) : null}
-              deleteIcon={<CancelIcon onMouseDown={e => e.stopPropagation()} />}
-              onClick={e => e.stopPropagation()}
-              onDelete={e => {
-                e.stopPropagation();
-                const selectedValues = getValues()[fieldName];
-                const updatedValues = selectedValues.filter((value: number) => value !== selectedValue);
-                setValue(fieldName, updatedValues, { shouldValidate: true });
-              }}
+              deleteIcon={<CancelIcon data-cy={`remove-${label}-chip`} onMouseDown={e => e.stopPropagation()} />}
+              onDelete={
+                !readonly
+                  ? e => {
+                      e.stopPropagation();
+                      const selectedValues = getValues()[fieldName];
+                      const updatedValues = selectedValues.filter((value: number) => value !== selectedValue);
+                      setValue(fieldName, updatedValues, { shouldValidate: true, shouldDirty: true });
+                    }
+                  : undefined
+              }
             />
           );
         })}

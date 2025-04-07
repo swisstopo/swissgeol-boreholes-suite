@@ -21,6 +21,14 @@ export const parseIfString = (value: string | number) => {
 
 /**
  * Parse a string to a float number, removing thousands separators if present.
+ * @param {string | number | null} value The value to parse.
+ * @returns The parsed float number.
+ */
+
+export const parseValueIfNotNull = (value: string | number | null) =>
+  value ? parseFloatWithThousandsSeparator(String(value)) : null;
+/**
+ * Parse a string to a float number, removing thousands separators if present.
  * @param {string/ number} value The string or number to parse.
  * @returns The parsed float number.
  */
@@ -104,6 +112,7 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   const data = { ...formInputs } as LocationFormSubmission;
 
   const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
+
   const getCompleteCodelists = (codelists: Identifier[]) => {
     return codelists
       .map(c => {

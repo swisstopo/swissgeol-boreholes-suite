@@ -121,6 +121,7 @@ const ProfileLayers = props => {
     // Todo: use get layers from new api.
     getData(stratigraphyID).then(res => {
       if (mounted.current) {
+        res.data.sort((a, b) => a.depth_from - b.depth_from);
         setLayersWithValidation(res);
       }
     });
