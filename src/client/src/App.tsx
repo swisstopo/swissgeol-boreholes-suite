@@ -48,6 +48,7 @@ class App extends React.Component {
           styles={{
             body: {
               fontFamily: theme.typography.fontFamily,
+              color: "rgb(28, 40, 52)",
             },
           }}
         />
