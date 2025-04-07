@@ -5,9 +5,8 @@ import { Box, FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../../../../hookformDevtools.js";
 import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2.ts";
-import { CopyButton, DeleteButton } from "../../../../../../../components/buttons/buttons";
+import { CancelButton, CopyButton, DeleteButton, SaveButton } from "../../../../../../../components/buttons/buttons";
 import { DataCardButtonContainer } from "../../../../../../../components/dataCard/dataCard.js";
-import { SaveAndCancelButtons } from "../../../../../../../components/dataCard/saveAndCancelButtons.js";
 import { FormContainer, FormInput, FormValueType } from "../../../../../../../components/form/form.js";
 import { FormDomainSelect } from "../../../../../../../components/form/formDomainSelect.js";
 import { ensureDatetime } from "../../../../../../../components/form/formUtils.js";
@@ -118,15 +117,20 @@ const InfoList = ({ id, profileInfo, onUpdated }) => {
                   }}
                 />
               </DataCardButtonContainer>
-              <SaveAndCancelButtons
-                onCancel={() => {
-                  formMethods.reset();
-                }}
-                onSave={() => {
-                  formMethods.handleSubmit(submitForm)();
-                }}
-                saveDisabled={!formMethods.formState.isValid}
-              />
+              <DataCardButtonContainer>
+                <CancelButton
+                  data-cy={"cancel-button-stratigraphy"}
+                  onClick={() => {
+                    formMethods.reset();
+                  }}
+                />
+                <SaveButton
+                  disabled={!formMethods.formState.isValid}
+                  onClick={() => {
+                    formMethods.handleSubmit(submitForm)();
+                  }}
+                />
+              </DataCardButtonContainer>
             </>
           )}
         </Stack>

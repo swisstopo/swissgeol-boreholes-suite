@@ -46,7 +46,7 @@ describe("Tests for stratigraphy", () => {
     addTestStratigraphyValues();
 
     //cancel editing
-    getElementByDataCy("cancel-button").click();
+    getElementByDataCy("cancel-button-stratigraphy").click();
 
     evaluateInput("name", "");
     evaluateSelect("qualityId", "");
@@ -71,7 +71,7 @@ describe("Tests for stratigraphy", () => {
     setInput("name", "Test Stratigraphy - reupdated");
     setInput("date", "2022-02-22");
     setSelect("qualityId", 6);
-    getElementByDataCy("cancel-button").click();
+    getElementByDataCy("cancel-button-stratigraphy").click();
     evaluateAddedStratigraphy();
 
     // Copy added stratigraphy
