@@ -10,7 +10,7 @@ import { DevTool } from "../../../../../../../hookformDevtools.js";
 import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.ts";
 import { CancelButton, SaveButton } from "../../../../../../components/buttons/buttons.js";
 import { DataCardButtonContainer } from "../../../../../../components/dataCard/dataCard.js";
-import { parseValueIfNotNull } from "../../../../../../components/form/formUtils.js";
+import { parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.js";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.js";
 import LithologyLayerForm from "./lithologyAttributeList/lithologyLayerForm.jsx";
 
@@ -113,7 +113,7 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
         updatedLayer[attribute.value] = updatedLayer[attribute.value] === "" ? null : updatedLayer[attribute.value];
       }
       if (attribute.isNumber) {
-        updatedLayer[attribute.value] = parseValueIfNotNull(updatedLayer?.[attribute.value]);
+        updatedLayer[attribute.value] = parseFloatWithThousandsSeparator(updatedLayer?.[attribute.value]);
       }
     });
     updatedLayer.colorCodelistIds = updatedLayer.color;
