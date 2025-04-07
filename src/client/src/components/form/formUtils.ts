@@ -21,14 +21,6 @@ export const parseIfString = (value: string | number) => {
 
 /**
  * Parse a string to a float number, removing thousands separators if present.
- * @param {string | number | null} value The value to parse.
- * @returns The parsed float number.
- */
-
-export const parseValueIfNotNull = (value: string | number | null) =>
-  value ? parseFloatWithThousandsSeparator(String(value)) : null;
-/**
- * Parse a string to a float number, removing thousands separators if present.
  * @param {string/ number} value The string or number to parse.
  * @returns The parsed float number.
  */

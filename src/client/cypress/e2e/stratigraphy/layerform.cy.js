@@ -437,4 +437,41 @@ describe("Tests for the layer form.", () => {
     evaluateYesNoSelect("isStriae", "Yes", false);
     evaluateInput("notes", "full-range circuit Cambridgeshire Senior");
   });
+
+  it("saves zero values in number inputs", () => {
+    goToRouteAndAcceptTerms(`/1001947`);
+    getElementByDataCy("stratigraphy-menu-item").click();
+    getElementByDataCy("lithology-menu-item").click();
+    startBoreholeEditing();
+
+    const evaluateInitialDepthValues = () => {
+      evaluateInput("fromDepth", "0");
+      evaluateInput("toDepth", "10");
+    };
+    // click on layer and verify form values
+    clickOnLayerAndWaitForForm("0");
+    evaluateInitialDepthValues();
+    // change anything then save
+    setSelect("grainSize1Id", 4);
+    evaluateInitialDepthValues();
+    saveForm();
+    cy.wait("@update-layer");
+    clickOnLayerAndWaitForForm("0");
+
+    evaluateInitialDepthValues();
+    setInput("fromDepth", "1");
+    saveForm();
+    cy.wait("@update-layer");
+    clickOnLayerAndWaitForForm("0");
+
+    evaluateInput("fromDepth", "1");
+    evaluateInput("toDepth", "10");
+    setInput("fromDepth", "0");
+    saveForm();
+    cy.wait("@update-layer");
+    clickOnLayerAndWaitForForm("0");
+
+    evaluateInitialDepthValues();
+    stopBoreholeEditing();
+  });
 });
