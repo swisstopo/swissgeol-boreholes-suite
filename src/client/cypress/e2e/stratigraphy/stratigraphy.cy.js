@@ -1,5 +1,5 @@
 // adds updates and deletes stratigraphies, makes them primary and unselect other when one is primary
-import { addItem, saveForm } from "../helpers/buttonHelpers";
+import { addItem } from "../helpers/buttonHelpers";
 import { evaluateInput, evaluateSelect, evaluateSelectText, setInput, setSelect } from "../helpers/formHelpers.js";
 import {
   getElementByDataCy,
@@ -55,7 +55,8 @@ describe("Tests for stratigraphy", () => {
 
     // Readd input values and save
     addTestStratigraphyValues();
-    saveForm();
+    getElementByDataCy("save-button-stratigraphy").should("not.be.disabled");
+    getElementByDataCy("save-button-stratigraphy").click({ force: true });
     cy.wait("@stratigraphy_PUT");
 
     evaluateAddedStratigraphy();

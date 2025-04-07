@@ -125,6 +125,7 @@ const InfoList = ({ id, profileInfo, onUpdated }) => {
                   }}
                 />
                 <SaveButton
+                  data-cy={"save-button-stratigraphy"}
                   disabled={!formMethods.formState.isValid}
                   onClick={() => {
                     formMethods.handleSubmit(submitForm)();
