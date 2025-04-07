@@ -109,7 +109,7 @@ describe("Borehole editor table tests", () => {
     cy.contains("1476 selected").should("be.visible");
 
     // uncheck another row
-    unCheckRowWithText("Andres Miller");
+    unCheckRowWithText("Angus Spencer");
     cy.contains("1475 selected").should("be.visible");
 
     // uncheck all rows
