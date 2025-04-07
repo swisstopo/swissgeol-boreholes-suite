@@ -11,7 +11,7 @@ import LithologyInfo from "./lithologyInfo/infoList/lithologyInfo.jsx";
 import ProfileLayers from "./lithologyLayers";
 import * as Styled from "./styles.js";
 
-const Lithology = ({ checkLock }) => {
+const Lithology = () => {
   const { user, borehole } = useSelector(state => ({
     borehole: state.core_borehole,
     user: state.core_user,
@@ -119,7 +119,6 @@ const Lithology = ({ checkLock }) => {
               data={{
                 selectedStratigraphyID: selectedStratigraphy ? selectedStratigraphy.id : null,
                 onUpdated,
-                checkLock,
                 attribute: attributesBasedKind?.profileInfo,
               }}
             />
@@ -148,7 +147,6 @@ const Lithology = ({ checkLock }) => {
                   isEditable,
                   onUpdated,
                   reloadAttribute,
-                  checkLock,
                   layerAttributes: attributesBasedKind?.profileAttribute,
                 }}
               />
