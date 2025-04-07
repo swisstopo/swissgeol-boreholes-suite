@@ -9,7 +9,6 @@ const CommentArea = props => {
 };
 
 CommentArea.propTypes = {
-  domains: PropTypes.object,
   height: PropTypes.number,
   i18n: PropTypes.shape({
     language: PropTypes.string,
@@ -25,11 +24,5 @@ CommentArea.defaultProps = {
   value: "",
 };
 
-const mapStateToProps = state => {
-  return {
-    domains: state.core_domain_list,
-  };
-};
-
-const ConnectedCommentArea = connect(mapStateToProps, null)(withTranslation()(CommentArea));
+const ConnectedCommentArea = connect(null)(withTranslation()(CommentArea));
 export default ConnectedCommentArea;
