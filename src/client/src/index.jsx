@@ -7,6 +7,7 @@ import "ol/ol.css";
 import { SettingsProvider } from "./api/SettingsContext.js";
 import App from "./App";
 import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.jsx";
+import "semantic-ui-css/semantic.css";
 import store from "./reducers";
 
 const container = document.getElementById("root");
