@@ -106,6 +106,7 @@
   "cuttings": "Déblais de forage (cuttings / carotte)",
   "dataCollectionConsent": "Consentement à la acquisition de données (facultatif)",
   "dataImport": "Importer des données",
+  "dataProvider": "Fournisseur de données",
   "date": "Date",
   "dateAbandonmentCompletion": "Date de l'abandon",
   "dateFinishCasing": "Date de fin de l'aménagement",

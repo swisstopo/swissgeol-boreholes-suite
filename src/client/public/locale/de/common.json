@@ -106,6 +106,7 @@
   "cuttings": "Bohrgut (Bohrklein, Kern)",
   "dataCollectionConsent": "Einwilligung zur Datenerfassung (optional)",
   "dataImport": "Datenimport",
+  "dataProvider": "Datenbereitsteller",
   "date": "Datum",
   "dateAbandonmentCompletion": "Datum Stilllegung",
   "dateFinishCasing": "Datum Ausbau Ende",

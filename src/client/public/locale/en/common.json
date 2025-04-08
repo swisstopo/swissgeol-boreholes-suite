@@ -106,6 +106,7 @@
   "cuttings": "Borehole cuttings / core",
   "dataCollectionConsent": "Consent to data acquisition (optional)",
   "dataImport": "Data import",
+  "dataProvider": "data provider",
   "date": "Date",
   "dateAbandonmentCompletion": "Abandonment date",
   "dateFinishCasing": "Completion date: end",

@@ -13,6 +13,7 @@ import {
   Layer,
   LithologicalDescription,
   Lithostratigraphy,
+  Photo,
   Stratigraphy,
 } from "./apiInterfaces";
 import { getAuthorizationHeader } from "./authentication";
@@ -545,3 +546,7 @@ export const deleteSection = async (id: number): Promise<void> => {
 };
 
 export const downloadCodelistCsv = (): Promise<Response> => download(`codelist/csv`);
+
+export const getPhotosByBoreholeId = async (boreholeId: number): Promise<Photo[]> => {
+  return await fetchApiV2(`photo/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
+};
