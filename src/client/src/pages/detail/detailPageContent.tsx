@@ -7,7 +7,7 @@ import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
-import { Attachments } from "./attachments/table/attachments.tsx";
+import { Attachments } from "./attachments/attachments.tsx";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";

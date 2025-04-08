@@ -1,9 +1,8 @@
-import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FC, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { Box, Button, Input, Stack, Typography } from "@mui/material";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
-import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
+import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
@@ -11,31 +10,31 @@ import { FullPageCentered, StackFullWidth } from "../../../../components/styledC
 import { DetailContext } from "../../detailContext.tsx";
 import { FilesTable } from "./filesTable.tsx";
 
-export const Attachments: FC = () => {
+interface ProfilesProps {
+  boreholeId: number;
+}
+
+export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
-  const { id } = useParams<{ id: string }>();
   const [files, setFiles] = useState<BoreholeFile[]>([]);
   const [patchQueued, setPatchQueued] = useState<NodeJS.Timeout | string | number | undefined>();
   const { showAlert } = useContext(AlertContext);
   const { editingEnabled } = useContext(DetailContext);
 
+  const loadFiles = useCallback(() => {
+    getFiles<BoreholeFile>(boreholeId).then(setFiles);
+  }, [boreholeId]);
+
   useEffect(() => {
     loadFiles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  const loadFiles = async () => {
-    if (id) {
-      getFiles<BoreholeFile>(parseInt(id)).then(setFiles);
-    }
-  };
+  }, [loadFiles]);
 
   const upload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target?.files && e.target?.files.length > 0) {
       const file = e.target?.files[0];
 
-      await uploadFile(parseInt(id), file)
+      await uploadFile(boreholeId, file)
         .then(() => loadFiles())
         .catch(error => {
           showAlert(t(error.message), "error");
