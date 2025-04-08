@@ -149,6 +149,8 @@ public class BdmsContext : DbContext
 
     public DbSet<BoreholeCodelist> BoreholeCodelists { get; set; }
 
+    public DbSet<Photo> Photos { get; set; }
+
     public BdmsContext(DbContextOptions options)
         : base(options)
     {
