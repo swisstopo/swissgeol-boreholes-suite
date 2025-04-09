@@ -61,14 +61,13 @@ const DescriptionInput = props => {
     <Stack direction="column" sx={{ width: "100%" }}>
       <TextField
         select
-        sx={{ flex: "1", margin: "10px" }}
+        sx={{ flex: "1", margin: "10px", mt: 3 }}
         variant="outlined"
         size="small"
         label={t("fromdepth")}
         defaultValue={item.fromDepth}
         disabled={fromDepthOptions?.length === 1}
         data-cy="from-depth-select"
-        InputLabelProps={{ shrink: true }}
         onChange={e => {
           e.stopPropagation();
           setFromDepth(e.target.value);
@@ -91,17 +90,16 @@ const DescriptionInput = props => {
         }}
         variant="outlined"
         type="text"
-        sx={{ flex: "1", margin: "10px" }}
+        sx={{ flex: "1", margin: "10px", mt: 2 }}
       />
       <TextField
         select
-        sx={{ flex: "1", margin: "10px" }}
+        sx={{ flex: "1", margin: "10px", mt: 2 }}
         variant="outlined"
         size="small"
         label={t("description_quality")}
         defaultValue={item.descriptionQualityId ?? ""}
         data-cy="qt-decription-select"
-        InputLabelProps={{ shrink: true }}
         onChange={e => {
           e.stopPropagation();
           setDescriptionQualityId(e.target.value);
@@ -121,14 +119,13 @@ const DescriptionInput = props => {
       {toDepthOptions?.length > 0 && (
         <TextField
           select
-          sx={{ flex: "1", margin: "10px" }}
+          sx={{ flex: "1", margin: "10px", mt: 2 }}
           variant="outlined"
           size="small"
           label={t("todepth")}
           defaultValue={item.toDepth}
           disabled={toDepthOptions?.length === 1}
           data-cy="to-depth-select"
-          InputLabelProps={{ shrink: true }}
           onChange={e => {
             e.stopPropagation();
             setToDepth(e.target.value);
