@@ -1,6 +1,7 @@
 import { FC, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
+import { Box } from "@mui/material";
 import { Tab, TabPanel } from "../../../components/tabs/tabPanel.tsx";
 import { Photos } from "./table/photos.tsx";
 import { Profiles } from "./table/profiles.tsx";
@@ -25,5 +26,9 @@ export const Attachments: FC = () => {
     ],
     [boreholeId, t],
   );
-  return <TabPanel tabs={tabs} />;
+  return (
+    <Box sx={{ position: "relative", height: "100%", display: "flex", flexDirection: "column" }}>
+      <TabPanel tabs={tabs} />
+    </Box>
+  );
 };

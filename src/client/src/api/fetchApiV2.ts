@@ -547,6 +547,21 @@ export const deleteSection = async (id: number): Promise<void> => {
 
 export const downloadCodelistCsv = (): Promise<Response> => download(`codelist/csv`);
 
+export const uploadPhoto = async (boreholeId: number, file: File): Promise<Photo> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await upload(`photo/upload?boreholeId=${boreholeId}`, "POST", formData);
+  if (!response.ok) {
+    if (response.status === 400) {
+      throw new ApiError(await response.text(), response.status);
+    } else {
+      throw new ApiError("errorDuringBoreholeFileUpload", response.status);
+    }
+  } else {
+    return (await response.json()) as Photo;
+  }
+};
+
 export const getPhotosByBoreholeId = async (boreholeId: number): Promise<Photo[]> => {
   return await fetchApiV2(`photo/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
 };

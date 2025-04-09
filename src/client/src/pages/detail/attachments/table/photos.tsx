@@ -1,9 +1,11 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { t } from "i18next";
 import { Photo } from "../../../../api/apiInterfaces.ts";
-import { getPhotosByBoreholeId } from "../../../../api/fetchApiV2.ts";
+import { getPhotosByBoreholeId, uploadPhoto } from "../../../../api/fetchApiV2.ts";
+import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
+import { AddAttachmentButton } from "../addAttachmentButton.tsx";
 import { PhotosTable } from "./photosTable.tsx";
 
 interface PhotosProps {
@@ -12,6 +14,7 @@ interface PhotosProps {
 
 export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const { showAlert } = useContext(AlertContext);
 
   const loadPhotos = useCallback(() => {
     getPhotosByBoreholeId(boreholeId).then(setPhotos);
@@ -21,8 +24,18 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     loadPhotos();
   }, [loadPhotos]);
 
+  const upload = async (file: File) => {
+    try {
+      await uploadPhoto(boreholeId, file);
+      loadPhotos();
+    } catch (error) {
+      showAlert(t((error as Error).message), "error");
+    }
+  };
+
   return (
     <>
+      <AddAttachmentButton label="addPhoto" onFileSelect={upload} acceptedFileTypes="image/*" />
       {photos && photos.length > 0 ? (
         <Box sx={{ height: "100%" }}>
           <PhotosTable photos={photos} />
