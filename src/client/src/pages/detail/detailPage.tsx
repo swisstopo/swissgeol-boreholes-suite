@@ -145,7 +145,6 @@ export const DetailPage: FC = () => {
                 onClick={() => togglePanel()}
               />
               <DetailPageContent
-                editableByCurrentUser={editableByCurrentUser}
                 locationPanelRef={locationPanelRef}
                 onLocationFormSubmit={onLocationFormSubmit}
                 boreholePanelRef={boreholePanelRef}

@@ -15,7 +15,7 @@ export const BoreholesBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((p
     <Button
       ref={ref}
       {...props}
-      data-cy={props.label?.toLowerCase() + "-button"}
+      data-cy={props.dataCy ?? props.label?.toLowerCase() + "-button"}
       color={color}
       endIcon={props.icon}
       sx={{ height: "36px" }}>

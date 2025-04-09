@@ -9,7 +9,6 @@
     "<BUILTIN_MODULES>",
     "^react.*$",
     "^@mui.*$",
-    "^semantic-ui-react$",
     "^lucide-react$",
     "^.*assets/icons.*$",
     "<THIRD_PARTY_MODULES>",

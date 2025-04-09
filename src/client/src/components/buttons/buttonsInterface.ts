@@ -5,4 +5,5 @@ export interface ButtonProps extends MuiButtonProps {
   onClick: () => void;
   label?: string;
   icon?: React.ReactNode;
+  dataCy?: string;
 }

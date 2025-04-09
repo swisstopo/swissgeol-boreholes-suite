@@ -17,7 +17,7 @@
 - The borehole geometry charts and tables now display numbers with thousand separators.
 - Bump data extraction API version to v1.0.30.
 - The panel displaying the PDF is now also visible when editing is disabled.
-- Inputs in filters and the lithology layer form now have the new UI style.
+- Inputs in filters and the lithology form and the lithology layer form now have the new UI style.
 - Reduced data of exported JSON files.
 
 ### Fixed

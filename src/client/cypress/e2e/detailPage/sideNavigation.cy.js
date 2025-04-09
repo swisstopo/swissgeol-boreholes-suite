@@ -34,8 +34,8 @@ describe("Test for the detail page side navigation.", () => {
 
     // Check that some menu items are enabled (not greyed out)
     checkElementColorByDataCy("location-menu-item", "rgb(153, 25, 30)");
-    checkElementColorByDataCy("borehole-menu-item", "rgba(0, 0, 0, 0.87)");
-    checkElementColorByDataCy("status-menu-item", "rgba(0, 0, 0, 0.87)");
+    checkElementColorByDataCy("borehole-menu-item", "rgb(28, 40, 52)");
+    checkElementColorByDataCy("status-menu-item", "rgb(28, 40, 52)");
 
     // Check borehole content tabs
     cy.get("@borehole_id").then(id => {
@@ -147,13 +147,13 @@ describe("Test for the detail page side navigation.", () => {
     // Verify that previously greyed-out items are now enabled
     // Check main menu items
     mainMenuItems.forEach(item => {
-      checkElementColorByDataCy(item, "rgba(0, 0, 0, 0.87)");
+      checkElementColorByDataCy(item, "rgb(28, 40, 52)");
     });
 
     // Expand stratigraphy menu and check its child items
     getElementByDataCy("stratigraphy-menu-item").click();
     ["lithology-menu-item", "chronostratigraphy-menu-item", "lithostratigraphy-menu-item"].forEach(item => {
-      checkElementColorByDataCy(item, "rgba(0, 0, 0, 0.87)");
+      checkElementColorByDataCy(item, "rgb(28, 40, 52)");
     });
 
     // Expand completion menu and check content tabs
@@ -173,7 +173,7 @@ describe("Test for the detail page side navigation.", () => {
       "fieldmeasurement-menu-item",
       "hydrotest-menu-item",
     ].forEach(item => {
-      checkElementColorByDataCy(item, "rgba(0, 0, 0, 0.87)");
+      checkElementColorByDataCy(item, "rgb(28, 40, 52)");
     });
   });
 });
