@@ -1,5 +1,4 @@
 import { RefObject, useContext } from "react";
-import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { Redirect, Route, Switch, useParams } from "react-router-dom";
 import { Box } from "@mui/material";
@@ -8,7 +7,6 @@ import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import { Attachments } from "./attachments/attachments.tsx";
-import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
 import Completion from "./form/completion/completion.jsx";
@@ -24,7 +22,6 @@ import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithos
 import WorkflowForm from "./form/workflow/workflowForm.jsx";
 
 interface DetailPageContentProps {
-  editableByCurrentUser: boolean;
   locationPanelRef: RefObject<{ submit: () => void; reset: () => void }>;
   boreholePanelRef: RefObject<{ submit: () => void; reset: () => void }>;
   onLocationFormSubmit: (data: LocationFormInputs) => void;
@@ -34,7 +31,6 @@ interface DetailPageContentProps {
 }
 
 export const DetailPageContent = ({
-  editableByCurrentUser,
   locationPanelRef,
   boreholePanelRef,
   onLocationFormSubmit,
@@ -42,24 +38,9 @@ export const DetailPageContent = ({
   borehole,
   panelOpen,
 }: DetailPageContentProps) => {
-  const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
-  const { editingEnabled } = useContext<DetailContextProps>(DetailContext);
   const { id } = useParams<{ id: string }>();
   const legacyBorehole = useSelector((state: ReduxRootState) => state.core_borehole);
-
-  function checkLock() {
-    if (legacyBorehole.data.role !== "EDIT") {
-      return false;
-    }
-    if (!editingEnabled) {
-      if (editableByCurrentUser) {
-        showAlert(t("errorStartEditing"), "error");
-      }
-      return false;
-    }
-    return true;
-  }
 
   if (legacyBorehole.error !== null) {
     showAlert(legacyBorehole.error, "error");
@@ -106,7 +87,7 @@ export const DetailPageContent = ({
                 <BoreholePanel ref={boreholePanelRef} borehole={borehole} onSubmit={onBoreholeFormSubmit} />
               )}
             />
-            <Route exact path={"/:id/stratigraphy/lithology"} render={() => <Lithology checkLock={checkLock} />} />
+            <Route exact path={"/:id/stratigraphy/lithology"} render={() => <Lithology />} />
             <Route exact path={"/:id/stratigraphy/chronostratigraphy"} render={() => <ChronostratigraphyPanel />} />
             <Route exact path={"/:id/stratigraphy/lithostratigraphy"} render={() => <LithostratigraphyPanel />} />
             <Route

@@ -32,7 +32,7 @@ const themePalette: AppThemePalette = {
   },
   neutral: {
     main: "#d8d8d8",
-    contrastText: "#000000",
+    contrastText: "rgb(28, 40, 52)",
   },
   hover: {
     main: "#f5f5f5",
@@ -140,7 +140,7 @@ export const theme = createTheme({
       fontSize: "32px",
       lineHeight: "44px",
       fontWeight: 400,
-      color: "#000000",
+      color: "rgb(28, 40, 52)",
     },
     subtitle1: {
       fontSize: "13px",
