@@ -8,23 +8,16 @@ namespace BDMS;
 /// <summary>
 /// Represents a service to manage borehole files in the cloud storage.
 /// </summary>
-public class BoreholeFileCloudService
+public class BoreholeFileCloudService : CloudServiceBase
 {
     private readonly BdmsContext context;
-    private readonly ILogger logger;
     private readonly IHttpContextAccessor httpContextAccessor;
-    private readonly IAmazonS3 s3Client;
-    private readonly string bucketName;
 
     public BoreholeFileCloudService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileCloudService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client)
+        : base(logger, s3Client, configuration["S3:BUCKET_NAME"]!)
     {
-        this.logger = logger;
         this.httpContextAccessor = httpContextAccessor;
         this.context = context;
-        this.s3Client = s3Client;
-#pragma warning disable CA1308
-        bucketName = configuration["S3:BUCKET_NAME"].ToLowerInvariant();
-#pragma warning restore CA1308
     }
 
     /// <summary>
@@ -81,57 +74,7 @@ public class BoreholeFileCloudService
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error attaching file <{FileName}> to borehole with Id <{BoreholeId}>.", fileName, boreholeId);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Uploads a file to the cloud storage.
-    /// </summary>
-    /// <param name="fileStream">The file stream to upload.</param>
-    /// <param name="objectName">The name of the file in the storage.</param>
-    /// <param name="contentType">The content type of the file.</param>
-    internal async Task UploadObject(Stream fileStream, string objectName, string contentType)
-    {
-        try
-        {
-            var putObjectRequest = new PutObjectRequest
-            {
-                BucketName = bucketName,
-                Key = objectName,
-                InputStream = fileStream,
-                ContentType = contentType,
-            };
-            await s3Client.PutObjectAsync(putObjectRequest).ConfigureAwait(false);
-        }
-        catch (AmazonS3Exception ex)
-        {
-            logger.LogError(ex, "Error uploading file to cloud storage.");
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Gets a file from the cloud storage.
-    /// </summary>
-    /// <param name="objectName">The name of the file in the bucket.</param>
-    public async Task<byte[]> GetObject(string objectName)
-    {
-        try
-        {
-            // Get object from storage
-            var getObjectRequest = new GetObjectRequest { BucketName = bucketName, Key = objectName };
-            using GetObjectResponse getObjectResponse = await s3Client.GetObjectAsync(getObjectRequest).ConfigureAwait(false);
-
-            // Read response to byte array
-            using var memoryStream = new MemoryStream();
-            await getObjectResponse.ResponseStream.CopyToAsync(memoryStream).ConfigureAwait(false);
-            return memoryStream.ToArray();
-        }
-        catch (AmazonS3Exception ex)
-        {
-            logger.LogError(ex, "Error downloading file from cloud storage.");
+            Logger.LogError(ex, "Error attaching file <{FileName}> to borehole with Id <{BoreholeId}>.", fileName, boreholeId);
             throw;
         }
     }
@@ -150,13 +93,13 @@ public class BoreholeFileCloudService
 
             var listObjectsRequest = new ListObjectsV2Request
             {
-                BucketName = bucketName,
+                BucketName = BucketName,
                 Prefix = baseObjectName + "-",
             };
 
             do
             {
-                var listObjectsResponse = await s3Client.ListObjectsV2Async(listObjectsRequest).ConfigureAwait(false);
+                var listObjectsResponse = await S3Client.ListObjectsV2Async(listObjectsRequest).ConfigureAwait(false);
                 totalObjects += listObjectsResponse.S3Objects.Count;
                 listObjectsRequest.ContinuationToken = listObjectsResponse.NextContinuationToken;
             }
@@ -166,7 +109,7 @@ public class BoreholeFileCloudService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, "Error counting files in data extraction folder in cloud storage.");
+            Logger.LogError(ex, "Error counting files in data extraction folder in cloud storage.");
             throw;
         }
     }
@@ -187,7 +130,7 @@ public class BoreholeFileCloudService
             var tempFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             try
             {
-                using (var s3Stream = await s3Client.GetObjectStreamAsync(bucketName, key, null).ConfigureAwait(false))
+                using (var s3Stream = await S3Client.GetObjectStreamAsync(BucketName, key, null).ConfigureAwait(false))
                 using (var fileStream = new FileStream(tempFile, FileMode.Create))
                 {
                     await s3Stream.CopyToAsync(fileStream).ConfigureAwait(false);
@@ -219,25 +162,7 @@ public class BoreholeFileCloudService
         }
         catch (AmazonS3Exception ex)
         {
-            logger.LogError(ex, "Error retrieving image information from data extraction folder in cloud storage.");
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Deletes a file from the cloud storage.
-    /// </summary>
-    /// <param name="objectName">The name of the file in the bucket to delete.</param>
-    public async Task DeleteObject(string objectName)
-    {
-        try
-        {
-            var request = new DeleteObjectRequest { BucketName = bucketName, Key = objectName };
-            var response = await s3Client.DeleteObjectAsync(request).ConfigureAwait(false);
-        }
-        catch (AmazonS3Exception ex)
-        {
-            logger.LogError(ex, "Error deleting file from cloud storage.");
+            Logger.LogError(ex, "Error retrieving image information from data extraction folder in cloud storage.");
             throw;
         }
     }

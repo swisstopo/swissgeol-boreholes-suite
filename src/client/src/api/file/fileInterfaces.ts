@@ -1,5 +1,3 @@
-import { BoreholeV2 } from "../borehole.ts";
-
 export const maxFileSizeKB = 210_000_000;
 
 export interface File {
@@ -16,7 +14,6 @@ export interface File {
 
 export interface BoreholeFile {
   boreholeId: number;
-  borehole: BoreholeV2 | null;
   fileId: number;
   file: File;
 }

@@ -138,3 +138,18 @@ export interface Section {
 export interface GeometryFormat {
   csvHeader: string;
 }
+
+export interface Photo {
+  id: number;
+  boreholeId: number;
+  name: string;
+  nameUuid: string;
+  fileType: string;
+  fromDepth: number;
+  toDepth: number;
+  public: boolean;
+  createdBy?: User;
+  created?: Date | string;
+  updatedBy?: User;
+  updated?: Date | string;
+}

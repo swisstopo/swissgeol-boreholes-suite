@@ -3,7 +3,7 @@ import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/Codelist.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { User, Workgroup } from "./apiInterfaces.ts";
+import { Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2.ts";
@@ -79,6 +79,7 @@ export interface BoreholeV2 {
   sections: Section[] | null;
   boreholeGeometry: BoreholeGeometry[] | null;
   boreholeFiles: BoreholeFile[] | null;
+  photos: Photo[] | null;
 }
 
 const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");

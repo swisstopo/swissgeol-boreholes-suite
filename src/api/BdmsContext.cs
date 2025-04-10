@@ -42,6 +42,7 @@ public class BdmsContext : DbContext
         .Include(b => b.BoreholeCodelists)
         .Include(b => b.Workflows)
         .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
+        .Include(b => b.Photos)
         .Include(b => b.BoreholeGeometry)
         .Include(b => b.Workgroup)
         .Include(b => b.UpdatedBy);
@@ -148,6 +149,8 @@ public class BdmsContext : DbContext
     public DbSet<BoreholeGeometryElement> BoreholeGeometry { get; set; }
 
     public DbSet<BoreholeCodelist> BoreholeCodelists { get; set; }
+
+    public DbSet<Photo> Photos { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)

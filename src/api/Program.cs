@@ -101,6 +101,7 @@ builder.Services.AddApiVersioning(config =>
 builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<CoordinateService>();
 builder.Services.AddScoped<BoreholeFileCloudService>();
+builder.Services.AddScoped<PhotoCloudService>();
 builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
     var s3ConfigSection = builder.Configuration.GetSection("S3");

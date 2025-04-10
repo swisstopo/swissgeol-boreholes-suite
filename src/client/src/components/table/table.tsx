@@ -36,6 +36,7 @@ interface TableProps<T extends GridValidRowModel> {
   isLoading?: boolean;
   rowCount?: number;
   rowSelectionModel?: GridRowSelectionModel;
+  onRowSelectionModelChange?: (model: GridRowSelectionModel) => void;
   getRowId?: GridRowIdGetter<T>;
   isRowSelectable?: (params: GridRowParams<T>) => boolean;
   disableColumnSorting?: boolean;
@@ -63,6 +64,7 @@ export const Table = <T extends GridValidRowModel>({
   isLoading,
   rowCount,
   rowSelectionModel,
+  onRowSelectionModelChange,
   getRowId,
   isRowSelectable,
   disableColumnSorting = false,
@@ -167,6 +169,7 @@ export const Table = <T extends GridValidRowModel>({
       disableColumnSorting={disableColumnSorting}
       isRowSelectable={isRowSelectable}
       rowSelectionModel={rowSelectionModel}
+      onRowSelectionModelChange={onRowSelectionModelChange}
       getRowId={getRowId}
     />
   );
