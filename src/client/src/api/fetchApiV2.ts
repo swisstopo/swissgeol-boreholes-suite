@@ -569,3 +569,7 @@ export const getPhotosByBoreholeId = async (boreholeId: number): Promise<Photo[]
 export const exportPhotos = async (photoIds: number[]): Promise<Response> => {
   return await download(`photo/export?${photoIds.map(id => `photoIds=${id}`).join("&")}`);
 };
+
+export const deletePhotos = async (photoIds: number[]): Promise<Response> => {
+  return await fetchApiV2(`photo?${photoIds.map(id => `photoIds=${id}`).join("&")}`, "DELETE");
+};

@@ -44,6 +44,9 @@ public class PhotoControllerTest
         s3ClientMock
             .Setup(x => x.GetObjectAsync(It.IsAny<GetObjectRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => new GetObjectResponse { ResponseStream = Stream.Null });
+        s3ClientMock
+            .Setup(x => x.DeleteObjectsAsync(It.IsAny<DeleteObjectsRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() => new DeleteObjectsResponse());
 
         photoCloudService = new PhotoCloudService(loggerMock.Object, s3ClientMock.Object, configuration, contextAccessorMock.Object, context);
 
@@ -51,10 +54,12 @@ public class PhotoControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsUserLackingPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
             .ReturnsAsync(false);
-
         boreholeLockServiceMock
             .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
             .ReturnsAsync(true);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), "sub_admin"))
+            .ReturnsAsync(false);
 
         var controllerLoggerMock = new Mock<ILogger<PhotoController>>();
         controller = new PhotoController(context, controllerLoggerMock.Object, boreholeLockServiceMock.Object, photoCloudService);
@@ -130,6 +135,33 @@ public class PhotoControllerTest
         await context.SaveChangesAsync();
 
         var response = await controller.Export([photo1.Id, photo2.Id]);
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task DeleteMultiplePhotos()
+    {
+        var photo1 = await CreatePhotoAsync();
+        var photo2 = await CreatePhotoAsync();
+
+        var response = await controller.Delete([photo1.Id, photo2.Id]);
+        ActionResultAssert.IsOk(response);
+
+        Assert.IsFalse(context.Photos.Any(p => p.Id == photo1.Id));
+        Assert.IsFalse(context.Photos.Any(p => p.Id == photo2.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteFromMultipleBoreholesNotAllowed()
+    {
+        var photo1 = await CreatePhotoAsync();
+        var photo2 = await CreatePhotoAsync();
+
+        // Attach photo to a different borehole
+        photo2.BoreholeId = context.Boreholes.Max(b => b.Id);
+        await context.SaveChangesAsync();
+
+        var response = await controller.Delete([photo1.Id, photo2.Id]);
         ActionResultAssert.IsBadRequest(response);
     }
 

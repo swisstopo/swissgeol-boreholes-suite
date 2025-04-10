@@ -38,7 +38,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
       <AddAttachmentButton label="addPhoto" onFileSelect={upload} acceptedFileTypes="image/*" />
       {photos && photos.length > 0 ? (
         <Box sx={{ height: "100%" }}>
-          <PhotosTable photos={photos} />
+          <PhotosTable photos={photos} loadPhotos={loadPhotos} />
         </Box>
       ) : (
         <FullPageCentered>

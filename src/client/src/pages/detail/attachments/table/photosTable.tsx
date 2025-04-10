@@ -1,22 +1,25 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { GridColDef, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import { Photo } from "../../../../api/apiInterfaces.ts";
-import { exportPhotos } from "../../../../api/fetchApiV2.ts";
-import { ExportButton } from "../../../../components/buttons/buttons.tsx";
+import { deletePhotos, exportPhotos } from "../../../../api/fetchApiV2.ts";
+import { DeleteButton, ExportButton } from "../../../../components/buttons/buttons.tsx";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import { Table } from "../../../../components/table/table.tsx";
 import { TableSearchField } from "../../../../components/table/tableSearchField.tsx";
+import { DetailContext } from "../../detailContext.tsx";
 
 interface PhotosTableProps {
   photos: Photo[];
+  loadPhotos: () => void;
 }
 
-export const PhotosTable: FC<PhotosTableProps> = ({ photos }) => {
+export const PhotosTable: FC<PhotosTableProps> = ({ photos, loadPhotos }) => {
   const { t } = useTranslation();
   const apiRef = useGridApiRef();
+  const { editingEnabled } = useContext(DetailContext);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
 
   const columns = useMemo<GridColDef<Photo>[]>(
@@ -49,6 +52,11 @@ export const PhotosTable: FC<PhotosTableProps> = ({ photos }) => {
     [t],
   );
 
+  const deleteSelected = async () => {
+    await deletePhotos(selectionModel as number[]);
+    loadPhotos();
+  };
+
   const exportSelected = async () => {
     await exportPhotos(selectionModel as number[]);
   };
@@ -57,8 +65,9 @@ export const PhotosTable: FC<PhotosTableProps> = ({ photos }) => {
     <Box>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
         <Stack direction="row" alignItems="center" gap={1}>
+          {editingEnabled && <DeleteButton disabled={selectionModel.length === 0} onClick={deleteSelected} />}
           <ExportButton disabled={selectionModel.length === 0} onClick={exportSelected} />
-          <Typography>{t("selectedCount", { count: selectionModel.length })}</Typography>
+          <Typography>{selectionModel.length > 0 && t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
         <Box>
           <TableSearchField apiRef={apiRef} />

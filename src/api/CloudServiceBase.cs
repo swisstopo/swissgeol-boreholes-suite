@@ -90,4 +90,22 @@ public abstract class CloudServiceBase
             throw;
         }
     }
+
+    /// <summary>
+    /// Deletes files from the cloud storage.
+    /// </summary>
+    /// <param name="objectNames">The names of the files in the bucket to delete.</param>
+    public async Task DeleteObjects(IEnumerable<string> objectNames)
+    {
+        try
+        {
+            var request = new DeleteObjectsRequest { BucketName = BucketName, Objects = objectNames.Select(name => new KeyVersion { Key = name }).ToList() };
+            var response = await S3Client.DeleteObjectsAsync(request).ConfigureAwait(false);
+        }
+        catch (AmazonS3Exception ex)
+        {
+            Logger.LogError(ex, "Error deleting files from cloud storage.");
+            throw;
+        }
+    }
 }

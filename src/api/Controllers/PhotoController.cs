@@ -138,4 +138,34 @@ public class PhotoController : ControllerBase
 
         return File(memoryStream.ToArray(), "application/zip", "photos.zip");
     }
+
+    [HttpDelete]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult> Delete([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
+    {
+        if (photoIds == null || photoIds.Count == 0) return BadRequest("The list of photoIds must not be empty.");
+
+        var photos = await context.Photos
+            .Where(p => photoIds.Contains(p.Id))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        if (photos.Count == 0) return NotFound();
+
+        var boreholeIds = photos.Select(p => p.BoreholeId).Distinct().ToList();
+        if (boreholeIds.Count != 1) return BadRequest("Not all photos are attached to the same borehole.");
+
+        var boreholeId = boreholeIds.Single();
+        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            return Problem("The borehole is locked by another user or you are missing permissions.");
+        }
+
+        await photoCloudService.DeleteObjects(photos.Select(p => p.NameUuid)).ConfigureAwait(false);
+
+        context.RemoveRange(photos);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        return Ok();
+    }
 }
