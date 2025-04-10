@@ -4,6 +4,7 @@ import { Box, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { GridColDef, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import { Photo } from "../../../../api/apiInterfaces.ts";
+import { exportPhotos } from "../../../../api/fetchApiV2.ts";
 import { ExportButton } from "../../../../components/buttons/buttons.tsx";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import { Table } from "../../../../components/table/table.tsx";
@@ -48,8 +49,8 @@ export const PhotosTable: FC<PhotosTableProps> = ({ photos }) => {
     [t],
   );
 
-  const exportSelected = () => {
-    console.log("export", selectionModel);
+  const exportSelected = async () => {
+    await exportPhotos(selectionModel as number[]);
   };
 
   return (

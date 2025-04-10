@@ -14,12 +14,15 @@ public class PhotoCloudServiceTest
 {
     private BdmsContext context;
     private User adminUser;
+    private Mock<IAmazonS3> s3ClientMock;
     private PhotoCloudService photoCloudService;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string> { { "S3:PHOTOS_BUCKET_NAME", "CANNONFLEA-PHOTOS" } })
+            .Build();
 
         context = ContextFactory.GetTestContext();
         adminUser = context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
@@ -30,17 +33,9 @@ public class PhotoCloudServiceTest
 
         var loggerMock = new Mock<ILogger<PhotoCloudService>>();
 
-        var s3Client = new AmazonS3Client(
-            configuration["S3:ACCESS_KEY"],
-            configuration["S3:SECRET_KEY"],
-            new AmazonS3Config
-            {
-                ServiceURL = configuration["S3:ENDPOINT"],
-                ForcePathStyle = true,
-                UseHttp = configuration["S3:SECURE"] == "0",
-            });
+        s3ClientMock = new Mock<IAmazonS3>(MockBehavior.Strict);
 
-        photoCloudService = new PhotoCloudService(loggerMock.Object, s3Client, configuration, contextAccessorMock.Object, context);
+        photoCloudService = new PhotoCloudService(loggerMock.Object, s3ClientMock.Object, configuration, contextAccessorMock.Object, context);
     }
 
     [TestCleanup]

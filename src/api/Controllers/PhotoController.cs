@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.IO.Compression;
 
 namespace BDMS.Controllers;
 
@@ -87,5 +88,54 @@ public class PhotoController : ControllerBase
             .AsNoTracking()
             .ToListAsync()
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Exports the photos matching the <paramref name="photoIds"/>.
+    /// </summary>
+    /// <param name="photoIds">Ids of the photos to export.</param>
+    /// <returns>The file content for a single photo or a zip file containing multiple photos.</returns>
+    [HttpGet("export")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult> Export([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
+    {
+        if (photoIds == null || photoIds.Count == 0) return BadRequest("The list of photoIds must not be empty.");
+
+        var photos = await context.Photos
+            .Where(p => photoIds.Contains(p.Id))
+            .AsNoTracking()
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        if (photos.Count == 0) return NotFound();
+
+        var boreholeIds = photos.Select(p => p.BoreholeId).Distinct().ToList();
+        if (boreholeIds.Count != 1) return BadRequest("Not all photos are attached to the same borehole.");
+
+        var boreholeId = boreholeIds.Single();
+        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+
+        if (photos.Count == 1)
+        {
+            var photo = photos.Single();
+            var fileBytes = await photoCloudService.GetObject(photo.NameUuid).ConfigureAwait(false);
+            return File(fileBytes, photo.FileType, photo.Name);
+        }
+
+        using var memoryStream = new MemoryStream();
+        using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+        {
+            foreach (var photo in photos)
+            {
+                var fileBytes = await photoCloudService.GetObject(photo.NameUuid).ConfigureAwait(false);
+
+                // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name
+                var zipEntry = archive.CreateEntry($"{photo.NameUuid}_{photo.Name}", CompressionLevel.Fastest);
+                using var zipEntryStream = zipEntry.Open();
+                await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
+            }
+        }
+
+        return File(memoryStream.ToArray(), "application/zip", "photos.zip");
     }
 }

@@ -42,7 +42,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
         </Box>
       ) : (
         <FullPageCentered>
-          <Typography variant="fullPageMessage">{t("noAttachments")}</Typography>
+          <Typography variant="fullPageMessage">{t("noPhotos")}</Typography>
         </FullPageCentered>
       )}
     </>

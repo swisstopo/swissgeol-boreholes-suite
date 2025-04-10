@@ -565,3 +565,7 @@ export const uploadPhoto = async (boreholeId: number, file: File): Promise<Photo
 export const getPhotosByBoreholeId = async (boreholeId: number): Promise<Photo[]> => {
   return await fetchApiV2(`photo/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
 };
+
+export const exportPhotos = async (photoIds: number[]): Promise<Response> => {
+  return await download(`photo/export?${photoIds.map(id => `photoIds=${id}`).join("&")}`);
+};
