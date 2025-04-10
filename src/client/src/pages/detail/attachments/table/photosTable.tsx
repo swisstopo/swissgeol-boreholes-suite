@@ -62,7 +62,7 @@ export const PhotosTable: FC<PhotosTableProps> = ({ photos, loadPhotos }) => {
   };
 
   return (
-    <Box>
+    <Box data-cy="photos-table-container">
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
         <Stack direction="row" alignItems="center" gap={1}>
           {editingEnabled && <DeleteButton disabled={selectionModel.length === 0} onClick={deleteSelected} />}
