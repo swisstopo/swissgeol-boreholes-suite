@@ -21,14 +21,6 @@ export const parseIfString = (value: string | number) => {
 
 /**
  * Parse a string to a float number, removing thousands separators if present.
- * @param {string | number | null} value The value to parse.
- * @returns The parsed float number.
- */
-
-export const parseValueIfNotNull = (value: string | number | null) =>
-  value ? parseFloatWithThousandsSeparator(String(value)) : null;
-/**
- * Parse a string to a float number, removing thousands separators if present.
  * @param {string/ number} value The string or number to parse.
  * @returns The parsed float number.
  */
@@ -103,6 +95,8 @@ export const formatNumberForDisplay = (value: number | null, minDecimals = 0): s
   return formatWithThousandsSeparator(minDecimals, value);
 };
 
+export const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
+
 /**
  * Transforms the location form data into a format that can be submitted to the API.
  * @param {LocationFormInputs} formInputs The data from the location form.
@@ -110,8 +104,6 @@ export const formatNumberForDisplay = (value: number | null, minDecimals = 0): s
  */
 export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => {
   const data = { ...formInputs } as LocationFormSubmission;
-
-  const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
 
   const getCompleteCodelists = (codelists: Identifier[]) => {
     return codelists
