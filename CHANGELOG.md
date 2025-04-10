@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1162 - 2025-04-10
+
 ### Fixed
 - Calculations of TVD resulted in an error when the distance between the two coordinates to interpolate was larger than their difference of MD.
 
