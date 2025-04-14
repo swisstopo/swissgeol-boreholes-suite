@@ -6,7 +6,7 @@ namespace BDMS;
 
 public class PhotoCloudService : CloudServiceBase
 {
-    private static readonly Regex fileNameDepthRegex = new(@"_(\d+\.\d+)-(\d+\.\d+)_");
+    private static readonly Regex fileNameDepthRegex = new(@"_(\d+\.\d+)-(\d+\.\d+)_", RegexOptions.NonBacktracking);
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly BdmsContext context;
 
