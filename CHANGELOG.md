@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Added the photos tab to the borehole attachments.
+
 ## v2.1.1162 - 2025-04-10
 
 ### Fixed

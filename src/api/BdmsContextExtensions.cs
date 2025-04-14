@@ -211,6 +211,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.BoreholeGeometry, _ => new Collection<BoreholeGeometryElement>())
            .RuleFor(o => o.BoreholeFiles, _ => new Collection<BoreholeFile>())
            .RuleFor(o => o.TopBedrockIntersected, f => f.Random.Bool().OrNull(f, .2f))
+           .RuleFor(o => o.Photos, _ => new Collection<Photo>())
            .FinishWith((f, o) => { o.Name = o.OriginalName; });
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
@@ -263,6 +264,30 @@ public static class BdmsContextExtensions
             .Select(bf => bf.FirstOrDefault())
             .ToList();
         context.BulkInsert<BoreholeFile>(filesToInsert, bulkConfig);
+
+        // Seed borehole_photo
+        var photo_ids = 4_000_000;
+        var photosRange = Enumerable.Range(photo_ids, 80);
+        var fakePhotos = new Faker<Photo>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, _ => photo_ids++)
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange))
+            .RuleFor(o => o.Borehole, f => default!)
+            .RuleFor(o => o.Name, f => f.Random.Word())
+            .RuleFor(o => o.NameUuid, f => f.Random.Uuid().ToString())
+            .RuleFor(o => o.FileType, f => f.Random.Word())
+            .RuleFor(o => o.FromDepth, f => f.Random.Int(0, 100))
+            .RuleFor(o => o.ToDepth, f => f.Random.Int(100, 200))
+            .RuleFor(o => o.Public, f => f.Random.Bool(.9f))
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime().OrNull(f, .5f))
+            .RuleFor(o => o.UpdatedById, (f, bf) => bf.Updated == null ? null : f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, f => default!)
+            .RuleFor(o => o.CreatedById, _ => default!)
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Created, _ => default!);
+
+        Photo SeededPhotos(int seed) => fakePhotos.UseSeed(seed).Generate();
+        context.BulkInsert(photosRange.Select(SeededPhotos).ToList(), bulkConfig);
 
         // Seed stratigraphy
         var stratigraphy_ids = 6_000_000;

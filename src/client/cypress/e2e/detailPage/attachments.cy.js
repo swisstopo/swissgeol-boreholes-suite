@@ -14,12 +14,21 @@ import {
 } from "../helpers/testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
+  const photoFilename = "HARDOASIS_10.00-120.00_all.jpg";
+
   const uploadLoudSpatulaFile = () => {
     selectInputFile("LOUDSPATULA.txt", "text/plain");
 
     // // upload file
     getElementByDataCy("attachments-upload-button").should("be.visible").click();
     cy.wait(["@upload-files", "@getAllAttachments"]);
+  };
+
+  const uploadPhoto = () => {
+    selectInputFile(photoFilename, "image/jpeg");
+
+    getElementByDataCy("photo-upload-button").should("be.visible").click();
+    cy.wait(["@upload-photo", "@getAllPhotos"]);
   };
 
   it("creates, downloads and deletes attachments.", () => {
@@ -108,6 +117,50 @@ describe("Tests for 'Attachments' edit page.", () => {
       verifyTableLength(1);
       getElementByDataCy("attachments-detach-button").children().first().click();
       cy.wait(["@delete-file", "@getAllAttachments"]);
+      verifyTableLength(0);
+
+      // reset test data
+      deleteBorehole(boreholeId);
+    });
+  });
+
+  it("creates, exports and deletes photos.", () => {
+    createBorehole({ "extended.original_name": "JUNIORSOUFFLE" }).as("borehole_id");
+    cy.get("@borehole_id").then(boreholeId => {
+      goToRouteAndAcceptTerms(`/${boreholeId}`);
+
+      startBoreholeEditing();
+      // navigate to photos tab
+      getElementByDataCy("attachments-menu-item").click();
+      getElementByDataCy("photos-tab").click();
+
+      uploadPhoto();
+
+      // check table entry
+      verifyTableLength(1);
+      verifyRowContains("10 - 120", 0);
+
+      // ensure file does not exist in download folder before download
+      deleteDownloadedFile(photoFilename);
+
+      // export photo
+      checkRowWithText(photoFilename);
+      getElementByDataCy("photos-table-container").find('[data-cy="export-button"]').click();
+      cy.wait("@export-photos");
+
+      // check if the file is present in download folder
+      readDownloadedFile(photoFilename);
+
+      // stop editing and verify table content
+      stopBoreholeEditing();
+      verifyRowContains(photoFilename, 0);
+      verifyRowContains("10 - 120", 0);
+
+      // delete photo
+      startBoreholeEditing();
+      checkRowWithText(photoFilename);
+      getElementByDataCy("photos-table-container").find('[data-cy="delete-button"]').click();
+      cy.wait(["@delete-photos", "@getAllPhotos"]);
       verifyTableLength(0);
 
       // reset test data
