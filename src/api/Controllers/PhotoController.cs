@@ -38,8 +38,9 @@ public class PhotoController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<IActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
     {
+        if (await boreholeLockService.IsUserLackingPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+
         if (file == null || file.Length == 0) return BadRequest("No file provided.");
-        if (boreholeId == 0) return BadRequest("No boreholeId provided.");
         if (file.Length > MaxFileSize) return BadRequest($"File size exceeds maximum file size of {MaxFileSize} bytes.");
 
         var depth = photoCloudService.ExtractDepthFromFileName(file.FileName);
@@ -47,8 +48,6 @@ public class PhotoController : ControllerBase
         {
             return BadRequest("No depth information found in file name.");
         }
-
-        if (await boreholeLockService.IsUserLackingPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
 
         try
         {
@@ -77,8 +76,6 @@ public class PhotoController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<Photo>>> GetAllOfBorehole([Required, Range(1, int.MaxValue)] int boreholeId)
     {
-        if (boreholeId == 0) return BadRequest("No boreholeId provided.");
-
         if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
 
         // Get all photos that are linked to the borehole.
