@@ -24,6 +24,7 @@ import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
 import { DetailContext } from "../detailContext.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
+import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import LabelingFileSelector from "./labelingFileSelector.tsx";
 import { LabelingHeader } from "./labelingHeader.tsx";
@@ -33,7 +34,6 @@ import {
   ExtractionState,
   labelingFileFormat,
   PanelPosition,
-  useLabelingContext,
 } from "./labelingInterfaces.tsx";
 import { labelingButtonStyles } from "./labelingStyles.ts";
 

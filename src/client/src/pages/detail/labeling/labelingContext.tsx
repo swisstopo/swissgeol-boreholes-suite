@@ -1,5 +1,20 @@
-import { createContext, FC, PropsWithChildren, useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { ExtractionObject, ExtractionState, LabelingContextInterface, PanelPosition } from "./labelingInterfaces.tsx";
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
+import {
+  ExtractionObject,
+  ExtractionState,
+  LabelingContextInterface,
+  PanelPosition,
+  PanelTab,
+} from "./labelingInterfaces.tsx";
 
 export const LabelingContext = createContext<LabelingContextInterface>({
   panelPosition: "right",
@@ -10,6 +25,8 @@ export const LabelingContext = createContext<LabelingContextInterface>({
   setExtractionObject: () => {},
   extractionState: undefined,
   setExtractionState: () => {},
+  panelTab: PanelTab.profile,
+  setPanelTab: () => {},
 });
 
 export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -17,6 +34,7 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
   const [panelOpen, setPanelOpen] = useState(false);
   const [extractionObject, setExtractionObject] = useState<ExtractionObject>();
   const [extractionState, setExtractionState] = useState<ExtractionState>();
+  const [panelTab, setPanelTab] = useState<PanelTab>(PanelTab.profile);
 
   const togglePanel = useCallback((isOpen?: boolean) => {
     setPanelOpen(prevState => (isOpen !== undefined ? isOpen : !prevState));
@@ -58,8 +76,12 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
         setExtractionObject,
         extractionState,
         setExtractionState,
+        panelTab,
+        setPanelTab,
       }}>
       {children}
     </LabelingContext.Provider>
   );
 };
+
+export const useLabelingContext = () => useContext(LabelingContext);

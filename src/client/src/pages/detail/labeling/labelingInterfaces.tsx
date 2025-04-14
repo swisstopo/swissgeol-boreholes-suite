@@ -1,6 +1,4 @@
-import { useContext } from "react";
 import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
-import { LabelingContext } from "./labelingContext.tsx";
 
 export type ExtractionType = "text" | "number" | "coordinates";
 export enum ExtractionState {
@@ -46,6 +44,11 @@ export type ExtractionResponse = {
 
 export type PanelPosition = "right" | "bottom";
 
+export enum PanelTab {
+  profile = "profile",
+  photo = "photo",
+}
+
 export interface LabelingContextInterface {
   panelPosition: PanelPosition;
   setPanelPosition: (position: PanelPosition) => void;
@@ -55,8 +58,8 @@ export interface LabelingContextInterface {
   setExtractionObject: (extractionObject: ExtractionObject | undefined) => void;
   extractionState?: ExtractionState;
   setExtractionState: (extractionState: ExtractionState) => void;
+  panelTab: PanelTab;
+  setPanelTab: (panelTab: PanelTab) => void;
 }
 
 export const labelingFileFormat = "application/pdf";
-
-export const useLabelingContext = () => useContext(LabelingContext);
