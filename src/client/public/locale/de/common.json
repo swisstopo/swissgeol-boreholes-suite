@@ -195,7 +195,7 @@
   "errorFromDepthGreaterThanToDepth": "von Tiefe ist grösser als bis Tiefe",
   "errorFromDepthTooLow": "von Tiefe ist zu klein",
   "errorGap": "Es gibt eine Lücke im Schichtverzeichnis",
-  "errorGapSolution_extendLowerLayer": "Top der unteren Schicht mit der Basis der oberen Schicht ersetzen",
+  "errorGapSolution_extendLowerLayer": "Top der unteren Schicht mit Basis der oberen Schicht ersetzen",
   "errorGapSolution_extendLowerToZero": "Top der unteren Schicht mit 0 Metern ersetzen",
   "errorGapSolution_extendUpperLayer": "Basis der oberen Schicht mit Top der unteren Schicht ersetzen",
   "errorGapSolution_fillWithUndefined": "Lücke mit 'nicht definierter Schicht' füllen",
