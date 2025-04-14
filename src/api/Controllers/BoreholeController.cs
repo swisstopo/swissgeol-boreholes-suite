@@ -151,6 +151,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         // Do not copy borehole attachments
         borehole.BoreholeFiles.Clear();
+        borehole.Photos.Clear();
 
         borehole.OriginalName += " (Copy)";
         borehole.Name += " (Copy)";

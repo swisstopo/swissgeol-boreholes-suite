@@ -5,7 +5,7 @@ import { AddWorkgroupDialog } from "../../pages/settings/admin/dialogs/AddWorkgr
 import { AddButton } from "../buttons/buttons.tsx";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../styledTabComponents.tsx";
 
-interface Tab {
+export interface Tab {
   label: string;
   hash: string;
   component: JSX.Element;
