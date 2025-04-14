@@ -3,6 +3,7 @@ using Amazon.S3.Model;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,6 +20,7 @@ public class PhotoControllerTest
     private User adminUser;
     private Mock<IAmazonS3> s3ClientMock;
     private PhotoCloudService photoCloudService;
+    private Mock<IBoreholeLockService> boreholeLockServiceMock;
     private PhotoController controller;
 
     [TestInitialize]
@@ -50,7 +52,7 @@ public class PhotoControllerTest
 
         photoCloudService = new PhotoCloudService(loggerMock.Object, s3ClientMock.Object, configuration, contextAccessorMock.Object, context);
 
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
         boreholeLockServiceMock
             .Setup(x => x.IsUserLackingPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
             .ReturnsAsync(false);
@@ -98,6 +100,68 @@ public class PhotoControllerTest
     }
 
     [TestMethod]
+    public async Task UploadFailsForPhotoWithInvalidDepthInformation()
+    {
+        var fileName = $"{Guid.NewGuid()}_123.00_all.tif";
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var content = Guid.NewGuid().ToString();
+        var file = GetFormFileByContent(content, fileName);
+
+        var response = await controller.Upload(file, minBoreholeId);
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task UploadFailsForPhotoWithoutDepthInformation()
+    {
+        var fileName = $"{Guid.NewGuid()}.tif";
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var content = Guid.NewGuid().ToString();
+        var file = GetFormFileByContent(content, fileName);
+
+        var response = await controller.Upload(file, minBoreholeId);
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task UploadFailsForUserWithInsufficientPermissions()
+    {
+        boreholeLockServiceMock
+            .Setup(x => x.IsUserLackingPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
+            .ReturnsAsync(true);
+
+        var fileName = $"{Guid.NewGuid()}_123.00-456.50_all.tif";
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var content = Guid.NewGuid().ToString();
+        var file = GetFormFileByContent(content, fileName);
+
+        var response = await controller.Upload(file, minBoreholeId);
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
+    public async Task GetAllOfBorehole()
+    {
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+
+        var response = await controller.GetAllOfBorehole(minBoreholeId);
+        Assert.IsNotNull(response.Value);
+    }
+
+    [TestMethod]
+    public async Task GetAllFailsForUserWithInsufficientPermissions()
+    {
+        boreholeLockServiceMock
+            .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
+            .ReturnsAsync(false);
+
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+
+        IConvertToActionResult response = await controller.GetAllOfBorehole(minBoreholeId);
+        ActionResultAssert.IsUnauthorized(response.Convert());
+    }
+
+    [TestMethod]
     public async Task ExportSinglePhoto()
     {
         var photo = await CreatePhotoAsync();
@@ -139,6 +203,19 @@ public class PhotoControllerTest
     }
 
     [TestMethod]
+    public async Task ExportFailsForUserWithInsufficientPermissions()
+    {
+        boreholeLockServiceMock
+            .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
+            .ReturnsAsync(false);
+
+        var photo = await CreatePhotoAsync();
+
+        var response = await controller.Export([photo.Id]);
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
     public async Task DeleteMultiplePhotos()
     {
         var photo1 = await CreatePhotoAsync();
@@ -162,6 +239,19 @@ public class PhotoControllerTest
         await context.SaveChangesAsync();
 
         var response = await controller.Delete([photo1.Id, photo2.Id]);
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task DeleteFailsForLockedBorehole()
+    {
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), "sub_admin"))
+            .ReturnsAsync(true);
+
+        var photo = await CreatePhotoAsync();
+
+        var response = await controller.Delete([photo.Id]);
         ActionResultAssert.IsBadRequest(response);
     }
 

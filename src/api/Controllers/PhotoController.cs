@@ -155,7 +155,7 @@ public class PhotoController : ControllerBase
         var boreholeId = boreholeIds.Single();
         if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
         {
-            return Problem("The borehole is locked by another user or you are missing permissions.");
+            return BadRequest("The borehole is locked by another user or you are missing permissions.");
         }
 
         await photoCloudService.DeleteObjects(photos.Select(p => p.NameUuid)).ConfigureAwait(false);
