@@ -62,6 +62,11 @@ public class PhotoCloudService : CloudServiceBase
         }
     }
 
+    /// <summary>
+    /// Extracts depth information from the file name.
+    /// </summary>
+    /// <param name="fileName">The file name which should contain depth information.</param>
+    /// <returns>The depth information, or <c>null</c> if no depth information was found in the file name.</returns>
     public (double FromDepth, double ToDepth)? ExtractDepthFromFileName(string fileName)
     {
         var match = fileNameDepthRegex.Match(fileName);
