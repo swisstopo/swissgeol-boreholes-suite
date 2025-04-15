@@ -62,4 +62,14 @@ export interface LabelingContextInterface {
   setPanelTab: (panelTab: PanelTab) => void;
 }
 
-export const labelingFileFormat = "application/pdf";
+export const labelingFileFormat: Record<PanelTab, string> = {
+  [PanelTab.profile]: "application/pdf",
+  [PanelTab.photo]: "image/*",
+};
+
+export const matchesFileFormat = (expectedFormat: string, format: string) => {
+  if (expectedFormat.endsWith("*")) {
+    return format.startsWith(expectedFormat.slice(0, -1));
+  }
+  return format === expectedFormat;
+};

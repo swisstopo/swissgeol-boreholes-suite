@@ -4,7 +4,8 @@ import { useParams } from "react-router-dom";
 import { Alert, Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { ChevronLeft, ChevronRight, PanelBottom, PanelRight } from "lucide-react";
-import { ApiError } from "../../../api/apiInterfaces.ts";
+import { ApiError, BoreholeAttachment } from "../../../api/apiInterfaces.ts";
+import { getPhotosByBoreholeId } from "../../../api/fetchApiV2.ts";
 import {
   extractCoordinates,
   extractText,
@@ -13,12 +14,7 @@ import {
   getFiles,
   uploadFile,
 } from "../../../api/file/file.ts";
-import {
-  BoreholeFile,
-  DataExtractionResponse,
-  File as FileInterface,
-  maxFileSizeKB,
-} from "../../../api/file/fileInterfaces.ts";
+import { BoreholeFile, DataExtractionResponse, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
@@ -33,7 +29,9 @@ import {
   ExtractionRequest,
   ExtractionState,
   labelingFileFormat,
+  matchesFileFormat,
   PanelPosition,
+  PanelTab,
 } from "./labelingInterfaces.tsx";
 import { labelingButtonStyles } from "./labelingStyles.ts";
 
@@ -74,10 +72,11 @@ const LabelingPanel: FC = () => {
     setExtractionObject,
     setExtractionState,
     extractionState,
+    panelTab,
   } = useLabelingContext();
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
-  const [files, setFiles] = useState<FileInterface[]>();
-  const [selectedFile, setSelectedFile] = useState<FileInterface>();
+  const [files, setFiles] = useState<BoreholeAttachment[]>();
+  const [selectedFile, setSelectedFile] = useState<BoreholeAttachment>();
   const [fileInfo, setFileInfo] = useState<DataExtractionResponse>();
   const [pageBoundingBoxes, setPageBoundingBoxes] = useState<ExtractionBoundingBox[]>([]);
   const [activePage, setActivePage] = useState<number>(1);
@@ -87,6 +86,7 @@ const LabelingPanel: FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
   const { editingEnabled } = useContext(DetailContext);
+  const expectedFileFormat = labelingFileFormat[panelTab];
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -99,22 +99,28 @@ const LabelingPanel: FC = () => {
     return () => clearTimeout(timer);
   }, [alertIsOpen, autoHideDuration, closeAlert]);
 
+  const loadProfiles = useCallback(async () => {
+    const response = await getFiles<BoreholeFile>(Number(boreholeId));
+    return response
+      .filter((fileResponse: BoreholeFile) => matchesFileFormat(expectedFileFormat, fileResponse.file.type))
+      .map((fileResponse: BoreholeFile) => fileResponse.file);
+  }, [boreholeId, expectedFileFormat]);
+
+  const loadPhotos = useCallback(async () => {
+    return await getPhotosByBoreholeId(Number(boreholeId));
+  }, [boreholeId]);
+
   const loadFiles = useCallback(async () => {
     if (boreholeId) {
       setIsLoadingFiles(true);
-      getFiles<BoreholeFile>(Number(boreholeId))
-        .then(response =>
-          setFiles(
-            response
-              .filter((fileResponse: BoreholeFile) => fileResponse.file.type === labelingFileFormat)
-              .map((fileResponse: BoreholeFile) => fileResponse.file),
-          ),
-        )
-        .finally(() => {
-          setIsLoadingFiles(false);
-        });
+      try {
+        const files = panelTab === PanelTab.profile ? await loadProfiles() : await loadPhotos();
+        setFiles(files);
+      } finally {
+        setIsLoadingFiles(false);
+      }
     }
-  }, [boreholeId]);
+  }, [boreholeId, loadPhotos, loadProfiles, panelTab]);
 
   const addFile = useCallback(
     async (file: File) => {
@@ -209,10 +215,8 @@ const LabelingPanel: FC = () => {
   };
 
   useEffect(() => {
-    if (files === undefined) {
-      loadFiles();
-    }
-  }, [files, loadFiles]);
+    loadFiles();
+  }, [loadFiles]);
 
   useEffect(() => {
     if (extractionState === ExtractionState.start) {
@@ -253,6 +257,14 @@ const LabelingPanel: FC = () => {
     fetchExtractionData();
   }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName, showAlert, t, editingEnabled]);
 
+  useEffect(() => {
+    if (files && files.length > 0 && (panelTab === PanelTab.photo || files.length === 1)) {
+      setSelectedFile(files[0]);
+    } else {
+      setSelectedFile(undefined);
+    }
+  }, [files, panelTab]);
+
   const isExtractionLoading = extractionState === ExtractionState.loading;
   return (
     <Stack
@@ -277,13 +289,13 @@ const LabelingPanel: FC = () => {
         type="file"
         ref={fileInputRef}
         style={{ display: "none" }}
-        accept={labelingFileFormat}
+        accept={expectedFileFormat}
         onChange={event => {
           const file = event.target.files?.[0];
           if (file) {
             if (file.size >= maxFileSizeKB) {
               showAlert(t("fileMaxSizeExceeded"), "error");
-            } else if (file.type !== labelingFileFormat) {
+            } else if (!matchesFileFormat(expectedFileFormat, file.type)) {
               showAlert(t("fileInvalidType"), "error");
             } else {
               addFile(file);
@@ -347,7 +359,9 @@ const LabelingPanel: FC = () => {
         <ToggleButtonGroup
           value={panelPosition}
           onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
-            setPanelPosition(nextPosition);
+            if (nextPosition) {
+              setPanelPosition(nextPosition);
+            }
           }}
           exclusive
           sx={labelingButtonStyles}>
@@ -397,6 +411,7 @@ const LabelingPanel: FC = () => {
         </Box>
       ) : (
         <LabelingFileSelector
+          activeTab={panelTab}
           isLoadingFiles={isLoadingFiles}
           files={files}
           setSelectedFile={setSelectedFile}

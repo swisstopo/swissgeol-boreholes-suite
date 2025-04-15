@@ -3,20 +3,23 @@ import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { AlertColor, Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { File as FileIcon } from "lucide-react";
-import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
+import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
+import { maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { DetailContext } from "../detailContext.tsx";
-import { labelingFileFormat } from "./labelingInterfaces.tsx";
+import { labelingFileFormat, PanelTab } from "./labelingInterfaces.tsx";
 
 interface LabelingFileSelectorProps {
   isLoadingFiles: boolean;
-  files?: FileInterface[];
-  setSelectedFile: (file: FileInterface) => void;
+  files?: BoreholeAttachment[];
+  activeTab: PanelTab;
+  setSelectedFile: (file: BoreholeAttachment) => void;
   addFile: (file: File) => void;
   showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean) => void;
 }
 
 const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
+  activeTab,
   isLoadingFiles,
   files,
   setSelectedFile,
@@ -48,7 +51,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
     onDrop,
     maxFiles: 1,
     maxSize: maxFileSizeKB,
-    accept: { [labelingFileFormat]: [] },
+    accept: { [labelingFileFormat[activeTab]]: [] },
     noDrag: false,
     noClick: true,
   });
@@ -95,7 +98,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
                 <CircularProgress />
               </Stack>
             ) : files && files.length > 0 ? (
-              files.map((file: FileInterface) => (
+              files.map(file => (
                 <Button
                   key={file.name}
                   startIcon={<FileIcon />}
