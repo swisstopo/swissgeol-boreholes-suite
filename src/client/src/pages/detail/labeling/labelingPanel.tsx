@@ -1,9 +1,9 @@
 import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { Alert, Box, Button, ButtonGroup, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Alert, Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
-import { ChevronLeft, ChevronRight, PanelBottom, PanelRight } from "lucide-react";
+import { PanelBottom, PanelRight } from "lucide-react";
 import { ApiError, BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import { getPhotosByBoreholeId } from "../../../api/fetchApiV2.ts";
 import {
@@ -34,6 +34,7 @@ import {
   PanelTab,
 } from "./labelingInterfaces.tsx";
 import { labelingButtonStyles } from "./labelingStyles.ts";
+import { PageSelection } from "./pageSelection.tsx";
 
 export const LabelingAlert = styled(Alert)({
   ...labelingButtonStyles,
@@ -263,6 +264,7 @@ const LabelingPanel: FC = () => {
     } else {
       setSelectedFile(undefined);
     }
+    setActivePage(1);
   }, [files, panelTab]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
@@ -314,47 +316,21 @@ const LabelingPanel: FC = () => {
           bottom: 0,
           zIndex: "500",
         }}>
-        {fileInfo?.count && (
-          <ButtonGroup
-            variant="contained"
-            sx={{
-              ...labelingButtonStyles,
-              visibility: selectedFile ? "visible" : "hidden",
-            }}>
-            <Typography
-              variant="h6"
-              p={1}
-              pr={fileInfo.count > 1 ? 0 : 1}
-              m={0.5}
-              sx={{ alignContent: "center" }}
-              data-cy="labeling-page-count">
-              {activePage} / {fileInfo.count}
-            </Typography>
-            {fileInfo?.count > 1 && (
-              <>
-                <Button
-                  variant="text"
-                  color="secondary"
-                  onClick={() => {
-                    setActivePage(activePage - 1);
-                  }}
-                  disabled={activePage === 1}
-                  data-cy="labeling-page-previous">
-                  <ChevronLeft />
-                </Button>
-                <Button
-                  variant="text"
-                  color="secondary"
-                  onClick={() => {
-                    setActivePage(activePage + 1);
-                  }}
-                  disabled={activePage === fileInfo.count}
-                  data-cy="labeling-page-next">
-                  <ChevronRight />
-                </Button>
-              </>
-            )}
-          </ButtonGroup>
+        {panelTab === PanelTab.profile && selectedFile && fileInfo?.count && (
+          <PageSelection
+            count={fileInfo.count}
+            activePage={activePage}
+            setActivePage={setActivePage}
+            sx={labelingButtonStyles}
+          />
+        )}
+        {panelTab === PanelTab.photo && selectedFile && files && (
+          <PageSelection
+            count={files.length}
+            activePage={files.indexOf(selectedFile) + 1}
+            setActivePage={page => setSelectedFile(files[page - 1])}
+            sx={labelingButtonStyles}
+          />
         )}
         <ToggleButtonGroup
           value={panelPosition}
