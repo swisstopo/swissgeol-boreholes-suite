@@ -256,7 +256,7 @@ describe("Test labeling tool", () => {
 
     closePanel();
     openPanel();
-    getElementByDataCy("labeling-file-selector").contains("Existing documents").should("exist");
+    getElementByDataCy("labeling-file-selector").contains("Profiles").should("exist");
     getElementByDataCy("addfile-button").should("not.exist");
     getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_1.pdf");
     getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_3.pdf");
