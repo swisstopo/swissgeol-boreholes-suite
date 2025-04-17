@@ -4,10 +4,10 @@ import { useParams } from "react-router-dom";
 import { Alert, Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
 import { PanelBottom, PanelRight } from "lucide-react";
-import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import { getPhotosByBoreholeId, uploadPhoto } from "../../../api/fetchApiV2.ts";
+import { BoreholeAttachment, Photo } from "../../../api/apiInterfaces.ts";
+import { getPhotoImageData, getPhotosByBoreholeId, uploadPhoto } from "../../../api/fetchApiV2.ts";
 import { getFiles, uploadFile } from "../../../api/file/file.ts";
-import { BoreholeFile, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
+import { BoreholeFile, File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
@@ -59,11 +59,15 @@ const LabelingPanel: FC = () => {
   const { panelPosition, setPanelPosition, extractionState, fileInfo, cancelRequest, panelTab } = useLabelingContext();
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [files, setFiles] = useState<BoreholeAttachment[]>();
-  const [selectedFile, setSelectedFile] = useState<BoreholeAttachment>();
+  const [selectedAttachment, setSelectedAttachment] = useState<BoreholeAttachment>();
   const [activePage, setActivePage] = useState<number>(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
+
   const expectedFileFormat = labelingFileFormat[panelTab];
+  const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
+  const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
+  const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -104,10 +108,10 @@ const LabelingPanel: FC = () => {
       try {
         if (panelTab === PanelTab.profile) {
           const fileResponse = await uploadFile<BoreholeFile>(Number(boreholeId), file);
-          setSelectedFile(fileResponse.file);
+          setSelectedAttachment(fileResponse.file);
         } else {
           const photoResponse = await uploadPhoto(Number(boreholeId), file);
-          setSelectedFile(photoResponse);
+          setSelectedAttachment(photoResponse);
         }
         loadFiles();
       } catch (error) {
@@ -117,12 +121,19 @@ const LabelingPanel: FC = () => {
     [boreholeId, loadFiles, panelTab, showAlert, t],
   );
 
+  const loadSelectedPhoto = useCallback(async () => {
+    if (selectedPhoto) {
+      return await getPhotoImageData(selectedPhoto.id);
+    }
+    return null;
+  }, [selectedPhoto]);
+
   useEffect(() => {
     loadFiles();
   }, [loadFiles]);
 
   useEffect(() => {
-    setSelectedFile(undefined);
+    setSelectedAttachment(undefined);
     setActivePage(1);
   }, [panelTab]);
 
@@ -140,8 +151,8 @@ const LabelingPanel: FC = () => {
       }}
       data-cy="labeling-panel">
       <LabelingHeader
-        selectedFile={selectedFile}
-        setSelectedFile={setSelectedFile}
+        selectedAttachment={selectedAttachment}
+        setSelectedAttachment={setSelectedAttachment}
         setActivePage={setActivePage}
         files={files}
         fileInputRef={fileInputRef}
@@ -183,11 +194,11 @@ const LabelingPanel: FC = () => {
             sx={labelingButtonStyles}
           />
         )}
-        {panelTab === PanelTab.photo && selectedFile && files && (
+        {panelTab === PanelTab.photo && selectedPhoto && files && (
           <PageSelection
             count={files.length}
-            activePage={files.indexOf(selectedFile) + 1}
-            setActivePage={page => setSelectedFile(files[page - 1])}
+            activePage={files.indexOf(selectedPhoto) + 1}
+            setActivePage={page => setSelectedAttachment(files[page - 1])}
             sx={labelingButtonStyles}
           />
         )}
@@ -208,7 +219,7 @@ const LabelingPanel: FC = () => {
           </ToggleButton>
         </ToggleButtonGroup>
       </Stack>
-      {selectedFile ? (
+      {selectedAttachment ? (
         <Box sx={{ height: "100%", width: "100%", position: "relative" }}>
           <FloatingExtractionFeedback
             isExtractionLoading={isExtractionLoading}
@@ -227,7 +238,7 @@ const LabelingPanel: FC = () => {
               closeAlert={closeAlert}
             />
           ) : (
-            <LabelingView fileInfo={undefined} loadImage={async () => null} />
+            <LabelingView fileName={selectedPhoto?.nameUuid} loadImage={loadSelectedPhoto} />
           )}
         </Box>
       ) : (
@@ -235,7 +246,7 @@ const LabelingPanel: FC = () => {
           activeTab={panelTab}
           isLoadingFiles={isLoadingFiles}
           files={files}
-          setSelectedFile={setSelectedFile}
+          setSelectedFile={setSelectedAttachment}
           addFile={addFile}
           showAlert={showAlert}
         />

@@ -201,6 +201,7 @@
   "errorGapSolution_fillWithUndefined": "Fill gap with 'undefined' layer",
   "errorHowToResolve": "How should this issue be resolved?",
   "errorInvalidEntry": "Invalid entry",
+  "errorLoadingImage": "An error occured while loading the image.",
   "errorLocked": "Borehole locked by {{user}}",
   "errorMissingBedrock": "Missing top bedrock depth",
   "errorMissingBedrockSolution": "Take the top bedrock depth automatically from the borehole data",

@@ -201,6 +201,7 @@
   "errorGapSolution_fillWithUndefined": "Remplir la lacune avec une 'strate non définie'",
   "errorHowToResolve": "Comment cette erreur doit-elle est résolue?",
   "errorInvalidEntry": "Entrée invalide",
+  "errorLoadingImage": "Une erreur s'est produite lors du chargement de l'image.",
   "errorLocked": "Modification en cours par l'utilisateur {{user}}",
   "errorMissingBedrock": "La profondeur du toit du rocher manque",
   "errorMissingBedrockSolution": "Reprendre automatiquement la profondeur du toit du rocher à partir de la page des données de forage",

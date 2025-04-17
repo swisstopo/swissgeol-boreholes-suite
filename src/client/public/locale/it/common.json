@@ -201,6 +201,7 @@
   "errorGapSolution_fillWithUndefined": "Riempire la lacuna con uno 'strato non definito'",
   "errorHowToResolve": "Come si può risolvere questo errore?",
   "errorInvalidEntry": "Voce non valida",
+  "errorLoadingImage": "Si è verificato un errore durante il caricamento dell'immagine.",
   "errorLocked": "Modifica della perforazione in corso da parte di {{user}}",
   "errorMissingBedrock": "Manca la profondità del substrato roccioso",
   "errorMissingBedrockSolution": "Crea automaticamente la profondità del substrato roccioso attingendo dai dati inseriti della perforazione",

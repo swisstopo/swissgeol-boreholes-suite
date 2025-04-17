@@ -265,7 +265,12 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
 
   return (
     <>
-      <LabelingView fileInfo={fileInfo} loadImage={loadImageFromApi} onMapInitialized={onMapInitialized} />
+      <LabelingView
+        fileName={fileInfo?.fileName}
+        imageSize={fileInfo}
+        loadImage={loadImageFromApi}
+        onMapInitialized={onMapInitialized}
+      />
       <Box
         data-cy="labeling-draw-tooltip"
         ref={tooltipRef}

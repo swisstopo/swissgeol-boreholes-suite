@@ -162,6 +162,31 @@ public class PhotoControllerTest
     }
 
     [TestMethod]
+    public async Task GetImage()
+    {
+        var photo = await CreatePhotoAsync();
+
+        var response = await controller.GetImage(photo.Id);
+        Assert.IsInstanceOfType<FileResult>(response);
+
+        var fileResult = (FileResult)response;
+        Assert.AreEqual("image/tiff", fileResult.ContentType);
+    }
+
+    [TestMethod]
+    public async Task GetImageFailsForUserWithInsufficientPermissions()
+    {
+        boreholeLockServiceMock
+            .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
+            .ReturnsAsync(false);
+
+        var photo = await CreatePhotoAsync();
+
+        var response = await controller.GetImage(photo.Id);
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
     public async Task ExportSinglePhoto()
     {
         var photo = await CreatePhotoAsync();

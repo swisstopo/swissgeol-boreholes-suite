@@ -27,12 +27,12 @@ const DescriptionBox = styled(Box)(({ theme }) => ({
 }));
 
 export const LabelingHeader: FC<{
-  selectedFile: BoreholeAttachment | undefined;
-  setSelectedFile: (file: BoreholeAttachment | undefined) => void;
+  selectedAttachment: BoreholeAttachment | undefined;
+  setSelectedAttachment: (file: BoreholeAttachment | undefined) => void;
   setActivePage: (page: number) => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
   files?: BoreholeAttachment[];
-}> = ({ selectedFile, setSelectedFile, setActivePage, fileInputRef, files }) => {
+}> = ({ selectedAttachment, setSelectedAttachment, setActivePage, fileInputRef, files }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(DetailContext);
   const { panelTab, setPanelTab } = useContext(LabelingContext);
@@ -71,17 +71,17 @@ export const LabelingHeader: FC<{
           {t("photo")}
         </ToggleButton>
       </ToggleButtonGroup>
-      {selectedFile && (
+      {selectedAttachment && (
         <Stack direction="row" gap={1}>
           {panelTab === PanelTab.photo && <DescriptionBox>{t("depthMD")}</DescriptionBox>}
           <ButtonSelect
             fieldName="labeling-file"
             items={fileSelectionItems}
-            selectedItem={{ key: selectedFile?.id, value: getDisplayName(selectedFile) }}
+            selectedItem={{ key: selectedAttachment?.id, value: getDisplayName(selectedAttachment) }}
             onItemSelected={item => {
               setActivePage(1);
               if (item.key === -1) handleFileInputClick();
-              else setSelectedFile(files?.find(file => file.id === item.key));
+              else setSelectedAttachment(files?.find(file => file.id === item.key));
             }}
             sx={labelingButtonStyles}
           />

@@ -201,6 +201,7 @@
   "errorGapSolution_fillWithUndefined": "Lücke mit 'nicht definierter Schicht' füllen",
   "errorHowToResolve": "Wie soll dieser Fehler behoben werden?",
   "errorInvalidEntry": "Ungültige Eingabe",
+  "errorLoadingImage": "Beim Laden des Bildes ist ein Fehler aufgetreten.",
   "errorLocked": "Bohrung durch den {{user}} gesperrt",
   "errorMissingBedrock": "Tiefe Top Fels fehlt",
   "errorMissingBedrockSolution": "Tiefe Top Fels automatisch aus der Bohrdaten übernehmen",

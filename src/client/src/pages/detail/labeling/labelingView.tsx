@@ -1,4 +1,5 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 import { View } from "ol";
 import { defaults as defaultControls } from "ol/control/defaults";
@@ -8,17 +9,48 @@ import ImageLayer from "ol/layer/Image";
 import Map from "ol/Map";
 import Projection from "ol/proj/Projection";
 import Static from "ol/source/ImageStatic";
+import { ApiError } from "../../../api/apiInterfaces.js";
+import { AlertContext } from "../../../components/alert/alertContext.js";
 import MapControls from "../../../components/buttons/mapControls.jsx";
 
+const blobToImage = (blob: Blob): Promise<HTMLImageElement> => {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = URL.createObjectURL(blob);
+  });
+};
+
+const createView = (extent?: Extent, currentView?: View): View => {
+  const projection = new Projection({
+    code: "image",
+    units: "pixels",
+    extent: extent,
+  });
+
+  return new View({
+    minResolution: 0.1,
+    zoom: currentView?.getZoom() ?? 0,
+    rotation: currentView?.getRotation() ?? 0,
+    projection: projection,
+    center: currentView?.getCenter() ?? (extent ? getCenter(extent) : undefined),
+    extent: extent,
+    showFullExtent: true,
+  });
+};
+
 interface LabelingViewProps {
-  fileInfo?: { fileName: string; width: number; height: number };
+  fileName?: string;
+  imageSize?: { width: number; height: number };
   loadImage: () => Promise<Blob | null>;
   onMapInitialized?: (map: Map) => void;
 }
 
-export const LabelingView: FC<LabelingViewProps> = ({ fileInfo, loadImage, onMapInitialized }) => {
+export const LabelingView: FC<LabelingViewProps> = ({ fileName, imageSize, loadImage, onMapInitialized }) => {
   const [map, setMap] = useState<Map>();
-  const [extent, setExtent] = useState<Extent>();
+  const { showAlert } = useContext(AlertContext);
+  const { t } = useTranslation();
 
   const zoomIn = () => {
     if (map) {
@@ -41,9 +73,12 @@ export const LabelingView: FC<LabelingViewProps> = ({ fileInfo, loadImage, onMap
   };
 
   const fitToExtent = () => {
-    if (map && extent) {
+    if (map) {
       const view = map.getView();
-      view.fit(extent, { size: map.getSize() });
+      const extent = view.getProjection().getExtent();
+      if (extent) {
+        view.fit(extent, { size: map.getSize() });
+      }
     }
   };
 
@@ -61,18 +96,14 @@ export const LabelingView: FC<LabelingViewProps> = ({ fileInfo, loadImage, onMap
   }, [map]);
 
   useEffect(() => {
-    if (fileInfo) {
+    if (fileName) {
       if (map) {
-        let currentFileName = "";
-        map
+        const imageLayer = map
           .getLayers()
           .getArray()
-          .forEach(layer => {
-            if (layer instanceof ImageLayer) {
-              currentFileName = layer.getSource().getUrl();
-            }
-          });
-        if (currentFileName === fileInfo.fileName) {
+          .find(layer => layer instanceof ImageLayer);
+        const currentFileName = imageLayer?.get("name");
+        if (currentFileName === fileName) {
           return;
         }
       }
@@ -82,27 +113,10 @@ export const LabelingView: FC<LabelingViewProps> = ({ fileInfo, loadImage, onMap
         setMap(undefined);
       }
 
-      const extent = [0, -fileInfo.height, fileInfo.width, 0];
-      setExtent(extent);
-      const projection = new Projection({
-        code: "image",
-        units: "pixels",
-        extent: extent,
-      });
+      const extent = imageSize ? [0, -imageSize.height, imageSize.width, 0] : undefined;
 
-      const imageLayer = new ImageLayer({
-        source: new Static({
-          url: fileInfo.fileName,
-          projection: projection,
-          imageExtent: extent,
-          imageLoadFunction: async image => {
-            const blob = await loadImage();
-            if (blob) {
-              (image.getImage() as HTMLImageElement).src = URL.createObjectURL(blob);
-            }
-          },
-        }),
-      });
+      const imageLayer = new ImageLayer();
+      imageLayer.set("name", fileName);
 
       const initMap = new Map({
         layers: [imageLayer],
@@ -112,14 +126,7 @@ export const LabelingView: FC<LabelingViewProps> = ({ fileInfo, loadImage, onMap
           zoom: false,
           rotate: false,
         }),
-        view: new View({
-          minResolution: 0.1,
-          zoom: 0,
-          projection: projection,
-          center: getCenter(extent),
-          extent: extent,
-          showFullExtent: true,
-        }),
+        view: createView(extent),
       });
       initMap
         .getInteractions()
@@ -130,8 +137,32 @@ export const LabelingView: FC<LabelingViewProps> = ({ fileInfo, loadImage, onMap
           }
         });
       setMap(initMap);
+
+      const loadImageSource = async () => {
+        const blob = await loadImage();
+        if (!blob) return;
+
+        const image = await blobToImage(blob);
+
+        const imageExtent = extent ?? [0, -image.naturalHeight, image.naturalWidth, 0];
+        initMap.setView(createView(imageExtent, initMap.getView()));
+
+        const source = new Static({
+          url: fileName,
+          imageExtent,
+          imageLoadFunction: img => {
+            (img.getImage() as HTMLImageElement).src = image.src;
+          },
+        });
+        imageLayer.setSource(source);
+      };
+
+      loadImageSource().catch(error => {
+        const message = error instanceof ApiError ? error.message : "errorLoadingImage";
+        showAlert(t(message), "error");
+      });
     }
-  }, [fileInfo, loadImage, map]);
+  }, [fileName, imageSize, loadImage, map, showAlert, t]);
 
   useEffect(() => {
     if (map) {
