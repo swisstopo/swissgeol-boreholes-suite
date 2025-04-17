@@ -1,5 +1,6 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using ImageMagick;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -106,7 +107,21 @@ public class PhotoController : ControllerBase
         if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(photo.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
 
         var imageData = await photoCloudService.GetObject(photo.NameUuid).ConfigureAwait(false);
-        return File(imageData, photo.FileType);
+
+        if (photo.FileType != "image/tiff")
+        {
+            return File(imageData, photo.FileType);
+        }
+
+        // Tiff files are not supported by any modern browser.
+        var memoryStream = new MemoryStream();
+
+        using var image = new MagickImage(imageData);
+        image.Format = MagickFormat.Jpeg;
+        await image.WriteAsync(memoryStream).ConfigureAwait(false);
+
+        memoryStream.Position = 0;
+        return File(memoryStream, "image/jpeg");
     }
 
     /// <summary>
