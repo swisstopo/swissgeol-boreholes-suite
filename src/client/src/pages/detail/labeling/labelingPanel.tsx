@@ -88,7 +88,11 @@ const LabelingPanel: FC = () => {
   }, [boreholeId, expectedFileFormat]);
 
   const loadPhotos = useCallback(async () => {
-    return await getPhotosByBoreholeId(Number(boreholeId));
+    const photos = await getPhotosByBoreholeId(Number(boreholeId));
+    if (photos.length > 0) {
+      setSelectedAttachment(photos[0]);
+    }
+    return photos;
   }, [boreholeId]);
 
   const loadFiles = useCallback(async () => {
