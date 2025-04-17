@@ -31,7 +31,7 @@ const createView = (extent?: Extent, currentView?: View): View => {
 
   return new View({
     minResolution: 0.1,
-    zoom: currentView?.getZoom() ?? 0,
+    zoom: 0,
     rotation: currentView?.getRotation() ?? 0,
     projection: projection,
     center: currentView?.getCenter() ?? (extent ? getCenter(extent) : undefined),
@@ -148,11 +148,8 @@ export const LabelingView: FC<LabelingViewProps> = ({ fileName, imageSize, loadI
         initMap.setView(createView(imageExtent, initMap.getView()));
 
         const source = new Static({
-          url: fileName,
+          url: image.src,
           imageExtent,
-          imageLoadFunction: img => {
-            (img.getImage() as HTMLImageElement).src = image.src;
-          },
         });
         imageLayer.setSource(source);
       };
