@@ -573,3 +573,11 @@ export const exportPhotos = async (photoIds: number[]): Promise<Response> => {
 export const deletePhotos = async (photoIds: number[]): Promise<Response> => {
   return await fetchApiV2(`photo?${photoIds.map(id => `photoIds=${id}`).join("&")}`, "DELETE");
 };
+
+export const getPhotoImageData = async (photoId: number): Promise<Blob> => {
+  const response = await fetchApiV2Base(`photo/image?photoId=${photoId}`, "GET");
+  if (!response.ok) {
+    throw new ApiError("errorLoadingImage", response.status);
+  }
+  return await response.blob();
+};

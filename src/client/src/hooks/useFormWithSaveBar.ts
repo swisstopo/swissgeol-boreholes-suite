@@ -2,7 +2,7 @@ import { ForwardedRef, useCallback, useEffect, useImperativeHandle } from "react
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
-import { useLabelingContext } from "../pages/detail/labeling/labelingInterfaces.tsx";
+import { useLabelingContext } from "../pages/detail/labeling/labelingContext.tsx";
 import { useBlockNavigation } from "./useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "./useSaveOnCtrlS.ts";
 

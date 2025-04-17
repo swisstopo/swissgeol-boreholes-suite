@@ -1,6 +1,5 @@
-import { useContext } from "react";
+import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
-import { LabelingContext } from "./labelingContext.tsx";
 
 export type ExtractionType = "text" | "number" | "coordinates";
 export enum ExtractionState {
@@ -46,6 +45,11 @@ export type ExtractionResponse = {
 
 export type PanelPosition = "right" | "bottom";
 
+export enum PanelTab {
+  profile = "profile",
+  photo = "photo",
+}
+
 export interface LabelingContextInterface {
   panelPosition: PanelPosition;
   setPanelPosition: (position: PanelPosition) => void;
@@ -55,8 +59,22 @@ export interface LabelingContextInterface {
   setExtractionObject: (extractionObject: ExtractionObject | undefined) => void;
   extractionState?: ExtractionState;
   setExtractionState: (extractionState: ExtractionState) => void;
+  fileInfo?: DataExtractionResponse;
+  setFileInfo: (fileInfo: DataExtractionResponse) => void;
+  setAbortController: (abortController: AbortController | undefined) => void;
+  cancelRequest: () => void;
+  panelTab: PanelTab;
+  setPanelTab: (panelTab: PanelTab) => void;
 }
 
-export const labelingFileFormat = "application/pdf";
+export const labelingFileFormat: Record<PanelTab, string> = {
+  [PanelTab.profile]: "application/pdf",
+  [PanelTab.photo]: "image/*",
+};
 
-export const useLabelingContext = () => useContext(LabelingContext);
+export const matchesFileFormat = (expectedFormat: string, format: string) => {
+  if (expectedFormat.endsWith("*")) {
+    return format.startsWith(expectedFormat.slice(0, -1));
+  }
+  return format === expectedFormat;
+};
