@@ -52,8 +52,12 @@ public class SyncBoreholesTaskTest
         Assert.IsTrue(syncedBoreholes.ValidateCasingReferences());
 
         // Validate files. File details are already asserted by comparing serialized JSON output.
-        Assert.AreEqual(3, originalBoreholes.Select(b => b.Files).Count());
-        Assert.AreEqual(3, syncedBoreholes.Select(b => b.Files).Count());
+        Assert.AreEqual(2, originalBoreholes.SelectMany(b => b.BoreholeFiles ?? Array.Empty<BoreholeFile>()).Count());
+        Assert.AreEqual(2, syncedBoreholes.SelectMany(b => b.BoreholeFiles ?? Array.Empty<BoreholeFile>()).Count());
+
+        // Validate photos. Photo details are already asserted by comparing serialized JSON output.
+        Assert.AreEqual(2, originalBoreholes.SelectMany(b => b.Photos ?? Array.Empty<Photo>()).Count());
+        Assert.AreEqual(2, syncedBoreholes.SelectMany(b => b.Photos ?? Array.Empty<Photo>()).Count());
 
         // Validate workgroup
         foreach (var syncedBorehole in syncedBoreholes)

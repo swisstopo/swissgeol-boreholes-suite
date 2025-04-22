@@ -1,5 +1,6 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using ImageMagick;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -80,11 +81,43 @@ public class PhotoController : ControllerBase
 
         // Get all photos that are linked to the borehole.
         return await context.Photos
-            .Include(bp => bp.CreatedBy)
-            .Where(bp => bp.BoreholeId == boreholeId)
+            .Include(p => p.CreatedBy)
+            .Where(p => p.BoreholeId == boreholeId)
+            .OrderBy(p => p.FromDepth)
             .AsNoTracking()
             .ToListAsync()
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Returns the image data for the specified <see cref="Photo"/>.
+    /// </summary>
+    /// <param name="photoId">The id of the photo.</param>
+    /// <returns>The image data of the photo.</returns>
+    [HttpGet("image")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> GetImage([Range(1, int.MaxValue)] int photoId)
+    {
+        var photo = await context.Photos
+            .FirstOrDefaultAsync(p => p.Id == photoId)
+            .ConfigureAwait(false);
+
+        if (photo == null) return NotFound();
+
+        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(photo.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+
+        var imageData = await photoCloudService.GetObject(photo.NameUuid).ConfigureAwait(false);
+
+        if (photo.FileType != "image/tiff")
+        {
+            return File(imageData, photo.FileType);
+        }
+
+        // Tiff files are not supported by any modern browser.
+        using var image = new MagickImage(imageData);
+        image.Format = MagickFormat.Jpeg;
+
+        return File(image.ToByteArray(), "image/jpeg");
     }
 
     /// <summary>

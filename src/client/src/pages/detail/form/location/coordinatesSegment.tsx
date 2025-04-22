@@ -11,7 +11,8 @@ import {
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { DetailContext } from "../../detailContext.tsx";
-import { Coordinate, ExtractionState, useLabelingContext } from "../../labeling/labelingInterfaces";
+import { useLabelingContext } from "../../labeling/labelingContext.tsx";
+import { Coordinate, ExtractionState } from "../../labeling/labelingInterfaces";
 import { boundingBox, referenceSystems } from "./coordinateSegmentConstants";
 import {
   Coordinates,

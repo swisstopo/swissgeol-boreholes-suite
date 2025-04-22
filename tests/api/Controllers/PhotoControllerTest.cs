@@ -162,6 +162,55 @@ public class PhotoControllerTest
     }
 
     [TestMethod]
+    public async Task GetImage()
+    {
+        var photo = await CreatePhotoAsync();
+        photo.FileType = "image/png";
+        await context.SaveChangesAsync();
+
+        var response = await controller.GetImage(photo.Id);
+        Assert.IsInstanceOfType<FileResult>(response);
+
+        var fileResult = (FileResult)response;
+        Assert.AreEqual("image/png", fileResult.ContentType);
+    }
+
+    [TestMethod]
+    [DeploymentItem("TestData/image.tif")]
+    public async Task GetImageConvertsTiffToJpeg()
+    {
+        var tiffContent = System.IO.File.ReadAllBytes("image.tif");
+        s3ClientMock
+            .Setup(x => x.GetObjectAsync(It.IsAny<GetObjectRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetObjectResponse
+            {
+                ResponseStream = new MemoryStream(tiffContent),
+            });
+
+        var photo = await CreatePhotoAsync();
+        Assert.AreEqual("image/tiff", photo.FileType);
+
+        var response = await controller.GetImage(photo.Id);
+        Assert.IsInstanceOfType<FileResult>(response);
+
+        var fileResult = (FileResult)response;
+        Assert.AreEqual("image/jpeg", fileResult.ContentType);
+    }
+
+    [TestMethod]
+    public async Task GetImageFailsForUserWithInsufficientPermissions()
+    {
+        boreholeLockServiceMock
+            .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
+            .ReturnsAsync(false);
+
+        var photo = await CreatePhotoAsync();
+
+        var response = await controller.GetImage(photo.Id);
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
     public async Task ExportSinglePhoto()
     {
         var photo = await CreatePhotoAsync();
