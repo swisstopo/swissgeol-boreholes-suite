@@ -17,8 +17,7 @@ public class BoreholePermissionServiceTest
     private const int EditorUserId = 2;
     private const int DefaultWorkgroupId = 1;
 
-    private readonly DateTime mockNow = new DateTime(2025, 4, 14, 16, 58, 24);
-    private Mock<TimeProvider> timeProviderMock;
+    private readonly DateTime mockNow = new DateTime(2025, 4, 14, 16, 58, 24, DateTimeKind.Utc);
 
     private BoreholePermissionService boreholePermissionService;
     private BdmsContext context;
@@ -28,7 +27,7 @@ public class BoreholePermissionServiceTest
     {
         context = ContextFactory.GetTestContext();
         var loggerMock = new Mock<ILogger<BoreholePermissionService>>();
-        timeProviderMock = new Mock<TimeProvider>();
+        var timeProviderMock = new Mock<TimeProvider>();
         timeProviderMock.Setup(x => x.GetUtcNow()).Returns(mockNow);
 
         boreholePermissionService = new BoreholePermissionService(context, loggerMock.Object, timeProviderMock.Object);

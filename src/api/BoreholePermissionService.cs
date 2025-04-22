@@ -57,7 +57,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
             && HasEditPermission(user, borehole);
     }
 
-    private bool HasUserSpecificRoleOnWorkgroup(User user, int? workgroupId, Role expectedRole)
+    private static bool HasUserSpecificRoleOnWorkgroup(User user, int? workgroupId, Role expectedRole)
     {
         var workgroupRoles = user.WorkgroupRoles ?? Enumerable.Empty<UserWorkgroupRole>();
         var hasExpectedWorkgroupRole = workgroupRoles.Any(x => x.WorkgroupId == workgroupId && x.Role == expectedRole);
@@ -65,7 +65,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         return hasExpectedWorkgroupRole;
     }
 
-    private bool HasUserAnyRoleOnWorkgroup(User user, int? workgroupId)
+    private static bool HasUserAnyRoleOnWorkgroup(User user, int? workgroupId)
     {
         var userWorkgroupRoles = user.WorkgroupRoles ?? Enumerable.Empty<UserWorkgroupRole>();
         var hasAnyRoleOnWorkgroup = userWorkgroupRoles.Any(x => x.WorkgroupId == workgroupId);
