@@ -14,7 +14,7 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
 {
     private readonly BdmsContext context;
     private readonly ILogger<BoreholeControllerBase<TEntity>> logger;
-    private readonly IBoreholeLockService boreholeLockService;
+    private readonly IBoreholePermissionService boreholePermissionService;
 
     /// <summary>
     /// Gets the <see cref="BdmsContext"/> used by the controller.
@@ -27,15 +27,15 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
     protected ILogger<BoreholeControllerBase<TEntity>> Logger => logger;
 
     /// <summary>
-    /// Gets the <see cref="IBoreholeLockService"/> used by the controller.
+    /// Gets the <see cref="IBoreholePermissionService"/> used by the controller.
     /// </summary>
-    protected IBoreholeLockService BoreholeLockService => boreholeLockService;
+    protected IBoreholePermissionService BoreholePermissionService => boreholePermissionService;
 
-    protected BoreholeControllerBase(BdmsContext context, ILogger<BoreholeControllerBase<TEntity>> logger, IBoreholeLockService boreholeLockService)
+    protected BoreholeControllerBase(BdmsContext context, ILogger<BoreholeControllerBase<TEntity>> logger, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
         this.logger = logger;
-        this.boreholeLockService = boreholeLockService;
+        this.boreholePermissionService = boreholePermissionService;
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
     {
         // Check if associated borehole is locked
         var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
-        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.");
         }
@@ -77,7 +77,7 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
 
         // Check if associated borehole is locked
         var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
-        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.");
         }
@@ -109,7 +109,7 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
 
         // Check if associated borehole is locked
         var boreholeId = await GetBoreholeId((TEntity)entityToDelete).ConfigureAwait(false);
-        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.");
         }

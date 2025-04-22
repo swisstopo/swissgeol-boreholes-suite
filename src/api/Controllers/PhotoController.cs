@@ -16,14 +16,14 @@ public class PhotoController : ControllerBase
     private const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
     private readonly BdmsContext context;
     private readonly ILogger logger;
-    private readonly IBoreholeLockService boreholeLockService;
+    private readonly IBoreholePermissionService boreholePermissionService;
     private readonly PhotoCloudService photoCloudService;
 
-    public PhotoController(BdmsContext context, ILogger<PhotoController> logger, IBoreholeLockService boreholeLockService, PhotoCloudService photoCloudService)
+    public PhotoController(BdmsContext context, ILogger<PhotoController> logger, IBoreholePermissionService boreholePermissionService, PhotoCloudService photoCloudService)
     {
         this.context = context;
         this.logger = logger;
-        this.boreholeLockService = boreholeLockService;
+        this.boreholePermissionService = boreholePermissionService;
         this.photoCloudService = photoCloudService;
     }
 
@@ -39,7 +39,7 @@ public class PhotoController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<IActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
     {
-        if (await boreholeLockService.IsUserLackingPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         if (file == null || file.Length == 0) return BadRequest("No file provided.");
         if (file.Length > MaxFileSize) return BadRequest($"File size exceeds maximum file size of {MaxFileSize} bytes.");
@@ -77,7 +77,7 @@ public class PhotoController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<Photo>>> GetAllOfBorehole([Required, Range(1, int.MaxValue)] int boreholeId)
     {
-        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         // Get all photos that are linked to the borehole.
         return await context.Photos
@@ -104,7 +104,7 @@ public class PhotoController : ControllerBase
 
         if (photo == null) return NotFound();
 
-        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(photo.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), photo.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
         var imageData = await photoCloudService.GetObject(photo.NameUuid).ConfigureAwait(false);
 
@@ -143,7 +143,7 @@ public class PhotoController : ControllerBase
         if (boreholeIds.Count != 1) return BadRequest("Not all photos are attached to the same borehole.");
 
         var boreholeId = boreholeIds.Single();
-        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         if (photos.Count == 1)
         {
@@ -186,7 +186,7 @@ public class PhotoController : ControllerBase
         if (boreholeIds.Count != 1) return BadRequest("Not all photos are attached to the same borehole.");
 
         var boreholeId = boreholeIds.Single();
-        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
         {
             return BadRequest("The borehole is locked by another user or you are missing permissions.");
         }

@@ -15,15 +15,15 @@ public class BoreholeFileController : ControllerBase
     private readonly BdmsContext context;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
     private readonly ILogger logger;
-    private readonly IBoreholeLockService boreholeLockService;
+    private readonly IBoreholePermissionService boreholePermissionService;
 
-    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, BoreholeFileCloudService boreholeFileCloudService, IBoreholeLockService boreholeLockService)
+    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, BoreholeFileCloudService boreholeFileCloudService, IBoreholePermissionService boreholePermissionService)
         : base()
     {
         this.logger = logger;
         this.boreholeFileCloudService = boreholeFileCloudService;
         this.context = context;
-        this.boreholeLockService = boreholeLockService;
+        this.boreholePermissionService = boreholePermissionService;
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public class BoreholeFileController : ControllerBase
                 .ConfigureAwait(false);
 
             // Check if user has permission to view the borehole file.
-            if (await boreholeLockService.IsUserLackingPermissionsAsync(boreholeFile.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeFile.BoreholeId).ConfigureAwait(false))
             {
                 return Unauthorized("You are missing permissions to view the borehole file.");
             }
@@ -201,7 +201,7 @@ public class BoreholeFileController : ControllerBase
         if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
 
         // Check if associated borehole is locked or user has permissions
-        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
         {
             return BadRequest("The borehole is locked by another user or you are missing permissions.");
         }

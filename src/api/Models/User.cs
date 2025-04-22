@@ -76,12 +76,12 @@ public class User : IIdentifyable
     /// <summary>
     /// Gets the WorkgroupRoles.
     /// </summary>
-    public IEnumerable<UserWorkgroupRole>? WorkgroupRoles { get; }
+    public ICollection<UserWorkgroupRole> WorkgroupRoles { get; } = new List<UserWorkgroupRole>();
 
     /// <summary>
     /// Gets the TermsAccepted.
     /// </summary>
-    public IEnumerable<TermsAccepted>? TermsAccepted { get; }
+    public ICollection<TermsAccepted> TermsAccepted { get; } = new List<TermsAccepted>();
 
     /// <summary>
     /// Gets or sets whether this user can be deleted.
