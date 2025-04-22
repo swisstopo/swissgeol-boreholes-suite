@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Reflection;
 
 namespace BDMS;
 
@@ -41,22 +40,24 @@ public class BoreholePermissionServiceTest
 
     private static User GetEditorUser()
     {
-        var editor = new User { Name = "Editor", Id = EditorUserId };
-        SetUserWorkgroupRoles(editor, new List<UserWorkgroupRole>
+        var editor = new User
         {
-            new UserWorkgroupRole { WorkgroupId = DefaultWorkgroupId, Role = Role.Editor },
-        });
+            Name = "Editor",
+            Id = EditorUserId,
+            WorkgroupRoles = { new UserWorkgroupRole { WorkgroupId = DefaultWorkgroupId, Role = Role.Editor } },
+        };
 
         return editor;
     }
 
     private static User GetPublisherUser()
     {
-        var publisher = new User { Name = "Publisher", Id = 5 };
-        SetUserWorkgroupRoles(publisher, new List<UserWorkgroupRole>
+        var publisher = new User
         {
-            new UserWorkgroupRole { WorkgroupId = DefaultWorkgroupId, Role = Role.Publisher },
-        });
+            Name = "Publisher",
+            Id = 5,
+            WorkgroupRoles = { new UserWorkgroupRole { WorkgroupId = DefaultWorkgroupId, Role = Role.Publisher } },
+        };
 
         return publisher;
     }
@@ -65,11 +66,12 @@ public class BoreholePermissionServiceTest
 
     private static User GetOtherWorkgroupUser()
     {
-        var editor = new User { Name = "Editor from another Workgroup", Id = 70816 };
-        SetUserWorkgroupRoles(editor, new List<UserWorkgroupRole>
+        var editor = new User
         {
-            new UserWorkgroupRole { WorkgroupId = 613, Role = Role.Editor },
-        });
+            Name = "Editor from another Workgroup",
+            Id = 70816,
+            WorkgroupRoles = { new UserWorkgroupRole { WorkgroupId = 613, Role = Role.Editor } },
+        };
 
         return editor;
     }
@@ -303,7 +305,7 @@ public class BoreholePermissionServiceTest
     public void HasUserRoleOnWorkgroupNoWorkgroups()
     {
         var userWithoutWorkgroups = new User();
-        Assert.AreEqual(null, userWithoutWorkgroups.WorkgroupRoles);
+        Assert.AreEqual(0, userWithoutWorkgroups.WorkgroupRoles.Count);
 
         Assert.IsFalse(boreholePermissionService.HasUserRoleOnWorkgroup(userWithoutWorkgroups, 1, Role.Editor));
     }
@@ -311,11 +313,10 @@ public class BoreholePermissionServiceTest
     [TestMethod]
     public void HasUserRoleOnWorkgroupNotPartOfWorkgroup()
     {
-        var user = new User();
-        SetUserWorkgroupRoles(user, new List<UserWorkgroupRole>
+        var user = new User
         {
-            new UserWorkgroupRole { WorkgroupId = 2, Role = Role.Editor },
-        });
+            WorkgroupRoles = { new UserWorkgroupRole { WorkgroupId = 2, Role = Role.Editor } },
+        };
 
         Assert.IsFalse(boreholePermissionService.HasUserRoleOnWorkgroup(user, 1, Role.Editor));
     }
@@ -323,11 +324,10 @@ public class BoreholePermissionServiceTest
     [TestMethod]
     public void HasUserRoleOnWorkgroupWrongRole()
     {
-        var user = new User();
-        SetUserWorkgroupRoles(user, new List<UserWorkgroupRole>
+        var user = new User
         {
-            new UserWorkgroupRole { WorkgroupId = 1, Role = Role.View },
-        });
+            WorkgroupRoles = { new UserWorkgroupRole { WorkgroupId = 1, Role = Role.View } },
+        };
 
         Assert.IsFalse(boreholePermissionService.HasUserRoleOnWorkgroup(user, 1, Role.Editor));
     }
@@ -335,11 +335,10 @@ public class BoreholePermissionServiceTest
     [TestMethod]
     public void HasUserRoleOnWorkgroup()
     {
-        var user = new User();
-        SetUserWorkgroupRoles(user, new List<UserWorkgroupRole>
+        var user = new User
         {
-            new UserWorkgroupRole { WorkgroupId = 1, Role = Role.Editor },
-        });
+            WorkgroupRoles = { new UserWorkgroupRole { WorkgroupId = 1, Role = Role.Editor } },
+        };
 
         Assert.IsTrue(boreholePermissionService.HasUserRoleOnWorkgroup(user, 1, Role.Editor));
     }
@@ -356,12 +355,5 @@ public class BoreholePermissionServiceTest
     public async Task HasUserRoleOnWorkgroupAsync()
     {
         Assert.IsTrue(await boreholePermissionService.HasUserRoleOnWorkgroupAsync(AdminSubjectId, DefaultWorkgroupId, Role.Editor));
-    }
-
-    private static void SetUserWorkgroupRoles(User user, IEnumerable<UserWorkgroupRole> workgroupRoles)
-    {
-        // Use reflection to set the readonly property
-        var workgroupRolesField = typeof(User).GetField("<WorkgroupRoles>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
-        workgroupRolesField.SetValue(user, workgroupRoles);
     }
 }
