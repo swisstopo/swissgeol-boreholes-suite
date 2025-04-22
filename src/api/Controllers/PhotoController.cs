@@ -114,14 +114,10 @@ public class PhotoController : ControllerBase
         }
 
         // Tiff files are not supported by any modern browser.
-        var memoryStream = new MemoryStream();
-
         using var image = new MagickImage(imageData);
         image.Format = MagickFormat.Jpeg;
-        await image.WriteAsync(memoryStream).ConfigureAwait(false);
 
-        memoryStream.Position = 0;
-        return File(memoryStream, "image/jpeg");
+        return File(image.ToByteArray(), "image/jpeg");
     }
 
     /// <summary>
