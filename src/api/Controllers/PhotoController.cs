@@ -104,7 +104,7 @@ public class PhotoController : ControllerBase
 
         if (photo == null) return NotFound();
 
-        if (!await boreholeLockService.HasUserWorkgroupPermissionsAsync(photo.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false)) return Unauthorized();
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), photo.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
         var imageData = await photoCloudService.GetObject(photo.NameUuid).ConfigureAwait(false);
 

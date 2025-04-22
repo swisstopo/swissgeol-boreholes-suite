@@ -197,8 +197,8 @@ public class PhotoControllerTest
     [TestMethod]
     public async Task GetImageFailsForUserWithInsufficientPermissions()
     {
-        boreholeLockServiceMock
-            .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var photo = await CreatePhotoAsync();
