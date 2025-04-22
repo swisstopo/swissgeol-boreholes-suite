@@ -27,7 +27,7 @@ public class ImportController : ControllerBase
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
-    private readonly IBoreholeLockService boreholeLockService;
+    private readonly IBoreholePermissionService boreholePermissionService;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
 
     private static readonly JsonSerializerOptions jsonImportOptions = new()
@@ -41,14 +41,14 @@ public class ImportController : ControllerBase
         },
     };
 
-    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService, IBoreholeLockService boreholeLockService)
+    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
         this.logger = logger;
         this.locationService = locationService;
         this.coordinateService = coordinateService;
         this.boreholeFileCloudService = boreholeFileCloudService;
-        this.boreholeLockService = boreholeLockService;
+        this.boreholePermissionService = boreholePermissionService;
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadCsvFileAsync(int workgroupId, IFormFile boreholesFile)
     {
-        if (await boreholeLockService.IsUserLackingWorkgroupRoleAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
+        if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
         }
@@ -180,7 +180,7 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile boreholesFile)
     {
-        if (await boreholeLockService.IsUserLackingWorkgroupRoleAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
+        if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
         }
@@ -208,7 +208,7 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadZipFileAsync(int workgroupId, IFormFile boreholesFile)
     {
-        if (await boreholeLockService.IsUserLackingWorkgroupRoleAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
+        if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
         }

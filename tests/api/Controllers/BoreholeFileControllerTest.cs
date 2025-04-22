@@ -48,22 +48,26 @@ public class BoreholeFileControllerTest
         boreholeFileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
         boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, boreholeFileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(false);
-
-        boreholeLockServiceMock
-            .Setup(x => x.IsUserLackingPermissionsAsync(It.IsAny<int?>(), "sub_viewer"))
+        var boreholePermisssionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermisssionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
 
-        boreholeLockServiceMock
-            .Setup(x => x.IsUserLackingPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
+        boreholePermisssionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_viewer", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        boreholePermisssionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
+
+        boreholePermisssionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, boreholeFileCloudService, boreholeLockServiceMock.Object);
+        controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, boreholeFileCloudService, boreholePermisssionServiceMock.Object);
         controller.ControllerContext = GetControllerContextAdmin();
     }
 

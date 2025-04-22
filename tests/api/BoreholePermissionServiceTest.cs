@@ -1,0 +1,368 @@
+﻿using BDMS.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System.Reflection;
+
+namespace BDMS;
+
+[TestClass]
+public class BoreholePermissionServiceTest
+{
+    private const string AdminSubjectId = "sub_admin";
+    private const string EditorSubjectId = "sub_editor";
+    private const string ViewerSubjectId = "sub_viewer";
+    private const int AdminUserId = 1;
+    private const int EditorUserId = 2;
+    private const int DefaultWorkgroupId = 1;
+
+    private readonly DateTime mockNow = new DateTime(2025, 4, 14, 16, 58, 24);
+    private Mock<TimeProvider> timeProviderMock;
+
+    private BoreholePermissionService boreholePermissionService;
+    private BdmsContext context;
+
+    [TestInitialize]
+    public void TestInitialize()
+    {
+        context = ContextFactory.GetTestContext();
+        var loggerMock = new Mock<ILogger<BoreholePermissionService>>();
+        timeProviderMock = new Mock<TimeProvider>();
+        timeProviderMock.Setup(x => x.GetUtcNow()).Returns(mockNow);
+
+        boreholePermissionService = new BoreholePermissionService(context, loggerMock.Object, timeProviderMock.Object);
+    }
+
+    [TestCleanup]
+    public async Task TestCleanup()
+    {
+        await context.DisposeAsync();
+    }
+
+    private static User GetEditorUser()
+    {
+        var editor = new User { Name = "Editor", Id = EditorUserId };
+        SetUserWorkgroupRoles(editor, new List<UserWorkgroupRole>
+        {
+            new UserWorkgroupRole { WorkgroupId = DefaultWorkgroupId, Role = Role.Editor },
+        });
+
+        return editor;
+    }
+
+    private static User GetPublisherUser()
+    {
+        var publisher = new User { Name = "Publisher", Id = 5 };
+        SetUserWorkgroupRoles(publisher, new List<UserWorkgroupRole>
+        {
+            new UserWorkgroupRole { WorkgroupId = DefaultWorkgroupId, Role = Role.Publisher },
+        });
+
+        return publisher;
+    }
+
+    private static User GetAdminUser() => new User { Name = "Admin", IsAdmin = true };
+
+    private static User GetOtherWorkgroupUser()
+    {
+        var editor = new User { Name = "Editor from another Workgroup", Id = 70816 };
+        SetUserWorkgroupRoles(editor, new List<UserWorkgroupRole>
+        {
+            new UserWorkgroupRole { WorkgroupId = 613, Role = Role.Editor },
+        });
+
+        return editor;
+    }
+
+    [TestMethod]
+    public void BoreholeInEditing()
+    {
+        var borehole = new Borehole
+        {
+            Name = "Borehole in editing",
+            WorkgroupId = DefaultWorkgroupId,
+            Workflows = { new Workflow { Id = 1, Role = Role.Editor } },
+        };
+
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
+
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+    }
+
+    [TestMethod]
+    public void BoreholeInPublishing()
+    {
+        var borehole = new Borehole
+        {
+            Name = "Borehole in publication",
+            WorkgroupId = DefaultWorkgroupId,
+            Workflows =
+            {
+                new Workflow { Id = 1, Role = Role.Editor },
+                new Workflow { Id = 2, Role = Role.Controller },
+                new Workflow { Id = 3, Role = Role.Validator },
+                new Workflow { Id = 4, Role = Role.Publisher },
+            },
+        };
+
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
+
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+    }
+
+    [TestMethod]
+    public void BoreholeLocked()
+    {
+        var editor = GetEditorUser();
+
+        var editor2 = GetEditorUser();
+        editor2.Id = 42;
+
+        var borehole = new Borehole
+        {
+            Name = "Borehole locked by Editor",
+            WorkgroupId = DefaultWorkgroupId,
+            Workflows = { new Workflow { Id = 93298, Role = Role.Editor } },
+            Locked = mockNow.AddMinutes(-1),
+            LockedById = editor.Id,
+        };
+
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(editor, borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(editor2, borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
+
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(editor, borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(editor2, borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+    }
+
+    [TestMethod]
+    public void BoreholeLockExpired()
+    {
+        var borehole = new Borehole
+        {
+            Name = "Borehole locked by Admin a day ago",
+            WorkgroupId = DefaultWorkgroupId,
+            Workflows = { new Workflow { Id = 74028, Role = Role.Editor } },
+            Locked = mockNow.AddMinutes(-(BoreholePermissionService.LockTimeoutInMinutes + 1)),
+            LockedById = AdminUserId,
+        };
+
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
+
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+    }
+
+    [TestMethod]
+    public void BoreholeWithNullWorkflows()
+    {
+        var borehole = new Borehole
+        {
+            Name = "Borehole without workflows",
+            WorkgroupId = DefaultWorkgroupId,
+        };
+
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
+
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+    }
+
+    [TestMethod]
+    public void BoreholeWithWorkflowRestarted()
+    {
+        var borehole = new Borehole
+        {
+            Name = "Borehole where workflow was reset",
+            WorkgroupId = DefaultWorkgroupId,
+            Workflows =
+            {
+                new Workflow { Id = 1, Role = Role.Editor },
+                new Workflow { Id = 2, Role = Role.Controller },
+                new Workflow { Id = 3, Role = Role.Validator },
+                new Workflow { Id = 4, Role = Role.Publisher },
+                new Workflow { Id = 5, Role = Role.Editor },
+            },
+        };
+
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
+
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+    }
+
+    [TestMethod]
+    public void BoreholeWithoutWorkgroupId()
+    {
+        var borehole = new Borehole
+        {
+            Name = "Borehole without workgroupId",
+            Workflows = { new Workflow { Id = 25098, Role = Role.Editor } },
+        };
+
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanViewBorehole(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
+
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+    }
+
+    [TestMethod]
+    public async Task CanEditBoreholeAsyncWithUserNotSet()
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanEditBoreholeAsync(null, null));
+
+    [TestMethod]
+    public async Task CanEditBoreholeAsyncWithUnknownUser()
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanEditBoreholeAsync("NON-EXISTENT-NAME", null));
+
+    [TestMethod]
+    public async Task CanEditBoreholeAsyncWithUnknownBorehole()
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanEditBoreholeAsync(EditorSubjectId, null));
+
+    [TestMethod]
+    public async Task CanEditBoreholeAsync()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+        Assert.IsFalse(await boreholePermissionService.CanEditBoreholeAsync(ViewerSubjectId, borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task CanViewBoreholeAsyncWithUserNotSet()
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync(null, null));
+
+    [TestMethod]
+    public async Task CanViewBoreholeAsyncWithUnknownUser()
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync("NON-EXISTENT-NAME", null));
+
+    [TestMethod]
+    public async Task CanViewBoreholeAsyncWithUnknownBorehole()
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync(EditorSubjectId, null));
+
+    [TestMethod]
+    public async Task CanViewBoreholeAsync()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+        Assert.IsTrue(await boreholePermissionService.CanViewBoreholeAsync(ViewerSubjectId, borehole.Id));
+    }
+
+    [TestMethod]
+    public void HasUserRoleOnWorkgroupNullUser()
+    {
+        Assert.ThrowsException<NullReferenceException>(() => boreholePermissionService.HasUserRoleOnWorkgroup(null, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public void HasUserRoleOnWorkgroupNullWorkgroup()
+    {
+        Assert.IsFalse(boreholePermissionService.HasUserRoleOnWorkgroup(new User(), null, Role.Editor));
+    }
+
+    [TestMethod]
+    public void HasUserRoleOnWorkgroupNoWorkgroups()
+    {
+        var userWithoutWorkgroups = new User();
+        Assert.AreEqual(null, userWithoutWorkgroups.WorkgroupRoles);
+
+        Assert.IsFalse(boreholePermissionService.HasUserRoleOnWorkgroup(userWithoutWorkgroups, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public void HasUserRoleOnWorkgroupNotPartOfWorkgroup()
+    {
+        var user = new User();
+        SetUserWorkgroupRoles(user, new List<UserWorkgroupRole>
+        {
+            new UserWorkgroupRole { WorkgroupId = 2, Role = Role.Editor },
+        });
+
+        Assert.IsFalse(boreholePermissionService.HasUserRoleOnWorkgroup(user, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public void HasUserRoleOnWorkgroupWrongRole()
+    {
+        var user = new User();
+        SetUserWorkgroupRoles(user, new List<UserWorkgroupRole>
+        {
+            new UserWorkgroupRole { WorkgroupId = 1, Role = Role.View },
+        });
+
+        Assert.IsFalse(boreholePermissionService.HasUserRoleOnWorkgroup(user, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public void HasUserRoleOnWorkgroup()
+    {
+        var user = new User();
+        SetUserWorkgroupRoles(user, new List<UserWorkgroupRole>
+        {
+            new UserWorkgroupRole { WorkgroupId = 1, Role = Role.Editor },
+        });
+
+        Assert.IsTrue(boreholePermissionService.HasUserRoleOnWorkgroup(user, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public void HasUserRoleOnWorkgroupAdminUser()
+    {
+        var user = new User { IsAdmin = true };
+
+        Assert.IsTrue(boreholePermissionService.HasUserRoleOnWorkgroup(user, 1, Role.Editor));
+    }
+
+    [TestMethod]
+    public async Task HasUserRoleOnWorkgroupAsync()
+    {
+        Assert.IsTrue(await boreholePermissionService.HasUserRoleOnWorkgroupAsync(AdminSubjectId, DefaultWorkgroupId, Role.Editor));
+    }
+
+    private static void SetUserWorkgroupRoles(User user, IEnumerable<UserWorkgroupRole> workgroupRoles)
+    {
+        // Use reflection to set the readonly property
+        var workgroupRolesField = typeof(User).GetField("<WorkgroupRoles>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+        workgroupRolesField.SetValue(user, workgroupRoles);
+    }
+}

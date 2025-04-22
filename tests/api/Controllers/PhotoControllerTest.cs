@@ -20,7 +20,7 @@ public class PhotoControllerTest
     private User adminUser;
     private Mock<IAmazonS3> s3ClientMock;
     private PhotoCloudService photoCloudService;
-    private Mock<IBoreholeLockService> boreholeLockServiceMock;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private PhotoController controller;
 
     [TestInitialize]
@@ -52,19 +52,16 @@ public class PhotoControllerTest
 
         photoCloudService = new PhotoCloudService(loggerMock.Object, s3ClientMock.Object, configuration, contextAccessorMock.Object, context);
 
-        boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsUserLackingPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
-            .ReturnsAsync(false);
-        boreholeLockServiceMock
-            .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(true);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), "sub_admin"))
-            .ReturnsAsync(false);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(true);
 
         var controllerLoggerMock = new Mock<ILogger<PhotoController>>();
-        controller = new PhotoController(context, controllerLoggerMock.Object, boreholeLockServiceMock.Object, photoCloudService);
+        controller = new PhotoController(context, controllerLoggerMock.Object, boreholePermissionServiceMock.Object, photoCloudService);
         controller.ControllerContext = GetControllerContextAdmin();
     }
 
@@ -126,9 +123,9 @@ public class PhotoControllerTest
     [TestMethod]
     public async Task UploadFailsForUserWithInsufficientPermissions()
     {
-        boreholeLockServiceMock
-            .Setup(x => x.IsUserLackingPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
 
         var fileName = $"{Guid.NewGuid()}_123.00-456.50_all.tif";
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
@@ -151,8 +148,8 @@ public class PhotoControllerTest
     [TestMethod]
     public async Task GetAllFailsForUserWithInsufficientPermissions()
     {
-        boreholeLockServiceMock
-            .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
@@ -205,8 +202,8 @@ public class PhotoControllerTest
     [TestMethod]
     public async Task ExportFailsForUserWithInsufficientPermissions()
     {
-        boreholeLockServiceMock
-            .Setup(x => x.HasUserWorkgroupPermissionsAsync(It.IsAny<int?>(), "sub_admin"))
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var photo = await CreatePhotoAsync();
@@ -245,9 +242,9 @@ public class PhotoControllerTest
     [TestMethod]
     public async Task DeleteFailsForLockedBorehole()
     {
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), "sub_admin"))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
 
         var photo = await CreatePhotoAsync();
 
