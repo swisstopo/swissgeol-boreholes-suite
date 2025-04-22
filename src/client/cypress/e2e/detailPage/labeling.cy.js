@@ -147,6 +147,8 @@ function assertClipboardContent(expectedText) {
 }
 
 function moveMouseOntoMap() {
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(1000);
   cy.get('[data-cy="labeling-panel"]').realMouseMove(400, 400, { position: "topLeft" });
 }
 
