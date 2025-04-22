@@ -48,29 +48,27 @@ const BottomBar = ({
 
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
     setCopyPromptOpen(true);
-    if (!copyPromptOpen) {
-      showPrompt(
-        t("selectWorkgroupToCreateCopy"),
-        [
-          {
-            label: t("cancel"),
-          },
-          {
-            label: "copy",
-            icon: <CopyIcon />,
-            variant: "contained",
-            action: onCopyBorehole,
-          },
-        ],
-        <WorkgroupSelect
-          workgroupId={workgroup}
-          enabledWorkgroups={enabledWorkgroups}
-          setWorkgroupId={setWorkgroup}
-          sx={{ pt: 6, pb: 3 }}
-        />,
-      );
-    }
-  }, [copyPromptOpen, enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, t, workgroup]);
+    showPrompt(
+      t("selectWorkgroupToCreateCopy"),
+      [
+        {
+          label: t("cancel"),
+        },
+        {
+          label: "copy",
+          icon: <CopyIcon />,
+          variant: "contained",
+          action: onCopyBorehole,
+        },
+      ],
+      <WorkgroupSelect
+        workgroupId={workgroup}
+        enabledWorkgroups={enabledWorkgroups}
+        setWorkgroupId={setWorkgroup}
+        sx={{ pt: 6, pb: 3 }}
+      />,
+    );
+  }, [enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, t, workgroup]);
 
   //Ensures prompt content with the WorkgroupSelect is updated when a workgroup is selected.
   useEffect(() => {
