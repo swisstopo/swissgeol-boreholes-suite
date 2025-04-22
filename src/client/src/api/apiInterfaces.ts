@@ -1,3 +1,5 @@
+import { File } from "./file/fileInterfaces";
+
 export class ApiError extends Error {
   status?: number;
 
@@ -153,3 +155,5 @@ export interface Photo {
   updatedBy?: User;
   updated?: Date | string;
 }
+
+export type BoreholeAttachment = File | Photo;

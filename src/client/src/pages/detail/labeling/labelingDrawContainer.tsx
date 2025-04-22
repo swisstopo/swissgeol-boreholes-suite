@@ -1,26 +1,22 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
-import { MapBrowserEvent, View } from "ol";
-import { defaults as defaultControls } from "ol/control/defaults";
-import { containsCoordinate, Extent, getCenter } from "ol/extent";
+import { MapBrowserEvent } from "ol";
+import { containsCoordinate, getCenter } from "ol/extent";
 import Feature from "ol/Feature";
 import { Geometry } from "ol/geom";
 import Polygon, { fromExtent } from "ol/geom/Polygon";
-import { DragBox, DragRotate, PinchRotate } from "ol/interaction";
+import { DragBox } from "ol/interaction";
 import BaseLayer from "ol/layer/Base";
-import ImageLayer from "ol/layer/Image";
 import VectorLayer from "ol/layer/Vector";
 import Map from "ol/Map";
-import Projection from "ol/proj/Projection";
-import Static from "ol/source/ImageStatic";
 import VectorSource from "ol/source/Vector";
 import { Fill, Stroke, Style } from "ol/style";
 import { loadImage } from "../../../api/file/file.ts";
 import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
-import MapControls from "../../../components/buttons/mapControls";
 import { ExtractionBoundingBox, ExtractionType } from "./labelingInterfaces.tsx";
+import { LabelingView } from "./labelingView.tsx";
 
 const drawingStyle = () =>
   new Style({
@@ -59,43 +55,12 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
   extractionType,
 }) => {
   const { t } = useTranslation();
-  const [map, setMap] = useState<Map>();
-  const [extent, setExtent] = useState<Extent>();
+  const mapRef = useRef<Map>();
   const tooltipRef = useRef<HTMLDivElement>();
-  const zoomIn = () => {
-    if (map) {
-      const view = map.getView();
-      const zoom = view.getZoom();
-      if (zoom) {
-        view.setZoom(zoom + 1);
-      }
-    }
-  };
 
-  const zoomOut = () => {
-    if (map) {
-      const view = map.getView();
-      const zoom = view.getZoom();
-      if (zoom) {
-        view.setZoom(zoom - 1);
-      }
-    }
-  };
-
-  const fitToExtent = () => {
-    if (map && extent) {
-      const view = map.getView();
-      view.fit(extent, { size: map.getSize() });
-    }
-  };
-
-  const rotateImage = () => {
-    if (map) {
-      const view = map.getView();
-      const rotation = view.getRotation();
-      view.setRotation(rotation + Math.PI / 2);
-    }
-  };
+  const loadImageFromApi = useCallback(async () => {
+    return fileInfo ? await loadImage(fileInfo.fileName) : null;
+  }, [fileInfo]);
 
   const updateTooltipPosition = useCallback((x: number, y: number) => {
     if (tooltipRef?.current) {
@@ -165,17 +130,13 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
     return drawingLayer?.getSource() as VectorSource | undefined;
   };
 
-  useEffect(() => {
-    // @ts-expect-error - Attach map object to window to make it accessible for E2E testing
-    window.labelingImage = map;
-  }, [map]);
-
   // Initially move tooltip out of view, to prevent wrong positioning when clicking and before pointermove event
   useEffect(() => {
     updateTooltipPosition(0, -10000);
   }, [drawTooltipLabel, updateTooltipPosition]);
 
   useEffect(() => {
+    const map = mapRef.current;
     if (map && drawTooltipLabel) {
       const layers = map.getLayers().getArray();
 
@@ -199,11 +160,11 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
         const dragBox = new DragBox();
         dragBox.on("boxstart", () => {
           if (tooltipRef?.current) {
-            tmpMap.un("pointermove", onPointerMove);
+            map.un("pointermove", onPointerMove);
             tooltipRef.current.style.visibility = "hidden";
             tooltipRef.current.innerHTML = "";
-            tmpMap.getTargetElement().removeEventListener("mouseleave", handleMouseLeave);
-            tmpMap.getTargetElement().removeEventListener("mouseenter", handleMouseEnter);
+            map.getTargetElement().removeEventListener("mouseleave", handleMouseLeave);
+            map.getTargetElement().removeEventListener("mouseenter", handleMouseEnter);
           }
           if (extractionType === "text") {
             // Add all transparent bounding boxes to map once the selection starts
@@ -231,83 +192,39 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
             geometry: fromExtent(dragBox.getGeometry().getExtent()),
           });
           drawingSource.addFeature(boxFeature);
-          const tmpMap = map;
-          if (tmpMap) {
-            tmpMap
+          if (map) {
+            map
               .getInteractions()
               .getArray()
               .forEach(interaction => {
                 if (interaction instanceof DragBox) {
-                  tmpMap.removeInteraction(interaction);
+                  map.removeInteraction(interaction);
                 }
               });
-            const targetElement = tmpMap.getTargetElement();
+            const targetElement = map.getTargetElement();
             if (targetElement) {
               targetElement.style.cursor = "";
             }
-
-            setMap(tmpMap);
           }
         });
 
-        const tmpMap = map;
-        tmpMap.addInteraction(dragBox);
-        tmpMap.getTargetElement().style.cursor = "crosshair";
+        map.addInteraction(dragBox);
+        map.getTargetElement().style.cursor = "crosshair";
 
         if (tooltipRef?.current) {
           tooltipRef.current.innerHTML = t(drawTooltipLabel);
           tooltipRef.current.style.visibility = "visible";
-          tmpMap.getTargetElement().addEventListener("mouseleave", handleMouseLeave);
-          tmpMap.getTargetElement().addEventListener("mouseenter", handleMouseEnter);
-          tmpMap.on("pointermove", onPointerMove);
+          map.getTargetElement().addEventListener("mouseleave", handleMouseLeave);
+          map.getTargetElement().addEventListener("mouseenter", handleMouseEnter);
+          map.on("pointermove", onPointerMove);
         }
-        setMap(tmpMap);
       }
     }
-  }, [boundingBoxes, drawTooltipLabel, extractionType, onPointerMove, map, t]);
+  }, [boundingBoxes, drawTooltipLabel, extractionType, onPointerMove, t]);
 
-  useEffect(() => {
-    if (fileInfo) {
-      if (map) {
-        let currentFileName = "";
-        map
-          .getLayers()
-          .getArray()
-          .forEach(layer => {
-            if (layer instanceof ImageLayer) {
-              currentFileName = layer.getSource().getUrl();
-            }
-          });
-        if (currentFileName === fileInfo.fileName) {
-          return;
-        }
-      }
-
-      if (map) {
-        map.dispose();
-        setMap(undefined);
-      }
-
-      const extent = [0, -fileInfo.height, fileInfo.width, 0];
-      setExtent(extent);
-      const projection = new Projection({
-        code: "image",
-        units: "pixels",
-        extent: extent,
-      });
-
-      const imageLayer = new ImageLayer({
-        source: new Static({
-          url: fileInfo.fileName,
-          projection: projection,
-          imageExtent: extent,
-          imageLoadFunction: (image, src) => {
-            loadImage(src).then(blob => {
-              (image.getImage() as HTMLImageElement).src = URL.createObjectURL(blob);
-            });
-          },
-        }),
-      });
+  const onMapInitialized = useCallback(
+    (map: Map) => {
+      mapRef.current = map;
 
       const drawingSource = new VectorSource();
       drawingSource.on("addfeature", e => {
@@ -339,40 +256,21 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
         }),
       });
       highlightsLayer.set("name", "highlightsLayer");
-
-      const initMap = new Map({
-        layers: [imageLayer, drawingLayer, boundingBoxLayer, highlightsLayer],
-        target: "map",
-        controls: defaultControls({
-          attribution: false,
-          zoom: false,
-          rotate: false,
-        }),
-        view: new View({
-          minResolution: 0.1,
-          zoom: 0,
-          projection: projection,
-          center: getCenter(extent),
-          extent: extent,
-          showFullExtent: true,
-        }),
-      });
-      initMap
-        .getInteractions()
-        .getArray()
-        .forEach(interaction => {
-          if (interaction instanceof DragRotate || interaction instanceof PinchRotate) {
-            initMap.removeInteraction(interaction);
-          }
-        });
-      setMap(initMap);
-    }
-  }, [fileInfo, onDrawEnd, map]);
+      map.addLayer(drawingLayer);
+      map.addLayer(boundingBoxLayer);
+      map.addLayer(highlightsLayer);
+    },
+    [onDrawEnd],
+  );
 
   return (
     <>
-      <MapControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} onRotate={rotateImage} />
-      <Box id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
+      <LabelingView
+        fileName={fileInfo?.fileName}
+        imageSize={fileInfo}
+        loadImage={loadImageFromApi}
+        onMapInitialized={onMapInitialized}
+      />
       <Box
         data-cy="labeling-draw-tooltip"
         ref={tooltipRef}
