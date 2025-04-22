@@ -4,6 +4,7 @@
 
 ### Added
 - Added the photos tab to the borehole attachments.
+- Added photo viewer to the borehole sidepanel.
 
 ## v2.1.1162 - 2025-04-10
 
