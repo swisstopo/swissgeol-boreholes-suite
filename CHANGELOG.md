@@ -6,6 +6,9 @@
 - Added the photos tab to the borehole attachments.
 - Added photo viewer to the borehole sidepanel.
 
+### Fixed
+- Boreholes were always copied to the default workgroup instead of the selected workgroup.
+
 ## v2.1.1162 - 2025-04-10
 
 ### Fixed
