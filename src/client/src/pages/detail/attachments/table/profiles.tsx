@@ -77,7 +77,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         </Box>
       ) : (
         <FullPageCentered>
-          <Typography variant="fullPageMessage">{t("noAttachments")}</Typography>
+          <Typography variant="fullPageMessage">{t("noProfiles")}</Typography>
         </FullPageCentered>
       )}
     </>
