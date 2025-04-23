@@ -1,10 +1,12 @@
 import { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
+import ReactGA from "react-ga4";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
+import { useSettings } from "../../api/useSettings.ts";
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
 import { prepareBoreholeDataForSubmit, prepareLocationDataForSubmit } from "../../components/form/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
@@ -28,6 +30,7 @@ export const DetailPage: FC = () => {
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
   const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
+  const settings = useSettings();
   const dispatch = useDispatch();
   const { id } = useParams<{ id: string }>();
 
@@ -84,6 +87,16 @@ export const DetailPage: FC = () => {
   useEffect(() => {
     loadOrCreate(id);
   }, [id, loadOrCreate]);
+
+  useEffect(() => {
+    if (settings?.googleAnalyticsTrackingId) {
+      if (!ReactGA.isInitialized) {
+        ReactGA.initialize(settings.googleAnalyticsTrackingId);
+      }
+
+      ReactGA.send("pageview");
+    }
+  }, [settings]);
 
   useEffect(() => {
     setEditingEnabled(legacyBorehole?.data?.lock !== null);

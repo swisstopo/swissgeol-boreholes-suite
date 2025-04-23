@@ -40,7 +40,10 @@ export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (hasAccepted && analyticsEnabled && settings?.googleAnalyticsTrackingId) {
-      ReactGA.initialize(settings.googleAnalyticsTrackingId);
+      if (!ReactGA.isInitialized) {
+        ReactGA.initialize(settings.googleAnalyticsTrackingId);
+      }
+
       ReactGA.send("pageview");
     }
   }, [hasAccepted, analyticsEnabled, settings]);
