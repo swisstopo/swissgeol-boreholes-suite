@@ -231,6 +231,7 @@
   "fileLimit1File200Mb": "1 fichier, max. 200 MB",
   "fileMaxSizeExceeded": "Dépassement de la taille maximale du fichier 200 MB",
   "fileTooMany": "Trop de fichiers sélectionnés en même temps",
+  "filter": "Filtre…",
   "filterByHierarchicalUnits": "Filtrer par unités hiérarchiques",
   "filterByName": "Filtrer par nom",
   "first_add_layer_to_depth": "D'abord, entrez la fin de la couche précédente.",

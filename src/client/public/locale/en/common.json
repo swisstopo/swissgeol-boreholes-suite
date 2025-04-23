@@ -231,6 +231,7 @@
   "fileLimit1File200Mb": "File limit: 1 file, up to 200 MB",
   "fileMaxSizeExceeded": "Exceeded maximum file size of 200 MB",
   "fileTooMany": "Too many files selected",
+  "filter": "Filter…",
   "filterByHierarchicalUnits": "Filter by hierarchical units",
   "filterByName": "Filter by name",
   "first_add_layer_to_depth": "First, enter the end of the previous layer.",

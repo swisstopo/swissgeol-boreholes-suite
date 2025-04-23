@@ -164,6 +164,7 @@ const LabelingPanel: FC = () => {
         setActivePage={setActivePage}
         files={files}
         fileInputRef={fileInputRef}
+        showSearch={panelTab === PanelTab.photo}
       />
       <input
         type="file"

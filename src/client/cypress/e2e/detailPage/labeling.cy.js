@@ -556,5 +556,26 @@ describe("Test labeling tool", () => {
       const view = win.labelingImage.getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
+
+    getElementByDataCy("labeling-panel")
+      .find('input[type="file"]')
+      .attachFile({
+        fileContent: new Blob([0]),
+        fileName: "image_123.0-456.0_all.jpg",
+        mimeType: "image/jpeg",
+      });
+    cy.wait(["@upload-photo", "@getAllPhotos"]);
+    stopBoreholeEditing();
+
+    // can navigate with previous button
+    getElementByDataCy("labeling-file-button-select").contains("123.00 - 456.00");
+    getElementByDataCy("labeling-page-previous").click();
+    getElementByDataCy("labeling-file-button-select").contains("12.00 - 34.00");
+
+    // can search in photo select list
+    getElementByDataCy("labeling-file-button-select").click();
+    assertSelectContent(["12.00 - 34.00", "123.00 - 456.00"]);
+    getElementByDataCy("labeling-file-button-select-search").type("456");
+    assertSelectContent(["123.00 - 456.00"]);
   });
 });
