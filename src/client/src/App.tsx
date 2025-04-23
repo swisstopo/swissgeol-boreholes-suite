@@ -21,6 +21,7 @@ import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterC
 import { DataLoader } from "./pages/settings/dataLoader";
 import { SettingsPage } from "./pages/settings/settingsPage.tsx";
 import { AcceptTerms } from "./term/accept";
+import { AnalyticsProvider } from "./term/analyticsContext.tsx";
 
 const queryClient = new QueryClient();
 
@@ -53,54 +54,56 @@ class App extends React.Component {
           }}
         />
         <DataLoader>
-          <AcceptTerms>
-            <AlertProvider>
-              <AlertBanner />
-              <PromptProvider>
-                <Prompt />
-                <DataCardProvider>
-                  <BasemapProvider>
-                    <FilterProvider>
-                      <OverviewProvider>
-                        <QueryClientProvider client={queryClient}>
-                          <AppBox>
-                            <HeaderComponent />
-                            <Router>
-                              <Switch>
-                                <Route key={0} path={"/setting"} render={() => <SettingsPage />} />
-                                <Route
-                                  exact={false}
-                                  key={1}
-                                  path={"/:id"}
-                                  render={() => (
-                                    <LabelingProvider>
-                                      <DetailProvider>
-                                        <DetailPage />
-                                      </DetailProvider>
-                                    </LabelingProvider>
-                                  )}
-                                />
-                                <Route component={OverviewPage} exact={false} key={2} path={"/"} />
-                                <Route
-                                  component={() => (
-                                    <Redirect
-                                      to={{
-                                        pathname: "/",
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </Switch>
-                            </Router>
-                          </AppBox>
-                        </QueryClientProvider>
-                      </OverviewProvider>
-                    </FilterProvider>
-                  </BasemapProvider>
-                </DataCardProvider>
-              </PromptProvider>
-            </AlertProvider>
-          </AcceptTerms>
+          <AnalyticsProvider>
+            <AcceptTerms>
+              <AlertProvider>
+                <AlertBanner />
+                <PromptProvider>
+                  <Prompt />
+                  <DataCardProvider>
+                    <BasemapProvider>
+                      <FilterProvider>
+                        <OverviewProvider>
+                          <QueryClientProvider client={queryClient}>
+                            <AppBox>
+                              <HeaderComponent />
+                              <Router>
+                                <Switch>
+                                  <Route key={0} path={"/setting"} render={() => <SettingsPage />} />
+                                  <Route
+                                    exact={false}
+                                    key={1}
+                                    path={"/:id"}
+                                    render={() => (
+                                      <LabelingProvider>
+                                        <DetailProvider>
+                                          <DetailPage />
+                                        </DetailProvider>
+                                      </LabelingProvider>
+                                    )}
+                                  />
+                                  <Route component={OverviewPage} exact={false} key={2} path={"/"} />
+                                  <Route
+                                    component={() => (
+                                      <Redirect
+                                        to={{
+                                          pathname: "/",
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </Switch>
+                              </Router>
+                            </AppBox>
+                          </QueryClientProvider>
+                        </OverviewProvider>
+                      </FilterProvider>
+                    </BasemapProvider>
+                  </DataCardProvider>
+                </PromptProvider>
+              </AlertProvider>
+            </AcceptTerms>
+          </AnalyticsProvider>
         </DataLoader>
       </ThemeProvider>
     );
