@@ -196,18 +196,26 @@ const LabelingPanel: FC = () => {
         }}>
         {panelTab === PanelTab.profile && selectedFile && fileInfo?.count && (
           <PageSelection
-            count={fileInfo.count}
+            pageCount={fileInfo.count}
             activePage={activePage}
             setActivePage={setActivePage}
-            sx={labelingButtonStyles}
+            files={
+              files && {
+                count: files.length,
+                active: files.findIndex(f => f.id === selectedFile.id) + 1,
+                setActive: (file: number) => {
+                  setSelectedAttachment(files[file - 1]);
+                  setActivePage(1);
+                },
+              }
+            }
           />
         )}
         {panelTab === PanelTab.photo && selectedPhoto && files && (
           <PageSelection
-            count={files.length}
-            activePage={files.indexOf(selectedPhoto) + 1}
+            pageCount={files.length}
+            activePage={files.findIndex(f => f.id === selectedPhoto.id) + 1}
             setActivePage={page => setSelectedAttachment(files[page - 1])}
-            sx={labelingButtonStyles}
           />
         )}
         <ToggleButtonGroup
