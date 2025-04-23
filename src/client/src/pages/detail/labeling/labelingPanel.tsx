@@ -82,15 +82,19 @@ const LabelingPanel: FC = () => {
 
   const loadProfiles = useCallback(async () => {
     const response = await getFiles<BoreholeFile>(Number(boreholeId));
-    return response
+    const profiles = response
       .filter((fileResponse: BoreholeFile) => matchesFileFormat(expectedFileFormat, fileResponse.file.type))
       .map((fileResponse: BoreholeFile) => fileResponse.file);
+    if (profiles.length === 1) {
+      setSelectedAttachment(selected => selected ?? profiles[0]);
+    }
+    return profiles;
   }, [boreholeId, expectedFileFormat]);
 
   const loadPhotos = useCallback(async () => {
     const photos = await getPhotosByBoreholeId(Number(boreholeId));
     if (photos.length > 0) {
-      setSelectedAttachment(photos[0]);
+      setSelectedAttachment(selected => selected ?? photos[0]);
     }
     return photos;
   }, [boreholeId]);

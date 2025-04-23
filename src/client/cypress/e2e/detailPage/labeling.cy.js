@@ -215,20 +215,19 @@ describe("Test labeling tool", () => {
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutDocuments();
 
-    cy.get('[data-cy="labeling-file-dropzone"]').attachFile("import/borehole_attachment_1.pdf", {
+    getElementByDataCy("labeling-file-dropzone").attachFile("import/borehole_attachment_1.pdf", {
       subjectType: "drag-n-drop",
     });
     cy.wait("@get-borehole-files");
-    cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_1.pdf");
+    getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
 
-    cy.get('[data-cy="labeling-toggle-button"]').click();
-    cy.get('[data-cy="labeling-toggle-button"]').click();
-    cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
-    cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.").should("not.exist");
-    getElementByDataCy("addfile-button").should("exist");
-    cy.get('[data-cy="labeling-file-selector"]').contains("borehole_attachment_1.pdf").should("exist");
-    cy.get('[data-cy="labeling-file-dropzone"]').attachFile("import/borehole_attachment_3.pdf", {
-      subjectType: "drag-n-drop",
+    reloadPanel();
+    getElementByDataCy("labeling-file-selector").should("not.exist");
+    getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
+
+    // Simulate file upload via Add document in labeling-file-button-select
+    getElementByDataCy("labeling-panel").find('input[type="file"]').attachFile("import/borehole_attachment_3.pdf", {
+      subjectType: "input",
     });
     cy.wait("@get-borehole-files");
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
