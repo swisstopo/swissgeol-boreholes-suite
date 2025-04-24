@@ -81,8 +81,8 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       getAttachments={loadProfiles}
       deleteAttachments={deleteProfiles}
       exportAttachments={exportProfiles}
-      addAttachmentButtonLabel={t("addProfile")}
-      noAttachmentsText={t("noProfiles")}
+      addAttachmentButtonLabel="addProfile"
+      noAttachmentsText="noProfiles"
     />
   );
 };

@@ -20,14 +20,14 @@ describe("Tests for 'Attachments' edit page.", () => {
     selectInputFile("LOUDSPATULA.txt", "text/plain");
 
     // // upload file
-    getElementByDataCy("attachments-upload-button").should("be.visible").click();
+    getElementByDataCy("addProfile-button").should("be.visible").click();
     cy.wait(["@upload-files", "@getAllAttachments"]);
   };
 
   const uploadPhoto = () => {
     selectInputFile(photoFilename, "image/jpeg");
 
-    getElementByDataCy("photo-upload-button").should("be.visible").click();
+    getElementByDataCy("addPhoto-button").should("be.visible").click();
     cy.wait(["@upload-photo", "@getAllPhotos"]);
   };
 
@@ -49,7 +49,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       selectInputFile("IRATETRINITY.pdf", "application/pdf");
 
       // upload and verify file IRATETRINITY.pdf
-      getElementByDataCy("attachments-upload-button").should("be.visible").click();
+      getElementByDataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
       verifyTableLength(2);
@@ -57,7 +57,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // Upload and verify file "IRATETRINITY.pdf" for the second time but with different file name.
       selectInputFile("IRATETRINITY_2.pdf", "application/pdf");
-      getElementByDataCy("attachments-upload-button").should("be.visible").click();
+      getElementByDataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
       verifyTableLength(3);
@@ -65,7 +65,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // Upload and verify file "WHITE   SPACE.pdf" to test file names with white spaces.
       selectInputFile("WHITE   SPACE.pdf", "application/pdf");
-      cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
+      cy.get('[data-cy="addProfile-button"]').should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
       verifyTableLength(4);
       verifyRowContains("application/pdf", 3);
@@ -145,7 +145,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // export photo
       checkRowWithText(photoFilename);
-      getElementByDataCy("photos-table-container").find('[data-cy="export-button"]').click();
+      getElementByDataCy("attachment-table-container").find('[data-cy="export-button"]').click();
       cy.wait("@export-photos");
 
       // check if the file is present in download folder
@@ -159,7 +159,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       // delete photo
       startBoreholeEditing();
       checkRowWithText(photoFilename);
-      getElementByDataCy("photos-table-container").find('[data-cy="delete-button"]').click();
+      getElementByDataCy("attachment-table-container").find('[data-cy="delete-button"]').click();
       cy.wait(["@delete-photos", "@getAllPhotos"]);
       verifyTableLength(0);
 

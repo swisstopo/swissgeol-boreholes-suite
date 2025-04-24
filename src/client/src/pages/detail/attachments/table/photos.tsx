@@ -69,8 +69,8 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
       getAttachments={loadPhotos}
       deleteAttachments={deletePhotos}
       exportAttachments={exportPhotos}
-      addAttachmentButtonLabel={t("addPhoto")}
-      noAttachmentsText={t("noPhotos")}
+      addAttachmentButtonLabel="addPhoto"
+      noAttachmentsText="noPhotos"
     />
   );
 };
