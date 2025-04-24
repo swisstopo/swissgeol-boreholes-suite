@@ -26,6 +26,7 @@ export async function fetchApiV2Base(
   contentType: string | null = null,
 ): Promise<Response> {
   const baseUrl = "/api/v2/";
+  // @ts-expect-error redux store will not be typed, as it's going to be removed
   const authentication = store.getState().core_user.authentication;
   let headers: Record<string, string> = {
     Authorization: getAuthorizationHeader(authentication),
