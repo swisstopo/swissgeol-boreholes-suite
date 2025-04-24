@@ -165,16 +165,25 @@ public class BoreholeGeometryController : ControllerBase
     /// <returns>The measured depth (MD) in meters.</returns>
     [HttpGet("[action]")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> GetDepthMD([FromQuery] int boreholeId, [FromQuery] double depthTvd)
+    public async Task<IActionResult> GetDepthMDFromMasl([FromQuery] int boreholeId, [FromQuery] double depthMasl)
     {
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
+        var borehole = await context.Boreholes.FindAsync(boreholeId).ConfigureAwait(false);
+        if (borehole?.ReferenceElevation == null)
+        {
+            logger.LogInformation("Invalid input, could not calculate measured depth because borehole has no ReferenceElevation");
+            return Ok(null);
+        }
+
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
+        var depthTvd = borehole.ReferenceElevation - depthMasl;
 
         var md = geometry.ConvertBoreholeDepth(depthTvd, BoreholeGeometryExtensions.GetDepthMD);
         if (md == null)
         {
-            logger.LogInformation("Invalid input, could not calculate measured depth from true vertical depth of {DepthTVD}", depthTvd);
+            logger.LogInformation("Invalid input, could not calculate measured depth from depth above sea level of {DepthMasl}", depthMasl);
+            return Ok(null);
         }
 
         return Ok(md);
