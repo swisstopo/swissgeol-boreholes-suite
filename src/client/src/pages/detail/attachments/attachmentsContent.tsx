@@ -78,7 +78,7 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
     <>
       {editingEnabled && (
         <AddAttachmentButton
-          label={addAttachmentButtonLabel}
+          label={t(addAttachmentButtonLabel)}
           onFileSelect={addSelected}
           acceptedFileTypes={acceptedFileTypes}
           dataCy={`${addAttachmentButtonLabel}-button`}
