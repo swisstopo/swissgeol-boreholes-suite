@@ -120,7 +120,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
             ) : (
               <Typography variant="body1">
                 {activeTab === PanelTab.profile
-                  ? t("noFiles")
+                  ? t("noProfilesUploaded")
                   : editingEnabled
                     ? `${t("noPhotosUploaded")} ${t("uploadPhotosAsAttachments")}`
                     : t("noPhotosUploaded")}
@@ -133,7 +133,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
               <AddButton
                 variant="contained"
                 color="primary"
-                label="addFile"
+                label="addProfile"
                 onClick={() => fileInputRef.current?.click()}
               />
             ) : (

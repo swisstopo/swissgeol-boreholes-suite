@@ -56,10 +56,14 @@ export const LabelingHeader: FC<{
         .filter(({ value }) => !search || value.includes(search)) ?? [];
 
     if (editingEnabled) {
-      items.push({ key: -1, value: t("addFile"), startIcon: <Plus /> });
+      items.push({
+        key: -1,
+        value: panelTab === PanelTab.profile ? t("addProfile") : t("addPhoto"),
+        startIcon: <Plus />,
+      });
     }
     return items;
-  }, [files, editingEnabled, search, t]);
+  }, [files, editingEnabled, search, panelTab, t]);
 
   useEffect(() => {
     setSearch("");
