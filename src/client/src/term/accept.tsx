@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import ReactGA from "react-ga4";
+import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getTerms } from "../api-lib";
-import { useSettings } from "../api/useSettings";
+import { AnalyticsContext, AnalyticsContextProps } from "./analyticsContext.tsx";
 import { DisclaimerDialog } from "./disclaimerDialog";
 import { de, en, fr, it } from "./disclaimerFallback";
 
@@ -16,11 +15,10 @@ interface Terms {
 
 export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
   const [hasAccepted, setHasAccepted] = useState(false);
-  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
+  const { setAnalyticsEnabled, sendAnalyticsEvent } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const [terms, setTerms] = useState<Terms>({ en: en, de: de, fr: fr, it: it });
   const [isFetching, setIsFetching] = useState(true);
   const { i18n } = useTranslation();
-  const settings = useSettings();
 
   useEffect(() => {
     // @ts-expect-error : The getTerms function is not typed
@@ -39,11 +37,10 @@ export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (hasAccepted && analyticsEnabled && settings?.googleAnalyticsTrackingId) {
-      ReactGA.initialize(settings.googleAnalyticsTrackingId);
-      ReactGA.send("pageview");
+    if (hasAccepted) {
+      sendAnalyticsEvent();
     }
-  }, [hasAccepted, analyticsEnabled, settings]);
+  }, [hasAccepted, sendAnalyticsEvent]);
 
   const handleDialogClose = (analyticsEnabled: boolean) => {
     setAnalyticsEnabled(analyticsEnabled);

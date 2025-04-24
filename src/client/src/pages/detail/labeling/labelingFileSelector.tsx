@@ -10,6 +10,8 @@ import { AddButton, BoreholesBaseButton } from "../../../components/buttons/butt
 import { DetailContext } from "../detailContext.tsx";
 import { labelingFileFormat, PanelTab } from "./labelingInterfaces.tsx";
 
+const dashedOutlineImage = `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23fff' stroke-width='4' stroke-dasharray='12%2C 24' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E")`;
+
 interface LabelingFileSelectorProps {
   isLoadingFiles: boolean;
   files?: BoreholeAttachment[];
@@ -33,6 +35,9 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
   const location = useLocation();
+
+  const isOnAttachmentsPage = location.pathname === `/${id}/attachments`;
+  const fileUploadEnabled = editingEnabled && (activeTab === PanelTab.profile || isOnAttachmentsPage);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -58,17 +63,29 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
     accept: { [labelingFileFormat[activeTab]]: [] },
     noDrag: false,
     noClick: true,
-    disabled: activeTab === PanelTab.photo,
+    disabled: !fileUploadEnabled,
   });
+
+  const getNoAttachmentText = () => {
+    if (activeTab === PanelTab.profile) {
+      return t("noProfilesUploaded");
+    }
+    if (editingEnabled && !fileUploadEnabled) {
+      return `${t("noPhotosUploaded")} ${t("uploadPhotosAsAttachments")}`;
+    }
+    return t("noPhotosUploaded");
+  };
 
   return (
     <Box
-      sx={{ py: 10.5, px: 6, height: "100%", width: "100%", cursor: "pointer" }}
+      sx={{ py: 10.5, px: 6, height: "100%", width: "100%" }}
       {...getRootProps()}
       onDragOver={e => {
-        e.stopPropagation();
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "copy";
+        if (fileUploadEnabled) {
+          e.stopPropagation();
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
+        }
       }}>
       <input {...getInputProps()} data-cy="labeling-file-dropzone" ref={fileInputRef} />
       <Stack
@@ -78,7 +95,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
           height: "100%",
           width: "100%",
           borderRadius: "24px",
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23fff' stroke-width='4' stroke-dasharray='12%2C 24' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E")`,
+          backgroundImage: fileUploadEnabled ? dashedOutlineImage : undefined,
         }}>
         <Stack
           sx={{
@@ -118,39 +135,31 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
                 </Button>
               ))
             ) : (
-              <Typography variant="body1">
-                {activeTab === PanelTab.profile
-                  ? t("noFiles")
-                  : editingEnabled
-                    ? `${t("noPhotosUploaded")} ${t("uploadPhotosAsAttachments")}`
-                    : t("noPhotosUploaded")}
-              </Typography>
+              <Typography variant="body1">{getNoAttachmentText()}</Typography>
             )}
           </Stack>
-          <Divider />
-          {editingEnabled &&
-            (activeTab === PanelTab.profile ? (
-              <AddButton
-                variant="contained"
-                color="primary"
-                label="addFile"
-                onClick={() => fileInputRef.current?.click()}
-              />
-            ) : (
-              <BoreholesBaseButton
-                variant="contained"
-                color="primary"
-                label="managePhotos"
-                onClick={() => {
-                  const target = `/${id}/attachments#photos`;
-                  if (location.pathname + location.hash !== target) {
-                    history.push(target);
-                  }
-                }}
-                icon={<ChevronRight />}
-                dataCy="labeling-file-selector-manage-photos"
-              />
-            ))}
+          {editingEnabled && (
+            <>
+              <Divider />
+              {fileUploadEnabled ? (
+                <AddButton
+                  variant="contained"
+                  color="primary"
+                  label={activeTab === PanelTab.profile ? "addProfile" : "addPhoto"}
+                  onClick={() => fileInputRef.current?.click()}
+                />
+              ) : (
+                <BoreholesBaseButton
+                  variant="contained"
+                  color="primary"
+                  label="managePhotos"
+                  onClick={() => history.push(`/${id}/attachments#photos`)}
+                  icon={<ChevronRight />}
+                  dataCy="labeling-file-selector-manage-photos"
+                />
+              )}
+            </>
+          )}
         </Stack>
       </Stack>
     </Box>
