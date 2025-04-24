@@ -10,7 +10,7 @@ import SidebarUp from "../../assets/icons/sidebarUp.svg?react";
 import { theme } from "../../AppTheme.ts";
 
 interface ExtractionButtonProps extends ButtonProps {
-  ref: Ref<HTMLButtonElement> | undefined;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 export const CoordinateExtractionButton = (props: ExtractionButtonProps) => {
@@ -33,7 +33,7 @@ export const CoordinateExtractionButton = (props: ExtractionButtonProps) => {
 interface SidePanelToggleButtonProps extends ButtonProps {
   panelOpen: boolean;
   panelPosition: "right" | "bottom";
-  ref: Ref<HTMLButtonElement> | undefined;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 export const SidePanelToggleButton = (props: SidePanelToggleButtonProps) => {
