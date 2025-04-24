@@ -8,6 +8,7 @@ import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
 import { prepareBoreholeDataForSubmit, prepareLocationDataForSubmit } from "../../components/form/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsContext.tsx";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
@@ -28,6 +29,7 @@ export const DetailPage: FC = () => {
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
   const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
+  const { sendAnalyticsEvent } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const dispatch = useDispatch();
   const { id } = useParams<{ id: string }>();
 
@@ -84,6 +86,10 @@ export const DetailPage: FC = () => {
   useEffect(() => {
     loadOrCreate(id);
   }, [id, loadOrCreate]);
+
+  useEffect(() => {
+    sendAnalyticsEvent();
+  }, [sendAnalyticsEvent]);
 
   useEffect(() => {
     setEditingEnabled(legacyBorehole?.data?.lock !== null);
