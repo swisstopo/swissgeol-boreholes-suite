@@ -6,5 +6,5 @@ export interface ButtonProps extends MuiButtonProps {
   label?: string;
   icon?: ReactNode;
   dataCy?: string;
-  ref: Ref<HTMLButtonElement> | undefined;
+  ref?: Ref<HTMLButtonElement>;
 }

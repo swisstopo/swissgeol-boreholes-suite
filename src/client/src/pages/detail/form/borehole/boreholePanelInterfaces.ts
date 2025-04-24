@@ -8,12 +8,12 @@ export interface BoreholeGeneralProps {
 
 export interface BoreholeDetailProps extends BoreholeGeneralProps {
   onSubmit: (data: BoreholeFormInputs) => void;
-  ref: Ref<BoreholeFormInputs>;
+  ref: Ref<unknown>;
 }
 
 export interface BoreholePanelProps extends BoreholeGeneralProps {
   onSubmit: (data: BoreholeFormInputs) => void;
-  ref: Ref<BoreholeFormInputs>;
+  ref: Ref<unknown>;
 }
 
 export interface BoreholeFormInputs {
