@@ -406,6 +406,31 @@ public class BdmsContext : DbContext
 
         modelBuilder.Entity<FieldMeasurement>().ToTable("field_measurement").HasBaseType<Observation>();
 
+        modelBuilder.Entity<WorkflowV2>().HasOne(w => w.Borehole).WithOne(b => b.Workflow).HasForeignKey<WorkflowV2>(w => w.BoreholeId);
+        modelBuilder.Entity<WorkflowV2>().HasOne(w => w.ReviewedTabs).WithOne().HasForeignKey<WorkflowV2>(w => w.ReviewedTabsId);
+        modelBuilder.Entity<WorkflowV2>().HasOne(w => w.PublishedTabs).WithOne().HasForeignKey<WorkflowV2>(w => w.PublishedTabsId);
+
+        modelBuilder.Entity<WorkflowChange>()
+            .HasOne(c => c.Workflow)
+            .WithMany(w => w.Changes)
+            .HasForeignKey(c => c.WorkflowId);
+
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.General).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Section).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Geometry).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Lithology).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Chronostratigraphy).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Lithostratigraphy).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Casing).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Instrumentation).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Backfill).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.WaterIngress).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Groundwater).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.FieldMeasurement).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Hydrotest).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Profile).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Photo).HasDefaultValue(false);
+
         // Configure delete behavior for all non-nullable foreign keys for Codelists.
         modelBuilder.Entity<CasingElement>()
             .HasOne(ce => ce.Kind)
