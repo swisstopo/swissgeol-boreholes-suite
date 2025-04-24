@@ -195,30 +195,32 @@ const LabelingPanel: FC = () => {
           bottom: 0,
           zIndex: "500",
         }}>
-        {panelTab === PanelTab.profile && selectedFile && fileInfo?.count && (
-          <PageSelection
-            pageCount={fileInfo.count}
-            activePage={activePage}
-            setActivePage={setActivePage}
-            files={
-              files && {
-                count: files.length,
-                active: files.findIndex(f => f.id === selectedFile.id) + 1,
-                setActive: (file: number) => {
-                  setSelectedAttachment(files[file - 1]);
-                  setActivePage(1);
-                },
+        <Box>
+          {panelTab === PanelTab.profile && selectedFile && fileInfo?.count && (
+            <PageSelection
+              pageCount={fileInfo.count}
+              activePage={activePage}
+              setActivePage={setActivePage}
+              files={
+                files && {
+                  count: files.length,
+                  active: files.findIndex(f => f.id === selectedFile.id) + 1,
+                  setActive: (file: number) => {
+                    setSelectedAttachment(files[file - 1]);
+                    setActivePage(1);
+                  },
+                }
               }
-            }
-          />
-        )}
-        {panelTab === PanelTab.photo && selectedPhoto && files && (
-          <PageSelection
-            pageCount={files.length}
-            activePage={files.findIndex(f => f.id === selectedPhoto.id) + 1}
-            setActivePage={page => setSelectedAttachment(files[page - 1])}
-          />
-        )}
+            />
+          )}
+          {panelTab === PanelTab.photo && selectedPhoto && files && (
+            <PageSelection
+              pageCount={files.length}
+              activePage={files.findIndex(f => f.id === selectedPhoto.id) + 1}
+              setActivePage={page => setSelectedAttachment(files[page - 1])}
+            />
+          )}
+        </Box>
         <ToggleButtonGroup
           value={panelPosition}
           onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
