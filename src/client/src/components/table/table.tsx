@@ -1,5 +1,6 @@
 import { MutableRefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { SxProps } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -47,6 +48,7 @@ interface TableProps<T extends GridValidRowModel> {
   isDisabled?: boolean;
   showQuickFilter?: boolean;
   rowAutoHeight?: boolean;
+  sx?: SxProps;
 }
 
 export const Table = <T extends GridValidRowModel>({
@@ -76,6 +78,7 @@ export const Table = <T extends GridValidRowModel>({
   isDisabled = false,
   showQuickFilter = true,
   rowAutoHeight = false,
+  sx,
 }: TableProps<T>) => {
   const { i18n } = useTranslation();
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
@@ -126,7 +129,7 @@ export const Table = <T extends GridValidRowModel>({
 
   return (
     <DataGrid
-      sx={{ border: "none !important", ...quickFilterStyles, ...disabledStyles }}
+      sx={{ ...quickFilterStyles, ...disabledStyles, ...sx }}
       data-cy={dataCy ?? "data-table"}
       columnHeaderHeight={44}
       sortingOrder={["asc", "desc"]}
