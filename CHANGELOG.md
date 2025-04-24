@@ -5,6 +5,7 @@
 ### Added
 - Added the photos tab to the borehole attachments.
 - Added photo viewer to the borehole sidepanel.
+- Added data collection to detail page.
 
 ### Fixed
 - Boreholes were always copied to the default workgroup instead of the selected workgroup.

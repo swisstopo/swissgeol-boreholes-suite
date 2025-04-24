@@ -82,15 +82,19 @@ const LabelingPanel: FC = () => {
 
   const loadProfiles = useCallback(async () => {
     const response = await getFiles<BoreholeFile>(Number(boreholeId));
-    return response
+    const profiles = response
       .filter((fileResponse: BoreholeFile) => matchesFileFormat(expectedFileFormat, fileResponse.file.type))
       .map((fileResponse: BoreholeFile) => fileResponse.file);
+    if (profiles.length === 1) {
+      setSelectedAttachment(selected => selected ?? profiles[0]);
+    }
+    return profiles;
   }, [boreholeId, expectedFileFormat]);
 
   const loadPhotos = useCallback(async () => {
     const photos = await getPhotosByBoreholeId(Number(boreholeId));
     if (photos.length > 0) {
-      setSelectedAttachment(photos[0]);
+      setSelectedAttachment(selected => selected ?? photos[0]);
     }
     return photos;
   }, [boreholeId]);
@@ -160,6 +164,7 @@ const LabelingPanel: FC = () => {
         setActivePage={setActivePage}
         files={files}
         fileInputRef={fileInputRef}
+        showSearch={panelTab === PanelTab.photo}
       />
       <input
         type="file"
@@ -190,22 +195,32 @@ const LabelingPanel: FC = () => {
           bottom: 0,
           zIndex: "500",
         }}>
-        {panelTab === PanelTab.profile && selectedFile && fileInfo?.count && (
-          <PageSelection
-            count={fileInfo.count}
-            activePage={activePage}
-            setActivePage={setActivePage}
-            sx={labelingButtonStyles}
-          />
-        )}
-        {panelTab === PanelTab.photo && selectedPhoto && files && (
-          <PageSelection
-            count={files.length}
-            activePage={files.indexOf(selectedPhoto) + 1}
-            setActivePage={page => setSelectedAttachment(files[page - 1])}
-            sx={labelingButtonStyles}
-          />
-        )}
+        <Box>
+          {panelTab === PanelTab.profile && selectedFile && fileInfo?.count && (
+            <PageSelection
+              pageCount={fileInfo.count}
+              activePage={activePage}
+              setActivePage={setActivePage}
+              files={
+                files && {
+                  count: files.length,
+                  active: files.findIndex(f => f.id === selectedFile.id) + 1,
+                  setActive: (file: number) => {
+                    setSelectedAttachment(files[file - 1]);
+                    setActivePage(1);
+                  },
+                }
+              }
+            />
+          )}
+          {panelTab === PanelTab.photo && selectedPhoto && files && (
+            <PageSelection
+              pageCount={files.length}
+              activePage={files.findIndex(f => f.id === selectedPhoto.id) + 1}
+              setActivePage={page => setSelectedAttachment(files[page - 1])}
+            />
+          )}
+        </Box>
         <ToggleButtonGroup
           value={panelPosition}
           onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
