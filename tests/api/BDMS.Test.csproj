@@ -121,6 +121,9 @@
     <None Update="random_testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\image.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\precision_testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -19,7 +19,7 @@ namespace BDMS.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("bdms")
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "ltree");
@@ -1596,6 +1596,73 @@ namespace BDMS.Migrations
                     b.UseTptMappingStrategy();
                 });
 
+            modelBuilder.Entity("BDMS.Models.Photo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BoreholeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("borehole_id");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("file_type");
+
+                    b.Property<double>("FromDepth")
+                        .HasColumnType("double precision")
+                        .HasColumnName("from_depth");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NameUuid")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name_uuid");
+
+                    b.Property<bool>("Public")
+                        .HasColumnType("boolean")
+                        .HasColumnName("public");
+
+                    b.Property<double>("ToDepth")
+                        .HasColumnType("double precision")
+                        .HasColumnName("to_depth");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoreholeId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("photo", "bdms");
+                });
+
             modelBuilder.Entity("BDMS.Models.Section", b =>
                 {
                     b.Property<int>("Id")
@@ -2938,6 +3005,29 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
+            modelBuilder.Entity("BDMS.Models.Photo", b =>
+                {
+                    b.HasOne("BDMS.Models.Borehole", "Borehole")
+                        .WithMany("Photos")
+                        .HasForeignKey("BoreholeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Borehole");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("BDMS.Models.Section", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
@@ -3161,6 +3251,8 @@ namespace BDMS.Migrations
                     b.Navigation("Completions");
 
                     b.Navigation("Observations");
+
+                    b.Navigation("Photos");
 
                     b.Navigation("Sections");
 

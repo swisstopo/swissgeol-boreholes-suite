@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class FieldMeasurementController : BoreholeControllerBase<FieldMeasurement>
 {
-    public FieldMeasurementController(BdmsContext context, ILogger<FieldMeasurementController> logger, IBoreholeLockService boreholeLockService)
-        : base(context, logger, boreholeLockService)
+    public FieldMeasurementController(BdmsContext context, ILogger<FieldMeasurementController> logger, IBoreholePermissionService boreholePermissionService)
+        : base(context, logger, boreholePermissionService)
     {
     }
 
@@ -71,7 +71,7 @@ public class FieldMeasurementController : BoreholeControllerBase<FieldMeasuremen
         }
 
         // Check if associated borehole is locked
-        if (await BoreholeLockService.IsBoreholeLockedAsync(((FieldMeasurement)fieldMeasurementToDelete).BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), ((FieldMeasurement)fieldMeasurementToDelete).BoreholeId).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.");
         }
@@ -84,7 +84,7 @@ public class FieldMeasurementController : BoreholeControllerBase<FieldMeasuremen
     private async Task<ActionResult> ProcessFieldMeasurement(FieldMeasurement fieldMeasurement)
     {
         // Check if associated borehole is locked
-        if (await BoreholeLockService.IsBoreholeLockedAsync(fieldMeasurement.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), fieldMeasurement.BoreholeId).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.");
         }

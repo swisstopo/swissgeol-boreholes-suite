@@ -11,7 +11,7 @@ import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../..
 import { ensureDatetime } from "../../../../../../../components/form/formUtils";
 import { PromptContext } from "../../../../../../../components/prompt/promptContext";
 import { DetailContext } from "../../../../../detailContext";
-import { updateStratigraphyAttributes } from "../api/index.js";
+import { updateStratigraphyAttributes } from "../api/index.ts";
 
 const InfoList = ({ id, profileInfo, onUpdated }) => {
   const { t } = useTranslation();

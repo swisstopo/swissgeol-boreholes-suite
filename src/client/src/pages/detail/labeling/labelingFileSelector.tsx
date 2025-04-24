@@ -1,22 +1,26 @@
 import { FC, useCallback, useContext, useRef } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { AlertColor, Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/material";
-import { File as FileIcon } from "lucide-react";
-import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
-import { AddButton } from "../../../components/buttons/buttons.tsx";
+import { ChevronRight, File as FileIcon } from "lucide-react";
+import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
+import { maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
+import { AddButton, BoreholesBaseButton } from "../../../components/buttons/buttons.tsx";
 import { DetailContext } from "../detailContext.tsx";
-import { labelingFileFormat } from "./labelingInterfaces.tsx";
+import { labelingFileFormat, PanelTab } from "./labelingInterfaces.tsx";
 
 interface LabelingFileSelectorProps {
   isLoadingFiles: boolean;
-  files?: FileInterface[];
-  setSelectedFile: (file: FileInterface) => void;
+  files?: BoreholeAttachment[];
+  activeTab: PanelTab;
+  setSelectedFile: (file: BoreholeAttachment) => void;
   addFile: (file: File) => void;
   showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean) => void;
 }
 
 const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
+  activeTab,
   isLoadingFiles,
   files,
   setSelectedFile,
@@ -26,6 +30,9 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { editingEnabled } = useContext(DetailContext);
+  const { id } = useParams<{ id: string }>();
+  const history = useHistory();
+  const location = useLocation();
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -48,9 +55,10 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
     onDrop,
     maxFiles: 1,
     maxSize: maxFileSizeKB,
-    accept: { [labelingFileFormat]: [] },
+    accept: { [labelingFileFormat[activeTab]]: [] },
     noDrag: false,
     noClick: true,
+    disabled: activeTab === PanelTab.photo,
   });
 
   return (
@@ -87,7 +95,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
           }}
           data-cy="labeling-file-selector">
           <Typography variant="h6" sx={{ fontWeight: "700" }}>
-            {t("existingFiles")}
+            {activeTab === PanelTab.profile ? t("profiles") : t("photos")}
           </Typography>
           <Stack gap={1}>
             {isLoadingFiles ? (
@@ -95,7 +103,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
                 <CircularProgress />
               </Stack>
             ) : files && files.length > 0 ? (
-              files.map((file: FileInterface) => (
+              files.map(file => (
                 <Button
                   key={file.name}
                   startIcon={<FileIcon />}
@@ -110,18 +118,39 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
                 </Button>
               ))
             ) : (
-              <Typography variant="body1">{t("noFiles")}</Typography>
+              <Typography variant="body1">
+                {activeTab === PanelTab.profile
+                  ? t("noFiles")
+                  : editingEnabled
+                    ? `${t("noPhotosUploaded")} ${t("uploadPhotosAsAttachments")}`
+                    : t("noPhotosUploaded")}
+              </Typography>
             )}
           </Stack>
           <Divider />
-          {editingEnabled && (
-            <AddButton
-              variant="contained"
-              color="primary"
-              label="addFile"
-              onClick={() => fileInputRef.current?.click()}
-            />
-          )}
+          {editingEnabled &&
+            (activeTab === PanelTab.profile ? (
+              <AddButton
+                variant="contained"
+                color="primary"
+                label="addFile"
+                onClick={() => fileInputRef.current?.click()}
+              />
+            ) : (
+              <BoreholesBaseButton
+                variant="contained"
+                color="primary"
+                label="managePhotos"
+                onClick={() => {
+                  const target = `/${id}/attachments#photos`;
+                  if (location.pathname + location.hash !== target) {
+                    history.push(target);
+                  }
+                }}
+                icon={<ChevronRight />}
+                dataCy="labeling-file-selector-manage-photos"
+              />
+            ))}
         </Stack>
       </Stack>
     </Box>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { fetchStratigraphy } from "../../../../../../../api/fetchApiV2.ts";
 import { FormContainer } from "../../../../../../../components/form/form.ts";
@@ -6,7 +6,6 @@ import InfoList from "./InfoList.jsx";
 
 const LithologyInfo = props => {
   const { selectedStratigraphyID: id, onUpdated, attribute } = props.data;
-  const mounted = useRef(false);
   const [state, setState] = useState({
     isPatching: false,
     updateAttributeDelay: {},
@@ -22,19 +21,13 @@ const LithologyInfo = props => {
   });
   const setData = useCallback(id => {
     fetchStratigraphy(id).then(data => {
-      if (mounted.current) setState({ profileInfo: data });
+      setState({ profileInfo: data });
     });
   }, []);
 
   useEffect(() => {
-    //using useRef for memory leak error
-    mounted.current = true;
-    if (id && mounted.current) setData(id);
+    if (id) setData(id);
     else setState({});
-
-    return () => {
-      mounted.current = false;
-    };
   }, [id, setData]);
 
   return (
