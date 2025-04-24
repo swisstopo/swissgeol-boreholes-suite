@@ -92,10 +92,10 @@ function assertPageCount(currentPage, totalPages) {
   cy.get('[data-cy="labeling-page-next"]').should(nextPageDisabled ? "be.disabled" : "not.be.disabled");
 }
 
-function toggleLabelingPanelWithoutDocuments() {
+function toggleLabelingPanelWithoutProfiles() {
   cy.get('[data-cy="labeling-toggle-button"]').click();
   cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
-  cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.");
+  cy.get('[data-cy="labeling-file-selector"]').contains("No profile has been uploaded yet.");
 }
 
 function selectLabelingAttachment() {
@@ -213,27 +213,26 @@ describe("Test labeling tool", () => {
   it("can select file", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    toggleLabelingPanelWithoutDocuments();
+    toggleLabelingPanelWithoutProfiles();
 
-    cy.get('[data-cy="labeling-file-dropzone"]').attachFile("import/borehole_attachment_1.pdf", {
+    getElementByDataCy("labeling-file-dropzone").attachFile("import/borehole_attachment_1.pdf", {
       subjectType: "drag-n-drop",
     });
     cy.wait("@get-borehole-files");
-    cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_1.pdf");
+    getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
 
-    cy.get('[data-cy="labeling-toggle-button"]').click();
-    cy.get('[data-cy="labeling-toggle-button"]').click();
-    cy.get('[data-cy="labeling-file-dropzone"]').should("exist");
-    cy.get('[data-cy="labeling-file-selector"]').contains("No documents have been uploaded yet.").should("not.exist");
-    getElementByDataCy("addfile-button").should("exist");
-    cy.get('[data-cy="labeling-file-selector"]').contains("borehole_attachment_1.pdf").should("exist");
-    cy.get('[data-cy="labeling-file-dropzone"]').attachFile("import/borehole_attachment_3.pdf", {
-      subjectType: "drag-n-drop",
+    reloadPanel();
+    getElementByDataCy("labeling-file-selector").should("not.exist");
+    getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
+
+    // Simulate file upload using Add profile in labeling-file-button-select
+    getElementByDataCy("labeling-panel").find('input[type="file"]').attachFile("import/borehole_attachment_3.pdf", {
+      subjectType: "input",
     });
     cy.wait("@get-borehole-files");
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
     cy.get('[data-cy="labeling-file-button-select"]').click();
-    assertSelectContent(["borehole_attachment_1.pdf", "borehole_attachment_3.pdf", "Add document"]);
+    assertSelectContent(["borehole_attachment_1.pdf", "borehole_attachment_3.pdf", "Add profile"]);
 
     isFileActive("borehole_attachment_1.pdf", false);
     isFileActive("borehole_attachment_3.pdf", true);
@@ -269,7 +268,7 @@ describe("Test labeling tool", () => {
 
     getElementByDataCy("labeling-file-button-select").click();
     assertSelectContent(["borehole_attachment_1.pdf", "borehole_attachment_3.pdf", "WOLFHEART.pdf"]);
-    cy.contains("Add document").should("not.exist");
+    cy.contains("Add profile").should("not.exist");
     // can select different file from dropdown
     cy.get(".MuiListItem-root").contains("WOLFHEART.pdf").click();
     getElementByDataCy("labeling-file-button-select").contains("WOLFHEART.pdf");
@@ -282,6 +281,19 @@ describe("Test labeling tool", () => {
     getElementByDataCy("labeling-file-selector-button").contains("WOLFHEART.pdf");
     getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_3.pdf").click();
     waitForLabelingImageLoaded();
+
+    // can select next file from page selection
+    getElementByDataCy("labeling-file-next").click();
+    getElementByDataCy("labeling-file-button-select").contains("WOLFHEART.pdf");
+    getElementByDataCy("labeling-file-next").should("be.disabled");
+
+    // can select previous file from page selection
+    getElementByDataCy("labeling-file-previous").click();
+    getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_3.pdf");
+
+    getElementByDataCy("labeling-file-previous").click();
+    getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
+    getElementByDataCy("labeling-file-previous").should("be.disabled");
   });
 
   it("can extract coordinates and reference system from image", () => {
@@ -323,7 +335,7 @@ describe("Test labeling tool", () => {
 
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    toggleLabelingPanelWithoutDocuments();
+    toggleLabelingPanelWithoutProfiles();
     selectLabelingAttachment();
     assertPageCount(1, 3);
 
@@ -381,7 +393,7 @@ describe("Test labeling tool", () => {
   it("can extract coordinates and reference system from rotated and zoomed next page", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    toggleLabelingPanelWithoutDocuments();
+    toggleLabelingPanelWithoutProfiles();
     selectLabelingAttachment();
     assertPageCount(1, 3);
 
@@ -426,7 +438,7 @@ describe("Test labeling tool", () => {
   it("can copy text to clipboard and show word bounding box previews", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    toggleLabelingPanelWithoutDocuments();
+    toggleLabelingPanelWithoutProfiles();
     selectLabelingAttachment();
     assertPageCount(1, 3);
     getElementByDataCy("labeling-page-next").click();
@@ -481,7 +493,7 @@ describe("Test labeling tool", () => {
   it("shows alert if no coordinates are extracted", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    toggleLabelingPanelWithoutDocuments();
+    toggleLabelingPanelWithoutProfiles();
     selectLabelingAttachment();
     assertPageCount(1, 3);
 
@@ -510,7 +522,7 @@ describe("Test labeling tool", () => {
     cy.intercept("POST", "/dataextraction/api/V1/bounding_boxes", req => req.destroy());
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    toggleLabelingPanelWithoutDocuments();
+    toggleLabelingPanelWithoutProfiles();
     selectLabelingAttachment();
 
     cy.get(".MuiAlert-message").contains("An error occurred while fetching the bounding boxes.");
@@ -520,7 +532,7 @@ describe("Test labeling tool", () => {
   it("can upload and show photos", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    toggleLabelingPanelWithoutDocuments();
+    toggleLabelingPanelWithoutProfiles();
     selectEmptyPhotoTab();
 
     getElementByDataCy("labeling-file-selector-manage-photos").click();
@@ -544,5 +556,26 @@ describe("Test labeling tool", () => {
       const view = win.labelingImage.getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
+
+    getElementByDataCy("labeling-panel")
+      .find('input[type="file"]')
+      .attachFile({
+        fileContent: new Blob([0]),
+        fileName: "image_123.0-456.0_all.jpg",
+        mimeType: "image/jpeg",
+      });
+    cy.wait(["@upload-photo", "@getAllPhotos"]);
+    stopBoreholeEditing();
+
+    // can navigate with previous button
+    getElementByDataCy("labeling-file-button-select").contains("123.00 - 456.00");
+    getElementByDataCy("labeling-page-previous").click();
+    getElementByDataCy("labeling-file-button-select").contains("12.00 - 34.00");
+
+    // can search in photo select list
+    getElementByDataCy("labeling-file-button-select").click();
+    assertSelectContent(["12.00 - 34.00", "123.00 - 456.00"]);
+    getElementByDataCy("labeling-file-button-select-search").type("456");
+    assertSelectContent(["123.00 - 456.00"]);
   });
 });
