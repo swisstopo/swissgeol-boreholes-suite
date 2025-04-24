@@ -73,43 +73,10 @@ public static class BoreholeGeometryExtensions
         var a = geometry[upperIndex - 1];
         var b = geometry[upperIndex];
         var ab = b.ToVector3D() - a.ToVector3D();
-        var distance = ab.Length();
-        var halfDistance = distance / 2;
+        var halfDistance = ab.Length() / 2;
         var deltaMD = b.MD - a.MD;
 
-        // Calculate dogleg beta and direction vector at a
-        double beta;
-        Vector3D aDirection;
-        if (a.HAZI.HasValue && a.DEVI.HasValue && b.HAZI.HasValue && b.DEVI.HasValue)
-        {
-            var aIncRad = Degrees.ToRadians(a.DEVI.Value);
-            var aAziRad = Degrees.ToRadians(a.HAZI.Value);
-            var bIncRad = Degrees.ToRadians(b.DEVI.Value);
-            var bAziRad = Degrees.ToRadians(b.HAZI.Value);
-
-            beta = Math.Acos(Math.Cos(bIncRad - aIncRad) - (Math.Sin(aIncRad) * Math.Sin(bIncRad) * (1 - Math.Cos(bAziRad - aAziRad))));
-            aDirection = ToVector3D(aAziRad, aIncRad);
-        }
-        else
-        {
-            // Azimuth and Inclination are missing
-            // Approximate direction with vector from previous to next point
-            aDirection = (b.ToVector3D() - geometry[Math.Max(upperIndex - 2, 0)].ToVector3D()).Normalize();
-
-            var factor = distance / deltaMD;
-            if (IsCloseToZero(factor - 1) || factor > 1)
-            {
-                // Difference of measured and actual distance between coordinates is small or distance between coordinates is larger than measured distance (rounding errors)
-                // Calculate as a straight segment
-                beta = 0;
-            }
-            else
-            {
-                // Inverse function of a 4th order Taylor series approximation of the function
-                // f(x) = ((2 * sin(x / 2)) / x) - factor
-                beta = 2.8284271247461903 * Math.Sqrt(5 - (2.23606797749979 * Math.Sqrt((6 * factor) - 1)));
-            }
-        }
+        var (beta, aDirection) = CalculateDogleg(geometry, upperIndex);
 
         if (beta == 0)
         {
@@ -175,7 +142,6 @@ public static class BoreholeGeometryExtensions
     {
         var pointA = geometry[upperIndex - 1];
         var pointB = geometry[upperIndex];
-        var pointVectorA = pointA.ToVector3D();
 
         if (IsCloseToZero(pointB.Z - pointA.Z))
         {
@@ -191,42 +157,11 @@ public static class BoreholeGeometryExtensions
             }
         }
 
+        var pointVectorA = pointA.ToVector3D();
         var ab = pointB.ToVector3D() - pointVectorA;
-        var distance = ab.Length();
-        var halfDistance = distance / 2;
         var deltaMD = pointB.MD - pointA.MD;
 
-        // Calculate dogleg beta and direction vector at a
-        double beta;
-        Vector3D aDirection;
-        if (pointA.HAZI.HasValue && pointA.DEVI.HasValue && pointB.HAZI.HasValue && pointB.DEVI.HasValue)
-        {
-            var aIncRad = Degrees.ToRadians(pointA.DEVI.Value);
-            var aAziRad = Degrees.ToRadians(pointA.HAZI.Value);
-            var bIncRad = Degrees.ToRadians(pointB.DEVI.Value);
-            var bAziRad = Degrees.ToRadians(pointB.HAZI.Value);
-
-            beta = Math.Acos(Math.Cos(bIncRad - aIncRad) - (Math.Sin(aIncRad) * Math.Sin(bIncRad) * (1 - Math.Cos(bAziRad - aAziRad))));
-            aDirection = ToVector3D(aAziRad, aIncRad);
-        }
-        else
-        {
-            // Azimuth and Inclination are missing
-            // Approximate direction with vector from previous to next point
-            aDirection = (pointB.ToVector3D() - geometry[Math.Max(upperIndex - 2, 0)].ToVector3D()).Normalize();
-
-            var factor = distance / deltaMD;
-            if (IsCloseToZero(factor - 1) || factor > 1)
-            {
-                beta = 0;
-            }
-            else
-            {
-                // Inverse function of a 4th order Taylor series approximation of the function
-                // f(x) = ((2 * sin(x / 2)) / x) - factor
-                beta = 2.8284271247461903 * Math.Sqrt(5 - (2.23606797749979 * Math.Sqrt((6 * factor) - 1)));
-            }
-        }
+        var (beta, aDirection) = CalculateDogleg(geometry, upperIndex);
 
         if (beta == 0)
         {
@@ -244,7 +179,7 @@ public static class BoreholeGeometryExtensions
         else
         {
             var circleNormal = aDirection.Cross(ab).Normalize();
-            var radius = halfDistance / Math.Sin(beta / 2);
+            var radius = (ab.Length() / 2) / Math.Sin(beta / 2);
             var center = pointVectorA + (radius * circleNormal.Cross(aDirection));
 
             // Calculate intersection line
@@ -294,6 +229,51 @@ public static class BoreholeGeometryExtensions
 
     internal static Vector3D ToVector3D(this BoreholeGeometryElement element)
         => new Vector3D(element.X, element.Y, element.Z);
+
+    /// <summary>
+    /// Calculate dogleg beta and direction vector at point a.
+    /// </summary>
+    private static (double Beta, Vector3D ADirection) CalculateDogleg(List<BoreholeGeometryElement> geometry, int upperIndex)
+    {
+        var pointA = geometry[upperIndex - 1];
+        var pointB = geometry[upperIndex];
+
+        double beta;
+        Vector3D aDirection;
+        if (pointA.HAZI.HasValue && pointA.DEVI.HasValue && pointB.HAZI.HasValue && pointB.DEVI.HasValue)
+        {
+            var aIncRad = Degrees.ToRadians(pointA.DEVI.Value);
+            var aAziRad = Degrees.ToRadians(pointA.HAZI.Value);
+            var bIncRad = Degrees.ToRadians(pointB.DEVI.Value);
+            var bAziRad = Degrees.ToRadians(pointB.HAZI.Value);
+
+            beta = Math.Acos(Math.Cos(bIncRad - aIncRad) - (Math.Sin(aIncRad) * Math.Sin(bIncRad) * (1 - Math.Cos(bAziRad - aAziRad))));
+            aDirection = ToVector3D(aAziRad, aIncRad);
+        }
+        else
+        {
+            // Azimuth and Inclination are missing
+            // Approximate direction with vector from previous to next point
+            aDirection = (pointB.ToVector3D() - geometry[Math.Max(upperIndex - 2, 0)].ToVector3D()).Normalize();
+
+            var ab = pointB.ToVector3D() - pointA.ToVector3D();
+            var distance = ab.Length();
+            var deltaMD = pointB.MD - pointA.MD;
+            var factor = distance / deltaMD;
+            if (IsCloseToZero(factor - 1) || factor > 1)
+            {
+                beta = 0;
+            }
+            else
+            {
+                // Inverse function of a 4th order Taylor series approximation of the function
+                // f(x) = ((2 * sin(x / 2)) / x) - factor
+                beta = 2.8284271247461903 * Math.Sqrt(5 - (2.23606797749979 * Math.Sqrt((6 * factor) - 1)));
+            }
+        }
+
+        return (beta, aDirection);
+    }
 
     /// <summary>
     /// Calculate the unit vector in the direction of the borehole.
