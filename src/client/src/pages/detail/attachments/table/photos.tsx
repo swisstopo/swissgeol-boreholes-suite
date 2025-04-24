@@ -1,55 +1,76 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
-import { t } from "i18next";
-import { Photo } from "../../../../api/apiInterfaces.ts";
+import { FC, useCallback, useContext, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { GridColDef } from "@mui/x-data-grid";
 import { getPhotosByBoreholeId, uploadPhoto } from "../../../../api/fetchApiV2.ts";
-import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import { FullPageCentered } from "../../../../components/styledComponents.ts";
-import { AddAttachmentButton } from "../addAttachmentButton.tsx";
-import { PhotosTable } from "./photosTable.tsx";
+import DateText from "../../../../components/legacyComponents/dateText";
+import { DetailContext } from "../../detailContext.tsx";
+import { AttachmentContent } from "../attachmentsContent.tsx";
 
 interface PhotosProps {
   boreholeId: number;
 }
 
 export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
-  const [photos, setPhotos] = useState<Photo[]>([]);
-  const { showAlert } = useContext(AlertContext);
+  const { t } = useTranslation();
+  const { editingEnabled } = useContext(DetailContext);
 
   const loadPhotos = useCallback(() => {
-    getPhotosByBoreholeId(boreholeId).then(setPhotos);
+    return getPhotosByBoreholeId(boreholeId);
   }, [boreholeId]);
 
-  useEffect(() => {
-    loadPhotos();
-  }, [loadPhotos]);
-
-  const upload = async (file: File) => {
-    try {
-      await uploadPhoto(boreholeId, file);
-      loadPhotos();
-    } catch (error) {
-      showAlert(t((error as Error).message), "error");
-    }
+  const addPhoto = async (file: File) => {
+    await uploadPhoto(boreholeId, file);
   };
 
+  const deletePhotos = async (ids: number[]) => {
+    await deletePhotos(ids);
+  };
+
+  const exportPhotos = async (ids: number[]) => {
+    await exportPhotos(ids);
+  };
+
+  const columns = useMemo<GridColDef[]>(
+    () => [
+      {
+        field: "name",
+        headerName: t("name"),
+      },
+      {
+        field: "created",
+        headerName: t("uploaded"),
+        renderCell: ({ row }) => <DateText date={row.created} hours />,
+      },
+      {
+        field: "createdBy",
+        headerName: t("user"),
+        valueGetter: (value, row) => row.createdBy?.name ?? "-",
+      },
+      {
+        field: "depth",
+        headerName: t("depthMD"),
+        valueGetter: (value, row) => `${row.fromDepth} - ${row.toDepth}`,
+      },
+      {
+        field: "public",
+        headerName: t("public"),
+        type: "boolean",
+        editable: editingEnabled,
+      },
+    ],
+    [t, editingEnabled],
+  );
+
   return (
-    <>
-      <AddAttachmentButton
-        label="addPhoto"
-        onFileSelect={upload}
-        acceptedFileTypes="image/*"
-        dataCy="photo-upload-button"
-      />
-      {photos && photos.length > 0 ? (
-        <Box sx={{ height: "100%" }}>
-          <PhotosTable photos={photos} loadPhotos={loadPhotos} />
-        </Box>
-      ) : (
-        <FullPageCentered>
-          <Typography variant="fullPageMessage">{t("noPhotos")}</Typography>
-        </FullPageCentered>
-      )}
-    </>
+    <AttachmentContent
+      columns={columns}
+      addAttachment={addPhoto}
+      acceptedFileTypes="image/*"
+      getAttachments={loadPhotos}
+      deleteAttachments={deletePhotos}
+      exportAttachments={exportPhotos}
+      addAttachmentButtonLabel={t("addPhoto")}
+      noAttachmentsText={t("noPhotos")}
+    />
   );
 };
