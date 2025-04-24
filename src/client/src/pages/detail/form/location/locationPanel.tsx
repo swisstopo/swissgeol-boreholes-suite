@@ -62,7 +62,8 @@ export const LocationPanel = ({ onSubmit, borehole, labelingPanelOpen, ref }: Lo
                 borehole={borehole}
                 formMethods={formMethods}
                 labelingPanelOpen={labelingPanelOpen}
-                key={resetKey}></LocationSegment>
+                key={resetKey}
+              />
             </Stack>
           </form>
         </FormProvider>

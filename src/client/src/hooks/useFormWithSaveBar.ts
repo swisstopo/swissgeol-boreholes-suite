@@ -50,7 +50,7 @@ export function UseFormWithSaveBar<T extends FieldValues>({
     const currentValues = formMethods.getValues();
     formMethods.reset(currentValues);
     setExtractionObject(undefined);
-    formMethods.handleSubmit(onSubmit)();
+    onSubmit(currentValues);
   }, [formMethods, onSubmit, setExtractionObject]);
 
   const saveAndShowFeedback = useCallback(() => {
