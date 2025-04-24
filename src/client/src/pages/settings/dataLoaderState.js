@@ -1,29 +1,19 @@
 const initialState = {
   isFetching: false,
   isReady: false,
-  coreDomainList: false,
   coreUser: false,
   terms: false,
 };
 
 const dataLoaderState = (state = initialState, action) => {
   const { path } = action;
-  if (path !== "/borehole/codes" && path !== "/user" && path !== "/terms") {
+  if (path !== "/user" && path !== "/terms") {
     return state;
   }
   let copy = {
     ...state,
   };
-  if (path === "/borehole/codes") {
-    switch (action.type) {
-      case "LIST_OK":
-        copy.coreDomainList = true;
-        break;
-
-      default:
-        return state;
-    }
-  } else if (path === "/terms") {
+  if (path === "/terms") {
     switch (action.type) {
       case "ACCEPT_OK":
         copy.terms = action.json.success;
@@ -49,7 +39,7 @@ const dataLoaderState = (state = initialState, action) => {
         return state;
     }
   }
-  if (copy.coreDomainList && copy.coreUser) {
+  if (copy.coreUser) {
     copy.isReady = true;
   }
 

@@ -1,13 +1,11 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { Box, Card, FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import _ from "lodash";
 import { DevTool } from "../../../../../../../hookformDevtools.js";
-import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.ts";
+import { fetchLayerById, layerQueryKey, updateLayer, useDomains } from "../../../../../../api/fetchApiV2.ts";
 import { CancelButton, SaveButton } from "../../../../../../components/buttons/buttons.js";
 import { DataCardButtonContainer } from "../../../../../../components/dataCard/dataCard.js";
 import { parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.js";
@@ -21,6 +19,7 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { showPrompt } = useContext(PromptContext);
+  const { data: domains } = useDomains();
 
   const getDefaultValues = useCallback(
     layer => {
@@ -49,11 +48,6 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
       formMethods.reset(getDefaultValues(layer));
     }
   }, [layer, getDefaultValues, formMethods]);
-
-  const { codes, geocode } = useSelector(state => ({
-    codes: state.core_domain_list,
-    geocode: "Geol",
-  }));
 
   const mapResponseToLayer = useCallback(response => {
     response["uscs_3"] = response.uscs3Codelists.map(x => x.id);
@@ -139,17 +133,10 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
   };
 
   const isVisibleFunction = field => {
-    if (_.has(codes, "data.layer_kind") && _.isArray(codes.data.layer_kind)) {
-      for (let idx = 0; idx < codes.data.layer_kind.length; idx++) {
-        const element = codes.data.layer_kind[idx];
-        if (element.code === geocode) {
-          if (_.isObject(element.conf) && _.has(element.conf, `fields.${field}`)) {
-            return element.conf.fields[field];
-          } else {
-            return false;
-          }
-        }
-      }
+    const layerKindDomain = domains.find(d => d.schema === "layer_kind");
+    if (layerKindDomain?.conf) {
+      const configurationObject = JSON.parse(layerKindDomain.conf);
+      return configurationObject?.fields?.[field] ?? false;
     }
     return false;
   };
