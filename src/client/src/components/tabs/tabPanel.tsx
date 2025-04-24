@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useState } from "react";
+import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { Box } from "@mui/system";
 import { AddWorkgroupDialog } from "../../pages/settings/admin/dialogs/AddWorkgroupDialog.tsx";
@@ -8,7 +8,7 @@ import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../styledTabCo
 export interface Tab {
   label: string;
   hash: string;
-  component: JSX.Element;
+  component: ReactNode;
   hasContent?: boolean;
 }
 

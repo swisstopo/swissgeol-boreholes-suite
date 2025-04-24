@@ -1,4 +1,4 @@
-import { FC, ReactNode, useContext } from "react";
+import { FC, ReactNode, RefObject, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
@@ -30,7 +30,7 @@ export const LabelingHeader: FC<{
   selectedAttachment: BoreholeAttachment | undefined;
   setSelectedAttachment: (file: BoreholeAttachment | undefined) => void;
   setActivePage: (page: number) => void;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: RefObject<HTMLInputElement | null>;
   files?: BoreholeAttachment[];
 }> = ({ selectedAttachment, setSelectedAttachment, setActivePage, fileInputRef, files }) => {
   const { t } = useTranslation();

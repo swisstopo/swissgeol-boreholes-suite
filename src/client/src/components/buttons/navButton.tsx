@@ -1,11 +1,11 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, ReactNode, useState } from "react";
 import { IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme";
 import { ButtonProps } from "./buttonsInterface";
 
 export interface NavButtonProps extends ButtonProps {
   label: string;
-  icon: JSX.Element;
+  icon: ReactNode;
   selected?: boolean;
 }
 

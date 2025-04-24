@@ -11,7 +11,7 @@ export interface LocationBaseProps {
 export interface LocationPanelProps extends LocationBaseProps {
   onSubmit: (data: LocationFormInputs) => void;
   labelingPanelOpen: boolean;
-  ref: RefObject<{ submit: () => void; reset: () => void }>;
+  ref: RefObject<{ submit: () => void; reset: () => void } | null>;
 }
 
 interface LocationFormBaseInputs {
