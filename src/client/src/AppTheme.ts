@@ -466,6 +466,15 @@ export const theme = createTheme({
         notched: false,
       },
     },
+    MuiCheckbox: {
+      styleOverrides: {
+        colorPrimary: {
+          "&.Mui-checked": {
+            color: themePalette.background.menuItemActive,
+          },
+        },
+      },
+    },
     MuiCardHeader: {
       styleOverrides: {
         root: {
