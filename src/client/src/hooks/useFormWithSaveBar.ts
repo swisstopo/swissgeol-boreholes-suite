@@ -1,4 +1,4 @@
-import { ForwardedRef, useCallback, useEffect, useImperativeHandle } from "react";
+import { Ref, useCallback, useEffect, useImperativeHandle } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
@@ -9,7 +9,7 @@ import { useSaveOnCtrlS } from "./useSaveOnCtrlS.ts";
 interface UseFormWithSaveBarProps<T extends FieldValues> {
   formMethods: UseFormReturn<T>;
   onSubmit: (data: T) => void;
-  ref: ForwardedRef<unknown>;
+  ref: Ref<unknown>;
   incrementResetKey?: () => void;
 }
 

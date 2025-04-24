@@ -1,5 +1,5 @@
-import React from "react";
-import { NumericFormat, NumericFormatProps } from "react-number-format";
+import { useRef } from "react";
+import { NumericFormat } from "react-number-format";
 
 interface CustomProps {
   onChange: (event: { target: { name: string; value: string } }) => void;
@@ -7,27 +7,26 @@ interface CustomProps {
   value: number | string;
 }
 
-export const NumericFormatWithThousandSeparator = React.forwardRef<NumericFormatProps, CustomProps>(
-  function NumericFormatWithThousandSeparator(props, ref) {
-    const { onChange, value, ...other } = props;
+export function NumericFormatWithThousandSeparator(props: CustomProps) {
+  const { onChange, value, ...other } = props;
+  const inputRef = useRef(null);
 
-    return (
-      <NumericFormat
-        {...other}
-        getInputRef={ref}
-        value={value}
-        fixedDecimalScale
-        onValueChange={values => {
-          onChange({
-            target: {
-              name: props.name,
-              value: values.value,
-            },
-          });
-        }}
-        thousandSeparator="'"
-        valueIsNumericString
-      />
-    );
-  },
-);
+  return (
+    <NumericFormat
+      {...other}
+      getInputRef={inputRef}
+      value={value}
+      fixedDecimalScale
+      onValueChange={values => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator="'"
+      valueIsNumericString
+    />
+  );
+}

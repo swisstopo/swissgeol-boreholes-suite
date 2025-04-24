@@ -1,3 +1,4 @@
+import { Ref } from "react";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 
@@ -7,10 +8,12 @@ export interface BoreholeGeneralProps {
 
 export interface BoreholeDetailProps extends BoreholeGeneralProps {
   onSubmit: (data: BoreholeFormInputs) => void;
+  ref: Ref<BoreholeFormInputs>;
 }
 
 export interface BoreholePanelProps extends BoreholeGeneralProps {
   onSubmit: (data: BoreholeFormInputs) => void;
+  ref: Ref<BoreholeFormInputs>;
 }
 
 export interface BoreholeFormInputs {

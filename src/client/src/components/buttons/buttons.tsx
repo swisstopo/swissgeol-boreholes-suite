@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import CloseIcon from "@mui/icons-material/Close";
 import { Button, IconButton } from "@mui/material";
@@ -7,13 +6,12 @@ import CopyIcon from "../../assets/icons/copy.svg?react";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { ButtonProps } from "./buttonsInterface";
 
-export const BoreholesBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const BoreholesBaseButton = (props: ButtonProps) => {
   const { t } = useTranslation();
   // As of now there is no variant "contained" with color "secondary" in the design system, fallback to "primary".
   const color = props.variant === "contained" ? "primary" : (props.color ?? "primary");
   return (
     <Button
-      ref={ref}
       {...props}
       data-cy={props.dataCy ?? props.label?.toLowerCase() + "-button"}
       color={color}
@@ -22,16 +20,15 @@ export const BoreholesBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((p
       {props.label && capitalizeFirstLetter(t(props.label))}
     </Button>
   );
-});
+};
 
-export const BoreholesButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BoreholesBaseButton ref={ref} {...props} label={props.label} />;
-});
+export const BoreholesButton = (props: ButtonProps) => {
+  return <BoreholesBaseButton {...props} label={props.label} />;
+};
 
-export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const AddButton = (props: ButtonProps) => {
   return (
     <BoreholesBaseButton
-      ref={ref}
       {...props}
       label={props.label ?? "add"}
       variant={props.variant ?? "outlined"}
@@ -39,18 +36,15 @@ export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref)
       icon={<Plus />}
     />
   );
-});
+};
 
-export const EditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return (
-    <BoreholesBaseButton ref={ref} {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />
-  );
-});
+export const EditButton = (props: ButtonProps) => {
+  return <BoreholesBaseButton {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />;
+};
 
-export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const BulkEditButton = (props: ButtonProps) => {
   return (
     <BoreholesBaseButton
-      ref={ref}
       {...props}
       label="bulkEditing"
       variant={props.variant ?? "outlined"}
@@ -58,24 +52,15 @@ export const BulkEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
       icon={<Pencil />}
     />
   );
-});
+};
 
-export const EndEditButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const EndEditButton = (props: ButtonProps) => {
+  return <BoreholesBaseButton {...props} label="editingStop" variant={props.variant ?? "contained"} icon={<Check />} />;
+};
+
+export const CopyButton = (props: ButtonProps) => {
   return (
     <BoreholesBaseButton
-      ref={ref}
-      {...props}
-      label="editingStop"
-      variant={props.variant ?? "contained"}
-      icon={<Check />}
-    />
-  );
-});
-
-export const CopyButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return (
-    <BoreholesBaseButton
-      ref={ref}
       {...props}
       label="copy"
       variant={props.variant ?? "outlined"}
@@ -83,12 +68,11 @@ export const CopyButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
       icon={<CopyIcon />}
     />
   );
-});
+};
 
-export const CancelButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const CancelButton = (props: ButtonProps) => {
   return (
     <BoreholesBaseButton
-      ref={ref}
       {...props}
       label="cancel"
       variant={props.variant ?? "outlined"}
@@ -96,12 +80,11 @@ export const CancelButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
       icon={<CloseIcon />}
     />
   );
-});
+};
 
-export const SaveButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const SaveButton = (props: ButtonProps) => {
   return (
     <BoreholesBaseButton
-      ref={ref}
       {...props}
       label="save"
       variant={props.variant ?? "outlined"}
@@ -109,16 +92,15 @@ export const SaveButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
       icon={<Save />}
     />
   );
-});
+};
 
-export const AcceptButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <BoreholesBaseButton ref={ref} {...props} label="accept" variant={props.variant ?? "contained"} />;
-});
+export const AcceptButton = (props: ButtonProps) => {
+  return <BoreholesBaseButton {...props} label="accept" variant={props.variant ?? "contained"} />;
+};
 
-export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const DeleteButton = (props: ButtonProps) => {
   return (
     <BoreholesBaseButton
-      ref={ref}
       {...props}
       label={props.label ?? "delete"}
       variant={props.variant ?? "outlined"}
@@ -126,12 +108,11 @@ export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
       icon={<Trash2 />}
     />
   );
-});
+};
 
-export const ExportButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const ExportButton = (props: ButtonProps) => {
   return (
     <BoreholesBaseButton
-      ref={ref}
       {...props}
       label={props.label ?? "export"}
       variant={props.variant ?? "outlined"}
@@ -139,7 +120,7 @@ export const ExportButton = forwardRef<HTMLButtonElement, ButtonProps>((props, r
       icon={<ArrowDownToLine />}
     />
   );
-});
+};
 
 export const ReturnButton = ({ onClick }: { onClick: () => void }) => {
   return (
