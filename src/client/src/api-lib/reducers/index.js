@@ -1,5 +1,5 @@
 import { applyMiddleware, combineReducers, compose, createStore } from "redux";
-import thunkMiddleware from "redux-thunk";
+import { thunk } from "redux-thunk";
 
 export function user() {
   const initialState = {
@@ -848,7 +848,7 @@ export function createReducer(pluginsReducers) {
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export function configureStore() {
-  const store = createStore(createReducer(), composeEnhancers(applyMiddleware(thunkMiddleware)));
+  const store = createStore(createReducer(), composeEnhancers(applyMiddleware(thunk)));
   store.pluginsReducers = {};
   return store;
 }
