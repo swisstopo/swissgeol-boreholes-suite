@@ -1,10 +1,10 @@
 ﻿using BDMS.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BDMS.BoreholeGeometry;
+namespace BDMS;
 
 [TestClass]
-public class HelperTest
+public class BoreholeGeometryExtensionsTest
 {
     private static readonly List<BoreholeGeometryElement> geometry = new List<BoreholeGeometryElement>
     {
