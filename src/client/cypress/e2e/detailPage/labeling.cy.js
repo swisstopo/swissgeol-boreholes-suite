@@ -147,6 +147,8 @@ function assertClipboardContent(expectedText) {
 }
 
 function moveMouseOntoMap() {
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(1000);
   cy.get('[data-cy="labeling-panel"]').realMouseMove(400, 400, { position: "topLeft" });
 }
 
@@ -158,6 +160,24 @@ function openPanel() {
 function closePanel() {
   getElementByDataCy("labeling-toggle-button").click();
   cy.get('[data-cy="labeling-panel"]').should("not.exist");
+}
+
+function selectEmptyPhotoTab() {
+  getElementByDataCy("labeling-tab-photo").click();
+  getElementByDataCy("labeling-file-selector").contains("No photo has been uploaded yet.");
+}
+
+function uploadPhoto() {
+  cy.get('[data-cy="photo-upload-button"]').find('input[type="file"]').attachFile("import/image_12.0-34.0_all.tif", {
+    subjectType: "input",
+  });
+  cy.wait("@upload-photo");
+  cy.wait("@getAllPhotos");
+}
+
+function reloadPanel() {
+  closePanel();
+  openPanel();
 }
 
 describe("Test labeling tool", () => {
@@ -254,9 +274,8 @@ describe("Test labeling tool", () => {
     cy.get(".MuiListItem-root").contains("WOLFHEART.pdf").click();
     getElementByDataCy("labeling-file-button-select").contains("WOLFHEART.pdf");
 
-    closePanel();
-    openPanel();
-    getElementByDataCy("labeling-file-selector").contains("Existing documents").should("exist");
+    reloadPanel();
+    getElementByDataCy("labeling-file-selector").contains("Profiles").should("exist");
     getElementByDataCy("addfile-button").should("not.exist");
     getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_1.pdf");
     getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_3.pdf");
@@ -496,5 +515,34 @@ describe("Test labeling tool", () => {
 
     cy.get(".MuiAlert-message").contains("An error occurred while fetching the bounding boxes.");
     cy.get('[aria-label="Close"]').click();
+  });
+
+  it("can upload and show photos", () => {
+    goToRouteAndAcceptTerms("/");
+    newEditableBorehole().as("borehole_id");
+    toggleLabelingPanelWithoutDocuments();
+    selectEmptyPhotoTab();
+
+    getElementByDataCy("labeling-file-selector-manage-photos").click();
+    cy.location()
+      .its("href")
+      .should("match", /\/attachments#photos$/);
+
+    uploadPhoto();
+    reloadPanel();
+
+    getElementByDataCy("labeling-file-selector").should("not.exist");
+    getElementByDataCy("labeling-file-button-select").contains("12.00 - 34.00");
+
+    // text extraction is not available for photos
+    getElementByDataCy("text-extraction-button").should("not.exist");
+
+    // can zoom and rotate
+    getElementByDataCy("zoom-in-button").click();
+    getElementByDataCy("rotate-button").click();
+    cy.window().then(win => {
+      const view = win.labelingImage.getView();
+      expect(view.getRotation()).to.equal(Math.PI / 2);
+    });
   });
 });

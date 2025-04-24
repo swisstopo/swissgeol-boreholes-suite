@@ -38,6 +38,8 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const hasFieldMeasurement =
     hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.fieldMeasurement) ?? false);
   const hasBoreholeFiles = (borehole.boreholeFiles?.length ?? 0) > 0;
+  const hasPhotos = (borehole.photos?.length ?? 0) > 0;
+  const hasAttachments = hasBoreholeFiles || hasPhotos;
 
   useEffect(() => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
@@ -177,7 +179,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             <>
               <ParentListItem
                 active={location.pathname === `/${id}/attachments`}
-                hasContent={hasBoreholeFiles}
+                hasContent={hasAttachments}
                 onClick={() => {
                   history.push(`/${id}/attachments`);
                 }}>

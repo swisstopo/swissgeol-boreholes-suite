@@ -101,6 +101,7 @@ builder.Services.AddApiVersioning(config =>
 builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<CoordinateService>();
 builder.Services.AddScoped<BoreholeFileCloudService>();
+builder.Services.AddScoped<PhotoCloudService>();
 builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
     var s3ConfigSection = builder.Configuration.GetSection("S3");
@@ -131,7 +132,7 @@ builder.Services
     .AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
-builder.Services.AddScoped<IBoreholeLockService, BoreholeLockService>();
+builder.Services.AddScoped<IBoreholePermissionService, BoreholePermissionService>();
 builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services

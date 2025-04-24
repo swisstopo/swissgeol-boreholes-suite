@@ -158,39 +158,31 @@
   color: black !important;
 }
 
-
-/*
-* Styles previously set by Semantic UI Css
- */
-
 *,
 *:before,
 *:after {
-    box-sizing: inherit;
+  box-sizing: inherit;
 }
 
 html {
-    box-sizing: border-box;
-    line-height: 1.15;
-    -ms-text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
-    font-size: 14px;
-
+  box-sizing: border-box;
+  line-height: 1.15;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  font-size: 14px;
 }
 
 body {
-    margin: 0;
-    overflow-x: hidden;
-    line-height: 1.4285em;
+  margin: 0;
+  overflow-x: hidden;
+  line-height: 1.4285em;
 }
 
 main {
-    display: block;
+  display: block;
 }
 
-
-html,body {
-    height: 100%;
+html,
+body {
+  height: 100%;
 }
-
-

@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class FaciesDescriptionController : BoreholeControllerBase<FaciesDescription>
 {
-    public FaciesDescriptionController(BdmsContext context, ILogger<FaciesDescriptionController> logger, IBoreholeLockService boreholeLockService)
-        : base(context, logger, boreholeLockService)
+    public FaciesDescriptionController(BdmsContext context, ILogger<FaciesDescriptionController> logger, IBoreholePermissionService boreholePermissionService)
+        : base(context, logger, boreholePermissionService)
     {
     }
 

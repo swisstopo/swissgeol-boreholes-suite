@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class SectionController : BoreholeControllerBase<Section>
 {
-    public SectionController(BdmsContext context, ILogger<SectionController> logger, IBoreholeLockService boreholeLockService)
-        : base(context, logger, boreholeLockService)
+    public SectionController(BdmsContext context, ILogger<SectionController> logger, IBoreholePermissionService boreholePermissionService)
+        : base(context, logger, boreholePermissionService)
     {
     }
 
@@ -87,7 +87,7 @@ public class SectionController : BoreholeControllerBase<Section>
         {
             // Check if associated borehole is locked
             var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
-            if (await BoreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
@@ -138,7 +138,7 @@ public class SectionController : BoreholeControllerBase<Section>
 
             // Check if associated borehole is locked
             var boreholeId = await GetBoreholeId(section).ConfigureAwait(false);
-            if (await BoreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
