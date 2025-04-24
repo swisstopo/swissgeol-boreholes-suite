@@ -65,41 +65,41 @@ public class HelperTest
     [TestMethod]
     public void GetDepthTVDArcSegment()
     {
-        Assert.AreEqual(57.820431832038, Math.Round(geometry.GetDepthTVD(58), 12));
-        Assert.AreEqual(84.571740070648, Math.Round(geometry.GetDepthTVD(86), 12));
-        Assert.AreEqual(109.225886942528, Math.Round(geometry.GetDepthTVD(114), 12));
+        Assert.AreEqual(57.820431832038, geometry.GetDepthTVD(58), 1e-12);
+        Assert.AreEqual(84.571740070648, geometry.GetDepthTVD(86), 1e-12);
+        Assert.AreEqual(109.225886942528, geometry.GetDepthTVD(114), 1e-12);
 
-        Assert.AreEqual(169.07893873662, Math.Round(geometry.GetDepthTVD(197.5), 12));
-        Assert.AreEqual(201.500222142397, Math.Round(geometry.GetDepthTVD(253), 12));
-        Assert.AreEqual(223.163431128066, Math.Round(geometry.GetDepthTVD(308.5), 12));
+        Assert.AreEqual(169.07893873662, geometry.GetDepthTVD(197.5), 1e-12);
+        Assert.AreEqual(201.500222142397, geometry.GetDepthTVD(253), 1e-12);
+        Assert.AreEqual(223.163431128066, geometry.GetDepthTVD(308.5), 1e-12);
 
-        Assert.AreEqual(228.766014771567, Math.Round(geometry.GetDepthTVD(383.75), 12));
-        Assert.AreEqual(222.856136832736, Math.Round(geometry.GetDepthTVD(403.5), 12));
-        Assert.AreEqual(213.346620440308, Math.Round(geometry.GetDepthTVD(423.25), 12));
+        Assert.AreEqual(228.766014771567, geometry.GetDepthTVD(383.75), 1e-12);
+        Assert.AreEqual(222.856136832736, geometry.GetDepthTVD(403.5), 1e-12);
+        Assert.AreEqual(213.346620440308, geometry.GetDepthTVD(423.25), 1e-12);
 
-        Assert.AreEqual(176.391371446291, Math.Round(geometry.GetDepthTVD(477.5), 12));
-        Assert.AreEqual(171.262121979607, Math.Round(geometry.GetDepthTVD(485), 12));
-        Assert.AreEqual(166.253522615015, Math.Round(geometry.GetDepthTVD(492.5), 12));
+        Assert.AreEqual(176.391371446291, geometry.GetDepthTVD(477.5), 1e-12);
+        Assert.AreEqual(171.262121979607, geometry.GetDepthTVD(485), 1e-12);
+        Assert.AreEqual(166.253522615015, geometry.GetDepthTVD(492.5), 1e-12);
     }
 
     [TestMethod]
     public void GetDepthTVDArcSegmentOnlyXYZ()
     {
-        Assert.AreEqual(57.820462857596, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(58), 12));
-        Assert.AreEqual(84.571801226303, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(86), 12));
-        Assert.AreEqual(109.225946771974, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(114), 12));
+        Assert.AreEqual(57.820462857596, geometryOnlyMDXYZ.GetDepthTVD(58), 1e-12);
+        Assert.AreEqual(84.571801226303, geometryOnlyMDXYZ.GetDepthTVD(86), 1e-12);
+        Assert.AreEqual(109.225946771974, geometryOnlyMDXYZ.GetDepthTVD(114), 1e-12);
 
-        Assert.AreEqual(177.933012100736, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(197.5), 12));
-        Assert.AreEqual(213.465069479762, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(253), 12));
-        Assert.AreEqual(232.019610033503, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(308.5), 12));
+        Assert.AreEqual(177.933012100736, geometryOnlyMDXYZ.GetDepthTVD(197.5), 1e-12);
+        Assert.AreEqual(213.465069479762, geometryOnlyMDXYZ.GetDepthTVD(253), 1e-12);
+        Assert.AreEqual(232.019610033503, geometryOnlyMDXYZ.GetDepthTVD(308.5), 1e-12);
 
-        Assert.AreEqual(227.911528743525, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(383.75), 12));
-        Assert.AreEqual(221.711811686328, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(403.5), 12));
-        Assert.AreEqual(212.492113070952, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(423.25), 12));
+        Assert.AreEqual(227.911528743525, geometryOnlyMDXYZ.GetDepthTVD(383.75), 1e-12);
+        Assert.AreEqual(221.711811686328, geometryOnlyMDXYZ.GetDepthTVD(403.5), 1e-12);
+        Assert.AreEqual(212.492113070952, geometryOnlyMDXYZ.GetDepthTVD(423.25), 1e-12);
 
-        Assert.AreEqual(176.391371445381, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(477.5), 12));
-        Assert.AreEqual(171.262121978368, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(485), 12));
-        Assert.AreEqual(166.253522614067, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(492.5), 12));
+        Assert.AreEqual(176.391371445381, geometryOnlyMDXYZ.GetDepthTVD(477.5), 1e-12);
+        Assert.AreEqual(171.262121978368, geometryOnlyMDXYZ.GetDepthTVD(485), 1e-12);
+        Assert.AreEqual(166.253522614067, geometryOnlyMDXYZ.GetDepthTVD(492.5), 1e-12);
     }
 
     [TestMethod]
@@ -117,7 +117,7 @@ public class HelperTest
         };
 
         Assert.AreEqual(0.25, geometryXYZ.GetDepthTVD(0.25));
-        Assert.AreEqual(512.932835, Math.Round(geometryXYZ.GetDepthTVD(541.75), 12));
+        Assert.AreEqual(512.932835, geometryXYZ.GetDepthTVD(541.75), 1e-12);
 
         var deltaMD = Math.Abs(geometryXYZ[3].MD - geometryXYZ[2].MD);
         var distance = (geometryXYZ[3].ToVector3D() - geometryXYZ[2].ToVector3D()).Length();
@@ -137,6 +137,49 @@ public class HelperTest
     }
 
     [TestMethod]
+    public void GetDepthMDSimpleArcSegment()
+    {
+        var arc90DegGeometry = new List<BoreholeGeometryElement>
+        {
+            new BoreholeGeometryElement { MD = 0, X = 42, Y = 0, Z = 100, HAZI = 0, DEVI = 0 },
+            new BoreholeGeometryElement { MD = (100 * Math.PI) / 2, X = 42, Y = 100, Z = 200, HAZI = 0, DEVI = 90 },
+        };
+
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => arc90DegGeometry.GetDepthMD(100 - 1e-12));
+        AssertRoundtrip(arc90DegGeometry, 100, 0);
+        AssertRoundtrip(arc90DegGeometry, 125, 25.268025514208);
+        AssertRoundtrip(arc90DegGeometry, 150, 52.35987755983);
+        AssertRoundtrip(arc90DegGeometry, 175, 84.806207898148);
+        AssertRoundtrip(arc90DegGeometry, 200, 157.07963267949);
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => arc90DegGeometry.GetDepthMD(200 + 1e-12));
+    }
+
+    [TestMethod]
+    public void GetDepthMDWrongMD()
+    {
+        // The measured depth of the second data point is shorter than the length of the arc segment.
+        var arc90DegGeometry = new List<BoreholeGeometryElement>
+        {
+            new BoreholeGeometryElement { MD = 0, X = 42, Y = 0, Z = 100, HAZI = 0, DEVI = 0 },
+            new BoreholeGeometryElement { MD = 100, X = 42, Y = 100, Z = 200, HAZI = 0, DEVI = 90 },
+        };
+
+        AssertRoundtrip(arc90DegGeometry, 100, 0);
+        AssertRoundtrip(arc90DegGeometry, 125, 16.086124651033);
+        AssertRoundtrip(arc90DegGeometry, 150, 33.333333333333);
+        AssertRoundtrip(arc90DegGeometry, 175, 53.989308767477);
+        AssertRoundtrip(arc90DegGeometry, 200, 100);
+    }
+
+    [TestMethod]
+    public void MdToTvdAndBack()
+    {
+        AssertRoundtrip(geometry, 140, 154.978898149935);
+        AssertRoundtrip(geometry, 229, 337.356883642718);
+        AssertRoundtrip(geometry, 230.5, 353.598364997125);
+    }
+
+    [TestMethod]
     public void GetDepthMDOnDataPoint()
     {
         Assert.AreEqual(142, geometry.GetDepthMD(130.83542740959587));
@@ -151,15 +194,15 @@ public class HelperTest
     [TestMethod]
     public void GetDepthMDArcSegment()
     {
-        Assert.AreEqual(60.90073047969, Math.Round(geometry.GetDepthMD(57.820431832038), 12));
-        Assert.AreEqual(90.613963216374, Math.Round(geometry.GetDepthMD(84.571740070648), 12));
-        Assert.AreEqual(117.997835339355, Math.Round(geometry.GetDepthMD(109.225886942528), 12));
+        Assert.AreEqual(58, geometry.GetDepthMD(57.820431832038), 1e-12);
+        Assert.AreEqual(86, geometry.GetDepthMD(84.571740070648), 1e-12);
+        Assert.AreEqual(114, geometry.GetDepthMD(109.225886942528), 1e-12);
     }
 
     [TestMethod]
     public void GetDepthMDMultipleIntersections()
     {
-        Assert.AreEqual(340.073879125045, Math.Round(geometry.GetDepthMD(220), 12));
+        Assert.AreEqual(297.780222690658, geometry.GetDepthMD(220), 1e-12);
     }
 
     [TestMethod]
@@ -178,5 +221,13 @@ public class HelperTest
     public void GetDepthMDEmptyGeometry()
     {
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => new List<BoreholeGeometryElement>().GetDepthMD(10));
+    }
+
+    private void AssertRoundtrip(List<BoreholeGeometryElement> geometry, double inputTVD, double expectedMD)
+    {
+        var actualMD = geometry.GetDepthMD(inputTVD);
+        Assert.AreEqual(expectedMD, actualMD, 1e-12);
+        var actualTVD = geometry.GetDepthTVD(actualMD);
+        Assert.AreEqual(inputTVD, actualTVD, 1e-12);
     }
 }

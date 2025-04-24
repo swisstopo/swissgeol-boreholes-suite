@@ -97,7 +97,7 @@ public static class BoreholeGeometryExtensions
             aDirection = (b.ToVector3D() - geometry[Math.Max(upperIndex - 2, 0)].ToVector3D()).Normalize();
 
             var factor = distance / deltaMD;
-            if (Math.Abs(factor - 1) < 1e-14 || factor > 1)
+            if (IsCloseToZero(factor - 1) || factor > 1)
             {
                 // Difference of measured and actual distance between coordinates is small or distance between coordinates is larger than measured distance (rounding errors)
                 // Calculate as a straight segment
@@ -143,6 +143,15 @@ public static class BoreholeGeometryExtensions
         var upperIndex = 1;
         while (upperIndex < geometry.Count)
         {
+            if (geometry[upperIndex - 1].Z == depthTvd)
+            {
+                return geometry[upperIndex - 1].MD;
+            }
+            else if (geometry[upperIndex].Z == depthTvd)
+            {
+                return geometry[upperIndex].MD;
+            }
+
             var depthMD = InterpolateDepthMD(geometry, depthTvd, upperIndex);
             if (depthMD.HasValue)
             {
@@ -160,20 +169,125 @@ public static class BoreholeGeometryExtensions
     /// If the <paramref name="depthTvd"/> does not intersect the segment between the two points, <see langword="null" /> is returned.
     /// </summary>
     /// <remarks>The segment is approximated by a straight line and therefore produces inaccurate results on circular segments.</remarks>
+    /// <seealso href="https://math.stackexchange.com/a/3859879">Circle Plane intersection</seealso>
+    /// <seealso href="https://math.stackexchange.com/a/3166304">Line circle intersection.</seealso>
     internal static double? InterpolateDepthMD(List<BoreholeGeometryElement> geometry, double depthTvd, int upperIndex)
     {
-        var a = geometry[upperIndex - 1];
-        var b = geometry[upperIndex];
+        var pointA = geometry[upperIndex - 1];
+        var pointB = geometry[upperIndex];
+        var pointVectorA = pointA.ToVector3D();
 
-        var t = (depthTvd - a.Z) / (b.Z - a.Z);
-        if (t >= 0 && t <= 1)
+        if (IsCloseToZero(pointB.Z - pointA.Z))
         {
-            return a.MD + (t * (b.MD - a.MD));
+            if (IsCloseToZero(pointA.Z - depthTvd))
+            {
+                // Infinitely many solutions, return the MD at the start point
+                return pointA.MD;
+            }
+            else
+            {
+                // No intersection
+                return null;
+            }
+        }
+
+        var ab = pointB.ToVector3D() - pointVectorA;
+        var distance = ab.Length();
+        var halfDistance = distance / 2;
+        var deltaMD = pointB.MD - pointA.MD;
+
+        // Calculate dogleg beta and direction vector at a
+        double beta;
+        Vector3D aDirection;
+        if (pointA.HAZI.HasValue && pointA.DEVI.HasValue && pointB.HAZI.HasValue && pointB.DEVI.HasValue)
+        {
+            var aIncRad = Degrees.ToRadians(pointA.DEVI.Value);
+            var aAziRad = Degrees.ToRadians(pointA.HAZI.Value);
+            var bIncRad = Degrees.ToRadians(pointB.DEVI.Value);
+            var bAziRad = Degrees.ToRadians(pointB.HAZI.Value);
+
+            beta = Math.Acos(Math.Cos(bIncRad - aIncRad) - (Math.Sin(aIncRad) * Math.Sin(bIncRad) * (1 - Math.Cos(bAziRad - aAziRad))));
+            aDirection = ToVector3D(aAziRad, aIncRad);
         }
         else
         {
-            return null;
+            // Azimuth and Inclination are missing
+            // Approximate direction with vector from previous to next point
+            aDirection = (pointB.ToVector3D() - geometry[Math.Max(upperIndex - 2, 0)].ToVector3D()).Normalize();
+
+            var factor = distance / deltaMD;
+            if (IsCloseToZero(factor - 1) || factor > 1)
+            {
+                beta = 0;
+            }
+            else
+            {
+                // Inverse function of a 4th order Taylor series approximation of the function
+                // f(x) = ((2 * sin(x / 2)) / x) - factor
+                beta = 2.8284271247461903 * Math.Sqrt(5 - (2.23606797749979 * Math.Sqrt((6 * factor) - 1)));
+            }
         }
+
+        if (beta == 0)
+        {
+            // Straight segment, use linear interpolation
+            var t = (depthTvd - pointA.Z) / (pointB.Z - pointA.Z);
+            if (t >= 0 && t <= 1)
+            {
+                return pointA.MD + (t * (pointB.MD - pointA.MD));
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {
+            var circleNormal = aDirection.Cross(ab).Normalize();
+            var radius = halfDistance / Math.Sin(beta / 2);
+            var center = pointVectorA + (radius * circleNormal.Cross(aDirection));
+
+            // Calculate intersection line
+            var tvdPlaneNormal = new Vector3D(0, 0, 1);
+            var normalCrossProduct = tvdPlaneNormal.Cross(circleNormal);
+            var linePoint = (((depthTvd * circleNormal) - (circleNormal.Dot(pointVectorA) * tvdPlaneNormal)) / normalCrossProduct.LengthSquare()).Cross(normalCrossProduct);
+            var lineDirection = normalCrossProduct.Normalize();
+
+            // Find Circle Line intersection points
+            var t = (center - linePoint).Dot(lineDirection);
+            var distanceLineToCenterSquared = (center - (linePoint + (lineDirection * t))).LengthSquare();
+            var perpendicularDistanceSquared = Math.Pow(radius, 2) - distanceLineToCenterSquared;
+            if (perpendicularDistanceSquared < 0)
+            {
+                return null;
+            }
+
+            var perpendicularDistance = Math.Sqrt(perpendicularDistanceSquared);
+            var interpolatedDeltaMDs = new Vector3D[]
+                {
+                    linePoint + (lineDirection * (t - perpendicularDistance)),
+                    linePoint + (lineDirection * (t + perpendicularDistance)),
+                }
+                .Distinct() // There might be only one intersection
+                .Where(p => (p - pointVectorA).Cross(ab).Dot(circleNormal) > 0) // Remove circle intersections that do not intersect the arc
+                .Select(p => (Math.Acos((center - pointVectorA).Dot(center - p) / Math.Pow(radius, 2)) * deltaMD) / beta) // Calculate the MD delta at the intersection point
+                .Order()
+                .ToArray();
+
+            if (interpolatedDeltaMDs.Length == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return pointA.MD + interpolatedDeltaMDs.First();
+            }
+        }
+    }
+
+    private static bool IsCloseToZero(double d)
+    {
+        return Math.Abs(d) < 1e-14;
     }
 
     private static readonly IComparer<BoreholeGeometryElement> geometryMDComparer = Comparer<BoreholeGeometryElement>.Create((a, b) => a.MD.CompareTo(b.MD));
@@ -186,4 +300,7 @@ public static class BoreholeGeometryExtensions
     /// </summary>
     internal static Vector3D ToVector3D(double azimuth, double inclination)
         => new Vector3D(Math.Sin(inclination) * Math.Sin(azimuth), Math.Sin(inclination) * Math.Cos(azimuth), Math.Cos(inclination));
+
+    internal static double LengthSquare(this Vector3D v)
+        => (v.X * v.X) + (v.Y * v.Y) + (v.Z * v.Z);
 }
