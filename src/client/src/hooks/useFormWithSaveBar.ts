@@ -3,6 +3,7 @@ import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
 import { useLabelingContext } from "../pages/detail/labeling/labelingContext.tsx";
+import { useSaveBarState } from "../pages/detail/saveBarStore.ts";
 import { useBlockNavigation } from "./useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "./useSaveOnCtrlS.ts";
 
@@ -23,6 +24,7 @@ export function UseFormWithSaveBar<T extends FieldValues>({
   const { handleBlockedNavigation } = useBlockNavigation();
   const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
   const { setExtractionObject } = useLabelingContext();
+  const setShowSaveFeedback = useSaveBarState(state => state.setShowSaveFeedback);
 
   // Block navigation if form is dirty
   history.block(nextLocation => {
@@ -51,16 +53,24 @@ export function UseFormWithSaveBar<T extends FieldValues>({
     formMethods.handleSubmit(onSubmit)();
   }, [formMethods, onSubmit, setExtractionObject]);
 
+  const saveAndShowFeedback = useCallback(() => {
+    setShowSaveFeedback(true);
+    resetAndSubmitForm();
+    setTimeout(() => setShowSaveFeedback(false), 4000);
+  }, [resetAndSubmitForm, setShowSaveFeedback]);
+
   // Save with ctrl+s
-  useSaveOnCtrlS(resetAndSubmitForm);
+  useSaveOnCtrlS(saveAndShowFeedback);
 
   // Expose form methods to parent component (save bar)
-  useImperativeHandle(ref, () => ({
-    submit: () => resetAndSubmitForm(),
-    reset: () => {
-      formMethods.reset();
-      setExtractionObject(undefined);
-      if (incrementResetKey) incrementResetKey();
-    },
-  }));
+  useImperativeHandle(ref, () => {
+    return {
+      submit: () => saveAndShowFeedback(),
+      reset: () => {
+        formMethods.reset();
+        setExtractionObject(undefined);
+        if (incrementResetKey) incrementResetKey();
+      },
+    };
+  }, [formMethods, incrementResetKey, saveAndShowFeedback, setExtractionObject]);
 }
