@@ -35,6 +35,7 @@ interface TableProps<T extends GridValidRowModel> {
   apiRef?: MutableRefObject<GridApiCommunity>;
   isLoading?: boolean;
   rowCount?: number;
+  maxRowsPerPage?: number;
   rowSelectionModel?: GridRowSelectionModel;
   onRowSelectionModelChange?: (model: GridRowSelectionModel) => void;
   getRowId?: GridRowIdGetter<T>;
@@ -63,6 +64,7 @@ export const Table = <T extends GridValidRowModel>({
   apiRef,
   isLoading,
   rowCount,
+  maxRowsPerPage = 100,
   rowSelectionModel,
   onRowSelectionModelChange,
   getRowId,
@@ -134,7 +136,7 @@ export const Table = <T extends GridValidRowModel>({
       columns={adjustedWidthColumns}
       getRowHeight={() => (rowAutoHeight ? "auto" : 44)}
       onRowClick={onRowClick}
-      pageSizeOptions={[100]}
+      pageSizeOptions={[maxRowsPerPage]}
       slots={{ toolbar: GridToolbar }}
       slotProps={{
         pagination: {
@@ -149,7 +151,7 @@ export const Table = <T extends GridValidRowModel>({
       localeText={muiLocales[i18n.language]}
       disableColumnSelector
       disableRowSelectionOnClick
-      hideFooterPagination={!rows?.length}
+      hideFooter={rows?.length < maxRowsPerPage}
       hideFooterSelectedRowCount
       disableColumnFilter
       disableColumnMenu={true}
