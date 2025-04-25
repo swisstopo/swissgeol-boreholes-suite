@@ -47,6 +47,13 @@ public class Observation : IChangeTracking, IIdentifyable, ICasingReference
     public double? Duration { get; set; }
 
     /// <summary>
+    /// Gets or sets the original vertical reference system.
+    /// </summary>
+    [IncludeInExport]
+    [Column("original_vertical_reference_system")]
+    public VerticalReferenceSystem OriginalVerticalReferenceSystem { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s from depth in m.
     /// </summary>
     [IncludeInExport]
