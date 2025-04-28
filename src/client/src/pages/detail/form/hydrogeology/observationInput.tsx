@@ -7,7 +7,7 @@ import { getBoreholeGeometryDepthMasl, getCasingsByBoreholeId } from "../../../.
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
+import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants.ts";
 import { ObservationDepthUnitType, ObservationInputProps } from "./Observation.ts";
@@ -73,7 +73,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
       if (depthUnit === ObservationDepthUnitType.measuredDepth) {
         const depthInMasl = await fetchDepthMASL(fromDepthM);
         setFromDepthMasl(depthInMasl);
-        setFormValue("fromDepthMasl", depthInMasl);
+        setFormValue("fromDepthMasl", formatNumberForDisplay(depthInMasl));
       }
     };
     fetchAndSetFromDepthMasl();
@@ -84,7 +84,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
       if (depthUnit === ObservationDepthUnitType.measuredDepth) {
         const depthInMasl = await fetchDepthMASL(toDepthM);
         setToDepthMasl(depthInMasl);
-        setFormValue("toDepthMasl", depthInMasl);
+        setFormValue("toDepthMasl", formatNumberForDisplay(depthInMasl));
       }
     };
     fetchAndSetToDepthMasl();
