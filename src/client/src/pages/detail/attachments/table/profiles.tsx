@@ -1,6 +1,8 @@
 import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { GridColDef } from "@mui/x-data-grid";
+import { Box } from "@mui/material";
+import { GridColDef, GridRenderCellParams, GridValidRowModel } from "@mui/x-data-grid";
+import { CheckIcon } from "lucide-react";
 import { detachFile, downloadFile, getFiles, uploadFile } from "../../../../api/file/file.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 import DateText from "../../../../components/legacyComponents/dateText";
@@ -69,6 +71,12 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         headerName: t("public"),
         type: "boolean",
         editable: editingEnabled,
+        renderCell: (params: GridRenderCellParams) =>
+          params.value ? (
+            <Box display="flex" alignItems="center" justifyContent="center" width="100%">
+              <CheckIcon />
+            </Box>
+          ) : null,
       },
     ],
     [t, editingEnabled],

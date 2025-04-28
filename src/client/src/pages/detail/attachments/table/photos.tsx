@@ -1,6 +1,8 @@
 import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { GridColDef } from "@mui/x-data-grid";
+import { Box } from "@mui/material";
+import { GridColDef, GridRenderCellParams, GridValidRowModel } from "@mui/x-data-grid";
+import { CheckIcon } from "lucide-react";
 import { getPhotosByBoreholeId, uploadPhoto } from "../../../../api/fetchApiV2.ts";
 import DateText from "../../../../components/legacyComponents/dateText";
 import { DetailContext } from "../../detailContext.tsx";
@@ -56,6 +58,12 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
         headerName: t("public"),
         type: "boolean",
         editable: editingEnabled,
+        renderCell: (params: GridRenderCellParams) =>
+          params.value ? (
+            <Box display="flex" alignItems="center" justifyContent="center" width="100%">
+              <CheckIcon />
+            </Box>
+          ) : null,
       },
     ],
     [t, editingEnabled],
