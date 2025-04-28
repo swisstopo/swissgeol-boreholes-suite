@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Dialog, DialogProps, Stack, Typography } from "@mui/material";
+import { Checkbox, Dialog, DialogProps, FormControlLabel, Stack, Typography } from "@mui/material";
 import { AcceptButton } from "../components/buttons/buttons.tsx";
-import { FormCheckbox, FormContainer } from "../components/form/form";
 import { LanguagePopup } from "../components/header/languagePopup.tsx";
 import { DialogFooterContainer, DialogHeaderContainer, DialogMainContent } from "../components/styledComponents.ts";
 import { MarkdownWrapper } from "./markdownWrapper.tsx";
@@ -17,7 +15,6 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
   const [open, setOpen] = useState(true);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
   const { t } = useTranslation();
-  const formMethods = useForm({ mode: "all" });
 
   const closeDialog = () => {
     setOpen(false);
@@ -42,16 +39,10 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
         </DialogHeaderContainer>
         <DialogMainContent>
           {markdownContent && <MarkdownWrapper markdownContent={markdownContent} />}
-          <FormProvider {...formMethods}>
-            <FormContainer>
-              <FormCheckbox
-                fieldName="dataCollectionConsent"
-                label="dataCollectionConsent"
-                checked={analyticsEnabled}
-                onChange={setAnalyticsEnabled}
-              />
-            </FormContainer>
-          </FormProvider>
+          <FormControlLabel
+            control={<Checkbox checked={analyticsEnabled} onChange={e => setAnalyticsEnabled(e.target.checked)} />}
+            label={t("dataCollectionConsent")}
+          />
         </DialogMainContent>
         <DialogFooterContainer>
           <Stack direction="row" justifyContent="flex-end" alignItems="center">

@@ -1,6 +1,19 @@
 import { FC, MouseEvent, ReactNode, useState } from "react";
-import { Button, ButtonProps, List, ListItem, ListItemIcon, ListItemText, Popover, SxProps } from "@mui/material";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import {
+  Box,
+  Button,
+  ButtonProps,
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Popover,
+  SxProps,
+  TextField,
+} from "@mui/material";
+import { Check, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 
 export interface ButtonSelectItem {
@@ -14,6 +27,8 @@ interface ButtonSelectProps {
   items: ButtonSelectItem[];
   selectedItem: ButtonSelectItem;
   onItemSelected: (item: ButtonSelectItem) => void;
+  search?: string;
+  onSearch?: (search: string) => void;
   startIcon?: ReactNode;
   variant?: ButtonProps["variant"];
   color?: ButtonProps["color"];
@@ -29,6 +44,8 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
   items,
   selectedItem,
   onItemSelected,
+  search,
+  onSearch,
   startIcon,
   variant,
   color,
@@ -38,6 +55,7 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
   sx,
   className,
 }) => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const isOpen = Boolean(anchorEl);
 
@@ -70,7 +88,25 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
         anchorOrigin={anchorOrigin ?? { vertical: "bottom", horizontal: "left" }}
         transformOrigin={transformOrigin ?? { vertical: "top", horizontal: "left" }}
         data-cy="button-select-popover">
-        <List sx={{ padding: 0 }}>
+        {typeof search === "string" && onSearch && (
+          <Box sx={{ p: 1.5, borderBottom: `1px solid ${theme.palette.border.light}` }}>
+            <TextField
+              sx={{ m: 0 }}
+              placeholder={t("filter")}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
+              value={search}
+              onChange={e => onSearch(e.target.value)}
+              data-cy={`${fieldName}-button-select-search`}
+            />
+          </Box>
+        )}
+        <List sx={{ padding: 0, overflowY: "auto", maxHeight: "400px" }}>
           {items.map(item => (
             <ListItem
               key={item.key}

@@ -1,4 +1,4 @@
-import { FC, ReactNode, RefObject, useContext } from "react";
+import { FC, ReactNode, RefObject, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
@@ -26,24 +26,48 @@ const DescriptionBox = styled(Box)(({ theme }) => ({
   alignContent: "center",
 }));
 
+interface SelectionItem {
+  key: number;
+  value: string;
+  startIcon?: ReactNode;
+}
+
 export const LabelingHeader: FC<{
   selectedAttachment: BoreholeAttachment | undefined;
   setSelectedAttachment: (file: BoreholeAttachment | undefined) => void;
   setActivePage: (page: number) => void;
   fileInputRef: RefObject<HTMLInputElement | null>;
   files?: BoreholeAttachment[];
-}> = ({ selectedAttachment, setSelectedAttachment, setActivePage, fileInputRef, files }) => {
+  showSearch?: boolean;
+}> = ({ selectedAttachment, setSelectedAttachment, setActivePage, fileInputRef, files, showSearch }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(DetailContext);
   const { panelTab, setPanelTab } = useContext(LabelingContext);
+  const [search, setSearch] = useState("");
 
   const handleFileInputClick = () => {
     fileInputRef.current?.click();
   };
 
-  const fileSelectionItems: { key: number; value: string; startIcon?: ReactNode }[] =
-    files?.map(file => ({ key: file.id, value: getDisplayName(file) })) ?? [];
-  if (editingEnabled) fileSelectionItems.push({ key: -1, value: t("addFile"), startIcon: <Plus /> });
+  const fileSelectionItems = useMemo(() => {
+    const items =
+      files
+        ?.map(file => ({ key: file.id, value: getDisplayName(file) }) as SelectionItem)
+        .filter(({ value }) => !search || value.includes(search)) ?? [];
+
+    if (editingEnabled) {
+      items.push({
+        key: -1,
+        value: panelTab === PanelTab.profile ? t("addProfile") : t("addPhoto"),
+        startIcon: <Plus />,
+      });
+    }
+    return items;
+  }, [files, editingEnabled, search, panelTab, t]);
+
+  useEffect(() => {
+    setSearch("");
+  }, [files, selectedAttachment]);
 
   return (
     <Stack
@@ -83,6 +107,8 @@ export const LabelingHeader: FC<{
               if (item.key === -1) handleFileInputClick();
               else setSelectedAttachment(files?.find(file => file.id === item.key));
             }}
+            search={showSearch ? search : undefined}
+            onSearch={showSearch ? setSearch : undefined}
             sx={labelingButtonStyles}
           />
         </Stack>

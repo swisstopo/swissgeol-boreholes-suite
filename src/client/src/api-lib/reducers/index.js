@@ -707,86 +707,6 @@ export function stratigraphyList() {
   };
 }
 
-export function domainsList() {
-  const initialState = {
-    isFetching: false,
-    fetchTime: 0,
-    fetchCount: 0,
-    data: {},
-  };
-  return function domains(state = initialState, action) {
-    const { path } = action;
-    if (path === "/borehole/codes") {
-      switch (action.type) {
-        case "LIST": {
-          return {
-            ...initialState,
-            fetchTime: new Date().getTime(),
-            data: {},
-            isFetching: true,
-          };
-        }
-        case "LIST_OK": {
-          let copy = {
-            ...state,
-            fetchCount: state.fetchCount + 1,
-            isFetching: false,
-            fetchTime: new Date().getTime() - state.fetchTime,
-            data: action.json.data,
-          };
-          return copy;
-        }
-        case "PATCH_OK": {
-          let copy = {
-            ...state,
-          };
-          if (Object.prototype.hasOwnProperty.call(copy.data, action.json.schema)) {
-            const data = copy.data[action.json.schema];
-            for (let idx = 0; idx < data.length; idx++) {
-              const element = data[idx];
-              if (element.id === action.json.code_id) {
-                element.conf = action.json.data;
-                break;
-              }
-            }
-          }
-          return copy;
-        }
-        default: {
-          return state;
-        }
-      }
-    } else if (path === "/borehole/identifier") {
-      switch (action.type) {
-        case "LIST": {
-          return {
-            ...state,
-            fetchTime: new Date().getTime(),
-            isFetching: true,
-          };
-        }
-        case "LIST_OK": {
-          let copy = {
-            ...state,
-            fetchCount: state.fetchCount + 1,
-            isFetching: false,
-            fetchTime: new Date().getTime() - state.fetchTime,
-            data: {
-              ...state.data,
-              ...action.json.data,
-            },
-          };
-          return copy;
-        }
-        default: {
-          return state;
-        }
-      }
-    }
-    return state;
-  };
-}
-
 export function layersList() {
   const initialState = {
     isFetching: false,
@@ -838,7 +758,6 @@ export function createReducer(pluginsReducers) {
     core_borehole_editor_list: boreholeEditorList(),
     core_project_list: projectList(),
     core_stratigraphy_list: stratigraphyList(),
-    core_domain_list: domainsList(),
     core_layers_list: layersList(),
     ...pluginsReducers,
   });
