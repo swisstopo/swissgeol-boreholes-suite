@@ -40,6 +40,9 @@ public class BdmsContext : DbContext
         .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestFlowDirectionCodes)
         .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestKindCodes)
         .Include(b => b.BoreholeCodelists)
+        .Include(b => b.Workflow).ThenInclude(w => w.Changes)
+        .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
+        .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
         .Include(b => b.Workflows)
         .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
         .Include(b => b.Photos)
@@ -103,6 +106,14 @@ public class BdmsContext : DbContext
     public DbSet<UserWorkgroupRole> UserWorkgroupRoles { get; set; }
 
     public DbSet<Workflow> Workflows { get; set; }
+
+    public DbSet<WorkflowV2> WorkflowsV2 { get; set; }
+
+    public IQueryable<WorkflowV2> WorkflowsV2WithIncludes
+        => WorkflowsV2
+        .Include(w => w.Changes)
+        .Include(w => w.ReviewedTabs)
+        .Include(w => w.PublishedTabs);
 
     public DbSet<Workgroup> Workgroups { get; set; }
 
