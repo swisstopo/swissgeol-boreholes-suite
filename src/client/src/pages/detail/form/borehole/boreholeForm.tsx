@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Box, Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
@@ -15,7 +15,7 @@ import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { UseFormWithSaveBar } from "../../../../hooks/useFormWithSaveBar.ts";
 import { BoreholeDetailProps, BoreholeFormInputs } from "./boreholePanelInterfaces.ts";
 
-export const BoreholeForm = ({ borehole, onSubmit, ref }: BoreholeDetailProps) => {
+export const BoreholeForm: FC<BoreholeDetailProps> = ({ borehole, onSubmit, ref }) => {
   const [totalDepthTVD, setTotalDepthTVD] = useState<number | null>(null);
   const [topBedrockFreshTVD, setTopBedrockFreshTVD] = useState<number | null>(null);
   const [topBedrockWeatheredTVD, setTopBedrockWeatheredTVD] = useState<number | null>(null);

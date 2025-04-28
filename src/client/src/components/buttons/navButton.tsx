@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme";
 import { ButtonProps } from "./buttonsInterface";
@@ -9,7 +9,7 @@ export interface NavButtonProps extends ButtonProps {
   selected?: boolean;
 }
 
-export const NavButton = (props: NavButtonProps) => {
+export const NavButton: FC<NavButtonProps> = props => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => setIsHovered(true);

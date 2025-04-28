@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import CloseIcon from "@mui/icons-material/Close";
 import { Button, IconButton } from "@mui/material";
@@ -6,7 +7,7 @@ import CopyIcon from "../../assets/icons/copy.svg?react";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { ButtonProps } from "./buttonsInterface";
 
-export const BoreholesBaseButton = (props: ButtonProps) => {
+export const BoreholesBaseButton: FC<ButtonProps> = props => {
   const { t } = useTranslation();
   // As of now there is no variant "contained" with color "secondary" in the design system, fallback to "primary".
   const color = props.variant === "contained" ? "primary" : (props.color ?? "primary");
@@ -22,7 +23,7 @@ export const BoreholesBaseButton = (props: ButtonProps) => {
   );
 };
 
-export const BoreholesButton = (props: ButtonProps) => {
+export const BoreholesButton: FC<ButtonProps> = props => {
   return <BoreholesBaseButton {...props} label={props.label} />;
 };
 
@@ -38,7 +39,7 @@ export const AddButton = (props: ButtonProps) => {
   );
 };
 
-export const EditButton = (props: ButtonProps) => {
+export const EditButton: FC<ButtonProps> = props => {
   return <BoreholesBaseButton {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />;
 };
 
@@ -54,7 +55,7 @@ export const BulkEditButton = (props: ButtonProps) => {
   );
 };
 
-export const EndEditButton = (props: ButtonProps) => {
+export const EndEditButton: FC<ButtonProps> = props => {
   return <BoreholesBaseButton {...props} label="editingStop" variant={props.variant ?? "contained"} icon={<Check />} />;
 };
 
@@ -70,7 +71,7 @@ export const CopyButton = (props: ButtonProps) => {
   );
 };
 
-export const CancelButton = (props: ButtonProps) => {
+export const CancelButton: FC<ButtonProps> = props => {
   return (
     <BoreholesBaseButton
       {...props}
@@ -82,7 +83,7 @@ export const CancelButton = (props: ButtonProps) => {
   );
 };
 
-export const SaveButton = (props: ButtonProps) => {
+export const SaveButton: FC<ButtonProps> = props => {
   return (
     <BoreholesBaseButton
       {...props}
@@ -94,11 +95,11 @@ export const SaveButton = (props: ButtonProps) => {
   );
 };
 
-export const AcceptButton = (props: ButtonProps) => {
+export const AcceptButton: FC<ButtonProps> = props => {
   return <BoreholesBaseButton {...props} label="accept" variant={props.variant ?? "contained"} />;
 };
 
-export const DeleteButton = (props: ButtonProps) => {
+export const DeleteButton: FC<ButtonProps> = props => {
   return (
     <BoreholesBaseButton
       {...props}
@@ -110,7 +111,7 @@ export const DeleteButton = (props: ButtonProps) => {
   );
 };
 
-export const ExportButton = (props: ButtonProps) => {
+export const ExportButton: FC<ButtonProps> = props => {
   return (
     <BoreholesBaseButton
       {...props}

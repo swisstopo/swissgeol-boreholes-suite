@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { NumericFormat } from "react-number-format";
 
 interface CustomProps {
@@ -6,7 +7,7 @@ interface CustomProps {
   value: number | string;
 }
 
-export const NumericFormatWithThousandSeparator = (props: Readonly<CustomProps>) => {
+export const NumericFormatWithThousandSeparator: FC<Readonly<CustomProps>> = props => {
   const { onChange, value, ...other } = props;
 
   return (

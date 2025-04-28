@@ -1,4 +1,4 @@
-import { Ref } from "react";
+import { FC, Ref } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, ButtonProps, IconButton, Tooltip } from "@mui/material";
 import { Sparkles } from "lucide-react";
@@ -13,7 +13,7 @@ interface ExtractionButtonProps extends ButtonProps {
   ref?: Ref<HTMLButtonElement>;
 }
 
-export const CoordinateExtractionButton = (props: ExtractionButtonProps) => {
+export const CoordinateExtractionButton: FC<ExtractionButtonProps> = props => {
   const { t } = useTranslation();
   return (
     <Tooltip title={t("extractCoordinates")}>
