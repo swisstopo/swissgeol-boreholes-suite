@@ -1,8 +1,9 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
+import { FC, MutableRefObject, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { GridColDef, GridRowSelectionModel, GridValidRowModel, useGridApiRef } from "@mui/x-data-grid";
+import { GridColDef, GridRowSelectionModel, GridValidRowModel } from "@mui/x-data-grid";
+import { GridApiCommunity } from "@mui/x-data-grid/internals";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
 import { Table } from "../../../components/table/table.tsx";
@@ -11,6 +12,7 @@ import { DetailContext } from "../detailContext.tsx";
 import { AddAttachmentButton } from "./addAttachmentButton.tsx";
 
 interface AttachmentContentProps {
+  apiRef: MutableRefObject<GridApiCommunity>;
   columns: GridColDef<GridValidRowModel>[];
   addAttachment: (file: File) => Promise<void>;
   acceptedFileTypes?: string;
@@ -22,6 +24,7 @@ interface AttachmentContentProps {
 }
 
 export const AttachmentContent: FC<AttachmentContentProps> = ({
+  apiRef,
   columns,
   addAttachment,
   acceptedFileTypes,
@@ -32,7 +35,6 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
   noAttachmentsText,
 }) => {
   const { t } = useTranslation();
-  const apiRef = useGridApiRef();
   const { editingEnabled } = useContext(DetailContext);
   const { showAlert } = useContext(AlertContext);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);

@@ -1,7 +1,7 @@
-import { FC, useCallback, useContext, useMemo } from "react";
+import { ChangeEvent, FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box } from "@mui/material";
-import { GridColDef, GridRenderCellParams, GridValidRowModel } from "@mui/x-data-grid";
+import { Checkbox, Stack, Typography } from "@mui/material";
+import { GridColDef, GridColumnHeaderParams, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { CheckIcon } from "lucide-react";
 import { detachFile, downloadFile, getFiles, uploadFile } from "../../../../api/file/file.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
@@ -15,7 +15,12 @@ interface ProfilesProps {
 
 export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
+  const apiRef = useGridApiRef();
   const { editingEnabled } = useContext(DetailContext);
+
+  const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, boolean>>(new Map());
+  const [allPhotosPublic, setAllPhotosPublic] = useState(false);
+  const [somePhotosPublic, setSomePhotosPublic] = useState(false);
 
   const loadProfiles = useCallback(async () => {
     const files = await getFiles<BoreholeFile>(boreholeId);
@@ -38,6 +43,37 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     const downloadPromises = ids.map(id => downloadFile(id));
     await Promise.all(downloadPromises);
   };
+
+  const togglePublicValueForRow = useCallback(
+    (id: GridRowId, checked: boolean) => {
+      setUpdatedRows(prevRows => {
+        const newMap = new Map(prevRows);
+        newMap.set(id, checked);
+        return newMap;
+      });
+      apiRef.current.updateRows([{ id, public: checked }]);
+    },
+    [apiRef],
+  );
+
+  const toggleAllPublicValues = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const checked = event.target.checked;
+      const currentRows = apiRef.current.getRowModels();
+      Array.from(currentRows.keys()).forEach(id => {
+        togglePublicValueForRow(id, checked);
+      });
+    },
+    [apiRef, togglePublicValueForRow],
+  );
+
+  useEffect(() => {
+    if (apiRef.current.getRowModels) {
+      const currentRows = apiRef.current.getRowModels();
+      setAllPhotosPublic(Array.from(currentRows.values()).every(row => row.public));
+      setSomePhotosPublic(Array.from(currentRows.values()).some(row => row.public));
+    }
+  }, [apiRef, updatedRows]);
 
   const columns = useMemo<GridColDef[]>(
     () => [
@@ -71,19 +107,40 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         headerName: t("public"),
         type: "boolean",
         editable: editingEnabled,
-        renderCell: (params: GridRenderCellParams) =>
-          params.value ? (
-            <Box display="flex" alignItems="center" justifyContent="center" width="100%">
+        width: 125,
+        flex: 0,
+        renderHeader: editingEnabled
+          ? (params: GridColumnHeaderParams) => (
+              <Stack flexDirection="row" justifyContent="flex-start" alignItems="center" gap={1}>
+                <Checkbox
+                  checked={allPhotosPublic}
+                  indeterminate={somePhotosPublic && !allPhotosPublic}
+                  onChange={toggleAllPublicValues}
+                />
+                <Typography sx={{ fontSize: "16px", fontWeight: 500 }}>{params.colDef.headerName}</Typography>
+              </Stack>
+            )
+          : undefined,
+        renderCell: (params: GridRenderCellParams) => (
+          <Stack flexDirection="row" alignItems="center" justifyContent="flex-start">
+            {editingEnabled ? (
+              <Checkbox
+                checked={params.row.public}
+                onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
+              />
+            ) : params.value ? (
               <CheckIcon />
-            </Box>
-          ) : null,
+            ) : null}
+          </Stack>
+        ),
       },
     ],
-    [t, editingEnabled],
+    [t, editingEnabled, allPhotosPublic, somePhotosPublic, toggleAllPublicValues, togglePublicValueForRow],
   );
 
   return (
     <AttachmentContent
+      apiRef={apiRef}
       columns={columns}
       addAttachment={addProfile}
       getAttachments={loadProfiles}
