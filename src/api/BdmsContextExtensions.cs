@@ -792,7 +792,8 @@ public static class BdmsContextExtensions
                 return validCasings.Count == 0 ? null : f.PickRandom(validCasings.Select(c => c.Id));
             })
             .RuleFor(i => i.Casing, _ => default!)
-            .RuleFor(o => o.Id, f => observation_ids++);
+            .RuleFor(o => o.Id, f => observation_ids++)
+            .RuleFor(o => o.OriginalVerticalReferenceSystem, f => f.PickRandom(VerticalReferenceSystem.Unknown, VerticalReferenceSystem.MD, VerticalReferenceSystem.Masl));
 
         Observation SeededObservations(int seed) => fakeObservations.UseSeed(seed).Generate();
         var observations = observationRange.Select(SeededObservations).ToList();
