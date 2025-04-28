@@ -39,8 +39,10 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
 
   const toggleEditing = (editing: boolean) => {
     if (!editing) {
+      // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
       dispatch(unlockBorehole(borehole.id));
     } else {
+      // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
       dispatch(lockBorehole(borehole.id));
     }
     setEditingEnabled(editing);

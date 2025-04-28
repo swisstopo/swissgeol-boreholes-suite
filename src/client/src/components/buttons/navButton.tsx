@@ -1,15 +1,15 @@
-import { forwardRef, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme";
 import { ButtonProps } from "./buttonsInterface";
 
 export interface NavButtonProps extends ButtonProps {
   label: string;
-  icon: JSX.Element;
+  icon: ReactNode;
   selected?: boolean;
 }
 
-export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>((props, ref) => {
+export const NavButton: FC<NavButtonProps> = props => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => setIsHovered(true);
@@ -23,7 +23,6 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>((props, r
   );
   return (
     <IconButton
-      ref={ref}
       {...props}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -50,4 +49,4 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>((props, r
       </Stack>
     </IconButton>
   );
-});
+};

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import DraggableCore from "react-draggable";
+import Draggable from "react-draggable";
 import { NumericFormat } from "react-number-format";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { Box, Button, ButtonGroup } from "@mui/material";
@@ -30,6 +30,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
   const [cursor, setCursor] = useState("grab");
 
   const contentRef = useRef(null);
+  const lensRef = useRef(null);
   useResizeObserver(contentRef, entry => setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)));
 
   useEffect(() => {
@@ -91,9 +92,10 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
             top: navState.lensStart * backgroundNavState.pixelPerMeter + lensHeight + "px",
           }}
         />
-        <DraggableCore
+        <Draggable
           axis="y"
           bounds="parent"
+          nodeRef={lensRef}
           position={{
             y: navState.lensStart * backgroundNavState.pixelPerMeter,
             x: 0,
@@ -102,6 +104,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
           onStart={() => setCursor("grabbing")}
           onStop={() => setCursor("grab")}>
           <Box
+            ref={lensRef}
             sx={{
               cursor: cursor,
               height: lensHeight + "px",
@@ -128,7 +131,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
               </>
             )}
           </Box>
-        </DraggableCore>
+        </Draggable>
       </Box>
       <Button onClick={() => handleMove(0.3)}>
         <KeyboardArrowDown />
