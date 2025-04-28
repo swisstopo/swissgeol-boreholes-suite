@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -21,9 +21,34 @@ import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterC
 import { DataLoader } from "./pages/settings/dataLoader";
 import { SettingsPage } from "./pages/settings/settingsPage";
 import { AcceptTerms } from "./term/accept";
-import { AnalyticsProvider } from "./term/analyticsContext.tsx";
+import { AnalyticsProvider } from "./term/analyticsContext";
 
 const queryClient = new QueryClient();
+
+const router = createBrowserRouter([
+  {
+    path: "/setting/*",
+    element: <SettingsPage />,
+  },
+  {
+    path: "/:id/*",
+    element: (
+      <LabelingProvider>
+        <DetailProvider>
+          <DetailPage />
+        </DetailProvider>
+      </LabelingProvider>
+    ),
+  },
+  {
+    path: "/",
+    element: <OverviewPage />,
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
+  },
+]);
 
 class App extends React.Component {
   handleDragOver = (e: DragEvent) => {
@@ -67,23 +92,7 @@ class App extends React.Component {
                           <QueryClientProvider client={queryClient}>
                             <AppBox>
                               <HeaderComponent />
-                              <Router>
-                                <Routes>
-                                  <Route path="/setting/*" element={<SettingsPage />} />
-                                  <Route
-                                    path="/:id/*"
-                                    element={
-                                      <LabelingProvider>
-                                        <DetailProvider>
-                                          <DetailPage />
-                                        </DetailProvider>
-                                      </LabelingProvider>
-                                    }
-                                  />
-                                  <Route path="/" element={<OverviewPage />} />
-                                  <Route path="*" element={<Navigate to="/" />} />
-                                </Routes>
-                              </Router>
+                              <RouterProvider router={router} />
                             </AppBox>
                           </QueryClientProvider>
                         </OverviewProvider>

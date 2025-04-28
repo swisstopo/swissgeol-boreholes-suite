@@ -1,56 +1,49 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useBlocker } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
 import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
 
-interface UseBlockNavigationResult {
-  handleBlockedNavigation: (nextLocation: string) => boolean;
-}
-
-export const useBlockNavigation = (): UseBlockNavigationResult => {
-  const [nextLocation, setNextLocation] = useState<string | null>(null);
-  const [confirmedNavigation, setConfirmedNavigation] = useState(false);
+export const useBlockNavigation = () => {
   const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
   const { showPrompt } = useContext(PromptContext);
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const promptShownRef = useRef(false);
 
-  // Allow navigation after user confirms
+  const shouldBlock = useCallback(() => {
+    return isFormDirty;
+  }, [isFormDirty]);
+
+  const blocker = useBlocker(shouldBlock);
+
   useEffect(() => {
-    if (confirmedNavigation && nextLocation) {
-      navigate(nextLocation);
-    }
-  }, [confirmedNavigation, nextLocation, navigate]);
-
-  const handleBlockedNavigation = (nextLocation: string): boolean => {
-    if (!confirmedNavigation && isFormDirty) {
+    if (blocker.state === "blocked" && !promptShownRef.current) {
+      promptShownRef.current = true;
       showPrompt(t("messageDiscardUnsavedChanges"), [
         {
           label: t("cancel"),
           icon: <X />,
           variant: "outlined",
+          action: () => {
+            blocker.reset?.();
+            setTimeout(() => {
+              promptShownRef.current = false; // avoids duplicate prompts with async state
+            }, 0);
+          },
         },
         {
           label: t("discardchanges"),
           icon: <Trash2 />,
           variant: "contained",
-          action: confirmNavigation,
+          action: () => {
+            blocker.proceed?.();
+            setTimeout(() => {
+              promptShownRef.current = false;
+            }, 0);
+          },
         },
       ]);
-
-      setNextLocation(nextLocation);
-      return false;
     }
-    return true;
-  };
-
-  const confirmNavigation = () => {
-    setConfirmedNavigation(true);
-  };
-
-  return {
-    handleBlockedNavigation,
-  };
+  }, [blocker, isFormDirty, showPrompt, t]);
 };

@@ -84,7 +84,6 @@ export const DetailPage: FC = () => {
     boreholePanelRef.current?.reset();
     locationPanelRef.current?.reset();
   };
-
   useEffect(() => {
     loadOrCreate(id);
   }, [id, loadOrCreate]);

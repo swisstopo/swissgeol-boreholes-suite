@@ -1,6 +1,5 @@
 import { Ref, useCallback, useEffect, useImperativeHandle } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
-import { useHistory } from "react-router-dom";
 import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
 import { useLabelingContext } from "../pages/detail/labeling/labelingContext.tsx";
 import { useSaveBarState } from "../pages/detail/saveBarStore.ts";
@@ -20,23 +19,10 @@ export function UseFormWithSaveBar<T extends FieldValues>({
   incrementResetKey,
   ref,
 }: UseFormWithSaveBarProps<T>) {
-  const history = useHistory();
-  const { handleBlockedNavigation } = useBlockNavigation();
+  useBlockNavigation();
   const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
   const { setExtractionObject } = useLabelingContext();
   const setShowSaveFeedback = useSaveBarState(state => state.setShowSaveFeedback);
-
-  // Block navigation if form is dirty
-  useEffect(() => {
-    const unblock = history.block(nextLocation => {
-      if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
-        return false;
-      }
-    });
-    return () => {
-      unblock();
-    };
-  }, [history, handleBlockedNavigation]);
 
   // Track form dirty state
   useEffect(() => {
