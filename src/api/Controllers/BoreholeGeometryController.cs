@@ -161,7 +161,7 @@ public class BoreholeGeometryController : ControllerBase
     /// Get the measured depth (MD) from the borehole's geometry for the provided true vertical depth (TVD).
     /// </summary>
     /// <param name="boreholeId">The id of the <see cref="Borehole"/> to get the MD for.</param>
-    /// <param name="depthTvd">The true vertical depth to get the MD for.</param>
+    /// <param name="depthMasl">The depth above sea level to get the MD for.</param>
     /// <returns>The measured depth (MD) in meters.</returns>
     [HttpGet("[action]")]
     [Authorize(Policy = PolicyNames.Viewer)]
