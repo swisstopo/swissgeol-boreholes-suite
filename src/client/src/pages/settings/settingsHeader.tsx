@@ -1,6 +1,6 @@
 import { FC, MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useSelectedUser, useUserMutations } from "../../api/user.ts";
 import { useSelectedWorkgroup, useWorkgroupMutations } from "../../api/workgroup.ts";
@@ -10,7 +10,7 @@ import { useDeleteUserPrompts, useDeleteWorkgroupPrompts } from "../../hooks/use
 import { capitalizeFirstLetter } from "../../utils.ts";
 
 export const SettingsHeader: FC = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const { showDeleteUserWarning } = useDeleteUserPrompts();
@@ -113,7 +113,7 @@ export const SettingsHeader: FC = () => {
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={3}>
         <ReturnButton
           onClick={() => {
-            history.push(getReturnRoute());
+            navigate(getReturnRoute());
           }}
         />
         <Typography variant="h2">{getTitle()}</Typography>

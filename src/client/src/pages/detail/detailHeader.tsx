@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
@@ -29,7 +29,7 @@ interface DetailHeaderProps {
 
 const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
@@ -95,7 +95,7 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
 
   const handleDelete = async () => {
     await deleteBorehole(borehole.id);
-    history.push("/");
+    navigate("/");
   };
 
   const handleReturnClick = () => {
@@ -106,7 +106,7 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
         stopEditing();
       }
     }
-    history.push("/");
+    navigate("/");
   };
 
   // get unfinished or latest workflow

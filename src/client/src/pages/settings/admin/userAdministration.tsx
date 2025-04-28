@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
 import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 export const UserAdministration: FC = () => {
   const { t } = useTranslation();
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { userTableSortModel, setUserTableSortModel } = useContext(UserAdministrationContext);
   const { data: users } = useUsers();
@@ -98,7 +98,7 @@ export const UserAdministration: FC = () => {
   };
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
-    history.push(`/setting/user/${params.row.id}`);
+    navigate(`/setting/user/${params.row.id}`);
   };
 
   const handleDeleteUser = (event: MouseEvent<HTMLButtonElement>, id: number) => {

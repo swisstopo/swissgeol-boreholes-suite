@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import {
@@ -25,7 +25,7 @@ const Completion = () => {
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(DetailContext);
   const { boreholeId, completionId } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const mounted = useRef(false);
@@ -65,9 +65,9 @@ const Completion = () => {
     if (location.pathname + location.hash !== newLocation) {
       var locationSnippets = location.pathname.split("/");
       if (locationSnippets[locationSnippets.length - 1] === "completion") {
-        history.replace(newLocation);
+        navigate(newLocation, { replace: true });
       } else {
-        history.push(newLocation);
+        navigate(newLocation);
       }
     }
   };
@@ -132,7 +132,7 @@ const Completion = () => {
         } else if (state.selected.id === 0) {
           var newCompletionList = state.displayed.slice(0, -1);
           if (newCompletionList.length === 0) {
-            history.push("/" + boreholeId + "/completion");
+            navigate("/" + boreholeId + "/completion");
             resetState();
           } else {
             updateHistory(newCompletionList[state.switchTabTo].id);
@@ -215,7 +215,7 @@ const Completion = () => {
       var newCompletionList = state.displayed.slice(0, -1);
       var index = newCompletionList.length - 1;
       if (newCompletionList.length === 0) {
-        history.push("/" + boreholeId + "/completion");
+        navigate("/" + boreholeId + "/completion");
       } else {
         updateHistory(newCompletionList[index].id);
       }
@@ -306,7 +306,7 @@ const Completion = () => {
       }
     } else {
       resetState();
-      history.push("/" + boreholeId + "/completion");
+      navigate("/" + boreholeId + "/completion");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completions, completionId]);

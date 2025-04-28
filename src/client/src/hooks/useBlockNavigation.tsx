@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
 import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
@@ -15,14 +15,14 @@ export const useBlockNavigation = (): UseBlockNavigationResult => {
   const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
   const { showPrompt } = useContext(PromptContext);
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // Allow navigation after user confirms
   useEffect(() => {
     if (confirmedNavigation && nextLocation) {
-      history.push(nextLocation);
+      navigate(nextLocation);
     }
-  }, [confirmedNavigation, nextLocation, history]);
+  }, [confirmedNavigation, nextLocation, navigate]);
 
   const handleBlockedNavigation = (nextLocation: string): boolean => {
     if (!confirmedNavigation && isFormDirty) {

@@ -1,6 +1,6 @@
 import { FC, MouseEvent, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Chip, Stack } from "@mui/material";
 import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Role, Workgroup } from "../../../api/apiInterfaces.ts";
@@ -13,7 +13,7 @@ import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext
 
 export const WorkgroupAdministration: FC = () => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { data: workgroups } = useWorkgroups();
   const { data: users } = useUsers();
   const { workgroupTableSortModel, setworkgroupTableSortModel } = useContext(WorkgroupAdministrationContext);
@@ -58,7 +58,7 @@ export const WorkgroupAdministration: FC = () => {
   ];
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
-    history.push(`/setting/workgroup/${params.row.id}`);
+    navigate(`/setting/workgroup/${params.row.id}`);
   };
 
   if (!workgroups) return;

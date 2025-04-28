@@ -1,7 +1,7 @@
 import { FC, useCallback, useContext, useRef } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AlertColor, Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { ChevronRight, File as FileIcon } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
@@ -33,7 +33,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { editingEnabled } = useContext(DetailContext);
   const { id } = useParams<{ id: string }>();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const isOnAttachmentsPage = location.pathname === `/${id}/attachments`;
@@ -153,7 +153,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
                   variant="contained"
                   color="primary"
                   label="managePhotos"
-                  onClick={() => history.push(`/${id}/attachments#photos`)}
+                  onClick={() => navigate(`/${id}/attachments#photos`)}
                   icon={<ChevronRight />}
                   dataCy="labeling-file-selector-manage-photos"
                 />
