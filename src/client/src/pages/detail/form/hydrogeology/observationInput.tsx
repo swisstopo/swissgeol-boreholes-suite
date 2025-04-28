@@ -87,17 +87,17 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
     });
   };
 
-  const onCancelDepthUnitChange = (e: number) => {
+  const onCancelDepthUnitChange = (newDepthUnit: ObservationDepthUnitType) => {
     // Reset the value to the previous one.
-    if (e == ObservationDepthUnitType.measuredDepth) {
+    if (newDepthUnit == ObservationDepthUnitType.measuredDepth) {
       formMethods.setValue(depthUnitFieldName, ObservationDepthUnitType.masl);
     } else {
       formMethods.setValue(depthUnitFieldName, ObservationDepthUnitType.measuredDepth);
     }
   };
 
-  const onDepthUnitChange = (e: number | boolean | null) => {
-    if (typeof e !== "number") return;
+  const onDepthUnitChange = (newDepthUnit: number | boolean | null) => {
+    if (typeof newDepthUnit !== "number") return;
     const areDepthValuesSet = formMethods.getValues(depthFields).some(value => value);
 
     if (!areDepthValuesSet) {
@@ -110,7 +110,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
         label: t("cancel"),
         icon: <X />,
         variant: "outlined",
-        action: () => onCancelDepthUnitChange(e),
+        action: () => onCancelDepthUnitChange(newDepthUnit),
       },
       {
         label: t("confirm"),
