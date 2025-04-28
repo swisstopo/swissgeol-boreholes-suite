@@ -7,7 +7,7 @@ interface CustomProps {
   value: number | string;
 }
 
-export function NumericFormatWithThousandSeparator(props: CustomProps) {
+export function NumericFormatWithThousandSeparator(props: Readonly<CustomProps>) {
   const { onChange, value, ...other } = props;
   const inputRef = useRef(null);
 

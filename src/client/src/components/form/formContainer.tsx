@@ -8,10 +8,10 @@ interface FormContainerProps extends StackProps {
 }
 
 export const FormContainer: FC<FormContainerProps> = props => {
-  const width = props.width || "100%";
+  const width = props.width ?? "100%";
   return (
     <Stack
-      component={props.component || "div"}
+      component={props.component ?? "div"}
       ref={props.ref}
       {...props}
       rowGap={3}
