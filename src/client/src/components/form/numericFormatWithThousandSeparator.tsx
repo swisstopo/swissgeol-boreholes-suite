@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { NumericFormat } from "react-number-format";
 
 interface CustomProps {
@@ -7,14 +6,12 @@ interface CustomProps {
   value: number | string;
 }
 
-export function NumericFormatWithThousandSeparator(props: Readonly<CustomProps>) {
+export const NumericFormatWithThousandSeparator = (props: Readonly<CustomProps>) => {
   const { onChange, value, ...other } = props;
-  const inputRef = useRef(null);
 
   return (
     <NumericFormat
       {...other}
-      getInputRef={inputRef}
       value={value}
       fixedDecimalScale
       onValueChange={values => {
@@ -29,4 +26,4 @@ export function NumericFormatWithThousandSeparator(props: Readonly<CustomProps>)
       valueIsNumericString
     />
   );
-}
+};
