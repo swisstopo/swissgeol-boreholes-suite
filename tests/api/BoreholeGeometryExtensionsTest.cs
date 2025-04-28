@@ -223,7 +223,7 @@ public class BoreholeGeometryExtensionsTest
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => new List<BoreholeGeometryElement>().GetDepthMD(10));
     }
 
-    private void AssertRoundtrip(List<BoreholeGeometryElement> geometry, double inputTVD, double expectedMD)
+    private static void AssertRoundtrip(List<BoreholeGeometryElement> geometry, double inputTVD, double expectedMD)
     {
         var actualMD = geometry.GetDepthMD(inputTVD);
         Assert.AreEqual(expectedMD, actualMD, 1e-12);

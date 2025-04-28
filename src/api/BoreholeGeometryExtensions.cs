@@ -78,7 +78,7 @@ public static class BoreholeGeometryExtensions
 
         var (beta, aDirection) = CalculateDogleg(geometry, upperIndex);
 
-        if (beta == 0)
+        if (IsCloseToZero(beta))
         {
             // Straight segment, use linear interpolation
             return a.Z + ((depthMD - a.MD) / deltaMD * (b.Z - a.Z));
@@ -110,11 +110,11 @@ public static class BoreholeGeometryExtensions
         var upperIndex = 1;
         while (upperIndex < geometry.Count)
         {
-            if (geometry[upperIndex - 1].Z == depthTvd)
+            if (IsCloseToZero(geometry[upperIndex - 1].Z - depthTvd))
             {
                 return geometry[upperIndex - 1].MD;
             }
-            else if (geometry[upperIndex].Z == depthTvd)
+            else if (IsCloseToZero(geometry[upperIndex].Z - depthTvd))
             {
                 return geometry[upperIndex].MD;
             }
@@ -163,7 +163,7 @@ public static class BoreholeGeometryExtensions
 
         var (beta, aDirection) = CalculateDogleg(geometry, upperIndex);
 
-        if (beta == 0)
+        if (IsCloseToZero(beta))
         {
             // Straight segment, use linear interpolation
             var t = (depthTvd - pointA.Z) / (pointB.Z - pointA.Z);
@@ -215,7 +215,7 @@ public static class BoreholeGeometryExtensions
             }
             else
             {
-                return pointA.MD + interpolatedDeltaMDs.First();
+                return pointA.MD + interpolatedDeltaMDs[0];
             }
         }
     }

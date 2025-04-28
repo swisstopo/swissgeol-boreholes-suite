@@ -51,7 +51,7 @@ public class Observation : IChangeTracking, IIdentifyable, ICasingReference
     /// </summary>
     [IncludeInExport]
     [Column("original_vertical_reference_system")]
-    public VerticalReferenceSystem OriginalVerticalReferenceSystem { get; set; }
+    public VerticalReferenceSystem OriginalVerticalReferenceSystem { get; set; } = VerticalReferenceSystem.Unknown;
 
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s from depth in m.
