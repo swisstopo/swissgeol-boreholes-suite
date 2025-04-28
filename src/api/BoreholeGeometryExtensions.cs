@@ -135,7 +135,6 @@ public static class BoreholeGeometryExtensions
     /// Get the measured depth at the corresponding <paramref name="depthTvd"/> between the points <paramref name="geometry"/>[<paramref name="upperIndex"/> - 1] and <paramref name="geometry"/>[<paramref name="upperIndex"/>].
     /// If the <paramref name="depthTvd"/> does not intersect the segment between the two points, <see langword="null" /> is returned.
     /// </summary>
-    /// <remarks>The segment is approximated by a straight line and therefore produces inaccurate results on circular segments.</remarks>
     /// <seealso href="https://math.stackexchange.com/a/3859879">Circle Plane intersection</seealso>
     /// <seealso href="https://math.stackexchange.com/a/3166304">Line circle intersection.</seealso>
     internal static double? InterpolateDepthMD(List<BoreholeGeometryElement> geometry, double depthTvd, int upperIndex)
