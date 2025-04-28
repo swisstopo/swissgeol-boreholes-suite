@@ -47,24 +47,25 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   }, [boreholeId]);
 
   const convertDepth = async (
-    originalFieldName: string,
-    targetFieldName: string,
-    targetUnit: ObservationDepthUnitType,
+    inputFieldName: string,
+    outputFieldName: string,
+    outputUnit: ObservationDepthUnitType,
   ) => {
-    if (targetUnit === watchDepthUnit) return;
+    if (outputUnit === watchDepthUnit) return;
 
-    const original = parseFloatWithThousandsSeparator(formMethods.getValues(originalFieldName));
-    if (original === null) {
-      formMethods.setValue(targetFieldName, "");
+    const inputValue = formMethods.getValues(inputFieldName);
+    const inputParsed = parseFloatWithThousandsSeparator(inputValue);
+    if (inputParsed === null) {
+      formMethods.setValue(outputFieldName, "");
     } else {
       let result = null;
-      switch (targetUnit) {
+      switch (outputUnit) {
         case ObservationDepthUnitType.measuredDepth: {
-          result = await getBoreholeGeometryDepthMDFromMasl(Number(boreholeId), original);
+          result = await getBoreholeGeometryDepthMDFromMasl(Number(boreholeId), inputParsed);
           break;
         }
         case ObservationDepthUnitType.masl: {
-          result = await getBoreholeGeometryDepthMasl(Number(boreholeId), original);
+          result = await getBoreholeGeometryDepthMasl(Number(boreholeId), inputParsed);
           break;
         }
         default:
@@ -72,7 +73,11 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
       }
 
       result = roundValue(result);
-      formMethods.setValue(targetFieldName, result);
+
+      // Check if the input value has changed since the conversion was triggered
+      if (inputValue !== formMethods.getValues(inputFieldName)) return;
+
+      formMethods.setValue(outputFieldName, result);
     }
   };
 
