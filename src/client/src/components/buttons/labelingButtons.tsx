@@ -36,7 +36,7 @@ interface SidePanelToggleButtonProps extends ButtonProps {
   ref?: Ref<HTMLButtonElement>;
 }
 
-export const SidePanelToggleButton = (props: SidePanelToggleButtonProps) => {
+export const SidePanelToggleButton: FC<SidePanelToggleButtonProps> = props => {
   const { panelOpen, panelPosition, ...defaultProps } = props;
   const { t } = useTranslation();
 

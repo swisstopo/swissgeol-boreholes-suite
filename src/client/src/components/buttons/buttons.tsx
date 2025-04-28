@@ -27,7 +27,7 @@ export const BoreholesButton: FC<ButtonProps> = props => {
   return <BoreholesBaseButton {...props} label={props.label} />;
 };
 
-export const AddButton = (props: ButtonProps) => {
+export const AddButton: FC<ButtonProps> = props => {
   return (
     <BoreholesBaseButton
       {...props}
@@ -43,7 +43,7 @@ export const EditButton: FC<ButtonProps> = props => {
   return <BoreholesBaseButton {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />;
 };
 
-export const BulkEditButton = (props: ButtonProps) => {
+export const BulkEditButton: FC<ButtonProps> = props => {
   return (
     <BoreholesBaseButton
       {...props}
@@ -59,7 +59,7 @@ export const EndEditButton: FC<ButtonProps> = props => {
   return <BoreholesBaseButton {...props} label="editingStop" variant={props.variant ?? "contained"} icon={<Check />} />;
 };
 
-export const CopyButton = (props: ButtonProps) => {
+export const CopyButton: FC<ButtonProps> = props => {
   return (
     <BoreholesBaseButton
       {...props}
@@ -123,7 +123,7 @@ export const ExportButton: FC<ButtonProps> = props => {
   );
 };
 
-export const ReturnButton = ({ onClick }: { onClick: () => void }) => {
+export const ReturnButton: FC<{ onClick: () => void }> = ({ onClick }) => {
   return (
     <IconButton
       color="primary"
