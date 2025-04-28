@@ -10,7 +10,8 @@
         "pgadmin": "StartWithoutDebugging",
         "api-legacy": "StartWithoutDebugging",
         "api": "DoNotStart",
-        "client": "DoNotStart"
+        "client": "DoNotStart",
+        "dataextraction": "StartWithoutDebugging"
       }
     }
   }
