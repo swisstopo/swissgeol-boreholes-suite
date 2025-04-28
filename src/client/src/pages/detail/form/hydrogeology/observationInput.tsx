@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { Casing } from "../../../../api/apiInterfaces.ts";
 import { getBoreholeGeometryDepthMasl, getCasingsByBoreholeId } from "../../../../api/fetchApiV2.js";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants.ts";
 import { ObservationDepthUnitType, ObservationInputProps } from "./Observation.ts";
@@ -16,7 +16,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   const { t } = useTranslation();
   const { setValue: setFormValue } = useFormContext();
   const [casings, setCasings] = useState<Casing[]>([]);
-  const { id: boreholeId } = useParams<{ id: string }>();
+  const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const getCasingOptions = useGetCasingOptions();
 
   const [depthUnit, setDepthUnit] = useState(ObservationDepthUnitType.masl);

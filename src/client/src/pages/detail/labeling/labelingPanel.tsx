@@ -1,6 +1,5 @@
 import { FC, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { Alert, Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
 import { PanelBottom, PanelRight } from "lucide-react";
@@ -10,6 +9,7 @@ import { getFiles, uploadFile } from "../../../api/file/file.ts";
 import { BoreholeFile, File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
+import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingExtraction } from "./labelingExtraction.tsx";
@@ -55,7 +55,7 @@ export const LabelingAlert = styled(Alert)({
 
 const LabelingPanel: FC = () => {
   const { t } = useTranslation();
-  const { id: boreholeId } = useParams<{ id: string }>();
+  const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { panelPosition, setPanelPosition, extractionState, fileInfo, cancelRequest, panelTab } = useLabelingContext();
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [files, setFiles] = useState<BoreholeAttachment[]>();

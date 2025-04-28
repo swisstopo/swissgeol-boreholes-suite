@@ -1,6 +1,5 @@
 import { FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
@@ -12,12 +11,13 @@ import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { FormInputDisplayOnly } from "../../../components/form/form.ts";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
+import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { AddUserDialog } from "./dialogs/addUserDialog.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
 export const WorkgroupDetail: FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useRequiredParams<{ id: string }>();
   const { t } = useTranslation();
   const [workgroupUsers, setWorkgroupUsers] = useState<User[]>();
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();

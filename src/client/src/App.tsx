@@ -1,25 +1,25 @@
 import React from "react";
-import { Redirect, Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { theme } from "./AppTheme";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { AlertProvider } from "./components/alert/alertContext";
-import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx";
-import { DataCardProvider } from "./components/dataCard/dataCardContext.tsx";
-import HeaderComponent from "./components/header/headerComponent.tsx";
-import { Prompt } from "./components/prompt/prompt.tsx";
-import { PromptProvider } from "./components/prompt/promptContext.tsx";
-import { AppBox } from "./components/styledComponents.ts";
-import { DetailProvider } from "./pages/detail/detailContext.tsx";
-import { DetailPage } from "./pages/detail/detailPage.tsx";
-import { LabelingProvider } from "./pages/detail/labeling/labelingContext.tsx";
-import { OverviewProvider } from "./pages/overview/overViewContext.tsx";
-import { OverviewPage } from "./pages/overview/overviewPage.tsx";
-import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext.tsx";
+import { BasemapProvider } from "./components/basemapSelector/basemapContext";
+import { DataCardProvider } from "./components/dataCard/dataCardContext";
+import HeaderComponent from "./components/header/headerComponent";
+import { Prompt } from "./components/prompt/prompt";
+import { PromptProvider } from "./components/prompt/promptContext";
+import { AppBox } from "./components/styledComponents";
+import { DetailProvider } from "./pages/detail/detailContext";
+import { DetailPage } from "./pages/detail/detailPage";
+import { LabelingProvider } from "./pages/detail/labeling/labelingContext";
+import { OverviewProvider } from "./pages/overview/overViewContext";
+import { OverviewPage } from "./pages/overview/overviewPage";
+import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext";
 import { DataLoader } from "./pages/settings/dataLoader";
-import { SettingsPage } from "./pages/settings/settingsPage.tsx";
+import { SettingsPage } from "./pages/settings/settingsPage";
 import { AcceptTerms } from "./term/accept";
 import { AnalyticsProvider } from "./term/analyticsContext.tsx";
 
@@ -68,31 +68,21 @@ class App extends React.Component {
                             <AppBox>
                               <HeaderComponent />
                               <Router>
-                                <Switch>
-                                  <Route key={0} path={"/setting"} render={() => <SettingsPage />} />
+                                <Routes>
+                                  <Route path="/setting/*" element={<SettingsPage />} />
                                   <Route
-                                    exact={false}
-                                    key={1}
-                                    path={"/:id"}
-                                    render={() => (
+                                    path="/:id/*"
+                                    element={
                                       <LabelingProvider>
                                         <DetailProvider>
                                           <DetailPage />
                                         </DetailProvider>
                                       </LabelingProvider>
-                                    )}
+                                    }
                                   />
-                                  <Route component={OverviewPage} exact={false} key={2} path={"/"} />
-                                  <Route
-                                    component={() => (
-                                      <Redirect
-                                        to={{
-                                          pathname: "/",
-                                        }}
-                                      />
-                                    )}
-                                  />
-                                </Switch>
+                                  <Route path="/" element={<OverviewPage />} />
+                                  <Route path="*" element={<Navigate to="/" />} />
+                                </Routes>
                               </Router>
                             </AppBox>
                           </QueryClientProvider>

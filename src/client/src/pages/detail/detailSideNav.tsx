@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { ChildListItem, ParentListItem } from "../../components/styledComponents.ts";
+import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../utils";
 import { ObservationType } from "./form/hydrogeology/Observation.ts";
 
@@ -17,7 +18,7 @@ interface DetailSideNavProps {
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const [stratigraphyIsVisible, setStratigraphyIsVisible] = useState(false);
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
-  const { id } = useParams<{ id: string }>();
+  const { id } = useRequiredParams<{ id: string }>();
   const location = useLocation();
   const { t } = useTranslation();
   const auth = useAuth();

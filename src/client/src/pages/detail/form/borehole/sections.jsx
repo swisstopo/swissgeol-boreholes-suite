@@ -1,11 +1,11 @@
-import { useParams } from "react-router-dom";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
 import DataCards from "../../../../components/dataCard/dataCards.tsx";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import SectionDisplay from "./sectionDisplay.jsx";
 import SectionInput from "./sectionInput.jsx";
 
 const Sections = () => {
-  const { id: boreholeId } = useParams();
+  const { id: boreholeId } = useRequiredParams();
   return (
     <DataCards
       parentId={boreholeId}

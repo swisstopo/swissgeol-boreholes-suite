@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import {
@@ -15,6 +15,7 @@ import { DataCardExternalContext } from "../../../../components/dataCard/dataCar
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { DetailContext } from "../../detailContext.tsx";
 import CompletionContent from "./completionContent.jsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";
@@ -24,7 +25,7 @@ const Completion = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(DetailContext);
-  const { boreholeId, completionId } = useParams();
+  const { boreholeId, completionId } = useRequiredParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();

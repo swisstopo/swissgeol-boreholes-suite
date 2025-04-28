@@ -1,6 +1,5 @@
 import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { Box, IconButton, Link, TextField } from "@mui/material";
 import { GridCellCheckboxRenderer, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { CloudDownload, Lock, LockOpen, Trash2 } from "lucide-react";
@@ -8,6 +7,7 @@ import { downloadFile } from "../../../../api/file/file";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import { Table } from "../../../../components/table/table.tsx";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { DetailContext } from "../../detailContext.tsx";
 
 interface FilesTableProps {
@@ -26,7 +26,7 @@ interface FilesTableProps {
 
 export const FilesTable: FC<FilesTableProps> = ({ editor, files, patchFile, detachFile }) => {
   const { t } = useTranslation();
-  const { id } = useParams<{ id: string }>();
+  const { id } = useRequiredParams<{ id: string }>();
   const { editingEnabled } = useContext(DetailContext);
 
   const getLockIcon = (isPublic: boolean) => {
