@@ -26,11 +26,17 @@ const SectionInput = ({ item, parentId }) => {
   const history = useHistory();
 
   // Block navigation if form is dirty
-  history.block(nextLocation => {
-    if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
-      return false;
-    }
-  });
+  useEffect(() => {
+    const unblock = history.block(nextLocation => {
+      if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
+        return false;
+      }
+    });
+    // When component unmounts, unblock navigation
+    return () => {
+      unblock();
+    };
+  }, [history, handleBlockedNavigation]);
 
   const sectionElementDefaults = {
     fromDepth: null,

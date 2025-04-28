@@ -27,11 +27,16 @@ export function UseFormWithSaveBar<T extends FieldValues>({
   const setShowSaveFeedback = useSaveBarState(state => state.setShowSaveFeedback);
 
   // Block navigation if form is dirty
-  history.block(nextLocation => {
-    if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
-      return false;
-    }
-  });
+  useEffect(() => {
+    const unblock = history.block(nextLocation => {
+      if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
+        return false;
+      }
+    });
+    return () => {
+      unblock();
+    };
+  }, [history, handleBlockedNavigation]);
 
   // Track form dirty state
   useEffect(() => {
