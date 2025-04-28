@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import {
@@ -25,7 +25,8 @@ const Completion = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(DetailContext);
-  const { boreholeId, completionId } = useRequiredParams();
+  const { id: boreholeId } = useRequiredParams();
+  const { completionId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -39,6 +40,7 @@ const Completion = () => {
     displayed: [],
     editing: false,
   });
+  console.log(state);
   const [checkContentDirty, setCheckContentDirty] = useState(false);
   const [completionToBeSaved, setCompletionToBeSaved] = useState(null);
 
@@ -74,8 +76,10 @@ const Completion = () => {
   };
 
   const loadData = () => {
+    console.log("loadData", boreholeId);
     setIsLoading(true);
     if (boreholeId && mounted.current) {
+      console.log("getcompl");
       getCompletions(parseInt(boreholeId, 10)).then(response => {
         if (response?.length > 0) {
           // Display primary completion first then order by created date

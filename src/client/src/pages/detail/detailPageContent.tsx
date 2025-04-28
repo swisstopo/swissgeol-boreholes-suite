@@ -94,8 +94,8 @@ export const DetailPageContent = ({
             <Route path="hydrogeology/fieldmeasurement" element={<FieldMeasurement />} />
             <Route path="hydrogeology/hydrotest" element={<Hydrotest />} />
             <Route path="hydrogeology" element={<Navigate to="hydrogeology/wateringress" replace />} />
-            <Route path="../:boreholeId/completion/:completionId" element={<Completion />} />
-            <Route path="../:boreholeId/completion" element={<Completion />} />
+            <Route path="completion/:completionId" element={<Completion />} />
+            <Route path="completion" element={<Completion />} />
             <Route path="status" element={<WorkflowForm id={id} />} />
             <Route path="" element={<Navigate to="location" replace />} />
           </Routes>
