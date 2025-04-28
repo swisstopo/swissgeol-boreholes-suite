@@ -91,7 +91,11 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
           <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
             <Stack direction="row" alignItems="center" gap={1}>
               {editingEnabled && <DeleteButton disabled={selectionModel.length === 0} onClick={deleteSelected} />}
-              <ExportButton disabled={selectionModel.length === 0} onClick={exportSelected} />
+              <ExportButton
+                disabled={selectionModel.length === 0}
+                onClick={exportSelected}
+                dataCy={"attachment-export-button"}
+              />
               <Typography>
                 {selectionModel.length > 0 && t("selectedCount", { count: selectionModel.length })}
               </Typography>

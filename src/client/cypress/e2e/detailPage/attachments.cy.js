@@ -145,7 +145,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // export photo
       checkRowWithText(photoFilename);
-      getElementByDataCy("attachment-table-container").find('[data-cy="export-button"]').click();
+      getElementByDataCy("attachment-table-container").find('[data-cy="attachment-export-button"]').click();
       cy.wait("@export-photos");
 
       // check if the file is present in download folder
