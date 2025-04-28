@@ -73,5 +73,5 @@ public class WorkflowV2 : IIdentifyable
     /// <summary>
     /// Get the <see cref="WorkflowChange"/>s associated with this <see cref="WorkflowV2"/>.
     /// </summary>
-    public ICollection<WorkflowChange> Changes { get; set; } = new List<WorkflowChange>();
+    public ICollection<WorkflowChange> Changes { get; } = new List<WorkflowChange>();
 }
