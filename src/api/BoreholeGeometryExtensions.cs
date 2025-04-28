@@ -220,16 +220,6 @@ public static class BoreholeGeometryExtensions
         }
     }
 
-    private static bool IsCloseToZero(double d)
-    {
-        return Math.Abs(d) < 1e-14;
-    }
-
-    private static readonly IComparer<BoreholeGeometryElement> geometryMDComparer = Comparer<BoreholeGeometryElement>.Create((a, b) => a.MD.CompareTo(b.MD));
-
-    internal static Vector3D ToVector3D(this BoreholeGeometryElement element)
-        => new Vector3D(element.X, element.Y, element.Z);
-
     /// <summary>
     /// Calculate dogleg beta and direction vector at point a.
     /// </summary>
@@ -274,6 +264,16 @@ public static class BoreholeGeometryExtensions
 
         return (beta, aDirection);
     }
+
+    private static bool IsCloseToZero(double d)
+    {
+        return Math.Abs(d) < 1e-14;
+    }
+
+    private static readonly IComparer<BoreholeGeometryElement> geometryMDComparer = Comparer<BoreholeGeometryElement>.Create((a, b) => a.MD.CompareTo(b.MD));
+
+    internal static Vector3D ToVector3D(this BoreholeGeometryElement element)
+        => new Vector3D(element.X, element.Y, element.Z);
 
     /// <summary>
     /// Calculate the unit vector in the direction of the borehole.
