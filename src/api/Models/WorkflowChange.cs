@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -7,7 +8,7 @@ namespace BDMS.Models;
 /// Represents a status change of a <see cref="WorkflowV2"/>.
 /// </summary>
 [Table("workflow_change")]
-public class WorkflowChange : IIdentifyable
+public class WorkflowChange : IIdentifyable, IChangeTracking
 {
     /// <inheritdoc />
     [Key]
@@ -70,4 +71,25 @@ public class WorkflowChange : IIdentifyable
     /// Gets or sets the <see cref="User"/> who is assigned to the change.
     /// </summary>
     public User? Assignee { get; set; }
+
+    /// <summary>
+    /// Not stored in database, <see cref="WorkflowChange"/> entries are read-only.
+    /// </summary>
+    [NotMapped]
+    [JsonIgnore]
+    int? IChangeTracking.UpdatedById { get; set; }
+
+    /// <summary>
+    /// Not stored in database, <see cref="WorkflowChange"/> entries are read-only.
+    /// </summary>
+    [NotMapped]
+    [JsonIgnore]
+    User? IChangeTracking.UpdatedBy { get; set; }
+
+    /// <summary>
+    /// Not stored in database, <see cref="WorkflowChange"/> entries are read-only.
+    /// </summary>
+    [NotMapped]
+    [JsonIgnore]
+    DateTime? IChangeTracking.Updated { get; set; }
 }
