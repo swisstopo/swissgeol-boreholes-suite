@@ -4,7 +4,6 @@ import editorUser from "../../fixtures/editorUser.json";
 import viewerUser from "../../fixtures/viewerUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers.js";
 
-
 export const bearerAuth = token => ({ bearer: token });
 
 export const interceptApiCalls = () => {
