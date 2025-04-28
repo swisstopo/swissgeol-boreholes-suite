@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { FC, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Box, Stack } from "@mui/material";
 import { DevTool } from "../../../../../hookformDevtools.ts";
@@ -9,7 +9,7 @@ import LocationSegment from "./locationSegment.tsx";
 import NameSegment from "./nameSegment.tsx";
 import RestrictionSegment from "./restrictionSegment.tsx";
 
-export const LocationPanel = forwardRef(({ onSubmit, borehole, labelingPanelOpen }: LocationPanelProps, ref) => {
+export const LocationPanel: FC<LocationPanelProps> = ({ onSubmit, borehole, labelingPanelOpen, ref }) => {
   const [resetKey, setResetKey] = useState(0);
   const formMethods = useForm<LocationFormInputs>({
     mode: "onChange",
@@ -62,10 +62,11 @@ export const LocationPanel = forwardRef(({ onSubmit, borehole, labelingPanelOpen
                 borehole={borehole}
                 formMethods={formMethods}
                 labelingPanelOpen={labelingPanelOpen}
-                key={resetKey}></LocationSegment>
+                key={resetKey}
+              />
             </Stack>
           </form>
         </FormProvider>
       </Box>
     );
-});
+};

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
@@ -6,20 +6,22 @@ import { CircleCheck, CircleX } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 import { DeleteButton, SaveButton } from "../../components/buttons/buttons.tsx";
 import { useFormDirtyStore } from "./formDirtyStore.ts";
+import { useSaveBarState } from "./saveBarStore.ts";
 
 interface SaveBarProps {
   triggerSubmit: () => void;
   triggerReset: () => void;
 }
 export const SaveBar = ({ triggerSubmit, triggerReset }: SaveBarProps) => {
-  const [showSaveFeedback, setShowSaveFeedback] = useState(false);
   const { t } = useTranslation();
   const location = useLocation();
   const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
+  const showSaveFeedback = useSaveBarState(state => state.showSaveFeedback);
+  const setShowSaveFeedback = useSaveBarState(state => state.setShowSaveFeedback);
 
   useEffect(() => {
     setShowSaveFeedback(false);
-  }, [location.pathname]);
+  }, [location.pathname, setShowSaveFeedback]);
 
   const changesMessage = (
     <>
@@ -34,6 +36,7 @@ export const SaveBar = ({ triggerSubmit, triggerReset }: SaveBarProps) => {
       <Box data-cy="save-bar-text"> {t("savedChanges")}</Box>
     </>
   );
+
   return (
     <Stack
       direction="row"
@@ -53,7 +56,6 @@ export const SaveBar = ({ triggerSubmit, triggerReset }: SaveBarProps) => {
         {isFormDirty && changesMessage}
         {showSaveFeedback && !isFormDirty && savedMessage}
       </Stack>
-
       <Stack spacing={1} direction="row">
         <DeleteButton
           disabled={!isFormDirty}
@@ -62,15 +64,7 @@ export const SaveBar = ({ triggerSubmit, triggerReset }: SaveBarProps) => {
             triggerReset();
           }}
         />
-        <SaveButton
-          disabled={!isFormDirty}
-          variant="contained"
-          onClick={() => {
-            setShowSaveFeedback(true);
-            triggerSubmit();
-            setTimeout(() => setShowSaveFeedback(false), 4000);
-          }}
-        />
+        <SaveButton disabled={!isFormDirty} variant="contained" onClick={() => triggerSubmit()} />
       </Stack>
     </Stack>
   );
