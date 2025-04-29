@@ -19,7 +19,7 @@ import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx"
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
 import Lithology from "./form/stratigraphy/lithology";
 import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
-import WorkflowForm from "./form/workflow/workflowForm.jsx";
+import { WorkflowPanel } from "./form/workflow/workflowPanel.tsx";
 
 interface DetailPageContentProps {
   locationPanelRef: RefObject<{ submit: () => void; reset: () => void } | null>;
@@ -125,7 +125,7 @@ export const DetailPageContent = ({
             />
             <Route path={"/:boreholeId/completion/:completionId"} render={() => <Completion />} />
             <Route path={"/:boreholeId/completion"} render={() => <Completion />} />
-            <Route exact path={"/:id/status"} render={() => <WorkflowForm id={parseInt(id, 10)} />} />
+            <Route exact path={"/:id/status"} render={() => <WorkflowPanel />} />
             <Route
               path={"/:id"}
               render={() => {
