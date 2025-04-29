@@ -12,7 +12,7 @@ import {
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
+import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants.ts";
@@ -33,10 +33,6 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   const toDepthMaslFieldName = "toDepthMasl";
   const depthFields = [fromDepthMFieldName, toDepthMFieldName, fromDepthMaslFieldName, toDepthMaslFieldName];
   const watchDepthUnit = formMethods.watch(depthUnitFieldName, ObservationDepthUnitType.measuredDepth);
-
-  const roundValue = (value: number | null) => {
-    return value ? Math.round(value * 100) / 100 : null;
-  };
 
   useEffect(() => {
     if (boreholeId) {
@@ -72,7 +68,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
           return;
       }
 
-      result = roundValue(result);
+      result = formatNumberForDisplay(result);
 
       // Check if the input value has changed since the conversion was triggered
       if (inputValue !== formMethods.getValues(inputFieldName)) return;

@@ -55,8 +55,8 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
   extractionType,
 }) => {
   const { t } = useTranslation();
-  const mapRef = useRef<Map>();
-  const tooltipRef = useRef<HTMLDivElement>();
+  const mapRef = useRef<Map>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   const loadImageFromApi = useCallback(async () => {
     return fileInfo ? await loadImage(fileInfo.fileName) : null;

@@ -191,6 +191,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.ReferenceElevationPrecision, _ => default!)
            .RuleFor(o => o.ReferenceElevationTypeId, f => f.PickRandom(referenceElevationTypeIds).OrNull(f, .05f))
            .RuleFor(o => o.ReferenceElevationType, _ => default!)
+           .RuleFor(o => o.Workflow, _ => default!)
            .RuleFor(o => o.BoreholeCodelists, _ => new Collection<BoreholeCodelist>())
            .RuleFor(o => o.Codelists, _ => new Collection<Codelist>())
            .RuleFor(o => o.Geometry, f =>
@@ -216,6 +217,36 @@ public static class BdmsContextExtensions
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
         context.BulkInsert(boreholeRange.Select(SeededBoreholes).ToList(), bulkConfig);
+
+        // Seed a workflow for each borehole
+        var tabStatus_ids = 3_000_000;
+        var tabStatusRange = Enumerable.Range(tabStatus_ids, boreholeRange.Count * 2).ToList();
+        var fakeTabStatus = new Faker<TabStatus>()
+            .StrictMode(false)
+            .RuleFor(o => o.Id, f => tabStatus_ids++);
+
+        TabStatus SeededTabStatus(int seed) => fakeTabStatus.UseSeed(seed).Generate();
+        context.BulkInsert(tabStatusRange.Select(SeededTabStatus).ToList(), bulkConfig);
+
+        var workflowV2_ids = 2_000_000;
+        var workflowV2Range = Enumerable.Range(workflowV2_ids, boreholeRange.Count);
+        var fakeWorkflowsV2 = new Faker<WorkflowV2>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => workflowV2_ids++)
+            .RuleFor(o => o.HasRequestedChanges, f => f.Random.Bool(.05f))
+            .RuleFor(o => o.Status, f => WorkflowStatus.Draft)
+            .RuleFor(o => o.BoreholeId, (f, o) => boreholeRange[o.Id - workflowV2Range.First()])
+            .RuleFor(o => o.Borehole, f => default!)
+            .RuleFor(o => o.ReviewedTabsId, (f, o) => tabStatusRange[(o.Id - workflowV2Range.First()) * 2])
+            .RuleFor(o => o.ReviewedTabs, f => default!)
+            .RuleFor(o => o.PublishedTabsId, (f, o) => o.ReviewedTabsId + 1)
+            .RuleFor(o => o.PublishedTabs, f => default!)
+            .RuleFor(o => o.AssigneeId, f => f.PickRandom(userRange).OrNull(f))
+            .RuleFor(o => o.Assignee, f => default!)
+            .RuleFor(o => o.Changes, f => new Collection<WorkflowChange>());
+
+        WorkflowV2 SeededWorkflowsV2(int seed) => fakeWorkflowsV2.UseSeed(seed).Generate();
+        context.BulkInsert(workflowV2Range.Select(SeededWorkflowsV2).ToList(), bulkConfig);
 
         // Seed file
         var filesUserRange = Enumerable.Range(1, 6); // Include dedicated user that only has file
@@ -1037,6 +1068,8 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.borehole_geometry', 'id'), {boreholeGeometry_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.lithological_description', 'id_ldp'), {lithologicalDescription_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.facies_description', 'id_fac'), {faciesDescription_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.tab_status', 'tab_status_id'), {tabStatus_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_v2', 'workflow_id'), {workflowV2_ids - 1})");
     }
 }
 #pragma warning restore CA1505

@@ -422,6 +422,11 @@ public class Borehole : IChangeTracking, IIdentifyable
     public Codelist? ReferenceElevationType { get; set; }
 
     /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s workflow.
+    /// </summary>
+    public WorkflowV2? Workflow { get; set; }
+
+    /// <summary>
     /// Gets the <see cref="Borehole"/>'s stratigraphies.
     /// </summary>
     [IncludeInExport]

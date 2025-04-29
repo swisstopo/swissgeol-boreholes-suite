@@ -145,6 +145,12 @@ public static class BoreholeExtensions
         borehole.Workflows.Clear();
         borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
 
+        borehole.Workflow = new WorkflowV2
+        {
+            ReviewedTabs = new(),
+            PublishedTabs = new(),
+        };
+
         // Set the geometry's SRID to LV95 (EPSG:2056)
         if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
 

@@ -44,6 +44,7 @@ const GeneralSettings = () => {
     filter.forEach(element => {
       newFilter.push(`fields.${element}`);
     });
+    // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
     dispatch(patchCodeConfig(newFilter, enabled));
   };
 
@@ -52,13 +53,16 @@ const GeneralSettings = () => {
     filter.forEach(element => {
       newFilter.push(`efilter.${element}`);
     });
+    // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
     dispatch(patchSettings(newFilter, enabled));
   };
 
   const toggleField = (filter: string, enabled: boolean) => {
+    // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
     dispatch(patchCodeConfig(`fields.${filter}`, enabled));
   };
   const toggleFilter = (filter: string, enabled: boolean) => {
+    // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
     dispatch(patchSettings(`efilter.${filter}`, enabled));
   };
 
@@ -72,6 +76,7 @@ const GeneralSettings = () => {
   ) => {
     const key = type === "WMTS" ? layer?.Identifier : layer?.Name;
     dispatch(
+      // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
       patchSettings(
         "map.explorer",
         {

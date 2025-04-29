@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { FC, Ref } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, ButtonProps, IconButton, Tooltip } from "@mui/material";
 import { Sparkles } from "lucide-react";
@@ -9,12 +9,15 @@ import SidebarRight from "../../assets/icons/sidebarRight.svg?react";
 import SidebarUp from "../../assets/icons/sidebarUp.svg?react";
 import { theme } from "../../AppTheme.ts";
 
-export const CoordinateExtractionButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+interface ExtractionButtonProps extends ButtonProps {
+  ref?: Ref<HTMLButtonElement>;
+}
+
+export const CoordinateExtractionButton: FC<ExtractionButtonProps> = props => {
   const { t } = useTranslation();
   return (
     <Tooltip title={t("extractCoordinates")}>
       <IconButton
-        ref={ref}
         {...props}
         color="ai"
         sx={{
@@ -25,14 +28,15 @@ export const CoordinateExtractionButton = forwardRef<HTMLButtonElement, ButtonPr
       </IconButton>
     </Tooltip>
   );
-});
+};
 
 interface SidePanelToggleButtonProps extends ButtonProps {
   panelOpen: boolean;
   panelPosition: "right" | "bottom";
+  ref?: Ref<HTMLButtonElement>;
 }
 
-export const SidePanelToggleButton = forwardRef<HTMLButtonElement, SidePanelToggleButtonProps>((props, ref) => {
+export const SidePanelToggleButton: FC<SidePanelToggleButtonProps> = props => {
   const { panelOpen, panelPosition, ...defaultProps } = props;
   const { t } = useTranslation();
 
@@ -54,7 +58,6 @@ export const SidePanelToggleButton = forwardRef<HTMLButtonElement, SidePanelTogg
   return (
     <Tooltip title={t("openSidepanel")}>
       <IconButton
-        ref={ref}
         {...defaultProps}
         color={"primary"}
         sx={{
@@ -71,7 +74,7 @@ export const SidePanelToggleButton = forwardRef<HTMLButtonElement, SidePanelTogg
       </IconButton>
     </Tooltip>
   );
-});
+};
 
 export const TextExtractionButton = ({ onClick, disabled }: { onClick: () => void; disabled: boolean }) => {
   const { t } = useTranslation();

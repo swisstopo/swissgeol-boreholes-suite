@@ -1,6 +1,7 @@
 import { RefObject } from "react";
 import { BasicIdentifier, BoreholeV2, Identifier } from "../../../../api/borehole.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
+import { WorkflowV2 } from "../../../../api/workflow.ts";
 import { Codelist } from "../../../../components/Codelist.ts";
 import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 
@@ -11,7 +12,7 @@ export interface LocationBaseProps {
 export interface LocationPanelProps extends LocationBaseProps {
   onSubmit: (data: LocationFormInputs) => void;
   labelingPanelOpen: boolean;
-  ref: RefObject<{ submit: () => void; reset: () => void }>;
+  ref: RefObject<{ submit: () => void; reset: () => void } | null>;
 }
 
 interface LocationFormBaseInputs {
@@ -55,4 +56,5 @@ export interface LocationFormSubmission extends LocationFormBaseInputs {
   locationX: string | number | null;
   codelists?: Codelist[];
   boreholeFiles: BoreholeFile[] | null;
+  workflow: WorkflowV2 | null;
 }
