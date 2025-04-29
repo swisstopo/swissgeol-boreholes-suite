@@ -459,7 +459,7 @@ export const getBoreholeGeometryDepthMasl = async (boreholeId: number, depthMD: 
 };
 
 export const getBoreholeGeometryDepthMDFromMasl = async (boreholeId: number, depthMasl: number): Promise<number> => {
-  return await fetchApiV2(`boreholegeometry/GetDepthMDFromMasl?boreholeId=${boreholeId}&depthMasl=${depthMasl}`, "GET");
+  return await fetchApiV2(`boreholegeometry/getDepthMDFromMasl?boreholeId=${boreholeId}&depthMasl=${depthMasl}`, "GET");
 };
 
 export const getCompletions = async (boreholeId: number): Promise<Completion[]> => {
