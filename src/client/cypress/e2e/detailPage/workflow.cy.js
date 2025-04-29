@@ -7,6 +7,7 @@ describe("Tests the publication workflow.", () => {
     cy.contains("h4", "Publication workflow").should("exist");
     goToRouteAndAcceptTerms(`/1000908/status?dev=true`);
     cy.contains("h4", "Publication workflow").should("not.exist");
-    cy.contains("p", "Workflow DEV").should("exist");
+    cy.contains("p", "Status").should("exist");
+    cy.contains("p", "Assigned Person").should("exist");
   });
 });
