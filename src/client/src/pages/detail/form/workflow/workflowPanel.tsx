@@ -14,7 +14,7 @@ export const WorkflowPanel = () => {
       {currentUser.data.admin && location.search === "?dev=true" ? (
         <WorkflowForm />
       ) : (
-        <LegacyWorkflowForm id={parseInt(id!, 10)} />
+        <LegacyWorkflowForm id={parseInt(id, 10)} />
       )}
     </>
   );
