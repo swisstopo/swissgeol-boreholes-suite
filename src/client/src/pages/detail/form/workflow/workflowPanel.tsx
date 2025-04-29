@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { ReduxRootState, User } from "../../../../api-lib/ReduxStateInterfaces.ts";
-import LegacyWorkflowForm from "./legacyWorkflowForm";
+import LegacyWorkflowForm from "./legacyWorkflow/legacyWorkflowForm";
 import { WorkflowView } from "./workflowView.tsx";
 
 export const WorkflowPanel = () => {

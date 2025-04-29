@@ -27,12 +27,12 @@ import {
   submitWorkflow,
   updateBorehole,
   updateWorkflow,
-} from "../../../../api-lib";
-import { theme } from "../../../../AppTheme.ts";
-import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import { CancelButton } from "../../../../components/buttons/buttons";
-import DateText from "../../../../components/legacyComponents/dateText.js";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
+} from "../../../../../api-lib/index.js";
+import { theme } from "../../../../../AppTheme.ts";
+import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
+import { CancelButton } from "../../../../../components/buttons/buttons.js";
+import DateText from "../../../../../components/legacyComponents/dateText.js";
+import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
 import CommentArea from "./commentArea.jsx";
 
 class LegacyWorkflowForm extends React.Component {
