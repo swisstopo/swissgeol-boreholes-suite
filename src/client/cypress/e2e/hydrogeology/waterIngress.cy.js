@@ -156,17 +156,21 @@ describe("Tests for the wateringress editor.", () => {
 
       // Enter Masl and ensure MD is automatically set
       setInput("fromDepthMasl", 3976);
-      cy.wait("@get-boreholegeometry-depth-md");
-      cy.wait("@get-boreholegeometry-depth-md");
-      cy.wait("@get-boreholegeometry-depth-md");
-      cy.wait("@get-boreholegeometry-depth-md");
+      cy.wait([
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+      ]);
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("have.value", "24");
 
       setInput("toDepthMasl", 3945);
-      cy.wait("@get-boreholegeometry-depth-md");
-      cy.wait("@get-boreholegeometry-depth-md");
-      cy.wait("@get-boreholegeometry-depth-md");
-      cy.wait("@get-boreholegeometry-depth-md");
+      cy.wait([
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+      ]);
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("have.value", "55");
 
       saveForm();
