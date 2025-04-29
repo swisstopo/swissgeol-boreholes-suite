@@ -1,27 +1,14 @@
-import { useEffect } from "react";
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import { CircleCheck, CircleX } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 import { DeleteButton, SaveButton } from "../../components/buttons/buttons.tsx";
-import { useFormDirtyStore } from "./formDirtyStore.ts";
-import { useSaveBarState } from "./saveBarStore.ts";
+import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
-interface SaveBarProps {
-  triggerSubmit: () => void;
-  triggerReset: () => void;
-}
-export const SaveBar = ({ triggerSubmit, triggerReset }: SaveBarProps) => {
+export const SaveBar = () => {
   const { t } = useTranslation();
-  const location = useLocation();
-  const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
-  const showSaveFeedback = useSaveBarState(state => state.showSaveFeedback);
-  const setShowSaveFeedback = useSaveBarState(state => state.setShowSaveFeedback);
-
-  useEffect(() => {
-    setShowSaveFeedback(false);
-  }, [location.pathname, setShowSaveFeedback]);
+  const { showSaveFeedback, hasChanges, triggerSave, triggerReset } = useContext<SaveContextProps>(SaveContext);
 
   const changesMessage = (
     <>
@@ -52,19 +39,19 @@ export const SaveBar = ({ triggerSubmit, triggerReset }: SaveBarProps) => {
       <Stack
         direction="row"
         spacing={1}
-        sx={{ flexGrow: 1, color: isFormDirty ? theme.palette.error.light : theme.palette.success.main }}>
-        {isFormDirty && changesMessage}
-        {showSaveFeedback && !isFormDirty && savedMessage}
+        sx={{ flexGrow: 1, color: hasChanges ? theme.palette.error.light : theme.palette.success.main }}>
+        {hasChanges && changesMessage}
+        {showSaveFeedback && !hasChanges && savedMessage}
       </Stack>
       <Stack spacing={1} direction="row">
         <DeleteButton
-          disabled={!isFormDirty}
+          disabled={!hasChanges}
           label="discardchanges"
           onClick={() => {
             triggerReset();
           }}
         />
-        <SaveButton disabled={!isFormDirty} variant="contained" onClick={() => triggerSubmit()} />
+        <SaveButton disabled={!hasChanges} variant="contained" onClick={() => triggerSave()} />
       </Stack>
     </Stack>
   );

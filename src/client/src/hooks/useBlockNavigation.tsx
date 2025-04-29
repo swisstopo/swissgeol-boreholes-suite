@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
-import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
+import { SaveContext, SaveContextProps } from "../pages/detail/saveContext.tsx";
 
 interface UseBlockNavigationResult {
   handleBlockedNavigation: (nextLocation: string) => boolean;
@@ -12,7 +12,7 @@ interface UseBlockNavigationResult {
 export const useBlockNavigation = (): UseBlockNavigationResult => {
   const [nextLocation, setNextLocation] = useState<string | null>(null);
   const [confirmedNavigation, setConfirmedNavigation] = useState(false);
-  const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
+  const { hasChanges } = useContext<SaveContextProps>(SaveContext);
   const { showPrompt } = useContext(PromptContext);
   const { t } = useTranslation();
   const history = useHistory();
@@ -25,7 +25,7 @@ export const useBlockNavigation = (): UseBlockNavigationResult => {
   }, [confirmedNavigation, nextLocation, history]);
 
   const handleBlockedNavigation = (nextLocation: string): boolean => {
-    if (!confirmedNavigation && isFormDirty) {
+    if (!confirmedNavigation && hasChanges) {
       showPrompt(t("messageDiscardUnsavedChanges"), [
         {
           label: t("cancel"),

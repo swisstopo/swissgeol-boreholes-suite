@@ -15,6 +15,7 @@ import { AppBox } from "./components/styledComponents.ts";
 import { DetailProvider } from "./pages/detail/detailContext.tsx";
 import { DetailPage } from "./pages/detail/detailPage.tsx";
 import { LabelingProvider } from "./pages/detail/labeling/labelingContext.tsx";
+import { SaveProvider } from "./pages/detail/saveContext.tsx";
 import { OverviewProvider } from "./pages/overview/overViewContext.tsx";
 import { OverviewPage } from "./pages/overview/overviewPage.tsx";
 import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext.tsx";
@@ -77,7 +78,9 @@ class App extends React.Component {
                                     render={() => (
                                       <LabelingProvider>
                                         <DetailProvider>
-                                          <DetailPage />
+                                          <SaveProvider>
+                                            <DetailPage />
+                                          </SaveProvider>
                                         </DetailProvider>
                                       </LabelingProvider>
                                     )}

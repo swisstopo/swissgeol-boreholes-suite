@@ -1,6 +1,5 @@
 import { Identifier } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
-import { BoreholeFormInputs } from "../../pages/detail/form/borehole/boreholePanelInterfaces.ts";
 import {
   LocationFormInputs,
   LocationFormSubmission,
@@ -136,24 +135,5 @@ export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => 
   data.boreholeCodelists = getCompleteCodelists(data.boreholeCodelists);
   data.boreholeFiles = null;
   data.workflow = null;
-  return data;
-};
-
-/**
- * Transforms the borehole form data into a format that can be submitted to the API.
- * @param {BoreholeFormInputs} formInputs The data from the borehole form.
- * @returns The borehole data in a format that can be submitted to the API.
- */
-export const prepareBoreholeDataForSubmit = (formInputs: BoreholeFormInputs) => {
-  const data = { ...formInputs };
-  data.totalDepth = parseFloatWithThousandsSeparator(data?.totalDepth);
-  data.topBedrockFreshMd = parseFloatWithThousandsSeparator(data?.topBedrockFreshMd);
-  data.topBedrockWeatheredMd = parseFloatWithThousandsSeparator(data?.topBedrockWeatheredMd);
-  data.hasGroundwater = data?.hasGroundwater === 1 ? true : data?.hasGroundwater === 0 ? false : null;
-  data.topBedrockIntersected =
-    data?.topBedrockIntersected === 1 ? true : data?.topBedrockIntersected === 0 ? false : null;
-  data.boreholeFiles = null;
-  data.workflow = null;
-
   return data;
 };

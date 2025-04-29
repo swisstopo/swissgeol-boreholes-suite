@@ -2,11 +2,11 @@ import { FC, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { BoreholeForm } from "./boreholeForm.tsx";
-import { BoreholePanelProps } from "./boreholePanelInterfaces";
+import { BoreholeProps } from "./boreholePanelInterfaces";
 import Geometry from "./geometry.jsx";
 import Sections from "./sections.jsx";
 
-export const BoreholePanel: FC<BoreholePanelProps> = ({ borehole, onSubmit, ref }) => {
+export const BoreholePanel: FC<BoreholeProps> = ({ borehole }) => {
   const { t } = useTranslation();
 
   const tabs = useMemo(
@@ -14,7 +14,7 @@ export const BoreholePanel: FC<BoreholePanelProps> = ({ borehole, onSubmit, ref 
       {
         label: t("general"),
         hash: "general",
-        component: <BoreholeForm borehole={borehole} onSubmit={onSubmit} ref={ref} />,
+        component: <BoreholeForm borehole={borehole} />,
       },
       {
         label: t("sections"),
@@ -29,7 +29,7 @@ export const BoreholePanel: FC<BoreholePanelProps> = ({ borehole, onSubmit, ref 
         hasContent: (borehole?.boreholeGeometry?.length ?? 0) > 0,
       },
     ],
-    [borehole, onSubmit, ref, t],
+    [borehole, t],
   );
 
   return <TabPanel tabs={tabs} />;

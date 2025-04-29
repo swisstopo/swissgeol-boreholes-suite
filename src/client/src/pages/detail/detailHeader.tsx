@@ -19,22 +19,21 @@ import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
-import { useFormDirtyStore } from "./formDirtyStore.ts";
+import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 interface DetailHeaderProps {
   editableByCurrentUser: boolean;
   borehole: BoreholeV2;
-  triggerReset: () => void;
 }
 
-const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailHeaderProps) => {
+const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
-  const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
+  const { hasChanges, triggerReset } = useContext<SaveContextProps>(SaveContext);
   const auth = useAuth();
 
   const toggleEditing = (editing: boolean) => {
@@ -100,7 +99,7 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
 
   const handleReturnClick = () => {
     if (editingEnabled) {
-      if (isFormDirty) {
+      if (hasChanges) {
         stopEditingWithUnsavedChanges();
       } else {
         stopEditing();
@@ -136,7 +135,7 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
       <Stack direction="row" data-cy="detail-header" gap={2}>
         <ExportButton
           label="export"
-          onClick={isFormDirty ? startExportWithUnsavedChanges : () => setIsExporting(true)}
+          onClick={hasChanges ? startExportWithUnsavedChanges : () => setIsExporting(true)}
         />
         {editableByCurrentUser && (
           <>
@@ -160,7 +159,7 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
                     ])
                   }
                 />
-                <EndEditButton onClick={isFormDirty ? stopEditingWithUnsavedChanges : stopEditing} />
+                <EndEditButton onClick={hasChanges ? stopEditingWithUnsavedChanges : stopEditing} />
               </>
             ) : (
               <EditButton onClick={startEditing} />

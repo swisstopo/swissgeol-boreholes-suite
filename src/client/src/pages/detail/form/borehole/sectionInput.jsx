@@ -15,13 +15,13 @@ import { parseFloatWithThousandsSeparator } from "../../../../components/form/fo
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
-import { useFormDirtyStore } from "../../formDirtyStore.ts";
+import { SaveContext } from "../../saveContext.js";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
-  const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
+  const { markAsChanged } = useContext(SaveContext);
   const { handleBlockedNavigation } = useBlockNavigation();
   const history = useHistory();
 
@@ -116,14 +116,14 @@ const SectionInput = ({ item, parentId }) => {
 
   // Track form dirty state
   useEffect(() => {
-    setIsFormDirty(Object.keys(formMethods.formState.dirtyFields).length > 0);
-    return () => setIsFormDirty(false);
+    markAsChanged(Object.keys(formMethods.formState.dirtyFields).length > 0);
+    return () => markAsChanged(false);
   }, [
     formMethods.formState.dirtyFields,
     formMethods.formState.isDirty,
     formMethods,
     formMethods.formState,
-    setIsFormDirty,
+    markAsChanged,
   ]);
 
   useSaveOnCtrlS(formMethods.handleSubmit(submitForm));

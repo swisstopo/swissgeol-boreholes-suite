@@ -1,4 +1,4 @@
-import { RefObject, useContext } from "react";
+import { useContext } from "react";
 import { useSelector } from "react-redux";
 import { Redirect, Route, Switch, useParams } from "react-router-dom";
 import { Box } from "@mui/material";
@@ -8,36 +8,23 @@ import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import { Attachments } from "./attachments/attachments.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
-import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
 import Completion from "./form/completion/completion.jsx";
 import { FieldMeasurement } from "./form/hydrogeology/fieldMeasurement/fieldMeasurement.tsx";
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement/groundwaterLevelMeasurement.tsx";
 import Hydrotest from "./form/hydrogeology/hydrotest/hydrotest.tsx";
 import WaterIngress from "./form/hydrogeology/waterIngress/waterIngress.tsx";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
-import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx";
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
 import Lithology from "./form/stratigraphy/lithology";
 import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
 import { WorkflowPanel } from "./form/workflow/workflowPanel.tsx";
 
 interface DetailPageContentProps {
-  locationPanelRef: RefObject<{ submit: () => void; reset: () => void } | null>;
-  boreholePanelRef: RefObject<{ submit: () => void; reset: () => void } | null>;
-  onLocationFormSubmit: (data: LocationFormInputs) => void;
-  onBoreholeFormSubmit: (data: BoreholeFormInputs) => void;
   borehole: BoreholeV2;
   panelOpen: boolean;
 }
 
-export const DetailPageContent = ({
-  locationPanelRef,
-  boreholePanelRef,
-  onLocationFormSubmit,
-  onBoreholeFormSubmit,
-  borehole,
-  panelOpen,
-}: DetailPageContentProps) => {
+export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProps) => {
   const { showAlert } = useContext(AlertContext);
   const { id } = useParams<{ id: string }>();
   const legacyBorehole = useSelector((state: ReduxRootState) => state.core_borehole);
@@ -71,22 +58,9 @@ export const DetailPageContent = ({
             <Route
               exact
               path={"/:id/location"}
-              render={() => (
-                <LocationPanel
-                  ref={locationPanelRef}
-                  onSubmit={onLocationFormSubmit}
-                  borehole={borehole}
-                  labelingPanelOpen={panelOpen}
-                />
-              )}
+              render={() => <LocationPanel borehole={borehole} labelingPanelOpen={panelOpen} />}
             />
-            <Route
-              exact
-              path={"/:id/borehole"}
-              render={() => (
-                <BoreholePanel ref={boreholePanelRef} borehole={borehole} onSubmit={onBoreholeFormSubmit} />
-              )}
-            />
+            <Route exact path={"/:id/borehole"} render={() => <BoreholePanel borehole={borehole} />} />
             <Route exact path={"/:id/stratigraphy/lithology"} render={() => <Lithology />} />
             <Route exact path={"/:id/stratigraphy/chronostratigraphy"} render={() => <ChronostratigraphyPanel />} />
             <Route exact path={"/:id/stratigraphy/lithostratigraphy"} render={() => <LithostratigraphyPanel />} />
