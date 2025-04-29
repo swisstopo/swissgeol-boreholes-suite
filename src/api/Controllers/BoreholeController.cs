@@ -25,6 +25,18 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
+    public async override Task<ActionResult<Borehole>> CreateAsync(Borehole entity)
+    {
+        entity.Workflow = new WorkflowV2
+        {
+            ReviewedTabs = new(),
+            PublishedTabs = new(),
+        };
+        return await base.CreateAsync(entity).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async override Task<ActionResult<Borehole>> EditAsync(Borehole entity)
     {
         if (entity == null)
@@ -34,6 +46,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         var existingBorehole = await Context.Boreholes
             .Include(b => b.BoreholeCodelists)
+            .Include(b => b.Workflow)
             .SingleOrDefaultAsync(l => l.Id == entity.Id)
             .ConfigureAwait(false);
 
@@ -42,7 +55,15 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return NotFound();
         }
 
+        var workflow = existingBorehole.Workflow;
         Context.Entry(existingBorehole).CurrentValues.SetValues(entity);
+
+        // Ensure that the borehole has a workflow
+        existingBorehole.Workflow = workflow ?? new WorkflowV2
+        {
+            ReviewedTabs = new(),
+            PublishedTabs = new(),
+        };
 
         // Update the geometry if new coordinates are provided
         if (entity.LocationX.HasValue && entity.LocationY.HasValue)
