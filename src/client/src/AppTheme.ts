@@ -599,6 +599,7 @@ export const theme = createTheme({
             display: "flex",
             alignItems: "center",
             borderColor: themePalette.border.table,
+            padding: `${themeSpacing(1)}} !important`,
           },
           "& .MuiDataGrid-toolbarContainer": {
             paddingLeft: "2px !important",

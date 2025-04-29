@@ -1,13 +1,14 @@
 import { ChangeEvent, FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Checkbox, Stack, Typography } from "@mui/material";
+import { Checkbox, Stack, TextField, Typography } from "@mui/material";
 import { GridColDef, GridColumnHeaderParams, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { CheckIcon } from "lucide-react";
-import { detachFile, downloadFile, getFiles, uploadFile } from "../../../../api/file/file.ts";
-import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
+import { detachFile, downloadFile, getFiles, uploadFile } from "../../../../api/file/file";
+import { BoreholeFile } from "../../../../api/file/fileInterfaces";
+import { theme } from "../../../../AppTheme.ts";
 import DateText from "../../../../components/legacyComponents/dateText";
-import { DetailContext } from "../../detailContext.tsx";
-import { AttachmentContent } from "../attachmentsContent.tsx";
+import { DetailContext } from "../../detailContext";
+import { AttachmentContent } from "../attachmentsContent";
 
 interface ProfilesProps {
   boreholeId: number;
@@ -18,7 +19,15 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const apiRef = useGridApiRef();
   const { editingEnabled } = useContext(DetailContext);
 
-  const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, boolean>>(new Map());
+  const [updatedRows, setUpdatedRows] = useState<
+    Map<
+      GridRowId,
+      {
+        description?: string;
+        public: boolean;
+      }
+    >
+  >(new Map());
   const [allPhotosPublic, setAllPhotosPublic] = useState(false);
   const [somePhotosPublic, setSomePhotosPublic] = useState(false);
 
@@ -44,17 +53,24 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     await Promise.all(downloadPromises);
   };
 
-  const togglePublicValueForRow = useCallback(
-    (id: GridRowId, checked: boolean) => {
-      setUpdatedRows(prevRows => {
-        const newMap = new Map(prevRows);
-        newMap.set(id, checked);
-        return newMap;
-      });
-      apiRef.current.updateRows([{ id, public: checked }]);
-    },
-    [apiRef],
-  );
+  const updateDescription = useCallback((id: GridRowId, description: string) => {
+    setUpdatedRows(prevRows => {
+      const newMap = new Map(prevRows);
+      const row = newMap.get(id) ?? { public: false };
+      row.description = description;
+      newMap.set(id, row);
+      return newMap;
+    });
+  }, []);
+
+  const togglePublicValueForRow = useCallback((id: GridRowId, checked: boolean) => {
+    setUpdatedRows(prevRows => {
+      const newMap = new Map(prevRows);
+      const row = newMap.get(id) ?? { public: false };
+      row.public = checked;
+      return newMap;
+    });
+  }, []);
 
   const toggleAllPublicValues = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -86,6 +102,23 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         field: "description",
         headerName: t("description"),
         editable: editingEnabled,
+        renderCell: (params: GridRenderCellParams) =>
+          editingEnabled ? (
+            <TextField
+              sx={{ margin: 0 }}
+              defaultValue={params.value}
+              onChange={event => updateDescription(params.id, event.target.value)}
+            />
+          ) : (
+            <Typography sx={{ fontSize: "16px", fontWeight: 400 }}>{params.value}</Typography>
+          ),
+        renderEditCell: (params: GridRenderCellParams) => (
+          <TextField
+            sx={{ margin: `0 ${theme.spacing(1)}` }}
+            defaultValue={params.value}
+            onChange={event => updateDescription(params.id, event.target.value)}
+          />
+        ),
       },
       {
         field: "type",
@@ -135,7 +168,15 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         ),
       },
     ],
-    [t, editingEnabled, allPhotosPublic, somePhotosPublic, toggleAllPublicValues, togglePublicValueForRow],
+    [
+      t,
+      editingEnabled,
+      updateDescription,
+      allPhotosPublic,
+      somePhotosPublic,
+      toggleAllPublicValues,
+      togglePublicValueForRow,
+    ],
   );
 
   return (
