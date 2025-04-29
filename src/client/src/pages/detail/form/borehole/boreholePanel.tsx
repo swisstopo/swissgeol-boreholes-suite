@@ -1,4 +1,4 @@
-import { forwardRef, useMemo } from "react";
+import { FC, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { BoreholeForm } from "./boreholeForm.tsx";
@@ -6,7 +6,7 @@ import { BoreholePanelProps } from "./boreholePanelInterfaces";
 import Geometry from "./geometry.jsx";
 import Sections from "./sections.jsx";
 
-export const BoreholePanel = forwardRef(({ borehole, onSubmit }: BoreholePanelProps, ref) => {
+export const BoreholePanel: FC<BoreholePanelProps> = ({ borehole, onSubmit, ref }) => {
   const { t } = useTranslation();
 
   const tabs = useMemo(
@@ -33,4 +33,4 @@ export const BoreholePanel = forwardRef(({ borehole, onSubmit }: BoreholePanelPr
   );
 
   return <TabPanel tabs={tabs} />;
-});
+};

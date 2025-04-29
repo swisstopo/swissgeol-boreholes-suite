@@ -10,6 +10,7 @@ import { download, fetchApiV2, upload } from "./fetchApiV2.ts";
 import { BoreholeFile } from "./file/fileInterfaces.ts";
 import { Section } from "./section.ts";
 import { Stratigraphy } from "./stratigraphy.ts";
+import { WorkflowV2 } from "./workflow.ts";
 
 export interface BasicIdentifier {
   boreholeId: number;
@@ -37,7 +38,7 @@ export interface BoreholeV2 {
   typeId: number;
   remarks: string;
   statusId: number;
-  workflow: Workflow;
+  workflow: WorkflowV2 | null;
   boreholeCodelists: BasicIdentifier[];
   workflows: Workflow[];
   workgroupId: number;

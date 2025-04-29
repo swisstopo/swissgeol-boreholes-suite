@@ -1,15 +1,16 @@
-import { ForwardedRef, useCallback, useEffect, useImperativeHandle } from "react";
+import { Ref, useCallback, useEffect, useImperativeHandle } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
 import { useLabelingContext } from "../pages/detail/labeling/labelingContext.tsx";
+import { useSaveBarState } from "../pages/detail/saveBarStore.ts";
 import { useBlockNavigation } from "./useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "./useSaveOnCtrlS.ts";
 
 interface UseFormWithSaveBarProps<T extends FieldValues> {
   formMethods: UseFormReturn<T>;
   onSubmit: (data: T) => void;
-  ref: ForwardedRef<unknown>;
+  ref: Ref<unknown>;
   incrementResetKey?: () => void;
 }
 
@@ -23,13 +24,19 @@ export function UseFormWithSaveBar<T extends FieldValues>({
   const { handleBlockedNavigation } = useBlockNavigation();
   const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
   const { setExtractionObject } = useLabelingContext();
+  const setShowSaveFeedback = useSaveBarState(state => state.setShowSaveFeedback);
 
   // Block navigation if form is dirty
-  history.block(nextLocation => {
-    if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
-      return false;
-    }
-  });
+  useEffect(() => {
+    const unblock = history.block(nextLocation => {
+      if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
+        return false;
+      }
+    });
+    return () => {
+      unblock();
+    };
+  }, [history, handleBlockedNavigation]);
 
   // Track form dirty state
   useEffect(() => {
@@ -48,19 +55,27 @@ export function UseFormWithSaveBar<T extends FieldValues>({
     const currentValues = formMethods.getValues();
     formMethods.reset(currentValues);
     setExtractionObject(undefined);
-    formMethods.handleSubmit(onSubmit)();
+    onSubmit(currentValues);
   }, [formMethods, onSubmit, setExtractionObject]);
 
+  const saveAndShowFeedback = useCallback(() => {
+    setShowSaveFeedback(true);
+    resetAndSubmitForm();
+    setTimeout(() => setShowSaveFeedback(false), 4000);
+  }, [resetAndSubmitForm, setShowSaveFeedback]);
+
   // Save with ctrl+s
-  useSaveOnCtrlS(resetAndSubmitForm);
+  useSaveOnCtrlS(saveAndShowFeedback);
 
   // Expose form methods to parent component (save bar)
-  useImperativeHandle(ref, () => ({
-    submit: () => resetAndSubmitForm(),
-    reset: () => {
-      formMethods.reset();
-      setExtractionObject(undefined);
-      if (incrementResetKey) incrementResetKey();
-    },
-  }));
+  useImperativeHandle(ref, () => {
+    return {
+      submit: () => saveAndShowFeedback(),
+      reset: () => {
+        formMethods.reset();
+        setExtractionObject(undefined);
+        if (incrementResetKey) incrementResetKey();
+      },
+    };
+  }, [formMethods, incrementResetKey, saveAndShowFeedback, setExtractionObject]);
 }

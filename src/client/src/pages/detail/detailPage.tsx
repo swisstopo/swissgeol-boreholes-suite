@@ -43,6 +43,7 @@ export const DetailPage: FC = () => {
   const loadOrCreate = useCallback(
     (id: string) => {
       setLoading(true);
+      // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
       dispatch(loadBorehole(parseInt(id, 10)))
         //@ts-expect-error // legacy fetch function returns not typed
         .then(response => {

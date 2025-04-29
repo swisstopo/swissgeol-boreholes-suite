@@ -22,8 +22,8 @@ import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithos
 import WorkflowForm from "./form/workflow/workflowForm.jsx";
 
 interface DetailPageContentProps {
-  locationPanelRef: RefObject<{ submit: () => void; reset: () => void }>;
-  boreholePanelRef: RefObject<{ submit: () => void; reset: () => void }>;
+  locationPanelRef: RefObject<{ submit: () => void; reset: () => void } | null>;
+  boreholePanelRef: RefObject<{ submit: () => void; reset: () => void } | null>;
   onLocationFormSubmit: (data: LocationFormInputs) => void;
   onBoreholeFormSubmit: (data: BoreholeFormInputs) => void;
   borehole: BoreholeV2;

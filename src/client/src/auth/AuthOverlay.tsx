@@ -39,6 +39,7 @@ export const AuthOverlay: FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
+      // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
       dispatch(loadUser());
     }
   }, [auth.isAuthenticated, dispatch]);

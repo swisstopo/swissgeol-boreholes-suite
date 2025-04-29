@@ -7,6 +7,9 @@
 - Added photo viewer to the borehole sidepanel.
 - Added data collection to detail page.
 
+### Changed
+- Upgraded to React 19.
+
 ### Fixed
 - Boreholes were always copied to the default workgroup instead of the selected workgroup.
 

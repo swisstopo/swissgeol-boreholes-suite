@@ -1,21 +1,24 @@
-import { forwardRef, ReactNode } from "react";
+import { FC, ReactNode, Ref } from "react";
 import { Box, Card, CardProps, Grid, Stack } from "@mui/material";
 import { BoxProps, GridProps, styled } from "@mui/system";
 import { theme } from "../../AppTheme";
 
 interface DataCardGridProps extends GridProps {
   children: ReactNode;
+  ref?: Ref<HTMLDivElement>;
 }
 
 interface DataCardProps extends CardProps {
   children: ReactNode;
+  ref?: Ref<HTMLDivElement>;
 }
 
 interface DataCardBoxProps extends BoxProps {
   children: ReactNode;
+  ref?: Ref<HTMLDivElement>;
 }
 
-export const DataCardContainer = forwardRef<HTMLDivElement, DataCardGridProps>(({ children, ...props }, ref) => {
+export const DataCardContainer: FC<DataCardGridProps> = ({ children, ...props }) => {
   const StyledTextField = styled(Grid)(() => ({
     flex: "1 0 0",
     alignContent: "flex-start",
@@ -30,24 +33,25 @@ export const DataCardContainer = forwardRef<HTMLDivElement, DataCardGridProps>((
   }));
 
   return (
-    <StyledTextField container columnSpacing={{ xs: 2 }} rowSpacing={{ xs: 2 }} ref={ref} {...props}>
+    <StyledTextField container columnSpacing={{ xs: 2 }} rowSpacing={{ xs: 2 }} ref={props.ref} {...props}>
       {children}
     </StyledTextField>
   );
-});
+};
 
-export const DataCardItem = forwardRef<HTMLDivElement, DataCardGridProps>(({ children, ...props }, ref) => {
+export const DataCardItem: FC<DataCardGridProps> = ({ children, ...props }) => {
   const StyledCard = styled(Grid)(() => ({
     padding: `0 ${theme.spacing(1)} ${theme.spacing(1)} ${theme.spacing(1)} !important`,
   }));
 
   return (
-    <StyledCard item md={12} lg={12} xl={6} ref={ref} {...props}>
+    <StyledCard item md={12} lg={12} xl={6} ref={props.ref} {...props}>
       {children}
     </StyledCard>
   );
-});
-export const DataCard = forwardRef<HTMLDivElement, DataCardProps>(({ children, ...props }, ref) => {
+};
+
+export const DataCard: FC<DataCardProps> = ({ children, ...props }) => {
   const StyledCard = styled(Card)(() => ({
     width: "100%",
     border: "1px solid lightgrey",
@@ -58,16 +62,16 @@ export const DataCard = forwardRef<HTMLDivElement, DataCardProps>(({ children, .
   }));
 
   return (
-    <StyledCard ref={ref} {...props}>
+    <StyledCard ref={props.ref} {...props}>
       {children}
     </StyledCard>
   );
-});
+};
 
-export const DataCardButtonContainer = forwardRef<HTMLDivElement, DataCardBoxProps>(({ children, ...props }, ref) => {
+export const DataCardButtonContainer: FC<DataCardBoxProps> = ({ children, ...props }) => {
   return (
     <Box
-      ref={ref}
+      ref={props.ref}
       {...props}
       sx={{
         flex: "0 1 auto",
@@ -78,4 +82,4 @@ export const DataCardButtonContainer = forwardRef<HTMLDivElement, DataCardBoxPro
       </Stack>
     </Box>
   );
-});
+};
