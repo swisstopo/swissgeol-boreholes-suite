@@ -469,6 +469,7 @@ export const theme = createTheme({
     MuiCheckbox: {
       styleOverrides: {
         colorPrimary: {
+          color: themePalette.primary.main,
           "&.Mui-checked, &.MuiCheckbox-indeterminate": {
             color: themePalette.background.menuItemActive,
           },
