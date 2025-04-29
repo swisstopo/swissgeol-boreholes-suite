@@ -317,4 +317,62 @@ public class BoreholeGeometryControllerTest
         Assert.IsNotNull(depthInMasl.Value);
         Assert.IsTrue(depthInMasl.Value < borehole.ReferenceElevation, "Returned depth should be below borehole elevation.");
     }
+
+    [TestMethod]
+    public async Task GetDepthMDFromMaslWithoutPermission()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        IActionResult response = await controller.GetDepthMDFromMasl(boreholeIdWithGeometry, 102).ConfigureAwait(false);
+        Assert.IsInstanceOfType(response, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public async Task GetDepthMDFromMaslWithValidInputs()
+    {
+        var borehole = await context.Boreholes.FindAsync(boreholeIdWithoutGeometry).ConfigureAwait(false);
+        borehole.ReferenceElevation = 500.0;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IActionResult response = await controller.GetDepthMDFromMasl(boreholeIdWithoutGeometry, 450.0).ConfigureAwait(false);
+
+        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        var result = response as OkObjectResult;
+        var depthMD = result?.Value as double?;
+
+        Assert.IsNotNull(depthMD);
+        Assert.IsTrue(depthMD > 0, "Measured depth should be positive.");
+    }
+
+    [TestMethod]
+    public async Task GetDepthMDFromMaslWithNoReferenceElevation()
+    {
+        var borehole = await context.Boreholes.FindAsync(boreholeIdWithoutGeometry).ConfigureAwait(false);
+        borehole.ReferenceElevation = null;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IActionResult response = await controller.GetDepthMDFromMasl(boreholeIdWithoutGeometry, 450.0).ConfigureAwait(false);
+
+        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        var result = response as OkObjectResult;
+
+        Assert.IsNull(result?.Value, "Result should be null when reference elevation is not set.");
+    }
+
+    [TestMethod]
+    public async Task GetDepthMDFromMaslWithInvalidDepthMasl()
+    {
+        var borehole = await context.Boreholes.FindAsync(boreholeIdWithGeometry).ConfigureAwait(false);
+        borehole.ReferenceElevation = 500.0;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IActionResult response = await controller.GetDepthMDFromMasl(boreholeIdWithGeometry, 600.0).ConfigureAwait(false);
+
+        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        var result = response as OkObjectResult;
+
+        Assert.IsNull(result?.Value, "Result should be null when depthMasl is greater than reference elevation.");
+    }
 }
