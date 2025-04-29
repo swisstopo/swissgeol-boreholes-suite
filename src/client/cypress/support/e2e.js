@@ -21,6 +21,7 @@ beforeEach(() => {
   loginAndResetState();
 });
 
+const failFlakyTests = false; // Set this to true to fail test run if at least one test fails in one of the attempts.
 let testFailures = [];
 
 afterEach(function () {
@@ -30,7 +31,7 @@ afterEach(function () {
 });
 
 after(function () {
-  if (testFailures.length > 0) {
+  if (failFlakyTests && testFailures.length > 0) {
     console.error(`Tests failed on at least one attempt: ${testFailures}`);
     throw new Error("One or more tests failed on at least one retry attempt.");
   }

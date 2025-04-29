@@ -6,8 +6,9 @@ import { Hydrotest } from "./hydrotest/Hydrotest.ts";
 import { WaterIngress } from "./waterIngress/WaterIngress.ts";
 
 export enum ObservationDepthUnitType {
-  measuredDepth = 0,
-  masl = 1,
+  unknown = 0,
+  measuredDepth = 1,
+  masl = 2,
 }
 
 export enum ObservationType {
@@ -25,6 +26,7 @@ export interface Observation {
   isOpenBorehole: boolean;
   endTime: string | null;
   startTime: string | null;
+  originalVerticalReferenceSystem: ObservationDepthUnitType;
   toDepthMasl: number | null;
   fromDepthMasl: number | null;
   toDepthM: number | null;

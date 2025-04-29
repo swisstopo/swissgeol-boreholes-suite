@@ -1,37 +1,38 @@
-import { useCallback, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
+import { Check, X } from "lucide-react";
 import { Casing } from "../../../../api/apiInterfaces.ts";
-import { getBoreholeGeometryDepthMasl, getCasingsByBoreholeId } from "../../../../api/fetchApiV2.js";
+import {
+  getBoreholeGeometryDepthMasl,
+  getBoreholeGeometryDepthMDFromMasl,
+  getCasingsByBoreholeId,
+} from "../../../../api/fetchApiV2.js";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants.ts";
 import { ObservationDepthUnitType, ObservationInputProps } from "./Observation.ts";
 
 const ObservationInput = ({ observation, showDepthInputs = true }: ObservationInputProps) => {
   const { t } = useTranslation();
-  const { setValue: setFormValue } = useFormContext();
+  const { showPrompt } = useContext(PromptContext);
+  const formMethods = useFormContext();
   const [casings, setCasings] = useState<Casing[]>([]);
   const { id: boreholeId } = useParams<{ id: string }>();
   const getCasingOptions = useGetCasingOptions();
 
-  const [depthUnit, setDepthUnit] = useState(ObservationDepthUnitType.masl);
-  const [fromDepthM, setFromDepthM] = useState<number | null>(observation.fromDepthM);
-  const [toDepthM, setToDepthM] = useState<number | null>(observation.toDepthM);
-  const [fromDepthMasl, setFromDepthMasl] = useState<number | null>(observation.fromDepthMasl);
-  const [toDepthMasl, setToDepthMasl] = useState<number | null>(observation.toDepthMasl);
-
-  const setValue = (e: number | boolean | null) => {
-    if (typeof e !== "number") return;
-    setDepthUnit(e);
-  };
-  const roundValue = (value: number | null) => {
-    return value ? Math.round(value * 100) / 100 : null;
-  };
+  const depthUnitFieldName = "originalVerticalReferenceSystem";
+  const fromDepthMFieldName = "fromDepthM";
+  const toDepthMFieldName = "toDepthM";
+  const fromDepthMaslFieldName = "fromDepthMasl";
+  const toDepthMaslFieldName = "toDepthMasl";
+  const depthFields = [fromDepthMFieldName, toDepthMFieldName, fromDepthMaslFieldName, toDepthMaslFieldName];
+  const watchDepthUnit = formMethods.watch(depthUnitFieldName, ObservationDepthUnitType.measuredDepth);
 
   useEffect(() => {
     if (boreholeId) {
@@ -41,54 +42,80 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
     }
   }, [boreholeId]);
 
-  useEffect(() => {
-    if (observation) {
-      setFromDepthM(observation.fromDepthM);
-      setToDepthM(observation.toDepthM);
-      setFromDepthMasl(observation.fromDepthMasl);
-      setToDepthMasl(observation.toDepthMasl);
-    }
-  }, [observation]);
+  const convertDepth = async (
+    inputFieldName: string,
+    outputFieldName: string,
+    outputUnit: ObservationDepthUnitType,
+  ) => {
+    if (outputUnit === watchDepthUnit) return;
 
-  const fetchDepthMASL = useCallback(
-    async (fieldValue: number | null) => {
-      if (!fieldValue) return null;
-      const getDepthMasl = async (depthMD: number | null) => {
-        if (depthMD == null) {
-          return null;
-        } else {
-          const response = await getBoreholeGeometryDepthMasl(Number(boreholeId), depthMD);
-          return response ?? null;
+    const inputValue = formMethods.getValues(inputFieldName);
+    const inputParsed = parseFloatWithThousandsSeparator(inputValue);
+    if (inputParsed === null) {
+      formMethods.setValue(outputFieldName, "");
+    } else {
+      let result = null;
+      switch (outputUnit) {
+        case ObservationDepthUnitType.measuredDepth: {
+          result = await getBoreholeGeometryDepthMDFromMasl(Number(boreholeId), inputParsed);
+          break;
         }
-      };
-
-      const depth = await getDepthMasl(parseFloatWithThousandsSeparator(fieldValue.toString()));
-      return roundValue(depth);
-    },
-    [boreholeId],
-  );
-
-  useEffect(() => {
-    const fetchAndSetFromDepthMasl = async () => {
-      if (depthUnit === ObservationDepthUnitType.measuredDepth) {
-        const depthInMasl = await fetchDepthMASL(fromDepthM);
-        setFromDepthMasl(depthInMasl);
-        setFormValue("fromDepthMasl", formatNumberForDisplay(depthInMasl));
+        case ObservationDepthUnitType.masl: {
+          result = await getBoreholeGeometryDepthMasl(Number(boreholeId), inputParsed);
+          break;
+        }
+        default:
+          return;
       }
-    };
-    fetchAndSetFromDepthMasl();
-  }, [depthUnit, fetchDepthMASL, fromDepthM, fromDepthMasl, setFormValue]);
 
-  useEffect(() => {
-    const fetchAndSetToDepthMasl = async () => {
-      if (depthUnit === ObservationDepthUnitType.measuredDepth) {
-        const depthInMasl = await fetchDepthMASL(toDepthM);
-        setToDepthMasl(depthInMasl);
-        setFormValue("toDepthMasl", formatNumberForDisplay(depthInMasl));
-      }
-    };
-    fetchAndSetToDepthMasl();
-  }, [depthUnit, fetchDepthMASL, setFormValue, toDepthM, toDepthMasl]);
+      result = formatNumberForDisplay(result);
+
+      // Check if the input value has changed since the conversion was triggered
+      if (inputValue !== formMethods.getValues(inputFieldName)) return;
+
+      formMethods.setValue(outputFieldName, result);
+    }
+  };
+
+  const clearDepthValues = () => {
+    depthFields.forEach(field => {
+      formMethods.setValue(field, "", { shouldValidate: true, shouldDirty: true });
+    });
+  };
+
+  const onCancelDepthUnitChange = (newDepthUnit: ObservationDepthUnitType) => {
+    // Reset the value to the previous one.
+    if (newDepthUnit == ObservationDepthUnitType.measuredDepth) {
+      formMethods.setValue(depthUnitFieldName, ObservationDepthUnitType.masl);
+    } else {
+      formMethods.setValue(depthUnitFieldName, ObservationDepthUnitType.measuredDepth);
+    }
+  };
+
+  const onDepthUnitChange = (newDepthUnit: number | boolean | null) => {
+    if (typeof newDepthUnit !== "number") return;
+    const areDepthValuesSet = formMethods.getValues(depthFields).some(value => value);
+
+    if (!areDepthValuesSet) {
+      clearDepthValues();
+      return;
+    }
+
+    showPrompt(t("changingVerticalReferenceSystemResetsValues"), [
+      {
+        label: t("cancel"),
+        icon: <X />,
+        variant: "outlined",
+        action: () => onCancelDepthUnitChange(newDepthUnit),
+      },
+      {
+        label: t("confirm"),
+        icon: <Check />,
+        variant: "contained",
+        action: clearDepthValues,
+      },
+    ]);
+  };
 
   return (
     <>
@@ -96,47 +123,62 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
         <>
           <FormSelect
             canReset={false}
-            fieldName="depthUnit"
-            label={t("autoSetDepthMaslEnabled")}
-            selected={depthUnit}
-            onUpdate={setValue}
+            fieldName={depthUnitFieldName}
+            label={t("verticalReferenceSystem")}
+            selected={
+              observation.originalVerticalReferenceSystem == null ||
+              observation.originalVerticalReferenceSystem === ObservationDepthUnitType.unknown
+                ? ObservationDepthUnitType.measuredDepth
+                : observation.originalVerticalReferenceSystem
+            }
+            onUpdate={onDepthUnitChange}
             values={[
-              { key: ObservationDepthUnitType.measuredDepth, name: t("yes") },
-              { key: ObservationDepthUnitType.masl, name: t("no") },
+              { key: ObservationDepthUnitType.measuredDepth, name: t("measuredDepth") },
+              { key: ObservationDepthUnitType.masl, name: t("metersAboveSeaLevel") },
             ]}
           />
           <FormContainer direction="row">
             <FormInput
-              fieldName="fromDepthM"
+              fieldName={fromDepthMFieldName}
               label="fromdepth"
-              value={fromDepthM}
+              value={observation.fromDepthM}
+              controlledValue={formMethods.watch(fromDepthMFieldName)}
               withThousandSeparator={true}
-              onUpdate={(value: string) => setFromDepthM(parseFloatWithThousandsSeparator(value) ?? 0)}
+              onUpdate={() => convertDepth(fromDepthMFieldName, fromDepthMaslFieldName, ObservationDepthUnitType.masl)}
+              disabled={watchDepthUnit !== ObservationDepthUnitType.measuredDepth}
             />
             <FormInput
-              fieldName="toDepthM"
+              fieldName={toDepthMFieldName}
               label="todepth"
-              value={toDepthM}
+              value={observation.toDepthM}
+              controlledValue={formMethods.watch(toDepthMFieldName)}
               withThousandSeparator={true}
-              onUpdate={(value: string) => setToDepthM(parseFloatWithThousandsSeparator(value) ?? 0)}
+              onUpdate={() => convertDepth(toDepthMFieldName, toDepthMaslFieldName, ObservationDepthUnitType.masl)}
+              disabled={watchDepthUnit !== ObservationDepthUnitType.measuredDepth}
             />
           </FormContainer>
           <FormContainer direction="row">
             <FormInput
-              key={`fromDepthMasl-${fromDepthMasl}`} // Unique key forces re-render
-              fieldName="fromDepthMasl"
+              fieldName={fromDepthMaslFieldName}
               label="fromDepthMasl"
-              value={fromDepthMasl}
+              value={observation.fromDepthMasl}
+              controlledValue={formMethods.watch(fromDepthMaslFieldName)}
               withThousandSeparator={true}
-              disabled={depthUnit === ObservationDepthUnitType.measuredDepth}
+              onUpdate={() =>
+                convertDepth(fromDepthMaslFieldName, fromDepthMFieldName, ObservationDepthUnitType.measuredDepth)
+              }
+              disabled={watchDepthUnit !== ObservationDepthUnitType.masl}
             />
             <FormInput
-              key={`toDepthMasl-${toDepthMasl}`} // Unique key forces re-render
-              fieldName="toDepthMasl"
+              fieldName={toDepthMaslFieldName}
               label="toDepthMasl"
-              value={toDepthMasl}
+              value={observation.toDepthMasl}
+              controlledValue={formMethods.watch(toDepthMaslFieldName)}
               withThousandSeparator={true}
-              disabled={depthUnit === ObservationDepthUnitType.measuredDepth}
+              onUpdate={() =>
+                convertDepth(toDepthMaslFieldName, toDepthMFieldName, ObservationDepthUnitType.measuredDepth)
+              }
+              disabled={watchDepthUnit !== ObservationDepthUnitType.masl}
             />
           </FormContainer>
         </>
