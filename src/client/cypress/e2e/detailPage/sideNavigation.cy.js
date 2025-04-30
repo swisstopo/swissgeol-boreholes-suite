@@ -85,6 +85,7 @@ describe("Test for the detail page side navigation.", () => {
     });
 
     // Add chronostratigraphy
+    getElementByDataCy("stratigraphy-menu-item").click();
     getElementByDataCy("chronostratigraphy-menu-item").click();
     cy.wait("@get-layers-by-profileId");
     cy.wait("@chronostratigraphy_GET");
