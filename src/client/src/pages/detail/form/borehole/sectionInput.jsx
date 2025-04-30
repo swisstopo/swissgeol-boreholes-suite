@@ -1,7 +1,6 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
 import { Divider, IconButton } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
@@ -22,21 +21,7 @@ const SectionInput = ({ item, parentId }) => {
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
   const { markAsChanged } = useContext(SaveContext);
-  const { handleBlockedNavigation } = useBlockNavigation();
-  const history = useHistory();
-
-  // Block navigation if form is dirty
-  useEffect(() => {
-    const unblock = history.block(nextLocation => {
-      if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
-        return false;
-      }
-    });
-    // When component unmounts, unblock navigation
-    return () => {
-      unblock();
-    };
-  }, [history, handleBlockedNavigation]);
+  useBlockNavigation();
 
   const sectionElementDefaults = {
     fromDepth: null,

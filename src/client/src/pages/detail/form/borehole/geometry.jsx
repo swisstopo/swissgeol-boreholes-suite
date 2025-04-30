@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { Card, CardActions, CardContent, CircularProgress, Grid, Typography } from "@mui/material/";
 import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2.ts";
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { DetailContext } from "../../detailContext.tsx";
 import GeometryChartNE from "./geometryChartNE.jsx";
 import { GeometryChartZE, GeometryChartZInteractive, GeometryChartZN } from "./geometryChartZ.jsx";
@@ -22,7 +22,7 @@ import GeometryTable from "./geometryTable.jsx";
 const Geometry = ({ measuredDepth }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(DetailContext);
-  const { id: boreholeId } = useParams();
+  const { id: boreholeId } = useRequiredParams();
   const { data } = useBoreholeGeometry(boreholeId);
   const {
     delete: { mutate: deleteBoreholeGeometry, isLoading: isDeletingBoreholeGeometry },

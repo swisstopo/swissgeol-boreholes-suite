@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useSelector } from "react-redux";
-import { Redirect, Route, Switch, useParams } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { Box } from "@mui/material";
 import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../api/borehole.ts";
@@ -26,7 +26,6 @@ interface DetailPageContentProps {
 
 export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProps) => {
   const { showAlert } = useContext(AlertContext);
-  const { id } = useParams<{ id: string }>();
   const legacyBorehole = useSelector((state: ReduxRootState) => state.core_borehole);
 
   if (legacyBorehole.error !== null) {
@@ -54,65 +53,35 @@ export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProp
             overflowY: "auto",
             backgroundColor: theme.palette.background.lightgrey,
           }}>
-          <Switch>
+          <Routes>
             <Route
-              exact
-              path={"/:id/location"}
-              render={() => <LocationPanel borehole={borehole} labelingPanelOpen={panelOpen} />}
+              path="location"
+              element={
+                <LocationPanel
+                  borehole={borehole}
+                  labelingPanelOpen={panelOpen}
+                />
+              }
             />
-            <Route exact path={"/:id/borehole"} render={() => <BoreholePanel borehole={borehole} />} />
-            <Route exact path={"/:id/stratigraphy/lithology"} render={() => <Lithology />} />
-            <Route exact path={"/:id/stratigraphy/chronostratigraphy"} render={() => <ChronostratigraphyPanel />} />
-            <Route exact path={"/:id/stratigraphy/lithostratigraphy"} render={() => <LithostratigraphyPanel />} />
             <Route
-              path={"/:id/stratigraphy"}
-              render={() => {
-                return (
-                  <Redirect
-                    to={{
-                      pathname: `/${id}/stratigraphy/lithology`,
-                    }}
-                  />
-                );
-              }}
+              path="borehole"
+              element={<BoreholePanel borehole={borehole} />}
             />
-            <Route exact path={"/:id/attachments"} render={() => <Attachments />} />
-            <Route exact path={"/:id/hydrogeology/wateringress"} render={() => <WaterIngress />} />
-            <Route
-              exact
-              path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
-              render={() => <GroundwaterLevelMeasurement />}
-            />
-            <Route exact path={"/:id/hydrogeology/fieldmeasurement"} render={() => <FieldMeasurement />} />
-            <Route exact path={"/:id/hydrogeology/hydrotest"} render={() => <Hydrotest />} />
-            <Route
-              path={"/:id/hydrogeology"}
-              render={() => {
-                return (
-                  <Redirect
-                    to={{
-                      pathname: `/${id}/hydrogeology/wateringress`,
-                    }}
-                  />
-                );
-              }}
-            />
-            <Route path={"/:boreholeId/completion/:completionId"} render={() => <Completion />} />
-            <Route path={"/:boreholeId/completion"} render={() => <Completion />} />
-            <Route exact path={"/:id/status"} render={() => <WorkflowPanel />} />
-            <Route
-              path={"/:id"}
-              render={() => {
-                return (
-                  <Redirect
-                    to={{
-                      pathname: `/${id}/location`,
-                    }}
-                  />
-                );
-              }}
-            />
-          </Switch>
+            <Route path="stratigraphy/lithology" element={<Lithology />} />
+            <Route path="stratigraphy/chronostratigraphy" element={<ChronostratigraphyPanel />} />
+            <Route path="stratigraphy/lithostratigraphy" element={<LithostratigraphyPanel />} />
+            <Route path="stratigraphy" element={<Navigate to="stratigraphy/lithology" replace />} />
+            <Route path="attachments" element={<Attachments />} />
+            <Route path="hydrogeology/wateringress" element={<WaterIngress />} />
+            <Route path="hydrogeology/groundwaterlevelmeasurement" element={<GroundwaterLevelMeasurement />} />
+            <Route path="hydrogeology/fieldmeasurement" element={<FieldMeasurement />} />
+            <Route path="hydrogeology/hydrotest" element={<Hydrotest />} />
+            <Route path="hydrogeology" element={<Navigate to="hydrogeology/wateringress" replace />} />
+            <Route path="completion/:completionId" element={<Completion />} />
+            <Route path="completion" element={<Completion />} />
+            <Route path="status" element={<WorkflowPanel />} />
+            <Route path="" element={<Navigate to="location" replace />} />
+          </Routes>
         </Box>
       )}
     </>

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Badge, Stack } from "@mui/material";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
@@ -37,7 +37,7 @@ const MainSideNav = ({
   errorDialogOpen,
   setErrorDialogOpen,
 }: MainSideNavProps) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const menuRef = useRef(null);
   const { t } = useTranslation();
   const auth = useAuth();
@@ -147,7 +147,7 @@ const MainSideNav = ({
           data-cy="settings-button"
           icon={<Settings />}
           label={t("header_settings")}
-          onClick={() => history.push(`/setting`)}
+          onClick={() => navigate(`/setting`)}
         />
         {!auth.anonymousModeEnabled && (
           <NavButton

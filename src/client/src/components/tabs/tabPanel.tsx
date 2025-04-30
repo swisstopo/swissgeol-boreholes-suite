@@ -1,5 +1,5 @@
 import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Box } from "@mui/system";
 import { AddWorkgroupDialog } from "../../pages/settings/admin/dialogs/AddWorkgroupDialog.tsx";
 import { AddButton } from "../buttons/buttons.tsx";
@@ -13,7 +13,7 @@ export interface Tab {
 }
 
 export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
@@ -26,15 +26,15 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
       setActiveIndex(newActiveIndex);
     } else {
       // Redirect to the first tab if hash is not valid
-      history.replace(`${location.pathname}#${tabs[0].hash}`);
+      navigate(`${location.pathname}#${tabs[0].hash}`, { replace: true });
     }
-  }, [location, history, tabs]);
+  }, [location, navigate, tabs]);
 
   // Change handler for tab selection
   const handleIndexChange = (event: SyntheticEvent | null, index: number) => {
     const newLocation = location.pathname + "#" + tabs[index].hash;
     if (location.pathname + location.hash !== newLocation) {
-      history.push(newLocation);
+      navigate(newLocation);
     }
   };
 

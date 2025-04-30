@@ -65,7 +65,7 @@
     "react-number-format": "^5.4.3",
     "react-oidc-context": "3.0.0",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^5.3.4",
+    "react-router-dom": "^7.5.2",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
     "styled-components": "^6.1.1"

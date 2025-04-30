@@ -1,12 +1,13 @@
 import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { getBoreholeById } from "../../api/borehole.ts";
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsContext.tsx";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import DetailHeader from "./detailHeader.tsx";
@@ -29,7 +30,7 @@ export const DetailPage: FC = () => {
   const { showSaveBar } = useContext<SaveContextProps>(SaveContext);
   const { sendAnalyticsEvent } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const dispatch = useDispatch();
-  const { id } = useParams<{ id: string }>();
+  const { id } = useRequiredParams<{ id: string }>();
 
   useEffect(() => {
     getBoreholeById(parseInt(id, 10)).then(b => {

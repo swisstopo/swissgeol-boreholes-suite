@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useLayoutEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import { deleteBoreholes } from "../../../api-lib";
 import { Boreholes, Filters, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
@@ -42,7 +42,7 @@ const BottomBarContainer = ({
   setIsExporting,
 }: BottomBarContainerProps) => {
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { featureIds } = useContext(FilterContext);
   const { bottomDrawerOpen } = useContext(OverViewContext);
   const [workgroupId, setWorkgroupId] = useState<number | null>(
@@ -80,7 +80,7 @@ const BottomBarContainer = ({
     setIsBusy(true);
     const newBoreholeId = await copyBorehole(selectionModel, workgroupId);
     setIsBusy(false);
-    history.push(`/${newBoreholeId}`);
+    navigate(`/${newBoreholeId}`);
   };
 
   const onDeleteMultiple = async () => {
