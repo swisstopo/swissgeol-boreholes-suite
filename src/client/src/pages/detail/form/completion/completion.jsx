@@ -40,7 +40,6 @@ const Completion = () => {
     displayed: [],
     editing: false,
   });
-  console.log(state);
   const [checkContentDirty, setCheckContentDirty] = useState(false);
   const [completionToBeSaved, setCompletionToBeSaved] = useState(null);
 
@@ -56,7 +55,7 @@ const Completion = () => {
   };
 
   const updateHistory = selectedId => {
-    var newLocation = "/" + boreholeId + "/completion/" + selectedId;
+    let newLocation = "/" + boreholeId + "/completion/" + selectedId;
     if (selectedId !== "new") {
       if (location.hash !== "" && selectedId.toString() === completionId) {
         newLocation += location.hash;
@@ -66,7 +65,7 @@ const Completion = () => {
     }
 
     if (location.pathname + location.hash !== newLocation) {
-      var locationSnippets = location.pathname.split("/");
+      const locationSnippets = location.pathname.split("/");
       if (locationSnippets[locationSnippets.length - 1] === "completion") {
         navigate(newLocation, { replace: true });
       } else {
@@ -76,10 +75,8 @@ const Completion = () => {
   };
 
   const loadData = () => {
-    console.log("loadData", boreholeId);
     setIsLoading(true);
     if (boreholeId && mounted.current) {
-      console.log("getcompl");
       getCompletions(parseInt(boreholeId, 10)).then(response => {
         if (response?.length > 0) {
           // Display primary completion first then order by created date
@@ -135,7 +132,7 @@ const Completion = () => {
         if (state.switchTabTo === -1) {
           updateHistory("new");
         } else if (state.selected.id === 0) {
-          var newCompletionList = state.displayed.slice(0, -1);
+          const newCompletionList = state.displayed.slice(0, -1);
           if (newCompletionList.length === 0) {
             navigate("/" + boreholeId + "/completion");
             resetState();
@@ -148,7 +145,7 @@ const Completion = () => {
       }
 
       if (completionToBeSaved !== null && canSwitch === -1) {
-        var displayed = state.displayed;
+        const displayed = state.displayed;
         const index = displayed.findIndex(item => item.id === completionToBeSaved.id);
         displayed[index] = completionToBeSaved;
 
@@ -217,8 +214,8 @@ const Completion = () => {
   const cancelChanges = () => {
     setState({ ...state, editing: false });
     if (state.selected.id === 0) {
-      var newCompletionList = state.displayed.slice(0, -1);
-      var index = newCompletionList.length - 1;
+      const newCompletionList = state.displayed.slice(0, -1);
+      const index = newCompletionList.length - 1;
       if (newCompletionList.length === 0) {
         navigate("/" + boreholeId + "/completion");
       } else {
@@ -243,7 +240,7 @@ const Completion = () => {
   };
 
   const onDeleteConfirmed = () => {
-    var newTabIndex = state.index > 0 ? state.index - 1 : 0;
+    const newTabIndex = state.index > 0 ? state.index - 1 : 0;
     setState({ ...state, switchTabTo: newTabIndex });
     deleteCompletion(state.selected.id).then(() => {
       loadData();
@@ -268,7 +265,7 @@ const Completion = () => {
       return;
     }
     if (completionId === "new" && (state.switchTabTo === null || state.switchTabTo === -1)) {
-      var tempCompletion = {
+      const tempCompletion = {
         id: 0,
         boreholeId: boreholeId,
         name: null,
@@ -277,7 +274,7 @@ const Completion = () => {
         abandonDate: null,
         notes: null,
       };
-      var displayed = completions?.length > 0 ? completions : [];
+      const displayed = completions?.length > 0 ? completions : [];
       setState({
         ...state,
         displayed: [...displayed, tempCompletion],
@@ -287,7 +284,7 @@ const Completion = () => {
         editing: true,
       });
     } else if (completions?.length > 0) {
-      var index;
+      let index;
       if (state.switchTabTo != null) {
         index = state.switchTabTo;
       } else if (completionId != null) {
