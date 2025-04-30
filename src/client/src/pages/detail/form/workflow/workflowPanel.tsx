@@ -9,13 +9,15 @@ export const WorkflowPanel = () => {
   const location = useLocation();
   const currentUser: User = useSelector((state: ReduxRootState) => state.core_user);
 
-  return (
-    <>
-      {currentUser.data.admin && location.search === "?dev=true" ? (
-        <WorkflowForm />
-      ) : (
-        <LegacyWorkflowForm id={parseInt(id, 10)} />
-      )}
-    </>
-  );
+  if (id) {
+    return (
+      <>
+        {currentUser.data.admin && location.search === "?dev=true" ? (
+          <WorkflowForm />
+        ) : (
+          <LegacyWorkflowForm id={parseInt(id, 10)} />
+        )}
+      </>
+    );
+  }
 };
