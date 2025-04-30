@@ -9,8 +9,10 @@ import { SaveContext } from "../saveContext.tsx";
 
 interface BaseFormProps<T extends FieldValues> {
   boreholeId: number;
-  formMethods: UseFormReturn<T>;
-  prepareDataForSubmit: (data: T) => Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  formMethods: UseFormReturn<T, any, T>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  prepareDataForSubmit: (data: T) => Record<string, any>;
   onReset?: () => void;
   children: ReactNode;
 }
