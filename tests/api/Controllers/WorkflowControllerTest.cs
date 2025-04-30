@@ -11,7 +11,6 @@ namespace BDMS.Controllers;
 [TestClass]
 public class WorkflowControllerTest
 {
-    private readonly Mock<ILogger<WorkflowController>> loggerMock = new();
     private BdmsContext context;
     private WorkflowController controller;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
