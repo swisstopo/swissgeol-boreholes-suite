@@ -54,19 +54,8 @@ export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProp
             backgroundColor: theme.palette.background.lightgrey,
           }}>
           <Routes>
-            <Route
-              path="location"
-              element={
-                <LocationPanel
-                  borehole={borehole}
-                  labelingPanelOpen={panelOpen}
-                />
-              }
-            />
-            <Route
-              path="borehole"
-              element={<BoreholePanel borehole={borehole} />}
-            />
+            <Route path="location" element={<LocationPanel borehole={borehole} labelingPanelOpen={panelOpen} />} />
+            <Route path="borehole" element={<BoreholePanel borehole={borehole} />} />
             <Route path="stratigraphy/lithology" element={<Lithology />} />
             <Route path="stratigraphy/chronostratigraphy" element={<ChronostratigraphyPanel />} />
             <Route path="stratigraphy/lithostratigraphy" element={<LithostratigraphyPanel />} />
