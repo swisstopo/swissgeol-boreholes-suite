@@ -57,7 +57,7 @@ export const WorkflowStatusCard = () => {
 
   return (
     <WorkflowCard>
-      <Stack gap={1.5}>
+      <Stack gap={1.5} data-cy={"workflow-status-card"}>
         <Typography variant="h5">{t("status")}</Typography>
         <Stepper activeStep={activeStep} orientation="vertical" connector={<CustomConnector />}>
           {steps.map((label, index) => {

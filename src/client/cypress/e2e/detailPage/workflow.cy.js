@@ -7,8 +7,13 @@ describe("Tests the publication workflow.", () => {
     cy.contains("h4", "Publication workflow").should("exist");
     goToRouteAndAcceptTerms(`/1000036/status?dev=true`);
     cy.contains("h4", "Publication workflow").should("not.exist");
-    cy.contains("h5", "Status").should("exist");
-    cy.contains("h5", "Assigned Person").should("exist");
+
+    getElementByDataCy("workflow-status-card").contains("h5", "Status").should("exist");
+    getElementByDataCy("workflow-status-card").contains("h5", "Draft").should("exist");
+
+    getElementByDataCy("workflow-assigned-user-card").contains("h5", "Assigned Person").should("exist");
+    getElementByDataCy("workflow-status-card").contains("p", "Validator User").should("exist");
+
     getElementByDataCy("workflow-history-entry-15000183").should("contain", "Editor User");
     getElementByDataCy("workflow-history-entry-15000183").should("contain", "16. Nov. 2021");
     getElementByDataCy("workflow-history-entry-15000183").should(
