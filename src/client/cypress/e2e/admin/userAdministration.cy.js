@@ -117,13 +117,13 @@ describe("User administration settings tests", () => {
 
     // try to delete controller from user table
     getElementByDataCy("delete-id-3").click();
-    handlePrompt(messageForActiveNonDeletableUser, "Cancel");
+    handlePrompt(messageForActiveNonDeletableUser, "cancel");
 
     // go to detail view and try to delete
     clickOnRowWithText("controller");
     cy.contains("C. user");
     getElementByDataCy("deleteuser-button").click();
-    handlePrompt(messageForActiveNonDeletableUser, "Cancel");
+    handlePrompt(messageForActiveNonDeletableUser, "cancel");
 
     // verify editing is enabled on active user
     getElementByDataCy("is-user-admin-checkbox").children().first().should("not.have.attr", "disabled");
@@ -134,14 +134,14 @@ describe("User administration settings tests", () => {
     getElementByDataCy("is-user-admin-checkbox").children().first().should("have.attr", "disabled");
 
     getElementByDataCy("deleteuser-button").click();
-    handlePrompt(messageForInactiveNonDeletableUser, "Cancel");
+    handlePrompt(messageForInactiveNonDeletableUser, "cancel");
 
     // go to users table
     getElementByDataCy("backButton").click();
     waitForTableData();
     verifyRowWithContentAlsoContains("controller", "Inactive");
     getElementByDataCy("delete-id-3").click(); // controller
-    handlePrompt(messageForInactiveNonDeletableUser, "Cancel");
+    handlePrompt(messageForInactiveNonDeletableUser, "cancel");
 
     // go to user detail and reactive controller
     clickOnRowWithText("controller");
@@ -153,16 +153,16 @@ describe("User administration settings tests", () => {
     waitForTableData();
     verifyRowContains("Active", 4); // user that can be deleted
     getElementByDataCy("delete-id-7").click(); // user that can be deleted
-    handlePrompt(messageForActiveDeletableUser, "Cancel");
+    handlePrompt(messageForActiveDeletableUser, "cancel");
     clickOnRowWithText("user_that_can");
     cy.wait("@get-user");
     cy.contains("U. be_deleted");
     getElementByDataCy("deleteuser-button").click();
-    handlePrompt(messageForActiveDeletableUser, "Cancel");
+    handlePrompt(messageForActiveDeletableUser, "cancel");
     getElementByDataCy("inactivate-button").click();
     cy.wait("@update-user");
     getElementByDataCy("deleteuser-button").click();
-    handlePrompt(messageForInactiveDeletableUser, "Cancel");
+    handlePrompt(messageForInactiveDeletableUser, "cancel");
     getElementByDataCy("activate-button").click();
     cy.wait("@update-user");
 
@@ -171,7 +171,7 @@ describe("User administration settings tests", () => {
     waitForTableData();
     verifyRowContains("Active", 5); // user with only files
     getElementByDataCy("delete-id-6").click(); // user with only files
-    handlePrompt(messageForActiveNonDeletableUser, "Cancel");
+    handlePrompt(messageForActiveNonDeletableUser, "cancel");
   });
 
   it("adds and deletes workgroups and workgroup roles for user.", () => {
@@ -210,20 +210,20 @@ describe("User administration settings tests", () => {
 
     // delete all workgroup roles for Reggae Workgroup
     getElementByDataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Reggae"?', "Delete");
+    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Reggae"?', "delete");
     verifyTableLength(2);
     verifyRowContains("Default", 0);
     verifyRowContains("Country", 1);
 
     // cancel delete all workgroup roles for Country Workgroup
     getElementByDataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "Cancel");
+    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "cancel");
     verifyTableLength(2);
     verifyRowContains("Default", 0);
     verifyRowContains("Country", 1);
 
     getElementByDataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "Delete");
+    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "delete");
     verifyRowContains("Default", 0);
     verifyTableLength(1);
   });

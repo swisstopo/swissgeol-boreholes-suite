@@ -259,10 +259,10 @@ describe("Tests for the layer form.", () => {
     updateInputsForEachType();
     evaluateUpdatedFormState(true);
     cancelEditing();
-    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "Cancel");
+    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "cancel");
     cancelEditing();
     evaluateUpdatedFormState(true);
-    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "Discard changes");
+    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "discardchanges");
     getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
     clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(true);
@@ -363,12 +363,12 @@ describe("Tests for the layer form.", () => {
     });
 
     cancelEditing();
-    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "Cancel");
+    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "cancel");
     cancelEditing();
     multiSelectAttributes.forEach(attribute => {
       evaluateMultiSelect(attribute.value, attribute.codeValues);
     });
-    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "Discard changes");
+    handlePrompt("There are unsaved changes. Do you want to discard all changes?", "discardchanges");
 
     // verify all inputs have been reset
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();

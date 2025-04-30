@@ -27,11 +27,11 @@ export const useUnsavedChangesPrompt = <T extends FieldValues>({
       if (hasChanges) {
         showPrompt(t("unsavedChangesMessage", { where: t(translationKey) }), [
           {
-            label: t("cancel"),
+            label: "cancel",
             action: () => leaveInput(false),
           },
           {
-            label: t("reset"),
+            label: "reset",
             action: () => {
               formMethods.reset();
               selectCard(null);
@@ -39,7 +39,7 @@ export const useUnsavedChangesPrompt = <T extends FieldValues>({
             },
           },
           {
-            label: t("save"),
+            label: "save",
             disabled: !formMethods.formState.isValid,
             action: () => formMethods.handleSubmit(submitForm)(),
           },

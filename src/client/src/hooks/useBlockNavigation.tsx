@@ -1,5 +1,4 @@
 import { useCallback, useContext, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { useBlocker } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
@@ -8,7 +7,6 @@ import { SaveContext, SaveContextProps } from "../pages/detail/saveContext.tsx";
 export const useBlockNavigation = () => {
   const { hasChanges } = useContext<SaveContextProps>(SaveContext);
   const { showPrompt } = useContext(PromptContext);
-  const { t } = useTranslation();
   const promptShownRef = useRef(false);
 
   const shouldBlock = useCallback(() => {
@@ -20,10 +18,9 @@ export const useBlockNavigation = () => {
   useEffect(() => {
     if (blocker.state === "blocked" && !promptShownRef.current) {
       promptShownRef.current = true;
-      showPrompt(t("messageDiscardUnsavedChanges"), [
+      showPrompt("messageDiscardUnsavedChanges", [
         {
-          dataCy: "cancel-button",
-          label: t("cancel"),
+          label: "cancel",
           icon: <X />,
           variant: "outlined",
           action: () => {
@@ -34,8 +31,7 @@ export const useBlockNavigation = () => {
           },
         },
         {
-          dataCy: "discardchanges-button",
-          label: t("discardchanges"),
+          label: "discardchanges",
           icon: <Trash2 />,
           variant: "contained",
           action: () => {
@@ -47,5 +43,5 @@ export const useBlockNavigation = () => {
         },
       ]);
     }
-  }, [blocker, hasChanges, showPrompt, t]);
+  }, [blocker, hasChanges, showPrompt]);
 };

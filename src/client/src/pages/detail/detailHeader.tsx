@@ -61,16 +61,14 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
   };
 
   const stopEditingWithUnsavedChanges = () => {
-    showPrompt(t("messageDiscardUnsavedChanges"), [
+    showPrompt("messageDiscardUnsavedChanges", [
       {
-        dataCy: "cancel-button",
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
         variant: "outlined",
       },
       {
-        dataCy: "discardchanges-button",
-        label: t("discardchanges"),
+        label: "discardchanges",
         icon: <Trash2 />,
         variant: "contained",
         action: resetFormAndStopEditing,
@@ -79,14 +77,14 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
   };
 
   const startExportWithUnsavedChanges = () => {
-    showPrompt(t("messageUnsavedChangesAtExport"), [
+    showPrompt("messageUnsavedChangesAtExport", [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
         variant: "outlined",
       },
       {
-        label: t("export"),
+        label: "export",
         icon: <ArrowDownToLine />,
         variant: "contained",
         action: () => setIsExporting(true),
@@ -148,10 +146,10 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
                   onClick={() =>
                     showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
                       {
-                        label: t("cancel"),
+                        label: "cancel",
                       },
                       {
-                        label: t("delete"),
+                        label: "delete",
                         icon: <Trash2 />,
                         variant: "contained",
                         action: () => {

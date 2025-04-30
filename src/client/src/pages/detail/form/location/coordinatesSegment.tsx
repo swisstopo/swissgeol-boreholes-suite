@@ -224,15 +224,15 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       return;
     }
 
-    showPrompt(t("changingCoordinateSystemResetsCoordinates"), [
+    showPrompt("changingCoordinateSystemResetsCoordinates", [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
         variant: "outlined",
         action: () => onCancelCoordinateChange(e),
       },
       {
-        label: t("confirm"),
+        label: "confirm",
         icon: <Check />,
         variant: "contained",
         action: confirmCoordinateChange,

@@ -97,11 +97,11 @@ export const UserDetail: FC = () => {
     if (!userWorkgroup) return;
     showPrompt(t("confirmRemoveRoles", { name: selectedUser.name, workgroupName: userWorkgroup.name }), [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
       },
       {
-        label: t("delete"),
+        label: "delete",
         icon: <Trash2 />,
         variant: "contained",
         action: () => {

@@ -227,11 +227,11 @@ const Completion = () => {
   const deleteSelectedCompletion = () => {
     showPrompt(t("deleteCompletionMessage"), [
       {
-        label: t("cancel"),
+        label: "cancel",
         action: null,
       },
       {
-        label: t("delete"),
+        label: "delete",
         icon: <Trash2 />,
         variant: "contained",
         action: onDeleteConfirmed,

@@ -75,7 +75,7 @@ export const useDeleteEntityPrompts = (
   const showNotDeletablePrompt = (entity: User | Workgroup) => {
     showPrompt(getNotDeletableMessage(entity), [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
       },
     ]);
@@ -84,11 +84,11 @@ export const useDeleteEntityPrompts = (
   const showDeletablePrompt = (entity: User | Workgroup) => {
     showPrompt(getDeletableMessage(entity), [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
       },
       {
-        label: t("delete"),
+        label: "delete",
         icon: <Trash2 />,
         variant: "contained",
         action: () => {

@@ -194,7 +194,7 @@ describe("Tests for 'Location' edit page.", () => {
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.get('[data-cy="editingstop-button"]').should("exist");
     stopEditing();
-    handlePrompt(messageUnsavedChanges, "discard changes");
+    handlePrompt(messageUnsavedChanges, "discardchanges");
     cy.get('[data-cy="editingstop-button"]').should("not.exist");
 
     startBoreholeEditing();
@@ -207,7 +207,7 @@ describe("Tests for 'Location' edit page.", () => {
     });
 
     cy.get('[data-cy="borehole-menu-item"]').click();
-    handlePrompt(messageUnsavedChanges, "discard changes");
+    handlePrompt(messageUnsavedChanges, "discardchanges");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
     });
