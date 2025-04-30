@@ -12,14 +12,20 @@ import { FormContainer, FormInput, FormValueType } from "../../../../components/
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
+import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.js";
+import { DetailContext } from "../../detailContext.js";
+import { SaveContext } from "../../saveContext.js";
 import { extractCasingDepth } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { prepareEntityDataForSubmit } from "./completionUtils.js";
 
 const CasingInput = props => {
+  const { t } = useTranslation();
   const { item, parentId } = props;
   const { triggerReload } = useContext(DataCardContext);
-  const { t } = useTranslation();
+  const { reloadBorehole } = useContext(DetailContext);
+  const { markAsChanged } = useContext(SaveContext);
+  useBlockNavigation();
   const formMethods = useForm({
     mode: "all",
     defaultValues: {
@@ -28,9 +34,10 @@ const CasingInput = props => {
       ],
     },
   });
+  const { formState, handleSubmit, control, getValues, setValue, trigger } = formMethods;
   const { fields, append, remove } = useFieldArray({
     name: "casingElements",
-    control: formMethods.control,
+    control: control,
     rules: {
       required: true,
     },
@@ -65,6 +72,7 @@ const CasingInput = props => {
         ...data,
       }).then(() => {
         triggerReload();
+        reloadBorehole();
       });
     } else {
       updateCasing({
@@ -77,15 +85,15 @@ const CasingInput = props => {
   };
 
   const updateDepth = () => {
-    const depths = extractCasingDepth(formMethods.getValues());
-    if (depths.min !== formMethods.getValues()["fromDepth"] || depths.max !== formMethods.getValues()["toDepth"]) {
-      formMethods.setValue("fromDepth", formatNumberForDisplay(depths.min));
-      formMethods.setValue("toDepth", formatNumberForDisplay(depths.max));
+    const depths = extractCasingDepth(getValues());
+    if (depths.min !== getValues()["fromDepth"] || depths.max !== getValues()["toDepth"]) {
+      setValue("fromDepth", formatNumberForDisplay(depths.min));
+      setValue("toDepth", formatNumberForDisplay(depths.max));
     }
   };
 
   const addCasingElement = () => {
-    const fieldArrayValues = formMethods.getValues()["casingElements"];
+    const fieldArrayValues = getValues()["casingElements"];
     append(
       {
         fromDepth: fieldArrayValues[fieldArrayValues.length - 1].toDepth,
@@ -108,15 +116,21 @@ const CasingInput = props => {
   useValidateFormOnMount({ formMethods });
 
   useEffect(() => {
-    formMethods.trigger("casingElements");
+    trigger("casingElements");
     updateDepth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.getValues()["casingElements"]]);
+  }, [getValues()["casingElements"]]);
+
+  // Track form dirty state
+  useEffect(() => {
+    markAsChanged(Object.keys(formState.dirtyFields).length > 0);
+    return () => markAsChanged(false);
+  }, [formState.dirtyFields, formState.isDirty, markAsChanged]);
 
   return (
     <>
       <FormProvider {...formMethods}>
-        <form onSubmit={formMethods.handleSubmit(submitForm)}>
+        <form onSubmit={handleSubmit(submitForm)}>
           <FormContainer>
             <FormInput fieldName="name" label="name" value={item.name} required={true} />
             <FormContainer direction="row">

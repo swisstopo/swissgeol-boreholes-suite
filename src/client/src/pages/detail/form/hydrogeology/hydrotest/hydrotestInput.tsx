@@ -12,6 +12,9 @@ import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useU
 import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput } from "../../../../../components/form/form";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
+import { useBlockNavigation } from "../../../../../hooks/useBlockNavigation.tsx";
+import { DetailContext } from "../../../detailContext.tsx";
+import { SaveContext } from "../../../saveContext.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation";
@@ -20,9 +23,12 @@ import { getHydrotestParameterUnits } from "../parameterUnits";
 import { addHydrotest, Hydrotest, HydrotestInputProps, updateHydrotest, useHydrotestDomains } from "./Hydrotest";
 
 export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
-  const { triggerReload } = useContext(DataCardContext);
-  const domains = useDomains();
   const { t } = useTranslation();
+  const { triggerReload } = useContext(DataCardContext);
+  const { reloadBorehole } = useContext(DetailContext);
+  const { markAsChanged } = useContext(SaveContext);
+  useBlockNavigation();
+  const domains = useDomains();
 
   const formMethods = useForm<Hydrotest>({
     mode: "all",
@@ -30,10 +36,11 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
       hydrotestResults: item?.hydrotestResults || [],
     },
   });
+  const { formState, handleSubmit, control, getValues, setValue, trigger } = formMethods;
 
   const { fields, append, remove } = useFieldArray({
     name: "hydrotestResults",
-    control: formMethods.control,
+    control: control,
   });
   const [units, setUnits] = useState<Record<number, string>>({});
   const [hydrotestKindIds, setHydrotestKindIds] = useState<number[]>(item?.kindCodelists?.map(c => c.id) || []);
@@ -47,6 +54,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
         ...hydrotest,
       }).then(() => {
         triggerReload();
+        reloadBorehole();
       });
     } else {
       updateHydrotest({
@@ -66,6 +74,12 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
 
   useValidateFormOnMount({ formMethods });
 
+  // Track form dirty state
+  useEffect(() => {
+    markAsChanged(Object.keys(formState.dirtyFields).length > 0);
+    return () => markAsChanged(false);
+  }, [formState.dirtyFields, formState.isDirty, markAsChanged]);
+
   const getFilteredDomains = (schema: string, data: Codelist[]) =>
     data?.filter(c => c.schema === schema).map(c => c.id) || [];
 
@@ -76,7 +90,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     if (hydrotestKindIds.length > 0) {
       // check the compatibility of codelists (flowdirection, evaluationMethod, hydrotestResultParameter) when the hydrotestKinds (and therefore the filteredTestKindDomains) change.
       if (filteredTestKindDomains.data?.length > 0) {
-        const formValues = formMethods.getValues();
+        const formValues = getValues();
         // delete flowDirections, evaluationMethods that are no longer compatible with the selected hydrotestKinds.
         const allowedEvaluationMethodIds = getFilteredDomains(
           hydrogeologySchemaConstants.hydrotestEvaluationMethod,
@@ -96,8 +110,8 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
         }
 
         // set form values
-        formMethods.setValue("evaluationMethodId", compatibleEvaluationMethods);
-        formMethods.setValue("flowDirectionId", compatibleFlowDirections);
+        setValue("evaluationMethodId", compatibleEvaluationMethods);
+        setValue("flowDirectionId", compatibleFlowDirections);
 
         // delete hydrotestResults that are not longer compatible with the selected hydrotestKinds.
         const allowedHydrotestResultParameterIds = getFilteredDomains(
@@ -109,35 +123,35 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
           r => (r.parameterId && allowedHydrotestResultParameterIds.includes(r.parameterId)) || [],
         );
 
-        formMethods.setValue("hydrotestResults", compatibleHydrotestResults);
+        setValue("hydrotestResults", compatibleHydrotestResults);
       }
     } else {
-      formMethods.setValue("flowDirectionId", []);
-      formMethods.setValue("evaluationMethodId", []);
-      formMethods.setValue("hydrotestResults", []);
+      setValue("flowDirectionId", []);
+      setValue("evaluationMethodId", []);
+      setValue("hydrotestResults", []);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrotestKindIds]);
 
   useEffect(() => {
-    formMethods.trigger("hydrotestResults");
+    trigger("hydrotestResults");
     const currentUnits: Record<number, string> = {};
 
-    formMethods.getValues().hydrotestResults.forEach((element, index) => {
+    getValues().hydrotestResults.forEach((element, index) => {
       currentUnits[index] = getHydrotestParameterUnits(element.parameterId, domains.data);
     });
 
     setUnits(currentUnits);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.getValues().hydrotestResults, domains.data]);
+  }, [getValues().hydrotestResults, domains.data]);
 
   useEffect(() => {
-    const currentValues = formMethods.getValues();
+    const currentValues = getValues();
     if (currentValues?.testKindId?.toString() !== hydrotestKindIds?.toString()) {
       setHydrotestKindIds(currentValues?.testKindId ?? []);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item, formMethods.getValues()["testKindId"]]);
+  }, [item, getValues()["testKindId"]]);
 
   const prepareFormDataForSubmit = (data: Hydrotest): Hydrotest => {
     data = prepareCasingDataForSubmit(data);
@@ -172,7 +186,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     return data;
   };
 
-  const hasTestKindError = !!formMethods.formState.errors?.testKindId;
+  const hasTestKindError = !!formState.errors?.testKindId;
   const hasValidFlowDirectionData =
     (
       filteredTestKindDomains.data?.filter(
@@ -189,7 +203,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+      <form onSubmit={handleSubmit(submitForm)}>
         <FormContainer>
           <ObservationInput observation={item} />
           <FormContainer direction="row">
@@ -220,7 +234,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
               prefilteredDomains={filteredTestKindDomains?.data}
             />
           </FormContainer>
-          {(formMethods.getValues().testKindId ?? []).length > 0 && (
+          {(getValues().testKindId ?? []).length > 0 && (
             <Box
               sx={{
                 paddingBottom: "8.5px",

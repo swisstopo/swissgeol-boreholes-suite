@@ -12,6 +12,9 @@ import { FormContainer, FormInput } from "../../../../../components/form/form.js
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.js";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
+import { useBlockNavigation } from "../../../../../hooks/useBlockNavigation.tsx";
+import { DetailContext } from "../../../detailContext.tsx";
+import { SaveContext } from "../../../saveContext.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
@@ -25,9 +28,13 @@ import {
 } from "./FieldMeasurement.ts";
 
 export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, parentId }) => {
-  const { triggerReload } = useContext(DataCardContext);
-  const domains = useDomains();
   const { t } = useTranslation();
+  const { triggerReload } = useContext(DataCardContext);
+  const { reloadBorehole } = useContext(DetailContext);
+  const { markAsChanged } = useContext(SaveContext);
+  useBlockNavigation();
+  const domains = useDomains();
+
   const formMethods = useForm<FieldMeasurement>({
     mode: "all",
     defaultValues: {
@@ -36,9 +43,10 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
       ],
     },
   });
+  const { formState, handleSubmit, control, getValues, trigger } = formMethods;
   const { fields, append, remove } = useFieldArray({
     name: "fieldMeasurementResults",
-    control: formMethods.control,
+    control: control,
   });
   const [units, setUnits] = useState<Record<number, string>>({});
 
@@ -49,6 +57,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
         ...data,
       }).then(() => {
         triggerReload();
+        reloadBorehole();
       });
     } else {
       updateFieldMeasurement({
@@ -68,10 +77,16 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
 
   useValidateFormOnMount({ formMethods });
 
+  // Track form dirty state
   useEffect(() => {
-    formMethods.trigger("fieldMeasurementResults");
+    markAsChanged(Object.keys(formState.dirtyFields).length > 0);
+    return () => markAsChanged(false);
+  }, [formState.dirtyFields, formState.isDirty, markAsChanged]);
+
+  useEffect(() => {
+    trigger("fieldMeasurementResults");
     let currentUnits = {};
-    formMethods.getValues()["fieldMeasurementResults"].forEach((element, index) => {
+    getValues()["fieldMeasurementResults"].forEach((element, index) => {
       currentUnits = {
         ...currentUnits,
         [index]: getFieldMeasurementParameterUnits(element.parameterId as number, domains.data),
@@ -79,7 +94,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
     });
     setUnits(currentUnits);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.getValues()["fieldMeasurementResults"]]);
+  }, [getValues()["fieldMeasurementResults"]]);
 
   const prepareFormDataForSubmit = (data: FieldMeasurement) => {
     data = prepareCasingDataForSubmit(data);
@@ -101,7 +116,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+      <form onSubmit={handleSubmit(submitForm)}>
         <FormContainer>
           <ObservationInput observation={item} />
           <Box
