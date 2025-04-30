@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import DataCards from "../../../../../components/dataCard/dataCards.js";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
 import { sortByDepth } from "../../sorter.jsx";
@@ -8,6 +8,18 @@ import WaterIngressInput from "./waterIngressInput.tsx";
 
 const WaterIngress: FC = () => {
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const renderInput = useCallback(
+    (props: { item: WaterIngressType; parentId: number }) => <WaterIngressInput {...props} />,
+    [],
+  );
+  const renderDisplay = useCallback(
+    (props: { item: WaterIngressType; editingEnabled: boolean }) => <WaterIngressDisplay {...props} />,
+    [],
+  );
+  const sortDisplayed = useCallback(
+    (a: WaterIngressType, b: WaterIngressType) => sortByDepth(a, b, "fromDepthM", "toDepthM"),
+    [],
+  );
 
   return (
     <DataCards<WaterIngressType>
@@ -16,11 +28,9 @@ const WaterIngress: FC = () => {
       cyLabel="waterIngress"
       addLabel="addWaterIngress"
       emptyLabel="msgWateringressEmpty"
-      renderInput={props => <WaterIngressInput {...props} />}
-      renderDisplay={props => <WaterIngressDisplay {...props} />}
-      sortDisplayed={(a, b) => {
-        return sortByDepth(a, b, "fromDepthM", "toDepthM");
-      }}
+      renderInput={renderInput}
+      renderDisplay={renderDisplay}
+      sortDisplayed={sortDisplayed}
     />
   );
 };

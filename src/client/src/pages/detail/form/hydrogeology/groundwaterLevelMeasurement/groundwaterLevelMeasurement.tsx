@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import DataCards from "../../../../../components/dataCard/dataCards.js";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
 import { sortByDepth } from "../../sorter.jsx";
@@ -11,6 +11,23 @@ import GroundwaterLevelMeasurementInput from "./groundwaterLevelMeasurementInput
 
 const GroundwaterLevelMeasurement: FC = () => {
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const renderInput = useCallback(
+    (props: { item: GroundwaterLevelMeasurementType; parentId: number }) => (
+      <GroundwaterLevelMeasurementInput {...props} />
+    ),
+    [],
+  );
+  const renderDisplay = useCallback(
+    (props: { item: GroundwaterLevelMeasurementType; editingEnabled: boolean }) => (
+      <GroundwaterLevelMeasurementDisplay {...props} />
+    ),
+    [],
+  );
+  const sortDisplayed = useCallback(
+    (a: GroundwaterLevelMeasurementType, b: GroundwaterLevelMeasurementType) =>
+      sortByDepth(a, b, "fromDepthM", "toDepthM"),
+    [],
+  );
 
   return (
     <DataCards<GroundwaterLevelMeasurementType>
@@ -19,11 +36,9 @@ const GroundwaterLevelMeasurement: FC = () => {
       cyLabel="groundwaterLevelMeasurement"
       addLabel="addGroundwaterLevelMeasurement"
       emptyLabel="msgGroundwaterLevelMeasurementsEmpty"
-      renderInput={props => <GroundwaterLevelMeasurementInput {...props} />}
-      renderDisplay={props => <GroundwaterLevelMeasurementDisplay {...props} />}
-      sortDisplayed={(a, b) => {
-        return sortByDepth(a, b, "fromDepthM", "toDepthM");
-      }}
+      renderInput={renderInput}
+      renderDisplay={renderDisplay}
+      sortDisplayed={sortDisplayed}
     />
   );
 };
