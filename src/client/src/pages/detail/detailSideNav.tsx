@@ -47,6 +47,12 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
     setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
   }, [location, id]);
 
+  const navigateTo = (path: string) => {
+    if (path !== location.pathname) {
+      navigate(path);
+    }
+  };
+
   return (
     <Box
       style={{
@@ -69,14 +75,14 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             style={{ borderTop: "none" }}
             active={location.pathname === `/${id}/location`}
             onClick={() => {
-              navigate(`/${id}/location`);
+              navigateTo(`/${id}/location`);
             }}>
             <Typography data-cy="location-menu-item">{capitalizeFirstLetter(t("location"))}</Typography>
           </ParentListItem>
           <ParentListItem
             active={location.pathname === `/${id}/borehole`}
             onClick={() => {
-              navigate(`/${id}/borehole`);
+              navigateTo(`/${id}/borehole`);
             }}>
             <Typography data-cy="borehole-menu-item">{capitalizeFirstLetter(t("borehole"))}</Typography>
           </ParentListItem>
@@ -94,7 +100,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/stratigraphy/lithology`}
                 hasContent={hasLithology}
                 onClick={() => {
-                  navigate(`/${id}/stratigraphy/lithology`);
+                  navigateTo(`/${id}/stratigraphy/lithology`);
                 }}>
                 <Typography data-cy="lithology-menu-item">{capitalizeFirstLetter(t("lithology"))}</Typography>
               </ChildListItem>
@@ -102,7 +108,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/stratigraphy/chronostratigraphy`}
                 hasContent={hasChronoStratigraphy}
                 onClick={() => {
-                  navigate(`/${id}/stratigraphy/chronostratigraphy`);
+                  navigateTo(`/${id}/stratigraphy/chronostratigraphy`);
                 }}>
                 <Typography data-cy="chronostratigraphy-menu-item">
                   {capitalizeFirstLetter(t("chronostratigraphy"))}
@@ -112,7 +118,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/stratigraphy/lithostratigraphy`}
                 hasContent={hasLithoStratigraphy}
                 onClick={() => {
-                  navigate(`/${id}/stratigraphy/lithostratigraphy`);
+                  navigateTo(`/${id}/stratigraphy/lithostratigraphy`);
                 }}>
                 <Typography data-cy="lithostratigraphy-menu-item">
                   {capitalizeFirstLetter(t("lithostratigraphy"))}
@@ -124,7 +130,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             active={location.pathname.includes(`/${id}/completion`)}
             hasContent={hasCompletion}
             onClick={() => {
-              navigate(`/${id}/completion`);
+              navigateTo(`/${id}/completion`);
             }}>
             <Typography data-cy="completion-menu-item">{capitalizeFirstLetter(t("completion"))}</Typography>
           </ParentListItem>
@@ -142,7 +148,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/wateringress`}
                 hasContent={hasWaterIngress}
                 onClick={() => {
-                  navigate(`/${id}/hydrogeology/wateringress`);
+                  navigateTo(`/${id}/hydrogeology/wateringress`);
                 }}>
                 <Typography data-cy="wateringress-menu-item">{capitalizeFirstLetter(t("waterIngress"))}</Typography>
               </ChildListItem>
@@ -150,7 +156,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
                 hasContent={hasGroundwaterLevelMeasurement}
                 onClick={() => {
-                  navigate(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
+                  navigateTo(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
                 }}>
                 <Typography data-cy="groundwaterlevelmeasurement-menu-item">
                   {capitalizeFirstLetter(t("groundwaterLevelMeasurement"))}
@@ -160,7 +166,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
                 hasContent={hasFieldMeasurement}
                 onClick={() => {
-                  navigate(`/${id}/hydrogeology/fieldmeasurement`);
+                  navigateTo(`/${id}/hydrogeology/fieldmeasurement`);
                 }}>
                 <Typography data-cy="fieldmeasurement-menu-item">
                   {capitalizeFirstLetter(t("fieldMeasurement"))}
@@ -170,7 +176,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/hydrotest`}
                 hasContent={hasHydroTest}
                 onClick={() => {
-                  navigate(`/${id}/hydrogeology/hydrotest`);
+                  navigateTo(`/${id}/hydrogeology/hydrotest`);
                 }}>
                 <Typography data-cy="hydrotest-menu-item">{capitalizeFirstLetter(t("hydrotest"))}</Typography>
               </ChildListItem>
@@ -182,7 +188,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/attachments`}
                 hasContent={hasAttachments}
                 onClick={() => {
-                  navigate(`/${id}/attachments`);
+                  navigateTo(`/${id}/attachments`);
                 }}>
                 <Typography data-cy="attachments-menu-item">{capitalizeFirstLetter(t("attachments"))}</Typography>
               </ParentListItem>
@@ -190,7 +196,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/status`}
                 style={{ borderBottom: `1px solid ${theme.palette.border.light}` }}
                 onClick={() => {
-                  navigate(`/${id}/status`);
+                  navigateTo(`/${id}/status`);
                 }}>
                 <Typography data-cy="status-menu-item">{capitalizeFirstLetter(t("flowPublicationStatus"))}</Typography>
               </ParentListItem>
