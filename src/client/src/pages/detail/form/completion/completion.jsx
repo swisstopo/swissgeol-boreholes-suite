@@ -24,7 +24,7 @@ import CompletionHeaderInput from "./completionHeaderInput.jsx";
 const Completion = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { showPrompt } = useContext(PromptContext);
-  const { editingEnabled } = useContext(DetailContext);
+  const { reloadBorehole, editingEnabled } = useContext(DetailContext);
   const { id: boreholeId } = useRequiredParams();
   const { completionId } = useParams();
   const navigate = useNavigate();
@@ -185,6 +185,7 @@ const Completion = () => {
         if (!preventReload) {
           loadData();
         }
+        reloadBorehole();
       });
     } else {
       updateCompletion(completion).then(() => {
@@ -244,6 +245,7 @@ const Completion = () => {
     setState({ ...state, switchTabTo: newTabIndex });
     deleteCompletion(state.selected.id).then(() => {
       loadData();
+      reloadBorehole();
     });
   };
 
