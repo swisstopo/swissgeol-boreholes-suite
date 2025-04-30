@@ -47,7 +47,7 @@ export const getDecimalsFromNumericString = (numericString: string) => numericSt
 export const getFieldBorderColor = (isReadOnly: boolean) => {
   return {
     "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: isReadOnly ? theme.palette.border.light : theme.palette.border.darker,
+      borderColor: isReadOnly ? theme.palette.border.light : theme.palette.border.dark,
     },
   };
 };

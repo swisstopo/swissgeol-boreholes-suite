@@ -30,6 +30,9 @@ declare module "@mui/material/styles" {
       contrastText: string;
       background: string;
     };
+    tertiary: {
+      main: string;
+    };
     success: {
       main: string;
     };
@@ -68,11 +71,13 @@ declare module "@mui/material/styles" {
     border: {
       light: string;
       darker: string;
+      dark: string;
     };
     background: {
       default: string;
       lightgrey: string;
       darkgrey: string;
+      grey: string;
       dark: string;
       menuItemActive: string;
       filterItemActive: string;
