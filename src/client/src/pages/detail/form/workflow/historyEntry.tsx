@@ -2,6 +2,7 @@ import { FC } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
+import { capitalizeFirstLetter } from "../../../../utils.ts";
 import { WorkflowChange } from "./workflow.ts";
 
 export const HistoryEntry: FC<{ workflowChange: WorkflowChange }> = ({ workflowChange }) => {
@@ -25,7 +26,7 @@ export const HistoryEntry: FC<{ workflowChange: WorkflowChange }> = ({ workflowC
             mr: "14px !important",
           }}
         />
-        <Typography variant="h5">{`${[workflowChange.createdBy?.firstName, workflowChange.createdBy?.lastName].filter(Boolean).join(" ")}`}</Typography>
+        <Typography variant="h5">{`${[capitalizeFirstLetter(workflowChange.createdBy?.firstName), capitalizeFirstLetter(workflowChange.createdBy?.lastName)].filter(Boolean).join(" ")}`}</Typography>
         <DescriptionText>
           {`∙ ${new Date(workflowChange?.created).toLocaleDateString("de-CH", {
             day: "2-digit",
@@ -77,7 +78,7 @@ export const HistoryEntry: FC<{ workflowChange: WorkflowChange }> = ({ workflowC
               <Trans
                 i18nKey="boreholeAssignedTo"
                 values={{
-                  user: `${workflowChange.assignee.firstName} ${workflowChange.assignee.lastName}`,
+                  user: `${capitalizeFirstLetter(workflowChange.assignee.firstName)} ${capitalizeFirstLetter(workflowChange.assignee.lastName)}`,
                 }}
                 components={{
                   strong: <Typography component="span" variant="h6" fontWeight="bold" color="secondary" />,
