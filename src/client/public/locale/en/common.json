@@ -36,6 +36,7 @@
   "alternate_name": "Name",
   "analyze": "Analyzing",
   "appearance": "Appearance",
+  "assignUser": "Assign new person",
   "assignedPerson": "Assigned Person",
   "attachments": "Attachments",
   "autoSetDepthMaslEnabled": "Auto set From and To Depth m a.s.l.",
