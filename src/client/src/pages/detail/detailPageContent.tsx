@@ -6,7 +6,6 @@ import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
-import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { Attachments } from "./attachments/attachments.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
@@ -20,7 +19,7 @@ import { LocationFormInputs } from "./form/location/locationPanelInterfaces.tsx"
 import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
 import Lithology from "./form/stratigraphy/lithology";
 import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
-import WorkflowForm from "./form/workflow/workflowForm.jsx";
+import { WorkflowPanel } from "./form/workflow/workflowPanel.tsx";
 
 interface DetailPageContentProps {
   locationPanelRef: RefObject<{ submit: () => void; reset: () => void } | null>;
@@ -40,7 +39,6 @@ export const DetailPageContent = ({
   panelOpen,
 }: DetailPageContentProps) => {
   const { showAlert } = useContext(AlertContext);
-  const { id } = useRequiredParams<{ id: string }>();
   const legacyBorehole = useSelector((state: ReduxRootState) => state.core_borehole);
 
   if (legacyBorehole.error !== null) {
@@ -96,7 +94,7 @@ export const DetailPageContent = ({
             <Route path="hydrogeology" element={<Navigate to="hydrogeology/wateringress" replace />} />
             <Route path="completion/:completionId" element={<Completion />} />
             <Route path="completion" element={<Completion />} />
-            <Route path="status" element={<WorkflowForm id={parseInt(id)} />} />
+            <Route path="status" element={<WorkflowPanel />} />
             <Route path="" element={<Navigate to="location" replace />} />
           </Routes>
         </Box>

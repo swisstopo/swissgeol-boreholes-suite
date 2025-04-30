@@ -116,13 +116,13 @@ describe("Tests for the wateringress editor.", () => {
 
       // Create water ingress and check states of depth inputs
       addItem("addWaterIngress");
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should(
-        "not.be.disabled",
-      );
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("not.be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should("be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("be.disabled");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("not.be.disabled");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("not.be.disabled");
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="depthUnit-formSelect"] input').should("have.value", "1");
+      cy.get(
+        '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',
+      ).should("have.value", "1");
 
       // Save with minimal info
       setSelect("quantityId", 2);
@@ -140,32 +140,38 @@ describe("Tests for the wateringress editor.", () => {
         .contains("-");
 
       startEditing();
-      // Ensure depth input dropdown is set to manual input and switch to auto input
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="depthUnit-formSelect"] input').should("have.value", "1");
-      setSelect("depthUnit", 0);
+      // Ensure depth input dropdown is set to "Measured Depth" and switch to "Meters above sea level"
+      cy.get(
+        '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',
+      ).should("have.value", "1");
+      setSelect("originalVerticalReferenceSystem", 1);
 
       // Check states of depth inputs
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should("be.disabled");
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("be.disabled");
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("not.be.disabled");
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("not.be.disabled");
-
-      // Enter measured depth and ensure MASL is automatically set
-      setInput("fromDepthM", 24);
-      cy.wait("@get-boreholegeometry-depth-masl");
-      cy.wait("@get-boreholegeometry-depth-masl");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should(
-        "have.value",
-        "3'976",
+        "not.be.disabled",
       );
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("not.be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("be.disabled");
 
-      setInput("toDepthM", 55);
-      cy.wait("@get-boreholegeometry-depth-masl");
-      cy.wait("@get-boreholegeometry-depth-masl");
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should(
-        "have.value",
-        "3'945",
-      );
+      // Enter Masl and ensure MD is automatically set
+      setInput("fromDepthMasl", 3976);
+      cy.wait([
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+      ]);
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("have.value", "24");
+
+      setInput("toDepthMasl", 3945);
+      cy.wait([
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+        "@get-boreholegeometry-depth-md",
+      ]);
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("have.value", "55");
 
       saveForm();
       cy.wait("@wateringress_GET");
@@ -177,39 +183,71 @@ describe("Tests for the wateringress editor.", () => {
       cy.get("@toDepthMaslDisplay").contains("3'945");
 
       startEditing();
-      // Ensure depth input dropdown is set to manual
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="depthUnit-formSelect"] input').should("have.value", "1");
-
-      // Check states of depth inputs
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should(
-        "not.be.disabled",
+      // Ensure depth input dropdown is set to "Meters above sea level" and switch to "Measured Depth"
+      cy.get(
+        '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',
+      ).should("have.value", "2");
+      setSelect("originalVerticalReferenceSystem", 0);
+      handlePrompt(
+        "Changing the vertical reference system will reset the depth values. Do you want to continue?",
+        "Cancel",
       );
-      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("not.be.disabled");
 
-      // Enter measured depth and ensure MASL is NOT automatically set
-      setInput("fromDepthM", 500);
+      // Check that the state of the depth inputs did not change
+      cy.get(
+        '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',
+      ).should("have.value", "2");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should("be.enabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("be.enabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("be.disabled");
+
+      setSelect("originalVerticalReferenceSystem", 0);
+      handlePrompt(
+        "Changing the vertical reference system will reset the depth values. Do you want to continue?",
+        "Confirm",
+      );
+      cy.get(
+        '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',
+      ).should("have.value", "1");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should("be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("be.disabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("be.enabled");
+      cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("be.enabled");
+
+      saveForm();
+      cy.wait("@wateringress_GET");
+
+      // Ensure depths have no values in display
+      cy.get("@fromDepthDisplay").contains("-");
+      cy.get("@toDepthDisplay").contains("-");
+      cy.get("@fromDepthMaslDisplay").contains("-");
+      cy.get("@toDepthMaslDisplay").contains("-");
+
+      // Enter MD and ensure Masl is automatically set
+      startEditing();
+      setInput("fromDepthM", 1);
+      cy.wait("@get-boreholegeometry-depth-masl");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should(
         "have.value",
-        "3'976",
+        "3'999",
       );
 
-      setInput("toDepthM", 300);
+      setInput("toDepthM", 2);
+      cy.wait("@get-boreholegeometry-depth-masl");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should(
         "have.value",
-        "3'945",
+        "3'998",
       );
 
-      // Manually set depth in MASL
-      setInput("fromDepthMasl", 2222);
-      setInput("toDepthMasl", 1555);
       saveForm();
       cy.wait("@wateringress_GET");
 
       // Double check values in display form
-      cy.get("@fromDepthDisplay").contains("500");
-      cy.get("@toDepthDisplay").contains("300");
-      cy.get("@fromDepthMaslDisplay").contains("2'222");
-      cy.get("@toDepthMaslDisplay").contains("1'555");
+      cy.get("@fromDepthDisplay").contains("1");
+      cy.get("@toDepthDisplay").contains("2");
+      cy.get("@fromDepthMaslDisplay").contains("3'999");
+      cy.get("@toDepthMaslDisplay").contains("3'998");
     });
   });
 });

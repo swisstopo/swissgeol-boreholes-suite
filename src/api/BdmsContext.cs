@@ -40,6 +40,9 @@ public class BdmsContext : DbContext
         .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestFlowDirectionCodes)
         .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestKindCodes)
         .Include(b => b.BoreholeCodelists)
+        .Include(b => b.Workflow).ThenInclude(w => w.Changes)
+        .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
+        .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
         .Include(b => b.Workflows)
         .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
         .Include(b => b.Photos)
@@ -103,6 +106,14 @@ public class BdmsContext : DbContext
     public DbSet<UserWorkgroupRole> UserWorkgroupRoles { get; set; }
 
     public DbSet<Workflow> Workflows { get; set; }
+
+    public DbSet<WorkflowV2> WorkflowsV2 { get; set; }
+
+    public IQueryable<WorkflowV2> WorkflowsV2WithIncludes
+        => WorkflowsV2
+        .Include(w => w.Changes)
+        .Include(w => w.ReviewedTabs)
+        .Include(w => w.PublishedTabs);
 
     public DbSet<Workgroup> Workgroups { get; set; }
 
@@ -405,6 +416,31 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<GroundwaterLevelMeasurement>().ToTable("groundwater_level_measurement").HasBaseType<Observation>();
 
         modelBuilder.Entity<FieldMeasurement>().ToTable("field_measurement").HasBaseType<Observation>();
+
+        modelBuilder.Entity<WorkflowV2>().HasOne(w => w.Borehole).WithOne(b => b.Workflow).HasForeignKey<WorkflowV2>(w => w.BoreholeId);
+        modelBuilder.Entity<WorkflowV2>().HasOne(w => w.ReviewedTabs).WithOne().HasForeignKey<WorkflowV2>(w => w.ReviewedTabsId);
+        modelBuilder.Entity<WorkflowV2>().HasOne(w => w.PublishedTabs).WithOne().HasForeignKey<WorkflowV2>(w => w.PublishedTabsId);
+
+        modelBuilder.Entity<WorkflowChange>()
+            .HasOne(c => c.Workflow)
+            .WithMany(w => w.Changes)
+            .HasForeignKey(c => c.WorkflowId);
+
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.General).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Section).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Geometry).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Lithology).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Chronostratigraphy).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Lithostratigraphy).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Casing).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Instrumentation).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Backfill).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.WaterIngress).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Groundwater).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.FieldMeasurement).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Hydrotest).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Profile).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Photo).HasDefaultValue(false);
 
         // Configure delete behavior for all non-nullable foreign keys for Codelists.
         modelBuilder.Entity<CasingElement>()

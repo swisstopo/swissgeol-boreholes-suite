@@ -294,4 +294,21 @@ public static class SyncContextExtensions
             item.ProcessRecursive(UpdateUserAttachedItem, []);
         }
     }
+
+    /// <summary>
+    /// Clears the users assigned to the workflow and its changes.
+    /// </summary>
+    internal static void ClearAssignedUser(this WorkflowV2 workflow)
+    {
+        ArgumentNullException.ThrowIfNull(workflow);
+
+        workflow.Assignee = null;
+        workflow.AssigneeId = null;
+
+        foreach (var change in workflow.Changes)
+        {
+            change.Assignee = null;
+            change.AssigneeId = null;
+        }
+    }
 }

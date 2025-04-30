@@ -14,9 +14,9 @@ public static class BoreholeExtensions
     {
         boreholeGeometries.TryGetValue(borehole.Id, out var boreholeGeometry);
 
-        borehole.TotalDepthTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TotalDepth);
-        borehole.TopBedrockFreshTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TopBedrockFreshMd);
-        borehole.TopBedrockWeatheredTvd = boreholeGeometry.GetTVDIfGeometryExists(borehole.TopBedrockWeatheredMd);
+        borehole.TotalDepthTvd = boreholeGeometry.ConvertBoreholeDepth(borehole.TotalDepth, BoreholeGeometryExtensions.GetDepthTVD);
+        borehole.TopBedrockFreshTvd = boreholeGeometry.ConvertBoreholeDepth(borehole.TopBedrockFreshMd, BoreholeGeometryExtensions.GetDepthTVD);
+        borehole.TopBedrockWeatheredTvd = boreholeGeometry.ConvertBoreholeDepth(borehole.TopBedrockWeatheredMd, BoreholeGeometryExtensions.GetDepthTVD);
     }
 
     /// <summary>
@@ -144,6 +144,12 @@ public static class BoreholeExtensions
         // Do not import any workflows but add a new unfinished workflow for the current user.
         borehole.Workflows.Clear();
         borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
+
+        borehole.Workflow = new WorkflowV2
+        {
+            ReviewedTabs = new(),
+            PublishedTabs = new(),
+        };
 
         // Set the geometry's SRID to LV95 (EPSG:2056)
         if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;

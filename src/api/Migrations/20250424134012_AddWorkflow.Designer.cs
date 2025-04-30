@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20250424134012_AddWorkflow")]
+    partial class AddWorkflow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1550,10 +1553,6 @@ namespace BDMS.Migrations
                     b.Property<bool>("IsOpenBorehole")
                         .HasColumnType("boolean")
                         .HasColumnName("is_open_borehole");
-
-                    b.Property<int>("OriginalVerticalReferenceSystem")
-                        .HasColumnType("integer")
-                        .HasColumnName("original_vertical_reference_system");
 
                     b.Property<int?>("ReliabilityId")
                         .HasColumnType("integer")

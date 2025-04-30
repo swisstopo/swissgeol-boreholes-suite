@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20250425065508_AddVerticalReferenceSystem")]
+    partial class AddVerticalReferenceSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1866,110 +1869,6 @@ namespace BDMS.Migrations
                     b.ToTable("stratigraphy", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.TabStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("tab_status_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Backfill")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("backfill");
-
-                    b.Property<bool>("Casing")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("casing");
-
-                    b.Property<bool>("Chronostratigraphy")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("chronostratigraphy");
-
-                    b.Property<bool>("FieldMeasurement")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("field_measurement");
-
-                    b.Property<bool>("General")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("general");
-
-                    b.Property<bool>("Geometry")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("geometry");
-
-                    b.Property<bool>("Groundwater")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("groundwater");
-
-                    b.Property<bool>("Hydrotest")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("hydrotest");
-
-                    b.Property<bool>("Instrumentation")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("instrumentation");
-
-                    b.Property<bool>("Lithology")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("lithology");
-
-                    b.Property<bool>("Lithostratigraphy")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("lithostratigraphy");
-
-                    b.Property<bool>("Photo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("photo");
-
-                    b.Property<bool>("Profile")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("profile");
-
-                    b.Property<bool>("Section")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("section");
-
-                    b.Property<bool>("WaterIngress")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("water_ingress");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("tab_status", "bdms");
-                });
-
             modelBuilder.Entity("BDMS.Models.Term", b =>
                 {
                     b.Property<int>("Id")
@@ -2154,104 +2053,6 @@ namespace BDMS.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("workflow", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.WorkflowChange", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("workflow_change_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AssigneeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("assignee_id");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("comment");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<int>("FromStatus")
-                        .HasColumnType("integer")
-                        .HasColumnName("from_status");
-
-                    b.Property<int>("ToStatus")
-                        .HasColumnType("integer")
-                        .HasColumnName("to_status");
-
-                    b.Property<int>("WorkflowId")
-                        .HasColumnType("integer")
-                        .HasColumnName("workflow_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssigneeId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("WorkflowId");
-
-                    b.ToTable("workflow_change", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.WorkflowV2", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("workflow_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AssigneeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("assignee_id");
-
-                    b.Property<int>("BoreholeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("borehole_id");
-
-                    b.Property<bool>("HasRequestedChanges")
-                        .HasColumnType("boolean")
-                        .HasColumnName("has_requested_changes");
-
-                    b.Property<int>("PublishedTabsId")
-                        .HasColumnType("integer")
-                        .HasColumnName("published_tabs_id");
-
-                    b.Property<int>("ReviewedTabsId")
-                        .HasColumnType("integer")
-                        .HasColumnName("reviewed_tabs_id");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssigneeId");
-
-                    b.HasIndex("BoreholeId")
-                        .IsUnique();
-
-                    b.HasIndex("PublishedTabsId")
-                        .IsUnique();
-
-                    b.HasIndex("ReviewedTabsId")
-                        .IsUnique();
-
-                    b.ToTable("workflow_v2", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Workgroup", b =>
@@ -3388,62 +3189,6 @@ namespace BDMS.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BDMS.Models.WorkflowChange", b =>
-                {
-                    b.HasOne("BDMS.Models.User", "Assignee")
-                        .WithMany()
-                        .HasForeignKey("AssigneeId");
-
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.WorkflowV2", "Workflow")
-                        .WithMany("Changes")
-                        .HasForeignKey("WorkflowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Assignee");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Workflow");
-                });
-
-            modelBuilder.Entity("BDMS.Models.WorkflowV2", b =>
-                {
-                    b.HasOne("BDMS.Models.User", "Assignee")
-                        .WithMany()
-                        .HasForeignKey("AssigneeId");
-
-                    b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithOne("Workflow")
-                        .HasForeignKey("BDMS.Models.WorkflowV2", "BoreholeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.TabStatus", "PublishedTabs")
-                        .WithOne()
-                        .HasForeignKey("BDMS.Models.WorkflowV2", "PublishedTabsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.TabStatus", "ReviewedTabs")
-                        .WithOne()
-                        .HasForeignKey("BDMS.Models.WorkflowV2", "ReviewedTabsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Assignee");
-
-                    b.Navigation("Borehole");
-
-                    b.Navigation("PublishedTabs");
-
-                    b.Navigation("ReviewedTabs");
-                });
-
             modelBuilder.Entity("BDMS.Models.FieldMeasurement", b =>
                 {
                     b.HasOne("BDMS.Models.Observation", null)
@@ -3519,9 +3264,6 @@ namespace BDMS.Migrations
                     b.Navigation("Sections");
 
                     b.Navigation("Stratigraphies");
-
-                    b.Navigation("Workflow")
-                        .IsRequired();
 
                     b.Navigation("Workflows");
                 });
@@ -3612,11 +3354,6 @@ namespace BDMS.Migrations
                     b.Navigation("TermsAccepted");
 
                     b.Navigation("WorkgroupRoles");
-                });
-
-            modelBuilder.Entity("BDMS.Models.WorkflowV2", b =>
-                {
-                    b.Navigation("Changes");
                 });
 
             modelBuilder.Entity("BDMS.Models.Workgroup", b =>
