@@ -290,6 +290,13 @@ export const startBoreholeEditing = () => {
 
 export const stopBoreholeEditing = () => {
   stopEditing();
+
+  cy.get("body").then($body => {
+    if ($body.find('[data-cy="prompt"]').length) {
+      cy.get('[data-cy="prompt"]').find(`[data-cy="discardchanges-button"]`).click();
+    }
+  });
+
   cy.wait("@edit_unlock");
 };
 

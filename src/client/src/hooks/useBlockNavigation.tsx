@@ -22,6 +22,7 @@ export const useBlockNavigation = () => {
       promptShownRef.current = true;
       showPrompt(t("messageDiscardUnsavedChanges"), [
         {
+          dataCy: "cancel-button",
           label: t("cancel"),
           icon: <X />,
           variant: "outlined",
@@ -33,6 +34,7 @@ export const useBlockNavigation = () => {
           },
         },
         {
+          dataCy: "discardchanges-button",
           label: t("discardchanges"),
           icon: <Trash2 />,
           variant: "contained",

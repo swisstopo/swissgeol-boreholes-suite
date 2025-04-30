@@ -63,11 +63,13 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
   const stopEditingWithUnsavedChanges = () => {
     showPrompt(t("messageDiscardUnsavedChanges"), [
       {
+        dataCy: "cancel-button",
         label: t("cancel"),
         icon: <X />,
         variant: "outlined",
       },
       {
+        dataCy: "discardchanges-button",
         label: t("discardchanges"),
         icon: <Trash2 />,
         variant: "contained",

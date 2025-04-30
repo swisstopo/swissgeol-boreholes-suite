@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 export interface PromptAction {
+  dataCy?: string;
   label: string;
   disabled?: boolean;
   action?: () => void;

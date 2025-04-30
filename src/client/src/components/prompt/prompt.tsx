@@ -25,6 +25,7 @@ export const Prompt = () => {
         <Stack direction="row" spacing={2}>
           {actions?.map((action, index) => (
             <BoreholesButton
+              dataCy={action.dataCy}
               label={action.label}
               key={index}
               onClick={() => {
