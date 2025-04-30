@@ -6,12 +6,13 @@ import { WorkflowTabs } from "./workflowTabs.tsx";
 export const WorkflowView = () => {
   return (
     <Stack gap={1.5} direction="row">
-      <Stack gap={1.5} sx={{ flexShrink: 0 }}>
-        <WorkflowStatusCard />
-        <WorkflowAssignedUserCard />
-      </Stack>
-      <Box sx={{ flexGrow: 0 }} width={"100%"}>
-        <WorkflowTabs />
+        <Stack gap={1.5} sx={{ flexShrink: 0 }}>
+          <WorkflowStatusCard />
+          <WorkflowAssignedUserCard />
+        </Stack>
+        <Box sx={{ flexGrow: 0 }} width={"100%"}>
+          <WorkflowTabs />
+        </Box>
       </Box>
     </Stack>
   );
