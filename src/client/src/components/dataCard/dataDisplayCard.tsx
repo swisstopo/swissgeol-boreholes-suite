@@ -20,7 +20,7 @@ export const DataDisplayCard = <T extends DataCardEntity>({ item, deleteData, ch
   const { selectedCard, selectCard, triggerReload } = useContext(DataCardContext);
   const { switchToCard } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
-  const { editingEnabled } = useContext(DetailContext);
+  const { reloadBorehole, editingEnabled } = useContext(DetailContext);
 
   return (
     <>
@@ -42,6 +42,7 @@ export const DataDisplayCard = <T extends DataCardEntity>({ item, deleteData, ch
                     if (item?.id) {
                       deleteData(item.id).then(() => {
                         triggerReload();
+                        reloadBorehole();
                       });
                     }
                   },

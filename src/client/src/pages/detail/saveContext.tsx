@@ -1,19 +1,31 @@
-import { createContext, FC, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLocation } from "react-router-dom";
+import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 
 export interface SaveContextProps {
   showSaveBar: boolean;
   showSaveFeedback: boolean;
   hasChanges: boolean;
   markAsChanged: (hasChanges: boolean) => void;
-  registerSaveHandler: (handler: SaveContextHandler) => void;
+  registerSaveHandler: (handler: SaveHandler) => void;
   triggerSave: () => void;
-  registerResetHandler: (handler: SaveContextHandler) => void;
+  registerResetHandler: (handler: ResetHandler) => void;
   triggerReset: () => void;
   unMount: () => void;
 }
 
-type SaveContextHandler = () => void;
+type SaveHandler = () => Promise<void>;
+type ResetHandler = () => void;
 
 export const SaveContext = createContext<SaveContextProps>({
   showSaveBar: false,
@@ -29,11 +41,12 @@ export const SaveContext = createContext<SaveContextProps>({
 
 export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
   const location = useLocation();
+  const { reloadBorehole } = useContext<DetailContextProps>(DetailContext);
 
   const [hasChanges, setHasChanges] = useState(false);
   const [showSaveFeedback, setShowSaveFeedback] = useState(false);
-  const saveHandlerRef = useRef<SaveContextHandler | null>(null);
-  const resetHandlerRef = useRef<SaveContextHandler | null>(null);
+  const saveHandlerRef = useRef<SaveHandler | null>(null);
+  const resetHandlerRef = useRef<ResetHandler | null>(null);
   const [hasSaveHandler, setHasSaveHandler] = useState(false);
   const [hasResetHandler, setHasResetHandler] = useState(false);
 
@@ -45,7 +58,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     setHasChanges(hasChanged);
   }, []);
 
-  const registerSaveHandler = useCallback((handler: SaveContextHandler) => {
+  const registerSaveHandler = useCallback((handler: SaveHandler) => {
     saveHandlerRef.current = handler;
     setHasSaveHandler(true);
   }, []);
@@ -53,13 +66,14 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
   const triggerSave = useCallback(async () => {
     if (saveHandlerRef.current) {
       setShowSaveFeedback(true);
-      saveHandlerRef.current();
+      await saveHandlerRef.current();
+      reloadBorehole();
       setTimeout(() => setShowSaveFeedback(false), 4000);
       setHasChanges(false);
     }
-  }, [setShowSaveFeedback]);
+  }, [reloadBorehole]);
 
-  const registerResetHandler = useCallback((handler: SaveContextHandler) => {
+  const registerResetHandler = useCallback((handler: ResetHandler) => {
     resetHandlerRef.current = handler;
     setHasResetHandler(true);
   }, []);

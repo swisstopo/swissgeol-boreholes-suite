@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Typography } from "@mui/material";
@@ -23,24 +23,53 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const { t } = useTranslation();
   const auth = useAuth();
   const navigate = useNavigate();
-  const hasStratigraphy = (borehole.stratigraphies?.length ?? 0) > 0;
-  const hasLithology = borehole.stratigraphies?.some(s => s.layers?.length > 0) ?? false;
-  const hasChronoStratigraphy = borehole.stratigraphies?.some(s => s.chronostratigraphyLayers?.length > 0) ?? false;
-  const hasLithoStratigraphy = borehole.stratigraphies?.some(s => s.lithostratigraphyLayers?.length > 0) ?? false;
-  const hasCompletion = (borehole.completions?.length ?? 0) > 0;
-  const hasObservation = (borehole.observations?.length ?? 0) > 0;
-  const hasWaterIngress =
-    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.waterIngress) ?? false);
-  const hasGroundwaterLevelMeasurement =
-    hasObservation &&
-    (borehole.observations?.some(obs => obs.type === ObservationType.groundwaterLevelMeasurement) ?? false);
-  const hasHydroTest =
-    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.hydrotest) ?? false);
-  const hasFieldMeasurement =
-    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.fieldMeasurement) ?? false);
-  const hasBoreholeFiles = (borehole.boreholeFiles?.length ?? 0) > 0;
-  const hasPhotos = (borehole.photos?.length ?? 0) > 0;
-  const hasAttachments = hasBoreholeFiles || hasPhotos;
+
+  const {
+    hasStratigraphy,
+    hasLithology,
+    hasChronoStratigraphy,
+    hasLithoStratigraphy,
+    hasCompletion,
+    hasObservation,
+    hasWaterIngress,
+    hasGroundwaterLevelMeasurement,
+    hasHydroTest,
+    hasFieldMeasurement,
+    hasAttachments,
+  } = useMemo(() => {
+    const hasStratigraphy = (borehole.stratigraphies?.length ?? 0) > 0;
+    const hasLithology = borehole.stratigraphies?.some(s => s.layers?.length > 0) ?? false;
+    const hasChronoStratigraphy = borehole.stratigraphies?.some(s => s.chronostratigraphyLayers?.length > 0) ?? false;
+    const hasLithoStratigraphy = borehole.stratigraphies?.some(s => s.lithostratigraphyLayers?.length > 0) ?? false;
+    const hasCompletion = (borehole.completions?.length ?? 0) > 0;
+    const hasObservation = (borehole.observations?.length ?? 0) > 0;
+    const hasWaterIngress =
+      hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.waterIngress) ?? false);
+    const hasGroundwaterLevelMeasurement =
+      hasObservation &&
+      (borehole.observations?.some(obs => obs.type === ObservationType.groundwaterLevelMeasurement) ?? false);
+    const hasHydroTest =
+      hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.hydrotest) ?? false);
+    const hasFieldMeasurement =
+      hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.fieldMeasurement) ?? false);
+    const hasBoreholeFiles = (borehole.boreholeFiles?.length ?? 0) > 0;
+    const hasPhotos = (borehole.photos?.length ?? 0) > 0;
+    const hasAttachments = hasBoreholeFiles || hasPhotos;
+
+    return {
+      hasStratigraphy,
+      hasLithology,
+      hasChronoStratigraphy,
+      hasLithoStratigraphy,
+      hasCompletion,
+      hasObservation,
+      hasWaterIngress,
+      hasGroundwaterLevelMeasurement,
+      hasHydroTest,
+      hasFieldMeasurement,
+      hasAttachments,
+    };
+  }, [borehole]);
 
   useEffect(() => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));

@@ -4,16 +4,13 @@ import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
 import { getBoreholeById, updateBorehole } from "../../../api/borehole.ts";
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
-import { DetailContext, DetailContextProps } from "../detailContext.tsx";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
-import { SaveContext, SaveContextProps } from "../saveContext.tsx";
+import { SaveContext } from "../saveContext.tsx";
 
 interface BaseFormProps<T extends FieldValues> {
   boreholeId: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  formMethods: UseFormReturn<T, any, T>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  prepareDataForSubmit: (data: T) => Record<string, any>;
+  formMethods: UseFormReturn<T>;
+  prepareDataForSubmit: (data: T) => Record<string, unknown>;
   onReset?: () => void;
   children: ReactNode;
 }
@@ -25,29 +22,27 @@ export const BaseForm = <T extends FieldValues>({
   onReset,
   children,
 }: BaseFormProps<T>) => {
-  const { markAsChanged, registerSaveHandler, registerResetHandler, unMount } =
-    useContext<SaveContextProps>(SaveContext);
+  const { markAsChanged, registerSaveHandler, registerResetHandler, unMount } = useContext(SaveContext);
   const { setExtractionObject } = useLabelingContext();
-  const { setBorehole } = useContext<DetailContextProps>(DetailContext);
   const { getValues, reset, formState } = formMethods;
   useBlockNavigation();
 
   const onSubmit = useCallback(
-    (formInputs: T) => {
-      getBoreholeById(boreholeId).then(currentBorehole => {
-        updateBorehole({ ...currentBorehole, ...prepareDataForSubmit(formInputs) }).then(updatedBorehole => {
-          setBorehole(updatedBorehole);
-        });
+    async (formInputs: T) => {
+      const currentBorehole = await getBoreholeById(boreholeId);
+      await updateBorehole({
+        ...currentBorehole,
+        ...prepareDataForSubmit(formInputs),
       });
     },
-    [boreholeId, prepareDataForSubmit, setBorehole],
+    [boreholeId, prepareDataForSubmit],
   );
 
-  const resetAndSubmitForm = useCallback(() => {
+  const resetAndSubmitForm = useCallback(async () => {
     const currentValues = getValues();
     reset(currentValues);
     setExtractionObject(undefined);
-    onSubmit(currentValues);
+    await onSubmit(currentValues);
   }, [getValues, onSubmit, reset, setExtractionObject]);
 
   const resetWithoutSave = useCallback(() => {

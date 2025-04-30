@@ -3,6 +3,7 @@ import { FieldValues, FormProvider, SubmitHandler, useForm } from "react-hook-fo
 import { DevTool } from "../../../hookformDevtools";
 import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../hooks/useSaveOnCtrlS";
+import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { SaveContext } from "../../pages/detail/saveContext.tsx";
 import { FormContainer } from "../form/form";
 import { useValidateFormOnMount } from "../form/useValidateFormOnMount.tsx";
@@ -29,6 +30,7 @@ export const DataInputCard = <T extends FieldValues>({
 }: DataInputCardProps<T>) => {
   const { triggerReload } = useContext(DataCardContext);
   const { markAsChanged } = useContext(SaveContext);
+  const { reloadBorehole } = useContext(DetailContext);
   useBlockNavigation();
   const formMethods = useForm<T>({ mode: "all" });
   const { formState, handleSubmit, control } = formMethods;
@@ -40,6 +42,7 @@ export const DataInputCard = <T extends FieldValues>({
         ...data,
       }).then(() => {
         triggerReload();
+        reloadBorehole();
       });
     } else {
       updateData({
