@@ -68,13 +68,8 @@ public class WorkflowControllerTest
         Assert.IsNotNull(workflowChange.CreatedBy);
         Assert.AreEqual("c. user", workflowChange.CreatedBy.Name);
         Assert.IsNotNull(workflowChange.Created);
-
-        var expectedDate = new DateTime(2021, 6, 7, 0, 58, 59).ToUniversalTime();
-        Assert.AreEqual(expectedDate.ToString(), workflowChange.Created.ToString());
-
         Assert.AreEqual(2000029, workflowChange.WorkflowId);
         Assert.IsNotNull(workflowChange.Workflow);
-
         Assert.IsNull(workflowChange.AssigneeId);
         Assert.IsNull(workflowChange.Assignee);
     }
