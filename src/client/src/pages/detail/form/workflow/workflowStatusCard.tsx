@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import {
   Box,
+  Button,
   Stack,
   Step,
   StepConnector,
@@ -12,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { StepIconProps } from "@mui/material/StepIcon";
+import { ChevronRight } from "lucide-react";
 import { theme } from "../../../../AppTheme.ts";
 import { WorkflowCard } from "./styledWorkflowComponents.tsx";
 import { useWorkflow, WorkflowStatus } from "./workflow.ts";
@@ -55,35 +57,44 @@ export const WorkflowStatusCard = () => {
 
   return (
     <WorkflowCard>
-      <Typography mb={1.5} variant="h5">
-        {t("status")}
-      </Typography>
-      <Stepper activeStep={activeStep} orientation="vertical" connector={<CustomConnector />}>
-        {steps.map((label, index) => {
-          const isActive = index === activeStep;
-          return (
-            <Step key={label}>
-              <Box
-                sx={{
-                  px: 1.5,
-                  py: isActive ? 0.5 : 0,
-                  mb: isActive ? 1 : 0,
-                  borderRadius: 0.5,
-                  backgroundColor: isActive ? theme.palette.background.grey : "transparent",
-                  border: `1px solid ${isActive ? theme.palette.border.light : "#transparent"}`,
-                }}>
-                <StepLabel slots={{ stepIcon: StepIcon }}>
-                  <Typography
-                    variant={isActive ? "h5" : "body1"}
-                    color={isActive ? theme.palette.primary.main : theme.palette.action.disabled}>
-                    {t(`statuses.${label}`)}
-                  </Typography>
-                </StepLabel>
-              </Box>
-            </Step>
-          );
-        })}
-      </Stepper>
+      <Stack gap={1.5}>
+        <Typography variant="h5">{t("status")}</Typography>
+        <Stepper activeStep={activeStep} orientation="vertical" connector={<CustomConnector />}>
+          {steps.map((label, index) => {
+            const isActive = index === activeStep;
+            return (
+              <Step key={label}>
+                <Box
+                  sx={{
+                    px: 1.5,
+                    py: isActive ? 0.5 : 0,
+                    mb: isActive ? 1 : 0,
+                    borderRadius: 0.5,
+                    backgroundColor: isActive ? theme.palette.background.grey : "transparent",
+                    border: `1px solid ${isActive ? theme.palette.border.light : "#transparent"}`,
+                  }}>
+                  <StepLabel slots={{ stepIcon: StepIcon }}>
+                    <Typography
+                      variant={isActive ? "h5" : "body1"}
+                      color={isActive ? theme.palette.primary.main : theme.palette.action.disabled}>
+                      {t(`statuses.${label}`)}
+                    </Typography>
+                  </StepLabel>
+                </Box>
+              </Step>
+            );
+          })}
+        </Stepper>
+        <Button
+          variant="contained"
+          data-cy={"request-review-button"}
+          endIcon={<ChevronRight />}
+          onClick={() => {
+            console.log("Request review");
+          }}>
+          {t("requestReview")}
+        </Button>
+      </Stack>
     </WorkflowCard>
   );
 };
