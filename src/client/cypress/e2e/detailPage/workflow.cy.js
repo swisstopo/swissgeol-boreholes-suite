@@ -1,13 +1,24 @@
-import { goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
+import { getElementByDataCy, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("Tests the publication workflow.", () => {
   it("Displays DEV workflow when feature flag is set", () => {
-    goToRouteAndAcceptTerms(`/1000908/status`);
+    goToRouteAndAcceptTerms(`/1000036/status`);
     // displays legacy workflow form by default
     cy.contains("h4", "Publication workflow").should("exist");
-    goToRouteAndAcceptTerms(`/1000908/status?dev=true`);
+    goToRouteAndAcceptTerms(`/1000036/status?dev=true`);
     cy.contains("h4", "Publication workflow").should("not.exist");
-    cy.contains("p", "Status").should("exist");
-    cy.contains("p", "Assigned Person").should("exist");
+    cy.contains("h5", "Status").should("exist");
+    cy.contains("h5", "Assigned Person").should("exist");
+    getElementByDataCy("workflow-history-entry-15000183").should("contain", "Editor User");
+    getElementByDataCy("workflow-history-entry-15000183").should("contain", "16. Nov. 2021");
+    getElementByDataCy("workflow-history-entry-15000183").should(
+      "contain",
+      "Changed status from Published to Reviewed",
+    );
+    getElementByDataCy("workflow-history-entry-15000112").should("contain", "Borehole assigned to Editor User");
+    getElementByDataCy("workflow-history-entry-15000112").should(
+      "contain",
+      "Rerum repudiandae nihil accusamus sed omnis tempore laboriosam eaque est.",
+    );
   });
 });

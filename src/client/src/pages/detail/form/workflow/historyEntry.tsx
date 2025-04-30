@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
@@ -8,14 +8,14 @@ import { WorkflowChange } from "./workflow.ts";
 export const HistoryEntry: FC<{ workflowChange: WorkflowChange }> = ({ workflowChange }) => {
   const { t } = useTranslation();
 
-  const DescriptionText = ({ children }: { children: React.ReactNode }) => (
+  const DescriptionText = ({ children }: { children: ReactNode }) => (
     <Typography variant="h6" color={theme.palette.tertiary.main} fontWeight={400}>
       {children}
     </Typography>
   );
 
   return (
-    <Stack>
+    <Stack data-cy={`workflow-history-entry-${workflowChange.id}`}>
       <Stack direction="row" spacing={0.5} alignItems={"baseline"}>
         <Box
           sx={{
