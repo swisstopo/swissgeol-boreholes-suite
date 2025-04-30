@@ -52,8 +52,8 @@ public class WorkflowControllerTest
         Assert.IsNull(workflow.Assignee);
         Assert.AreEqual(3000058, workflow.ReviewedTabsId);
         Assert.AreEqual(3000059, workflow.PublishedTabsId);
-        Assert.IsNull(workflow.ReviewedTabs);
-        Assert.IsNull(workflow.PublishedTabs);
+        Assert.IsNotNull(workflow.ReviewedTabs);
+        Assert.IsNotNull(workflow.PublishedTabs);
         Assert.IsFalse(workflow.HasRequestedChanges);
         Assert.IsNotNull(workflow.Changes);
         Assert.AreEqual(3, workflow.Changes.Count);
@@ -65,8 +65,8 @@ public class WorkflowControllerTest
         Assert.AreEqual(WorkflowStatus.Published, workflowChange.ToStatus);
         Assert.AreEqual("Voluptates natus nemo saepe odit ea quaerat.", workflowChange.Comment);
         Assert.AreEqual(3, workflowChange.CreatedById);
-        Assert.IsNull(workflowChange.CreatedBy);
-
+        Assert.IsNotNull(workflowChange.CreatedBy);
+        Assert.AreEqual("c. user", workflowChange.CreatedBy.Name);
         Assert.IsNotNull(workflowChange.Created);
 
         var expectedDate = new DateTime(2021, 6, 7, 0, 58, 59).ToUniversalTime();
