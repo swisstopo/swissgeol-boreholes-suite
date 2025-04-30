@@ -6,7 +6,7 @@ import { PromptContext } from "../components/prompt/promptContext.tsx";
 import { SaveContext, SaveContextProps } from "../pages/detail/saveContext.tsx";
 
 export const useBlockNavigation = () => {
-    const { hasChanges } = useContext<SaveContextProps>(SaveContext);
+  const { hasChanges } = useContext<SaveContextProps>(SaveContext);
   const { showPrompt } = useContext(PromptContext);
   const { t } = useTranslation();
   const promptShownRef = useRef(false);
@@ -45,5 +45,5 @@ export const useBlockNavigation = () => {
         },
       ]);
     }
-  }, [blocker, isFormDirty, showPrompt, t]);
+  }, [blocker, hasChanges, showPrompt, t]);
 };

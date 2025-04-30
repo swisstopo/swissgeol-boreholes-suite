@@ -1,6 +1,5 @@
 import { ReactNode, useCallback, useContext, useEffect } from "react";
 import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
-import { useHistory } from "react-router-dom";
 import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
 import { getBoreholeById, updateBorehole } from "../../../api/borehole.ts";
@@ -29,10 +28,9 @@ export const BaseForm = <T extends FieldValues>({
   const { markAsChanged, registerSaveHandler, registerResetHandler, unMount } =
     useContext<SaveContextProps>(SaveContext);
   const { setExtractionObject } = useLabelingContext();
-  const { handleBlockedNavigation } = useBlockNavigation();
-  const history = useHistory();
   const { setBorehole } = useContext<DetailContextProps>(DetailContext);
   const { getValues, reset, formState } = formMethods;
+  useBlockNavigation();
 
   const onSubmit = useCallback(
     (formInputs: T) => {
@@ -62,24 +60,10 @@ export const BaseForm = <T extends FieldValues>({
     registerSaveHandler(resetAndSubmitForm);
     registerResetHandler(resetWithoutSave);
 
-    const unblock = history.block(nextLocation => {
-      if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
-        return false;
-      }
-    });
     return () => {
-      unblock();
       unMount();
     };
-  }, [
-    registerResetHandler,
-    registerSaveHandler,
-    resetAndSubmitForm,
-    resetWithoutSave,
-    unMount,
-    history,
-    handleBlockedNavigation,
-  ]);
+  }, [registerResetHandler, registerSaveHandler, resetAndSubmitForm, resetWithoutSave, unMount]);
 
   useEffect(() => {
     markAsChanged(Object.keys(formState.dirtyFields).length > 0);
