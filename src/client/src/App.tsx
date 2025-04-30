@@ -36,9 +36,9 @@ const router = createBrowserRouter([
     element: (
       <LabelingProvider>
         <DetailProvider>
-            <SaveProvider>
-                <DetailPage />
-            </SaveProvider>
+          <SaveProvider>
+            <DetailPage />
+          </SaveProvider>
         </DetailProvider>
       </LabelingProvider>
     ),
