@@ -4,11 +4,11 @@
 -- the public view of the database.
 -- =============================================================================
 
--- Insert default workgroup 'Default'
+-- Insert default workgroup using a random workgroup name in order to not to interfere
+-- with possible existing workgroup names due to the unique constraint on name_wgp.
 INSERT INTO bdms.workgroups(id_wgp, name_wgp)
-VALUES (1, 'Default')
-ON CONFLICT (id_wgp)
-DO UPDATE SET name_wgp = EXCLUDED.name_wgp;
+VALUES (1, 'DEFAULT_VIEW')
+ON CONFLICT (id_wgp) DO UPDATE SET name_wgp = EXCLUDED.name_wgp;
 
 -- Update existing boreholes to default workgroup
 UPDATE bdms.borehole SET id_wgp_fk = 1 WHERE id_wgp_fk <> 1;
@@ -21,7 +21,7 @@ VALUES (false, 'Anonymous', 'Anonymous', 'Anonymous', 'sub_anonymous');
 INSERT INTO bdms.users_roles(id_usr_fk, id_rol_fk, id_wgp_fk)
 VALUES ((SELECT id_usr FROM bdms.users WHERE subject_id = 'sub_anonymous'),
         (SELECT id_rol FROM bdms.roles WHERE name_rol = 'VIEW'),
-        (SELECT id_wgp FROM bdms.workgroups WHERE name_wgp = 'Default'));
+        (SELECT id_wgp FROM bdms.workgroups WHERE name_wgp = 'DEFAULT_VIEW'));
 
 -- Set default settings for anonymous user (e.g. "Maps displayed")
 UPDATE bdms.users
