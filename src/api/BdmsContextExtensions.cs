@@ -1100,6 +1100,7 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.facies_description', 'id_fac'), {faciesDescription_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.tab_status', 'tab_status_id'), {tabStatus_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_v2', 'workflow_id'), {workflowV2_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_change', 'workflow_change_id'), {workflowChange_ids - 1})");
     }
 }
 #pragma warning restore CA1505
