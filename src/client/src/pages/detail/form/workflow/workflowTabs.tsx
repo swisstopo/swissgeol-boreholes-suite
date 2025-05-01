@@ -6,6 +6,7 @@ import { theme } from "../../../../AppTheme.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { Tab } from "../../../../components/tabs/tabPanel.tsx";
 import { WorkflowHistory } from "./workflowHistory.tsx";
+import { WorkflowReview } from "./workflowReview.tsx";
 
 export const WorkflowTabs = () => {
   const history = useHistory();
@@ -23,7 +24,7 @@ export const WorkflowTabs = () => {
       {
         label: t("review"),
         hash: "review",
-        component: <Box />,
+        component: <WorkflowReview />,
       },
       {
         label: t("publication"),

@@ -31,7 +31,7 @@ const CompletionContent = ({ completion, editingEnabled }) => {
       hasContent: casings.length > 0,
     },
     {
-      label: t("instrument"),
+      label: t("instrumentation"),
       hash: "instrumentation",
       hasContent: instrumentation.length > 0,
     },

@@ -63,7 +63,7 @@ const themePalette: AppThemePalette = {
   background: {
     default: "#ffffff",
     lightgrey: "#F8F9FA",
-    grey: "#F1F3F5",
+    grey: "#F0F4F7",
     darkgrey: "#787878",
     dark: "rgba(0, 0, 0, 0.5)",
     menuItemActive: "#A65462",
@@ -564,6 +564,7 @@ export const theme = createTheme({
           paddingLeft: "3px",
           flex: 1,
           fontSize: "13px",
+          height: "44px",
         },
       },
     },
