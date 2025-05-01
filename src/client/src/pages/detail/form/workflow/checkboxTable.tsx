@@ -1,6 +1,5 @@
-import { Fragment } from "react";
+import { FC, Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import {
   Checkbox,
   FormControlLabel,
@@ -15,7 +14,7 @@ import {
 } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
 import { capitalizeFirstLetter } from "../../../../utils.ts";
-import { TabStatus, useWorkflow } from "./workflow.ts";
+import { TabStatus } from "./workflow.ts";
 
 const tableStructure = [
   {
@@ -40,10 +39,9 @@ const tableStructure = [
   },
 ];
 
-export const WorkflowReview = () => {
-  const { id: boreholeId } = useParams<{ id: string }>();
-  const { data: workflow } = useWorkflow(parseInt(boreholeId));
+export const CheckboxTable: FC<{ tabStatus?: TabStatus; checkAllTitle: string }> = ({ tabStatus, checkAllTitle }) => {
   const { t } = useTranslation();
+  if (!tabStatus) return;
 
   const cellBorderStyle = { borderBottom: `1px solid ${theme.palette.border.darker}` };
 
@@ -59,7 +57,7 @@ export const WorkflowReview = () => {
             <TableCell sx={{ py: 1.5, px: 2, fontWeight: "bold" }}>{"Tab"}</TableCell>
             <TableCell align="left">
               <FormControlLabel
-                label={<Typography fontWeight="bold">{t("reviewed")}</Typography>}
+                label={<Typography fontWeight="bold">{t(`statuses.${checkAllTitle}`)}</Typography>}
                 control={<Checkbox disabled />}
               />
             </TableCell>
@@ -85,11 +83,7 @@ export const WorkflowReview = () => {
                     </Typography>
                   </TableCell>
                   <TableCell sx={cellBorderStyle}>
-                    <Checkbox
-                      sx={{ p: 0 }}
-                      checked={workflow?.reviewedTabs[field as keyof TabStatus] as boolean}
-                      disabled
-                    />
+                    <Checkbox sx={{ p: 0 }} checked={tabStatus[field as keyof TabStatus] as boolean} disabled />
                   </TableCell>
                 </TableRow>
               ))}
