@@ -18,6 +18,8 @@ DELETE FROM bdms.workgroups WHERE id_wgp <> 1;
 INSERT INTO bdms.users(admin_usr, username, firstname, lastname, subject_id)
 VALUES (false, 'Anonymous', 'Anonymous', 'Anonymous', 'sub_anonymous');
 
+-- Setup VIEW permissions for anonymous user in the default workgroup and purge all other permissions.
+DELETE FROM bdms.users_roles WHERE true;
 INSERT INTO bdms.users_roles(id_usr_fk, id_rol_fk, id_wgp_fk)
 VALUES ((SELECT id_usr FROM bdms.users WHERE subject_id = 'sub_anonymous'),
         (SELECT id_rol FROM bdms.roles WHERE name_rol = 'VIEW'),
