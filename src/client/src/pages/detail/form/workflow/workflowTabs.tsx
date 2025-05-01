@@ -27,12 +27,12 @@ export const WorkflowTabs = () => {
       {
         label: t("review"),
         hash: "review",
-        component: <CheckboxTable tabStatus={workflow?.publishedTabs} checkAllTitle={"Published"} />,
+        component: <CheckboxTable tabStatus={workflow?.reviewedTabs} checkAllTitle={"Reviewed"} />,
       },
       {
         label: t("publication"),
         hash: "publication",
-        component: <CheckboxTable tabStatus={workflow?.reviewedTabs} checkAllTitle={"Reviewed"} />,
+        component: <CheckboxTable tabStatus={workflow?.publishedTabs} checkAllTitle={"Published"} />,
       },
     ],
     [t, workflow?.publishedTabs, workflow?.reviewedTabs],
