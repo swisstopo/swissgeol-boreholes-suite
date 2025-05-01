@@ -38,8 +38,9 @@ describe("Tests for 'Location' edit page.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole();
 
-    // enter original name
-    originalNameInput().type("AAA_SCATORPS");
+    // enter original name and make sure it was copied to alternate name
+    originalNameInput().type("AAA_SCATORPS", { delay: 100 });
+    evaluateInput("name", "AAA_SCATORPS");
 
     // save borehole
     saveWithSaveBar();
@@ -72,7 +73,7 @@ describe("Tests for 'Location' edit page.", () => {
 
       startBoreholeEditing();
       // changing original name should also change alternate name
-      setInput("originalName", "PHOTOCAT");
+      originalNameInput().clear().type("PHOTOCAT", { delay: 100 });
       evaluateInput("originalName", "PHOTOCAT");
       evaluateInput("name", "PHOTOCAT");
 
@@ -82,7 +83,7 @@ describe("Tests for 'Location' edit page.", () => {
       evaluateInput("name", "PHOTOMOUSE");
 
       // changing original name should not update alternate name if they are different
-      setInput("originalName", "PHOTOPIGEON");
+      originalNameInput().clear().type("PHOTOPIGEON", { delay: 100 });
       evaluateInput("originalName", "PHOTOPIGEON");
       evaluateInput("name", "PHOTOMOUSE");
 
@@ -189,7 +190,7 @@ describe("Tests for 'Location' edit page.", () => {
     });
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
 
-    originalNameInput().type("FELIX_THE_RACOON");
+    originalNameInput().type("FELIX_THE_RACOON", { delay: 100 });
     stopEditing();
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.get('[data-cy="editingstop-button"]').should("exist");
@@ -198,7 +199,7 @@ describe("Tests for 'Location' edit page.", () => {
     cy.get('[data-cy="editingstop-button"]').should("not.exist");
 
     startBoreholeEditing();
-    originalNameInput().type("FELIX_THE_BROOM");
+    originalNameInput().clear().type("FELIX_THE_BROOM", { delay: 100 });
 
     cy.get('[data-cy="borehole-menu-item"]').click();
     handlePrompt(messageUnsavedChanges, "cancel");
@@ -216,7 +217,8 @@ describe("Tests for 'Location' edit page.", () => {
   it("adds edits and deletes borehole identifiers", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    originalNameInput().type("AAA_FELIX_THE_PANDA");
+    originalNameInput().type("AAA_FELIX_THE_PANDA", { delay: 100 });
+    evaluateInput("name", "AAA_FELIX_THE_PANDA");
 
     function saveFormAndReturnToOverview() {
       saveWithSaveBar();
