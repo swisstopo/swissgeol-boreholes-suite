@@ -1,0 +1,22 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "source-db",
+      "Group": "Servers",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "bdms",
+      "Username": "SPAWNPLOW",
+      "PassFile": "/tmp/.pgpass"
+    },
+    "2": {
+      "Name": "target-db",
+      "Group": "Servers",
+      "Host": "target-db",
+      "Port": 5432,
+      "MaintenanceDB": "ANGRYFELONY",
+      "Username": "SLICKERMONTANA",
+      "PassFile": "/tmp/.pgpass"
+    }
+  }
+}
