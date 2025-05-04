@@ -1,9 +1,10 @@
 import { FC } from "react";
 import DataInputCard from "../../../../../components/dataCard/dataInputCard.js";
-import { FormContainer, FormInput } from "../../../../../components/form/form.ts";
+import { FormContainer } from "../../../../../components/form/form.ts";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.tsx";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
+import DepthInput from "../depthInput.tsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
 import ObservationInput from "../observationInput.tsx";
@@ -48,10 +49,12 @@ const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; 
           schemaName={hydrogeologySchemaConstants.groundwaterLevelMeasurementKind}
         />
       </FormContainer>
-      <FormContainer direction="row">
-        <FormInput fieldName="levelMasl" label="gwlm_levelmasl" value={item.levelMasl} withThousandSeparator={true} />
-        <FormInput fieldName="levelM" label="gwlm_levelm" value={item.levelM} withThousandSeparator={true} />
-      </FormContainer>
+      <DepthInput<GroundwaterLevelMeasurement>
+        observation={item}
+        depthFields={[
+          { fieldNameMD: "levelM", labelMD: "gwlm_levelm", fieldNameMasl: "levelMasl", labelMasl: "gwlm_levelmasl" },
+        ]}
+      />
     </DataInputCard>
   );
 };
