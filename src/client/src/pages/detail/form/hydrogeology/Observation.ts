@@ -41,6 +41,16 @@ export interface ObservationInputProps {
   showDepthInputs?: boolean;
 }
 
+export interface DepthInputProps<ItemType> {
+  observation: ItemType;
+  depthFields: Array<{
+    fieldNameMD: string;
+    labelMD: string;
+    fieldNameMasl: string;
+    labelMasl: string;
+  }>;
+}
+
 export function prepareObservationDataForSubmit<
   T extends FieldMeasurement | WaterIngress | GroundwaterLevelMeasurement | Hydrotest,
 >(data: T, parentId: number): T {
