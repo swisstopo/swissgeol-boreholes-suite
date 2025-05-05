@@ -49,10 +49,17 @@ const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; 
           schemaName={hydrogeologySchemaConstants.groundwaterLevelMeasurementKind}
         />
       </FormContainer>
-      <DepthInput<GroundwaterLevelMeasurement>
+      <DepthInput
         observation={item}
         depthFields={[
-          { fieldNameMD: "levelM", labelMD: "gwlm_levelm", fieldNameMasl: "levelMasl", labelMasl: "gwlm_levelmasl" },
+          {
+            fieldNameMD: "levelM",
+            labelMD: "gwlm_levelm",
+            getValueMD: () => item.levelM,
+            fieldNameMasl: "levelMasl",
+            labelMasl: "gwlm_levelmasl",
+            getValueMasl: () => item.levelMasl,
+          },
         ]}
       />
     </DataInputCard>

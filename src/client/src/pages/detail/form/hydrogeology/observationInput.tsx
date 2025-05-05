@@ -8,7 +8,7 @@ import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
 import DepthInput from "./depthInput.tsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants.ts";
-import { Observation, ObservationInputProps } from "./Observation.ts";
+import { ObservationInputProps } from "./Observation.ts";
 
 const ObservationInput = ({ observation, showDepthInputs = true }: ObservationInputProps) => {
   const [casings, setCasings] = useState<Casing[]>([]);
@@ -26,16 +26,25 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
   return (
     <>
       {showDepthInputs && (
-        <DepthInput<Observation>
+        <DepthInput
           observation={observation}
           depthFields={[
             {
               fieldNameMD: "fromDepthM",
               labelMD: "fromdepth",
+              getValueMD: () => observation.fromDepthM,
               fieldNameMasl: "fromDepthMasl",
               labelMasl: "fromDepthMasl",
+              getValueMasl: () => observation.fromDepthMasl,
             },
-            { fieldNameMD: "toDepthM", labelMD: "todepth", fieldNameMasl: "toDepthMasl", labelMasl: "toDepthMasl" },
+            {
+              fieldNameMD: "toDepthM",
+              labelMD: "todepth",
+              getValueMD: () => observation.toDepthM,
+              fieldNameMasl: "toDepthMasl",
+              labelMasl: "toDepthMasl",
+              getValueMasl: () => observation.toDepthMasl,
+            },
           ]}
         />
       )}

@@ -8,9 +8,9 @@ import { FormInput, FormSelect } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import { DepthInputProps, Observation, ObservationDepthUnitType } from "./Observation.ts";
+import { DepthInputProps, ObservationDepthUnitType } from "./Observation.ts";
 
-const DepthInput = <ItemType extends Observation>({ observation, depthFields }: DepthInputProps<ItemType>) => {
+const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const formMethods = useFormContext();
@@ -120,7 +120,7 @@ const DepthInput = <ItemType extends Observation>({ observation, depthFields }: 
           <FormInput
             fieldName={fields.fieldNameMD}
             label={fields.labelMD}
-            value={observation[fields.fieldNameMD]}
+            value={fields.getValueMD()}
             controlledValue={formMethods.watch(fields.fieldNameMD)}
             withThousandSeparator={true}
             onUpdate={() => convertDepth(fields.fieldNameMD, fields.fieldNameMasl, ObservationDepthUnitType.masl)}
@@ -129,7 +129,7 @@ const DepthInput = <ItemType extends Observation>({ observation, depthFields }: 
           <FormInput
             fieldName={fields.fieldNameMasl}
             label={fields.labelMasl}
-            value={observation[fields.fieldNameMasl]}
+            value={fields.getValueMasl()}
             controlledValue={formMethods.watch(fields.fieldNameMasl)}
             withThousandSeparator={true}
             onUpdate={() =>
