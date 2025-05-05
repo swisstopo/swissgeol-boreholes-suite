@@ -12,7 +12,7 @@ describe("Tests the publication workflow.", () => {
     getElementByDataCy("workflow-status-card").contains("h5", "Draft").should("exist");
 
     getElementByDataCy("workflow-assigned-user-card").contains("h5", "Assigned Person").should("exist");
-    getElementByDataCy("workflow-status-card").contains("p", "Validator User").should("exist");
+    getElementByDataCy("workflow-assigned-user-card").contains("p", "Validator User").should("exist");
 
     getElementByDataCy("workflow-history-entry-15000183").should("contain", "Editor User");
     getElementByDataCy("workflow-history-entry-15000183").should("contain", "16. Nov. 2021");
