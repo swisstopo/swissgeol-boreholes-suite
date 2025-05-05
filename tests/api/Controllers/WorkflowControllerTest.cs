@@ -1,7 +1,6 @@
 ﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static BDMS.Helpers;
@@ -26,7 +25,7 @@ public class WorkflowControllerTest
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
-        controller = new WorkflowController(context, new Mock<ILogger<WorkflowV2>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new WorkflowController(context, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

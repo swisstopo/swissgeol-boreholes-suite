@@ -11,13 +11,11 @@ namespace BDMS.Controllers;
 public class WorkflowController : ControllerBase
 {
     private readonly BdmsContext context;
-    private readonly ILogger logger;
     private readonly IBoreholePermissionService boreholePermissionService;
 
-    public WorkflowController(BdmsContext context, ILogger<WorkflowController> logger, IBoreholePermissionService boreholePermissionService)
+    public WorkflowController(BdmsContext context, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
-        this.logger = logger;
         this.boreholePermissionService = boreholePermissionService;
     }
 
