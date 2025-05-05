@@ -16,7 +16,7 @@ export const useBlockNavigation = () => {
   const blocker = useBlocker(shouldBlock);
 
   useEffect(() => {
-    if (blocker.state === "blocked" && !promptShownRef.current) {
+    if (blocker.state === "blocked" && !promptShownRef.current && hasChanges) {
       promptShownRef.current = true;
       showPrompt("messageDiscardUnsavedChanges", [
         {
