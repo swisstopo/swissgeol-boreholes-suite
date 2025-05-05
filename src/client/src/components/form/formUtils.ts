@@ -1,9 +1,4 @@
-import { Identifier } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
-import {
-  LocationFormInputs,
-  LocationFormSubmission,
-} from "../../pages/detail/form/location/locationPanelInterfaces.tsx";
 
 /**
  * Parse the input value if it's a string. If it's a number, return it as is.
@@ -95,45 +90,3 @@ export const formatNumberForDisplay = (value: number | null, minDecimals = 0): s
 };
 
 export const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
-
-/**
- * Transforms the location form data into a format that can be submitted to the API.
- * @param {LocationFormInputs} formInputs The data from the location form.
- * @returns The location data in a format that can be submitted to the API.
- */
-export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => {
-  const data = { ...formInputs } as LocationFormSubmission;
-
-  const getCompleteCodelists = (codelists: Identifier[]) => {
-    return codelists
-      .map(c => {
-        delete c.borehole;
-        delete c.codelist;
-        return c;
-      })
-      .filter(c => c.codelistId && c.value && c.boreholeId);
-  };
-
-  data.restrictionUntil = data?.restrictionUntil ? ensureDatetime(data.restrictionUntil.toString()) : null;
-  data.elevationZ = parseFloatWithThousandsSeparator(data?.elevationZ);
-  data.referenceElevation = parseFloatWithThousandsSeparator(data?.referenceElevation);
-  data.nationalInterest = data?.nationalInterest === 1 ? true : data?.nationalInterest === 0 ? false : null;
-  data.restrictionId = data.restrictionId ?? null;
-  data.referenceElevationTypeId = data.referenceElevationTypeId ?? null;
-  data.elevationPrecisionId = data.elevationPrecisionId ?? null;
-  data.locationPrecisionId = data.locationPrecisionId ?? null;
-  data.referenceElevationPrecisionId = data.referenceElevationPrecisionId ?? null;
-  data.name = data?.name ?? data.originalName;
-  data.precisionLocationX = data?.locationX ? getDecimalsFromNumericString(formInputs.locationX) : null;
-  data.precisionLocationY = data?.locationY ? getDecimalsFromNumericString(formInputs.locationY) : null;
-  data.precisionLocationXLV03 = data?.locationXLV03 ? getDecimalsFromNumericString(formInputs.locationXLV03) : null;
-  data.precisionLocationYLV03 = data?.locationYLV03 ? getDecimalsFromNumericString(formInputs.locationYLV03) : null;
-  data.locationX = parseFloatWithThousandsSeparator(data?.locationX);
-  data.locationY = parseFloatWithThousandsSeparator(data?.locationY);
-  data.locationXLV03 = parseFloatWithThousandsSeparator(data?.locationXLV03);
-  data.locationYLV03 = parseFloatWithThousandsSeparator(data?.locationYLV03);
-  data.boreholeCodelists = getCompleteCodelists(data.boreholeCodelists);
-  data.boreholeFiles = null;
-  data.workflow = null;
-  return data;
-};
