@@ -5,14 +5,14 @@ import { theme } from "../../../../AppTheme.ts";
 import { capitalizeFirstLetter } from "../../../../utils.ts";
 import { WorkflowChange } from "./workflow.ts";
 
+const DescriptionText = ({ children }: { children: ReactNode }) => (
+  <Typography variant="h6" color={theme.palette.tertiary.main} fontWeight={400}>
+    {children}
+  </Typography>
+);
+
 export const HistoryEntry: FC<{ workflowChange: WorkflowChange }> = ({ workflowChange }) => {
   const { t } = useTranslation();
-
-  const DescriptionText = ({ children }: { children: ReactNode }) => (
-    <Typography variant="h6" color={theme.palette.tertiary.main} fontWeight={400}>
-      {children}
-    </Typography>
-  );
 
   return (
     <Stack data-cy={`workflow-history-entry-${workflowChange.id}`}>

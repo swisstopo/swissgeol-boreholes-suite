@@ -5,14 +5,12 @@ import { WorkflowTabs } from "./workflowTabs.tsx";
 
 export const WorkflowView = () => {
   return (
-    <>
-      <Stack gap={1.5} direction="row">
-        <Stack gap={1.5}>
-          <WorkflowStatusCard />
-          <WorkflowAssignedUserCard />
-        </Stack>
-        <WorkflowTabs />
+    <Stack gap={1.5} direction="row">
+      <Stack gap={1.5}>
+        <WorkflowStatusCard />
+        <WorkflowAssignedUserCard />
       </Stack>
-    </>
+      <WorkflowTabs />
+    </Stack>
   );
 };
