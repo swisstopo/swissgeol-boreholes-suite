@@ -14,7 +14,7 @@ import {
   clickOnRowWithText,
   showTableAndWaitForData,
 } from "../helpers/dataGridHelpers.js";
-import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
+import { evaluateInput, setInput, setOriginalName, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   deleteDownloadedFile,
@@ -149,7 +149,7 @@ describe("Test for exporting boreholes.", () => {
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "674.87");
     getElementByDataCy("location-menu-item").click();
-    setInput("originalName", secondBoreholeName); // change name to avoid potential CSV filename conflict
+    setOriginalName(secondBoreholeName); // change name to avoid potential CSV filename conflict
     saveWithSaveBar();
     stopBoreholeEditing();
     exportItem();
