@@ -1,5 +1,6 @@
 import { MutableRefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { SxProps } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -35,6 +36,7 @@ interface TableProps<T extends GridValidRowModel> {
   apiRef?: MutableRefObject<GridApiCommunity>;
   isLoading?: boolean;
   rowCount?: number;
+  maxRowsPerPage?: number;
   rowSelectionModel?: GridRowSelectionModel;
   onRowSelectionModelChange?: (model: GridRowSelectionModel) => void;
   getRowId?: GridRowIdGetter<T>;
@@ -46,6 +48,7 @@ interface TableProps<T extends GridValidRowModel> {
   isDisabled?: boolean;
   showQuickFilter?: boolean;
   rowAutoHeight?: boolean;
+  sx?: SxProps;
 }
 
 export const Table = <T extends GridValidRowModel>({
@@ -63,6 +66,7 @@ export const Table = <T extends GridValidRowModel>({
   apiRef,
   isLoading,
   rowCount,
+  maxRowsPerPage = 100,
   rowSelectionModel,
   onRowSelectionModelChange,
   getRowId,
@@ -74,6 +78,7 @@ export const Table = <T extends GridValidRowModel>({
   isDisabled = false,
   showQuickFilter = true,
   rowAutoHeight = false,
+  sx,
 }: TableProps<T>) => {
   const { i18n } = useTranslation();
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
@@ -124,7 +129,7 @@ export const Table = <T extends GridValidRowModel>({
 
   return (
     <DataGrid
-      sx={{ border: "none !important", ...quickFilterStyles, ...disabledStyles }}
+      sx={{ ...quickFilterStyles, ...disabledStyles, ...sx }}
       data-cy={dataCy ?? "data-table"}
       columnHeaderHeight={44}
       sortingOrder={["asc", "desc"]}
@@ -134,7 +139,7 @@ export const Table = <T extends GridValidRowModel>({
       columns={adjustedWidthColumns}
       getRowHeight={() => (rowAutoHeight ? "auto" : 44)}
       onRowClick={onRowClick}
-      pageSizeOptions={[100]}
+      pageSizeOptions={[maxRowsPerPage]}
       slots={{ toolbar: GridToolbar }}
       slotProps={{
         pagination: {
@@ -149,7 +154,7 @@ export const Table = <T extends GridValidRowModel>({
       localeText={muiLocales[i18n.language]}
       disableColumnSelector
       disableRowSelectionOnClick
-      hideFooterPagination={!rows?.length}
+      hideFooter={rows?.length < maxRowsPerPage}
       hideFooterSelectedRowCount
       disableColumnFilter
       disableColumnMenu={true}

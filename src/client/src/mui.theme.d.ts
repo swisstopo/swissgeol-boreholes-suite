@@ -68,6 +68,7 @@ declare module "@mui/material/styles" {
     border: {
       light: string;
       darker: string;
+      table: string;
     };
     background: {
       default: string;
@@ -138,6 +139,7 @@ declare module "@mui/material/styles" {
     MuiTextField: object;
     MuiInputLabel: object;
     MuiOutlinedInput: object;
+    MuiCheckbox: object;
     MuiTab: object;
     MuiTabs: object;
     MuiBadge: object;
@@ -163,6 +165,7 @@ declare module "@mui/material/styles" {
     MuiTextField: object;
     MuiInputLabel: object;
     MuiOutlinedInput: object;
+    MuiCheckbox: object;
     MuiTab: object;
     MuiTabs: object;
     MuiBadge: object;

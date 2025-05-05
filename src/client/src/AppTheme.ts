@@ -55,6 +55,7 @@ const themePalette: AppThemePalette = {
   border: {
     light: "#DFE4E9",
     darker: "#596978",
+    table: "#ACB4BD",
   },
   background: {
     default: "#ffffff",
@@ -465,6 +466,15 @@ export const theme = createTheme({
         notched: false,
       },
     },
+    MuiCheckbox: {
+      styleOverrides: {
+        colorPrimary: {
+          "&.Mui-checked, &.MuiCheckbox-indeterminate": {
+            color: themePalette.background.menuItemActive,
+          },
+        },
+      },
+    },
     MuiCardHeader: {
       styleOverrides: {
         root: {
@@ -575,6 +585,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           cursor: "pointer",
+          borderColor: themePalette.border.table,
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: themePalette.border.light,
           },
@@ -586,6 +597,7 @@ export const theme = createTheme({
             minHeight: "44px",
             display: "flex",
             alignItems: "center",
+            borderColor: themePalette.border.table,
           },
           "& .MuiDataGrid-toolbarContainer": {
             paddingLeft: "2px !important",

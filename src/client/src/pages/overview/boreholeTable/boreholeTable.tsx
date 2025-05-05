@@ -315,6 +315,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       isRowSelectable={(params: GridRowParams) => params.row.lock === null}
       rowSelectionModel={selectionModel}
       showQuickFilter={false}
+      sx={{ border: "none !important" }}
     />
   );
 };

@@ -1,55 +1,141 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
-import { t } from "i18next";
-import { Photo } from "../../../../api/apiInterfaces.ts";
+import { ChangeEvent, FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Checkbox, Stack, Typography } from "@mui/material";
+import { GridColDef, GridColumnHeaderParams, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
+import { CheckIcon } from "lucide-react";
 import { getPhotosByBoreholeId, uploadPhoto } from "../../../../api/fetchApiV2.ts";
-import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import { FullPageCentered } from "../../../../components/styledComponents.ts";
-import { AddAttachmentButton } from "../addAttachmentButton.tsx";
-import { PhotosTable } from "./photosTable.tsx";
+import DateText from "../../../../components/legacyComponents/dateText";
+import { DetailContext } from "../../detailContext.tsx";
+import { AttachmentContent } from "../attachmentsContent.tsx";
 
 interface PhotosProps {
   boreholeId: number;
 }
 
 export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
-  const [photos, setPhotos] = useState<Photo[]>([]);
-  const { showAlert } = useContext(AlertContext);
+  const { t } = useTranslation();
+  const apiRef = useGridApiRef();
+  const { editingEnabled } = useContext(DetailContext);
+
+  const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, boolean>>(new Map());
+  const [allPhotosPublic, setAllPhotosPublic] = useState(false);
+  const [somePhotosPublic, setSomePhotosPublic] = useState(false);
 
   const loadPhotos = useCallback(() => {
-    getPhotosByBoreholeId(boreholeId).then(setPhotos);
+    return getPhotosByBoreholeId(boreholeId);
   }, [boreholeId]);
 
-  useEffect(() => {
-    loadPhotos();
-  }, [loadPhotos]);
-
-  const upload = async (file: File) => {
-    try {
-      await uploadPhoto(boreholeId, file);
-      loadPhotos();
-    } catch (error) {
-      showAlert(t((error as Error).message), "error");
-    }
+  const addPhoto = async (file: File) => {
+    await uploadPhoto(boreholeId, file);
   };
 
+  const deletePhotos = async (ids: number[]) => {
+    await deletePhotos(ids);
+  };
+
+  const exportPhotos = async (ids: number[]) => {
+    await exportPhotos(ids);
+  };
+
+  const togglePublicValueForRow = useCallback(
+    (id: GridRowId, checked: boolean) => {
+      setUpdatedRows(prevRows => {
+        const newMap = new Map(prevRows);
+        newMap.set(id, checked);
+        return newMap;
+      });
+      apiRef.current.updateRows([{ id, public: checked }]);
+    },
+    [apiRef],
+  );
+
+  const toggleAllPublicValues = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const checked = event.target.checked;
+      const currentRows = apiRef.current.getRowModels();
+      Array.from(currentRows.keys()).forEach(id => {
+        togglePublicValueForRow(id, checked);
+      });
+    },
+    [apiRef, togglePublicValueForRow],
+  );
+
+  useEffect(() => {
+    if (apiRef.current.getRowModels) {
+      const currentRows = apiRef.current.getRowModels();
+      setAllPhotosPublic(Array.from(currentRows.values()).every(row => row.public));
+      setSomePhotosPublic(Array.from(currentRows.values()).some(row => row.public));
+    }
+  }, [apiRef, updatedRows]);
+
+  const columns = useMemo<GridColDef[]>(
+    () => [
+      {
+        field: "name",
+        headerName: t("name"),
+      },
+      {
+        field: "created",
+        headerName: t("uploaded"),
+        renderCell: ({ row }) => <DateText date={row.created} hours />,
+      },
+      {
+        field: "createdBy",
+        headerName: t("user"),
+        valueGetter: (value, row) => row.createdBy?.name ?? "-",
+      },
+      {
+        field: "depth",
+        headerName: t("depthMD"),
+        valueGetter: (value, row) => `${row.fromDepth} - ${row.toDepth}`,
+      },
+      {
+        field: "public",
+        headerName: t("public"),
+        type: "boolean",
+        editable: editingEnabled,
+        width: 125,
+        flex: 0,
+        renderHeader: editingEnabled
+          ? (params: GridColumnHeaderParams) => (
+              <Stack flexDirection="row" justifyContent="flex-start" alignItems="center" gap={1}>
+                <Checkbox
+                  checked={allPhotosPublic}
+                  indeterminate={somePhotosPublic && !allPhotosPublic}
+                  onChange={toggleAllPublicValues}
+                />
+                <Typography sx={{ fontSize: "16px", fontWeight: 500 }}>{params.colDef.headerName}</Typography>
+              </Stack>
+            )
+          : undefined,
+        renderCell: (params: GridRenderCellParams) => (
+          <Stack flexDirection="row" alignItems="center" justifyContent="flex-start">
+            {editingEnabled ? (
+              <Checkbox
+                checked={params.row.public}
+                onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
+              />
+            ) : params.value ? (
+              <CheckIcon />
+            ) : null}
+          </Stack>
+        ),
+      },
+    ],
+    [t, editingEnabled, allPhotosPublic, somePhotosPublic, toggleAllPublicValues, togglePublicValueForRow],
+  );
+
   return (
-    <>
-      <AddAttachmentButton
-        label="addPhoto"
-        onFileSelect={upload}
-        acceptedFileTypes="image/*"
-        dataCy="photo-upload-button"
-      />
-      {photos && photos.length > 0 ? (
-        <Box sx={{ height: "100%" }}>
-          <PhotosTable photos={photos} loadPhotos={loadPhotos} />
-        </Box>
-      ) : (
-        <FullPageCentered>
-          <Typography variant="fullPageMessage">{t("noPhotos")}</Typography>
-        </FullPageCentered>
-      )}
-    </>
+    <AttachmentContent
+      apiRef={apiRef}
+      columns={columns}
+      addAttachment={addPhoto}
+      acceptedFileTypes="image/*"
+      getAttachments={loadPhotos}
+      deleteAttachments={deletePhotos}
+      exportAttachments={exportPhotos}
+      addAttachmentButtonLabel="addPhoto"
+      noAttachmentsText="noPhotos"
+    />
   );
 };

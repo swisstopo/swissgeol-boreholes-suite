@@ -1,12 +1,13 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
+import { ChangeEvent, FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Typography } from "@mui/material";
-import { detachFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file.ts";
+import { Checkbox, Stack, Typography } from "@mui/material";
+import { GridColDef, GridColumnHeaderParams, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
+import { CheckIcon } from "lucide-react";
+import { detachFile, downloadFile, getFiles, uploadFile } from "../../../../api/file/file.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
-import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import { FullPageCentered } from "../../../../components/styledComponents.ts";
-import { AddAttachmentButton } from "../addAttachmentButton.tsx";
-import { FilesTable } from "./filesTable.tsx";
+import DateText from "../../../../components/legacyComponents/dateText";
+import { DetailContext } from "../../detailContext.tsx";
+import { AttachmentContent } from "../attachmentsContent.tsx";
 
 interface ProfilesProps {
   boreholeId: number;
@@ -14,72 +15,139 @@ interface ProfilesProps {
 
 export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const [files, setFiles] = useState<BoreholeFile[]>([]);
-  const [patchQueued, setPatchQueued] = useState<NodeJS.Timeout | string | number | undefined>();
-  const { showAlert } = useContext(AlertContext);
+  const apiRef = useGridApiRef();
+  const { editingEnabled } = useContext(DetailContext);
 
-  const loadFiles = useCallback(() => {
-    getFiles<BoreholeFile>(boreholeId).then(setFiles);
+  const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, boolean>>(new Map());
+  const [allPhotosPublic, setAllPhotosPublic] = useState(false);
+  const [somePhotosPublic, setSomePhotosPublic] = useState(false);
+
+  const loadProfiles = useCallback(async () => {
+    const files = await getFiles<BoreholeFile>(boreholeId);
+    return files.map(boreholeFile => ({
+      id: boreholeFile.fileId,
+      ...boreholeFile,
+    }));
   }, [boreholeId]);
 
-  useEffect(() => {
-    loadFiles();
-  }, [loadFiles]);
+  const addProfile = async (file: File) => {
+    await uploadFile(boreholeId, file);
+  };
 
-  const upload = async (file: File) => {
-    await uploadFile(boreholeId, file)
-      .then(() => loadFiles())
-      .catch(error => {
-        showAlert(t(error.message), "error");
+  const deleteProfiles = async (ids: number[]) => {
+    const downloadPromises = ids.map(id => detachFile(boreholeId.toString(), id));
+    await Promise.all(downloadPromises);
+  };
+
+  const exportProfiles = async (ids: number[]) => {
+    const downloadPromises = ids.map(id => downloadFile(id));
+    await Promise.all(downloadPromises);
+  };
+
+  const togglePublicValueForRow = useCallback(
+    (id: GridRowId, checked: boolean) => {
+      setUpdatedRows(prevRows => {
+        const newMap = new Map(prevRows);
+        newMap.set(id, checked);
+        return newMap;
       });
-  };
+      apiRef.current.updateRows([{ id, public: checked }]);
+    },
+    [apiRef],
+  );
 
-  const patch = (
-    id: string,
-    fid: number,
-    currentDescription: string,
-    currentIsPublic: boolean,
-    field: string,
-    value: string | boolean,
-  ) => {
-    setFiles(files.map(file => (file.fileId === fid ? { ...file, [field]: value } : file)));
-    if (field === "public") {
-      updateFile(id, fid, currentDescription, value as boolean);
-    } else {
-      if (patchQueued) {
-        clearTimeout(patchQueued);
-        setPatchQueued(undefined);
-      }
-      setPatchQueued(
-        setTimeout(() => {
-          updateFile(id, fid, value as string, currentIsPublic);
-        }, 250),
-      );
+  const toggleAllPublicValues = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const checked = event.target.checked;
+      const currentRows = apiRef.current.getRowModels();
+      Array.from(currentRows.keys()).forEach(id => {
+        togglePublicValueForRow(id, checked);
+      });
+    },
+    [apiRef, togglePublicValueForRow],
+  );
+
+  useEffect(() => {
+    if (apiRef.current.getRowModels) {
+      const currentRows = apiRef.current.getRowModels();
+      setAllPhotosPublic(Array.from(currentRows.values()).every(row => row.public));
+      setSomePhotosPublic(Array.from(currentRows.values()).some(row => row.public));
     }
-  };
+  }, [apiRef, updatedRows]);
+
+  const columns = useMemo<GridColDef[]>(
+    () => [
+      {
+        field: "name",
+        headerName: t("name"),
+        valueGetter: (value, row) => row.file.name,
+      },
+      {
+        field: "description",
+        headerName: t("description"),
+        editable: editingEnabled,
+      },
+      {
+        field: "type",
+        headerName: t("type"),
+        valueGetter: (value, row) => row.file.type,
+      },
+      {
+        field: "created",
+        headerName: t("uploaded"),
+        renderCell: ({ row }) => <DateText date={row.attached} hours />,
+      },
+      {
+        field: "createdBy",
+        headerName: t("user"),
+        valueGetter: (value, row) => row.user?.name ?? "-",
+      },
+      {
+        field: "public",
+        headerName: t("public"),
+        type: "boolean",
+        editable: editingEnabled,
+        width: 125,
+        flex: 0,
+        renderHeader: editingEnabled
+          ? (params: GridColumnHeaderParams) => (
+              <Stack flexDirection="row" justifyContent="flex-start" alignItems="center" gap={1}>
+                <Checkbox
+                  checked={allPhotosPublic}
+                  indeterminate={somePhotosPublic && !allPhotosPublic}
+                  onChange={toggleAllPublicValues}
+                />
+                <Typography sx={{ fontSize: "16px", fontWeight: 500 }}>{params.colDef.headerName}</Typography>
+              </Stack>
+            )
+          : undefined,
+        renderCell: (params: GridRenderCellParams) => (
+          <Stack flexDirection="row" alignItems="center" justifyContent="flex-start">
+            {editingEnabled ? (
+              <Checkbox
+                checked={params.row.public}
+                onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
+              />
+            ) : params.value ? (
+              <CheckIcon />
+            ) : null}
+          </Stack>
+        ),
+      },
+    ],
+    [t, editingEnabled, allPhotosPublic, somePhotosPublic, toggleAllPublicValues, togglePublicValueForRow],
+  );
 
   return (
-    <>
-      <AddAttachmentButton label="addProfile" onFileSelect={upload} dataCy="attachments-upload-button" />
-
-      {files && files.length > 0 ? (
-        <Box sx={{ height: "100%" }}>
-          <FilesTable
-            detachFile={(id: string, fid: number) => {
-              detachFile(id, fid).then(() => {
-                loadFiles();
-              });
-            }}
-            editor
-            files={files}
-            patchFile={patch}
-          />
-        </Box>
-      ) : (
-        <FullPageCentered>
-          <Typography variant="fullPageMessage">{t("noAttachments")}</Typography>
-        </FullPageCentered>
-      )}
-    </>
+    <AttachmentContent
+      apiRef={apiRef}
+      columns={columns}
+      addAttachment={addProfile}
+      getAttachments={loadProfiles}
+      deleteAttachments={deleteProfiles}
+      exportAttachments={exportProfiles}
+      addAttachmentButtonLabel="addProfile"
+      noAttachmentsText="noProfiles"
+    />
   );
 };
