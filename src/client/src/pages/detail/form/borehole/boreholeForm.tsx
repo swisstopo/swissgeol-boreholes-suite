@@ -46,14 +46,19 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
   const topBedrockFreshMd = formMethods.watch("topBedrockFreshMd");
   const topBedrockWeatheredMd = formMethods.watch("topBedrockWeatheredMd");
 
+  const convertRadioValueToBoolean = (value: number | boolean | null): boolean | null => {
+    if (value === 1) return true;
+    if (value === 0) return false;
+    return null;
+  };
+
   const prepareBoreholeDataForSubmit = useCallback((formInputs: BoreholeFormInputs) => {
     const data = { ...formInputs };
     data.totalDepth = parseFloatWithThousandsSeparator(data?.totalDepth);
     data.topBedrockFreshMd = parseFloatWithThousandsSeparator(data?.topBedrockFreshMd);
     data.topBedrockWeatheredMd = parseFloatWithThousandsSeparator(data?.topBedrockWeatheredMd);
-    data.hasGroundwater = data?.hasGroundwater === 1 ? true : data?.hasGroundwater === 0 ? false : null;
-    data.topBedrockIntersected =
-      data?.topBedrockIntersected === 1 ? true : data?.topBedrockIntersected === 0 ? false : null;
+    data.hasGroundwater = convertRadioValueToBoolean(data?.hasGroundwater);
+    data.topBedrockIntersected = convertRadioValueToBoolean(data?.topBedrockIntersected);
     data.boreholeFiles = null;
     data.workflow = null;
 

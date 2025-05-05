@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Stack } from "@mui/material";
 import { Identifier } from "../../../../api/borehole.ts";
 import {
+  convertRadioValueToBoolean,
   ensureDatetime,
   getDecimalsFromNumericString,
   parseFloatWithThousandsSeparator,
@@ -60,7 +61,7 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
     data.restrictionUntil = data?.restrictionUntil ? ensureDatetime(data.restrictionUntil.toString()) : null;
     data.elevationZ = parseFloatWithThousandsSeparator(data?.elevationZ);
     data.referenceElevation = parseFloatWithThousandsSeparator(data?.referenceElevation);
-    data.nationalInterest = data?.nationalInterest === 1 ? true : data?.nationalInterest === 0 ? false : null;
+    data.nationalInterest = convertRadioValueToBoolean(data?.nationalInterest);
     data.restrictionId = data.restrictionId ?? null;
     data.referenceElevationTypeId = data.referenceElevationTypeId ?? null;
     data.elevationPrecisionId = data.elevationPrecisionId ?? null;

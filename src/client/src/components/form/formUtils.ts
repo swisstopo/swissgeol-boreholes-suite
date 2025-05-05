@@ -90,3 +90,13 @@ export const formatNumberForDisplay = (value: number | null, minDecimals = 0): s
 };
 
 export const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
+
+/**
+ * Convert a radio button value to a boolean.
+ * @param value The value to convert.
+ */
+export const convertRadioValueToBoolean = (value: number | boolean | null): boolean | null => {
+  if (value === 1) return true;
+  if (value === 0) return false;
+  return null;
+};
