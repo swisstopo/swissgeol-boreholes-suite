@@ -61,8 +61,8 @@ export const workflowQueryKey = "workflows";
 export const useWorkflow = (boreholeId: number) => {
   const query = useQuery({
     queryKey: [workflowQueryKey, boreholeId],
-    queryFn: async () => {
-      return await fetchWorkflowByBoreholeId(boreholeId);
+    queryFn: () => {
+      return fetchWorkflowByBoreholeId(boreholeId);
     },
     enabled: !!boreholeId,
   });
