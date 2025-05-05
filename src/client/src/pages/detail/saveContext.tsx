@@ -114,20 +114,29 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     setShowSaveFeedback(false);
   }, [location.pathname]);
 
-  return (
-    <SaveContext.Provider
-      value={{
-        showSaveBar,
-        showSaveFeedback,
-        hasChanges,
-        markAsChanged,
-        registerSaveHandler,
-        triggerSave,
-        registerResetHandler,
-        triggerReset,
-        unMount,
-      }}>
-      {children}
-    </SaveContext.Provider>
-  );
+  const contextValue = useMemo(() => {
+    return {
+      showSaveBar,
+      showSaveFeedback,
+      hasChanges,
+      markAsChanged,
+      registerSaveHandler,
+      triggerSave,
+      registerResetHandler,
+      triggerReset,
+      unMount,
+    };
+  }, [
+    hasChanges,
+    markAsChanged,
+    registerResetHandler,
+    registerSaveHandler,
+    showSaveBar,
+    showSaveFeedback,
+    triggerReset,
+    triggerSave,
+    unMount,
+  ]);
+
+  return <SaveContext.Provider value={contextValue}>{children}</SaveContext.Provider>;
 };

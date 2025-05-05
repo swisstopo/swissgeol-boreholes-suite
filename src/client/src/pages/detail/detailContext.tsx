@@ -1,4 +1,4 @@
-import { createContext, FC, PropsWithChildren, useCallback, useState } from "react";
+import { createContext, FC, PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { BoreholeV2, getBoreholeById } from "../../api/borehole.ts";
 
 export interface DetailContextProps {
@@ -27,9 +27,16 @@ export const DetailProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [borehole]);
 
-  return (
-    <DetailContext.Provider value={{ borehole, setBorehole, reloadBorehole, editingEnabled, setEditingEnabled }}>
-      {children}
-    </DetailContext.Provider>
+  const contextValue = useMemo(
+    () => ({
+      borehole,
+      setBorehole,
+      reloadBorehole,
+      editingEnabled,
+      setEditingEnabled,
+    }),
+    [borehole, reloadBorehole, editingEnabled],
   );
+
+  return <DetailContext.Provider value={contextValue}>{children}</DetailContext.Provider>;
 };
