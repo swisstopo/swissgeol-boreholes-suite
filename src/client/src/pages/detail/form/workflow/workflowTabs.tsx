@@ -36,12 +36,14 @@ export const WorkflowTabs = () => {
 
   // Initialize and update activeIndex based on the current URL hash
   useEffect(() => {
+    // This is a workaround which will become obsolete with the upgrade of react-router. Then useSearchParams will be available
+    // Todo: use useSearchParams from react-router
     const searchString = location.search?.slice(1);
     const hashWithoutHash = location.hash.startsWith("#") ? location.hash.slice(1) : location.hash;
-    const [tabHash, serachParams] = hashWithoutHash.split("?");
+    const [tabHash, searchParams] = hashWithoutHash.split("?");
     const newActiveIndex = tabs.findIndex(tab => tab.hash === tabHash);
 
-    const queryString = searchString ?? serachParams;
+    const queryString = searchString ?? searchParams;
     if (newActiveIndex > -1) {
       setActiveIndex(newActiveIndex);
     } else {
