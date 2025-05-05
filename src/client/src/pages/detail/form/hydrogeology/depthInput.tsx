@@ -63,7 +63,7 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
 
   const onCancelDepthUnitChange = (newDepthUnit: ObservationDepthUnitType) => {
     // Reset the value to the previous one.
-    if (newDepthUnit == ObservationDepthUnitType.measuredDepth) {
+    if (newDepthUnit === ObservationDepthUnitType.measuredDepth) {
       formMethods.setValue(depthUnitFieldName, ObservationDepthUnitType.masl);
     } else {
       formMethods.setValue(depthUnitFieldName, ObservationDepthUnitType.measuredDepth);
