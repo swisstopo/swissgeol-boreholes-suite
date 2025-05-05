@@ -14,7 +14,7 @@ public class WorkflowController : ControllerBase
     private readonly ILogger logger;
     private readonly IBoreholePermissionService boreholePermissionService;
 
-    public WorkflowController(BdmsContext context, ILogger<WorkflowV2> logger, IBoreholePermissionService boreholePermissionService)
+    public WorkflowController(BdmsContext context, ILogger<WorkflowController> logger, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
         this.logger = logger;
