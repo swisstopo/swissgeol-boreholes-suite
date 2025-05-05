@@ -9,6 +9,7 @@
 
 ### Changed
 - Upgraded to React 19.
+- Refactored save logic in the borehole detail view.
 
 ### Fixed
 - Boreholes were always copied to the default workgroup instead of the selected workgroup.
