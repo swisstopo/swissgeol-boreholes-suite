@@ -63,8 +63,8 @@ export const WorkflowReview = () => {
         </TableHead>
         <TableBody
           sx={{
-            border: `1px solid${theme.palette.border.darker}`,
-            borderTop: `2px solid${theme.palette.border.darker}`,
+            border: `1px solid ${theme.palette.border.darker}`,
+            borderTop: `2px solid ${theme.palette.border.darker}`,
           }}>
           {tableStructure.map(section => (
             <Fragment key={section.groupLabel}>
