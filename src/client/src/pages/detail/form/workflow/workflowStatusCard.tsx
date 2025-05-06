@@ -71,7 +71,7 @@ export const WorkflowStatusCard = () => {
                     mb: isActive ? 1 : 0,
                     borderRadius: 0.5,
                     backgroundColor: isActive ? theme.palette.background.grey : "transparent",
-                    border: `1px solid ${isActive ? theme.palette.border.light : "#transparent"}`,
+                    border: `1px solid ${isActive ? theme.palette.border.light : "transparent"}`,
                   }}>
                   <StepLabel slots={{ stepIcon: StepIcon }}>
                     <Typography
