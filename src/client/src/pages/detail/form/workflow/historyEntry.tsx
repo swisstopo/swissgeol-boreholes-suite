@@ -26,7 +26,14 @@ export const HistoryEntry: FC<{ workflowChange: WorkflowChange }> = ({ workflowC
             mr: "14px !important",
           }}
         />
-        <Typography variant="h5">{`${[capitalizeFirstLetter(workflowChange.createdBy?.firstName), capitalizeFirstLetter(workflowChange.createdBy?.lastName)].filter(Boolean).join(" ")}`}</Typography>
+        <Typography variant="h5">
+          {[
+            capitalizeFirstLetter(workflowChange.createdBy?.firstName),
+            capitalizeFirstLetter(workflowChange.createdBy?.lastName),
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        </Typography>
         <DescriptionText>
           {`∙ ${new Date(workflowChange?.created).toLocaleDateString("de-CH", {
             day: "2-digit",

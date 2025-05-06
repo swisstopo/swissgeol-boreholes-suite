@@ -15,7 +15,11 @@ export const WorkflowAssignedUserCard = () => {
     <WorkflowCard>
       <Stack gap={1.5} data-cy={"workflow-assigned-user-card"}>
         <Typography variant="h5">{t("assignedPerson")}</Typography>
-        <Typography variant="body1">{`${[capitalizeFirstLetter(workflow?.assignee?.firstName), capitalizeFirstLetter(workflow?.assignee?.lastName)].filter(Boolean).join(" ")}`}</Typography>
+        <Typography variant="body1">
+          {[capitalizeFirstLetter(workflow?.assignee?.firstName), capitalizeFirstLetter(workflow?.assignee?.lastName)]
+            .filter(Boolean)
+            .join(" ")}
+        </Typography>
         <Button
           variant="outlined"
           data-cy={"assign-user-button"}
