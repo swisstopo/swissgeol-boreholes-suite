@@ -25,5 +25,10 @@ describe("Tests the publication workflow.", () => {
       "contain",
       "Rerum repudiandae nihil accusamus sed omnis tempore laboriosam eaque est.",
     );
+    getElementByDataCy("review-tab").click();
+    cy.contains("thead", "Reviewed").should("exist");
+
+    //verify all checkboxes are unchecked
+    cy.get(".PrivateSwitchBase-input").should("not.be.checked");
   });
 });
