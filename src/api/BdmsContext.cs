@@ -113,6 +113,7 @@ public class BdmsContext : DbContext
         => WorkflowsV2
         .Include(w => w.Changes).ThenInclude(wc => wc.CreatedBy)
         .Include(w => w.Changes).ThenInclude(wc => wc.Assignee)
+        .Include(w => w.Assignee)
         .Include(w => w.ReviewedTabs)
         .Include(w => w.PublishedTabs);
 
