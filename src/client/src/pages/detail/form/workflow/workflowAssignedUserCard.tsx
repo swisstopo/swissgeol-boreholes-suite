@@ -21,7 +21,7 @@ export const WorkflowAssignedUserCard = () => {
           data-cy={"assign-user-button"}
           endIcon={<AssignUser />}
           onClick={() => {
-            console.log("Assign user");
+            //Todo: implement assign user functionality
           }}>
           {t("assignUser")}
         </Button>

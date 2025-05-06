@@ -90,7 +90,7 @@ export const WorkflowStatusCard = () => {
           data-cy={"request-review-button"}
           endIcon={<ChevronRight />}
           onClick={() => {
-            console.log("Request review");
+            //Todo: implement request review functionality
           }}>
           {t("requestReview")}
         </Button>
