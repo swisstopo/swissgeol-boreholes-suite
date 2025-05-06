@@ -3,6 +3,7 @@ import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/Codelist.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
+import { WorkflowV2 } from "../pages/detail/form/workflow/workflow.ts";
 import { Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -10,7 +11,6 @@ import { download, fetchApiV2, upload } from "./fetchApiV2.ts";
 import { BoreholeFile } from "./file/fileInterfaces.ts";
 import { Section } from "./section.ts";
 import { Stratigraphy } from "./stratigraphy.ts";
-import { WorkflowV2 } from "./workflow.ts";
 
 export interface BasicIdentifier {
   boreholeId: number;

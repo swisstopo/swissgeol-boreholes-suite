@@ -1,8 +1,8 @@
 import { RefObject } from "react";
 import { BasicIdentifier, BoreholeV2, Identifier } from "../../../../api/borehole.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
-import { WorkflowV2 } from "../../../../api/workflow.ts";
 import { Codelist } from "../../../../components/Codelist.ts";
+import { WorkflowV2 } from "../workflow/workflow.ts";
 import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 
 export interface LocationBaseProps {

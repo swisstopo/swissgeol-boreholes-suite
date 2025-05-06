@@ -1,7 +1,7 @@
 import { Ref } from "react";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
-import { WorkflowV2 } from "../../../../api/workflow.ts";
+import { WorkflowV2 } from "../workflow/workflow.ts";
 
 export interface BoreholeGeneralProps {
   borehole: BoreholeV2;

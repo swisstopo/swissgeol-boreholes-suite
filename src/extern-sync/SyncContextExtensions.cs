@@ -309,6 +309,8 @@ public static class SyncContextExtensions
         {
             change.Assignee = null;
             change.AssigneeId = null;
+            change.CreatedBy = null;
+            change.CreatedById = null;
         }
     }
 }

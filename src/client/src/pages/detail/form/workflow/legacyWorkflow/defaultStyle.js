@@ -1,4 +1,4 @@
-import { theme } from "../../../../AppTheme.ts";
+import { theme } from "../../../../../AppTheme.ts";
 
 export const defaultStyle = {
   control: {

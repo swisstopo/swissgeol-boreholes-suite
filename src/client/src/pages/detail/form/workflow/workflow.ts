@@ -1,4 +1,7 @@
-import { User } from "./apiInterfaces.ts";
+import { useQuery } from "@tanstack/react-query";
+import { User } from "../../../../api/apiInterfaces.ts";
+import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
+import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
 
 export enum WorkflowStatus {
   Draft = "Draft",
@@ -49,3 +52,21 @@ export interface TabStatus {
   profile: boolean;
   photo: boolean;
 }
+
+export const fetchWorkflowByBoreholeId = async (boreholeId: number) =>
+  await fetchApiV2(`workflow/${boreholeId}`, "GET");
+
+export const workflowQueryKey = "workflows";
+
+export const useWorkflow = (boreholeId: number) => {
+  const query = useQuery({
+    queryKey: [workflowQueryKey, boreholeId],
+    queryFn: () => {
+      return fetchWorkflowByBoreholeId(boreholeId);
+    },
+    enabled: !!boreholeId,
+  });
+
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
