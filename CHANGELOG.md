@@ -6,12 +6,14 @@
 - Added the photos tab to the borehole attachments.
 - Added photo viewer to the borehole sidepanel.
 - Added data collection to detail page.
+- Automatic conversion from meters above sea level (MASL) to measured depth (MD) in hydro module.
 
 ### Changed
 - Upgraded to React 19.
 
 ### Fixed
 - Boreholes were always copied to the default workgroup instead of the selected workgroup.
+- _view-sync_ failed if the source database had a default workgroup named `Default`.
 
 ## v2.1.1162 - 2025-04-10
 

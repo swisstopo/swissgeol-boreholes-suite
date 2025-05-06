@@ -29,7 +29,6 @@ public class WorkflowController : ControllerBase
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         var workflow = await context.WorkflowsV2WithIncludes.SingleOrDefaultAsync(i => i.BoreholeId == boreholeId).ConfigureAwait(false);
-
         if (workflow == null)
         {
             return NotFound();
