@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
-import { capitalizeFirstLetter } from "../../../../utils.ts"; // Organized table structure
+import { capitalizeFirstLetter } from "../../../../utils.ts";
 import { TabStatus, useWorkflow } from "./workflow.ts";
 
 const tableStructure = [
