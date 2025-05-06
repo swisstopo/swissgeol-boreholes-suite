@@ -32,7 +32,11 @@ const tableStructure = [
   },
   {
     groupLabel: "hydrogeology",
-    fields: ["waterIngress", "groundwater", "fieldMeasurement", "hydrotest", "profile", "photo"],
+    fields: ["waterIngress", "groundwater", "fieldMeasurement", "hydrotest"],
+  },
+  {
+    groupLabel: "attachments",
+    fields: ["profile", "photo"],
   },
 ];
 
