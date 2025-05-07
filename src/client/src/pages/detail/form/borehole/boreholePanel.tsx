@@ -13,18 +13,18 @@ export const BoreholePanel: FC<BoreholeProps> = ({ borehole }) => {
     () => [
       {
         label: t("general"),
-        hash: "general",
+        hash: "#general",
         component: <BoreholeForm borehole={borehole} />,
       },
       {
         label: t("sections"),
-        hash: "sections",
+        hash: "#sections",
         component: <Sections />,
         hasContent: (borehole?.sections?.length ?? 0) > 0,
       },
       {
         label: t("boreholeGeometry"),
-        hash: "geometry",
+        hash: "#geometry",
         component: <Geometry measuredDepth={borehole?.totalDepth} />,
         hasContent: (borehole?.boreholeGeometry?.length ?? 0) > 0,
       },

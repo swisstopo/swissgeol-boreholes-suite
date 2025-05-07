@@ -26,21 +26,21 @@ export const SettingsPage = () => {
   const isAnonymousUser = auth.anonymousModeEnabled;
 
   const tabs = useMemo(() => {
-    const tabsArray = [{ label: t("about"), hash: "about", component: <AboutSettings /> }];
+    const tabsArray = [{ label: t("about"), hash: "#about", component: <AboutSettings /> }];
 
     if (!isAnonymousUser) {
-      tabsArray.unshift({ label: t("general"), hash: "general", component: <GeneralSettings /> });
-      tabsArray.push({ label: t("terms"), hash: "terms", component: <TermSettings /> });
+      tabsArray.unshift({ label: t("general"), hash: "#general", component: <GeneralSettings /> });
+      tabsArray.push({ label: t("#terms"), hash: "terms", component: <TermSettings /> });
     }
     if (isAdminUser) {
       tabsArray.unshift({
         label: t("workgroups"),
-        hash: "workgroups",
+        hash: "#workgroups",
         component: <WorkgroupAdministration />,
       });
       tabsArray.unshift({
         label: t("users"),
-        hash: "users",
+        hash: "#users",
         component: <UserAdministration />,
       });
     }
