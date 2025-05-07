@@ -1,12 +1,11 @@
 import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation, useParams } from "react-router-dom";
-import { Stack } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Box, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { Tab } from "../../../../components/tabs/tabPanel.tsx";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { CheckboxTable } from "./checkboxTable.tsx";
 import { useWorkflow } from "./workflow.ts";
 import { WorkflowHistory } from "./workflowHistory.tsx";
@@ -16,7 +15,7 @@ export const WorkflowTabs = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
-  const { id: boreholeId } = useParams<{ id: string }>();
+  const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: workflow } = useWorkflow(parseInt(boreholeId));
 
   const tabs = useMemo<Tab[]>(
