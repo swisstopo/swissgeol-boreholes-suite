@@ -1,6 +1,5 @@
-import { Fragment } from "react";
+import { FC, Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import {
   Checkbox,
   FormControlLabel,
@@ -15,7 +14,7 @@ import {
 } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
 import { capitalizeFirstLetter } from "../../../../utils.ts";
-import { TabStatus, useWorkflow } from "./workflow.ts";
+import { TabStatus } from "./workflow.ts";
 
 const tableStructure = [
   {
@@ -40,12 +39,12 @@ const tableStructure = [
   },
 ];
 
-export const WorkflowReview = () => {
-  const { id: boreholeId } = useParams<{ id: string }>();
-  const { data: workflow } = useWorkflow(parseInt(boreholeId));
+export const CheckboxTable: FC<{ tabStatus?: TabStatus; checkAllTitle: string }> = ({ tabStatus, checkAllTitle }) => {
   const { t } = useTranslation();
+  if (!tabStatus) return null;
 
   const cellBorderStyle = { borderBottom: `1px solid ${theme.palette.border.darker}` };
+  const firstColumnCellStyle = { width: "1%", whiteSpace: "nowrap" };
 
   return (
     <TableContainer component={Paper} elevation={0} sx={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}>
@@ -56,10 +55,10 @@ export const WorkflowReview = () => {
             backgroundColor: theme.palette.border.light,
           }}>
           <TableRow>
-            <TableCell sx={{ py: 1.5, px: 2, fontWeight: "bold" }}>{"Tab"}</TableCell>
+            <TableCell sx={{ py: 1.5, px: 2, fontWeight: "bold", ...firstColumnCellStyle }}>{"Tab"}</TableCell>
             <TableCell align="left">
               <FormControlLabel
-                label={<Typography fontWeight="bold">{t("reviewed")}</Typography>}
+                label={<Typography fontWeight="bold">{t(`statuses.${checkAllTitle}`)}</Typography>}
                 control={<Checkbox disabled />}
               />
             </TableCell>
@@ -79,17 +78,13 @@ export const WorkflowReview = () => {
               </TableRow>
               {section.fields.map(field => (
                 <TableRow key={field}>
-                  <TableCell sx={{ pl: 2, ...cellBorderStyle }}>
+                  <TableCell sx={{ pl: 2, pr: 20, ...cellBorderStyle, ...firstColumnCellStyle }}>
                     <Typography ml={2} color={theme.palette.action.disabled}>
                       {t(field)}
                     </Typography>
                   </TableCell>
                   <TableCell sx={cellBorderStyle}>
-                    <Checkbox
-                      sx={{ p: 0 }}
-                      checked={workflow?.reviewedTabs[field as keyof TabStatus] as boolean}
-                      disabled
-                    />
+                    <Checkbox sx={{ p: 0 }} checked={tabStatus[field as keyof TabStatus] as boolean} disabled />
                   </TableCell>
                 </TableRow>
               ))}
