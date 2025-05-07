@@ -50,7 +50,7 @@ export const WorkflowTabs = () => {
       // If tab not found, redirect to first tab, preserving query params
       navigate({
         pathname: pathname,
-        search: new URLSearchParams(searchParams).toString(),
+        search: searchParams.toString(),
         hash: tabs[0].hash,
       });
     }
@@ -62,7 +62,7 @@ export const WorkflowTabs = () => {
       const newHash = tabs[index].hash;
       navigate({
         pathname: pathname,
-        search: new URLSearchParams(searchParams).toString(),
+        search: searchParams.toString(),
         hash: newHash,
       });
     },
