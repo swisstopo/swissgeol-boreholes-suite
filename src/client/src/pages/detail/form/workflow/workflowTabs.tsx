@@ -59,11 +59,10 @@ export const WorkflowTabs = () => {
   // Change handler for tab selection
   const handleIndexChange = useCallback(
     (event: SyntheticEvent | null, index: number) => {
-      const newHash = tabs[index].hash;
       navigate({
         pathname: pathname,
         search: searchParams.toString(),
-        hash: newHash,
+        hash: tabs[index].hash,
       });
     },
     [tabs, navigate, pathname, searchParams],
