@@ -1,18 +1,23 @@
 import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useHistory, useLocation, useParams } from "react-router-dom";
+import { Stack } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { Tab } from "../../../../components/tabs/tabPanel.tsx";
+import { CheckboxTable } from "./checkboxTable.tsx";
+import { useWorkflow } from "./workflow.ts";
 import { WorkflowHistory } from "./workflowHistory.tsx";
-import { WorkflowReview } from "./workflowReview.tsx";
 
 export const WorkflowTabs = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
+  const { id: boreholeId } = useParams<{ id: string }>();
+  const { data: workflow } = useWorkflow(parseInt(boreholeId));
 
   const tabs = useMemo<Tab[]>(
     () => [
@@ -24,15 +29,15 @@ export const WorkflowTabs = () => {
       {
         label: t("review"),
         hash: "review",
-        component: <WorkflowReview />,
+        component: <CheckboxTable tabStatus={workflow?.reviewedTabs} checkAllTitle={"Reviewed"} />,
       },
       {
         label: t("publication"),
         hash: "publication",
-        component: <Box />,
+        component: <CheckboxTable tabStatus={workflow?.publishedTabs} checkAllTitle={"Published"} />,
       },
     ],
-    [t],
+    [t, workflow?.publishedTabs, workflow?.reviewedTabs],
   );
 
   // Initialize and update activeIndex based on the current URL hash
