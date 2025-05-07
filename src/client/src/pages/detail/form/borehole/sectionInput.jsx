@@ -14,7 +14,7 @@ import { parseFloatWithThousandsSeparator } from "../../../../components/form/fo
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
-import { SaveContext } from "../../saveContext.js";
+import { SaveContext } from "../../saveContext.tsx";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
