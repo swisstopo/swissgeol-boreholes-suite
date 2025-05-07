@@ -78,7 +78,8 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
 
   const navigateTo = (path: string) => {
     if (path !== location.pathname) {
-      navigate(path);
+      const searchParams = location.search;
+      navigate(`${path}${searchParams}`);
     }
   };
 
