@@ -41,7 +41,7 @@ const tableStructure = [
 
 export const CheckboxTable: FC<{ tabStatus?: TabStatus; checkAllTitle: string }> = ({ tabStatus, checkAllTitle }) => {
   const { t } = useTranslation();
-  if (!tabStatus) return;
+  if (!tabStatus) return null;
 
   const cellBorderStyle = { borderBottom: `1px solid ${theme.palette.border.darker}` };
   const firstColumnCellStyle = { width: "1%", whiteSpace: "nowrap" };
