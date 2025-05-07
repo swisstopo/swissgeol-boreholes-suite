@@ -1,6 +1,6 @@
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
@@ -9,9 +9,9 @@ import { WorkflowHistory } from "./workflowHistory.tsx";
 import { WorkflowReview } from "./workflowReview.tsx";
 
 export const WorkflowTabs = () => {
-  const history = useHistory();
   const { t } = useTranslation();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
 
   const tabs = useMemo<Tab[]>(
@@ -37,34 +37,31 @@ export const WorkflowTabs = () => {
 
   // Initialize and update activeIndex based on the current URL hash
   useEffect(() => {
-    // This is a workaround which will become obsolete with the upgrade of react-router. Then useSearchParams will be available
-    // Todo: use useSearchParams from react-router
-    const searchString = location.search?.slice(1);
-    const hashWithoutHash = location.hash.startsWith("#") ? location.hash.slice(1) : location.hash;
-    const [tabHash, searchParams] = hashWithoutHash.split("?");
+    const [tabHash] = window.location.hash.replace("#", "").split("?");
     const newActiveIndex = tabs.findIndex(tab => tab.hash === tabHash);
 
-    const queryString = searchString ?? searchParams;
     if (newActiveIndex > -1) {
       setActiveIndex(newActiveIndex);
     } else {
-      // If tab not found, redirect to first tab, preserving query
-      const newHash = `${tabs[0].hash}${queryString ? `?${queryString}` : ""}`;
-      history.replace({ pathname: location.pathname, hash: newHash });
+      // If tab not found, redirect to first tab, preserving query params
+      const newHash = tabs[0].hash;
+      const searchParamsString = new URLSearchParams(searchParams).toString();
+      const newUrl = `${window.location.pathname}#${newHash}${searchParamsString ? `?${searchParamsString}` : ""}`;
+      navigate(newUrl, { replace: true });
     }
-  }, [location, history, tabs]);
+  }, [navigate, searchParams, tabs]);
 
   // Change handler for tab selection
-  const handleIndexChange = (event: SyntheticEvent | null, index: number) => {
-    const hashWithoutHash = location.hash.startsWith("#") ? location.hash.slice(1) : location.hash;
-    const [, queryString] = hashWithoutHash.split("?");
+  const handleIndexChange = useCallback(
+    (event: SyntheticEvent | null, index: number) => {
+      const searchParamsString = new URLSearchParams(searchParams).toString();
+      const newHash = tabs[index].hash;
+      const newUrl = `${window.location.pathname}#${newHash}${searchParamsString ? `?${searchParamsString}` : ""}`;
 
-    const newHash = `${tabs[index].hash}${queryString ? `?${queryString}` : ""}`;
-
-    if (location.hash !== `#${newHash}`) {
-      history.push({ pathname: location.pathname, hash: newHash });
-    }
-  };
+      navigate(newUrl);
+    },
+    [navigate, searchParams, tabs],
+  );
 
   return (
     <Stack sx={{ position: "relative", minHeight: theme.spacing(20), width: "100%" }}>

@@ -1,20 +1,20 @@
 import { useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { Check, X } from "lucide-react";
 import { getBoreholeGeometryDepthMasl, getBoreholeGeometryDepthMDFromMasl } from "../../../../api/fetchApiV2.js";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { DepthInputProps, ObservationDepthUnitType } from "./Observation.ts";
 
 const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const formMethods = useFormContext();
-  const { id: boreholeId } = useParams<{ id: string }>();
+  const { id: boreholeId } = useRequiredParams<{ id: string }>();
 
   const depthUnitFieldName = "originalVerticalReferenceSystem";
   const watchDepthUnit = formMethods.watch(depthUnitFieldName, ObservationDepthUnitType.measuredDepth);

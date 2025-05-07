@@ -1,6 +1,5 @@
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import {
   Checkbox,
   FormControlLabel,
@@ -14,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../../../utils.ts";
 import { TabStatus, useWorkflow } from "./workflow.ts";
 
@@ -41,7 +41,7 @@ const tableStructure = [
 ];
 
 export const WorkflowReview = () => {
-  const { id: boreholeId } = useParams<{ id: string }>();
+  const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: workflow } = useWorkflow(parseInt(boreholeId));
   const { t } = useTranslation();
 
