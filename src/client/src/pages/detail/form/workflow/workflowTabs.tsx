@@ -1,6 +1,6 @@
 import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
@@ -17,72 +17,68 @@ export const WorkflowTabs = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: workflow } = useWorkflow(parseInt(boreholeId));
+  const { pathname, hash } = useLocation();
 
   const tabs = useMemo<Tab[]>(
     () => [
       {
         label: t("history"),
-        hash: "history",
+        hash: "#history",
         component: <WorkflowHistory />,
       },
       {
         label: t("review"),
-        hash: "review",
+        hash: "#review",
         component: <CheckboxTable tabStatus={workflow?.reviewedTabs} checkAllTitle={"Reviewed"} />,
       },
       {
         label: t("publication"),
-        hash: "publication",
+        hash: "#publication",
         component: <CheckboxTable tabStatus={workflow?.publishedTabs} checkAllTitle={"Published"} />,
       },
     ],
     [t, workflow?.publishedTabs, workflow?.reviewedTabs],
   );
 
-  const buildUrlWithHashAndParams = useCallback(
-    (hash: string) => {
-      const searchParamsString = new URLSearchParams(searchParams).toString();
-      let newUrl = `${window.location.pathname}#${hash}`;
-
-      if (searchParamsString) {
-        newUrl += `?${searchParamsString}`;
-      }
-
-      return newUrl;
-    },
-    [searchParams],
-  );
-
   // Initialize and update activeIndex based on the current URL hash
   useEffect(() => {
-    const [tabHash] = window.location.hash.replace("#", "").split("?");
-    const newActiveIndex = tabs.findIndex(tab => tab.hash === tabHash);
+    const newActiveIndex = tabs.findIndex(tab => tab.hash === hash);
 
     if (newActiveIndex > -1) {
       setActiveIndex(newActiveIndex);
     } else {
       // If tab not found, redirect to first tab, preserving query params
-      const newHash = tabs[0].hash;
-      const newUrl = buildUrlWithHashAndParams(newHash);
-      navigate(newUrl, { replace: true });
+      navigate({
+        pathname: pathname,
+        search: new URLSearchParams(searchParams).toString(),
+        hash: tabs[0].hash,
+      });
     }
-  }, [navigate, buildUrlWithHashAndParams, tabs]);
+  }, [navigate, tabs, hash, pathname, searchParams]);
 
   // Change handler for tab selection
   const handleIndexChange = useCallback(
     (event: SyntheticEvent | null, index: number) => {
       const newHash = tabs[index].hash;
-      const newUrl = buildUrlWithHashAndParams(newHash);
-      navigate(newUrl);
+      navigate({
+        pathname: pathname,
+        search: new URLSearchParams(searchParams).toString(),
+        hash: newHash,
+      });
     },
-    [navigate, buildUrlWithHashAndParams, tabs],
+    [tabs, navigate, pathname, searchParams],
   );
 
   return (
     <Stack sx={{ position: "relative", minHeight: theme.spacing(20), width: "100%" }}>
       <BoreholeTabs value={activeIndex} onChange={handleIndexChange}>
         {tabs.map(tab => (
-          <BoreholeTab data-cy={`${tab.hash}-tab`} label={tab.label} key={tab.hash} hasContent={true} />
+          <BoreholeTab
+            data-cy={`${tab.hash.replace("#", "")}-tab`}
+            label={tab.label}
+            key={tab.hash}
+            hasContent={true}
+          />
         ))}
       </BoreholeTabs>
       <BoreholeTabContentBox flex="1 0 0">{tabs[activeIndex].component}</BoreholeTabContentBox>
