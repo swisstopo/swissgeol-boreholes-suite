@@ -248,6 +248,36 @@ public static class BdmsContextExtensions
         WorkflowV2 SeededWorkflowsV2(int seed) => fakeWorkflowsV2.UseSeed(seed).Generate();
         context.BulkInsert(workflowV2Range.Select(SeededWorkflowsV2).ToList(), bulkConfig);
 
+        // Seed some workflow changes for richBoreholeRange
+        var workflowChange_ids = 15_000_000;
+        var workflowChangeRange = Enumerable.Range(workflowChange_ids, richBoreholeRange.Count * 3);
+
+        var fakeWorkflowChanges = new Faker<WorkflowChange>()
+            .RuleFor(o => o.Id, f => workflowChange_ids++)
+            .RuleFor(o => o.Comment, f => f.Lorem.Sentence())
+            .RuleFor(o => o.FromStatus, f => f.PickRandom<WorkflowStatus>())
+            .RuleFor(o => o.ToStatus, (f, o) =>
+            {
+                // Ensure it's not the same as FromStatus
+                var toStatus = f.PickRandom<WorkflowStatus>();
+                while (toStatus == o.FromStatus)
+                {
+                    toStatus = f.PickRandom<WorkflowStatus>();
+                }
+
+                return toStatus;
+            })
+            .RuleFor(o => o.WorkflowId, f => f.PickRandom(richBoreholeRange) + 1_000_000)
+            .RuleFor(o => o.Workflow, f => default!)
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, f => default!)
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.AssigneeId, f => f.PickRandom(userRange).OrNull(f, .3f))
+            .RuleFor(o => o.Assignee, f => default!);
+
+        WorkflowChange SeededWorkflowChanges(int seed) => fakeWorkflowChanges.UseSeed(seed).Generate();
+        context.BulkInsert(workflowChangeRange.Select(SeededWorkflowChanges).ToList(), bulkConfig);
+
         // Seed file
         var filesUserRange = Enumerable.Range(1, 6); // Include dedicated user that only has file
         var file_ids = 5_000_000;
@@ -1070,6 +1100,7 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.facies_description', 'id_fac'), {faciesDescription_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.tab_status', 'tab_status_id'), {tabStatus_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_v2', 'workflow_id'), {workflowV2_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_change', 'workflow_change_id'), {workflowChange_ids - 1})");
     }
 }
 #pragma warning restore CA1505

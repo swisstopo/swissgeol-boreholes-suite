@@ -17,6 +17,9 @@ const themePalette: AppThemePalette = {
     contrastText: "#ffffff",
     background: "#eeeeee",
   },
+  tertiary: {
+    main: "#596978",
+  },
   success: {
     main: "#059669",
   },
@@ -54,11 +57,13 @@ const themePalette: AppThemePalette = {
   },
   border: {
     light: "#DFE4E9",
-    darker: "#596978",
+    darker: "#ACB4BD",
+    dark: "#596978",
   },
   background: {
     default: "#ffffff",
     lightgrey: "#F8F9FA",
+    grey: "#F0F4F7",
     darkgrey: "#787878",
     dark: "rgba(0, 0, 0, 0.5)",
     menuItemActive: "#A65462",
@@ -439,7 +444,7 @@ export const theme = createTheme({
             borderColor: `${themePalette.border.light} !important`,
           },
           "& .MuiInputBase-input.Mui-disabled": {
-            WebkitTextFillColor: themePalette.border.darker,
+            WebkitTextFillColor: themePalette.border.dark,
           },
         },
       },
@@ -559,6 +564,7 @@ export const theme = createTheme({
           paddingLeft: "3px",
           flex: 1,
           fontSize: "13px",
+          height: "44px",
         },
       },
     },
