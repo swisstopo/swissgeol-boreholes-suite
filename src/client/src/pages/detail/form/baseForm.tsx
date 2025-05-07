@@ -3,14 +3,14 @@ import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
 import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
 import { getBoreholeById, updateBorehole } from "../../../api/borehole.ts";
+import { useFormDirtyChanges } from "../../../components/form/useFormDirtyChanges.tsx";
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
 import { SaveContext } from "../saveContext.tsx";
 
 interface BaseFormProps<T extends FieldValues> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  formMethods: UseFormReturn<T, any, T>;
+  formMethods: UseFormReturn<T>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prepareDataForSubmit: (data: T) => Record<string, any>;
   onReset?: () => void;
@@ -23,11 +23,12 @@ export const BaseForm = <T extends FieldValues>({
   onReset,
   children,
 }: BaseFormProps<T>) => {
-  const { markAsChanged, registerSaveHandler, registerResetHandler, unMount } = useContext(SaveContext);
+  const { registerSaveHandler, registerResetHandler, unMount } = useContext(SaveContext);
   const { setExtractionObject } = useLabelingContext();
   const { id } = useRequiredParams<{ id: string }>();
   const { getValues, reset, formState } = formMethods;
   useBlockNavigation();
+  useFormDirtyChanges({ formState });
 
   const boreholeId = useMemo(() => parseInt(id, 10), [id]);
 
@@ -63,12 +64,6 @@ export const BaseForm = <T extends FieldValues>({
       unMount();
     };
   }, [registerResetHandler, registerSaveHandler, resetAndSubmitForm, resetWithoutSave, unMount]);
-
-  useEffect(() => {
-    markAsChanged(Object.keys(formState.dirtyFields).length > 0);
-    return () => markAsChanged(false);
-    // formState.isDirty is needed to trigger the effect even though it is not used in the code
-  }, [formState.dirtyFields, formState.isDirty, markAsChanged]);
 
   return (
     <Box>

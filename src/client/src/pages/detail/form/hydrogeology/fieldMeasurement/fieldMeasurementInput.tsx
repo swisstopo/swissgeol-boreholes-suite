@@ -11,10 +11,10 @@ import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useU
 import { FormContainer, FormInput } from "../../../../../components/form/form.js";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.js";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
+import { useFormDirtyChanges } from "../../../../../components/form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { useBlockNavigation } from "../../../../../hooks/useBlockNavigation.tsx";
 import { DetailContext } from "../../../detailContext.tsx";
-import { SaveContext } from "../../../saveContext.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
@@ -31,7 +31,6 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   const { t } = useTranslation();
   const { triggerReload } = useContext(DataCardContext);
   const { reloadBorehole } = useContext(DetailContext);
-  const { markAsChanged } = useContext(SaveContext);
   useBlockNavigation();
   const domains = useDomains();
 
@@ -76,12 +75,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   });
 
   useValidateFormOnMount({ formMethods });
-
-  // Track form dirty state
-  useEffect(() => {
-    markAsChanged(Object.keys(formState.dirtyFields).length > 0);
-    return () => markAsChanged(false);
-  }, [formState.dirtyFields, formState.isDirty, markAsChanged]);
+  useFormDirtyChanges({ formState });
 
   useEffect(() => {
     trigger("fieldMeasurementResults");

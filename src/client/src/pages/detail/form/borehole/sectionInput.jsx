@@ -11,16 +11,15 @@ import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/sa
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
+import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
-import { SaveContext } from "../../saveContext.tsx";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
-  const { markAsChanged } = useContext(SaveContext);
   useBlockNavigation();
 
   const sectionElementDefaults = {
@@ -100,14 +99,9 @@ const SectionInput = ({ item, parentId }) => {
     }
   };
 
-  // Track form dirty state
-  useEffect(() => {
-    markAsChanged(Object.keys(formState.dirtyFields).length > 0);
-    return () => markAsChanged(false);
-  }, [formState.dirtyFields, formState.isDirty, markAsChanged]);
-
   useSaveOnCtrlS(handleSubmit(submitForm));
   useValidateFormOnMount({ formMethods });
+  useFormDirtyChanges({ formState });
 
   useEffect(() => {
     trigger("sectionElements");

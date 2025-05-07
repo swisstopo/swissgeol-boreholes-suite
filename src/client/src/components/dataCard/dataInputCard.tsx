@@ -1,11 +1,11 @@
-import { ReactNode, useContext, useEffect } from "react";
+import { ReactNode, useContext } from "react";
 import { FieldValues, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { DevTool } from "../../../hookformDevtools";
 import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../hooks/useSaveOnCtrlS";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
-import { SaveContext } from "../../pages/detail/saveContext.tsx";
 import { FormContainer } from "../form/form";
+import { useFormDirtyChanges } from "../form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../form/useValidateFormOnMount.tsx";
 import { DataCardContext } from "./dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "./saveAndCancelButtons.tsx";
@@ -29,7 +29,6 @@ export const DataInputCard = <T extends FieldValues>({
   children,
 }: DataInputCardProps<T>) => {
   const { triggerReload } = useContext(DataCardContext);
-  const { markAsChanged } = useContext(SaveContext);
   const { reloadBorehole } = useContext(DetailContext);
   useBlockNavigation();
   const formMethods = useForm<T>({ mode: "all" });
@@ -60,16 +59,9 @@ export const DataInputCard = <T extends FieldValues>({
     translationKey: promptLabel,
   });
 
-  // Track form dirty state
-  useEffect(() => {
-    markAsChanged(Object.keys(formState.dirtyFields).length > 0);
-    return () => markAsChanged(false);
-  }, [formState.dirtyFields, formState.isDirty, markAsChanged]);
-
   useValidateFormOnMount({ formMethods });
-
-  // Save with ctrl+s
   useSaveOnCtrlS(handleSubmit(submitForm));
+  useFormDirtyChanges({ formState });
 
   return (
     <FormProvider {...formMethods}>

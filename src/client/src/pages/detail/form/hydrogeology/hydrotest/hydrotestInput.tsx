@@ -11,10 +11,10 @@ import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard
 import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
 import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput } from "../../../../../components/form/form";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
+import { useFormDirtyChanges } from "../../../../../components/form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { useBlockNavigation } from "../../../../../hooks/useBlockNavigation.tsx";
 import { DetailContext } from "../../../detailContext.tsx";
-import { SaveContext } from "../../../saveContext.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation";
@@ -26,7 +26,6 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const { t } = useTranslation();
   const { triggerReload } = useContext(DataCardContext);
   const { reloadBorehole } = useContext(DetailContext);
-  const { markAsChanged } = useContext(SaveContext);
   useBlockNavigation();
   const domains = useDomains();
 
@@ -73,12 +72,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   });
 
   useValidateFormOnMount({ formMethods });
-
-  // Track form dirty state
-  useEffect(() => {
-    markAsChanged(Object.keys(formState.dirtyFields).length > 0);
-    return () => markAsChanged(false);
-  }, [formState.dirtyFields, formState.isDirty, markAsChanged]);
+  useFormDirtyChanges({ formState });
 
   const getFilteredDomains = (schema: string, data: Codelist[]) =>
     data?.filter(c => c.schema === schema).map(c => c.id) || [];

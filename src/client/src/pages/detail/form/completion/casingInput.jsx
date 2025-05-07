@@ -11,10 +11,10 @@ import { useUnsavedChangesPrompt } from "../../../../components/dataCard/useUnsa
 import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
+import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.js";
 import { DetailContext } from "../../detailContext.js";
-import { SaveContext } from "../../saveContext.js";
 import { extractCasingDepth } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { prepareEntityDataForSubmit } from "./completionUtils.js";
@@ -24,7 +24,6 @@ const CasingInput = props => {
   const { item, parentId } = props;
   const { triggerReload } = useContext(DataCardContext);
   const { reloadBorehole } = useContext(DetailContext);
-  const { markAsChanged } = useContext(SaveContext);
   useBlockNavigation();
   const formMethods = useForm({
     mode: "all",
@@ -114,18 +113,13 @@ const CasingInput = props => {
   });
 
   useValidateFormOnMount({ formMethods });
+  useFormDirtyChanges({ formState });
 
   useEffect(() => {
     trigger("casingElements");
     updateDepth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getValues()["casingElements"]]);
-
-  // Track form dirty state
-  useEffect(() => {
-    markAsChanged(Object.keys(formState.dirtyFields).length > 0);
-    return () => markAsChanged(false);
-  }, [formState.dirtyFields, formState.isDirty, markAsChanged]);
 
   return (
     <>
