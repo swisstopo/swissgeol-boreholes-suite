@@ -39,6 +39,20 @@ export const WorkflowTabs = () => {
     [t, workflow?.publishedTabs, workflow?.reviewedTabs],
   );
 
+  const buildUrlWithHashAndParams = useCallback(
+    (hash: string) => {
+      const searchParamsString = new URLSearchParams(searchParams).toString();
+      let newUrl = `${window.location.pathname}#${hash}`;
+
+      if (searchParamsString) {
+        newUrl += `?${searchParamsString}`;
+      }
+
+      return newUrl;
+    },
+    [searchParams],
+  );
+
   // Initialize and update activeIndex based on the current URL hash
   useEffect(() => {
     const [tabHash] = window.location.hash.replace("#", "").split("?");
@@ -49,22 +63,19 @@ export const WorkflowTabs = () => {
     } else {
       // If tab not found, redirect to first tab, preserving query params
       const newHash = tabs[0].hash;
-      const searchParamsString = new URLSearchParams(searchParams).toString();
-      const newUrl = `${window.location.pathname}#${newHash}${searchParamsString ? `?${searchParamsString}` : ""}`;
+      const newUrl = buildUrlWithHashAndParams(newHash);
       navigate(newUrl, { replace: true });
     }
-  }, [navigate, searchParams, tabs]);
+  }, [navigate, buildUrlWithHashAndParams, tabs]);
 
   // Change handler for tab selection
   const handleIndexChange = useCallback(
     (event: SyntheticEvent | null, index: number) => {
-      const searchParamsString = new URLSearchParams(searchParams).toString();
       const newHash = tabs[index].hash;
-      const newUrl = `${window.location.pathname}#${newHash}${searchParamsString ? `?${searchParamsString}` : ""}`;
-
+      const newUrl = buildUrlWithHashAndParams(newHash);
       navigate(newUrl);
     },
-    [navigate, searchParams, tabs],
+    [navigate, buildUrlWithHashAndParams, tabs],
   );
 
   return (
