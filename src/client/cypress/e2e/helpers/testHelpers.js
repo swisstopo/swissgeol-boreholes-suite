@@ -288,14 +288,12 @@ export const startBoreholeEditing = () => {
   cy.wait("@edit_lock");
 };
 
-export const stopBoreholeEditing = () => {
+export const stopBoreholeEditing = discardChanges => {
   stopEditing();
 
-  cy.get("body").then($body => {
-    if ($body.find('[data-cy="prompt"]').length) {
-      cy.get('[data-cy="prompt"]').find(`[data-cy="discardchanges-button"]`).click();
-    }
-  });
+  if (discardChanges) {
+    cy.get('[data-cy="prompt"]').find(`[data-cy="discardchanges-button"]`).click();
+  }
 
   cy.wait("@edit_unlock");
 };
