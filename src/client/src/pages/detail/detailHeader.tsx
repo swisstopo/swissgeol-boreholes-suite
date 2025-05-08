@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
@@ -19,22 +19,21 @@ import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
-import { useFormDirtyStore } from "./formDirtyStore.ts";
+import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 interface DetailHeaderProps {
   editableByCurrentUser: boolean;
   borehole: BoreholeV2;
-  triggerReset: () => void;
 }
 
-const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailHeaderProps) => {
+const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
-  const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
+  const { hasChanges, triggerReset } = useContext<SaveContextProps>(SaveContext);
   const auth = useAuth();
 
   const toggleEditing = (editing: boolean) => {
@@ -62,14 +61,14 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
   };
 
   const stopEditingWithUnsavedChanges = () => {
-    showPrompt(t("messageDiscardUnsavedChanges"), [
+    showPrompt("messageDiscardUnsavedChanges", [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
         variant: "outlined",
       },
       {
-        label: t("discardchanges"),
+        label: "discardchanges",
         icon: <Trash2 />,
         variant: "contained",
         action: resetFormAndStopEditing,
@@ -78,14 +77,14 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
   };
 
   const startExportWithUnsavedChanges = () => {
-    showPrompt(t("messageUnsavedChangesAtExport"), [
+    showPrompt("messageUnsavedChangesAtExport", [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
         variant: "outlined",
       },
       {
-        label: t("export"),
+        label: "export",
         icon: <ArrowDownToLine />,
         variant: "contained",
         action: () => setIsExporting(true),
@@ -95,18 +94,18 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
 
   const handleDelete = async () => {
     await deleteBorehole(borehole.id);
-    history.push("/");
+    navigate("/");
   };
 
   const handleReturnClick = () => {
     if (editingEnabled) {
-      if (isFormDirty) {
+      if (hasChanges) {
         stopEditingWithUnsavedChanges();
       } else {
         stopEditing();
       }
     }
-    history.push("/");
+    navigate("/");
   };
 
   // get unfinished or latest workflow
@@ -136,7 +135,7 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
       <Stack direction="row" data-cy="detail-header" gap={2}>
         <ExportButton
           label="export"
-          onClick={isFormDirty ? startExportWithUnsavedChanges : () => setIsExporting(true)}
+          onClick={hasChanges ? startExportWithUnsavedChanges : () => setIsExporting(true)}
         />
         {editableByCurrentUser && (
           <>
@@ -147,10 +146,10 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
                   onClick={() =>
                     showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
                       {
-                        label: t("cancel"),
+                        label: "cancel",
                       },
                       {
-                        label: t("delete"),
+                        label: "delete",
                         icon: <Trash2 />,
                         variant: "contained",
                         action: () => {
@@ -160,7 +159,7 @@ const DetailHeader = ({ editableByCurrentUser, triggerReset, borehole }: DetailH
                     ])
                   }
                 />
-                <EndEditButton onClick={isFormDirty ? stopEditingWithUnsavedChanges : stopEditing} />
+                <EndEditButton onClick={hasChanges ? stopEditingWithUnsavedChanges : stopEditing} />
               </>
             ) : (
               <EditButton onClick={startEditing} />

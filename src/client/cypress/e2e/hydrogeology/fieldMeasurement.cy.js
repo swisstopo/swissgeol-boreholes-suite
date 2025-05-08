@@ -80,7 +80,7 @@ describe("Tests for the field measurement editor.", () => {
 
       // delete field measurement
       deleteItem();
-      handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "Löschen");
+      handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "delete");
       cy.wait("@fieldmeasurement_DELETE");
       cy.get("body").should("not.contain", "Pumpprobe");
     });

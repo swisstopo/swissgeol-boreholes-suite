@@ -1,7 +1,6 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
 import { Divider, IconButton } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
@@ -12,31 +11,16 @@ import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/sa
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
+import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
-import { useFormDirtyStore } from "../../formDirtyStore.ts";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
   const { data: domains } = useDomains();
   const { i18n } = useTranslation();
-  const setIsFormDirty = useFormDirtyStore(state => state.setIsFormDirty);
-  const { handleBlockedNavigation } = useBlockNavigation();
-  const history = useHistory();
-
-  // Block navigation if form is dirty
-  useEffect(() => {
-    const unblock = history.block(nextLocation => {
-      if (!handleBlockedNavigation(nextLocation.pathname + nextLocation.hash)) {
-        return false;
-      }
-    });
-    // When component unmounts, unblock navigation
-    return () => {
-      unblock();
-    };
-  }, [history, handleBlockedNavigation]);
+  useBlockNavigation();
 
   const sectionElementDefaults = {
     fromDepth: null,
@@ -73,9 +57,10 @@ const SectionInput = ({ item, parentId }) => {
       sectionElements: item?.sectionElements || [{ ...sectionElementDefaults }],
     },
   });
+  const { reset, formState, getValues, trigger, handleSubmit, control } = formMethods;
   const { fields, append, remove, update } = useFieldArray({
     name: "sectionElements",
-    control: formMethods.control,
+    control: control,
     keyName: "sectionElementId", // default "id" clashes with the id property of the sectionElement
     rules: {
       required: true,
@@ -100,7 +85,7 @@ const SectionInput = ({ item, parentId }) => {
     data = prepareFormDataForSubmit(data);
     if (item.id === 0) {
       addSection(data).then(() => {
-        formMethods.reset();
+        reset();
         triggerReload();
       });
     } else {
@@ -108,37 +93,26 @@ const SectionInput = ({ item, parentId }) => {
         ...item,
         ...data,
       }).then(() => {
-        formMethods.reset();
+        reset();
         triggerReload();
       });
     }
   };
 
-  // Track form dirty state
-  useEffect(() => {
-    setIsFormDirty(Object.keys(formMethods.formState.dirtyFields).length > 0);
-    return () => setIsFormDirty(false);
-  }, [
-    formMethods.formState.dirtyFields,
-    formMethods.formState.isDirty,
-    formMethods,
-    formMethods.formState,
-    setIsFormDirty,
-  ]);
-
-  useSaveOnCtrlS(formMethods.handleSubmit(submitForm));
+  useSaveOnCtrlS(handleSubmit(submitForm));
   useValidateFormOnMount({ formMethods });
+  useFormDirtyChanges({ formState });
 
   useEffect(() => {
-    formMethods.trigger("sectionElements");
+    trigger("sectionElements");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.getValues()["sectionElements"]]);
+  }, [getValues()["sectionElements"]]);
 
   return (
     <>
-      <DevTool control={formMethods.control} placement="top-left" />
+      <DevTool control={control} placement="top-left" />
       <FormProvider {...formMethods}>
-        <form onSubmit={formMethods.handleSubmit(submitForm)}>
+        <form onSubmit={handleSubmit(submitForm)}>
           <FormContainer>
             <FormInput fieldName="name" label="section_name" value={item?.name} required={true} />
             {fields
@@ -185,9 +159,9 @@ const SectionInput = ({ item, parentId }) => {
                           d => d.path.length === 0 || d.path.length === 1,
                         )}
                         onUpdate={newValue => {
-                          const subtypeValue = formMethods.getValues(`sectionElements.${index}.drillingMudSubtypeId`);
+                          const subtypeValue = getValues(`sectionElements.${index}.drillingMudSubtypeId`);
                           update(index, {
-                            ...formMethods.getValues(`sectionElements.${index}`),
+                            ...getValues(`sectionElements.${index}`),
                             drillingMudTypeId: newValue,
                             drillingMudSubtypeId:
                               drillingMudTypeOptions.get(subtypeValue)?.path?.length > 0 ? "" : subtypeValue,
@@ -202,7 +176,7 @@ const SectionInput = ({ item, parentId }) => {
                           d =>
                             d.path.length === 0 ||
                             (d.path.length === 2 &&
-                              d.path[0] === formMethods.getValues(`sectionElements.${index}.drillingMudTypeId`)),
+                              d.path[0] === getValues(`sectionElements.${index}.drillingMudTypeId`)),
                         )}
                       />
                     </FormContainer>
@@ -249,8 +223,8 @@ const SectionInput = ({ item, parentId }) => {
                             append(
                               {
                                 ...sectionElementDefaults,
-                                fromDepth: formMethods.getValues(`sectionElements.${fields.length - 1}.fromDepth`),
-                                toDepth: formMethods.getValues(`sectionElements.${fields.length - 1}.toDepth`),
+                                fromDepth: getValues(`sectionElements.${fields.length - 1}.fromDepth`),
+                                toDepth: getValues(`sectionElements.${fields.length - 1}.toDepth`),
                               },
                               { shouldFocus: false },
                             );

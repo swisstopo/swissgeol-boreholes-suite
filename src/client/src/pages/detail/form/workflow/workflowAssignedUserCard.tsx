@@ -1,14 +1,14 @@
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { Button, Stack, Typography } from "@mui/material";
 import AssignUser from "../../../../assets/icons/assignUser.svg?react";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../../../utils.ts";
 import { WorkflowCard } from "./styledWorkflowComponents.tsx";
 import { useWorkflow } from "./workflow.ts";
 
 export const WorkflowAssignedUserCard = () => {
   const { t } = useTranslation();
-  const { id: boreholeId } = useParams<{ id: string }>();
+  const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: workflow } = useWorkflow(parseInt(boreholeId));
 
   return (

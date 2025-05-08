@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { Casing } from "../../../../api/apiInterfaces.ts";
 import { getCasingsByBoreholeId } from "../../../../api/fetchApiV2.js";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
 import DepthInput from "./depthInput.tsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants.ts";
@@ -12,7 +12,7 @@ import { ObservationInputProps } from "./Observation.ts";
 
 const ObservationInput = ({ observation, showDepthInputs = true }: ObservationInputProps) => {
   const [casings, setCasings] = useState<Casing[]>([]);
-  const { id: boreholeId } = useParams<{ id: string }>();
+  const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const getCasingOptions = useGetCasingOptions();
 
   useEffect(() => {

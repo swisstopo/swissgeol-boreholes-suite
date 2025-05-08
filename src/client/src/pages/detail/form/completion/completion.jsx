@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import {
@@ -15,6 +15,7 @@ import { DataCardExternalContext } from "../../../../components/dataCard/dataCar
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { DetailContext } from "../../detailContext.tsx";
 import CompletionContent from "./completionContent.jsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";
@@ -23,9 +24,10 @@ import CompletionHeaderInput from "./completionHeaderInput.jsx";
 const Completion = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { showPrompt } = useContext(PromptContext);
-  const { editingEnabled } = useContext(DetailContext);
-  const { boreholeId, completionId } = useParams();
-  const history = useHistory();
+  const { reloadBorehole, editingEnabled } = useContext(DetailContext);
+  const { id: boreholeId } = useRequiredParams();
+  const { completionId } = useParams();
+  const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const mounted = useRef(false);
@@ -53,7 +55,7 @@ const Completion = () => {
   };
 
   const updateHistory = selectedId => {
-    var newLocation = "/" + boreholeId + "/completion/" + selectedId;
+    let newLocation = "/" + boreholeId + "/completion/" + selectedId;
     if (selectedId !== "new") {
       if (location.hash !== "" && selectedId.toString() === completionId) {
         newLocation += location.hash;
@@ -63,11 +65,11 @@ const Completion = () => {
     }
 
     if (location.pathname + location.hash !== newLocation) {
-      var locationSnippets = location.pathname.split("/");
+      const locationSnippets = location.pathname.split("/");
       if (locationSnippets[locationSnippets.length - 1] === "completion") {
-        history.replace(newLocation);
+        navigate(newLocation, { replace: true });
       } else {
-        history.push(newLocation);
+        navigate(newLocation);
       }
     }
   };
@@ -130,9 +132,9 @@ const Completion = () => {
         if (state.switchTabTo === -1) {
           updateHistory("new");
         } else if (state.selected.id === 0) {
-          var newCompletionList = state.displayed.slice(0, -1);
+          const newCompletionList = state.displayed.slice(0, -1);
           if (newCompletionList.length === 0) {
-            history.push("/" + boreholeId + "/completion");
+            navigate("/" + boreholeId + "/completion");
             resetState();
           } else {
             updateHistory(newCompletionList[state.switchTabTo].id);
@@ -143,7 +145,7 @@ const Completion = () => {
       }
 
       if (completionToBeSaved !== null && canSwitch === -1) {
-        var displayed = state.displayed;
+        const displayed = state.displayed;
         const index = displayed.findIndex(item => item.id === completionToBeSaved.id);
         displayed[index] = completionToBeSaved;
 
@@ -183,6 +185,7 @@ const Completion = () => {
         if (!preventReload) {
           loadData();
         }
+        reloadBorehole();
       });
     } else {
       updateCompletion(completion).then(() => {
@@ -212,10 +215,10 @@ const Completion = () => {
   const cancelChanges = () => {
     setState({ ...state, editing: false });
     if (state.selected.id === 0) {
-      var newCompletionList = state.displayed.slice(0, -1);
-      var index = newCompletionList.length - 1;
+      const newCompletionList = state.displayed.slice(0, -1);
+      const index = newCompletionList.length - 1;
       if (newCompletionList.length === 0) {
-        history.push("/" + boreholeId + "/completion");
+        navigate("/" + boreholeId + "/completion");
       } else {
         updateHistory(newCompletionList[index].id);
       }
@@ -225,11 +228,11 @@ const Completion = () => {
   const deleteSelectedCompletion = () => {
     showPrompt(t("deleteCompletionMessage"), [
       {
-        label: t("cancel"),
+        label: "cancel",
         action: null,
       },
       {
-        label: t("delete"),
+        label: "delete",
         icon: <Trash2 />,
         variant: "contained",
         action: onDeleteConfirmed,
@@ -238,10 +241,11 @@ const Completion = () => {
   };
 
   const onDeleteConfirmed = () => {
-    var newTabIndex = state.index > 0 ? state.index - 1 : 0;
+    const newTabIndex = state.index > 0 ? state.index - 1 : 0;
     setState({ ...state, switchTabTo: newTabIndex });
     deleteCompletion(state.selected.id).then(() => {
       loadData();
+      reloadBorehole();
     });
   };
 
@@ -263,7 +267,7 @@ const Completion = () => {
       return;
     }
     if (completionId === "new" && (state.switchTabTo === null || state.switchTabTo === -1)) {
-      var tempCompletion = {
+      const tempCompletion = {
         id: 0,
         boreholeId: boreholeId,
         name: null,
@@ -272,7 +276,7 @@ const Completion = () => {
         abandonDate: null,
         notes: null,
       };
-      var displayed = completions?.length > 0 ? completions : [];
+      const displayed = completions?.length > 0 ? completions : [];
       setState({
         ...state,
         displayed: [...displayed, tempCompletion],
@@ -282,7 +286,7 @@ const Completion = () => {
         editing: true,
       });
     } else if (completions?.length > 0) {
-      var index;
+      let index;
       if (state.switchTabTo != null) {
         index = state.switchTabTo;
       } else if (completionId != null) {
@@ -306,7 +310,7 @@ const Completion = () => {
       }
     } else {
       resetState();
-      history.push("/" + boreholeId + "/completion");
+      navigate("/" + boreholeId + "/completion");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completions, completionId]);

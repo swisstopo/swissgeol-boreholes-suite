@@ -1,44 +1,43 @@
-import { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { BoreholeV2, getBoreholeById, updateBorehole } from "../../api/borehole.ts";
+import { getBoreholeById } from "../../api/borehole.ts";
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
-import { prepareBoreholeDataForSubmit, prepareLocationDataForSubmit } from "../../components/form/formUtils.ts";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsContext.tsx";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
-import { BoreholeFormInputs } from "./form/borehole/boreholePanelInterfaces.ts";
-import { LocationFormInputs, LocationFormSubmission } from "./form/location/locationPanelInterfaces.tsx";
 import { useLabelingContext } from "./labeling/labelingContext.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
+import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 export const DetailPage: FC = () => {
   const [loading, setLoading] = useState(true);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
-  const [borehole, setBorehole] = useState<BoreholeV2 | null>(null);
   const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const workflowStatus = useSelector((state: ReduxRootState) => state.core_workflow);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
-  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
+  const { borehole, setBorehole, editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
+  const { showSaveBar } = useContext<SaveContextProps>(SaveContext);
   const { sendAnalyticsEvent } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const dispatch = useDispatch();
-  const { id } = useParams<{ id: string }>();
+  const { id } = useRequiredParams<{ id: string }>();
 
   useEffect(() => {
     getBoreholeById(parseInt(id, 10)).then(b => {
       setBorehole(b);
       setEditingEnabled(b.locked !== null && b.lockedById === user.data.id);
     });
-  }, [id, setEditingEnabled, user.data.id, workflowStatus]);
+  }, [id, setBorehole, setEditingEnabled, user.data.id, workflowStatus]);
 
   const loadOrCreate = useCallback(
     (id: string) => {
@@ -54,35 +53,6 @@ export const DetailPage: FC = () => {
     },
     [dispatch, setLoading],
   );
-
-  const locationPanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
-  const boreholePanelRef = useRef<{ submit: () => void; reset: () => void }>(null);
-
-  function getAndUpdateBorehole(boreholeSubmission: BoreholeFormInputs | LocationFormSubmission) {
-    getBoreholeById(parseInt(id)).then(b => {
-      updateBorehole({ ...b, ...boreholeSubmission }).then(r => {
-        setBorehole(r);
-      });
-    });
-  }
-
-  const onBoreholeFormSubmit = (formInputs: BoreholeFormInputs) => {
-    getAndUpdateBorehole(prepareBoreholeDataForSubmit(formInputs));
-  };
-
-  const onLocationFormSubmit = (formInputs: LocationFormInputs) => {
-    getAndUpdateBorehole(prepareLocationDataForSubmit(formInputs));
-  };
-
-  const triggerSubmit = () => {
-    boreholePanelRef.current?.submit();
-    locationPanelRef.current?.submit();
-  };
-
-  const triggerReset = () => {
-    boreholePanelRef.current?.reset();
-    locationPanelRef.current?.reset();
-  };
 
   useEffect(() => {
     loadOrCreate(id);
@@ -121,13 +91,9 @@ export const DetailPage: FC = () => {
       </Stack>
     );
 
-  const shouldShowSaveBar =
-    location.pathname.endsWith("/location") ||
-    (location.pathname.endsWith("/borehole") && location.hash === "#general");
-
   return (
     <>
-      <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} triggerReset={triggerReset} />
+      <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} />
       <LayoutBox>
         <SidebarBox>
           <DetailSideNav borehole={borehole} />
@@ -151,18 +117,11 @@ export const DetailPage: FC = () => {
                 panelPosition={panelPosition}
                 onClick={() => togglePanel()}
               />
-              <DetailPageContent
-                locationPanelRef={locationPanelRef}
-                onLocationFormSubmit={onLocationFormSubmit}
-                boreholePanelRef={boreholePanelRef}
-                onBoreholeFormSubmit={onBoreholeFormSubmit}
-                borehole={borehole}
-                panelOpen={panelOpen}
-              />
+              <DetailPageContent borehole={borehole} panelOpen={panelOpen} />
             </MainContentBox>
             {panelOpen && <LabelingPanel />}
           </Box>
-          {editingEnabled && shouldShowSaveBar && <SaveBar triggerSubmit={triggerSubmit} triggerReset={triggerReset} />}
+          {editingEnabled && showSaveBar && <SaveBar />}
         </Stack>
       </LayoutBox>
     </>

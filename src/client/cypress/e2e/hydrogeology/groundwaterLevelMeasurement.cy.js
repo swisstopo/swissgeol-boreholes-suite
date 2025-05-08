@@ -64,7 +64,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // delete groundwater level measurement
     deleteItem();
-    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "Löschen");
+    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "delete");
     cy.wait("@groundwaterlevelmeasurement_DELETE");
     cy.get("body").should("not.contain", "Drucksonde");
   });

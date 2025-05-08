@@ -1,6 +1,14 @@
 import { addItem, saveWithSaveBar, stopEditing } from "../helpers/buttonHelpers";
 import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
-import { clearInput, evaluateInput, evaluateSelect, isDisabled, setInput, setSelect } from "../helpers/formHelpers";
+import {
+  clearInput,
+  evaluateInput,
+  evaluateSelect,
+  isDisabled,
+  setInput,
+  setOriginalName,
+  setSelect,
+} from "../helpers/formHelpers";
 import {
   createBorehole,
   goToRouteAndAcceptTerms,
@@ -32,14 +40,13 @@ describe("Tests for 'Location' edit page.", () => {
     cy.contains("Unsaved changes").should("exist");
   };
 
-  const originalNameInput = () => cy.contains("label", "Original name").next().children("input");
-
   it("creates and deletes a borehole.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole();
 
-    // enter original name
-    originalNameInput().type("AAA_SCATORPS");
+    // enter original name and make sure it was copied to alternate name
+    setOriginalName("AAA_SCATORPS");
+    evaluateInput("name", "AAA_SCATORPS");
 
     // save borehole
     saveWithSaveBar();
@@ -72,7 +79,7 @@ describe("Tests for 'Location' edit page.", () => {
 
       startBoreholeEditing();
       // changing original name should also change alternate name
-      setInput("originalName", "PHOTOCAT");
+      setOriginalName("PHOTOCAT");
       evaluateInput("originalName", "PHOTOCAT");
       evaluateInput("name", "PHOTOCAT");
 
@@ -82,7 +89,7 @@ describe("Tests for 'Location' edit page.", () => {
       evaluateInput("name", "PHOTOMOUSE");
 
       // changing original name should not update alternate name if they are different
-      setInput("originalName", "PHOTOPIGEON");
+      setOriginalName("PHOTOPIGEON");
       evaluateInput("originalName", "PHOTOPIGEON");
       evaluateInput("name", "PHOTOMOUSE");
 
@@ -174,7 +181,7 @@ describe("Tests for 'Location' edit page.", () => {
     newEditableBorehole();
 
     verifyNoUnsavedChanges();
-    originalNameInput().type("PHOTOFOX");
+    setOriginalName("PHOTOFOX");
     verifyUnsavedChanges();
     cy.get("body").type("{ctrl}s");
     verifyNoUnsavedChanges();
@@ -189,16 +196,16 @@ describe("Tests for 'Location' edit page.", () => {
     });
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
 
-    originalNameInput().type("FELIX_THE_RACOON");
+    setOriginalName("FELIX_THE_RACOON");
     stopEditing();
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.get('[data-cy="editingstop-button"]').should("exist");
     stopEditing();
-    handlePrompt(messageUnsavedChanges, "discard changes");
+    handlePrompt(messageUnsavedChanges, "discardchanges");
     cy.get('[data-cy="editingstop-button"]').should("not.exist");
 
     startBoreholeEditing();
-    originalNameInput().type("FELIX_THE_BROOM");
+    setOriginalName("FELIX_THE_BROOM");
 
     cy.get('[data-cy="borehole-menu-item"]').click();
     handlePrompt(messageUnsavedChanges, "cancel");
@@ -207,7 +214,7 @@ describe("Tests for 'Location' edit page.", () => {
     });
 
     cy.get('[data-cy="borehole-menu-item"]').click();
-    handlePrompt(messageUnsavedChanges, "discard changes");
+    handlePrompt(messageUnsavedChanges, "discardchanges");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
     });
@@ -216,7 +223,9 @@ describe("Tests for 'Location' edit page.", () => {
   it("adds edits and deletes borehole identifiers", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    originalNameInput().type("AAA_FELIX_THE_PANDA");
+
+    setOriginalName("AAA_FELIX_THE_PANDA");
+    evaluateInput("name", "AAA_FELIX_THE_PANDA");
 
     function saveFormAndReturnToOverview() {
       saveWithSaveBar();

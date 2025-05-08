@@ -74,14 +74,14 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
 
   const onCancel = () => {
     if (isFormDirty) {
-      showPrompt(t("messageDiscardUnsavedChanges"), [
+      showPrompt("messageDiscardUnsavedChanges", [
         {
-          label: t("cancel"),
+          label: "cancel",
           icon: <X />,
           variant: "outlined",
         },
         {
-          label: t("discardchanges"),
+          label: "discardchanges",
           icon: <Trash2 />,
           variant: "contained",
           action: () => {

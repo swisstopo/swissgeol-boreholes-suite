@@ -49,10 +49,10 @@ const BottomBar = ({
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
     setCopyPromptOpen(true);
     showPrompt(
-      t("selectWorkgroupToCreateCopy"),
+      "selectWorkgroupToCreateCopy",
       [
         {
-          label: t("cancel"),
+          label: "cancel",
         },
         {
           label: "copy",
@@ -68,7 +68,7 @@ const BottomBar = ({
         sx={{ pt: 6, pb: 3 }}
       />,
     );
-  }, [enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, t, workgroup]);
+  }, [enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, workgroup]);
 
   //Ensures prompt content with the WorkgroupSelect is updated when a workgroup is selected.
   useEffect(() => {
@@ -81,12 +81,12 @@ const BottomBar = ({
   }
 
   const showPromptExportMoreThan100 = (callback: () => void) => {
-    showPrompt(t("bulkExportMoreThan100"), [
+    showPrompt("bulkExportMoreThan100", [
       {
-        label: t("cancel"),
+        label: "cancel",
       },
       {
-        label: t("export100Boreholes"),
+        label: "export100Boreholes",
         icon: <ArrowDownToLine />,
         variant: "contained",
         action: callback,
@@ -125,10 +125,10 @@ const BottomBar = ({
               onClick={() =>
                 showPrompt(t("deleteBoreholesMessage", { count: selectionModel.length }), [
                   {
-                    label: t("cancel"),
+                    label: "cancel",
                   },
                   {
-                    label: t("delete"),
+                    label: "delete",
                     icon: <Trash2 />,
                     variant: "contained",
                     action: onDeleteMultiple,

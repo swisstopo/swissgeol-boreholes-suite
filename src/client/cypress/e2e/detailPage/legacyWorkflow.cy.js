@@ -132,7 +132,7 @@ describe("Tests the legacy publication workflow.", () => {
     // Delete
     startBoreholeEditing();
     cy.get("[data-cy=deleteborehole-button]").click();
-    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
+    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "delete");
     cy.wait(["@edit_list", "@borehole"]);
   });
 });

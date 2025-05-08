@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { loadEditingBoreholes } from "../../../api-lib";
@@ -21,7 +21,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [rowToHighlight, setRowToHighlight] = useState<number | null>(null);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [isExporting, setIsExporting] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   const {
     filterPolygon,
     setFilterPolygon,
@@ -43,7 +43,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       type: "CLEAR",
       path: "/borehole",
     });
-    history.push("/" + id);
+    navigate("/" + id);
   };
 
   const multipleSelected = (selection: GridRowSelectionModel, filter: Record<string, unknown> | null = null) => {

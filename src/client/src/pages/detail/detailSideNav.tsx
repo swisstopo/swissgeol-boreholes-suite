@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { ChildListItem, ParentListItem } from "../../components/styledComponents.ts";
+import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../utils";
 import { ObservationType } from "./form/hydrogeology/Observation.ts";
 
@@ -17,34 +18,70 @@ interface DetailSideNavProps {
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const [stratigraphyIsVisible, setStratigraphyIsVisible] = useState(false);
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
-  const { id } = useParams<{ id: string }>();
+  const { id } = useRequiredParams<{ id: string }>();
   const location = useLocation();
   const { t } = useTranslation();
   const auth = useAuth();
-  const history = useHistory();
-  const hasStratigraphy = (borehole.stratigraphies?.length ?? 0) > 0;
-  const hasLithology = borehole.stratigraphies?.some(s => s.layers?.length > 0) ?? false;
-  const hasChronoStratigraphy = borehole.stratigraphies?.some(s => s.chronostratigraphyLayers?.length > 0) ?? false;
-  const hasLithoStratigraphy = borehole.stratigraphies?.some(s => s.lithostratigraphyLayers?.length > 0) ?? false;
-  const hasCompletion = (borehole.completions?.length ?? 0) > 0;
-  const hasObservation = (borehole.observations?.length ?? 0) > 0;
-  const hasWaterIngress =
-    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.waterIngress) ?? false);
-  const hasGroundwaterLevelMeasurement =
-    hasObservation &&
-    (borehole.observations?.some(obs => obs.type === ObservationType.groundwaterLevelMeasurement) ?? false);
-  const hasHydroTest =
-    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.hydrotest) ?? false);
-  const hasFieldMeasurement =
-    hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.fieldMeasurement) ?? false);
-  const hasBoreholeFiles = (borehole.boreholeFiles?.length ?? 0) > 0;
-  const hasPhotos = (borehole.photos?.length ?? 0) > 0;
-  const hasAttachments = hasBoreholeFiles || hasPhotos;
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const {
+    hasStratigraphy,
+    hasLithology,
+    hasChronoStratigraphy,
+    hasLithoStratigraphy,
+    hasCompletion,
+    hasObservation,
+    hasWaterIngress,
+    hasGroundwaterLevelMeasurement,
+    hasHydroTest,
+    hasFieldMeasurement,
+    hasAttachments,
+  } = useMemo(() => {
+    const hasStratigraphy = (borehole.stratigraphies?.length ?? 0) > 0;
+    const hasLithology = borehole.stratigraphies?.some(s => s.layers?.length > 0) ?? false;
+    const hasChronoStratigraphy = borehole.stratigraphies?.some(s => s.chronostratigraphyLayers?.length > 0) ?? false;
+    const hasLithoStratigraphy = borehole.stratigraphies?.some(s => s.lithostratigraphyLayers?.length > 0) ?? false;
+    const hasCompletion = (borehole.completions?.length ?? 0) > 0;
+    const hasObservation = (borehole.observations?.length ?? 0) > 0;
+    const hasWaterIngress =
+      hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.waterIngress) ?? false);
+    const hasGroundwaterLevelMeasurement =
+      hasObservation &&
+      (borehole.observations?.some(obs => obs.type === ObservationType.groundwaterLevelMeasurement) ?? false);
+    const hasHydroTest =
+      hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.hydrotest) ?? false);
+    const hasFieldMeasurement =
+      hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.fieldMeasurement) ?? false);
+    const hasBoreholeFiles = (borehole.boreholeFiles?.length ?? 0) > 0;
+    const hasPhotos = (borehole.photos?.length ?? 0) > 0;
+    const hasAttachments = hasBoreholeFiles || hasPhotos;
+
+    return {
+      hasStratigraphy,
+      hasLithology,
+      hasChronoStratigraphy,
+      hasLithoStratigraphy,
+      hasCompletion,
+      hasObservation,
+      hasWaterIngress,
+      hasGroundwaterLevelMeasurement,
+      hasHydroTest,
+      hasFieldMeasurement,
+      hasAttachments,
+    };
+  }, [borehole]);
 
   useEffect(() => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
     setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
   }, [location, id]);
+
+  const navigateTo = (path: string) => {
+    if (path !== location.pathname) {
+      navigate({ pathname: path, search: searchParams.toString() });
+    }
+  };
 
   return (
     <Box
@@ -68,14 +105,14 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             style={{ borderTop: "none" }}
             active={location.pathname === `/${id}/location`}
             onClick={() => {
-              history.push(`/${id}/location`);
+              navigateTo(`/${id}/location`);
             }}>
             <Typography data-cy="location-menu-item">{capitalizeFirstLetter(t("location"))}</Typography>
           </ParentListItem>
           <ParentListItem
             active={location.pathname === `/${id}/borehole`}
             onClick={() => {
-              history.push(`/${id}/borehole`);
+              navigateTo(`/${id}/borehole`);
             }}>
             <Typography data-cy="borehole-menu-item">{capitalizeFirstLetter(t("borehole"))}</Typography>
           </ParentListItem>
@@ -93,7 +130,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/stratigraphy/lithology`}
                 hasContent={hasLithology}
                 onClick={() => {
-                  history.push(`/${id}/stratigraphy/lithology`);
+                  navigateTo(`/${id}/stratigraphy/lithology`);
                 }}>
                 <Typography data-cy="lithology-menu-item">{capitalizeFirstLetter(t("lithology"))}</Typography>
               </ChildListItem>
@@ -101,7 +138,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/stratigraphy/chronostratigraphy`}
                 hasContent={hasChronoStratigraphy}
                 onClick={() => {
-                  history.push(`/${id}/stratigraphy/chronostratigraphy`);
+                  navigateTo(`/${id}/stratigraphy/chronostratigraphy`);
                 }}>
                 <Typography data-cy="chronostratigraphy-menu-item">
                   {capitalizeFirstLetter(t("chronostratigraphy"))}
@@ -111,7 +148,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/stratigraphy/lithostratigraphy`}
                 hasContent={hasLithoStratigraphy}
                 onClick={() => {
-                  history.push(`/${id}/stratigraphy/lithostratigraphy`);
+                  navigateTo(`/${id}/stratigraphy/lithostratigraphy`);
                 }}>
                 <Typography data-cy="lithostratigraphy-menu-item">
                   {capitalizeFirstLetter(t("lithostratigraphy"))}
@@ -123,7 +160,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             active={location.pathname.includes(`/${id}/completion`)}
             hasContent={hasCompletion}
             onClick={() => {
-              history.push(`/${id}/completion`);
+              navigateTo(`/${id}/completion`);
             }}>
             <Typography data-cy="completion-menu-item">{capitalizeFirstLetter(t("completion"))}</Typography>
           </ParentListItem>
@@ -141,7 +178,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/wateringress`}
                 hasContent={hasWaterIngress}
                 onClick={() => {
-                  history.push(`/${id}/hydrogeology/wateringress`);
+                  navigateTo(`/${id}/hydrogeology/wateringress`);
                 }}>
                 <Typography data-cy="wateringress-menu-item">{capitalizeFirstLetter(t("waterIngress"))}</Typography>
               </ChildListItem>
@@ -149,7 +186,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
                 hasContent={hasGroundwaterLevelMeasurement}
                 onClick={() => {
-                  history.push(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
+                  navigateTo(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
                 }}>
                 <Typography data-cy="groundwaterlevelmeasurement-menu-item">
                   {capitalizeFirstLetter(t("groundwaterLevelMeasurement"))}
@@ -159,7 +196,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
                 hasContent={hasFieldMeasurement}
                 onClick={() => {
-                  history.push(`/${id}/hydrogeology/fieldmeasurement`);
+                  navigateTo(`/${id}/hydrogeology/fieldmeasurement`);
                 }}>
                 <Typography data-cy="fieldmeasurement-menu-item">
                   {capitalizeFirstLetter(t("fieldMeasurement"))}
@@ -169,7 +206,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/hydrotest`}
                 hasContent={hasHydroTest}
                 onClick={() => {
-                  history.push(`/${id}/hydrogeology/hydrotest`);
+                  navigateTo(`/${id}/hydrogeology/hydrotest`);
                 }}>
                 <Typography data-cy="hydrotest-menu-item">{capitalizeFirstLetter(t("hydrotest"))}</Typography>
               </ChildListItem>
@@ -181,7 +218,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/attachments`}
                 hasContent={hasAttachments}
                 onClick={() => {
-                  history.push(`/${id}/attachments`);
+                  navigateTo(`/${id}/attachments`);
                 }}>
                 <Typography data-cy="attachments-menu-item">{capitalizeFirstLetter(t("attachments"))}</Typography>
               </ParentListItem>
@@ -189,7 +226,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/status`}
                 style={{ borderBottom: `1px solid ${theme.palette.border.light}` }}
                 onClick={() => {
-                  history.push(`/${id}/status`);
+                  navigateTo(`/${id}/status`);
                 }}>
                 <Typography data-cy="status-menu-item">{capitalizeFirstLetter(t("flowPublicationStatus"))}</Typography>
               </ParentListItem>

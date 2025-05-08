@@ -50,13 +50,13 @@ const CompletionHeaderInput = props => {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
         showPrompt(t("unsavedChangesMessage", { where: t("completion") }), [
           {
-            label: t("cancel"),
+            label: "cancel",
             action: () => {
               switchTabs(false);
             },
           },
           {
-            label: t("reset"),
+            label: "reset",
             action: () => {
               formMethods.reset(selectedCompletion);
               switchTabs(true);

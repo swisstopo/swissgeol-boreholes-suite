@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { SaveContext } from "../../pages/detail/saveContext.tsx";
 import { PromptContext } from "../prompt/promptContext.tsx";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext.tsx";
 
@@ -19,17 +20,18 @@ export const useUnsavedChangesPrompt = <T extends FieldValues>({
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
   const { selectCard } = useContext(DataCardContext);
   const { showPrompt } = useContext(PromptContext);
+  const { hasChanges } = useContext(SaveContext);
 
   useEffect(() => {
     if (checkIsDirty) {
-      if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
+      if (hasChanges) {
         showPrompt(t("unsavedChangesMessage", { where: t(translationKey) }), [
           {
-            label: t("cancel"),
+            label: "cancel",
             action: () => leaveInput(false),
           },
           {
-            label: t("reset"),
+            label: "reset",
             action: () => {
               formMethods.reset();
               selectCard(null);
@@ -37,7 +39,7 @@ export const useUnsavedChangesPrompt = <T extends FieldValues>({
             },
           },
           {
-            label: t("save"),
+            label: "save",
             disabled: !formMethods.formState.isValid,
             action: () => formMethods.handleSubmit(submitForm)(),
           },

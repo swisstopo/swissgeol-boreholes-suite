@@ -89,7 +89,7 @@ describe("Instrumentation crud tests", () => {
 
     // delete instrumentation
     deleteItem();
-    handlePrompt("Do you really want to delete this entry?", "Delete");
+    handlePrompt("Do you really want to delete this entry?", "delete");
     cy.contains("From depth").should("not.exist");
   });
 

@@ -1,56 +1,47 @@
-import { useContext, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
+import { useCallback, useContext, useEffect, useRef } from "react";
+import { useBlocker } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
-import { useFormDirtyStore } from "../pages/detail/formDirtyStore.ts";
+import { SaveContext, SaveContextProps } from "../pages/detail/saveContext.tsx";
 
-interface UseBlockNavigationResult {
-  handleBlockedNavigation: (nextLocation: string) => boolean;
-}
-
-export const useBlockNavigation = (): UseBlockNavigationResult => {
-  const [nextLocation, setNextLocation] = useState<string | null>(null);
-  const [confirmedNavigation, setConfirmedNavigation] = useState(false);
-  const isFormDirty = useFormDirtyStore(state => state.isFormDirty);
+export const useBlockNavigation = () => {
+  const { hasChanges } = useContext<SaveContextProps>(SaveContext);
   const { showPrompt } = useContext(PromptContext);
-  const { t } = useTranslation();
-  const history = useHistory();
+  const promptShownRef = useRef(false);
 
-  // Allow navigation after user confirms
+  const shouldBlock = useCallback(() => {
+    return hasChanges;
+  }, [hasChanges]);
+
+  const blocker = useBlocker(shouldBlock);
+
   useEffect(() => {
-    if (confirmedNavigation && nextLocation) {
-      history.push(nextLocation);
-    }
-  }, [confirmedNavigation, nextLocation, history]);
-
-  const handleBlockedNavigation = (nextLocation: string): boolean => {
-    if (!confirmedNavigation && isFormDirty) {
-      showPrompt(t("messageDiscardUnsavedChanges"), [
+    if (blocker.state === "blocked" && !promptShownRef.current && hasChanges) {
+      promptShownRef.current = true;
+      showPrompt("messageDiscardUnsavedChanges", [
         {
-          label: t("cancel"),
+          label: "cancel",
           icon: <X />,
           variant: "outlined",
+          action: () => {
+            blocker.reset?.();
+            setTimeout(() => {
+              promptShownRef.current = false; // avoids duplicate prompts with async state
+            }, 0);
+          },
         },
         {
-          label: t("discardchanges"),
+          label: "discardchanges",
           icon: <Trash2 />,
           variant: "contained",
-          action: confirmNavigation,
+          action: () => {
+            blocker.proceed?.();
+            setTimeout(() => {
+              promptShownRef.current = false;
+            }, 0);
+          },
         },
       ]);
-
-      setNextLocation(nextLocation);
-      return false;
     }
-    return true;
-  };
-
-  const confirmNavigation = () => {
-    setConfirmedNavigation(true);
-  };
-
-  return {
-    handleBlockedNavigation,
-  };
+  }, [blocker, hasChanges, showPrompt]);
 };

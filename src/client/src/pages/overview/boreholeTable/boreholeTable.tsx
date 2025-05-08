@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/system";
 import {
   GridCellCheckboxRenderer,
@@ -52,7 +52,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   isBusy,
 }: BoreholeTableProps) => {
   const { t, i18n } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const domains = useDomains();
   const apiRef = useGridApiRef();
   const auth = useAuth();
@@ -227,7 +227,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   }
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
-    history.push(`/${params.row.id}/location`);
+    navigate(`/${params.row.id}/location`);
   };
 
   const getRowClassName = (params: GridRowParams) => {

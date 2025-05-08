@@ -28,7 +28,7 @@ describe("Test copying of boreholes", () => {
     startBoreholeEditing();
 
     cy.get('[data-cy="deleteborehole-button"]').click({ force: true });
-    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
+    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "delete");
   });
 
   it("copies a borehole to the default selected workgroup", () => {
@@ -52,7 +52,7 @@ describe("Test copying of boreholes", () => {
     startBoreholeEditing();
 
     cy.get('[data-cy="deleteborehole-button"]').click({ force: true });
-    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
+    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "delete");
   });
 
   it("copies a borehole to the selected workgroup", () => {

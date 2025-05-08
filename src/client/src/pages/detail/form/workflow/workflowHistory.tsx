@@ -1,10 +1,10 @@
-import { useParams } from "react-router-dom";
 import { Stack } from "@mui/material";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { HistoryEntry } from "./historyEntry.tsx";
 import { useWorkflow, WorkflowChange } from "./workflow.ts";
 
 export const WorkflowHistory = () => {
-  const { id: boreholeId } = useParams<{ id: string }>();
+  const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: workflow } = useWorkflow(parseInt(boreholeId));
 
   return (

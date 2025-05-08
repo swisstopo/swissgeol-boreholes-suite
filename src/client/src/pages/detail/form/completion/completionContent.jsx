@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Stack } from "@mui/material";
 import PropTypes from "prop-types";
 import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.ts";
@@ -18,7 +18,7 @@ export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBo
 
 const CompletionContent = ({ completion, editingEnabled }) => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const [casings, setCasings] = useState([]);
@@ -74,7 +74,7 @@ const CompletionContent = ({ completion, editingEnabled }) => {
         setNewIndex(null);
         var newLocation = location.pathname + "#" + tabs[newIndex].hash;
         if (location.pathname + location.hash !== newLocation) {
-          history.push(newLocation);
+          navigate(newLocation);
         }
       } else if (canSwitch === -1) {
         setNewIndex(null);

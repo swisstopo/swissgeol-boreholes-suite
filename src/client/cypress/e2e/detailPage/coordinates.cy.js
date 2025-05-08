@@ -53,10 +53,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     //switch reference system and show prompt
     setSelect("originalReferenceSystem", 1);
-    handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "Cancel");
+    handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "cancel");
     evaluateSelect("originalReferenceSystem", "20104001");
     setSelect("originalReferenceSystem", 1);
-    handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "Confirm");
+    handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "confirm");
     evaluateSelect("originalReferenceSystem", "20104002");
 
     // verify all inputs are empty
@@ -235,7 +235,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     // switch reference system to LV03
     setSelect("originalReferenceSystem", 1);
-    handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "Confirm");
+    handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "confirm");
 
     // Type coordinates for Samaden in LV03
     cy.get("@LV03X-input").clear();

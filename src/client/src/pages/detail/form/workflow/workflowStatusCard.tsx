@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -15,6 +14,7 @@ import {
 import type { StepIconProps } from "@mui/material/StepIcon";
 import { ChevronRight } from "lucide-react";
 import { theme } from "../../../../AppTheme.ts";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { WorkflowCard } from "./styledWorkflowComponents.tsx";
 import { useWorkflow, WorkflowStatus } from "./workflow.ts";
 
@@ -51,7 +51,7 @@ const StepIcon = ({ active, icon }: StepIconProps) => {
 
 export const WorkflowStatusCard = () => {
   const { t } = useTranslation();
-  const { id: boreholeId } = useParams<{ id: string }>();
+  const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: workflow } = useWorkflow(parseInt(boreholeId));
   const activeStep = steps.findIndex(step => step === workflow?.status);
 

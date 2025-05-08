@@ -82,7 +82,7 @@ describe("User administration settings tests", () => {
 
     // Click on workgroup delete button
     getElementByDataCy("delete-id-3").click();
-    handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
+    handlePrompt(inactiveWorkgroupDeletePrompt, "cancel");
 
     // Navigate to workgroup detail
     clickOnRowWithText("World");
@@ -112,16 +112,16 @@ describe("User administration settings tests", () => {
 
     // Click on workgroup delete button
     getElementByDataCy("delete-id-3").click();
-    handlePrompt(activeWorkgroupDeletePrompt, "Cancel");
+    handlePrompt(activeWorkgroupDeletePrompt, "cancel");
 
     // Go to detail and click on delete again
     clickOnRowWithText("World");
     getElementByDataCy("deleteworkgroup-button").click();
-    handlePrompt(activeWorkgroupDeletePrompt, "Cancel");
+    handlePrompt(activeWorkgroupDeletePrompt, "cancel");
     getElementByDataCy("inactivate-button").click();
     cy.wait("@update-workgroup");
     getElementByDataCy("deleteworkgroup-button").click();
-    handlePrompt(inactiveWorkgroupDeletePrompt, "Cancel");
+    handlePrompt(inactiveWorkgroupDeletePrompt, "cancel");
   });
 
   it("can add a new workgroup.", () => {
@@ -177,18 +177,18 @@ describe("User administration settings tests", () => {
 
     // delete all roles for publisher
     getElementByDataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove all roles of the user "p. user" in the workgroup "Blues"?', "Delete");
+    handlePrompt('Do you want to remove all roles of the user "p. user" in the workgroup "Blues"?', "delete");
     verifyTableLength(1);
     verifyRowContains("editor", 0);
 
     // cancel delete all roles for editor
     getElementByDataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "e. user" in the workgroup "Blues"?', "Cancel");
+    handlePrompt('Do you want to remove all roles of the user "e. user" in the workgroup "Blues"?', "cancel");
     verifyTableLength(1);
     verifyRowContains("editor", 0);
 
     getElementByDataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "e. user" in the workgroup "Blues"?', "Delete");
+    handlePrompt('Do you want to remove all roles of the user "e. user" in the workgroup "Blues"?', "delete");
     verifyTableLength(0);
   });
 

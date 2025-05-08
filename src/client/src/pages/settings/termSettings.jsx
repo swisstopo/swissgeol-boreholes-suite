@@ -131,14 +131,14 @@ class TermSettings extends React.Component {
                 }}
                 variant="contained"
                 onClick={() => {
-                  this.context.showPrompt(t("disclaimer_publish_message"), [
+                  this.context.showPrompt("disclaimer_publish_message", [
                     {
-                      label: t("cancel"),
+                      label: "cancel",
                       icon: <X />,
                       variant: "outlined",
                     },
                     {
-                      label: t("publish"),
+                      label: "publish",
                       icon: <Trash2 />,
                       variant: "contained",
                       action: () => this.publishTerms(),
