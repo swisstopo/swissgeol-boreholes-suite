@@ -5,12 +5,12 @@ export interface EditStateContextProps {
   setEditingEnabled: (editingEnabled: boolean) => void;
 }
 
-export const DetailContext = createContext<EditStateContextProps>({
+export const EditStateContext = createContext<EditStateContextProps>({
   editingEnabled: false,
   setEditingEnabled: () => {},
 });
 
-export const DetailProvider: FC<PropsWithChildren> = ({ children }) => {
+export const EditStateProvider: FC<PropsWithChildren> = ({ children }) => {
   const [editingEnabled, setEditingEnabled] = useState<boolean>(false);
 
   const contextValue = useMemo(
@@ -21,5 +21,5 @@ export const DetailProvider: FC<PropsWithChildren> = ({ children }) => {
     [editingEnabled],
   );
 
-  return <DetailContext.Provider value={contextValue}>{children}</DetailContext.Provider>;
+  return <EditStateContext.Provider value={contextValue}>{children}</EditStateContext.Provider>;
 };

@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.js";
 import { NumericFormatWithThousandSeparator } from "../../../../components/form/numericFormatWithThousandSeparator.js";
-import { DetailContext } from "../../detailContext.tsx";
+import { DetailContext } from "../../editStateContext.tsx";
 
 const State = Object.freeze({
   EDITING: Symbol("Editing"),

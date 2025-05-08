@@ -10,7 +10,7 @@ import { DataCardButtonContainer } from "../../../../../../../components/dataCar
 import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../../../../../../../components/form/form";
 import { ensureDatetime } from "../../../../../../../components/form/formUtils";
 import { PromptContext } from "../../../../../../../components/prompt/promptContext";
-import { DetailContext } from "../../../../../detailContext";
+import { DetailContext } from "../../../../../editStateContext.js";
 import { updateStratigraphyAttributes } from "../api/index.ts";
 
 const InfoList = ({ id, profileInfo, onUpdated }) => {

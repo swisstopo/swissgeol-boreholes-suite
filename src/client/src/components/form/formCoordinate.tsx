@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
-import { DetailContext } from "../../pages/detail/detailContext.tsx";
+import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { boundingBox } from "../../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { Direction, ReferenceSystemKey } from "../../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { getFormFieldError } from "./form";
@@ -61,7 +61,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
 }) => {
   const { t } = useTranslation();
   const { formState, register } = useFormContext();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const isReadOnly = readonly ?? !editingEnabled;
 
   return (

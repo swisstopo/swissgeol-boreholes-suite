@@ -8,7 +8,7 @@ import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import { Table } from "../../../../components/table/table.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 
 interface FilesTableProps {
   detachFile: (id: string, fid: number) => void;
@@ -27,7 +27,7 @@ interface FilesTableProps {
 export const FilesTable: FC<FilesTableProps> = ({ editor, files, patchFile, detachFile }) => {
   const { t } = useTranslation();
   const { id } = useRequiredParams<{ id: string }>();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
 
   const getLockIcon = (isPublic: boolean) => {
     return <IconButton color={isPublic ? "success" : "error"}>{isPublic ? <LockOpen /> : <Lock />}</IconButton>;

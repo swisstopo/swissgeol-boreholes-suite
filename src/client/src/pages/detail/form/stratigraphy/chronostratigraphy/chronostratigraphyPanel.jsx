@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
-import { DetailContext } from "../../../detailContext.tsx";
+import { DetailContext } from "../../../editStateContext.tsx";
 import LithologyViewProfile from "../lithologyViewProfile.jsx";
 import LithostratigraphyViewProfile from "../lithostratigraphy/lithostratigraphyViewProfile.jsx";
 import NavigationChild from "../navigationChild.jsx";

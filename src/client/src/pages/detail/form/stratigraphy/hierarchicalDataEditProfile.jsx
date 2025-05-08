@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useDomainSchema } from "../../../../api/fetchApiV2.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { DetailContext } from "../../editStateContext.tsx";
 import LayerCard from "./layerCard.jsx";
 import LayerGap from "./layerGap.jsx";
 import NavigationChild from "./navigationChild.jsx";

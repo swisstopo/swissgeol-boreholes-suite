@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { AddCircle, ArrowDownward, ArrowUpward, Warning } from "@mui/icons-material";
 import { Card, CardActionArea, Stack, Typography } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { DetailContext } from "../../editStateContext.tsx";
 
 const IconTypography = ({ icon, text }) => {
   return (
