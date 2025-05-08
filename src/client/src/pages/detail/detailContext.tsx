@@ -1,11 +1,11 @@
 import { createContext, FC, PropsWithChildren, useMemo, useState } from "react";
 
-export interface DetailContextProps {
+export interface EditStateContextProps {
   editingEnabled: boolean;
   setEditingEnabled: (editingEnabled: boolean) => void;
 }
 
-export const DetailContext = createContext<DetailContextProps>({
+export const DetailContext = createContext<EditStateContextProps>({
   editingEnabled: false,
   setEditingEnabled: () => {},
 });
