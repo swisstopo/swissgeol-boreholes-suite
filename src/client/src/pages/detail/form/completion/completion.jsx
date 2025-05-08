@@ -17,7 +17,7 @@ import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { DetailContext } from "../../editStateContext.tsx";
 import CompletionContent from "./completionContent.jsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";
 import CompletionHeaderInput from "./completionHeaderInput.jsx";

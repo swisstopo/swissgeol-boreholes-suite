@@ -9,10 +9,10 @@ import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsContext.tsx";
-import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
+import { DetailContextProps, EditStateContext } from "./editStateContext.tsx";
 import { useLabelingContext } from "./labeling/labelingContext.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
@@ -22,7 +22,7 @@ export const DetailPage: FC = () => {
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
-  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
+  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(EditStateContext);
   const { showSaveBar } = useContext<SaveContextProps>(SaveContext);
   const { sendAnalyticsEvent } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const { id } = useRequiredParams<{ id: string }>();

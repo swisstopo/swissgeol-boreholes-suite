@@ -9,7 +9,7 @@ import { DeleteButton, ExportButton } from "../../../../components/buttons/butto
 import DateText from "../../../../components/legacyComponents/dateText.js";
 import { Table } from "../../../../components/table/table.tsx";
 import { TableSearchField } from "../../../../components/table/tableSearchField.tsx";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 
 interface PhotosTableProps {
   photos: Photo[];
@@ -19,7 +19,7 @@ interface PhotosTableProps {
 export const PhotosTable: FC<PhotosTableProps> = ({ photos, loadPhotos }) => {
   const { t } = useTranslation();
   const apiRef = useGridApiRef();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
 
   const columns = useMemo<GridColDef<Photo>[]>(

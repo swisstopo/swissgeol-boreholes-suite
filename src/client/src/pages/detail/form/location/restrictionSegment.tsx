@@ -9,7 +9,7 @@ import {
   FormValueType,
 } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 interface RestrictionSegmentProps extends LocationBaseProps {
@@ -21,7 +21,7 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
   const [restrictionUntilEnabled, setRestrictionUntilEnabled] = useState<boolean>(
     borehole.restrictionId === restrictionUntilCode,
   );
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const { dirtyFields } = formMethods.formState;
   const restriction = formMethods.watch("restrictionId");
 

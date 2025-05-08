@@ -14,7 +14,7 @@ import {
   FormValueType,
 } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import { LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 interface IdentifierSegmentProps {
@@ -25,7 +25,7 @@ interface IdentifierSegmentProps {
 const IdentifierSegment = ({ borehole, formMethods }: IdentifierSegmentProps) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
 
   const { fields, append, remove } = useFieldArray<LocationFormInputs, "boreholeCodelists">({
     name: "boreholeCodelists",
