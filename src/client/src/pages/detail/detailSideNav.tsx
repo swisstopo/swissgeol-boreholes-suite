@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import { BoreholeV2 } from "../../api/borehole.ts";
@@ -23,6 +23,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const { t } = useTranslation();
   const auth = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const {
     hasStratigraphy,
@@ -78,8 +79,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
 
   const navigateTo = (path: string) => {
     if (path !== location.pathname) {
-      const searchParams = location.search;
-      navigate(`${path}${searchParams}`);
+      navigate({ pathname: path, search: searchParams.toString() });
     }
   };
 

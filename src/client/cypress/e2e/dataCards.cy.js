@@ -44,7 +44,7 @@ describe("Tests for the data cards in the editor.", () => {
     cy.wait("@wateringress_GET");
     startEditing();
     setInput("comment", "Lorem.");
-    stopBoreholeEditing();
+    stopBoreholeEditing(true);
     evaluateDisplayValue("comment", "-");
   });
 
