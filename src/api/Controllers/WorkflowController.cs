@@ -58,6 +58,7 @@ public class WorkflowController : ControllerBase
         {
          if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workflowChangeRequest.BoreholeId, Role.Publisher).ConfigureAwait(false)) return Unauthorized();
         }
+
         if (workflow == null) return NotFound($"Workflow for borehole with {workflowChangeRequest.BoreholeId} not found.");
 
         var newAssignee = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Id == workflowChangeRequest.NewAssigneeId).ConfigureAwait(false);
