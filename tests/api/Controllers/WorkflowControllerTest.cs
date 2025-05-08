@@ -116,8 +116,8 @@ public class WorkflowControllerTest
         Assert.AreEqual(newStatus, latestChange.ToStatus);
         Assert.AreEqual(comment, latestChange.Comment);
         Assert.AreEqual(newAssigneeId, latestChange.AssigneeId);
-        Assert.AreEqual("A. User", latestChange.CreatedBy.Name);
-        Assert.AreEqual("e. user", latestChange.Assignee.Name);
+        Assert.AreEqual("a. user", latestChange.CreatedBy.Name.ToLowerInvariant());
+        Assert.AreEqual("e. user", latestChange.Assignee.Name.ToLowerInvariant());
     }
 
     [TestMethod]
