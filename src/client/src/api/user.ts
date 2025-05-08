@@ -3,6 +3,8 @@ import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { User } from "./apiInterfaces.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
+export const fetchCurrentUser = async (): Promise<User> => await fetchApiV2WithApiError("user/self", "GET");
+
 export const fetchUser = async (id: number): Promise<User> => await fetchApiV2WithApiError(`user/${id}`, "GET");
 
 export const fetchUsers = async (): Promise<User[]> => await fetchApiV2WithApiError("user", "GET");
@@ -27,6 +29,13 @@ export const useUsers = () => {
   // integrate error alert into query
   useShowAlertOnError(query.isError, query.error);
   return query;
+};
+
+export const useCurrentUser = () => {
+  return useQuery({
+    queryKey: ["currentUser"],
+    queryFn: fetchCurrentUser,
+  });
 };
 
 export const useSelectedUser = (id: number) => {
