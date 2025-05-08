@@ -142,6 +142,6 @@ public class WorkflowControllerTest
         var response = await controller.ApplyWorkflowChangeAsync(request).ConfigureAwait(false);
         ActionResultAssert.IsNotFound(response);
         var notFoundResponse = response as NotFoundObjectResult;
-        Assert.AreEqual("New assingee with id 75500871 not found.", notFoundResponse.Value);
+        Assert.AreEqual("New assignee with id 75500871 not found.", notFoundResponse.Value);
     }
 }
