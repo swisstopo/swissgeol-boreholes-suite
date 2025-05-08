@@ -80,10 +80,6 @@ public class WorkflowControllerTest
     public async Task UpdatesWorkflowAndCreatesChange()
     {
         int boreholeId = 1000029;
-        var workflow = await context.WorkflowsV2
-            .Include(w => w.Changes)
-            .FirstAsync(w => w.BoreholeId == boreholeId);
-
         var newStatus = WorkflowStatus.InReview;
         var newAssigneeId = 2;
         var comment = "Changing to InReview status.";

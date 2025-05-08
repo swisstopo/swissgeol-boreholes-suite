@@ -49,20 +49,35 @@ public class WorkflowController : ControllerBase
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request.")]
     public async Task<IActionResult> ApplyWorkflowChangeAsync([FromBody] WorkflowChangeRequest workflowChangeRequest)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
         var subjectId = HttpContext.GetUserSubjectId();
+
+        // Check permission for editing the borehole
         if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, workflowChangeRequest.BoreholeId, true).ConfigureAwait(false)) return Unauthorized();
 
-        var workflow = await context.WorkflowsV2WithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == workflowChangeRequest.BoreholeId).ConfigureAwait(false);
-        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), workflowChangeRequest.BoreholeId).ConfigureAwait(false)) return Unauthorized();
-        if (workflowChangeRequest.NewStatus == WorkflowStatus.Published)
+        // Check permissions specifically for publishing the borehole
+        if (workflowChangeRequest.NewStatus == WorkflowStatus.Published &&
+            !await boreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, workflowChangeRequest.BoreholeId, Role.Publisher).ConfigureAwait(false))
         {
-         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workflowChangeRequest.BoreholeId, Role.Publisher).ConfigureAwait(false)) return Unauthorized();
+            return Unauthorized();
         }
 
-        if (workflow == null) return NotFound($"Workflow for borehole with {workflowChangeRequest.BoreholeId} not found.");
+        var workflow = await context.WorkflowsV2WithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == workflowChangeRequest.BoreholeId).ConfigureAwait(false);
+        if (workflow == null)
+        {
+            var workflowNotFoundMessage = $"Workflow for borehole with {workflowChangeRequest.BoreholeId} not found.";
+            logger?.LogWarning(workflowNotFoundMessage);
+            return NotFound(workflowNotFoundMessage);
+        }
 
         var newAssignee = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Id == workflowChangeRequest.NewAssigneeId).ConfigureAwait(false);
-        if (newAssignee == null) return NotFound($"New assingee with id {workflowChangeRequest.NewAssigneeId} not found.");
+        if (newAssignee == null)
+        {
+            var userNotFoundMessage = $"New assignee with id {workflowChangeRequest.NewAssigneeId} not found.";
+            logger?.LogWarning(userNotFoundMessage);
+            return NotFound(userNotFoundMessage);
+        }
 
         var user = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.SubjectId == subjectId).ConfigureAwait(false);
 
@@ -71,19 +86,29 @@ public class WorkflowController : ControllerBase
         {
             WorkflowId = workflow.Id,
             FromStatus = workflow.Status,
-            ToStatus = workflowChangeRequest.NewStatus,
-            Comment = workflowChangeRequest.Comment,
+            ToStatus = workflowChangeRequest.NewStatus ?? workflow.Status,
+            Comment = workflowChangeRequest.Comment ?? "",
             Created = DateTime.UtcNow,
             CreatedById = user.Id,
-            AssigneeId = workflowChangeRequest?.NewAssigneeId ?? null,
+            AssigneeId = workflowChangeRequest.NewAssigneeId,
         };
 
         // Update the workflow state
-        workflow.Status = workflowChangeRequest.NewStatus;
+        workflow.Status = workflowChangeRequest.NewStatus ?? workflow.Status;
         workflow.AssigneeId = workflowChangeRequest.NewAssigneeId;
 
         context.WorkflowChanges.Add(change);
-        await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-        return Ok(workflow);
+
+        try
+        {
+            await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return Ok(workflow);
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while saving the workflow changes.";
+            logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
     }
 }
