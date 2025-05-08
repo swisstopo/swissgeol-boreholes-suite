@@ -53,8 +53,19 @@ export interface TabStatus {
   photo: boolean;
 }
 
+export interface WorkflowChangeRequest {
+  boreholeId: string;
+  comment: string;
+  newAssigneeId: number | null;
+  newStatus: WorkflowStatus;
+}
+
 export const fetchWorkflowByBoreholeId = async (boreholeId: number) =>
   await fetchApiV2(`workflow/${boreholeId}`, "GET");
+
+export const sendWorkflowChangeRequest = async (workflowChangeRequest: WorkflowChangeRequest) => {
+  await fetchApiV2(`workflow/change`, "POST", workflowChangeRequest);
+};
 
 export const workflowQueryKey = "workflows";
 

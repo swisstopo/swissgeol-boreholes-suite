@@ -63,15 +63,15 @@ public class ExportControllerTest
 
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(true);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(false);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(true);
 
         boreholePermissionServiceMock

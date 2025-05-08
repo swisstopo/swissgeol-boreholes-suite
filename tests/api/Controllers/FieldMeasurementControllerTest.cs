@@ -20,7 +20,7 @@ public class FieldMeasurementControllerTest
         context = ContextFactory.GetTestContext();
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(true);
         controller = new FieldMeasurementController(context, new Mock<ILogger<FieldMeasurementController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }

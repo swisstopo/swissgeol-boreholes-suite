@@ -58,11 +58,11 @@ public class BoreholeFileControllerTest
             .ReturnsAsync(false);
 
         boreholePermisssionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(true);
 
         boreholePermisssionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(false);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
