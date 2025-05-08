@@ -1,9 +1,12 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
+import { useQuery } from "@tanstack/react-query";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/Codelist.ts";
+import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { WorkflowV2 } from "../pages/detail/form/workflow/workflow.ts";
+import { queryClient } from "../queryClient.ts";
 import { Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -122,8 +125,27 @@ export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | 
   return await download(`export/zip?${getIdQuery(boreholeIds)}`);
 };
 
-export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
+export const fetchBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
 
 export const updateBorehole = async (borehole: BoreholeV2) => {
   return await fetchApiV2("borehole", "PUT", borehole);
+};
+
+export const boreholeQueryKey = "boreholes";
+
+export const useBorehole = (id: number) => {
+  const query = useQuery({
+    queryKey: [boreholeQueryKey, id],
+    queryFn: async () => {
+      return await fetchBoreholeById(id);
+    },
+    enabled: !!id,
+  });
+
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
+
+export const reloadBorehole = () => {
+  queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
 };

@@ -1,8 +1,8 @@
-import { ReactNode, useCallback, useContext, useEffect, useMemo } from "react";
+import { ReactNode, useCallback, useContext, useEffect } from "react";
 import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
 import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
-import { getBoreholeById, updateBorehole } from "../../../api/borehole.ts";
+import { updateBorehole, useBorehole } from "../../../api/borehole.ts";
 import { useFormDirtyChanges } from "../../../components/form/useFormDirtyChanges.tsx";
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
@@ -26,21 +26,19 @@ export const BaseForm = <T extends FieldValues>({
   const { registerSaveHandler, registerResetHandler, unMount } = useContext(SaveContext);
   const { setExtractionObject } = useLabelingContext();
   const { id } = useRequiredParams<{ id: string }>();
+  const { data: borehole } = useBorehole(parseInt(id, 10));
   const { getValues, reset, formState } = formMethods;
   useBlockNavigation();
   useFormDirtyChanges({ formState });
 
-  const boreholeId = useMemo(() => parseInt(id, 10), [id]);
-
   const onSubmit = useCallback(
     async (formInputs: T) => {
-      const currentBorehole = await getBoreholeById(boreholeId);
       await updateBorehole({
-        ...currentBorehole,
+        ...borehole,
         ...prepareDataForSubmit(formInputs),
       });
     },
-    [boreholeId, prepareDataForSubmit],
+    [borehole, prepareDataForSubmit],
   );
 
   const resetAndSubmitForm = useCallback(async () => {

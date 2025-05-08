@@ -1,10 +1,9 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
-import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { getBoreholeById } from "../../api/borehole.ts";
+import { useBorehole } from "../../api/borehole.ts";
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
@@ -19,45 +18,24 @@ import { SaveBar } from "./saveBar";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 export const DetailPage: FC = () => {
-  const [loading, setLoading] = useState(true);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
   const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const workflowStatus = useSelector((state: ReduxRootState) => state.core_workflow);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
-  const { borehole, setBorehole, editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
+  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
   const { showSaveBar } = useContext<SaveContextProps>(SaveContext);
   const { sendAnalyticsEvent } = useContext<AnalyticsContextProps>(AnalyticsContext);
-  const dispatch = useDispatch();
   const { id } = useRequiredParams<{ id: string }>();
+  const { data: borehole, isLoading } = useBorehole(parseInt(id));
 
   useEffect(() => {
-    getBoreholeById(parseInt(id, 10)).then(b => {
-      setBorehole(b);
-      setEditingEnabled(b.locked !== null && b.lockedById === user.data.id);
-    });
-  }, [id, setBorehole, setEditingEnabled, user.data.id, workflowStatus]);
+    // query here
+    setEditingEnabled(borehole?.locked !== null && borehole?.lockedById === user.data.id);
+  }, [borehole?.locked, borehole?.lockedById, setEditingEnabled, user.data.id, workflowStatus]);
 
-  const loadOrCreate = useCallback(
-    (id: string) => {
-      setLoading(true);
-      // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
-      dispatch(loadBorehole(parseInt(id, 10)))
-        //@ts-expect-error // legacy fetch function returns not typed
-        .then(response => {
-          if (response.success) {
-            setLoading(false);
-          }
-        });
-    },
-    [dispatch, setLoading],
-  );
-
-  useEffect(() => {
-    loadOrCreate(id);
-  }, [id, loadOrCreate]);
-
+  console.log(borehole);
   useEffect(() => {
     sendAnalyticsEvent();
   }, [sendAnalyticsEvent]);
@@ -84,7 +62,7 @@ export const DetailPage: FC = () => {
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
   }, [editingEnabled, user, legacyBorehole, location, togglePanel]);
 
-  if (loading || !borehole)
+  if (isLoading || !borehole)
     return (
       <Stack height="100%" alignItems="center" justifyContent="center">
         <CircularProgress />

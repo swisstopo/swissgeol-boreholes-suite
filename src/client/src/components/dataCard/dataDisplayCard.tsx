@@ -1,5 +1,6 @@
 import { ReactNode, useContext } from "react";
 import { Trash2 } from "lucide-react";
+import { reloadBorehole } from "../../api/borehole.ts";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
 import { FormContainer } from "../form/form";
@@ -18,7 +19,7 @@ export const DataDisplayCard = <T extends DataCardEntity>({ item, deleteData, ch
   const { selectedCard, selectCard, triggerReload } = useContext(DataCardContext);
   const { switchToCard } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
-  const { reloadBorehole, editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(DetailContext);
 
   return (
     <>

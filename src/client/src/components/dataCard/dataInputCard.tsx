@@ -1,9 +1,9 @@
 import { ReactNode, useContext } from "react";
 import { FieldValues, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { DevTool } from "../../../hookformDevtools";
+import { reloadBorehole } from "../../api/borehole.ts";
 import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../hooks/useSaveOnCtrlS";
-import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { FormContainer } from "../form/form";
 import { useFormDirtyChanges } from "../form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../form/useValidateFormOnMount.tsx";
@@ -29,7 +29,6 @@ export const DataInputCard = <T extends FieldValues>({
   children,
 }: DataInputCardProps<T>) => {
   const { triggerReload } = useContext(DataCardContext);
-  const { reloadBorehole } = useContext(DetailContext);
   useBlockNavigation();
   const formMethods = useForm<T>({ mode: "all" });
   const { formState, handleSubmit, control } = formMethods;
