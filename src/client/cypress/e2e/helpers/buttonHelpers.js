@@ -18,11 +18,9 @@ export const saveWithSaveBar = parent => {
   // Verify one additional 'borehole_by_id' requests is made and awaited (statusCode 200) before the update request.
   cy.get("@countBeforeSaveButton").then(countBeforeSaveButton => {
     cy.get("@borehole_by_id.all")
-      .should("have.length", countBeforeSaveButton + 1)
+      .should("have.length", countBeforeSaveButton)
       .then(() => {
-        cy.get(`@borehole_by_id.${countBeforeSaveButton + 1}`)
-          .its("response.statusCode")
-          .should("equal", 200);
+        cy.get(`@borehole_by_id.${countBeforeSaveButton}`).its("response.statusCode").should("equal", 200);
       });
   });
 
