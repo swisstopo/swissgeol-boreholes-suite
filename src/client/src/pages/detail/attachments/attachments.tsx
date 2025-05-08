@@ -15,12 +15,12 @@ export const Attachments: FC = () => {
     () => [
       {
         label: t("profiles"),
-        hash: "profiles",
+        hash: "#profiles",
         component: <Profiles boreholeId={boreholeId} />,
       },
       {
         label: t("photos"),
-        hash: "photos",
+        hash: "#photos",
         component: <Photos boreholeId={boreholeId} />,
       },
     ],
