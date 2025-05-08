@@ -12,7 +12,7 @@ import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsCon
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
 import { DetailSideNav } from "./detailSideNav.tsx";
-import { DetailContextProps, EditStateContext } from "./editStateContext.tsx";
+import { EditStateContext } from "./editStateContext.tsx";
 import { useLabelingContext } from "./labeling/labelingContext.tsx";
 import LabelingPanel from "./labeling/labelingPanel.tsx";
 import { SaveBar } from "./saveBar";
@@ -22,7 +22,7 @@ export const DetailPage: FC = () => {
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
-  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(EditStateContext);
+  const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);
   const { showSaveBar } = useContext<SaveContextProps>(SaveContext);
   const { sendAnalyticsEvent } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const { id } = useRequiredParams<{ id: string }>();
