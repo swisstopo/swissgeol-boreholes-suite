@@ -38,14 +38,14 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     }
 
     /// <inheritdoc />
-    public async Task<bool> CanEditBoreholeAsync(string? subjectId, int? boreholeId)
+    public async Task<bool> CanEditBoreholeAsync(string? subjectId, int? boreholeId, bool? useWorkflowV2 = false)
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeWithWorkflowsAsync(boreholeId).ConfigureAwait(false);
-        return CanEditBorehole(user, borehole);
+        return CanEditBorehole(user, borehole, useWorkflowV2 ?? false);
     }
 
-    internal bool CanEditBorehole(User user, Borehole borehole)
+    internal bool CanEditBorehole(User user, Borehole borehole, bool useWorkflowV2)
     {
         if (user.IsAdmin)
         {
@@ -54,7 +54,25 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
 
         return !IsBoreholeLocked(user, borehole)
             && HasViewPermission(user, borehole)
-            && HasEditPermission(user, borehole);
+            && (useWorkflowV2 ? HasEditPermissionV2(user, borehole) : HasEditPermission(user, borehole));
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> CanPublishBoreholeAsync(string? subjectId, int? boreholeId)
+    {
+        var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
+        var borehole = await GetBoreholeWithWorkflowsAsync(boreholeId).ConfigureAwait(false);
+        return CanPublishBorehole(user, borehole);
+    }
+
+    internal bool CanPublishBorehole(User user, Borehole borehole)
+    {
+        if (user.IsAdmin)
+        {
+            return true;
+        }
+
+        return HasUserRoleOnWorkgroup(user, borehole.WorkgroupId, Role.Publisher);
     }
 
     private static bool HasUserSpecificRoleOnWorkgroup(User user, int? workgroupId, Role expectedRole)
@@ -109,6 +127,32 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         return true;
     }
 
+    /// <summary>
+    /// Checks whether the <paramref name="user"/> has permissions to edit the <paramref name="borehole"/>.
+    /// "Permission to edit" refers to the user having the <see cref="Role"/> on the <see cref="Workgroup"/> of the <see cref="Borehole"/>, which has permission to the
+    /// change the borehole with the current <see cref="WorkflowV2.Status"/>.
+    /// </summary>
+    private bool HasEditPermissionV2(User user, Borehole borehole)
+    {
+        if (borehole.Workflow == null)
+        {
+            logger.LogWarning("User with SubjectId <{SubjectId}> attempted to edit BoreholeId <{BoreholeId}>, but it has no workflow.", user.SubjectId, borehole.Id);
+            return false;
+        }
+
+        if (!EditPermissionsStatusRoleMap.TryGetValue(borehole.Workflow.Status, out var requiredRole))
+            return false;
+        var hasUserPermission = requiredRole != null && HasUserSpecificRoleOnWorkgroup(user, borehole.WorkgroupId, requiredRole.Value);
+
+        if (!hasUserPermission)
+        {
+            logger.LogWarning("User with SubjectId <{SubjectId}> lacks the required role to edit BoreholeId <{BoreholeId}>.", user.SubjectId, borehole.Id);
+            return false;
+        }
+
+        return true;
+    }
+
     private bool IsBoreholeLocked(User user, Borehole borehole)
     {
         if (borehole.Locked.HasValue && borehole.Locked.Value.AddMinutes(LockTimeoutInMinutes) > timeProvider.GetUtcNow() && borehole.LockedById != user.Id)
@@ -138,4 +182,12 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
             .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
             .ConfigureAwait(false) ?? throw new InvalidOperationException($"Current user with subjectId <{subjectId}> does not exist.");
     }
+
+    private static readonly Dictionary<WorkflowStatus, Role?> EditPermissionsStatusRoleMap = new()
+    {
+        { WorkflowStatus.Draft, Role.Editor },
+        { WorkflowStatus.InReview, Role.Controller },
+        { WorkflowStatus.Reviewed, Role.Controller },
+        { WorkflowStatus.Published, Role.Publisher },
+    };
 }

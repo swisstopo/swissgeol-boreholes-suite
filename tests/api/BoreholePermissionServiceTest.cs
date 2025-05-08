@@ -92,11 +92,11 @@ public class BoreholePermissionServiceTest
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
 
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole, false));
     }
 
     [TestMethod]
@@ -121,11 +121,11 @@ public class BoreholePermissionServiceTest
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
 
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole, false));
     }
 
     [TestMethod]
@@ -152,12 +152,12 @@ public class BoreholePermissionServiceTest
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
 
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(editor, borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(editor2, borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(editor, borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(editor2, borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole, false));
     }
 
     [TestMethod]
@@ -178,11 +178,11 @@ public class BoreholePermissionServiceTest
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
 
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole, false));
     }
 
     [TestMethod]
@@ -198,9 +198,9 @@ public class BoreholePermissionServiceTest
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetEditorUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
 
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole, false));
     }
 
     [TestMethod]
@@ -226,11 +226,11 @@ public class BoreholePermissionServiceTest
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
 
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole, false));
     }
 
     [TestMethod]
@@ -246,9 +246,9 @@ public class BoreholePermissionServiceTest
         Assert.IsFalse(boreholePermissionService.CanViewBorehole(GetEditorUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
 
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
-        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole, false));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole, false));
+        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole, false));
     }
 
     [TestMethod]
@@ -268,6 +268,39 @@ public class BoreholePermissionServiceTest
     {
         var borehole = await context.Boreholes.FirstAsync();
         Assert.IsFalse(await boreholePermissionService.CanEditBoreholeAsync(ViewerSubjectId, borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task CanPublishBoreholeAsyncWithUserNotSet()
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanPublishBoreholeAsync(null, null));
+
+    [TestMethod]
+    public async Task CanPublishBoreholeAsyncWithUnknownUser()
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanPublishBoreholeAsync("NON-EXISTENT-NAME", null));
+
+    [TestMethod]
+    public async Task CanPublishBoreholeAsyncWithUnknownBorehole()
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanPublishBoreholeAsync(EditorSubjectId, null));
+
+    [TestMethod]
+    public async Task ViewerCannotPublishBoreholeAsync()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+        Assert.IsFalse(await boreholePermissionService.CanPublishBoreholeAsync(ViewerSubjectId, borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task EditorCannotPublishBoreholeAsync()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+        Assert.IsFalse(await boreholePermissionService.CanPublishBoreholeAsync(EditorSubjectId, borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task AdminCanPublishBoreholeAsync()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+        Assert.IsTrue(await boreholePermissionService.CanPublishBoreholeAsync(AdminSubjectId, borehole.Id));
     }
 
     [TestMethod]
