@@ -1,16 +1,6 @@
-import {
-  createContext,
-  FC,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { createContext, FC, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { DetailContext, DetailContextProps } from "./detailContext.tsx";
+import { reloadBorehole } from "../../api/borehole.ts";
 
 export interface SaveContextProps {
   showSaveBar: boolean;
@@ -41,8 +31,6 @@ export const SaveContext = createContext<SaveContextProps>({
 
 export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
   const location = useLocation();
-  const { reloadBorehole } = useContext<DetailContextProps>(DetailContext);
-
   const [hasChanges, setHasChanges] = useState(false);
   const [showSaveFeedback, setShowSaveFeedback] = useState(false);
   const saveHandlerRef = useRef<SaveHandler | null>(null);
@@ -71,7 +59,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
       setTimeout(() => setShowSaveFeedback(false), 4000);
       setHasChanges(false);
     }
-  }, [reloadBorehole]);
+  }, []);
 
   const registerResetHandler = useCallback((handler: ResetHandler) => {
     resetHandlerRef.current = handler;

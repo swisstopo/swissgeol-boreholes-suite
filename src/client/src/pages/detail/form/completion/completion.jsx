@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
+import { reloadBorehole } from "../../../../api/borehole.ts";
 import {
   addCompletion,
   copyCompletion,
@@ -24,7 +25,7 @@ import CompletionHeaderInput from "./completionHeaderInput.jsx";
 const Completion = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { showPrompt } = useContext(PromptContext);
-  const { reloadBorehole, editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(DetailContext);
   const { id: boreholeId } = useRequiredParams();
   const { completionId } = useParams();
   const navigate = useNavigate();

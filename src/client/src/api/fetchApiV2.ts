@@ -1,5 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Codelist } from "../components/Codelist.ts";
+import { queryClient } from "../queryClient.ts";
 import store from "../reducers";
 import {
   ApiError,
@@ -316,7 +317,6 @@ export const useChronostratigraphies = (stratigraphyID?: number) =>
   });
 
 export const useChronostratigraphyMutations = () => {
-  const queryClient = useQueryClient();
   const useAddChronostratigraphy = useMutation({
     mutationFn: async (chronostratigraphy: Chronostratigraphy) => {
       return await fetchApiV2("chronostratigraphy", "POST", chronostratigraphy);
@@ -367,7 +367,6 @@ export const useLithostratigraphies = (stratigraphyID?: number) =>
   });
 
 export const useLithostratigraphyMutations = () => {
-  const queryClient = useQueryClient();
   const useAddLithostratigraphy = useMutation({
     mutationFn: async (lithostratigraphy: Lithostratigraphy) => {
       return await fetchApiV2("lithostratigraphy", "POST", lithostratigraphy);
@@ -422,7 +421,6 @@ export const getBoreholeGeometryFormats = async (): Promise<GeometryFormat[]> =>
 };
 
 export const useBoreholeGeometryMutations = () => {
-  const queryClient = useQueryClient();
   const useSetBoreholeGeometry = useMutation({
     mutationFn: async ({ boreholeId, formData }: { boreholeId: number; formData: FormData }) => {
       return await upload(`boreholegeometry?boreholeId=${boreholeId}`, "POST", formData);
