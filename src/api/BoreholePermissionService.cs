@@ -57,24 +57,6 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
             && (useWorkflowV2 ? HasEditPermissionV2(user, borehole) : HasEditPermission(user, borehole));
     }
 
-    /// <inheritdoc />
-    public async Task<bool> CanPublishBoreholeAsync(string? subjectId, int? boreholeId)
-    {
-        var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
-        var borehole = await GetBoreholeWithWorkflowsAsync(boreholeId).ConfigureAwait(false);
-        return CanPublishBorehole(user, borehole);
-    }
-
-    internal bool CanPublishBorehole(User user, Borehole borehole)
-    {
-        if (user.IsAdmin)
-        {
-            return true;
-        }
-
-        return HasUserRoleOnWorkgroup(user, borehole.WorkgroupId, Role.Publisher);
-    }
-
     private static bool HasUserSpecificRoleOnWorkgroup(User user, int? workgroupId, Role expectedRole)
     {
         var workgroupRoles = user.WorkgroupRoles ?? Enumerable.Empty<UserWorkgroupRole>();

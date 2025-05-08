@@ -271,39 +271,6 @@ public class BoreholePermissionServiceTest
     }
 
     [TestMethod]
-    public async Task CanPublishBoreholeAsyncWithUserNotSet()
-        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanPublishBoreholeAsync(null, null));
-
-    [TestMethod]
-    public async Task CanPublishBoreholeAsyncWithUnknownUser()
-        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanPublishBoreholeAsync("NON-EXISTENT-NAME", null));
-
-    [TestMethod]
-    public async Task CanPublishBoreholeAsyncWithUnknownBorehole()
-        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanPublishBoreholeAsync(EditorSubjectId, null));
-
-    [TestMethod]
-    public async Task ViewerCannotPublishBoreholeAsync()
-    {
-        var borehole = await context.Boreholes.FirstAsync();
-        Assert.IsFalse(await boreholePermissionService.CanPublishBoreholeAsync(ViewerSubjectId, borehole.Id));
-    }
-
-    [TestMethod]
-    public async Task EditorCannotPublishBoreholeAsync()
-    {
-        var borehole = await context.Boreholes.FirstAsync();
-        Assert.IsFalse(await boreholePermissionService.CanPublishBoreholeAsync(EditorSubjectId, borehole.Id));
-    }
-
-    [TestMethod]
-    public async Task AdminCanPublishBoreholeAsync()
-    {
-        var borehole = await context.Boreholes.FirstAsync();
-        Assert.IsTrue(await boreholePermissionService.CanPublishBoreholeAsync(AdminSubjectId, borehole.Id));
-    }
-
-    [TestMethod]
     public async Task CanViewBoreholeAsyncWithUserNotSet()
         => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync(null, null));
 
