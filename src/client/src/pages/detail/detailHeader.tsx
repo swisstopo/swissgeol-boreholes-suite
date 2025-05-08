@@ -18,7 +18,7 @@ import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
-import { DetailContextProps, EditStateContext } from "./editStateContext.tsx";
+import { EditStateContext } from "./editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 interface DetailHeaderProps {
@@ -33,7 +33,7 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const { showPrompt } = useContext(PromptContext);
-  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(EditStateContext);
+  const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);
   const { hasChanges, triggerReset } = useContext<SaveContextProps>(SaveContext);
   const auth = useAuth();
 
