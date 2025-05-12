@@ -14,7 +14,7 @@ import {
   clickOnRowWithText,
   showTableAndWaitForData,
 } from "../helpers/dataGridHelpers.js";
-import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
+import { evaluateInput, setInput, setOriginalName, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   deleteDownloadedFile,
@@ -82,7 +82,7 @@ describe("Test for exporting boreholes.", () => {
     readDownloadedFile(jsonFileName);
     readDownloadedFile(csvFileName);
     deleteItem(); // bulk delete all added boreholes
-    handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "Delete");
+    handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "delete");
   });
 
   it("exports TVD for a borehole with and without geometry", () => {
@@ -149,7 +149,7 @@ describe("Test for exporting boreholes.", () => {
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "674.87");
     getElementByDataCy("location-menu-item").click();
-    setInput("originalName", secondBoreholeName); // change name to avoid potential CSV filename conflict
+    setOriginalName(secondBoreholeName); // change name to avoid potential CSV filename conflict
     saveWithSaveBar();
     stopBoreholeEditing();
     exportItem();
@@ -157,7 +157,7 @@ describe("Test for exporting boreholes.", () => {
     verifyTVDContentInCSVFile(secondFileName, "674.8678208299723", "762.6098263945338", "846.9637100889873");
     startBoreholeEditing();
     getElementByDataCy("deleteborehole-button").click();
-    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
+    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "delete");
   });
 
   it("exports custom Ids form borehole", () => {
@@ -202,7 +202,7 @@ describe("Test for exporting boreholes.", () => {
       expect(rows[2][35]).to.equal("\r");
     });
     deleteItem();
-    handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "Delete");
+    handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "delete");
   });
 
   it("downloads a maximum of 100 boreholes", () => {
@@ -216,9 +216,9 @@ describe("Test for exporting boreholes.", () => {
 
     const moreThan100SelectedPrompt =
       "You have selected more than 100 boreholes and a maximum of 100 boreholes can be exported. Do you want to continue?";
-    handlePrompt(moreThan100SelectedPrompt, "Cancel");
+    handlePrompt(moreThan100SelectedPrompt, "cancel");
     exportItem();
-    handlePrompt(moreThan100SelectedPrompt, "Export 100 boreholes");
+    handlePrompt(moreThan100SelectedPrompt, "export100Boreholes");
     exportItem();
     exportCSVItem();
     cy.wait("@borehole_export_csv").its("response.statusCode").should("eq", 200);
@@ -338,7 +338,7 @@ describe("Test for exporting boreholes.", () => {
       showTableAndWaitForData();
       checkRowWithText(boreholeName);
       deleteItem();
-      handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
+      handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "delete");
       getElementByDataCy("import-borehole-button").click();
       cy.contains(boreholeName).should("not.exist");
 

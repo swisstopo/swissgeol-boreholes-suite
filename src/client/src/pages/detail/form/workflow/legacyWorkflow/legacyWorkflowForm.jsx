@@ -27,15 +27,15 @@ import {
   submitWorkflow,
   updateBorehole,
   updateWorkflow,
-} from "../../../../api-lib";
-import { theme } from "../../../../AppTheme.ts";
-import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import { CancelButton } from "../../../../components/buttons/buttons";
-import DateText from "../../../../components/legacyComponents/dateText.js";
-import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
+} from "../../../../../api-lib/index.js";
+import { theme } from "../../../../../AppTheme.ts";
+import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
+import { CancelButton } from "../../../../../components/buttons/buttons.js";
+import DateText from "../../../../../components/legacyComponents/dateText.js";
+import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
 import CommentArea from "./commentArea.jsx";
 
-class WorkflowForm extends React.Component {
+class LegacyWorkflowForm extends React.Component {
   static contextType = AlertContext;
 
   constructor(props) {
@@ -588,7 +588,7 @@ class WorkflowForm extends React.Component {
   }
 }
 
-WorkflowForm.propTypes = {
+LegacyWorkflowForm.propTypes = {
   borehole: PropTypes.object,
   id: PropTypes.number,
   loadWorkflows: PropTypes.func,
@@ -603,7 +603,7 @@ WorkflowForm.propTypes = {
   workflows: PropTypes.object,
 };
 
-WorkflowForm.defaultProps = {
+LegacyWorkflowForm.defaultProps = {
   id: undefined,
 };
 
@@ -649,5 +649,8 @@ const mapDispatchToProps = (dispatch, props) => {
   };
 };
 
-const ConnectedWorkflowForm = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(WorkflowForm));
+const ConnectedWorkflowForm = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslation(["common"])(LegacyWorkflowForm));
 export default ConnectedWorkflowForm;

@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { getCasings } from "../../../../api/fetchApiV2.ts";
 import DataCards from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
@@ -6,6 +7,14 @@ import CasingInput from "./casingInput.jsx";
 import { extractCasingDepth } from "./casingUtils.jsx";
 
 const Casing = ({ completionId }) => {
+  const renderInput = useCallback(props => <CasingInput {...props} />, []);
+  const renderDisplay = useCallback(props => <CasingDisplay {...props} />, []);
+  const sortDisplayed = useCallback((a, b) => {
+    const aDepth = extractCasingDepth(a);
+    const bDepth = extractCasingDepth(b);
+    return sortByDepth(aDepth, bDepth, "min", "max");
+  }, []);
+
   return (
     <DataCards
       parentId={completionId}
@@ -13,13 +22,9 @@ const Casing = ({ completionId }) => {
       cyLabel="casing"
       addLabel="addCasing"
       emptyLabel="msgCasingEmpty"
-      renderInput={props => <CasingInput {...props} />}
-      renderDisplay={props => <CasingDisplay {...props} />}
-      sortDisplayed={(a, b) => {
-        var aDepth = extractCasingDepth(a);
-        var bDepth = extractCasingDepth(b);
-        return sortByDepth(aDepth, bDepth, "min", "max");
-      }}
+      renderInput={renderInput}
+      renderDisplay={renderDisplay}
+      sortDisplayed={sortDisplayed}
     />
   );
 };

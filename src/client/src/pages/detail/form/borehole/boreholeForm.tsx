@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { Box, Stack } from "@mui/material";
-import { DevTool } from "../../../../../hookformDevtools.ts";
+import { useForm } from "react-hook-form";
+import { Stack } from "@mui/material";
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.ts";
 import {
   FormBooleanSelect,
@@ -12,10 +11,10 @@ import {
 } from "../../../../components/form/form.ts";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
-import { UseFormWithSaveBar } from "../../../../hooks/useFormWithSaveBar.ts";
-import { BoreholeDetailProps, BoreholeFormInputs } from "./boreholePanelInterfaces.ts";
+import { BaseForm } from "../baseForm.tsx";
+import { BoreholeFormInputs, BoreholeProps } from "./boreholePanelInterfaces.ts";
 
-export const BoreholeForm: FC<BoreholeDetailProps> = ({ borehole, onSubmit, ref }) => {
+export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
   const [totalDepthTVD, setTotalDepthTVD] = useState<number | null>(null);
   const [topBedrockFreshTVD, setTopBedrockFreshTVD] = useState<number | null>(null);
   const [topBedrockWeatheredTVD, setTopBedrockWeatheredTVD] = useState<number | null>(null);
@@ -47,11 +46,24 @@ export const BoreholeForm: FC<BoreholeDetailProps> = ({ borehole, onSubmit, ref 
   const topBedrockFreshMd = formMethods.watch("topBedrockFreshMd");
   const topBedrockWeatheredMd = formMethods.watch("topBedrockWeatheredMd");
 
-  UseFormWithSaveBar({
-    formMethods,
-    onSubmit,
-    ref,
-  });
+  const convertRadioValueToBoolean = (value: number | boolean | null): boolean | null => {
+    if (value === 1) return true;
+    if (value === 0) return false;
+    return null;
+  };
+
+  const prepareBoreholeDataForSubmit = useCallback((formInputs: BoreholeFormInputs) => {
+    const data = { ...formInputs };
+    data.totalDepth = parseFloatWithThousandsSeparator(data?.totalDepth);
+    data.topBedrockFreshMd = parseFloatWithThousandsSeparator(data?.topBedrockFreshMd);
+    data.topBedrockWeatheredMd = parseFloatWithThousandsSeparator(data?.topBedrockWeatheredMd);
+    data.hasGroundwater = convertRadioValueToBoolean(data?.hasGroundwater);
+    data.topBedrockIntersected = convertRadioValueToBoolean(data?.topBedrockIntersected);
+    data.boreholeFiles = null;
+    data.workflow = null;
+
+    return data;
+  }, []);
 
   const fetchDepthTVD = useCallback(
     async (fieldValue: number | null) => {
@@ -113,126 +125,117 @@ export const BoreholeForm: FC<BoreholeDetailProps> = ({ borehole, onSubmit, ref 
   }, [fetchDepthTVD, topBedrockWeatheredMd]);
 
   return (
-    <Box>
-      <DevTool control={formMethods.control} placement="top-right" />
-      <FormProvider {...formMethods}>
-        <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-          <Stack>
-            <FormSegmentBox>
-              <FormContainer>
-                <FormContainer direction="row">
-                  <FormDomainSelect
-                    fieldName={"typeId"}
-                    label={"borehole_type"}
-                    schemaName={"borehole_type"}
-                    selected={borehole.typeId}
-                  />
-                  <FormDomainSelect
-                    fieldName={"purposeId"}
-                    label={"purpose"}
-                    schemaName={"extended.purpose"}
-                    selected={borehole.purposeId}
-                  />
-                  <FormDomainSelect
-                    fieldName={"statusId"}
-                    label={"boreholestatus"}
-                    schemaName={"extended.status"}
-                    selected={borehole.statusId}
-                  />
-                </FormContainer>
-                <FormContainer>
-                  <FormContainer direction="row">
-                    <FormInput
-                      fieldName={"totalDepth"}
-                      label={"totaldepth"}
-                      value={borehole?.totalDepth}
-                      controlledValue={totalDepth ?? ""}
-                      withThousandSeparator={true}
-                    />
-                    <FormDomainSelect
-                      fieldName={"depthPrecisionId"}
-                      label={"qt_depth"}
-                      schemaName={"depth_precision"}
-                      selected={borehole.depthPrecisionId}
-                    />
-                    <FormInputDisplayOnly
-                      label={"total_depth_tvd"}
-                      value={totalDepthTVD}
-                      withThousandSeparator={true}
-                    />
-                  </FormContainer>
-                </FormContainer>
-                <FormContainer direction="row">
-                  <FormInput
-                    fieldName={"topBedrockWeatheredMd"}
-                    label={"top_bedrock_weathered_md"}
-                    value={borehole?.topBedrockWeatheredMd}
-                    controlledValue={topBedrockWeatheredMd ?? ""}
-                    withThousandSeparator={true}
-                  />
-                  <FormInputDisplayOnly
-                    label={"top_bedrock_weathered_tvd"}
-                    value={topBedrockWeatheredTVD}
-                    withThousandSeparator={true}
-                  />
-                </FormContainer>
-                <FormContainer direction="row">
-                  <FormInput
-                    fieldName={"topBedrockFreshMd"}
-                    label={"top_bedrock_fresh_md"}
-                    value={borehole?.topBedrockFreshMd}
-                    controlledValue={topBedrockFreshMd ?? ""}
-                    withThousandSeparator={true}
-                  />
-                  <FormInputDisplayOnly
-                    label={"top_bedrock_fresh_tvd"}
-                    value={topBedrockFreshTVD}
-                    withThousandSeparator={true}
-                  />
-                </FormContainer>
-                <FormContainer direction="row" width="50%">
-                  <FormBooleanSelect
-                    sx={{ mr: 1 }}
-                    canReset={false}
-                    fieldName={"topBedrockIntersected"}
-                    label="topBedrockIntersected"
-                    selected={borehole.topBedrockIntersected}
-                  />
-                </FormContainer>
-                <FormContainer direction="row">
-                  <FormDomainSelect
-                    fieldName={"lithologyTopBedrockId"}
-                    label={"lithology_top_bedrock"}
-                    schemaName={"custom.lithology_top_bedrock"}
-                    selected={borehole.lithologyTopBedrockId}
-                  />
-                  <FormDomainSelect
-                    fieldName={"lithostratigraphyTopBedrockId"}
-                    label={"lithostratigraphy_top_bedrock"}
-                    schemaName={"custom.lithostratigraphy_top_bedrock"}
-                    selected={borehole.lithostratigraphyTopBedrockId}
-                  />
-                </FormContainer>
-                <FormContainer direction="row">
-                  <FormDomainSelect
-                    fieldName={"chronostratigraphyTopBedrockId"}
-                    label={"chronostratigraphy_top_bedrock"}
-                    schemaName={"custom.chronostratigraphy_top_bedrock"}
-                    selected={borehole.chronostratigraphyTopBedrockId}
-                  />
-                  <FormBooleanSelect
-                    canReset={false}
-                    fieldName={"hasGroundwater"}
-                    label="groundwater"
-                    selected={borehole.hasGroundwater}
-                  />
-                </FormContainer>
-                <FormInput fieldName={"remarks"} multiline={true} label={"remarks"} value={borehole?.remarks} />
+    <BaseForm formMethods={formMethods} prepareDataForSubmit={prepareBoreholeDataForSubmit}>
+      <Stack>
+        <FormSegmentBox>
+          <FormContainer>
+            <FormContainer direction="row">
+              <FormDomainSelect
+                fieldName={"typeId"}
+                label={"borehole_type"}
+                schemaName={"borehole_type"}
+                selected={borehole.typeId}
+              />
+              <FormDomainSelect
+                fieldName={"purposeId"}
+                label={"purpose"}
+                schemaName={"extended.purpose"}
+                selected={borehole.purposeId}
+              />
+              <FormDomainSelect
+                fieldName={"statusId"}
+                label={"boreholestatus"}
+                schemaName={"extended.status"}
+                selected={borehole.statusId}
+              />
+            </FormContainer>
+            <FormContainer>
+              <FormContainer direction="row">
+                <FormInput
+                  fieldName={"totalDepth"}
+                  label={"totaldepth"}
+                  value={borehole?.totalDepth}
+                  controlledValue={totalDepth ?? ""}
+                  withThousandSeparator={true}
+                />
+                <FormDomainSelect
+                  fieldName={"depthPrecisionId"}
+                  label={"qt_depth"}
+                  schemaName={"depth_precision"}
+                  selected={borehole.depthPrecisionId}
+                />
+                <FormInputDisplayOnly label={"total_depth_tvd"} value={totalDepthTVD} withThousandSeparator={true} />
               </FormContainer>
-            </FormSegmentBox>
-          </Stack>
-        </form>
-      </FormProvider>
-    </Box>
+            </FormContainer>
+            <FormContainer direction="row">
+              <FormInput
+                fieldName={"topBedrockWeatheredMd"}
+                label={"top_bedrock_weathered_md"}
+                value={borehole?.topBedrockWeatheredMd}
+                controlledValue={topBedrockWeatheredMd ?? ""}
+                withThousandSeparator={true}
+              />
+              <FormInputDisplayOnly
+                label={"top_bedrock_weathered_tvd"}
+                value={topBedrockWeatheredTVD}
+                withThousandSeparator={true}
+              />
+            </FormContainer>
+            <FormContainer direction="row">
+              <FormInput
+                fieldName={"topBedrockFreshMd"}
+                label={"top_bedrock_fresh_md"}
+                value={borehole?.topBedrockFreshMd}
+                controlledValue={topBedrockFreshMd ?? ""}
+                withThousandSeparator={true}
+              />
+              <FormInputDisplayOnly
+                label={"top_bedrock_fresh_tvd"}
+                value={topBedrockFreshTVD}
+                withThousandSeparator={true}
+              />
+            </FormContainer>
+            <FormContainer direction="row" width="50%">
+              <FormBooleanSelect
+                sx={{ mr: 1 }}
+                canReset={false}
+                fieldName={"topBedrockIntersected"}
+                label="topBedrockIntersected"
+                selected={borehole.topBedrockIntersected}
+              />
+            </FormContainer>
+            <FormContainer direction="row">
+              <FormDomainSelect
+                fieldName={"lithologyTopBedrockId"}
+                label={"lithology_top_bedrock"}
+                schemaName={"custom.lithology_top_bedrock"}
+                selected={borehole.lithologyTopBedrockId}
+              />
+              <FormDomainSelect
+                fieldName={"lithostratigraphyTopBedrockId"}
+                label={"lithostratigraphy_top_bedrock"}
+                schemaName={"custom.lithostratigraphy_top_bedrock"}
+                selected={borehole.lithostratigraphyTopBedrockId}
+              />
+            </FormContainer>
+            <FormContainer direction="row">
+              <FormDomainSelect
+                fieldName={"chronostratigraphyTopBedrockId"}
+                label={"chronostratigraphy_top_bedrock"}
+                schemaName={"custom.chronostratigraphy_top_bedrock"}
+                selected={borehole.chronostratigraphyTopBedrockId}
+              />
+              <FormBooleanSelect
+                canReset={false}
+                fieldName={"hasGroundwater"}
+                label="groundwater"
+                selected={borehole.hasGroundwater}
+              />
+            </FormContainer>
+            <FormInput fieldName={"remarks"} multiline={true} label={"remarks"} value={borehole?.remarks} />
+          </FormContainer>
+        </FormSegmentBox>
+      </Stack>
+    </BaseForm>
   );
 };

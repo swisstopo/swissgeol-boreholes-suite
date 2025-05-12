@@ -1,5 +1,4 @@
 import { ReactNode, useContext } from "react";
-import { useTranslation } from "react-i18next";
 import { Trash2 } from "lucide-react";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
@@ -16,11 +15,10 @@ interface DataDisplayCardProps<T extends DataCardEntity> {
 }
 
 export const DataDisplayCard = <T extends DataCardEntity>({ item, deleteData, children }: DataDisplayCardProps<T>) => {
-  const { t } = useTranslation();
   const { selectedCard, selectCard, triggerReload } = useContext(DataCardContext);
   const { switchToCard } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
-  const { editingEnabled } = useContext(DetailContext);
+  const { reloadBorehole, editingEnabled } = useContext(DetailContext);
 
   return (
     <>
@@ -29,19 +27,20 @@ export const DataDisplayCard = <T extends DataCardEntity>({ item, deleteData, ch
         <DataCardButtonContainer>
           <DeleteButton
             onClick={() => {
-              showPrompt(t("deleteMessage"), [
+              showPrompt("deleteMessage", [
                 {
-                  label: t("cancel"),
+                  label: "cancel",
                   action: undefined,
                 },
                 {
-                  label: t("delete"),
+                  label: "delete",
                   icon: <Trash2 />,
                   variant: "contained",
                   action: () => {
                     if (item?.id) {
                       deleteData(item.id).then(() => {
                         triggerReload();
+                        reloadBorehole();
                       });
                     }
                   },

@@ -97,13 +97,13 @@ const InfoList = ({ id, profileInfo, onUpdated }) => {
                   }}></CopyButton>
                 <DeleteButton
                   onClick={() => {
-                    showPrompt(t("deleteMessage"), [
+                    showPrompt("deleteMessage", [
                       {
-                        label: t("cancel"),
+                        label: "cancel",
                         action: null,
                       },
                       {
-                        label: t("delete"),
+                        label: "delete",
                         icon: <Trash2 />,
                         variant: "contained",
                         action: () => {

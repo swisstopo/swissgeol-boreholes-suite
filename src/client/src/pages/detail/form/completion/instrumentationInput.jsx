@@ -30,7 +30,7 @@ const InstrumentationInput = ({ item, parentId }) => {
       item={item}
       addData={addInstrumentation}
       updateData={updateInstrumentation}
-      promptLabel="instrument"
+      promptLabel="instrumentation"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <FormContainer direction="row">
         <FormInput

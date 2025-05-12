@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { UseMutateFunction, useQueryClient } from "@tanstack/react-query";
 import { User, Workgroup } from "../api/apiInterfaces.ts";
@@ -12,7 +12,7 @@ export const useDeleteEntityPrompts = (
   deleteEntity: UseMutateFunction<unknown, unknown, number>,
   entityQueryKey: string,
 ) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const queryClient = useQueryClient();
@@ -55,9 +55,9 @@ export const useDeleteEntityPrompts = (
     });
 
     if (isUser(entity)) {
-      history.push(`/setting#users`);
+      navigate(`/setting#users`);
     } else if (isWorkgroup(entity)) {
-      history.push(`/setting#workgroups`);
+      navigate(`/setting#workgroups`);
     } else return `/setting`;
 
     deleteEntity(entity.id);
@@ -75,7 +75,7 @@ export const useDeleteEntityPrompts = (
   const showNotDeletablePrompt = (entity: User | Workgroup) => {
     showPrompt(getNotDeletableMessage(entity), [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
       },
     ]);
@@ -84,11 +84,11 @@ export const useDeleteEntityPrompts = (
   const showDeletablePrompt = (entity: User | Workgroup) => {
     showPrompt(getDeletableMessage(entity), [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
       },
       {
-        label: t("delete"),
+        label: "delete",
         icon: <Trash2 />,
         variant: "contained",
         action: () => {

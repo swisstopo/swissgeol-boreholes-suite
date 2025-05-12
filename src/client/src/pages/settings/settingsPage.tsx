@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { Route, Switch } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
@@ -26,21 +26,21 @@ export const SettingsPage = () => {
   const isAnonymousUser = auth.anonymousModeEnabled;
 
   const tabs = useMemo(() => {
-    const tabsArray = [{ label: t("about"), hash: "about", component: <AboutSettings /> }];
+    const tabsArray = [{ label: t("about"), hash: "#about", component: <AboutSettings /> }];
 
     if (!isAnonymousUser) {
-      tabsArray.unshift({ label: t("general"), hash: "general", component: <GeneralSettings /> });
-      tabsArray.push({ label: t("terms"), hash: "terms", component: <TermSettings /> });
+      tabsArray.unshift({ label: t("general"), hash: "#general", component: <GeneralSettings /> });
+      tabsArray.push({ label: t("terms"), hash: "#terms", component: <TermSettings /> });
     }
     if (isAdminUser) {
       tabsArray.unshift({
         label: t("workgroups"),
-        hash: "workgroups",
+        hash: "#workgroups",
         component: <WorkgroupAdministration />,
       });
       tabsArray.unshift({
         label: t("users"),
-        hash: "users",
+        hash: "#users",
         component: <UserAdministration />,
       });
     }
@@ -52,14 +52,12 @@ export const SettingsPage = () => {
     <UserAdministrationProvider>
       <WorkgroupAdministrationProvider>
         <SettingsHeader />
-        <Switch>
-          <Route exact={false} key={4} path={"/setting/user/:id"} render={() => <UserDetail />} />
-          <Route exact={false} key={5} path={"/setting/workgroup/:id"} render={() => <WorkgroupDetail />} />
+        <Routes>
+          <Route path="user/:id" element={<UserDetail />} />
+          <Route path="workgroup/:id" element={<WorkgroupDetail />} />
           <Route
-            exact={false}
-            key={6}
-            path={"/setting"}
-            render={() => (
+            path=""
+            element={
               <Stack
                 sx={{
                   height: "100%",
@@ -69,9 +67,9 @@ export const SettingsPage = () => {
                 }}>
                 <TabPanel tabs={tabs} />
               </Stack>
-            )}
+            }
           />
-        </Switch>
+        </Routes>
       </WorkgroupAdministrationProvider>
     </UserAdministrationProvider>
   );

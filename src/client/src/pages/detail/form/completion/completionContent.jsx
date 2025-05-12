@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Stack } from "@mui/material";
 import PropTypes from "prop-types";
 import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.ts";
@@ -18,8 +18,8 @@ export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBo
 
 const CompletionContent = ({ completion, editingEnabled }) => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
-  const history = useHistory();
-  const location = useLocation();
+  const navigate = useNavigate();
+  const { hash, pathname } = useLocation();
   const { t } = useTranslation();
   const [casings, setCasings] = useState([]);
   const [instrumentation, setInstrumentation] = useState([]);
@@ -27,17 +27,17 @@ const CompletionContent = ({ completion, editingEnabled }) => {
   const tabs = [
     {
       label: t("casing"),
-      hash: "casing",
+      hash: "#casing",
       hasContent: casings.length > 0,
     },
     {
-      label: t("instrument"),
-      hash: "instrumentation",
+      label: t("instrumentation"),
+      hash: "#instrumentation",
       hasContent: instrumentation.length > 0,
     },
     {
       label: t("backfill"),
-      hash: "backfill",
+      hash: "#backfill",
       hasContent: backfills.length > 0,
     },
   ];
@@ -72,9 +72,8 @@ const CompletionContent = ({ completion, editingEnabled }) => {
       if (canSwitch === 1 && newIndex !== null) {
         setActiveIndex(newIndex);
         setNewIndex(null);
-        var newLocation = location.pathname + "#" + tabs[newIndex].hash;
-        if (location.pathname + location.hash !== newLocation) {
-          history.push(newLocation);
+        if (hash !== tabs[newIndex].hash) {
+          navigate({ pathname, hash: tabs[newIndex].hash });
         }
       } else if (canSwitch === -1) {
         setNewIndex(null);
@@ -88,12 +87,12 @@ const CompletionContent = ({ completion, editingEnabled }) => {
   }, [canSwitch]);
 
   useEffect(() => {
-    var newTabIndex = tabs.findIndex(t => t.hash === location.hash.replace("#", ""));
+    const newTabIndex = tabs.findIndex(t => t.hash === hash);
     if (newTabIndex > -1 && activeIndex !== newTabIndex) {
       handleCompletionChanged(null, newTabIndex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.hash]);
+  }, [hash]);
 
   const renderTabContent = useCallback(() => {
     return (
@@ -109,7 +108,7 @@ const CompletionContent = ({ completion, editingEnabled }) => {
         <BoreholeTabs value={activeIndex} onChange={handleCompletionChanged}>
           {tabs.map((tab, index) => (
             <BoreholeTab
-              data-cy={"completion-content-tab-" + tab.hash}
+              data-cy={"completion-content-tab-" + tab.hash.replace("#", "")}
               label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
               key={index}
               hasContent={tab.hasContent}

@@ -1,6 +1,5 @@
 import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
@@ -11,12 +10,13 @@ import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
+import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { AddWorkgroupRoleDialog } from "./dialogs/addWorkgroupRoleDialog.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
 export const UserDetail: FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useRequiredParams<{ id: string }>();
   const { t } = useTranslation();
   const [userWorkgroups, setUserWorkgroups] = useState<Workgroup[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
@@ -97,11 +97,11 @@ export const UserDetail: FC = () => {
     if (!userWorkgroup) return;
     showPrompt(t("confirmRemoveRoles", { name: selectedUser.name, workgroupName: userWorkgroup.name }), [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
       },
       {
-        label: t("delete"),
+        label: "delete",
         icon: <Trash2 />,
         variant: "contained",
         action: () => {

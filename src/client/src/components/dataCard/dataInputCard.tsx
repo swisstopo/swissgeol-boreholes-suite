@@ -1,8 +1,11 @@
 import { ReactNode, useContext } from "react";
 import { FieldValues, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { DevTool } from "../../../hookformDevtools";
+import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../hooks/useSaveOnCtrlS";
+import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { FormContainer } from "../form/form";
+import { useFormDirtyChanges } from "../form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../form/useValidateFormOnMount.tsx";
 import { DataCardContext } from "./dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "./saveAndCancelButtons.tsx";
@@ -26,7 +29,10 @@ export const DataInputCard = <T extends FieldValues>({
   children,
 }: DataInputCardProps<T>) => {
   const { triggerReload } = useContext(DataCardContext);
+  const { reloadBorehole } = useContext(DetailContext);
+  useBlockNavigation();
   const formMethods = useForm<T>({ mode: "all" });
+  const { formState, handleSubmit, control } = formMethods;
 
   const submitForm: SubmitHandler<T> = data => {
     data = prepareFormDataForSubmit(data);
@@ -35,6 +41,7 @@ export const DataInputCard = <T extends FieldValues>({
         ...data,
       }).then(() => {
         triggerReload();
+        reloadBorehole();
       });
     } else {
       updateData({
@@ -53,14 +60,13 @@ export const DataInputCard = <T extends FieldValues>({
   });
 
   useValidateFormOnMount({ formMethods });
-
-  // Save with ctrl+s
-  useSaveOnCtrlS(formMethods.handleSubmit(submitForm));
+  useSaveOnCtrlS(handleSubmit(submitForm));
+  useFormDirtyChanges({ formState });
 
   return (
     <FormProvider {...formMethods}>
-      <DevTool control={formMethods.control} placement="top-left" />
-      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+      <DevTool control={control} placement="top-left" />
+      <form onSubmit={handleSubmit(submitForm)}>
         <FormContainer pt={1}>{children}</FormContainer>
         <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
       </form>

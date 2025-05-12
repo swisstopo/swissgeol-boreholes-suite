@@ -1,10 +1,4 @@
-import { Identifier } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
-import { BoreholeFormInputs } from "../../pages/detail/form/borehole/boreholePanelInterfaces.ts";
-import {
-  LocationFormInputs,
-  LocationFormSubmission,
-} from "../../pages/detail/form/location/locationPanelInterfaces.tsx";
 
 /**
  * Parse the input value if it's a string. If it's a number, return it as is.
@@ -47,7 +41,7 @@ export const getDecimalsFromNumericString = (numericString: string) => numericSt
 export const getFieldBorderColor = (isReadOnly: boolean) => {
   return {
     "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: isReadOnly ? theme.palette.border.light : theme.palette.border.darker,
+      borderColor: isReadOnly ? theme.palette.border.light : theme.palette.border.dark,
     },
   };
 };
@@ -98,62 +92,12 @@ export const formatNumberForDisplay = (value: number | null, minDecimals = 0): s
 export const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
 
 /**
- * Transforms the location form data into a format that can be submitted to the API.
- * @param {LocationFormInputs} formInputs The data from the location form.
- * @returns The location data in a format that can be submitted to the API.
+ * Convert a value to a boolean.
+ * @param value The value to convert from (yes=1, no=0, undefined=null).
+ * @returns boolean or null depending on the input value.
  */
-export const prepareLocationDataForSubmit = (formInputs: LocationFormInputs) => {
-  const data = { ...formInputs } as LocationFormSubmission;
-
-  const getCompleteCodelists = (codelists: Identifier[]) => {
-    return codelists
-      .map(c => {
-        delete c.borehole;
-        delete c.codelist;
-        return c;
-      })
-      .filter(c => c.codelistId && c.value && c.boreholeId);
-  };
-
-  data.restrictionUntil = data?.restrictionUntil ? ensureDatetime(data.restrictionUntil.toString()) : null;
-  data.elevationZ = parseFloatWithThousandsSeparator(data?.elevationZ);
-  data.referenceElevation = parseFloatWithThousandsSeparator(data?.referenceElevation);
-  data.nationalInterest = data?.nationalInterest === 1 ? true : data?.nationalInterest === 0 ? false : null;
-  data.restrictionId = data.restrictionId ?? null;
-  data.referenceElevationTypeId = data.referenceElevationTypeId ?? null;
-  data.elevationPrecisionId = data.elevationPrecisionId ?? null;
-  data.locationPrecisionId = data.locationPrecisionId ?? null;
-  data.referenceElevationPrecisionId = data.referenceElevationPrecisionId ?? null;
-  data.name = data?.name ?? data.originalName;
-  data.precisionLocationX = data?.locationX ? getDecimalsFromNumericString(formInputs.locationX) : null;
-  data.precisionLocationY = data?.locationY ? getDecimalsFromNumericString(formInputs.locationY) : null;
-  data.precisionLocationXLV03 = data?.locationXLV03 ? getDecimalsFromNumericString(formInputs.locationXLV03) : null;
-  data.precisionLocationYLV03 = data?.locationYLV03 ? getDecimalsFromNumericString(formInputs.locationYLV03) : null;
-  data.locationX = parseFloatWithThousandsSeparator(data?.locationX);
-  data.locationY = parseFloatWithThousandsSeparator(data?.locationY);
-  data.locationXLV03 = parseFloatWithThousandsSeparator(data?.locationXLV03);
-  data.locationYLV03 = parseFloatWithThousandsSeparator(data?.locationYLV03);
-  data.boreholeCodelists = getCompleteCodelists(data.boreholeCodelists);
-  data.boreholeFiles = null;
-  data.workflow = null;
-  return data;
-};
-
-/**
- * Transforms the borehole form data into a format that can be submitted to the API.
- * @param {BoreholeFormInputs} formInputs The data from the borehole form.
- * @returns The borehole data in a format that can be submitted to the API.
- */
-export const prepareBoreholeDataForSubmit = (formInputs: BoreholeFormInputs) => {
-  const data = { ...formInputs };
-  data.totalDepth = parseFloatWithThousandsSeparator(data?.totalDepth);
-  data.topBedrockFreshMd = parseFloatWithThousandsSeparator(data?.topBedrockFreshMd);
-  data.topBedrockWeatheredMd = parseFloatWithThousandsSeparator(data?.topBedrockWeatheredMd);
-  data.hasGroundwater = data?.hasGroundwater === 1 ? true : data?.hasGroundwater === 0 ? false : null;
-  data.topBedrockIntersected =
-    data?.topBedrockIntersected === 1 ? true : data?.topBedrockIntersected === 0 ? false : null;
-  data.boreholeFiles = null;
-  data.workflow = null;
-
-  return data;
+export const convertValueToBoolean = (value: number | boolean | null): boolean | null => {
+  if (value === 1) return true;
+  if (value === 0) return false;
+  return null;
 };

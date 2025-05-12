@@ -101,7 +101,7 @@ describe("Tests for the hydrotest editor.", () => {
 
     // delete hydrotest
     deleteItem();
-    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "Löschen");
+    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "delete");
     cy.wait("@hydrotest_GET");
     cy.get("body").should("not.contain", "Pump-/Injektionsversuch, variable Rate");
   });
@@ -164,26 +164,26 @@ describe("Tests for the hydrotest editor.", () => {
 
     // can cancel switching tabs without loosing data
     addItem("addHydrotest");
-    handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "Cancel");
+    handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "cancel");
     evaluateTextarea("comment", "Lorem.");
 
     // can reset creating
     addItem("addHydrotest");
-    handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "Reset");
+    handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "reset");
     evaluateDisplayValue("comment", "-");
 
     // can save changes in existing card and switch to new card
     startEditing();
     setInput("comment", "Lorem.");
     addItem("addHydrotest");
-    handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "Save");
+    handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "save");
     evaluateDisplayValue("comment", "Lorem.");
 
     // can reset creating and switch to existing card
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 3);
     startEditing();
-    handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "Reset");
+    handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "reset");
     cy.get('[data-cy="hydrotest-card.0.edit"]').should("be.visible");
     cy.get('[data-cy="hydrotest-card.1"]').should("not.exist");
 
@@ -193,7 +193,7 @@ describe("Tests for the hydrotest editor.", () => {
     setSelect("reliabilityId", 2);
     toggleMultiSelect("testKindId", [4]);
     startEditing();
-    handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "Save");
+    handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "save");
     cy.get('[data-cy="hydrotest-card.0.edit"]').should("exist");
     cy.get('[data-cy="hydrotest-card.1"]').should("exist");
   });

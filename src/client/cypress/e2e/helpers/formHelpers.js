@@ -336,3 +336,12 @@ export const evaluateCoordinate = (fieldName, expectedValue, parent) => {
     })
     .should("have.length", 1);
 };
+
+/**
+ * Sets the value for the original name field with a delay, so that the name field is updated correctly.
+ * @param value The value to type in the input field.
+ */
+export const setOriginalName = value => {
+  const originalNameInput = () => cy.contains("label", "Original name").next().children("input");
+  originalNameInput().clear().type(value, { delay: 100 });
+};

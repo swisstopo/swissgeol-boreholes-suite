@@ -44,7 +44,7 @@ describe("Tests for the data cards in the editor.", () => {
     cy.wait("@wateringress_GET");
     startEditing();
     setInput("comment", "Lorem.");
-    stopBoreholeEditing();
+    stopBoreholeEditing(true);
     evaluateDisplayValue("comment", "-");
   });
 
@@ -72,26 +72,26 @@ describe("Tests for the data cards in the editor.", () => {
 
     // can cancel switching tabs without loosing data
     addItem("addwateringress");
-    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Cancel");
+    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "cancel");
     evaluateTextarea("comment", "Lorem.");
 
     // can reset creating
     addItem("addwateringress");
-    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Reset");
+    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "reset");
     evaluateDisplayValue("comment", "-");
 
     // can save changes in existing card and switch to new card
     startEditing();
     setInput("comment", "Lorem.");
     addItem("addwateringress");
-    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Save");
+    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "save");
     evaluateDisplayValue("comment", "Lorem.");
 
     // can reset creating and switch to existing card
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 2);
     startEditing();
-    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Reset");
+    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "reset");
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
     cy.get('[data-cy="waterIngress-card.1"]').should("not.exist");
 
@@ -101,7 +101,7 @@ describe("Tests for the data cards in the editor.", () => {
     setSelect("reliabilityId", 3);
     setSelect("quantityId", 3);
     startEditing();
-    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Save");
+    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "save");
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
     cy.get('[data-cy="waterIngress-card.1"]').should("exist");
   });

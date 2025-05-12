@@ -68,7 +68,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // delete wateringress
     deleteItem();
-    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "Löschen");
+    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "delete");
     cy.wait("@wateringress_DELETE");
     cy.get("body").should("not.contain", "mittel (30 - 120 l/min)");
   });
@@ -190,7 +190,7 @@ describe("Tests for the wateringress editor.", () => {
       setSelect("originalVerticalReferenceSystem", 0);
       handlePrompt(
         "Changing the vertical reference system will reset the depth values. Do you want to continue?",
-        "Cancel",
+        "cancel",
       );
 
       // Check that the state of the depth inputs did not change
@@ -205,7 +205,7 @@ describe("Tests for the wateringress editor.", () => {
       setSelect("originalVerticalReferenceSystem", 0);
       handlePrompt(
         "Changing the vertical reference system will reset the depth values. Do you want to continue?",
-        "Confirm",
+        "confirm",
       );
       cy.get(
         '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',

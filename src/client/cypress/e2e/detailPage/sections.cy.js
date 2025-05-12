@@ -96,12 +96,12 @@ describe("Section crud tests", () => {
 
     // delete section
     deleteItem();
-    handlePrompt("Do you really want to delete this entry?", "Cancel");
+    handlePrompt("Do you really want to delete this entry?", "cancel");
     cy.wait("@section_GET");
     cy.get('[data-cy="section-card.0"]').should("exist");
 
     deleteItem();
-    handlePrompt("Do you really want to delete this entry?", "Delete");
+    handlePrompt("Do you really want to delete this entry?", "delete");
     cy.wait("@section_DELETE");
     cy.get('[data-cy="section-card.0"]').should("not.exist");
   });
@@ -128,7 +128,7 @@ describe("Section crud tests", () => {
     handlePrompt(messageUnsavedChanges, "cancel");
     evaluateInput("totalDepth", "5");
     cy.get('[data-cy="sections-tab"]').click();
-    handlePrompt(messageUnsavedChanges, "discard changes");
+    handlePrompt(messageUnsavedChanges, "discardchanges");
 
     // sections tab should be unchanged when retuning from borehole tab
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
@@ -163,7 +163,7 @@ describe("Section crud tests", () => {
       expect(location.hash).to.eq("#sections");
     });
     getElementByDataCy("geometry-tab").click();
-    handlePrompt(messageUnsavedChanges, "discard changes");
+    handlePrompt(messageUnsavedChanges, "discardchanges");
     cy.location().should(location => {
       expect(location.hash).to.eq("#geometry");
     });

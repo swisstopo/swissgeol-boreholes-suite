@@ -30,6 +30,9 @@ declare module "@mui/material/styles" {
       contrastText: string;
       background: string;
     };
+    tertiary: {
+      main: string;
+    };
     success: {
       main: string;
     };
@@ -68,12 +71,13 @@ declare module "@mui/material/styles" {
     border: {
       light: string;
       darker: string;
-      table: string;
+      dark: string;
     };
     background: {
       default: string;
       lightgrey: string;
       darkgrey: string;
+      grey: string;
       dark: string;
       menuItemActive: string;
       filterItemActive: string;
@@ -139,7 +143,6 @@ declare module "@mui/material/styles" {
     MuiTextField: object;
     MuiInputLabel: object;
     MuiOutlinedInput: object;
-    MuiCheckbox: object;
     MuiTab: object;
     MuiTabs: object;
     MuiBadge: object;
@@ -165,7 +168,6 @@ declare module "@mui/material/styles" {
     MuiTextField: object;
     MuiInputLabel: object;
     MuiOutlinedInput: object;
-    MuiCheckbox: object;
     MuiTab: object;
     MuiTabs: object;
     MuiBadge: object;

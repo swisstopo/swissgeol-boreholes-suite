@@ -43,15 +43,17 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     setSelect("kindId", 2);
     setSelect("casingId", 2);
-    setInput("levelM", "789.12");
-    setInput("levelMasl", "5.4567");
+    setInput("levelM", "78.1267");
+    cy.get('[data-cy="groundwaterLevelMeasurement-card.0.edit"] [data-cy="levelMasl-formInput"] input').should(
+      "be.disabled",
+    );
 
     // close editing mask
     saveForm();
     evaluateDisplayValue("casingName", "test groundwaterlevel measurement - casing-1");
     evaluateDisplayValue("gwlm_kind", "Manometer");
-    evaluateDisplayValue("gwlm_levelm", "789.12");
-    evaluateDisplayValue("gwlm_levelmasl", "5.457"); // Should round to 3 decimals
+    evaluateDisplayValue("gwlm_levelm", "78.127"); // Should round to 3 decimals
+    evaluateDisplayValue("gwlm_levelmasl", "-");
 
     // edit groundwater level measurement
     startEditing();
@@ -62,7 +64,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // delete groundwater level measurement
     deleteItem();
-    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "Löschen");
+    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "delete");
     cy.wait("@groundwaterlevelmeasurement_DELETE");
     cy.get("body").should("not.contain", "Drucksonde");
   });

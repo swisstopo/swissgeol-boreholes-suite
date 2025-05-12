@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { getInstrumentation } from "../../../../api/fetchApiV2.ts";
 import DataCards from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
@@ -5,6 +6,10 @@ import InstrumentationDisplay from "./instrumentationDisplay.jsx";
 import InstrumentationInput from "./instrumentationInput.jsx";
 
 const Instrumentation = ({ completionId }) => {
+  const renderInput = useCallback(props => <InstrumentationInput {...props} />, []);
+  const renderDisplay = useCallback(props => <InstrumentationDisplay {...props} />, []);
+  const sortDisplayed = useCallback((a, b) => sortByDepth(a, b, "fromDepth", "toDepth"), []);
+
   return (
     <DataCards
       parentId={completionId}
@@ -12,11 +17,9 @@ const Instrumentation = ({ completionId }) => {
       cyLabel="instrumentation"
       addLabel="addInstrument"
       emptyLabel="msgInstrumentsEmpty"
-      renderInput={props => <InstrumentationInput {...props} />}
-      renderDisplay={props => <InstrumentationDisplay {...props} />}
-      sortDisplayed={(a, b) => {
-        return sortByDepth(a, b, "fromDepth", "toDepth");
-      }}
+      renderInput={renderInput}
+      renderDisplay={renderDisplay}
+      sortDisplayed={sortDisplayed}
     />
   );
 };

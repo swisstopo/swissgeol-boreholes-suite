@@ -111,7 +111,9 @@ public class BdmsContext : DbContext
 
     public IQueryable<WorkflowV2> WorkflowsV2WithIncludes
         => WorkflowsV2
-        .Include(w => w.Changes)
+        .Include(w => w.Changes).ThenInclude(wc => wc.CreatedBy)
+        .Include(w => w.Changes).ThenInclude(wc => wc.Assignee)
+        .Include(w => w.Assignee)
         .Include(w => w.ReviewedTabs)
         .Include(w => w.PublishedTabs);
 
