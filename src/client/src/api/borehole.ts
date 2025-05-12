@@ -1,12 +1,12 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/Codelist.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { WorkflowV2 } from "../pages/detail/form/workflow/workflow.ts";
-import { queryClient } from "../queryClient.ts";
+import { queryClient as globalQueryClient } from "../queryClient.ts";
 import { Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -146,6 +146,24 @@ export const useBorehole = (id: number) => {
   return query;
 };
 
+export const useBoreholeMutations = () => {
+  const queryClient = useQueryClient();
+  const useUpdateBorehole = useMutation({
+    mutationFn: async (borehole: BoreholeV2) => {
+      return await updateBorehole(borehole);
+    },
+    onSettled: (_data, _error, updatedBorehole) => {
+      console.log("setteled", updatedBorehole.id);
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, updatedBorehole.id] });
+    },
+  });
+
+  useShowAlertOnError(useUpdateBorehole.isError, useUpdateBorehole.error);
+  return {
+    update: useUpdateBorehole,
+  };
+};
+
 export const reloadBorehole = () => {
-  queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+  globalQueryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
 };

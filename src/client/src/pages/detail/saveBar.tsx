@@ -44,14 +44,8 @@ export const SaveBar = () => {
         {showSaveFeedback && !hasChanges && savedMessage}
       </Stack>
       <Stack spacing={1} direction="row">
-        <DeleteButton
-          disabled={!hasChanges}
-          label="discardchanges"
-          onClick={() => {
-            triggerReset();
-          }}
-        />
-        <SaveButton disabled={!hasChanges} variant="contained" onClick={() => triggerSave()} />
+        <DeleteButton disabled={!hasChanges} label="discardchanges" onClick={triggerReset} />
+        <SaveButton disabled={!hasChanges} variant="contained" onClick={triggerSave} />
       </Stack>
     </Stack>
   );
