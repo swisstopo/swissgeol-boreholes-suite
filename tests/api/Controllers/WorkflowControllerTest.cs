@@ -13,6 +13,7 @@ namespace BDMS.Controllers;
 public class WorkflowControllerTest
 {
     private readonly Mock<ILogger<WorkflowController>> loggerMock = new();
+    private readonly int boreholeTestId = 1000029;
     private BdmsContext context;
     private WorkflowController controller;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
@@ -48,7 +49,7 @@ public class WorkflowControllerTest
         var workflow = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response.Result);
         Assert.IsNotNull(workflow);
         Assert.AreEqual(WorkflowStatus.Draft, workflow.Status);
-        Assert.AreEqual(1000029, workflow.BoreholeId);
+        Assert.AreEqual(boreholeTestId, workflow.BoreholeId);
         Assert.AreEqual(2000029, workflow.Id);
         Assert.IsNull(workflow.AssigneeId);
         Assert.IsNull(workflow.Assignee);
@@ -79,14 +80,13 @@ public class WorkflowControllerTest
     [TestMethod]
     public async Task UpdatesWorkflowAndCreatesChange()
     {
-        int boreholeId = 1000029;
         var newStatus = WorkflowStatus.InReview;
         var newAssigneeId = 2;
         var comment = "Changing to InReview status.";
 
         var request = new WorkflowChangeRequest
         {
-            BoreholeId = boreholeId,
+            BoreholeId = boreholeTestId,
             NewStatus = newStatus,
             NewAssigneeId = newAssigneeId,
             Comment = comment,
@@ -101,7 +101,7 @@ public class WorkflowControllerTest
         // Assert workflow change created
         var updatedWorkflow = await context.WorkflowsV2
             .Include(w => w.Changes)
-            .FirstAsync(w => w.BoreholeId == boreholeId);
+            .FirstAsync(w => w.BoreholeId == boreholeTestId);
 
         var latestChange = updatedWorkflow.Changes
             .OrderByDescending(c => c.Created)
@@ -135,7 +135,7 @@ public class WorkflowControllerTest
     {
         var request = new WorkflowChangeRequest
         {
-            BoreholeId = 1000029,
+            BoreholeId = boreholeTestId,
             NewAssigneeId = 75500871,
         };
 
@@ -143,5 +143,70 @@ public class WorkflowControllerTest
         ActionResultAssert.IsNotFound(response);
         var notFoundResponse = response as NotFoundObjectResult;
         Assert.AreEqual("New assignee with id 75500871 not found.", notFoundResponse.Value);
+    }
+
+    [TestMethod]
+    public async Task WorkflowChangeRequestByUserWithoutEditPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(false);
+
+        var request = new WorkflowChangeRequest
+        {
+            BoreholeId = boreholeTestId,
+            NewStatus = WorkflowStatus.InReview,
+            NewAssigneeId = 2,
+            Comment = "Unauthorized change attempt",
+        };
+
+        var response = await controller.ApplyWorkflowChangeAsync(request).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
+    public async Task WorkflowChangeRequestToPublishWithoutPublisherRights()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(true);
+
+        // User does not have publisher rights
+        boreholePermissionServiceMock
+            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), It.IsAny<int>(), Role.Publisher))
+            .ReturnsAsync(false);
+
+        var request = new WorkflowChangeRequest
+        {
+            BoreholeId = boreholeTestId,
+            NewStatus = WorkflowStatus.Published,
+            NewAssigneeId = 2,
+            Comment = "Trying to publish without publisher role",
+        };
+
+        var response = await controller.ApplyWorkflowChangeAsync(request).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
+    public async Task WorkflowChangeRequestWithoutStatsChange()
+    {
+        var existingWorkflow = await context.WorkflowsV2.FirstAsync(w => w.BoreholeId == boreholeTestId);
+        var originalStatus = existingWorkflow.Status;
+
+        var request = new WorkflowChangeRequest
+        {
+            BoreholeId = boreholeTestId,
+            NewAssigneeId = 2,
+            Comment = "No status change",
+        };
+
+        var response = await controller.ApplyWorkflowChangeAsync(request).ConfigureAwait(false);
+
+        var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
+        Assert.AreEqual(originalStatus, result.Status);
+        Assert.AreEqual(2, result.AssigneeId);
     }
 }
