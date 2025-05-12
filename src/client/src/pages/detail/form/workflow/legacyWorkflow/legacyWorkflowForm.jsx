@@ -55,6 +55,7 @@ class LegacyWorkflowForm extends React.Component {
 
   componentDidMount() {
     this.load(this.state.id);
+    this.props.dispatch(loadBorehole(this.props.id));
   }
 
   componentDidUpdate(prevProps) {
