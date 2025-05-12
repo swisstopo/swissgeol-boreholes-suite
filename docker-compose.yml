@@ -144,8 +144,6 @@ services:
     # TODO change this to `latest` once it is released.
     image: ghcr.io/swisstopo/swissgeol-ocr-api:edge
     restart: unless-stopped
-    volumes:
-     - ./.aws/:/root/.aws:ro
     ports:
       - "5052:8000"
     environment:
@@ -159,7 +157,9 @@ services:
       S3_OUTPUT_FOLDER: /
       CONFIDENCE_THRESHOLD: 0.45
       USE_AGGRESSIVE_STRATEGY: TRUE
-      AWS_PROFILE: default
+      AWS_ACCESS_KEY_ID: REDSQUIRREL
+      AWS_SECRET_ACCESS_KEY: YELLOWMONKEY
+      AWS_DEFAULT_REGION : us-east-1
 
   oidc-server:
     image: soluto/oidc-server-mock
