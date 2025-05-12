@@ -111,7 +111,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
 
     /// <summary>
     /// Checks whether the <paramref name="user"/> has permissions to edit the <paramref name="borehole"/>.
-    /// "Permission to edit" refers to the user having the <see cref="Role"/> on the <see cref="Workgroup"/> of the <see cref="Borehole"/>, which has permission to the
+    /// "Permission to edit" refers to the user having the <see cref="Role"/> on the <see cref="Workgroup"/> of the <see cref="Borehole"/>, which has permission to
     /// change the borehole with the current <see cref="WorkflowV2.Status"/>.
     /// </summary>
     private bool HasEditPermissionV2(User user, Borehole borehole)
