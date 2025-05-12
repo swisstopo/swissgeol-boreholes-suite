@@ -49,8 +49,6 @@ public class WorkflowController : ControllerBase
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request.")]
     public async Task<IActionResult> ApplyWorkflowChangeAsync([FromBody] WorkflowChangeRequest workflowChangeRequest)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
         var subjectId = HttpContext.GetUserSubjectId();
 
         // Check permission for editing the borehole
@@ -90,12 +88,12 @@ public class WorkflowController : ControllerBase
             Comment = workflowChangeRequest.Comment ?? "",
             Created = DateTime.UtcNow,
             CreatedById = user.Id,
-            AssigneeId = workflowChangeRequest.NewAssigneeId,
+            AssigneeId = newAssignee.Id,
         };
 
         // Update the workflow state
-        workflow.Status = workflowChangeRequest.NewStatus ?? workflow.Status;
-        workflow.AssigneeId = workflowChangeRequest.NewAssigneeId;
+        workflow.Status = change.ToStatus;
+        workflow.AssigneeId = newAssignee.Id;
 
         context.WorkflowChanges.Add(change);
 
