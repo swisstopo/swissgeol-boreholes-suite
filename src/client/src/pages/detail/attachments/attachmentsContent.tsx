@@ -1,24 +1,28 @@
-import { FC, MutableRefObject, useCallback, useContext, useEffect, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { GridColDef, GridRowSelectionModel, GridValidRowModel } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
+import { RefObject } from "@mui/x-internals/types";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
 import { Table } from "../../../components/table/table.tsx";
 import { TableSearchField } from "../../../components/table/tableSearchField.tsx";
 import { DetailContext } from "../detailContext.tsx";
+import { SaveContext, SaveContextProps } from "../saveContext.tsx";
 import { AddAttachmentButton } from "./addAttachmentButton.tsx";
 
 interface AttachmentContentProps {
-  apiRef: MutableRefObject<GridApiCommunity>;
+  apiRef: RefObject<GridApiCommunity>;
   columns: GridColDef<GridValidRowModel>[];
   addAttachment: (file: File) => Promise<void>;
   acceptedFileTypes?: string;
   getAttachments: () => Promise<GridValidRowModel[]>;
   deleteAttachments: (ids: number[]) => Promise<void>;
   exportAttachments: (ids: number[]) => Promise<void>;
+  saveChanges: () => Promise<void>;
+  resetChanges: () => void;
   addAttachmentButtonLabel: string;
   noAttachmentsText: string;
 }
@@ -31,11 +35,14 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
   getAttachments,
   deleteAttachments,
   exportAttachments,
+  saveChanges,
+  resetChanges,
   addAttachmentButtonLabel,
   noAttachmentsText,
 }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled, reloadBorehole } = useContext(DetailContext);
+  const { registerSaveHandler, registerResetHandler, unMount } = useContext<SaveContextProps>(SaveContext);
   const { showAlert } = useContext(AlertContext);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [rows, setRows] = useState<GridValidRowModel[]>();
@@ -57,24 +64,47 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
       try {
         setIsLoading(true);
         await addAttachment(file);
-        loadAttachments();
+        await loadAttachments();
+        reloadBorehole();
       } catch (error) {
         showAlert(t((error as Error).message), "error");
         setIsLoading(false);
       }
     },
-    [addAttachment, loadAttachments, showAlert, t],
+    [addAttachment, loadAttachments, reloadBorehole, showAlert, t],
   );
 
   const deleteSelected = useCallback(async () => {
     setIsLoading(true);
     await deleteAttachments(selectionModel as number[]);
     loadAttachments();
-  }, [deleteAttachments, loadAttachments, selectionModel]);
+    reloadBorehole();
+  }, [deleteAttachments, loadAttachments, reloadBorehole, selectionModel]);
 
   const exportSelected = useCallback(async () => {
     await exportAttachments(selectionModel as number[]);
   }, [exportAttachments, selectionModel]);
+
+  const save = useCallback(async () => {
+    await saveChanges();
+    loadAttachments();
+  }, [loadAttachments, saveChanges]);
+
+  const resetWithoutSave = useCallback(async () => {
+    if (apiRef.current && rows) {
+      apiRef.current.setRows(rows);
+      resetChanges();
+    }
+  }, [apiRef, rows, resetChanges]);
+
+  useEffect(() => {
+    registerSaveHandler(save);
+    registerResetHandler(resetWithoutSave);
+
+    return () => {
+      unMount();
+    };
+  }, [registerResetHandler, registerSaveHandler, save, resetWithoutSave, unMount]);
 
   return (
     <>
@@ -86,7 +116,7 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
           dataCy={`${addAttachmentButtonLabel}-button`}
         />
       )}
-      {rows && rows.length > 0 ? (
+      {(rows && rows.length > 0) || isLoading ? (
         <Box data-cy="attachment-table-container">
           <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
             <Stack direction="row" alignItems="center" gap={1}>
@@ -108,7 +138,7 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
             <Table
               apiRef={apiRef}
               isLoading={isLoading}
-              rows={rows}
+              rows={rows ?? []}
               columns={columns}
               showQuickFilter={false}
               checkboxSelection

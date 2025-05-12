@@ -599,6 +599,12 @@ export const theme = createTheme({
             {
               outline: "none !important",
             },
+          "& .MuiDataGrid-columnHeader--alignCenter .MuiDataGrid-columnHeaderTitleContainer": {
+            justifyContent: "flex-start",
+          },
+          "& .MuiDataGrid-columnHeaderCheckbox .MuiDataGrid-columnHeaderTitleContainer": {
+            justifyContent: "center",
+          },
           "& .MuiDataGrid-cell": {
             minHeight: "44px",
             display: "flex",

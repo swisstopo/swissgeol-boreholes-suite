@@ -3,11 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Checkbox, Stack, TextField, Typography } from "@mui/material";
 import { GridColDef, GridColumnHeaderParams, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { CheckIcon } from "lucide-react";
-import { detachFile, downloadFile, getFiles, uploadFile } from "../../../../api/file/file";
+import { detachFile, downloadFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces";
 import { theme } from "../../../../AppTheme.ts";
 import DateText from "../../../../components/legacyComponents/dateText";
 import { DetailContext } from "../../detailContext";
+import { SaveContext, SaveContextProps } from "../../saveContext.tsx";
 import { AttachmentContent } from "../attachmentsContent";
 
 interface ProfilesProps {
@@ -18,18 +19,19 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
   const apiRef = useGridApiRef();
   const { editingEnabled } = useContext(DetailContext);
+  const { hasChanges, markAsChanged } = useContext<SaveContextProps>(SaveContext);
 
   const [updatedRows, setUpdatedRows] = useState<
     Map<
       GridRowId,
       {
-        description?: string;
+        description: string;
         public: boolean;
       }
     >
   >(new Map());
-  const [allPhotosPublic, setAllPhotosPublic] = useState(false);
-  const [somePhotosPublic, setSomePhotosPublic] = useState(false);
+  const [allProfilesPublic, setAllProfilesPublic] = useState(false);
+  const [someProfilesPublic, setSomeProfilesPublic] = useState(false);
 
   const loadProfiles = useCallback(async () => {
     const files = await getFiles<BoreholeFile>(boreholeId);
@@ -56,21 +58,26 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const updateDescription = useCallback((id: GridRowId, description: string) => {
     setUpdatedRows(prevRows => {
       const newMap = new Map(prevRows);
-      const row = newMap.get(id) ?? { public: false };
+      const row = newMap.get(id) ?? { description: "", public: false };
       row.description = description;
       newMap.set(id, row);
       return newMap;
     });
   }, []);
 
-  const togglePublicValueForRow = useCallback((id: GridRowId, checked: boolean) => {
-    setUpdatedRows(prevRows => {
-      const newMap = new Map(prevRows);
-      const row = newMap.get(id) ?? { public: false };
-      row.public = checked;
-      return newMap;
-    });
-  }, []);
+  const togglePublicValueForRow = useCallback(
+    (id: GridRowId, checked: boolean) => {
+      setUpdatedRows(prevRows => {
+        const newMap = new Map(prevRows);
+        const row = newMap.get(id) ?? { description: "", public: false };
+        row.public = checked;
+        newMap.set(id, row);
+        return newMap;
+      });
+      apiRef.current.updateRows([{ id, public: checked }]);
+    },
+    [apiRef],
+  );
 
   const toggleAllPublicValues = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -83,11 +90,25 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     [apiRef, togglePublicValueForRow],
   );
 
+  const updateProfiles = useCallback(async () => {
+    const updatePromises = Array.from(updatedRows.entries()).map(([id, row]) => {
+      return updateFile(boreholeId.toString(), id as number, row.description, row.public);
+    });
+    await Promise.all(updatePromises);
+    setUpdatedRows(new Map());
+  }, [boreholeId, updatedRows]);
+
+  useEffect(() => {
+    if (updatedRows.size > 0 && !hasChanges) {
+      markAsChanged(true);
+    }
+  }, [hasChanges, markAsChanged, updatedRows]);
+
   useEffect(() => {
     if (apiRef.current.getRowModels) {
       const currentRows = apiRef.current.getRowModels();
-      setAllPhotosPublic(Array.from(currentRows.values()).every(row => row.public));
-      setSomePhotosPublic(Array.from(currentRows.values()).some(row => row.public));
+      setAllProfilesPublic(Array.from(currentRows.values()).every(row => row.public));
+      setSomeProfilesPublic(Array.from(currentRows.values()).some(row => row.public));
     }
   }, [apiRef, updatedRows]);
 
@@ -96,17 +117,19 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       {
         field: "name",
         headerName: t("name"),
+        flex: 0.5,
         valueGetter: (value, row) => row.file.name,
       },
       {
         field: "description",
         headerName: t("description"),
         editable: editingEnabled,
+        flex: 1,
         renderCell: (params: GridRenderCellParams) =>
           editingEnabled ? (
             <TextField
               sx={{ margin: 0 }}
-              defaultValue={params.value}
+              value={updatedRows.get(params.id)?.description ?? params.value}
               onChange={event => updateDescription(params.id, event.target.value)}
             />
           ) : (
@@ -123,16 +146,20 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       {
         field: "type",
         headerName: t("type"),
+        flex: 0.5,
         valueGetter: (value, row) => row.file.type,
       },
       {
         field: "created",
         headerName: t("uploaded"),
+        resizable: false,
+        width: 150,
         renderCell: ({ row }) => <DateText date={row.attached} hours />,
       },
       {
         field: "createdBy",
         headerName: t("user"),
+        flex: 0.5,
         valueGetter: (value, row) => row.user?.name ?? "-",
       },
       {
@@ -140,14 +167,14 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         headerName: t("public"),
         type: "boolean",
         editable: editingEnabled,
-        width: 125,
-        flex: 0,
+        resizable: false,
+        width: 150,
         renderHeader: editingEnabled
           ? (params: GridColumnHeaderParams) => (
               <Stack flexDirection="row" justifyContent="flex-start" alignItems="center" gap={1}>
                 <Checkbox
-                  checked={allPhotosPublic}
-                  indeterminate={somePhotosPublic && !allPhotosPublic}
+                  checked={allProfilesPublic}
+                  indeterminate={someProfilesPublic && !allProfilesPublic}
                   onChange={toggleAllPublicValues}
                 />
                 <Typography sx={{ fontSize: "16px", fontWeight: 500 }}>{params.colDef.headerName}</Typography>
@@ -155,7 +182,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
             )
           : undefined,
         renderCell: (params: GridRenderCellParams) => (
-          <Stack flexDirection="row" alignItems="center" justifyContent="flex-start">
+          <Stack flexDirection="row" alignItems="center" justifyContent="flex-start" width="100%">
             {editingEnabled ? (
               <Checkbox
                 checked={params.row.public}
@@ -172,8 +199,8 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       t,
       editingEnabled,
       updateDescription,
-      allPhotosPublic,
-      somePhotosPublic,
+      allProfilesPublic,
+      someProfilesPublic,
       toggleAllPublicValues,
       togglePublicValueForRow,
     ],
@@ -187,6 +214,8 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       getAttachments={loadProfiles}
       deleteAttachments={deleteProfiles}
       exportAttachments={exportProfiles}
+      saveChanges={updateProfiles}
+      resetChanges={() => setUpdatedRows(new Map())}
       addAttachmentButtonLabel="addProfile"
       noAttachmentsText="noProfiles"
     />

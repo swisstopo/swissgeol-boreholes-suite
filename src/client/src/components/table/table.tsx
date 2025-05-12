@@ -123,13 +123,13 @@ export const Table = <T extends GridValidRowModel>({
     return {
       ...col,
       width: columnWidths[col.field] ?? col.width,
-      flex: columnWidths[col.field] ? undefined : 1, // Auto flex if no width
+      flex: columnWidths[col.field] ? undefined : (col.flex ?? 1), // Auto flex if no width or flex
     };
   });
 
   return (
     <DataGrid
-      sx={{ ...quickFilterStyles, ...disabledStyles, ...sx }}
+      sx={{ ...quickFilterStyles, ...disabledStyles, ...sx, minHeight: 150 }}
       data-cy={dataCy ?? "data-table"}
       columnHeaderHeight={44}
       sortingOrder={["asc", "desc"]}

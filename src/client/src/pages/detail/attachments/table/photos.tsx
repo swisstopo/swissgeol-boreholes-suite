@@ -3,9 +3,16 @@ import { useTranslation } from "react-i18next";
 import { Checkbox, Stack, Typography } from "@mui/material";
 import { GridColDef, GridColumnHeaderParams, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { CheckIcon } from "lucide-react";
-import { getPhotosByBoreholeId, uploadPhoto } from "../../../../api/fetchApiV2.ts";
+import {
+  deletePhotos,
+  exportPhotos,
+  getPhotosByBoreholeId,
+  updatePhotos,
+  uploadPhoto,
+} from "../../../../api/fetchApiV2.ts";
 import DateText from "../../../../components/legacyComponents/dateText";
 import { DetailContext } from "../../detailContext.tsx";
+import { SaveContext, SaveContextProps } from "../../saveContext.tsx";
 import { AttachmentContent } from "../attachmentsContent.tsx";
 
 interface PhotosProps {
@@ -16,6 +23,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
   const apiRef = useGridApiRef();
   const { editingEnabled } = useContext(DetailContext);
+  const { hasChanges, markAsChanged } = useContext<SaveContextProps>(SaveContext);
 
   const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, boolean>>(new Map());
   const [allPhotosPublic, setAllPhotosPublic] = useState(false);
@@ -29,11 +37,11 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     await uploadPhoto(boreholeId, file);
   };
 
-  const deletePhotos = async (ids: number[]) => {
+  const deleteAttachments = async (ids: number[]) => {
     await deletePhotos(ids);
   };
 
-  const exportPhotos = async (ids: number[]) => {
+  const exportAttachments = async (ids: number[]) => {
     await exportPhotos(ids);
   };
 
@@ -60,6 +68,20 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     [apiRef, togglePublicValueForRow],
   );
 
+  const updateAttachments = useCallback(async () => {
+    const updatedRowsArray = Array.from(updatedRows.entries()).map(([key, value]) => ({
+      id: key as number,
+      public: value,
+    }));
+    updatePhotos(updatedRowsArray);
+  }, [updatedRows]);
+
+  useEffect(() => {
+    if (updatedRows.size > 0 && !hasChanges) {
+      markAsChanged(true);
+    }
+  }, [hasChanges, markAsChanged, updatedRows]);
+
   useEffect(() => {
     if (apiRef.current.getRowModels) {
       const currentRows = apiRef.current.getRowModels();
@@ -77,6 +99,8 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
       {
         field: "created",
         headerName: t("uploaded"),
+        resizable: false,
+        width: 150,
         renderCell: ({ row }) => <DateText date={row.created} hours />,
       },
       {
@@ -87,6 +111,8 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
       {
         field: "depth",
         headerName: t("depthMD"),
+        resizable: false,
+        width: 150,
         valueGetter: (value, row) => `${row.fromDepth} - ${row.toDepth}`,
       },
       {
@@ -94,8 +120,8 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
         headerName: t("public"),
         type: "boolean",
         editable: editingEnabled,
-        width: 125,
-        flex: 0,
+        resizable: false,
+        width: 150,
         renderHeader: editingEnabled
           ? (params: GridColumnHeaderParams) => (
               <Stack flexDirection="row" justifyContent="flex-start" alignItems="center" gap={1}>
@@ -109,7 +135,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
             )
           : undefined,
         renderCell: (params: GridRenderCellParams) => (
-          <Stack flexDirection="row" alignItems="center" justifyContent="flex-start">
+          <Stack flexDirection="row" alignItems="center" justifyContent="flex-start" width="100%">
             {editingEnabled ? (
               <Checkbox
                 checked={params.row.public}
@@ -132,8 +158,10 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
       addAttachment={addPhoto}
       acceptedFileTypes="image/*"
       getAttachments={loadPhotos}
-      deleteAttachments={deletePhotos}
-      exportAttachments={exportPhotos}
+      deleteAttachments={deleteAttachments}
+      exportAttachments={exportAttachments}
+      saveChanges={updateAttachments}
+      resetChanges={() => setUpdatedRows(new Map())}
       addAttachmentButtonLabel="addPhoto"
       noAttachmentsText="noPhotos"
     />
