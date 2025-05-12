@@ -109,13 +109,14 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
     navigate("/");
   };
 
+  if (!borehole) return;
   // get unfinished or latest workflow
   const workflows = borehole?.workflows.sort((a, b) => new Date(b.finished).getTime() - new Date(a.finished).getTime());
   const currentWorkflow = workflows?.find(workflow => workflow.finished == null) || workflows[0];
   const hasDevFlag = searchParams.get("dev") === "true";
   const statusLabel = hasDevFlag
     ? t(`statuses.${borehole.workflow?.status}`)
-    : t(`status${currentWorkflow.role.toLowerCase()}`);
+    : t(`status${currentWorkflow?.role.toLowerCase()}`);
 
   return (
     <DetailHeaderStack direction="row" alignItems="center">
@@ -133,8 +134,8 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
           <Chip
             data-cy="workflow-status-chip"
             label={statusLabel}
-            color={currentWorkflow.finished != null ? "success" : "warning"}
-            icon={currentWorkflow.finished != null ? <Check /> : <div />}
+            color={currentWorkflow?.finished != null ? "success" : "warning"}
+            icon={currentWorkflow?.finished != null ? <Check /> : <div />}
           />
         )}
       </Stack>
