@@ -168,7 +168,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
             .ConfigureAwait(false) ?? throw new InvalidOperationException($"Current user with subjectId <{subjectId}> does not exist.");
     }
 
-    private static readonly Dictionary<WorkflowStatus, Role?> EditPermissionsStatusRoleMap = new()
+    internal static readonly Dictionary<WorkflowStatus, Role?> EditPermissionsStatusRoleMap = new()
     {
         { WorkflowStatus.Draft, Role.Editor },
         { WorkflowStatus.InReview, Role.Controller },

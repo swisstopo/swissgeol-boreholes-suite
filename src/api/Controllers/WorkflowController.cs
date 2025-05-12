@@ -55,8 +55,15 @@ public class WorkflowController : ControllerBase
         if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, workflowChangeRequest.BoreholeId, true).ConfigureAwait(false)) return Unauthorized();
 
         // Check permissions specifically for publishing the borehole
-        if (workflowChangeRequest.NewStatus == WorkflowStatus.Published &&
-            !await boreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, workflowChangeRequest.BoreholeId, Role.Publisher).ConfigureAwait(false))
+        BoreholePermissionService.EditPermissionsStatusRoleMap.TryGetValue(WorkflowStatus.Published, out var requiredRole);
+        if (!requiredRole.HasValue)
+        {
+            var errorMessage = $"No required role found workflow status {WorkflowStatus.Published}.";
+            logger?.LogError(errorMessage);
+            return Problem(errorMessage);
+        }
+
+        if (workflowChangeRequest.NewStatus == WorkflowStatus.Published && !await boreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, workflowChangeRequest.BoreholeId, requiredRole.Value).ConfigureAwait(false))
         {
             return Unauthorized();
         }
@@ -93,7 +100,7 @@ public class WorkflowController : ControllerBase
 
         // Update the workflow state
         workflow.Status = change.ToStatus;
-        workflow.AssigneeId = newAssignee.Id;
+        workflow.AssigneeId = change.AssigneeId;
 
         context.WorkflowChanges.Add(change);
 
