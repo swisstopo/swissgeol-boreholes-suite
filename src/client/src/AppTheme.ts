@@ -591,6 +591,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           cursor: "pointer",
+          borderColor: themePalette.border.darker,
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: themePalette.border.light,
           },
@@ -602,6 +603,7 @@ export const theme = createTheme({
             minHeight: "44px",
             display: "flex",
             alignItems: "center",
+            borderColor: themePalette.border.darker,
           },
           "& .MuiDataGrid-toolbarContainer": {
             paddingLeft: "2px !important",
