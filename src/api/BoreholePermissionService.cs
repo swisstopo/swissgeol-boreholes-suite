@@ -123,7 +123,10 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         }
 
         if (!EditPermissionsStatusRoleMap.TryGetValue(borehole.Workflow.Status, out var requiredRole))
+        {
             return false;
+        }
+
         var hasUserPermission = requiredRole != null && HasUserSpecificRoleOnWorkgroup(user, borehole.WorkgroupId, requiredRole.Value);
 
         if (!hasUserPermission)
