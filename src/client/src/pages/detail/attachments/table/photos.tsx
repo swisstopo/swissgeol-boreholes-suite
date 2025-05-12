@@ -1,8 +1,6 @@
-import { ChangeEvent, FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Checkbox, Stack, Typography } from "@mui/material";
-import { GridColDef, GridColumnHeaderParams, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
-import { CheckIcon } from "lucide-react";
+import { GridColDef, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import {
   deletePhotos,
   exportPhotos,
@@ -12,8 +10,8 @@ import {
 } from "../../../../api/fetchApiV2.ts";
 import DateText from "../../../../components/legacyComponents/dateText";
 import { DetailContext } from "../../detailContext.tsx";
-import { SaveContext, SaveContextProps } from "../../saveContext.tsx";
 import { AttachmentContent } from "../attachmentsContent.tsx";
+import { AttachmentWithPublicState, useAttachments } from "../useAttachments.tsx";
 
 interface PhotosProps {
   boreholeId: number;
@@ -21,19 +19,14 @@ interface PhotosProps {
 
 export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const apiRef = useGridApiRef();
   const { editingEnabled } = useContext(DetailContext);
-  const { hasChanges, markAsChanged } = useContext<SaveContextProps>(SaveContext);
+  const apiRef = useGridApiRef();
 
-  const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, boolean>>(new Map());
-  const [allPhotosPublic, setAllPhotosPublic] = useState(false);
-  const [somePhotosPublic, setSomePhotosPublic] = useState(false);
-
-  const loadPhotos = useCallback(() => {
+  const loadAttachments = useCallback(() => {
     return getPhotosByBoreholeId(boreholeId);
   }, [boreholeId]);
 
-  const addPhoto = async (file: File) => {
+  const addAttachment = async (file: File) => {
     await uploadPhoto(boreholeId, file);
   };
 
@@ -45,50 +38,22 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     await exportPhotos(ids);
   };
 
-  const togglePublicValueForRow = useCallback(
-    (id: GridRowId, checked: boolean) => {
-      setUpdatedRows(prevRows => {
-        const newMap = new Map(prevRows);
-        newMap.set(id, checked);
-        return newMap;
-      });
-      apiRef.current.updateRows([{ id, public: checked }]);
-    },
-    [apiRef],
-  );
-
-  const toggleAllPublicValues = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const checked = event.target.checked;
-      const currentRows = apiRef.current.getRowModels();
-      Array.from(currentRows.keys()).forEach(id => {
-        togglePublicValueForRow(id, checked);
-      });
-    },
-    [apiRef, togglePublicValueForRow],
-  );
-
-  const updateAttachments = useCallback(async () => {
+  const updateAttachments = useCallback(async (updatedRows: Map<GridRowId, AttachmentWithPublicState>) => {
     const updatedRowsArray = Array.from(updatedRows.entries()).map(([key, value]) => ({
       id: key as number,
-      public: value,
+      public: value.public ?? false,
     }));
-    updatePhotos(updatedRowsArray);
-  }, [updatedRows]);
+    await updatePhotos(updatedRowsArray);
+  }, []);
 
-  useEffect(() => {
-    if (updatedRows.size > 0 && !hasChanges) {
-      markAsChanged(true);
-    }
-  }, [hasChanges, markAsChanged, updatedRows]);
-
-  useEffect(() => {
-    if (apiRef.current.getRowModels) {
-      const currentRows = apiRef.current.getRowModels();
-      setAllPhotosPublic(Array.from(currentRows.values()).every(row => row.public));
-      setSomePhotosPublic(Array.from(currentRows.values()).some(row => row.public));
-    }
-  }, [apiRef, updatedRows]);
+  const { isLoading, rows, onAdd, onDelete, onExport, getPublicColumnHeader, getPublicColumnCell } = useAttachments({
+    apiRef,
+    loadAttachments,
+    addAttachment,
+    deleteAttachments,
+    exportAttachments,
+    updateAttachments,
+  });
 
   const columns = useMemo<GridColDef[]>(
     () => [
@@ -122,46 +87,23 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
         editable: editingEnabled,
         resizable: false,
         width: 150,
-        renderHeader: editingEnabled
-          ? (params: GridColumnHeaderParams) => (
-              <Stack flexDirection="row" justifyContent="flex-start" alignItems="center" gap={1}>
-                <Checkbox
-                  checked={allPhotosPublic}
-                  indeterminate={somePhotosPublic && !allPhotosPublic}
-                  onChange={toggleAllPublicValues}
-                />
-                <Typography sx={{ fontSize: "16px", fontWeight: 500 }}>{params.colDef.headerName}</Typography>
-              </Stack>
-            )
-          : undefined,
-        renderCell: (params: GridRenderCellParams) => (
-          <Stack flexDirection="row" alignItems="center" justifyContent="flex-start" width="100%">
-            {editingEnabled ? (
-              <Checkbox
-                checked={params.row.public}
-                onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
-              />
-            ) : params.value ? (
-              <CheckIcon />
-            ) : null}
-          </Stack>
-        ),
+        renderHeader: getPublicColumnHeader,
+        renderCell: getPublicColumnCell,
       },
     ],
-    [t, editingEnabled, allPhotosPublic, somePhotosPublic, toggleAllPublicValues, togglePublicValueForRow],
+    [t, editingEnabled, getPublicColumnHeader, getPublicColumnCell],
   );
 
   return (
     <AttachmentContent
       apiRef={apiRef}
+      isLoading={isLoading}
       columns={columns}
-      addAttachment={addPhoto}
+      rows={rows}
+      addAttachment={onAdd}
       acceptedFileTypes="image/*"
-      getAttachments={loadPhotos}
-      deleteAttachments={deleteAttachments}
-      exportAttachments={exportAttachments}
-      saveChanges={updateAttachments}
-      resetChanges={() => setUpdatedRows(new Map())}
+      deleteAttachments={onDelete}
+      exportAttachments={onExport}
       addAttachmentButtonLabel="addPhoto"
       noAttachmentsText="noPhotos"
     />
