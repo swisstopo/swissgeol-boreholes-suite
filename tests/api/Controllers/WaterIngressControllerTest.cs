@@ -21,7 +21,7 @@ public class WaterIngressControllerTest
         context = ContextFactory.GetTestContext();
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(true);
         controller = new WaterIngressController(context, new Mock<ILogger<WaterIngressController>>().Object, boreholePermissionServiceMock.Object)
         {
