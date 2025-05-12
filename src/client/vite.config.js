@@ -23,6 +23,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: path => path.replace(/^\/dataextraction/, ""),
       },
+      "/ocr": {
+        target: "http://localhost:5052/",
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/ocr/, ""),
+      },
     },
     port: 3000,
     headers: {
