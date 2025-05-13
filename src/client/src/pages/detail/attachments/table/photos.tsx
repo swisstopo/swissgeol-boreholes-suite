@@ -86,7 +86,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
         type: "boolean",
         editable: editingEnabled,
         resizable: false,
-        width: 150,
+        width: editingEnabled ? 150 : 100,
         renderHeader: getPublicColumnHeader,
         renderCell: getPublicColumnCell,
       },

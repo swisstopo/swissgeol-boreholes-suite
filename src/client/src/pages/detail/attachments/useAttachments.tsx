@@ -121,7 +121,7 @@ export const useAttachments = ({
   const getPublicColumnHeader = useCallback(
     (params: GridColumnHeaderParams) => {
       return editingEnabled ? (
-        <Stack flexDirection="row" justifyContent="flex-start" alignItems="center" gap={1}>
+        <Stack flexDirection="row" justifyContent="flex-start" alignItems="center" gap={1} data-cy={"public-header"}>
           <Checkbox checked={allPublic} indeterminate={somePublic && !allPublic} onChange={toggleAllPublicValues} />
           <Typography sx={{ fontSize: "16px", fontWeight: 500 }}>{params.colDef.headerName}</Typography>
         </Stack>
@@ -132,20 +132,22 @@ export const useAttachments = ({
 
   const getPublicColumnCell = useCallback(
     (params: GridRenderCellParams) => {
-      const readonlyContent = params.value ? <CheckIcon /> : null;
-
-      return (
-        <Stack flexDirection="row" alignItems="center" justifyContent="flex-start" width="100%">
-          {editingEnabled ? (
-            <Checkbox
-              checked={params.row.public}
-              onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
-            />
-          ) : (
-            readonlyContent
-          )}
+      const readonlyContent = (
+        <Stack flexDirection="row" alignItems="center" justifyContent="center" className={params.value && "public"}>
+          {params.value ? <CheckIcon /> : null}
         </Stack>
       );
+
+      const editableContent = (
+        <Stack flexDirection="row" alignItems="center" justifyContent="flex-start" width="100%" className="public">
+          <Checkbox
+            checked={params.row.public}
+            onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
+          />
+        </Stack>
+      );
+
+      return editingEnabled ? editableContent : readonlyContent;
     },
     [editingEnabled, togglePublicValueForRow],
   );

@@ -57,11 +57,7 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
               {editingEnabled && (
                 <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteAttachments()} />
               )}
-              <ExportButton
-                disabled={selectionModel.length === 0}
-                onClick={() => exportAttachments()}
-                dataCy={"attachment-export-button"}
-              />
+              <ExportButton disabled={selectionModel.length === 0} onClick={() => exportAttachments()} />
               <Typography>
                 {selectionModel.length > 0 && t("selectedCount", { count: selectionModel.length })}
               </Typography>

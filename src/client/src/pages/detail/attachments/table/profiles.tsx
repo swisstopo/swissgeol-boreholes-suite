@@ -111,6 +111,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         renderCell: (params: GridRenderCellParams) =>
           editingEnabled ? (
             <TextField
+              data-cy="profile-description"
               sx={{ margin: 0 }}
               defaultValue={(updatedRows.get(params.id) as Profile)?.description ?? params.value ?? ""}
             />
@@ -119,6 +120,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
           ),
         renderEditCell: (params: GridRenderCellParams) => (
           <TextField
+            data-cy="profile-description"
             sx={{ margin: `0 ${theme.spacing(1)}` }}
             defaultValue={(updatedRows.get(params.id) as Profile)?.description ?? params.value ?? ""}
             onChange={event => updateDescription(params.id, event.target.value)}
@@ -150,7 +152,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         type: "boolean",
         editable: editingEnabled,
         resizable: false,
-        width: 150,
+        width: editingEnabled ? 150 : 100,
         renderHeader: getPublicColumnHeader,
         renderCell: getPublicColumnCell,
       },
