@@ -361,10 +361,10 @@ public class PhotoControllerTest
     }
 
     [TestMethod]
-    public async Task Update()
+    public async Task UpdateFailsForLockedBorehole()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(false);
 
         var photo = await CreatePhotoAsync();
