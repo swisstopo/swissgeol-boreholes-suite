@@ -76,7 +76,7 @@ export const RequestReviewDialog: FC<RequestReviewDialogProps> = ({ open, setOpe
                 values={getUsersWithPrivilege(Role.Controller).map(user => {
                   return {
                     key: user.id,
-                    value: user.id as number,
+                    value: user.id,
                     name: [capitalizeFirstLetter(user.firstName), capitalizeFirstLetter(user.lastName)]
                       .filter(Boolean)
                       .join(" "),
