@@ -117,6 +117,8 @@ public class BdmsContext : DbContext
         .Include(w => w.ReviewedTabs)
         .Include(w => w.PublishedTabs);
 
+    public DbSet<WorkflowChange> WorkflowChanges { get; set; }
+
     public DbSet<Workgroup> Workgroups { get; set; }
 
     public IQueryable<Workgroup> WorkgroupsWithIncludes => Workgroups.Include(w => w.Boreholes);
