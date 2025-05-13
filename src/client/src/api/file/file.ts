@@ -6,7 +6,7 @@ import {
 import { ApiError } from "../apiInterfaces.ts";
 import { fetchCreatePngs, fetchExtractData, fetchPageBoundingBoxes } from "../dataextraction";
 import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2.ts";
-import { processFile } from "../ocr.ts";
+import { processFileWithOCR } from "../ocr.ts";
 import { BoreholeFile, DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
 export async function uploadFile(boreholeId: number, file: File) {
@@ -22,7 +22,7 @@ export async function uploadFile(boreholeId: number, file: File) {
       }
     } else {
       const uploadedFile = (await response.json()) as BoreholeFile;
-      setTimeout(() => processFile({ file: uploadedFile.file.nameUuid }), 10);
+      processFileWithOCR({ file: uploadedFile.file.nameUuid });
       return uploadedFile;
     }
   } else {
