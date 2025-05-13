@@ -2,7 +2,7 @@ import { evaluateSelectText, setInput, setSelect } from "../helpers/formHelpers.
 import { getElementByDataCy, goToRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers.js";
 
 describe("Tests the publication workflow.", () => {
-  it.skip("Displays DEV workflow when feature flag is set", () => {
+  it("Displays DEV workflow when feature flag is set", () => {
     goToRouteAndAcceptTerms(`/1000036/status`);
     // displays legacy workflow form by default
     cy.contains("h4", "Publication workflow").should("exist");
