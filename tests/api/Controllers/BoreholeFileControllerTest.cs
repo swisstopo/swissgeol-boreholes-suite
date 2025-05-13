@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Collections.ObjectModel;
 using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
@@ -23,6 +22,8 @@ public class BoreholeFileControllerTest
     private BoreholeFileCloudService boreholeFileCloudService;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private User adminUser;
+
+    private static string File1 => "file_1.pdf";
 
     [TestInitialize]
     public void TestInitialize()
@@ -182,7 +183,7 @@ public class BoreholeFileControllerTest
         var secondBoreholeBoreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count();
 
         // Create file to upload
-        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
 
         // Upload file for both boreholes
         await controller.Upload(pdfFormFile, firstBoreholeId);
@@ -230,7 +231,7 @@ public class BoreholeFileControllerTest
         var boreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count();
 
         // Create file to upload
-        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
 
         // Upload file for boreholes
         await controller.Upload(pdfFormFile, firstBoreholeId);
@@ -301,7 +302,7 @@ public class BoreholeFileControllerTest
     public async Task UploadWithMissingBoreholeFileId()
     {
         var content = Guid.NewGuid().ToString();
-        var firstPdfFormFile = GetFormFileByContent(content, "file_1.pdf");
+        var firstPdfFormFile = GetFormFileByContent(content, File1);
 
         await AssertIsBadRequestResponse(() => controller.Upload(firstPdfFormFile, 0));
     }
@@ -349,7 +350,7 @@ public class BoreholeFileControllerTest
         var boreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count();
 
         // Create file to upload
-        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
 
         // Upload file for boreholes
         await controller.Upload(pdfFormFile, firstBoreholeId);
@@ -395,14 +396,14 @@ public class BoreholeFileControllerTest
             .ReturnsAsync(false);
 
         var borehole = new Borehole();
-        context.Boreholes.Add(borehole);
+        await context.Boreholes.AddAsync(borehole);
 
         var file = new Models.File() { Name = $"{Guid.NewGuid}.pdf", NameUuid = $"{Guid.NewGuid}.pdf", Type = "pdf" };
-        context.Files.Add(file);
+        await context.Files.AddAsync(file);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         var boreholeFile = new BoreholeFile() { BoreholeId = borehole.Id, FileId = file.Id, Description = null, Public = null };
-        context.BoreholeFiles.Add(boreholeFile);
+        await context.BoreholeFiles.AddAsync(boreholeFile);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         // Create update borehole file object
