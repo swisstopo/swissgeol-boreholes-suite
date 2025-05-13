@@ -1,8 +1,8 @@
 import {
   checkRowWithText,
   clickOnRowWithText,
+  hasPagination,
   sortBy,
-  verifyPaginationText,
   verifyRowContains,
   verifyRowWithContentAlsoContains,
   verifyRowWithTextCheckState,
@@ -19,7 +19,7 @@ describe("User administration settings tests", () => {
     verifyRowContains("Admin", 7);
     verifyRowContains("admin.user@local.dev", 7);
     verifyRowContains("Active", 7);
-    verifyPaginationText("1–8 of 8");
+    hasPagination(false);
     verifyTableLength(8);
 
     // sort
@@ -199,7 +199,7 @@ describe("User administration settings tests", () => {
     verifyRowContains("Default", 1);
     verifyRowContains("Reggae", 2);
 
-    verifyPaginationText("1–3 of 3");
+    hasPagination(false);
     verifyTableLength(3);
 
     // sort

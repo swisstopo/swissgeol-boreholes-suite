@@ -2,6 +2,14 @@ export const verifyPaginationText = text => {
   cy.get(".MuiTablePagination-displayedRows").should("have.text", text);
 };
 
+export const hasPagination = exists => {
+  if (exists) {
+    cy.get(".MuiTablePagination-displayedRows").should("exist");
+  } else {
+    cy.get(".MuiTablePagination-displayedRows").should("not.exist");
+  }
+};
+
 export const sortBy = headerTextContent => {
   cy.get(".MuiDataGrid-columnHeader").contains(headerTextContent).click();
   waitForTableData();
