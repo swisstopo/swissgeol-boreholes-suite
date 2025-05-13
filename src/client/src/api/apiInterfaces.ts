@@ -11,6 +11,14 @@ export class ApiError extends Error {
   }
 }
 
+export const RolePriority: Record<Role, number> = {
+  View: 0,
+  Editor: 1,
+  Controller: 2,
+  Validator: 3,
+  Publisher: 4,
+};
+
 export enum Role {
   View = "View",
   Editor = "Editor",

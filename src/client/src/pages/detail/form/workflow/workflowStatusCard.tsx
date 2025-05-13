@@ -1,3 +1,4 @@
+import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -13,8 +14,12 @@ import {
 } from "@mui/material";
 import type { StepIconProps } from "@mui/material/StepIcon";
 import { ChevronRight } from "lucide-react";
+import { Role } from "../../../../api/apiInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useUserRoleForBorehole } from "../../../../hooks/useUserRoleForBorehole.ts";
+import { DetailContext } from "../../detailContext.tsx";
+import { RequestReviewDialog } from "./requestReviewDialog.tsx";
 import { WorkflowCard } from "./styledWorkflowComponents.tsx";
 import { useWorkflow, WorkflowStatus } from "./workflow.ts";
 
@@ -53,7 +58,10 @@ export const WorkflowStatusCard = () => {
   const { t } = useTranslation();
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: workflow } = useWorkflow(parseInt(boreholeId));
+  const { editingEnabled } = useContext(DetailContext);
+  const [open, setOpen] = useState<boolean>(false);
   const activeStep = steps.findIndex(step => step === workflow?.status);
+  const { hasUserPrivilege } = useUserRoleForBorehole();
 
   return (
     <WorkflowCard>
@@ -63,7 +71,7 @@ export const WorkflowStatusCard = () => {
           {steps.map((label, index) => {
             const isActive = index === activeStep;
             return (
-              <Step key={label}>
+              <Step key={label} data-cy={`workflow-status-${label}-${isActive ? "active" : "inactive"}`}>
                 <Box
                   sx={{
                     px: 1.5,
@@ -85,16 +93,19 @@ export const WorkflowStatusCard = () => {
             );
           })}
         </Stepper>
-        <Button
-          variant="contained"
-          data-cy={"request-review-button"}
-          endIcon={<ChevronRight />}
-          onClick={() => {
-            //Todo: implement request review functionality
-          }}>
-          {t("requestReview")}
-        </Button>
+        {editingEnabled && hasUserPrivilege(Role.Editor) && workflow?.status === WorkflowStatus.Draft && (
+          <Button
+            variant="contained"
+            data-cy={"request-review-button"}
+            endIcon={<ChevronRight />}
+            onClick={() => {
+              setOpen(true);
+            }}>
+            {t("requestReview")}
+          </Button>
+        )}
       </Stack>
+      <RequestReviewDialog open={open} setOpen={setOpen} />
     </WorkflowCard>
   );
 };
