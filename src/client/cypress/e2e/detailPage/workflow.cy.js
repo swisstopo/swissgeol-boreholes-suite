@@ -1,5 +1,10 @@
 import { evaluateSelectText, setInput, setSelect } from "../helpers/formHelpers.js";
-import { getElementByDataCy, goToRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers.js";
+import {
+  getElementByDataCy,
+  goToRouteAndAcceptTerms,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers.js";
 
 describe("Tests the publication workflow.", () => {
   it("Displays DEV workflow when feature flag is set", () => {
@@ -82,5 +87,6 @@ describe("Tests the publication workflow.", () => {
 
     // assert status update in header
     getElementByDataCy("workflow-status-chip").should("contain", "Review");
+    stopBoreholeEditing();
   });
 });
