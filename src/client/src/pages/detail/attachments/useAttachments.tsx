@@ -132,18 +132,18 @@ export const useAttachments = ({
 
   const getPublicColumnCell = useCallback(
     (params: GridRenderCellParams) => {
-      const cellContent = editingEnabled ? (
-        <Checkbox
-          checked={params.row.public}
-          onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
-        />
-      ) : params.value ? (
-        <CheckIcon />
-      ) : null;
+      const readonlyContent = params.value ? <CheckIcon /> : null;
 
       return (
         <Stack flexDirection="row" alignItems="center" justifyContent="flex-start" width="100%">
-          {cellContent}
+          {editingEnabled ? (
+            <Checkbox
+              checked={params.row.public}
+              onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
+            />
+          ) : (
+            readonlyContent
+          )}
         </Stack>
       );
     },
