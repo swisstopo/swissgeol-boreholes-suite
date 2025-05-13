@@ -205,7 +205,8 @@ public class PhotoController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult> Update([FromBody] Collection<PhotoUpdate> data)
     {
-        if (data == null || data.Count == 0) return BadRequest("The data must not be empty.");
+        if (data == null || data.Count == 0 || data.Any(d => d == null || d.Id <= 0)) 
+            return BadRequest("The data must not be empty and must contain valid entries.");
 
         var photoIds = data.Select(d => d.Id).ToList();
 
