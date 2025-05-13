@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Collections.ObjectModel;
 using System.Security.Claims;
 using static BDMS.Helpers;
 
@@ -299,6 +300,82 @@ public class PhotoControllerTest
 
         var response = await controller.Delete([photo.Id]);
         ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task UpdateMultiplePhotosPublicState()
+    {
+        var photo1 = await CreatePhotoAsync();
+        var photo2 = await CreatePhotoAsync();
+
+        var updateData = new Collection<PhotoUpdate>
+        {
+            new() { Id = photo1.Id, Public = true },
+            new() { Id = photo2.Id, Public = true },
+        };
+
+        var result = await controller.Update(updateData);
+        ActionResultAssert.IsOk(result);
+
+        var updatedPhoto1 = context.Photos.Single(p => p.Id == photo1.Id);
+        Assert.IsTrue(updatedPhoto1.Public);
+        var updatedPhoto2 = context.Photos.Single(p => p.Id == photo2.Id);
+        Assert.IsTrue(updatedPhoto2.Public);
+    }
+
+    [TestMethod]
+    public async Task UpdateFailsWhenDataIsEmpty()
+    {
+        var result = await controller.Update([]);
+        ActionResultAssert.IsBadRequest(result);
+    }
+
+    [TestMethod]
+    public async Task UpdateFailsWhenPhotoDoesNotExist()
+    {
+        var updateData = new Collection<PhotoUpdate>
+        {
+            new() { Id = int.MaxValue, Public = true },
+        };
+
+        var result = await controller.Update(updateData);
+        ActionResultAssert.IsNotFound(result);
+    }
+
+    [TestMethod]
+    public async Task UpdateFailsWhenPhotosFromMultipleBoreholes()
+    {
+        var photo1 = await CreatePhotoAsync();
+        var photo2 = await CreatePhotoAsync();
+        photo2.BoreholeId = context.Boreholes.Max(b => b.Id);
+        await context.SaveChangesAsync();
+
+        var updateData = new Collection<PhotoUpdate>
+        {
+            new() { Id = photo1.Id, Public = true },
+            new() { Id = photo2.Id, Public = true },
+        };
+
+        var result = await controller.Update(updateData);
+        ActionResultAssert.IsBadRequest(result);
+    }
+
+    [TestMethod]
+    public async Task Update()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var photo = await CreatePhotoAsync();
+
+        var updateData = new Collection<PhotoUpdate>
+        {
+            new() { Id = photo.Id, Public = true },
+        };
+
+        var result = await controller.Update(updateData);
+        ActionResultAssert.IsBadRequest(result);
     }
 
     private async Task<Photo> CreatePhotoAsync()
