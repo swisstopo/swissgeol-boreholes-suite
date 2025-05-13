@@ -12,13 +12,10 @@ export const useUserRoleForBorehole = (): {
 
   const userPrivilegeLevel = useMemo(() => {
     const boreholeWorkgroupId = borehole?.data?.workgroup?.id;
-
     const userWorkgroupRoles = user?.workgroupRoles?.filter(wgr => wgr.workgroup?.id === boreholeWorkgroupId);
-
     if (!userWorkgroupRoles || userWorkgroupRoles.length === 0) {
       return null;
     }
-
     return Math.max(...userWorkgroupRoles.map(workgroupRole => RolePriority[workgroupRole.role]));
   }, [user, borehole]);
 
