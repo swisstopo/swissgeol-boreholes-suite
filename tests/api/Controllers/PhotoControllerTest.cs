@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using Azure;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -299,7 +300,7 @@ public class PhotoControllerTest
         var photo = await CreatePhotoAsync();
 
         var response = await controller.Delete([photo.Id]);
-        ActionResultAssert.IsBadRequest(response);
+        ActionResultAssert.IsUnauthorized(response);
     }
 
     [TestMethod]
@@ -375,7 +376,7 @@ public class PhotoControllerTest
         };
 
         var result = await controller.Update(updateData);
-        ActionResultAssert.IsBadRequest(result);
+        ActionResultAssert.IsUnauthorized(result);
     }
 
     private async Task<Photo> CreatePhotoAsync()

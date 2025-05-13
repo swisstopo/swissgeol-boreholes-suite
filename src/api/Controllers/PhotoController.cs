@@ -187,10 +187,7 @@ public class PhotoController : ControllerBase
         if (boreholeIds.Count != 1) return BadRequest("Not all photos are attached to the same borehole.");
 
         var boreholeId = boreholeIds.Single();
-        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
-        {
-            return BadRequest("The borehole is locked by another user or you are missing permissions.");
-        }
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         await photoCloudService.DeleteObjects(photos.Select(p => p.NameUuid)).ConfigureAwait(false);
 
@@ -223,10 +220,7 @@ public class PhotoController : ControllerBase
         if (boreholeIds.Count != 1) return BadRequest("Not all photos are attached to the same borehole.");
 
         var boreholeId = boreholeIds.Single();
-        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
-        {
-            return BadRequest("The borehole is locked by another user or you are missing permissions.");
-        }
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         foreach (var photo in photos)
         {

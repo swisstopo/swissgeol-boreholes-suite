@@ -201,10 +201,7 @@ public class BoreholeFileController : ControllerBase
         if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
 
         // Check if associated borehole is locked or user has permissions
-        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
-        {
-            return BadRequest("The borehole is locked by another user or you are missing permissions.");
-        }
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         try
         {
@@ -259,6 +256,8 @@ public class BoreholeFileController : ControllerBase
             .ConfigureAwait(false);
 
         if (existingBoreholeFile == null) return NotFound("Borehole file not found.");
+
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         existingBoreholeFile.Public = boreholeFileUpdate.Public;
         existingBoreholeFile.Description = boreholeFileUpdate.Description;
