@@ -131,18 +131,22 @@ export const useAttachments = ({
   );
 
   const getPublicColumnCell = useCallback(
-    (params: GridRenderCellParams) => (
-      <Stack flexDirection="row" alignItems="center" justifyContent="flex-start" width="100%">
-        {editingEnabled ? (
-          <Checkbox
-            checked={params.row.public}
-            onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
-          />
-        ) : params.value ? (
-          <CheckIcon />
-        ) : null}
-      </Stack>
-    ),
+    (params: GridRenderCellParams) => {
+      const cellContent = editingEnabled ? (
+        <Checkbox
+          checked={params.row.public}
+          onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
+        />
+      ) : params.value ? (
+        <CheckIcon />
+      ) : null;
+
+      return (
+        <Stack flexDirection="row" alignItems="center" justifyContent="flex-start" width="100%">
+          {cellContent}
+        </Stack>
+      );
+    },
     [editingEnabled, togglePublicValueForRow],
   );
 
@@ -151,8 +155,8 @@ export const useAttachments = ({
   }, [onLoad]);
 
   useEffect(() => {
-    if (apiRef.current && apiRef.current.getRowModels) {
-      const currentRows = apiRef.current.getRowModels();
+    const currentRows = apiRef.current?.getRowModels?.();
+    if (currentRows) {
       setAllPublic(Array.from(currentRows.values()).every(row => (row as AttachmentWithPublicState).public));
       setSomePublic(Array.from(currentRows.values()).some(row => (row as AttachmentWithPublicState).public));
     }
