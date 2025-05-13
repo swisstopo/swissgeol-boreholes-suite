@@ -129,7 +129,12 @@ export const Table = <T extends GridValidRowModel>({
 
   return (
     <DataGrid
-      sx={{ ...quickFilterStyles, ...disabledStyles, ...sx, minHeight: 150 }}
+      sx={{
+        "--DataGrid-overlayHeight": "44px",
+        ...quickFilterStyles,
+        ...disabledStyles,
+        ...sx,
+      }}
       data-cy={dataCy ?? "data-table"}
       columnHeaderHeight={44}
       sortingOrder={["asc", "desc"]}
