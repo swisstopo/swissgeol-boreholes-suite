@@ -151,7 +151,7 @@ export const useAttachments = ({
   }, [onLoad]);
 
   useEffect(() => {
-    if (apiRef.current.getRowModels) {
+    if (apiRef.current && apiRef.current.getRowModels) {
       const currentRows = apiRef.current.getRowModels();
       setAllPublic(Array.from(currentRows.values()).every(row => (row as AttachmentWithPublicState).public));
       setSomePublic(Array.from(currentRows.values()).some(row => (row as AttachmentWithPublicState).public));
