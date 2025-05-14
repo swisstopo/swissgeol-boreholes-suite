@@ -273,7 +273,7 @@ describe("Test for exporting boreholes.", () => {
       getElementByDataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
-      exportItem();
+      exportItem("detail-header");
       exportZipItem();
     });
 
