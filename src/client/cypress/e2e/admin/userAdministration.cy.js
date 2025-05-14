@@ -79,12 +79,12 @@ describe("User administration settings tests", () => {
 
     getElementByDataCy("backButton").click();
     waitForTableData();
-    verifyRowWithTextCheckState("Admin", true);
-    verifyRowWithTextCheckState("editor", false);
+    verifyRowWithTextCheckState("Admin", true, true);
+    verifyRowWithTextCheckState("editor", false, true);
 
     // Make editor admin from user table
-    checkRowWithText("editor");
-    verifyRowWithTextCheckState("editor", true);
+    checkRowWithText("editor", true);
+    verifyRowWithTextCheckState("editor", true, true);
 
     // Go to user detail
     clickOnRowWithText("editor");
@@ -95,7 +95,7 @@ describe("User administration settings tests", () => {
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");
     getElementByDataCy("backButton").click();
     waitForTableData();
-    verifyRowWithTextCheckState("editor", false);
+    verifyRowWithTextCheckState("editor", false, true);
   });
 
   it("shows appropriate prompts when clicking delete button", () => {
@@ -113,7 +113,7 @@ describe("User administration settings tests", () => {
     const messageForInactiveDeletableUser = "Do you really want to delete this user? This cannot be undone.";
 
     verifyRowContains("Active", 1); // controller
-    verifyRowWithTextCheckState("controller", false);
+    verifyRowWithTextCheckState("controller", false, true);
 
     // try to delete controller from user table
     getElementByDataCy("delete-id-3").click();
