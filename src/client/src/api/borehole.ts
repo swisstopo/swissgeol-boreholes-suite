@@ -130,6 +130,7 @@ export const fetchBoreholeById = async (id: number) => await fetchApiV2(`borehol
 export const updateBorehole = async (borehole: BoreholeV2) => {
   return await fetchApiV2("borehole", "PUT", borehole);
 };
+export const deleteBorehole = async (id: number) => await fetchApiV2(`borehole?id=${id}`, "DELETE");
 
 export const boreholeQueryKey = "boreholes";
 
@@ -153,14 +154,26 @@ export const useBoreholeMutations = () => {
       return await updateBorehole(borehole);
     },
     onSettled: (_data, _error, updatedBorehole) => {
-      console.log("setteled", updatedBorehole.id);
       queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, updatedBorehole.id] });
     },
   });
 
+  const useDeleteBorehole = useMutation({
+    mutationFn: async (boreholeId: number) => {
+      return await deleteBorehole(boreholeId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey],
+      });
+    },
+  });
+
   useShowAlertOnError(useUpdateBorehole.isError, useUpdateBorehole.error);
+  useShowAlertOnError(useDeleteBorehole.isError, useDeleteBorehole.error);
   return {
     update: useUpdateBorehole,
+    delete: useDeleteBorehole,
   };
 };
 

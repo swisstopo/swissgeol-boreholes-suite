@@ -1,11 +1,10 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
-import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
-import { BoreholeV2 } from "../../api/borehole.ts";
+import { BoreholeV2, useBoreholeMutations } from "../../api/borehole.ts";
+import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import {
   DeleteButton,
@@ -29,21 +28,24 @@ interface DetailHeaderProps {
 const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { data: currentUser } = useCurrentUser();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);
   const { hasChanges, triggerReset } = useContext<SaveContextProps>(SaveContext);
   const auth = useAuth();
+  const {
+    update: { mutate: updateBorehole },
+    delete: { mutate: deleteBorehole },
+  } = useBoreholeMutations();
 
   const toggleEditing = (editing: boolean) => {
+    if (!currentUser) return;
     if (!editing) {
-      // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
-      dispatch(unlockBorehole(borehole.id));
+      updateBorehole({ ...borehole, locked: false, lockedById: currentUser.id });
     } else {
-      // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
-      dispatch(lockBorehole(borehole.id));
+      updateBorehole({ ...borehole, locked: true, lockedById: null });
     }
     setEditingEnabled(editing);
   };

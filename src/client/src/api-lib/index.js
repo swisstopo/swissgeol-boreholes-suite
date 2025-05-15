@@ -1,15 +1,12 @@
 import { getHeight } from "./actions";
 import {
   createBorehole,
-  deleteBorehole,
   deleteBoreholes,
   getGeojson,
   loadBorehole,
   loadBoreholes,
   loadEditingBoreholes,
-  lockBorehole,
   patchBoreholes,
-  unlockBorehole,
   updateBorehole,
 } from "./actions/borehole";
 import { loadDomains, patchCodeConfig } from "./actions/domains";
@@ -46,9 +43,6 @@ export {
   loadBoreholes,
   loadEditingBoreholes,
   createBorehole,
-  lockBorehole,
-  unlockBorehole,
-  deleteBorehole,
   deleteBoreholes,
   patchBoreholes,
   getGeojson,
