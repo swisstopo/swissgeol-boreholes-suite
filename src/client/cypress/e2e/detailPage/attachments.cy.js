@@ -143,7 +143,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.contains(".MuiDataGrid-row", "IRATETRINITY_2.pdf").find(`[data-cy="profile-description"]`).click();
       cy.contains(".MuiDataGrid-row", "IRATETRINITY_2.pdf")
         .find(`[data-cy="profile-description"]`)
-        .find('input[type="text"]')
+        .find("textarea:visible")
         .type("a brand new description");
 
       saveWithSaveBar();
