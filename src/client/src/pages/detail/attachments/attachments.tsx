@@ -4,8 +4,8 @@ import { Box } from "@mui/material";
 import { Tab, TabPanel } from "../../../components/tabs/tabPanel.tsx";
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
-import { Photos } from "./table/photos.tsx";
-import { Profiles } from "./table/profiles.tsx";
+import { Photos } from "./tabs/photos.tsx";
+import { Profiles } from "./tabs/profiles.tsx";
 
 export const Attachments: FC = () => {
   const { t } = useTranslation();
