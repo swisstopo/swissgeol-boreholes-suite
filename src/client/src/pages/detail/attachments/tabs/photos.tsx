@@ -8,7 +8,7 @@ import {
   updatePhotos,
   uploadPhoto,
 } from "../../../../api/fetchApiV2.ts";
-import DateText from "../../../../components/legacyComponents/dateText";
+import { DateText } from "../../../../components/dateText.tsx";
 import { DetailContext } from "../../detailContext.tsx";
 import { AttachmentContent } from "../attachmentsContent.tsx";
 import { AttachmentWithPublicState, useAttachments } from "../useAttachments.tsx";

@@ -14,8 +14,8 @@ import {
   ExportButton,
   ReturnButton,
 } from "../../components/buttons/buttons.tsx";
+import { DateText } from "../../components/dateText.tsx";
 import { ExportDialog } from "../../components/export/exportDialog.tsx";
-import DateText from "../../components/legacyComponents/dateText";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";

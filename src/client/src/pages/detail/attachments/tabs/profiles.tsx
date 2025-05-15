@@ -5,7 +5,7 @@ import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui
 import { detachFile, downloadFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces";
 import { theme } from "../../../../AppTheme.ts";
-import DateText from "../../../../components/legacyComponents/dateText";
+import { DateText } from "../../../../components/dateText.tsx";
 import { DetailContext } from "../../detailContext";
 import { AttachmentContent } from "../attachmentsContent";
 import { AttachmentWithPublicState, useAttachments } from "../useAttachments.tsx";
