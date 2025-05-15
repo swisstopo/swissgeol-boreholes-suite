@@ -95,6 +95,19 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     [setUpdatedRows],
   );
 
+  const getDescriptionField = useCallback(
+    (params: GridRenderCellParams) => (
+      <TextField
+        data-cy="profile-description"
+        multiline
+        sx={{ margin: 1 }}
+        defaultValue={(updatedRows.get(params.id) as Profile)?.description ?? params.value ?? ""}
+        onChange={event => updateDescription(params.id, event.target.value)}
+      />
+    ),
+    [updateDescription, updatedRows],
+  );
+
   const columns = useMemo<GridColDef[]>(
     () => [
       {
@@ -110,14 +123,9 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         flex: 1,
         renderCell: (params: GridRenderCellParams) =>
           editingEnabled ? (
-            <TextField
-              data-cy="profile-description"
-              multiline
-              sx={{ margin: 0 }}
-              defaultValue={(updatedRows.get(params.id) as Profile)?.description ?? params.value ?? ""}
-            />
+            getDescriptionField(params)
           ) : (
-            <Typography>
+            <Typography sx={{ margin: `${theme.spacing(1)} 0` }}>
               {params.value
                 ? params.value.split("\n").map((line: string, i: number) => (
                     <span key={i}>
@@ -128,15 +136,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
                 : ""}
             </Typography>
           ),
-        renderEditCell: (params: GridRenderCellParams) => (
-          <TextField
-            data-cy="profile-description"
-            multiline
-            sx={{ margin: `0 ${theme.spacing(1)}` }}
-            defaultValue={(updatedRows.get(params.id) as Profile)?.description ?? params.value ?? ""}
-            onChange={event => updateDescription(params.id, event.target.value)}
-          />
-        ),
+        renderEditCell: params => getDescriptionField(params),
       },
       {
         field: "type",
@@ -168,7 +168,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         renderCell: getPublicColumnCell,
       },
     ],
-    [t, editingEnabled, getPublicColumnHeader, getPublicColumnCell, updatedRows, updateDescription],
+    [t, editingEnabled, getPublicColumnHeader, getPublicColumnCell, getDescriptionField],
   );
 
   return (

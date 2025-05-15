@@ -616,6 +616,11 @@ export const theme = createTheme({
               fontWeight: 400,
             },
           },
+          "& .MuiDataGrid-cell--editable": {
+            padding: "0 !important",
+            backgroundColor: "transparent !important",
+            boxShadow: "none !important",
+          },
           "& .MuiDataGrid-toolbarContainer": {
             paddingLeft: "2px !important",
             paddingBottom: "20px !important",
