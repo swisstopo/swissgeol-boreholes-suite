@@ -19,6 +19,7 @@ export const updateUser = async (user: User) => {
 export const deleteUser = async (id: number) => await fetchApiV2WithApiError(`user/${id}`, "DELETE");
 
 export const usersQueryKey = "users";
+const currentUserQueryKey = "currentUser";
 
 export const useUsers = () => {
   const query = useQuery({
@@ -32,10 +33,13 @@ export const useUsers = () => {
 };
 
 export const useCurrentUser = () => {
-  return useQuery({
-    queryKey: ["currentUser"],
+  const query = useQuery({
+    queryKey: [currentUserQueryKey],
     queryFn: fetchCurrentUser,
   });
+
+  useShowAlertOnError(query.isError, query.error);
+  return query;
 };
 
 export const useSelectedUser = (id: number) => {

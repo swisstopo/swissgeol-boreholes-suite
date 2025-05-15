@@ -1,9 +1,10 @@
 import { FC, useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
-import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
+import { Workflow } from "../../api-lib/ReduxStateInterfaces.ts";
+import { Role } from "../../api/apiInterfaces.ts";
 import { useBorehole } from "../../api/borehole.ts";
+import { useCurrentUser } from "../../api/user.ts";
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
@@ -19,9 +20,6 @@ import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 export const DetailPage: FC = () => {
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
-  const legacyBorehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
-  const user = useSelector((state: ReduxRootState) => state.core_user);
-  const workflowStatus = useSelector((state: ReduxRootState) => state.core_workflow);
   const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
   const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
@@ -29,38 +27,39 @@ export const DetailPage: FC = () => {
   const { sendAnalyticsEvent } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const { id } = useRequiredParams<{ id: string }>();
   const { data: borehole, isLoading } = useBorehole(parseInt(id));
+  const { data: currentUser } = useCurrentUser();
 
   useEffect(() => {
-    // query here
-    setEditingEnabled(borehole?.locked !== null && borehole?.lockedById === user.data.id);
-  }, [borehole?.locked, borehole?.lockedById, setEditingEnabled, user.data.id, workflowStatus]);
+    setEditingEnabled(borehole?.locked !== null && borehole?.lockedById === currentUser?.id);
+  }, [borehole?.locked, borehole?.lockedById, setEditingEnabled, currentUser?.id]);
 
-  console.log(borehole);
   useEffect(() => {
     sendAnalyticsEvent();
   }, [sendAnalyticsEvent]);
 
   useEffect(() => {
-    setEditingEnabled(legacyBorehole?.data?.lock !== null);
-  }, [legacyBorehole?.data?.lock, setEditingEnabled]);
-
-  useEffect(() => {
-    if (legacyBorehole?.data?.lock?.id && legacyBorehole.data.lock.id !== user.data.id) {
+    if (borehole?.locked && borehole?.lockedById !== currentUser?.id) {
       setEditableByCurrentUser(false);
       return;
     }
-
-    const matchingWorkgroup =
-      user.data.workgroups.find(workgroup => workgroup.id === legacyBorehole.data.workgroup?.id) ?? false;
-    const userRoleMatches =
-      matchingWorkgroup &&
-      Object.prototype.hasOwnProperty.call(matchingWorkgroup, "roles") &&
-      matchingWorkgroup.roles.includes(legacyBorehole.data.role);
+    const userRolesOnBorehole =
+      currentUser?.workgroupRoles?.filter(w => w.workgroupId === borehole?.workgroupId).map(r => r.role) ?? [];
+    const currentBoreholeStatus = borehole?.workflows.sort((a: Workflow, b: Workflow) => a.id - b.id)[
+      borehole?.workflows.length - 1
+    ].role;
+    const userRoleMatches = userRolesOnBorehole?.includes(currentBoreholeStatus);
     const isStatusPage = location.pathname.endsWith("/status");
-    const isBoreholeInEditWorkflow = legacyBorehole?.data.workflow?.role === "EDIT";
+    const isBoreholeInEditWorkflow = currentBoreholeStatus === Role.Editor;
 
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
-  }, [editingEnabled, user, legacyBorehole, location, togglePanel]);
+  }, [
+    borehole?.locked,
+    borehole?.lockedById,
+    borehole?.workflows,
+    borehole?.workgroupId,
+    currentUser,
+    location.pathname,
+  ]);
 
   if (isLoading || !borehole)
     return (

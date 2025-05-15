@@ -53,6 +53,7 @@ export interface Workgroup {
 }
 
 export interface Workflow {
+  id: number;
   started: string;
   finished: string;
   role: Role;
