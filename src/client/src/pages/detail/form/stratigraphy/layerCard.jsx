@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ClickAwayListener } from "@mui/base";
 import { Close, Delete, Edit } from "@mui/icons-material";
 import {
   Autocomplete,
@@ -8,6 +7,7 @@ import {
   Card,
   CardActionArea,
   CircularProgress,
+  ClickAwayListener,
   IconButton,
   Skeleton,
   TextField,

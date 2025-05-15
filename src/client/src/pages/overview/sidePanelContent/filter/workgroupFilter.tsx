@@ -1,7 +1,6 @@
 import { ChangeEvent, FC } from "react";
 import { useTranslation } from "react-i18next";
-import { FormControl } from "@mui/base";
-import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { capitalizeFirstLetter } from "../../../../utils.js";
 
