@@ -341,7 +341,7 @@ public class BoreholeFileControllerTest
     [TestMethod]
     public async Task DetachFailsForLockedBorehole()
     {
-        // Get borehole Ids
+        // Get borehole Id
         var firstBoreholeId = context.Boreholes.First().Id;
 
         // Get counts before upload
