@@ -115,7 +115,7 @@ const LabelingPanel: FC = () => {
     async (file: File) => {
       try {
         if (panelTab === PanelTab.profile) {
-          const fileResponse = await uploadFile<BoreholeFile>(Number(boreholeId), file);
+          const fileResponse = await uploadFile(Number(boreholeId), file);
           setSelectedAttachment(fileResponse.file);
         } else {
           const photoResponse = await uploadPhoto(Number(boreholeId), file);

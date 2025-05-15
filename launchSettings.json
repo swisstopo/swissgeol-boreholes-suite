@@ -11,7 +11,8 @@
         "api-legacy": "StartWithoutDebugging",
         "api": "DoNotStart",
         "client": "DoNotStart",
-        "dataextraction": "StartWithoutDebugging"
+        "dataextraction": "StartWithoutDebugging",
+        "ocr": "StartWithoutDebugging"
       }
     }
   }
