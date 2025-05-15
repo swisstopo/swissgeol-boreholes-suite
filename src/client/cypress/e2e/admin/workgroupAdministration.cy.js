@@ -1,7 +1,7 @@
 import {
   clickOnRowWithText,
+  hasPagination,
   sortBy,
-  verifyPaginationText,
   verifyRowContains,
   verifyRowWithContentAlsoContains,
   verifyTableLength,
@@ -25,7 +25,7 @@ describe("User administration settings tests", () => {
     verifyRowContains("Reggae", 3);
     verifyRowContains("Inactive", 3);
 
-    verifyPaginationText("1–6 of 6");
+    hasPagination(false);
     verifyTableLength(6);
 
     // sort by workgroup name descending
@@ -165,7 +165,7 @@ describe("User administration settings tests", () => {
     verifyRowWithContentAlsoContains("publisher", "CONTROLLER");
     verifyRowWithContentAlsoContains("publisher", "VIEW");
 
-    verifyPaginationText("1–2 of 2");
+    hasPagination(false);
     verifyTableLength(2);
 
     sortBy("First name");

@@ -78,7 +78,7 @@ describe("Viewer tests", () => {
     getElementByDataCy("hydrotest-menu-item").click({ force: true });
     cy.contains("No hydrotests available").should("exist");
     getElementByDataCy("attachments-menu-item").click({ force: true });
-    cy.contains("No attachments").should("exist");
+    cy.contains("No profiles available...").should("exist");
     getElementByDataCy("status-menu-item").click({ force: true });
     cy.contains("Publication workflow").should("exist");
   });

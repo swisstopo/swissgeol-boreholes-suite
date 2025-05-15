@@ -1,5 +1,14 @@
-import { saveWithSaveBar } from "../helpers/buttonHelpers.js";
-import { checkRowWithText, verifyRowContains, verifyTableLength } from "../helpers/dataGridHelpers.js";
+import { deleteItem, exportItem, saveWithSaveBar } from "../helpers/buttonHelpers.js";
+import {
+  checkAllVisibleRows,
+  checkRowWithText,
+  uncheckAllVisibleRows,
+  unCheckRowWithText,
+  verifyRowContains,
+  verifyRowWithContentAlsoContains,
+  verifyRowWithTextCheckState,
+  verifyTableLength,
+} from "../helpers/dataGridHelpers.js";
 import { evaluateInput, setInput } from "../helpers/formHelpers.js";
 import {
   createBorehole,
@@ -13,21 +22,31 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
+const checkPublicStatus = (text, checked, editingEnabled) => {
+  if (editingEnabled) {
+    verifyRowWithTextCheckState(text, checked, "public");
+  } else {
+    cy.contains(".MuiDataGrid-row", text)
+      .find('[data-field="public"] svg')
+      .should(checked ? "exist" : "not.exist");
+  }
+};
+
 describe("Tests for 'Attachments' edit page.", () => {
   const photoFilename = "HARDOASIS_10.00-120.00_all.jpg";
 
   const uploadLoudSpatulaFile = () => {
     selectInputFile("LOUDSPATULA.txt", "text/plain");
 
-    // // upload file
-    getElementByDataCy("attachments-upload-button").should("be.visible").click();
+    // upload file
+    getElementByDataCy("addProfile-button").should("be.visible").click();
     cy.wait(["@upload-files", "@getAllAttachments"]);
   };
 
   const uploadPhoto = () => {
     selectInputFile(photoFilename, "image/jpeg");
 
-    getElementByDataCy("photo-upload-button").should("be.visible").click();
+    getElementByDataCy("addPhoto-button").should("be.visible").click();
     cy.wait(["@upload-photo", "@getAllPhotos"]);
   };
 
@@ -49,7 +68,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       selectInputFile("IRATETRINITY.pdf", "application/pdf");
 
       // upload and verify file IRATETRINITY.pdf
-      getElementByDataCy("attachments-upload-button").should("be.visible").click();
+      getElementByDataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
       verifyTableLength(2);
@@ -57,7 +76,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // Upload and verify file "IRATETRINITY.pdf" for the second time but with different file name.
       selectInputFile("IRATETRINITY_2.pdf", "application/pdf");
-      getElementByDataCy("attachments-upload-button").should("be.visible").click();
+      getElementByDataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
       verifyTableLength(3);
@@ -65,7 +84,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // Upload and verify file "WHITE   SPACE.pdf" to test file names with white spaces.
       selectInputFile("WHITE   SPACE.pdf", "application/pdf");
-      cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
+      cy.get('[data-cy="addProfile-button"]').should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
       verifyTableLength(4);
       verifyRowContains("application/pdf", 3);
@@ -75,47 +94,71 @@ describe("Tests for 'Attachments' edit page.", () => {
       deleteDownloadedFile("WHITE___SPACE.pdf");
 
       // Download recently uploaded file
-      getElementByDataCy("'download-IRATETRINITY_2.pdf'").click();
+      checkRowWithText("IRATETRINITY_2.pdf");
+      checkRowWithText("WHITE___SPACE.pdf");
+      exportItem("attachment-table-container");
       cy.wait("@download-file");
 
       // Check if the file is present in download folder.
       readDownloadedFile("IRATETRINITY_2.pdf");
-
-      // Download recently uploaded file
-      getElementByDataCy("'download-WHITE___SPACE.pdf'").click();
-      cy.wait("@download-file");
-
-      // Check if the file is present in download folder.
       readDownloadedFile("WHITE___SPACE.pdf");
 
       // edit attachment description and public status
       stopBoreholeEditing();
-      cy.get('[class*="lucide-lock-open"]').should("not.exist");
-      cy.get('[class*="lucide-lock"]').should("exist");
+      checkPublicStatus("IRATETRINITY_2.pdf", false, false);
+      checkPublicStatus("WHITE___SPACE.pdf", false, false);
       startBoreholeEditing();
-      getElementByDataCy("'input-IRATETRINITY_2.pdf'").type("a brand new description");
-      checkRowWithText("IRATETRINITY.pdf"); // edit public status
+
+      getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
+      checkPublicStatus("IRATETRINITY_2.pdf", false, true);
+      checkPublicStatus("WHITE___SPACE.pdf", false, true);
+      checkRowWithText("IRATETRINITY_2.pdf", "public");
+      getElementByDataCy("public-header").find(".MuiCheckbox-indeterminate").should("exist");
+      getElementByDataCy("public-header").find('input[type="checkbox"]').click();
+      getElementByDataCy("public-header").find('input[type="checkbox"]').should("be.checked");
+      checkPublicStatus("LOUDSPATULA.txt", true, true);
+      checkPublicStatus("IRATETRINITY.pdf", true, true);
+      checkPublicStatus("IRATETRINITY_2.pdf", true, true);
+      checkPublicStatus("WHITE___SPACE.pdf", true, true);
+      unCheckRowWithText("IRATETRINITY.pdf", "public");
+      getElementByDataCy("public-header").find(".MuiCheckbox-indeterminate").should("exist");
+      checkRowWithText("IRATETRINITY.pdf", "public");
+      getElementByDataCy("public-header").find('input[type="checkbox"]').should("be.checked");
+      getElementByDataCy("public-header").find('input[type="checkbox"]').click();
+      getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
+      checkPublicStatus("LOUDSPATULA.txt", false, true);
+      checkPublicStatus("IRATETRINITY.pdf", false, true);
+      checkPublicStatus("IRATETRINITY_2.pdf", false, true);
+      checkPublicStatus("WHITE___SPACE.pdf", false, true);
+      checkRowWithText("IRATETRINITY_2.pdf", "public");
+
+      cy.contains(".MuiDataGrid-row", "IRATETRINITY_2.pdf").find(`[data-cy="profile-description"]`).click();
+      cy.contains(".MuiDataGrid-row", "IRATETRINITY_2.pdf")
+        .find(`[data-cy="profile-description"]`)
+        .find("textarea:visible")
+        .type("a brand new description");
+
+      saveWithSaveBar();
 
       // stop editing and verify table content
       stopBoreholeEditing();
-      verifyRowContains("a brand new description", 2);
-      verifyRowContains("IRATETRINITY_2.pdf", 2);
+      verifyRowWithContentAlsoContains("IRATETRINITY_2.pdf", "a brand new description");
+      checkPublicStatus("IRATETRINITY_2.pdf", true, false);
+      checkPublicStatus("WHITE___SPACE.pdf", false, false);
 
-      cy.get('[class*="lucide-lock-open"]').should("exist");
-      cy.get('[class*="lucide-lock"]').should("exist");
+      checkAllVisibleRows();
+      uncheckAllVisibleRows();
+
       startBoreholeEditing();
 
       // delete attachments
-      getElementByDataCy("attachments-detach-button").children().first().click();
+      checkRowWithText("IRATETRINITY_2.pdf");
+      deleteItem("attachment-table-container");
       cy.wait(["@delete-file", "@getAllAttachments"]);
       verifyTableLength(3);
-      getElementByDataCy("attachments-detach-button").children().first().click();
-      cy.wait(["@delete-file", "@getAllAttachments"]);
-      verifyTableLength(2);
-      getElementByDataCy("attachments-detach-button").children().first().click();
-      cy.wait(["@delete-file", "@getAllAttachments"]);
-      verifyTableLength(1);
-      getElementByDataCy("attachments-detach-button").children().first().click();
+
+      checkAllVisibleRows();
+      deleteItem("attachment-table-container");
       cy.wait(["@delete-file", "@getAllAttachments"]);
       verifyTableLength(0);
 
@@ -145,21 +188,32 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // export photo
       checkRowWithText(photoFilename);
-      getElementByDataCy("photos-table-container").find('[data-cy="export-button"]').click();
+      exportItem("attachment-table-container");
       cy.wait("@export-photos");
 
       // check if the file is present in download folder
       readDownloadedFile(photoFilename);
 
+      checkPublicStatus(photoFilename, false, true);
+      getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
+      getElementByDataCy("public-header").find('input[type="checkbox"]').click();
+      getElementByDataCy("public-header").find('input[type="checkbox"]').should("be.checked");
+      checkPublicStatus(photoFilename, true, true);
+      unCheckRowWithText(photoFilename, "public");
+      getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
+      checkRowWithText(photoFilename, "public");
+      saveWithSaveBar();
+
       // stop editing and verify table content
       stopBoreholeEditing();
       verifyRowContains(photoFilename, 0);
       verifyRowContains("10 - 120", 0);
+      checkPublicStatus(photoFilename, true, false);
 
       // delete photo
       startBoreholeEditing();
       checkRowWithText(photoFilename);
-      getElementByDataCy("photos-table-container").find('[data-cy="delete-button"]').click();
+      deleteItem("attachment-table-container");
       cy.wait(["@delete-photos", "@getAllPhotos"]);
       verifyTableLength(0);
 
@@ -168,7 +222,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     });
   });
 
-  it("can save changes on a  borehole with attachments.", () => {
+  it("can save changes on a borehole with attachments.", () => {
     createBorehole({ "extended.original_name": "AAA_COBRA" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToRouteAndAcceptTerms(`/${boreholeId}`);

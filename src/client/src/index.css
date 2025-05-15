@@ -149,15 +149,6 @@
   background-color: rgb(233, 233, 233);
 }
 
-.radio-group {
-  height: 36px;
-  display: flex;
-}
-
-.Mui-checked {
-  color: black !important;
-}
-
 *,
 *:before,
 *:after {

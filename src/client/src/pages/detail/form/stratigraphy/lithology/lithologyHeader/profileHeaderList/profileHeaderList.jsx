@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
-import DateText from "../../../../../../../components/legacyComponents/dateText.js";
+import { DateText } from "../../../../../../../components/dateText.js";
 import * as Styled from "./styles.js";
 
 const ProfileHeaderList = props => {

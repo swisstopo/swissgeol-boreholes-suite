@@ -26,8 +26,6 @@ export const saveWithSaveBar = parent => {
       });
   });
 
-  // Ensure the actual update request is processed
-  cy.wait(["@update-borehole"]);
   getElementByDataCy("save-bar-text").should("contain", "Changes saved");
   getElementByDataCy("save-bar-text").should("not.exist");
 };
@@ -109,9 +107,10 @@ export const deleteItem = parent => {
 
 /**
  * Clicks on the Export button.
+ * @param {string} parent (optional) The parent of the button.
  */
-export const exportItem = () => {
-  const selector = '[data-cy="export-button"]';
+export const exportItem = parent => {
+  const selector = createBaseSelector(parent) + '[data-cy="export-button"]';
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
 };
