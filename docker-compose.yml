@@ -118,6 +118,7 @@ services:
       CONNECTIONSTRINGS__BdmsContext: Host=localhost;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms;CommandTimeout=300
       ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address: "http://localhost:8888/"
       ReverseProxy__Clusters__dataExtractionApi__Destinations__dataExtractionApi__Address: "http://localhost:8000/"
+      ReverseProxy__Clusters__ocrApi__Destinations__ocrApi__Address: "http://localhost:5052/"
       Auth__Authority: http://localhost:4011
       Auth__Audience: "bdms-client"
       Auth__GroupClaimType: "local_groups_claim"
@@ -139,6 +140,27 @@ services:
       AWS_S3_BUCKET: cannonflea
     healthcheck:
       test: "curl --fail http://localhost:8000/health || exit 1"
+  ocr:
+    # TODO change this to `latest` once it is released.
+    image: ghcr.io/swisstopo/swissgeol-ocr-api:edge
+    restart: unless-stopped
+    ports:
+      - "5052:8000"
+    environment:
+      TMP_PATH: /tmp/ocr/
+      SKIP_PROCESSING: true
+      S3_INPUT_ENDPOINT: http://minio:9000
+      S3_INPUT_BUCKET: cannonflea
+      S3_INPUT_FOLDER: /
+      S3_OUTPUT_ENDPOINT: http://minio:9000
+      S3_OUTPUT_BUCKET: cannonflea
+      S3_OUTPUT_FOLDER: /
+      CONFIDENCE_THRESHOLD: 0.45
+      USE_AGGRESSIVE_STRATEGY: TRUE
+      AWS_ACCESS_KEY_ID: REDSQUIRREL
+      AWS_SECRET_ACCESS_KEY: YELLOWMONKEY
+      AWS_DEFAULT_REGION : us-east-1
+
   oidc-server:
     image: soluto/oidc-server-mock
     restart: unless-stopped

@@ -6,9 +6,10 @@ import {
 import { ApiError } from "../apiInterfaces.ts";
 import { fetchCreatePngs, fetchExtractData, fetchPageBoundingBoxes } from "../dataextraction";
 import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2.ts";
-import { DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
+import { processFileWithOCR } from "../ocr.ts";
+import { BoreholeFile, DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
-export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
+export async function uploadFile(boreholeId: number, file: File) {
   if (file && file.size <= maxFileSizeKB) {
     const formData = new FormData();
     formData.append("file", file);
@@ -20,7 +21,9 @@ export async function uploadFile<FileResponse>(boreholeId: number, file: File) {
         throw new ApiError("errorDuringBoreholeFileUpload", response.status);
       }
     } else {
-      return (await response.json()) as FileResponse;
+      const uploadedFile = (await response.json()) as BoreholeFile;
+      processFileWithOCR({ file: uploadedFile.file.nameUuid });
+      return uploadedFile;
     }
   } else {
     throw new ApiError("fileMaxSizeExceeded", 500);
