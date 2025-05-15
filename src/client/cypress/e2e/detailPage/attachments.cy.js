@@ -3,8 +3,10 @@ import {
   checkAllVisibleRows,
   checkRowWithText,
   uncheckAllVisibleRows,
+  unCheckRowWithText,
   verifyRowContains,
   verifyRowWithContentAlsoContains,
+  verifyRowWithTextCheckState,
   verifyTableLength,
 } from "../helpers/dataGridHelpers.js";
 import { evaluateInput, setInput } from "../helpers/formHelpers.js";
@@ -22,21 +24,11 @@ import {
 
 const checkPublicStatus = (text, checked, editingEnabled) => {
   if (editingEnabled) {
-    cy.contains(".MuiDataGrid-row", text)
-      .find('.public input[type="checkbox"]')
-      .should(checked ? "be.checked" : "not.be.checked");
+    verifyRowWithTextCheckState(text, checked, "public");
   } else {
     cy.contains(".MuiDataGrid-row", text)
-      .find(".public")
+      .find('[data-field="public"] svg')
       .should(checked ? "exist" : "not.exist");
-  }
-};
-
-const setPublicStatus = (text, check) => {
-  if (check) {
-    cy.contains(".MuiDataGrid-row", text).find('.public input[type="checkbox"]').check();
-  } else {
-    cy.contains(".MuiDataGrid-row", text).find('.public input[type="checkbox"]').uncheck();
   }
 };
 
@@ -120,7 +112,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
       checkPublicStatus("IRATETRINITY_2.pdf", false, true);
       checkPublicStatus("WHITE___SPACE.pdf", false, true);
-      setPublicStatus("IRATETRINITY_2.pdf", true);
+      checkRowWithText("IRATETRINITY_2.pdf", "public");
       getElementByDataCy("public-header").find(".MuiCheckbox-indeterminate").should("exist");
       getElementByDataCy("public-header").find('input[type="checkbox"]').click();
       getElementByDataCy("public-header").find('input[type="checkbox"]').should("be.checked");
@@ -128,9 +120,9 @@ describe("Tests for 'Attachments' edit page.", () => {
       checkPublicStatus("IRATETRINITY.pdf", true, true);
       checkPublicStatus("IRATETRINITY_2.pdf", true, true);
       checkPublicStatus("WHITE___SPACE.pdf", true, true);
-      setPublicStatus("IRATETRINITY.pdf", false);
+      unCheckRowWithText("IRATETRINITY.pdf", "public");
       getElementByDataCy("public-header").find(".MuiCheckbox-indeterminate").should("exist");
-      setPublicStatus("IRATETRINITY.pdf", true);
+      checkRowWithText("IRATETRINITY.pdf", "public");
       getElementByDataCy("public-header").find('input[type="checkbox"]').should("be.checked");
       getElementByDataCy("public-header").find('input[type="checkbox"]').click();
       getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
@@ -138,7 +130,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       checkPublicStatus("IRATETRINITY.pdf", false, true);
       checkPublicStatus("IRATETRINITY_2.pdf", false, true);
       checkPublicStatus("WHITE___SPACE.pdf", false, true);
-      setPublicStatus("IRATETRINITY_2.pdf", true);
+      checkRowWithText("IRATETRINITY_2.pdf", "public");
 
       cy.contains(".MuiDataGrid-row", "IRATETRINITY_2.pdf").find(`[data-cy="profile-description"]`).click();
       cy.contains(".MuiDataGrid-row", "IRATETRINITY_2.pdf")
@@ -207,9 +199,9 @@ describe("Tests for 'Attachments' edit page.", () => {
       getElementByDataCy("public-header").find('input[type="checkbox"]').click();
       getElementByDataCy("public-header").find('input[type="checkbox"]').should("be.checked");
       checkPublicStatus(photoFilename, true, true);
-      setPublicStatus(photoFilename, false);
+      unCheckRowWithText(photoFilename, "public");
       getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
-      setPublicStatus(photoFilename, true);
+      checkRowWithText(photoFilename, "public");
       saveWithSaveBar();
 
       // stop editing and verify table content

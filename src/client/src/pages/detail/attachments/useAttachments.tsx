@@ -133,13 +133,13 @@ export const useAttachments = ({
   const getPublicColumnCell = useCallback(
     (params: GridRenderCellParams) => {
       const readonlyContent = (
-        <Stack direction="row" alignItems="center" justifyContent="center" className={params.value && "public"}>
+        <Stack direction="row" alignItems="center" justifyContent="center">
           {params.value ? <CheckIcon /> : null}
         </Stack>
       );
 
       const editableContent = (
-        <Stack direction="row" alignItems="center" justifyContent="flex-start" width="100%" className="public">
+        <Stack direction="row" alignItems="center" justifyContent="flex-start" width="100%" pl={1.25}>
           <Checkbox
             checked={params.row.public}
             onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
