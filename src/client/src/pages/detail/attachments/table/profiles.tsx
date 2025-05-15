@@ -112,15 +112,26 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
           editingEnabled ? (
             <TextField
               data-cy="profile-description"
+              multiline
               sx={{ margin: 0 }}
               defaultValue={(updatedRows.get(params.id) as Profile)?.description ?? params.value ?? ""}
             />
           ) : (
-            <Typography sx={{ fontSize: "16px", fontWeight: 400 }}>{params.value}</Typography>
+            <Typography>
+              {params.value
+                ? params.value.split("\n").map((line: string, i: number) => (
+                    <span key={i}>
+                      {line}
+                      {i < params.value.split("\n").length - 1 && <br />}
+                    </span>
+                  ))
+                : ""}
+            </Typography>
           ),
         renderEditCell: (params: GridRenderCellParams) => (
           <TextField
             data-cy="profile-description"
+            multiline
             sx={{ margin: `0 ${theme.spacing(1)}` }}
             defaultValue={(updatedRows.get(params.id) as Profile)?.description ?? params.value ?? ""}
             onChange={event => updateDescription(params.id, event.target.value)}

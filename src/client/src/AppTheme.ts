@@ -610,6 +610,11 @@ export const theme = createTheme({
             display: "flex",
             alignItems: "center",
             borderColor: themePalette.border.darker,
+
+            "& .MuiInputBase-input, .MuiTypography-root": {
+              fontSize: "16px",
+              fontWeight: 400,
+            },
           },
           "& .MuiDataGrid-toolbarContainer": {
             paddingLeft: "2px !important",

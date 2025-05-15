@@ -76,6 +76,7 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
               checkboxSelection
               rowSelectionModel={selectionModel}
               onRowSelectionModelChange={setSelectionModel}
+              rowAutoHeight={true}
             />
           </Box>
         </Box>
