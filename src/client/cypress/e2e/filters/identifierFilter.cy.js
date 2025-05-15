@@ -1,5 +1,10 @@
 import { addItem, saveWithSaveBar } from "../helpers/buttonHelpers";
-import { checkAllVisibleRows, hasPagination, verifyPaginationText } from "../helpers/dataGridHelpers";
+import {
+  checkAllVisibleRows,
+  hasPagination,
+  showTableAndWaitForData,
+  verifyPaginationText,
+} from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 import {
   getElementByDataCy,
@@ -62,6 +67,7 @@ describe("Tests for filtering data by identifier.", () => {
     getElementByDataCy("show-all-fields-switch").click();
 
     setSelect("borehole_identifier", 0);
+    showTableAndWaitForData();
     hasPagination(false);
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
