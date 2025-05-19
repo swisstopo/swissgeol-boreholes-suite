@@ -29,6 +29,7 @@ describe("Tests for stratigraphy", () => {
     startBoreholeEditing();
     getElementByDataCy("stratigraphy-menu-item").click();
     getElementByDataCy("lithology-menu-item").click();
+    cy.wait("@stratigraphy_GET");
 
     // Add new stratigraphy
     addItem("addStratigraphy");
