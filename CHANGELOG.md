@@ -9,7 +9,7 @@
 - Automatic conversion from meters above sea level (MASL) to measured depth (MD) in hydro module.
 
 ### Changed
-- Upgraded to React 19.
+- Upgraded to React 19.1
 - Refactored save logic in the borehole detail view.
 
 ### Fixed
