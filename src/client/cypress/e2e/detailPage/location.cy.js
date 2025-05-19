@@ -13,6 +13,8 @@ import {
   createBorehole,
   goToRouteAndAcceptTerms,
   handlePrompt,
+  navigateToBoreholeTab,
+  navigateToLocationTab,
   newEditableBorehole,
   returnToOverview,
   startBoreholeEditing,
@@ -104,8 +106,8 @@ describe("Tests for 'Location' edit page.", () => {
       // should keep different alternate name when switching tabs
       setInput("name", "PHOTOMOUSE");
       saveWithSaveBar();
-      cy.get('[data-cy="borehole-menu-item"]').click();
-      cy.get('[data-cy="location-menu-item"]').click();
+      navigateToBoreholeTab(id);
+      navigateToLocationTab(id);
       evaluateInput("originalName", "PHOTOPIGEON");
       evaluateInput("name", "PHOTOMOUSE");
     });
@@ -164,16 +166,18 @@ describe("Tests for 'Location' edit page.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
 
-    setSelect("restrictionId", 3);
-    isDisabled("restrictionUntil", false);
-    setInput("restrictionUntil", "2012-11-14");
-    evaluateInput("restrictionUntil", "2012-11-14");
-    saveWithSaveBar();
-    // navigate away and back to check if values are saved
-    cy.get('[data-cy="borehole-menu-item"]').click();
-    cy.get('[data-cy="location-menu-item"]').click();
+    cy.get("@borehole_id").then(id => {
+      setSelect("restrictionId", 3);
+      isDisabled("restrictionUntil", false);
+      setInput("restrictionUntil", "2012-11-14");
+      evaluateInput("restrictionUntil", "2012-11-14");
+      saveWithSaveBar();
+      // navigate away and back to check if values are saved
+      navigateToBoreholeTab(id);
+      navigateToLocationTab(id);
 
-    evaluateInput("restrictionUntil", "2012-11-14");
+      evaluateInput("restrictionUntil", "2012-11-14");
+    });
   });
 
   it("saves with ctrl s", () => {
