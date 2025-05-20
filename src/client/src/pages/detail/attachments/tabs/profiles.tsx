@@ -6,7 +6,7 @@ import { detachFile, downloadFile, getFiles, updateFile, uploadFile } from "../.
 import { BoreholeFile } from "../../../../api/file/fileInterfaces";
 import { theme } from "../../../../AppTheme.ts";
 import { formatDate } from "../../../../utils.ts";
-import { DetailContext } from "../../detailContext";
+import { EditStateContext } from "../../editStateContext";
 import { AttachmentContent } from "../attachmentsContent";
 import { AttachmentWithPublicState, useAttachments } from "../useAttachments.tsx";
 
@@ -20,7 +20,7 @@ interface Profile extends AttachmentWithPublicState {
 
 export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
 
   const loadAttachments = useCallback(async () => {

@@ -8,7 +8,7 @@ import { RefObject } from "@mui/x-internals/types";
 import { DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
 import { Table } from "../../../components/table/table.tsx";
 import { TableSearchField } from "../../../components/table/tableSearchField.tsx";
-import { DetailContext } from "../detailContext.tsx";
+import { EditStateContext } from "../editStateContext.tsx";
 import { AddAttachmentButton } from "./addAttachmentButton.tsx";
 
 interface AttachmentContentProps {
@@ -37,7 +37,7 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
   noAttachmentsText,
 }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
 
   return (

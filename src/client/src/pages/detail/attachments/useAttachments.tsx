@@ -6,7 +6,7 @@ import { GridApiCommunity } from "@mui/x-data-grid/internals";
 import { RefObject } from "@mui/x-internals/types";
 import { CheckIcon } from "lucide-react";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
-import { DetailContext } from "../detailContext.tsx";
+import { EditStateContext } from "../editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "../saveContext.tsx";
 
 export interface AttachmentWithPublicState {
@@ -31,7 +31,7 @@ export const useAttachments = ({
   exportAttachments,
 }: UseAttachmentsProps) => {
   const { t } = useTranslation();
-  const { editingEnabled, reloadBorehole } = useContext(DetailContext);
+  const { editingEnabled, reloadBorehole } = useContext(EditStateContext);
   const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } =
     useContext<SaveContextProps>(SaveContext);
   const { showAlert } = useContext(AlertContext);
