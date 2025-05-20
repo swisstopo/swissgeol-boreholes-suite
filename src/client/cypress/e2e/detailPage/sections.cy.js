@@ -1,5 +1,6 @@
 import { addItem, deleteItem, saveForm, saveWithSaveBar, startEditing } from "../helpers/buttonHelpers";
 import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
+import { navigateInBorehole } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
   getElementByDataCy,
@@ -7,6 +8,12 @@ import {
   handlePrompt,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
+
+const saveSection = method => {
+  saveForm();
+  cy.wait(`@section_${method}`);
+  cy.wait("@section_GET");
+};
 
 describe("Section crud tests", () => {
   beforeEach(() => {
@@ -52,9 +59,7 @@ describe("Section crud tests", () => {
     evaluateInput("sectionElements.1.fromDepth", "0");
     evaluateInput("sectionElements.1.toDepth", "10");
 
-    saveForm();
-    cy.wait("@section_POST");
-    cy.wait("@section_GET");
+    saveSection("POST");
 
     evaluateDisplayValue("section_name", "section-1");
 
@@ -88,8 +93,7 @@ describe("Section crud tests", () => {
     setSelect("sectionElements.1.drillingMethodId", 13);
     cy.get('[data-cy="sectionElements.0.delete"]').click();
 
-    saveForm();
-    cy.wait("@section_PUT");
+    saveSection("PUT");
     evaluateDisplayValue("section_name", "section-1");
     evaluateDisplayValue("0.drilling_method", "auger drilling");
     evaluateDisplayValue("0.overcoring", "No");
@@ -103,6 +107,7 @@ describe("Section crud tests", () => {
     deleteItem();
     handlePrompt("Do you really want to delete this entry?", "delete");
     cy.wait("@section_DELETE");
+    cy.wait("@section_GET");
     cy.get('[data-cy="section-card.0"]').should("not.exist");
   });
 
@@ -118,7 +123,7 @@ describe("Section crud tests", () => {
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
 
     // switch tab to borehole general tab and edit depth
-    cy.get('[data-cy="general-tab"]').click();
+    navigateInBorehole("general");
     setInput("totalDepth", 5);
     evaluateInput("totalDepth", "5");
 
@@ -128,20 +133,20 @@ describe("Section crud tests", () => {
     handlePrompt(messageUnsavedChanges, "cancel");
     evaluateInput("totalDepth", "5");
     cy.get('[data-cy="sections-tab"]').click();
-    handlePrompt(messageUnsavedChanges, "discardchanges");
+    navigateInBorehole("sections", "discardchanges");
 
     // sections tab should be unchanged when retuning from borehole tab
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
 
     // switch tab to borehole general tab and edit depth with saving
-    cy.get('[data-cy="general-tab"]').click();
+    navigateInBorehole("general");
     evaluateInput("totalDepth", "");
     setInput("totalDepth", 7);
     evaluateInput("totalDepth", "7");
     saveWithSaveBar();
 
     // edit sections tab and save again
-    cy.get('[data-cy="sections-tab"]').click();
+    navigateInBorehole("sections");
     startEditing();
     setSelect("sectionElements.0.drillingMudTypeId", 4);
     cy.get("body").type("{ctrl}s");
@@ -149,7 +154,7 @@ describe("Section crud tests", () => {
     evaluateDisplayValue("0.drilling_mud_type", "water-based non-dispersed");
 
     // borehole tab should still display saved depth value
-    cy.get('[data-cy="general-tab"]').click();
+    navigateInBorehole("general");
     evaluateInput("totalDepth", "7");
   });
 
@@ -162,13 +167,8 @@ describe("Section crud tests", () => {
     cy.location().should(location => {
       expect(location.hash).to.eq("#sections");
     });
-    getElementByDataCy("geometry-tab").click();
-    handlePrompt(messageUnsavedChanges, "discardchanges");
-    cy.location().should(location => {
-      expect(location.hash).to.eq("#geometry");
-    });
-
-    getElementByDataCy("sections-tab").click();
+    navigateInBorehole("geometry", "discardchanges");
+    navigateInBorehole("sections");
 
     // section was not saved
     cy.contains("No sections available");
@@ -177,18 +177,11 @@ describe("Section crud tests", () => {
     setInput("name", "AA_CAPYBARA");
     setInput("sectionElements.0.fromDepth", "0");
     setInput("sectionElements.0.toDepth", "1");
-    saveForm();
-    cy.wait("@section_POST");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(100);
-    getElementByDataCy("geometry-tab").click();
-    cy.location().should(location => {
-      expect(location.hash).to.eq("#geometry");
-    });
-    getElementByDataCy("sections-tab").click();
-    cy.location().should(location => {
-      expect(location.hash).to.eq("#sections");
-    });
+    saveSection("POST");
+    cy.get('[data-cy="section-card.0"]').should("exist");
+
+    navigateInBorehole("geometry");
+    navigateInBorehole("sections");
 
     // section was saved
     cy.contains("AA_CAPYBARA");
@@ -202,8 +195,7 @@ describe("Section crud tests", () => {
 
     setSelect("sectionElements.0.drillingMudTypeId", 5);
     setSelect("sectionElements.0.drillingMudSubtypeId", 2, 5);
-    saveForm();
-    cy.wait("@section_POST");
+    saveSection("POST");
 
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
     evaluateDisplayValue(
@@ -213,16 +205,14 @@ describe("Section crud tests", () => {
 
     startEditing();
     setSelect("sectionElements.0.drillingMudTypeId", 3);
-    saveForm();
-    cy.wait("@section_PUT");
+    saveSection("PUT");
 
     evaluateDisplayValue("0.drilling_mud_type", "pneumatic");
     evaluateDisplayValue("0.drilling_mud_subtype", "-"); // subtype was reset because it is not a subtype of pneumatic
 
     startEditing();
     setSelect("sectionElements.0.drillingMudSubtypeId", 2, 7);
-    saveForm();
-    cy.wait("@section_PUT");
+    saveSection("PUT");
 
     evaluateDisplayValue("0.drilling_mud_type", "pneumatic");
     evaluateDisplayValue("0.drilling_mud_subtype", "gas");
@@ -230,8 +220,7 @@ describe("Section crud tests", () => {
     startEditing();
     setSelect("sectionElements.0.drillingMudSubtypeId", 5, 7);
     setSelect("sectionElements.0.drillingMudTypeId", 1);
-    saveForm();
-    cy.wait("@section_PUT");
+    saveSection("PUT");
 
     evaluateDisplayValue("0.drilling_mud_type", "water");
     evaluateDisplayValue("0.drilling_mud_subtype", "other"); // subtype other is not reset when switching type
@@ -239,8 +228,7 @@ describe("Section crud tests", () => {
     startEditing();
     setSelect("sectionElements.0.drillingMudTypeId", 0); // reset
     setSelect("sectionElements.0.drillingMudSubtypeId", 0, 3); // still 3 options (Reset, other, not specified)
-    saveForm();
-    cy.wait("@section_PUT");
+    saveSection("PUT");
 
     evaluateDisplayValue("0.drilling_mud_type", "-");
     evaluateDisplayValue("0.drilling_mud_subtype", "-");

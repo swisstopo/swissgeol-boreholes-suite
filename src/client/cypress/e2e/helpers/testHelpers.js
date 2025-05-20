@@ -90,14 +90,16 @@ export const interceptApiCalls = () => {
     return (req.alias = `stratigraphy_${req.method}`);
   });
 
-  cy.intercept("/api/v2/section?boreholeId=**").as("get-sections-by-boreholeId");
-
-  cy.intercept("/api/v2/section*", req => {
-    return (req.alias = `section_${req.method}`);
-  });
+  cy.intercept("/api/v2/section?boreholeId=**").as("section_GET");
+  cy.intercept("POST", "/api/v2/section").as("section_POST");
+  cy.intercept("PUT", "/api/v2/section").as("section_PUT");
+  cy.intercept("DELETE", "/api/v2/section?id=**").as("section_DELETE");
 
   cy.intercept("/api/v2/boreholegeometry?boreholeId=**", req => {
     return (req.alias = `boreholegeometry_${req.method}`);
+  });
+  cy.intercept("/api/v2/boreholegeometry/geometryformats", req => {
+    return (req.alias = `boreholegeometry_formats`);
   });
 
   cy.intercept("/api/v2/boreholegeometry/getDepthInMasl?**").as("get-boreholegeometry-depth-masl");
@@ -710,7 +712,9 @@ export const createInstrument = (completionId, casingId, name, statusId, kindId,
 
 export const handlePrompt = (message, action) => {
   cy.get('[data-cy="prompt"]').should("be.visible");
-  cy.contains(message);
+  if (message && message.length > 0) {
+    cy.contains(message);
+  }
   cy.get('[data-cy="prompt"]').find(`[data-cy="${action.toLowerCase()}-button"]`).click();
 };
 
