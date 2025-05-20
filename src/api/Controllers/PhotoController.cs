@@ -200,14 +200,14 @@ public class PhotoController : ControllerBase
     /// <summary>
     /// Updates the public state of the photos matching the provided data.
     /// </summary>
-    /// <param name="data">An array of objects containing photo IDs and their new public state.</param>
+    /// <param name="photoUpdates">An array of objects containing photo IDs and their new public state.</param>
     [HttpPut]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> UpdateAsync([FromBody] Collection<PhotoUpdate> data)
+    public async Task<ActionResult> UpdateAsync([FromBody] Collection<PhotoUpdate> photoUpdates)
     {
-        if (data == null || data.Count == 0 || data.Any(d => d == null || d.Id <= 0)) return BadRequest("The data must not be empty and must contain valid entries.");
+        if (photoUpdates == null || photoUpdates.Count == 0 || photoUpdates.Any(d => d == null || d.Id <= 0)) return BadRequest("The data must not be empty and must contain valid entries.");
 
-        var photoIds = data.Select(d => d.Id).ToList();
+        var photoIds = photoUpdates.Select(d => d.Id).ToList();
 
         var photos = await context.Photos
             .Where(p => photoIds.Contains(p.Id))
@@ -224,7 +224,7 @@ public class PhotoController : ControllerBase
 
         foreach (var photo in photos)
         {
-            var updateData = data.FirstOrDefault(d => d.Id == photo.Id);
+            var updateData = photoUpdates.FirstOrDefault(d => d.Id == photo.Id);
             if (updateData != null)
             {
                 photo.Public = updateData.Public;
