@@ -257,7 +257,7 @@ describe("Test for the borehole form.", () => {
     });
 
     cy.get('[data-cy="sections-tab"]').click();
-    cy.wait("@get-sections-by-boreholeId");
+    cy.wait("@section_GET");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
       expect(location.hash).to.eq("#sections");
