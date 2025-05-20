@@ -38,7 +38,7 @@ public class PhotoController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<IActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
+    public async Task<IActionResult> UploadAsync(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
     {
         if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
@@ -76,7 +76,7 @@ public class PhotoController : ControllerBase
     /// <returns>A list of <see cref="Photo"/>.</returns>
     [HttpGet("getAllForBorehole")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<Photo>>> GetAllOfBorehole([Required, Range(1, int.MaxValue)] int boreholeId)
+    public async Task<ActionResult<IEnumerable<Photo>>> GetAllOfBoreholeAsync([Required, Range(1, int.MaxValue)] int boreholeId)
     {
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
@@ -97,7 +97,7 @@ public class PhotoController : ControllerBase
     /// <returns>The image data of the photo.</returns>
     [HttpGet("image")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> GetImage([Range(1, int.MaxValue)] int photoId)
+    public async Task<IActionResult> GetImageAsync([Range(1, int.MaxValue)] int photoId)
     {
         var photo = await context.Photos
             .FirstOrDefaultAsync(p => p.Id == photoId)
@@ -128,7 +128,7 @@ public class PhotoController : ControllerBase
     /// <returns>The file content for a single photo or a zip file containing multiple photos.</returns>
     [HttpGet("export")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> Export([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
+    public async Task<ActionResult> ExportAsync([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
     {
         if (photoIds == null || photoIds.Count == 0) return BadRequest("The list of photoIds must not be empty.");
 
@@ -172,7 +172,7 @@ public class PhotoController : ControllerBase
 
     [HttpDelete]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> Delete([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
+    public async Task<ActionResult> DeleteAsync([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
     {
         if (photoIds == null || photoIds.Count == 0) return BadRequest("The list of photoIds must not be empty.");
 
@@ -203,7 +203,7 @@ public class PhotoController : ControllerBase
     /// <param name="data">An array of objects containing photo IDs and their new public state.</param>
     [HttpPut]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> Update([FromBody] Collection<PhotoUpdate> data)
+    public async Task<ActionResult> UpdateAsync([FromBody] Collection<PhotoUpdate> data)
     {
         if (data == null || data.Count == 0 || data.Any(d => d == null || d.Id <= 0)) return BadRequest("The data must not be empty and must contain valid entries.");
 

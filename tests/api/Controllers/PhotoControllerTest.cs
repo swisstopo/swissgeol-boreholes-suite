@@ -83,7 +83,7 @@ public class PhotoControllerTest
         var file = GetFormFileByContent(content, fileName);
 
         // Upload
-        var response = await controller.Upload(file, minBoreholeId);
+        var response = await controller.UploadAsync(file, minBoreholeId);
         ActionResultAssert.IsOk(response);
 
         // Get uploaded photo from db
@@ -106,7 +106,7 @@ public class PhotoControllerTest
         var content = Guid.NewGuid().ToString();
         var file = GetFormFileByContent(content, fileName);
 
-        var response = await controller.Upload(file, minBoreholeId);
+        var response = await controller.UploadAsync(file, minBoreholeId);
         ActionResultAssert.IsBadRequest(response);
     }
 
@@ -118,7 +118,7 @@ public class PhotoControllerTest
         var content = Guid.NewGuid().ToString();
         var file = GetFormFileByContent(content, fileName);
 
-        var response = await controller.Upload(file, minBoreholeId);
+        var response = await controller.UploadAsync(file, minBoreholeId);
         ActionResultAssert.IsBadRequest(response);
     }
 
@@ -134,7 +134,7 @@ public class PhotoControllerTest
         var content = Guid.NewGuid().ToString();
         var file = GetFormFileByContent(content, fileName);
 
-        var response = await controller.Upload(file, minBoreholeId);
+        var response = await controller.UploadAsync(file, minBoreholeId);
         ActionResultAssert.IsUnauthorized(response);
     }
 
@@ -143,7 +143,7 @@ public class PhotoControllerTest
     {
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
 
-        var response = await controller.GetAllOfBorehole(minBoreholeId);
+        var response = await controller.GetAllOfBoreholeAsync(minBoreholeId);
         Assert.IsNotNull(response.Value);
     }
 
@@ -156,7 +156,7 @@ public class PhotoControllerTest
 
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
 
-        IConvertToActionResult response = await controller.GetAllOfBorehole(minBoreholeId);
+        IConvertToActionResult response = await controller.GetAllOfBoreholeAsync(minBoreholeId);
         ActionResultAssert.IsUnauthorized(response.Convert());
     }
 
@@ -167,7 +167,7 @@ public class PhotoControllerTest
         photo.FileType = "image/png";
         await context.SaveChangesAsync();
 
-        var response = await controller.GetImage(photo.Id);
+        var response = await controller.GetImageAsync(photo.Id);
         Assert.IsInstanceOfType<FileResult>(response);
 
         var fileResult = (FileResult)response;
@@ -189,7 +189,7 @@ public class PhotoControllerTest
         var photo = await CreatePhotoAsync();
         Assert.AreEqual("image/tiff", photo.FileType);
 
-        var response = await controller.GetImage(photo.Id);
+        var response = await controller.GetImageAsync(photo.Id);
         Assert.IsInstanceOfType<FileResult>(response);
 
         var fileResult = (FileResult)response;
@@ -205,7 +205,7 @@ public class PhotoControllerTest
 
         var photo = await CreatePhotoAsync();
 
-        var response = await controller.GetImage(photo.Id);
+        var response = await controller.GetImageAsync(photo.Id);
         ActionResultAssert.IsUnauthorized(response);
     }
 
@@ -214,7 +214,7 @@ public class PhotoControllerTest
     {
         var photo = await CreatePhotoAsync();
 
-        var response = await controller.Export([photo.Id]);
+        var response = await controller.ExportAsync([photo.Id]);
         Assert.IsInstanceOfType<FileResult>(response);
 
         var fileResult = (FileResult)response;
@@ -228,7 +228,7 @@ public class PhotoControllerTest
         var photo1 = await CreatePhotoAsync();
         var photo2 = await CreatePhotoAsync();
 
-        var response = await controller.Export([photo1.Id, photo2.Id]);
+        var response = await controller.ExportAsync([photo1.Id, photo2.Id]);
         Assert.IsInstanceOfType<FileResult>(response);
 
         var fileResult = (FileResult)response;
@@ -246,7 +246,7 @@ public class PhotoControllerTest
         photo2.BoreholeId = context.Boreholes.Max(b => b.Id);
         await context.SaveChangesAsync();
 
-        var response = await controller.Export([photo1.Id, photo2.Id]);
+        var response = await controller.ExportAsync([photo1.Id, photo2.Id]);
         ActionResultAssert.IsBadRequest(response);
     }
 
@@ -259,7 +259,7 @@ public class PhotoControllerTest
 
         var photo = await CreatePhotoAsync();
 
-        var response = await controller.Export([photo.Id]);
+        var response = await controller.ExportAsync([photo.Id]);
         ActionResultAssert.IsUnauthorized(response);
     }
 
@@ -269,7 +269,7 @@ public class PhotoControllerTest
         var photo1 = await CreatePhotoAsync();
         var photo2 = await CreatePhotoAsync();
 
-        var response = await controller.Delete([photo1.Id, photo2.Id]);
+        var response = await controller.DeleteAsync([photo1.Id, photo2.Id]);
         ActionResultAssert.IsOk(response);
 
         Assert.IsFalse(context.Photos.Any(p => p.Id == photo1.Id));
@@ -286,7 +286,7 @@ public class PhotoControllerTest
         photo2.BoreholeId = context.Boreholes.Max(b => b.Id);
         await context.SaveChangesAsync();
 
-        var response = await controller.Delete([photo1.Id, photo2.Id]);
+        var response = await controller.DeleteAsync([photo1.Id, photo2.Id]);
         ActionResultAssert.IsBadRequest(response);
     }
 
@@ -299,7 +299,7 @@ public class PhotoControllerTest
 
         var photo = await CreatePhotoAsync();
 
-        var response = await controller.Delete([photo.Id]);
+        var response = await controller.DeleteAsync([photo.Id]);
         ActionResultAssert.IsUnauthorized(response);
     }
 
@@ -315,7 +315,7 @@ public class PhotoControllerTest
             new() { Id = photo2.Id, Public = true },
         };
 
-        var result = await controller.Update(updateData);
+        var result = await controller.UpdateAsync(updateData);
         ActionResultAssert.IsOk(result);
 
         var updatedPhoto1 = context.Photos.Single(p => p.Id == photo1.Id);
@@ -327,7 +327,7 @@ public class PhotoControllerTest
     [TestMethod]
     public async Task UpdateFailsWhenDataIsEmpty()
     {
-        var result = await controller.Update([]);
+        var result = await controller.UpdateAsync([]);
         ActionResultAssert.IsBadRequest(result);
     }
 
@@ -339,7 +339,7 @@ public class PhotoControllerTest
             new() { Id = int.MaxValue, Public = true },
         };
 
-        var result = await controller.Update(updateData);
+        var result = await controller.UpdateAsync(updateData);
         ActionResultAssert.IsNotFound(result);
     }
 
@@ -357,7 +357,7 @@ public class PhotoControllerTest
             new() { Id = photo2.Id, Public = true },
         };
 
-        var result = await controller.Update(updateData);
+        var result = await controller.UpdateAsync(updateData);
         ActionResultAssert.IsBadRequest(result);
     }
 
@@ -375,7 +375,7 @@ public class PhotoControllerTest
             new() { Id = photo.Id, Public = true },
         };
 
-        var result = await controller.Update(updateData);
+        var result = await controller.UpdateAsync(updateData);
         ActionResultAssert.IsUnauthorized(result);
     }
 
