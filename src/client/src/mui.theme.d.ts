@@ -143,6 +143,7 @@ declare module "@mui/material/styles" {
     MuiTextField: object;
     MuiInputLabel: object;
     MuiOutlinedInput: object;
+    MuiCheckbox: object;
     MuiTab: object;
     MuiTabs: object;
     MuiBadge: object;
@@ -168,6 +169,7 @@ declare module "@mui/material/styles" {
     MuiTextField: object;
     MuiInputLabel: object;
     MuiOutlinedInput: object;
+    MuiCheckbox: object;
     MuiTab: object;
     MuiTabs: object;
     MuiBadge: object;

@@ -63,7 +63,7 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
         <Box sx={{ flexGrow: 1 }}></Box>
         {hash === "#workgroups" && <AddButton label={"addWorkgroup"} variant={"contained"} onClick={addWorkgroup} />}
       </BoreholeTabs>
-      <BoreholeTabContentBox flex="1 0 0">{tabs[activeIndex].component}</BoreholeTabContentBox>
+      <BoreholeTabContentBox>{tabs[activeIndex].component}</BoreholeTabContentBox>
       <AddWorkgroupDialog open={workgroupDialogOpen} setOpen={setWorkgroupDialogOpen} />
     </>
   );

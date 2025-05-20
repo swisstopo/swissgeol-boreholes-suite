@@ -1,8 +1,8 @@
 import {
   checkRowWithText,
   clickOnRowWithText,
+  hasPagination,
   sortBy,
-  verifyPaginationText,
   verifyRowContains,
   verifyRowWithContentAlsoContains,
   verifyRowWithTextCheckState,
@@ -19,7 +19,7 @@ describe("User administration settings tests", () => {
     verifyRowContains("Admin", 7);
     verifyRowContains("admin.user@local.dev", 7);
     verifyRowContains("Active", 7);
-    verifyPaginationText("1–8 of 8");
+    hasPagination(false);
     verifyTableLength(8);
 
     // sort
@@ -79,12 +79,12 @@ describe("User administration settings tests", () => {
 
     getElementByDataCy("backButton").click();
     waitForTableData();
-    verifyRowWithTextCheckState("Admin", true);
-    verifyRowWithTextCheckState("editor", false);
+    verifyRowWithTextCheckState("Admin", true, "isAdmin");
+    verifyRowWithTextCheckState("editor", false, "isAdmin");
 
     // Make editor admin from user table
-    checkRowWithText("editor");
-    verifyRowWithTextCheckState("editor", true);
+    checkRowWithText("editor", "isAdmin");
+    verifyRowWithTextCheckState("editor", true, "isAdmin");
 
     // Go to user detail
     clickOnRowWithText("editor");
@@ -95,7 +95,7 @@ describe("User administration settings tests", () => {
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");
     getElementByDataCy("backButton").click();
     waitForTableData();
-    verifyRowWithTextCheckState("editor", false);
+    verifyRowWithTextCheckState("editor", false, "isAdmin");
   });
 
   it("shows appropriate prompts when clicking delete button", () => {
@@ -113,7 +113,7 @@ describe("User administration settings tests", () => {
     const messageForInactiveDeletableUser = "Do you really want to delete this user? This cannot be undone.";
 
     verifyRowContains("Active", 1); // controller
-    verifyRowWithTextCheckState("controller", false);
+    verifyRowWithTextCheckState("controller", false, "isAdmin");
 
     // try to delete controller from user table
     getElementByDataCy("delete-id-3").click();
@@ -199,7 +199,7 @@ describe("User administration settings tests", () => {
     verifyRowContains("Default", 1);
     verifyRowContains("Reggae", 2);
 
-    verifyPaginationText("1–3 of 3");
+    hasPagination(false);
     verifyTableLength(3);
 
     // sort
