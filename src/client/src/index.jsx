@@ -3,7 +3,6 @@ import { I18nextProvider } from "react-i18next";
 import { Provider } from "react-redux";
 import i18n from "./i18n";
 import "./index.css";
-import "./swissgeol-ui-core.css";
 import "ol/ol.css";
 import { SettingsProvider } from "./api/SettingsContext.js";
 import App from "./App";
