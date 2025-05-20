@@ -4,6 +4,7 @@ import {
   createStratigraphy,
   goToRouteAndAcceptTerms,
   startBoreholeEditing,
+  stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
 describe("Tests for the lithostratigraphy editor.", () => {
@@ -86,5 +87,6 @@ describe("Tests for the lithostratigraphy editor.", () => {
     // delete lithostratigraphy
     cy.get('[data-cy="layer-card"] [data-testid="DeleteIcon"]').click();
     cy.wait("@lithostratigraphy_DELETE");
+    stopBoreholeEditing();
   });
 });

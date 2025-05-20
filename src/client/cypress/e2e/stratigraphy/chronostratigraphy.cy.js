@@ -101,5 +101,6 @@ describe("Tests for the chronostratigraphy editor.", () => {
     // delete chronostratigraphy
     cy.get('[data-cy="layer-card"] [data-testid="DeleteIcon"]').click();
     cy.wait("@chronostratigraphy_DELETE");
+    stopBoreholeEditing();
   });
 });
