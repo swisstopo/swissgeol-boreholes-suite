@@ -96,8 +96,8 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
     ]);
   };
 
-  const handleDelete = async () => {
-    await deleteBorehole(borehole.id);
+  const handleDelete = () => {
+    deleteBorehole(borehole.id);
     navigate("/");
   };
 
