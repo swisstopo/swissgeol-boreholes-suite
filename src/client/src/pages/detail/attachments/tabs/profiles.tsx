@@ -128,7 +128,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
             <Typography sx={{ margin: `${theme.spacing(1)} 0` }}>
               {params.value
                 ? params.value.split("\n").map((line: string, i: number) => (
-                    <span key={i}>
+                    <span key={`profile-description-${line}-${params.id}`}>
                       {line}
                       {i < params.value.split("\n").length - 1 && <br />}
                     </span>
