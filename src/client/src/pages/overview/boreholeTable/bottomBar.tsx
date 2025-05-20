@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { Box, Button, Stack, Typography } from "@mui/material";
@@ -22,8 +22,8 @@ interface BottomBarProps {
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
   workgroup: number | null;
-  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
-  setIsExporting: React.Dispatch<React.SetStateAction<boolean>>;
+  setWorkgroup: Dispatch<SetStateAction<number | null>>;
+  setIsExporting: Dispatch<SetStateAction<boolean>>;
 }
 
 const BottomBar = ({
@@ -44,7 +44,10 @@ const BottomBar = ({
   const userIsEditor = user.data.roles.includes("EDIT");
   const auth = useAuth();
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
-  const enabledWorkgroups = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
+  const enabledWorkgroups = useMemo(
+    () => user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT")),
+    [user.data.workgroups],
+  );
 
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
     setCopyPromptOpen(true);

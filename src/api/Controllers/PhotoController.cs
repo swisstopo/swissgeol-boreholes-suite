@@ -4,6 +4,7 @@ using ImageMagick;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
 
@@ -37,7 +38,7 @@ public class PhotoController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<IActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
+    public async Task<IActionResult> UploadAsync(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
     {
         if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
@@ -75,7 +76,7 @@ public class PhotoController : ControllerBase
     /// <returns>A list of <see cref="Photo"/>.</returns>
     [HttpGet("getAllForBorehole")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<Photo>>> GetAllOfBorehole([Required, Range(1, int.MaxValue)] int boreholeId)
+    public async Task<ActionResult<IEnumerable<Photo>>> GetAllOfBoreholeAsync([Required, Range(1, int.MaxValue)] int boreholeId)
     {
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
@@ -96,7 +97,7 @@ public class PhotoController : ControllerBase
     /// <returns>The image data of the photo.</returns>
     [HttpGet("image")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> GetImage([Range(1, int.MaxValue)] int photoId)
+    public async Task<IActionResult> GetImageAsync([Range(1, int.MaxValue)] int photoId)
     {
         var photo = await context.Photos
             .FirstOrDefaultAsync(p => p.Id == photoId)
@@ -127,7 +128,7 @@ public class PhotoController : ControllerBase
     /// <returns>The file content for a single photo or a zip file containing multiple photos.</returns>
     [HttpGet("export")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> Export([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
+    public async Task<ActionResult> ExportAsync([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
     {
         if (photoIds == null || photoIds.Count == 0) return BadRequest("The list of photoIds must not be empty.");
 
@@ -171,7 +172,7 @@ public class PhotoController : ControllerBase
 
     [HttpDelete]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> Delete([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
+    public async Task<ActionResult> DeleteAsync([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
     {
         if (photoIds == null || photoIds.Count == 0) return BadRequest("The list of photoIds must not be empty.");
 
@@ -186,14 +187,50 @@ public class PhotoController : ControllerBase
         if (boreholeIds.Count != 1) return BadRequest("Not all photos are attached to the same borehole.");
 
         var boreholeId = boreholeIds.Single();
-        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
-        {
-            return BadRequest("The borehole is locked by another user or you are missing permissions.");
-        }
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         await photoCloudService.DeleteObjects(photos.Select(p => p.NameUuid)).ConfigureAwait(false);
 
         context.RemoveRange(photos);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Updates the public state of the photos matching the provided data.
+    /// </summary>
+    /// <param name="photoUpdates">An array of objects containing photo IDs and their new public state.</param>
+    [HttpPut]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult> UpdateAsync([FromBody] Collection<PhotoUpdate> photoUpdates)
+    {
+        if (photoUpdates == null || photoUpdates.Count == 0 || photoUpdates.Any(d => d == null || d.Id <= 0)) return BadRequest("The data must not be empty and must contain valid entries.");
+
+        var photoIds = photoUpdates.Select(d => d.Id).ToList();
+
+        var photos = await context.Photos
+            .Where(p => photoIds.Contains(p.Id))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        if (photos.Count == 0) return NotFound();
+
+        var boreholeIds = photos.Select(p => p.BoreholeId).Distinct().ToList();
+        if (boreholeIds.Count != 1) return BadRequest("Not all photos are attached to the same borehole.");
+
+        var boreholeId = boreholeIds.Single();
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        foreach (var photo in photos)
+        {
+            var updateData = photoUpdates.FirstOrDefault(d => d.Id == photo.Id);
+            if (updateData != null)
+            {
+                photo.Public = updateData.Public;
+            }
+        }
+
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         return Ok();

@@ -9,12 +9,15 @@
 - Automatic conversion from meters above sea level (MASL) to measured depth (MD) in hydro module.
 
 ### Changed
-- Upgraded to React 19.
+- Upgraded to React 19.1
 - Refactored save logic in the borehole detail view.
+- Refactored attachments tabs to unify the design and behavior of the tables.
 
 ### Fixed
 - Boreholes were always copied to the default workgroup instead of the selected workgroup.
 - _view-sync_ failed if the source database had a default workgroup named `Default`.
+- Depths with thousand separators could not be input in lithostratigraphy and chronostratigraphy.
+- Fixed a bug where copy boreholes dialog could not always be closed.
 
 ## v2.1.1162 - 2025-04-10
 

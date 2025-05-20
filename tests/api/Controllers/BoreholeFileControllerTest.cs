@@ -20,7 +20,10 @@ public class BoreholeFileControllerTest
     private BdmsContext context;
     private BoreholeFileController controller;
     private BoreholeFileCloudService boreholeFileCloudService;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private User adminUser;
+
+    private static string File1 => "file_1.pdf";
 
     [TestInitialize]
     public void TestInitialize()
@@ -48,26 +51,26 @@ public class BoreholeFileControllerTest
         boreholeFileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
         boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, boreholeFileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
-        var boreholePermisssionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermisssionServiceMock
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
 
-        boreholePermisssionServiceMock
+        boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync("sub_viewer", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        boreholePermisssionServiceMock
+        boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(true);
 
-        boreholePermisssionServiceMock
+        boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(false);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, boreholeFileCloudService, boreholePermisssionServiceMock.Object);
+        controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, boreholeFileCloudService, boreholePermissionServiceMock.Object);
         controller.ControllerContext = GetControllerContextAdmin();
     }
 
@@ -180,7 +183,7 @@ public class BoreholeFileControllerTest
         var secondBoreholeBoreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count();
 
         // Create file to upload
-        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
 
         // Upload file for both boreholes
         await controller.Upload(pdfFormFile, firstBoreholeId);
@@ -228,7 +231,7 @@ public class BoreholeFileControllerTest
         var boreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count();
 
         // Create file to upload
-        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
 
         // Upload file for boreholes
         await controller.Upload(pdfFormFile, firstBoreholeId);
@@ -299,7 +302,7 @@ public class BoreholeFileControllerTest
     public async Task UploadWithMissingBoreholeFileId()
     {
         var content = Guid.NewGuid().ToString();
-        var firstPdfFormFile = GetFormFileByContent(content, "file_1.pdf");
+        var firstPdfFormFile = GetFormFileByContent(content, File1);
 
         await AssertIsBadRequestResponse(() => controller.Upload(firstPdfFormFile, 0));
     }
@@ -336,6 +339,43 @@ public class BoreholeFileControllerTest
     public async Task DetachFromBoreholeWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.DetachFromBorehole(123, 0));
 
     [TestMethod]
+    public async Task DetachFailsWithoutPermission()
+    {
+        // Get borehole Id
+        var firstBoreholeId = context.Boreholes.First().Id;
+
+        // Get counts before upload
+        var filesCountBeforeUpload = context.Files.Count();
+        var boreholeFilesCountBeforeUpload = context.BoreholeFiles.Count();
+        var boreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count();
+
+        // Create file to upload
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
+
+        // Upload file for boreholes
+        await controller.Upload(pdfFormFile, firstBoreholeId);
+
+        // Get latest file in db
+        var latestFileInDb = context.Files.OrderBy(f => f.Id).Last();
+
+        // Ensure file exists
+        await boreholeFileCloudService.GetObject(latestFileInDb.NameUuid!);
+
+        // Check counts after upload
+        Assert.AreEqual(filesCountBeforeUpload + 1, context.Files.Count());
+        Assert.AreEqual(boreholeFilesCountBeforeUpload + 1, context.BoreholeFiles.Count());
+        Assert.AreEqual(boreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(false);
+
+        // Detach borehole file from first borehole
+        var response = await controller.DetachFromBorehole(firstBoreholeId, latestFileInDb.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
     public async Task UpdateWithMissingBoreholeId() => await AssertIsBadRequestResponse(() => controller.Update(new BoreholeFileUpdate(), 0, 1));
 
     [TestMethod]
@@ -346,6 +386,32 @@ public class BoreholeFileControllerTest
     {
         var result = await controller.Update(new BoreholeFileUpdate(), 1, 1);
         ActionResultAssert.IsNotFound(result);
+    }
+
+    [TestMethod]
+    public async Task UpdateFailsWithoutPermission()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(false);
+
+        var borehole = new Borehole();
+        await context.Boreholes.AddAsync(borehole);
+
+        var file = new Models.File() { Name = $"{Guid.NewGuid}.pdf", NameUuid = $"{Guid.NewGuid}.pdf", Type = "pdf" };
+        await context.Files.AddAsync(file);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var boreholeFile = new BoreholeFile() { BoreholeId = borehole.Id, FileId = file.Id, Description = null, Public = null };
+        await context.BoreholeFiles.AddAsync(boreholeFile);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Create update borehole file object
+        var updateBoreholeFile = new BoreholeFileUpdate() { Description = "Changed Description", Public = true };
+
+        // Update borehole file
+        var response = await controller.Update(updateBoreholeFile, borehole.Id, file.Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(response);
     }
 
     [TestMethod]

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FormControl } from "@mui/base";
-import { FormControlLabel, IconButton, Radio, RadioGroup } from "@mui/material";
+import { FormControl, FormControlLabel, IconButton, Radio, RadioGroup } from "@mui/material";
 import { Check, TriangleAlert, Wrench } from "lucide-react";
 import { deleteLayer, gapLayer } from "../../../../../../api-lib";
 import { addBedrock, fetchLayerById } from "../../../../../../api/fetchApiV2.ts";

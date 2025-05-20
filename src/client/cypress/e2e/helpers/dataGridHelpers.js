@@ -2,6 +2,14 @@ export const verifyPaginationText = text => {
   cy.get(".MuiTablePagination-displayedRows").should("have.text", text);
 };
 
+export const hasPagination = exists => {
+  if (exists) {
+    cy.get(".MuiTablePagination-displayedRows").should("exist");
+  } else {
+    cy.get(".MuiTablePagination-displayedRows").should("not.exist");
+  }
+};
+
 export const sortBy = headerTextContent => {
   cy.get(".MuiDataGrid-columnHeader").contains(headerTextContent).click();
   waitForTableData();
@@ -54,23 +62,34 @@ export const checkAllVisibleRows = () => {
   cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").find('input[type="checkbox"]').check({ force: true });
 };
 
-export const checkRowWithText = text => {
-  cy.contains(".MuiDataGrid-row", text).find('.MuiCheckbox-root input[type="checkbox"]').check({ force: true });
+export const uncheckAllVisibleRows = () => {
+  cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").find('input[type="checkbox"]').uncheck({ force: true });
 };
 
-export const unCheckRowWithText = text => {
-  cy.contains(".MuiDataGrid-row", text).find('.MuiCheckbox-root input[type="checkbox"]').uncheck({ force: true });
-};
+const getCheckboxCellSelector = column =>
+  column ? `[data-field="${column}"] .MuiCheckbox-root` : ".MuiDataGrid-cellCheckbox";
 
-export const verifyRowWithTextCheckState = (text, checked) => {
+export const checkRowWithText = (text, column) => {
   cy.contains(".MuiDataGrid-row", text)
-    .find('.MuiCheckbox-root input[type="checkbox"]')
+    .find(`${getCheckboxCellSelector(column)} input[type="checkbox"]`)
+    .check({ force: true });
+};
+
+export const unCheckRowWithText = (text, column) => {
+  cy.contains(".MuiDataGrid-row", text)
+    .find(`${getCheckboxCellSelector(column)} input[type="checkbox"]`)
+    .uncheck({ force: true });
+};
+
+export const verifyRowWithTextCheckState = (text, checked, column) => {
+  cy.contains(".MuiDataGrid-row", text)
+    .find(`${getCheckboxCellSelector(column)} input[type="checkbox"]`)
     .should(checked ? "be.checked" : "not.be.checked");
 };
 
 export const checkTwoFirstRows = () => {
-  cy.get(".MuiDataGrid-row").eq(0).find('.MuiCheckbox-root input[type="checkbox"]').check({ force: true });
-  cy.get(".MuiDataGrid-row").eq(1).find('.MuiCheckbox-root input[type="checkbox"]').check({ force: true });
+  cy.get(".MuiDataGrid-row").eq(0).find('.MuiDataGrid-cellCheckbox input[type="checkbox"]').check({ force: true });
+  cy.get(".MuiDataGrid-row").eq(1).find('.MuiDataGrid-cellCheckbox input[type="checkbox"]').check({ force: true });
 };
 
 export const clickOnRowWithText = text => {

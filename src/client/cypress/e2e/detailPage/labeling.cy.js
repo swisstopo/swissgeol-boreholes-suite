@@ -168,7 +168,7 @@ function selectEmptyPhotoTab() {
 }
 
 function uploadPhoto() {
-  cy.get('[data-cy="photo-upload-button"]').find('input[type="file"]').attachFile("import/image_12.0-34.0_all.tif", {
+  cy.get('[data-cy="addPhoto-button"]').find('input[type="file"]').attachFile("import/image_12.0-34.0_all.tif", {
     subjectType: "input",
   });
   cy.wait("@upload-photo");

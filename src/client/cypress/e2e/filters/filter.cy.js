@@ -1,4 +1,4 @@
-import { showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
+import { hasPagination, showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
 import {
   createBorehole,
@@ -135,7 +135,7 @@ describe("Search filter tests", () => {
 
     setYesNoSelect("national_interest", "Not specified");
     cy.wait("@edit_list");
-    verifyPaginationText("1–1 of 1");
+    hasPagination(false);
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
     setYesNoSelect("national_interest", "No");
@@ -159,7 +159,7 @@ describe("Search filter tests", () => {
 
     setYesNoSelect("striae", "Not Specified");
     cy.wait("@edit_list");
-    verifyPaginationText("1–2 of 2");
+    hasPagination(false);
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
@@ -247,7 +247,7 @@ describe("Search filter tests", () => {
     setInput("original_lithology", "Wooden Chair");
     cy.wait("@edit_list");
     showTableAndWaitForData();
-    verifyPaginationText("1–21 of 21");
+    hasPagination(false);
   });
 
   it("filters boreholes by creation date", () => {
@@ -264,7 +264,7 @@ describe("Search filter tests", () => {
 
     // check content of table
     showTableAndWaitForData();
-    verifyPaginationText("1–3 of 3");
+    hasPagination(false);
   });
 
   it("filters boreholes by workgroup", () => {

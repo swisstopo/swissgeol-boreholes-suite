@@ -76,21 +76,21 @@ const BottomBarContainer = ({
     reloadBoreholes();
   }, [reloadBoreholes]);
 
-  const onCopyBorehole = async () => {
+  const onCopyBorehole = useCallback(async () => {
     setIsBusy(true);
     const newBoreholeId = await copyBorehole(selectionModel, workgroupId);
     setIsBusy(false);
     navigate(`/${newBoreholeId}`);
-  };
+  }, [navigate, selectionModel, workgroupId]);
 
-  const onDeleteMultiple = async () => {
+  const onDeleteMultiple = useCallback(async () => {
     setIsBusy(true);
     // @ts-expect-error legacy api calls not typed
     await deleteBoreholes(selectionModel).then(() => {
       reloadBoreholes();
     });
     setIsBusy(false);
-  };
+  }, [reloadBoreholes, selectionModel]);
 
   return (
     <>

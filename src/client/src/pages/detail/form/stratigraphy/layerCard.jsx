@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ClickAwayListener } from "@mui/base";
 import { Close, Delete, Edit } from "@mui/icons-material";
 import {
   Autocomplete,
@@ -8,12 +7,13 @@ import {
   Card,
   CardActionArea,
   CircularProgress,
+  ClickAwayListener,
   IconButton,
   Skeleton,
   TextField,
   Typography,
 } from "@mui/material";
-import { formatNumberForDisplay } from "../../../../components/form/formUtils.js";
+import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { NumericFormatWithThousandSeparator } from "../../../../components/form/numericFormatWithThousandSeparator.js";
 import { EditStateContext } from "../../editStateContext.tsx";
 
@@ -199,7 +199,7 @@ const LayerCard = ({
           }}
           error={!!fromDepthErrorMessage}
           helperText={fromDepthErrorMessage}
-          onBlur={e => handleFromDepth(e.target.value)}
+          onBlur={e => handleFromDepth(parseFloatWithThousandsSeparator(e.target.value))}
           size="small"
         />
       )}
@@ -263,7 +263,7 @@ const LayerCard = ({
           }}
           error={!!toDepthErrorMessage}
           helperText={toDepthErrorMessage}
-          onBlur={e => handleToDepth(e.target.value)}
+          onBlur={e => handleToDepth(parseFloatWithThousandsSeparator(e.target.value))}
           size="small"
         />
       )}

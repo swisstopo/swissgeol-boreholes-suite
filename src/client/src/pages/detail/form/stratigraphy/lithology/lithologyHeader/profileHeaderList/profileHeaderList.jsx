@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
-import DateText from "../../../../../../../components/legacyComponents/dateText.js";
+import { formatDate } from "../../../../../../../utils.js";
 import * as Styled from "./styles.js";
 
 const ProfileHeaderList = props => {
@@ -23,9 +23,7 @@ const ProfileHeaderList = props => {
             {item.primary && <Check />}
             {item.name === null || item.name === "" ? t("common:np") : item.name}
           </Styled.ItemName>
-          <Styled.ItemDate>
-            <DateText date={item.date} />
-          </Styled.ItemDate>
+          <Styled.ItemDate>{formatDate(item.date)}</Styled.ItemDate>
         </Styled.Item>
       ))}
     </Styled.Container>
