@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
-import { reloadBorehole } from "../../../../api/borehole.ts";
+import { useReloadBoreholes } from "../../../../api/borehole.ts";
 import {
   addCompletion,
   copyCompletion,
@@ -43,6 +43,7 @@ const Completion = () => {
   });
   const [checkContentDirty, setCheckContentDirty] = useState(false);
   const [completionToBeSaved, setCompletionToBeSaved] = useState(null);
+  const reloadBoreholes = useReloadBoreholes();
 
   const resetState = () => {
     setState({
@@ -186,7 +187,7 @@ const Completion = () => {
         if (!preventReload) {
           loadData();
         }
-        reloadBorehole();
+        reloadBoreholes();
       });
     } else {
       updateCompletion(completion).then(() => {
@@ -246,7 +247,7 @@ const Completion = () => {
     setState({ ...state, switchTabTo: newTabIndex });
     deleteCompletion(state.selected.id).then(() => {
       loadData();
-      reloadBorehole();
+      reloadBoreholes();
     });
   };
 

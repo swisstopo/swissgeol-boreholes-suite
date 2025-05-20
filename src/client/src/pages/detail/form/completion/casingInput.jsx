@@ -3,7 +3,7 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
-import { reloadBorehole } from "../../../../api/borehole.ts";
+import { useReloadBoreholes } from "../../../../api/borehole.ts";
 import { addCasing, updateCasing } from "../../../../api/fetchApiV2.js";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
@@ -23,6 +23,8 @@ const CasingInput = props => {
   const { t } = useTranslation();
   const { item, parentId } = props;
   const { triggerReload } = useContext(DataCardContext);
+  const reloadBoreholes = useReloadBoreholes();
+
   useBlockNavigation();
   const formMethods = useForm({
     mode: "all",
@@ -70,7 +72,7 @@ const CasingInput = props => {
         ...data,
       }).then(() => {
         triggerReload();
-        reloadBorehole();
+        reloadBoreholes();
       });
     } else {
       updateCasing({
