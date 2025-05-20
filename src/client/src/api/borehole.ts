@@ -76,7 +76,7 @@ export interface BoreholeV2 {
   updatedById: number;
   updatedBy: User;
   stratigraphies: Stratigraphy[] | null;
-  locked: boolean | null;
+  locked: Date | string | null;
   lockedById: number | null;
   completions: Completion[] | null;
   observations: Observation[] | null;

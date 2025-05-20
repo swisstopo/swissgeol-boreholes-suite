@@ -42,10 +42,11 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
 
   const toggleEditing = (editing: boolean) => {
     if (!currentUser) return;
+    borehole.workflow = null;
     if (!editing) {
-      updateBorehole({ ...borehole, locked: false, lockedById: currentUser.id });
+      updateBorehole({ ...borehole, locked: null, lockedById: null });
     } else {
-      updateBorehole({ ...borehole, locked: true, lockedById: null });
+      updateBorehole({ ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id });
     }
     setEditingEnabled(editing);
   };
