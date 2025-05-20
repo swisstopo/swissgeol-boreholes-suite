@@ -44,7 +44,10 @@ const BottomBar = ({
   const userIsEditor = user.data.roles.includes("EDIT");
   const auth = useAuth();
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
-  const enabledWorkgroups = useMemo(() => user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT")), [user.data.workgroups]);
+  const enabledWorkgroups = useMemo(
+    () => user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT")),
+    [user.data.workgroups],
+  );
 
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
     setCopyPromptOpen(true);
