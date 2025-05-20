@@ -144,6 +144,7 @@ export const WorkgroupDetail: FC = () => {
               onSortModelChange={setWorkgroupDetailTableSortModel}
               dataCy={"workgroup-users-table"}
               rowAutoHeight={true}
+              sx={{ border: "none" }}
             />
           )}
         </CardContent>

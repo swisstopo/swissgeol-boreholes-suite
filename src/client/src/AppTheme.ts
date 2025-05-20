@@ -470,6 +470,16 @@ export const theme = createTheme({
         notched: false,
       },
     },
+    MuiCheckbox: {
+      styleOverrides: {
+        colorPrimary: {
+          color: themePalette.primary.main,
+          "&.Mui-checked, &.MuiCheckbox-indeterminate": {
+            color: themePalette.background.menuItemActive,
+          },
+        },
+      },
+    },
     MuiCardHeader: {
       styleOverrides: {
         root: {
@@ -581,6 +591,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           cursor: "pointer",
+          borderColor: themePalette.border.darker,
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: themePalette.border.light,
           },
@@ -588,10 +599,27 @@ export const theme = createTheme({
             {
               outline: "none !important",
             },
+          "& .MuiDataGrid-columnHeader--alignCenter .MuiDataGrid-columnHeaderTitleContainer": {
+            justifyContent: "flex-start",
+          },
+          "& .MuiDataGrid-columnHeaderCheckbox .MuiDataGrid-columnHeaderTitleContainer": {
+            justifyContent: "center",
+          },
           "& .MuiDataGrid-cell": {
             minHeight: "44px",
             display: "flex",
             alignItems: "center",
+            borderColor: themePalette.border.darker,
+
+            "& .MuiInputBase-input, .MuiTypography-root": {
+              fontSize: "16px",
+              fontWeight: 400,
+            },
+          },
+          "& .MuiDataGrid-cell--editable": {
+            padding: "0 !important",
+            backgroundColor: "transparent !important",
+            boxShadow: "none !important",
           },
           "& .MuiDataGrid-toolbarContainer": {
             paddingLeft: "2px !important",

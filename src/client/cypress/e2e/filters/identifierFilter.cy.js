@@ -1,5 +1,10 @@
 import { addItem, saveWithSaveBar } from "../helpers/buttonHelpers";
-import { checkAllVisibleRows, verifyPaginationText } from "../helpers/dataGridHelpers";
+import {
+  checkAllVisibleRows,
+  hasPagination,
+  showTableAndWaitForData,
+  verifyPaginationText,
+} from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 import {
   getElementByDataCy,
@@ -30,7 +35,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     setSelect("borehole_identifier", 0);
 
-    verifyPaginationText("1–1 of 1");
+    hasPagination(false);
     // click reset label
     cy.get('[data-cy="reset-filter-button"]').click();
     verifyPaginationText("1–100 of 1627");
@@ -62,7 +67,8 @@ describe("Tests for filtering data by identifier.", () => {
     getElementByDataCy("show-all-fields-switch").click();
 
     setSelect("borehole_identifier", 0);
-    verifyPaginationText("1–2 of 2");
+    showTableAndWaitForData();
+    hasPagination(false);
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 

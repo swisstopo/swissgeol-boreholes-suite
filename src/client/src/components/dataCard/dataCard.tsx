@@ -20,7 +20,6 @@ interface DataCardBoxProps extends BoxProps {
 
 export const DataCardContainer: FC<DataCardGridProps> = ({ children, ...props }) => {
   const StyledTextField = styled(Grid)(() => ({
-    flex: "1 0 0",
     alignContent: "flex-start",
     width: "100% !important",
     borderWidth: "1px",
