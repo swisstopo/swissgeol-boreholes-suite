@@ -123,8 +123,6 @@ const LayerCard = ({
       setToDepth(newToDepth);
       const errors = [];
       if (newToDepth === "" || isNaN(newToDepth)) {
-        console.log("hey invalid");
-        console.log(newToDepth);
         errors.push(t("errorInvalidEntry"));
       } else {
         if (newToDepth > maxToDepth) {

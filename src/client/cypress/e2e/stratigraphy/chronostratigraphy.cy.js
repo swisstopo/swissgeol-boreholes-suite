@@ -4,6 +4,7 @@ import {
   createStratigraphy,
   goToRouteAndAcceptTerms,
   startBoreholeEditing,
+  stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
 describe("Tests for the chronostratigraphy editor.", () => {
