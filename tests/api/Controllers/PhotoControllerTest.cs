@@ -291,7 +291,7 @@ public class PhotoControllerTest
     }
 
     [TestMethod]
-    public async Task DeleteFailsForLockedBorehole()
+    public async Task DeleteFailsWithoutPermissions()
     {
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
@@ -362,7 +362,7 @@ public class PhotoControllerTest
     }
 
     [TestMethod]
-    public async Task UpdateFailsForLockedBorehole()
+    public async Task UpdateFailsWithoutPermissions()
     {
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))

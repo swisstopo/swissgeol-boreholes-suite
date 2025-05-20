@@ -339,7 +339,7 @@ public class BoreholeFileControllerTest
     public async Task DetachFromBoreholeWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.DetachFromBorehole(123, 0));
 
     [TestMethod]
-    public async Task DetachFailsForLockedBorehole()
+    public async Task DetachFailsWithoutPermission()
     {
         // Get borehole Id
         var firstBoreholeId = context.Boreholes.First().Id;
@@ -389,7 +389,7 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
-    public async Task UpdateFailsForLockedBorehole()
+    public async Task UpdateFailsWithoutPermission()
     {
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
