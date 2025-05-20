@@ -7,7 +7,7 @@ import { ChevronRight } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { Role, RolePriority, User } from "../../../../api/apiInterfaces.ts";
-import { reloadBorehole } from "../../../../api/borehole.ts";
+import { useReloadBoreholes } from "../../../../api/borehole.ts";
 import { useUsers } from "../../../../api/user.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { CancelButton } from "../../../../components/buttons/buttons.tsx";
@@ -27,6 +27,7 @@ export const RequestReviewDialog: FC<RequestReviewDialogProps> = ({ open, setOpe
   const formMethods = useForm({ mode: "all" });
   const borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const queryClient = useQueryClient();
+  const reloadBoreholes = useReloadBoreholes();
 
   const getUsersWithPrivilege = (role: Role): User[] => {
     if (!users) return [];
@@ -51,7 +52,7 @@ export const RequestReviewDialog: FC<RequestReviewDialogProps> = ({ open, setOpe
     formMethods.reset();
     await sendWorkflowChangeRequest(workflowChangeRequest);
     queryClient.invalidateQueries({ queryKey: [workflowQueryKey] });
-    reloadBorehole();
+    reloadBoreholes();
   };
 
   const cancel = () => {

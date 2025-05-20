@@ -3,7 +3,7 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-import { reloadBorehole } from "../../../../../api/borehole.ts";
+import { useReloadBoreholes } from "../../../../../api/borehole.ts";
 import { useDomains } from "../../../../../api/fetchApiV2.js";
 import { AddButton } from "../../../../../components/buttons/buttons.tsx";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext.tsx";
@@ -32,6 +32,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   const { triggerReload } = useContext(DataCardContext);
   useBlockNavigation();
   const domains = useDomains();
+  const reloadBoreholes = useReloadBoreholes();
 
   const formMethods = useForm<FieldMeasurement>({
     mode: "all",
@@ -55,7 +56,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
         ...data,
       }).then(() => {
         triggerReload();
-        reloadBorehole();
+        reloadBoreholes();
       });
     } else {
       updateFieldMeasurement({

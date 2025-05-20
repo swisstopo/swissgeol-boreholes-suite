@@ -6,7 +6,6 @@ import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { WorkflowV2 } from "../pages/detail/form/workflow/workflow.ts";
-import { queryClient as globalQueryClient } from "../queryClient.ts";
 import { Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -162,7 +161,7 @@ export const useBoreholeMutations = () => {
     mutationFn: async (boreholeId: number) => {
       return await deleteBorehole(boreholeId);
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: [boreholeQueryKey],
       });
@@ -177,6 +176,9 @@ export const useBoreholeMutations = () => {
   };
 };
 
-export const reloadBorehole = () => {
-  globalQueryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+export const useReloadBoreholes = () => {
+  const queryClient = useQueryClient();
+  return () => {
+    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+  };
 };

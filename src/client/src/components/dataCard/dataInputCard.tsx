@@ -1,7 +1,7 @@
 import { ReactNode, useContext } from "react";
 import { FieldValues, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { DevTool } from "../../../hookformDevtools";
-import { reloadBorehole } from "../../api/borehole.ts";
+import { useReloadBoreholes } from "../../api/borehole.ts";
 import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
 import { useSaveOnCtrlS } from "../../hooks/useSaveOnCtrlS";
 import { FormContainer } from "../form/form";
@@ -32,6 +32,7 @@ export const DataInputCard = <T extends FieldValues>({
   useBlockNavigation();
   const formMethods = useForm<T>({ mode: "all" });
   const { formState, handleSubmit, control } = formMethods;
+  const reloadBoreholes = useReloadBoreholes();
 
   const submitForm: SubmitHandler<T> = data => {
     data = prepareFormDataForSubmit(data);
@@ -40,7 +41,7 @@ export const DataInputCard = <T extends FieldValues>({
         ...data,
       }).then(() => {
         triggerReload();
-        reloadBorehole();
+        reloadBoreholes();
       });
     } else {
       updateData({

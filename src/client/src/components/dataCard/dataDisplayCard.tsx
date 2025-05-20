@@ -1,6 +1,6 @@
 import { ReactNode, useContext } from "react";
 import { Trash2 } from "lucide-react";
-import { reloadBorehole } from "../../api/borehole.ts";
+import { useReloadBoreholes } from "../../api/borehole.ts";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
 import { FormContainer } from "../form/form";
@@ -20,6 +20,7 @@ export const DataDisplayCard = <T extends DataCardEntity>({ item, deleteData, ch
   const { switchToCard } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(EditStateContext);
+  const reloadBoreholes = useReloadBoreholes();
 
   return (
     <>
@@ -41,7 +42,7 @@ export const DataDisplayCard = <T extends DataCardEntity>({ item, deleteData, ch
                     if (item?.id) {
                       deleteData(item.id).then(() => {
                         triggerReload();
-                        reloadBorehole();
+                        reloadBoreholes();
                       });
                     }
                   },

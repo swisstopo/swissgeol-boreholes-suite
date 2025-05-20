@@ -3,7 +3,7 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-import { reloadBorehole } from "../../../../../api/borehole.ts";
+import { useReloadBoreholes } from "../../../../../api/borehole.ts";
 import { useDomains } from "../../../../../api/fetchApiV2.ts";
 import { AddButton } from "../../../../../components/buttons/buttons";
 import { Codelist } from "../../../../../components/Codelist";
@@ -27,6 +27,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
   useBlockNavigation();
   const domains = useDomains();
+  const reloadBoreholes = useReloadBoreholes();
 
   const formMethods = useForm<Hydrotest>({
     mode: "all",
@@ -52,7 +53,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
         ...hydrotest,
       }).then(() => {
         triggerReload();
-        reloadBorehole();
+        reloadBoreholes();
       });
     } else {
       updateHydrotest({
