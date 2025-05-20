@@ -60,7 +60,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
       setTimeout(() => setShowSaveFeedback(false), 4000);
       setHasChanges(false);
     }
-  }, []);
+  }, [reloadBoreholes]);
 
   const registerResetHandler = useCallback((handler: ResetHandler) => {
     resetHandlerRef.current = handler;
