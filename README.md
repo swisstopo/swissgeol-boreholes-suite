@@ -14,6 +14,8 @@ Folgende Komponenten müssen auf dem Entwicklungsrechner installiert sein:
 ✔️ Node.js 20 LTS  
 ✔️ Optional, um die Onlinehilfe zu erstellen: [MkDocs](https://www.mkdocs.org/)
 
+Um die [swissgeol-ui-core](https://github.com/swisstopo/swissgeol-ui-core) npm libraries lokale installieren zu können muss ein Github Access Token erstellt werden und in den Umgebungsvariablen des Users als `GITHUB_TOKEN` gespeichert werden. Der Token muss die Berechtigung `read:packages` beinhalten.
+
 ### Entwicklung mit Visual Studio 2022
 
 Es wird eine lokale Installation von Node.js benötigt. Diese kann mit Visual Studio 2022 oder mit [nvm](https://github.com/coreybutler/nvm-windows/releases) installiert werden, um mehrere Node Version zu verwalten. Anschliessend kann mit `nvm use` die im Projekt verwendete Node Version aktiviert werden.
@@ -73,7 +75,8 @@ Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten �
 
 - Das UI-Design ist in [Figma](https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/SwissGeol?node-id=7390-40928&t=DemUCUzYlysJ5lB4-0) definiert. Unter Pages/Screens sind die definitiven Designs zu finden.
 - Standardmässig werden die [Lucid Icons](https://lucide.dev/icons/) verwendet. Custom-Icons können aus [Figma](https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/SwissGeol?node-id=7390-40928&t=DemUCUzYlysJ5lB4-0) kopiert und als SVG eingebunden werden. Um die Icons farblich stylen zu können, müssen `fill` und `stroke` wie folgt angepasst werden `fill="currentColor" stroke="currentColor"`.
-- [MUI](https://mui.com/) wird als UI-Component library verwendet. Allgemeine Styles werden im [AppTheme.ts](./src/client/src/AppTheme.ts) definiert und diese Styles wo immer möglich verwendet. [MUI Styled Components](https://mui.com/system/styled/) im gleichen File mit der Komponente definieren, sobald die Styles mehrfach gebraucht werden. Übergreifende Styled Components werden in [styledComponents.ts](./src/client/src/components/styledComponents.ts) definiert. Für Abstände (margins, paddings, gaps etc.) sollten möglichst [MUI Spacings](https://mui.com/system/spacing/) verwendet werden.
+- Wo mögliche sollten UI-Komponenten der [swissgeol-ui-core](https://github.com/swisstopo/swissgeol-ui-core) und [swissgeol-ui-core-react](https://github.com/swisstopo/swissgeol-ui-core/pkgs/npm/swissgeol-ui-core-react) libraries verwendet werden.
+- Sind keine Komponente in den Swissgeol UI libraries vorhanden wir [MUI](https://mui.com/) als UI-Component library verwendet. Allgemeine Styles werden im [AppTheme.ts](./src/client/src/AppTheme.ts) definiert und diese Styles wo immer möglich verwendet. [MUI Styled Components](https://mui.com/system/styled/) im gleichen File mit der Komponente definieren, sobald die Styles mehrfach gebraucht werden. Übergreifende Styled Components werden in [styledComponents.ts](./src/client/src/components/styledComponents.ts) definiert. Für Abstände (margins, paddings, gaps etc.) sollten möglichst [MUI Spacings](https://mui.com/system/spacing/) verwendet werden.
 
 #### Typescript
 
