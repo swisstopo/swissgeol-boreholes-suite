@@ -77,12 +77,16 @@ describe("Tests for the lithostratigraphy editor.", () => {
     cy.get('[data-cy="layer-card"] [data-testid="EditIcon"]').click();
     cy.get('[data-cy="layer-card"] :nth-child(2) > .MuiAutocomplete-root').click();
 
-    // Ensure clone and delete buttons in header are disabled for lithostratigraphy.
+    // ensure clone and delete buttons in header are disabled for lithostratigraphy.
     cy.get('[data-cy="clone-and-delete-buttons"]').should("not.exist");
 
     cy.get('.MuiPaper-elevation [role="listbox"]').find('[role="option"]').eq(1).click();
     cy.wait("@lithostratigraphy_PUT");
-    cy.get('[data-cy="layer-card"] [data-testid="CloseIcon"]').click();
+
+    // edit to depth with value containing thousand separator
+    cy.get('[data-cy="layer-card"] :nth-child(2) > .MuiInputBase-input').last().type("5000");
+    cy.contains("Formation").click(); // click anywhere to trigger on blur on input
+    cy.wait("@lithostratigraphy_PUT");
 
     // delete lithostratigraphy
     cy.get('[data-cy="layer-card"] [data-testid="DeleteIcon"]').click();
