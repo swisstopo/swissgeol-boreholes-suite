@@ -15,6 +15,7 @@
 ### Fixed
 - Boreholes were always copied to the default workgroup instead of the selected workgroup.
 - _view-sync_ failed if the source database had a default workgroup named `Default`.
+- Depths with thousand separators could were not input in lithostratigraphy and chronostratigrapy.
 
 ## v2.1.1162 - 2025-04-10
 
