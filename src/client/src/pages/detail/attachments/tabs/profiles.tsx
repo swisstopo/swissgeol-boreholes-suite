@@ -5,7 +5,7 @@ import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui
 import { detachFile, downloadFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces";
 import { theme } from "../../../../AppTheme.ts";
-import { DateText } from "../../../../components/dateText.tsx";
+import { formatDate } from "../../../../utils.ts";
 import { DetailContext } from "../../detailContext";
 import { AttachmentContent } from "../attachmentsContent";
 import { AttachmentWithPublicState, useAttachments } from "../useAttachments.tsx";
@@ -148,8 +148,8 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         field: "created",
         headerName: t("uploaded"),
         resizable: false,
-        width: 150,
-        renderCell: ({ row }) => <DateText date={row.attached} hours />,
+        width: 160,
+        renderCell: ({ row }) => formatDate(row.attached, true),
       },
       {
         field: "createdBy",

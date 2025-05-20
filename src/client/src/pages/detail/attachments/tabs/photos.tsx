@@ -8,7 +8,7 @@ import {
   updatePhotos,
   uploadPhoto,
 } from "../../../../api/fetchApiV2.ts";
-import { DateText } from "../../../../components/dateText.tsx";
+import { formatDate } from "../../../../utils.ts";
 import { DetailContext } from "../../detailContext.tsx";
 import { AttachmentContent } from "../attachmentsContent.tsx";
 import { AttachmentWithPublicState, useAttachments } from "../useAttachments.tsx";
@@ -65,8 +65,8 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
         field: "created",
         headerName: t("uploaded"),
         resizable: false,
-        width: 150,
-        renderCell: ({ row }) => <DateText date={row.created} hours />,
+        width: 160,
+        renderCell: ({ row }) => formatDate(row.created, true),
       },
       {
         field: "createdBy",

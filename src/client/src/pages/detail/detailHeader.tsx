@@ -14,10 +14,10 @@ import {
   ExportButton,
   ReturnButton,
 } from "../../components/buttons/buttons.tsx";
-import { DateText } from "../../components/dateText.tsx";
 import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
+import { formatDate } from "../../utils.ts";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
@@ -125,7 +125,7 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
           <Typography variant="h2"> {borehole?.name}</Typography>
           {!auth.anonymousModeEnabled && (
             <Typography variant={"subtitle2"}>
-              {t("lastUpdated")}: <DateText date={borehole?.updated} /> {t("by")} {borehole?.updatedBy?.name}
+              {t("lastUpdated")}: {formatDate(borehole?.updated)} {t("by")} {borehole?.updatedBy?.name}
             </Typography>
           )}
         </Stack>

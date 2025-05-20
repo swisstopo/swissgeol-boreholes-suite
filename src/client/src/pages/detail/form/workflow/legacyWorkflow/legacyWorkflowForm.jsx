@@ -31,7 +31,7 @@ import {
 import { theme } from "../../../../../AppTheme.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { CancelButton } from "../../../../../components/buttons/buttons.js";
-import { DateText } from "../../../../../components/dateText.js";
+import DateText from "../../../../../components/legacyComponents/dateText.js";
 import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
 import CommentArea from "./commentArea.jsx";
 
@@ -182,7 +182,7 @@ class LegacyWorkflowForm extends React.Component {
                       style={{
                         fontSize: "0.8em",
                       }}>
-                      <DateText date={flow.finished} fromNow /> - <DateText date={flow.finished} hours />
+                      <DateText date={flow.finished} fromnow /> - <DateText date={flow.finished} hours />
                     </div>
                     <div
                       style={{
