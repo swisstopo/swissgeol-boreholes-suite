@@ -13,7 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { formatNumberForDisplay } from "../../../../components/form/formUtils.js";
+import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { NumericFormatWithThousandSeparator } from "../../../../components/form/numericFormatWithThousandSeparator.js";
 import { DetailContext } from "../../detailContext.tsx";
 
@@ -199,7 +199,7 @@ const LayerCard = ({
           }}
           error={!!fromDepthErrorMessage}
           helperText={fromDepthErrorMessage}
-          onBlur={e => handleFromDepth(e.target.value)}
+          onBlur={e => handleFromDepth(parseFloatWithThousandsSeparator(e.target.value))}
           size="small"
         />
       )}
@@ -263,7 +263,7 @@ const LayerCard = ({
           }}
           error={!!toDepthErrorMessage}
           helperText={toDepthErrorMessage}
-          onBlur={e => handleToDepth(e.target.value)}
+          onBlur={e => handleToDepth(parseFloatWithThousandsSeparator(e.target.value))}
           size="small"
         />
       )}
