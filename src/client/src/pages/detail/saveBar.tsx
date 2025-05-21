@@ -29,6 +29,7 @@ export const SaveBar = () => {
       direction="row"
       alignItems="center"
       justifyContent="flex-end"
+      data-cy="save-bar"
       p={1}
       sx={{
         boxShadow: theme.shadows[2],

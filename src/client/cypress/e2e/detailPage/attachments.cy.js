@@ -164,6 +164,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // reset test data
       deleteBorehole(boreholeId);
+      stopBoreholeEditing();
     });
   });
 
@@ -219,6 +220,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // reset test data
       deleteBorehole(boreholeId);
+      stopBoreholeEditing();
     });
   });
 

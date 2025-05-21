@@ -37,6 +37,7 @@ describe("Test for the borehole form.", () => {
     goToRouteAndAcceptTerms(`/`);
     // create boreholes
     newEditableBorehole().as("borehole_id");
+    getElementByDataCy("save-bar").should("be.visible");
 
     // fills and evaluates all mui dropdowns on location tab (identifiers are tested separately)
     setSelect("restrictionId", 2);
@@ -100,7 +101,11 @@ describe("Test for the borehole form.", () => {
     createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/borehole`);
+      getElementByDataCy("save-bar").should("not.be.visible");
       startBoreholeEditing();
+      getElementByDataCy("save-bar").should("be.visible");
+
+      evaluateInput("totalDepth", "");
 
       setSelect("purposeId", 1);
       setSelect("typeId", 1);
