@@ -25,6 +25,12 @@ const failFlakyTests = false; // Set this to true to fail test run if at least o
 let testFailures = [];
 
 afterEach(function () {
+  cy.get("body").then($body => {
+    if ($body.find('[data-cy="stop-editing-button"]').length) {
+      cy.get('[data-cy="stop-editing-button"]').click();
+      cy.wait("@update-borehole");
+    }
+  });
   if (this.currentTest.state === "failed") {
     testFailures.push(this.currentTest.fullTitle());
   }
