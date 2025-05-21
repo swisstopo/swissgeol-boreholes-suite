@@ -1,4 +1,14 @@
-import { clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers.js";
+import {
+  BoreholeTab,
+  isActiveMenuItem,
+  isActiveTab,
+  isInactiveBoreholeTab,
+  isInactiveTab,
+  isMenuItemWithContent,
+  isMenuItemWithoutContent,
+  navigateInSidebar,
+  SidebarMenuItem,
+} from "../helpers/navigationHelpers.js";
 import {
   checkElementColorByDataCy,
   createBackfill,
@@ -14,8 +24,6 @@ import {
   createWateringress,
   getElementByDataCy,
   goToRouteAndAcceptTerms,
-  navigateToBoreholeTab,
-  returnToOverview,
   selectInputFile,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -33,47 +41,31 @@ describe("Test for the detail page side navigation.", () => {
     });
 
     // Check that some menu items are enabled (not greyed out)
-    checkElementColorByDataCy("location-menu-item", "rgb(153, 25, 30)");
-    checkElementColorByDataCy("borehole-menu-item", "rgb(28, 40, 52)");
-    checkElementColorByDataCy("status-menu-item", "rgb(28, 40, 52)");
+    isActiveMenuItem(SidebarMenuItem.location, true);
+    isMenuItemWithContent(SidebarMenuItem.borehole);
+    isMenuItemWithoutContent(SidebarMenuItem.stratigraphy);
+    isMenuItemWithoutContent(SidebarMenuItem.completion);
+    isMenuItemWithoutContent(SidebarMenuItem.hydrogeology);
+    isMenuItemWithoutContent(SidebarMenuItem.attachments);
+    isMenuItemWithContent(SidebarMenuItem.status);
 
     // Check borehole content tabs
-    cy.get("@borehole_id").then(id => {
-      navigateToBoreholeTab(id);
-    });
-    const boreholeContentTabs = ["sections-tab", "geometry-tab"];
-    boreholeContentTabs.forEach(item => {
-      checkElementColorByDataCy(item, "rgb(130, 142, 154)");
-    });
-
-    // Check greyed-out main menu items
-    const mainMenuItems = [
-      "stratigraphy-menu-item",
-      "completion-menu-item",
-      "hydrogeology-menu-item",
-      "attachments-menu-item",
-    ];
-    mainMenuItems.forEach(item => {
-      checkElementColorByDataCy(item, "rgb(130, 142, 154)");
-    });
+    navigateInSidebar(SidebarMenuItem.borehole);
+    isInactiveBoreholeTab(BoreholeTab.sections, false);
+    isInactiveBoreholeTab(BoreholeTab.geometry, false);
 
     // Expand Stratigraphy menu and check its child items
-    getElementByDataCy("stratigraphy-menu-item").click();
-    ["lithology-menu-item", "chronostratigraphy-menu-item", "lithostratigraphy-menu-item"].forEach(item => {
-      checkElementColorByDataCy(item, "rgb(130, 142, 154)");
-    });
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
+    isMenuItemWithoutContent(SidebarMenuItem.lithology);
+    isMenuItemWithoutContent(SidebarMenuItem.chronostratigraphy);
+    isMenuItemWithoutContent(SidebarMenuItem.lithostratigraphy);
 
     // Expand Hydrogeology menu and check its child items
-    getElementByDataCy("hydrogeology-menu-item").click();
-    cy.wait("@codelist_GET");
-    [
-      "wateringress-menu-item",
-      "groundwaterlevelmeasurement-menu-item",
-      "fieldmeasurement-menu-item",
-      "hydrotest-menu-item",
-    ].forEach(item => {
-      checkElementColorByDataCy(item, "rgb(130, 142, 154)");
-    });
+    navigateInSidebar(SidebarMenuItem.hydrogeology);
+    isMenuItemWithoutContent(SidebarMenuItem.waterIngress);
+    isMenuItemWithoutContent(SidebarMenuItem.groundwaterLevelMeasurement);
+    isMenuItemWithoutContent(SidebarMenuItem.fieldMeasurement);
+    isMenuItemWithoutContent(SidebarMenuItem.hydrotest);
 
     // Add stratigraphy and Lithology
     cy.get("@borehole_id").then(boreholeId => {
@@ -85,19 +77,14 @@ describe("Test for the detail page side navigation.", () => {
     });
 
     // Add chronostratigraphy
-    getElementByDataCy("stratigraphy-menu-item").click();
-    getElementByDataCy("chronostratigraphy-menu-item").click();
-    cy.wait("@get-layers-by-profileId");
-    cy.wait("@chronostratigraphy_GET");
+    navigateInSidebar(SidebarMenuItem.chronostratigraphy);
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
     cy.wait("@chronostratigraphy_POST");
 
     // Add lithostratigraphy
-    getElementByDataCy("lithostratigraphy-menu-item").click();
-    cy.wait("@get-layers-by-profileId");
-    cy.wait("@lithostratigraphy_GET");
+    navigateInSidebar(SidebarMenuItem.lithostratigraphy);
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
@@ -109,7 +96,7 @@ describe("Test for the detail page side navigation.", () => {
     });
 
     // Check completions content tabs and verify that they are greyed out
-    getElementByDataCy("completion-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.completion);
     ["completion-content-tab-instrumentation", "completion-content-tab-backfill"].forEach(item => {
       checkElementColorByDataCy(item, "rgb(130, 142, 154)");
     });
@@ -136,45 +123,35 @@ describe("Test for the detail page side navigation.", () => {
     });
 
     // Add attachment
-    getElementByDataCy("attachments-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.attachments);
     selectInputFile("SKIPBOX.pdf", "application/pdf");
 
-    // Navigate back to overview and verify enabled items
-    getElementByDataCy("location-menu-item").click();
-    returnToOverview();
-    showTableAndWaitForData();
-    clickOnRowWithText("AAA_HIPPOPOTHAMUS");
-
     // Verify that previously greyed-out items are now enabled
-    // Check main menu items
-    mainMenuItems.forEach(item => {
-      checkElementColorByDataCy(item, "rgb(28, 40, 52)");
-    });
+    isMenuItemWithContent(SidebarMenuItem.stratigraphy);
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
+    isMenuItemWithContent(SidebarMenuItem.lithology);
+    isMenuItemWithContent(SidebarMenuItem.chronostratigraphy);
+    isMenuItemWithContent(SidebarMenuItem.lithostratigraphy);
 
-    // Expand stratigraphy menu and check its child items
-    getElementByDataCy("stratigraphy-menu-item").click();
-    ["lithology-menu-item", "chronostratigraphy-menu-item", "lithostratigraphy-menu-item"].forEach(item => {
-      checkElementColorByDataCy(item, "rgb(28, 40, 52)");
-    });
+    isMenuItemWithContent(SidebarMenuItem.completion);
+
+    isMenuItemWithContent(SidebarMenuItem.hydrogeology);
+    navigateInSidebar(SidebarMenuItem.hydrogeology);
+    isMenuItemWithContent(SidebarMenuItem.waterIngress);
+    isMenuItemWithContent(SidebarMenuItem.groundwaterLevelMeasurement);
+    isMenuItemWithContent(SidebarMenuItem.fieldMeasurement);
+    isMenuItemWithContent(SidebarMenuItem.hydrotest);
+
+    isActiveMenuItem(SidebarMenuItem.attachments, true);
 
     // Expand completion menu and check content tabs
-    getElementByDataCy("completion-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.completion);
+    isActiveTab("completion-content-tab-casing", true);
+    cy.wait("@get-casings-by-completionId");
     ["completion-content-tab-instrumentation", "completion-content-tab-backfill"].forEach(item => {
-      checkElementColorByDataCy(item, "rgb(28, 40, 52)");
+      isInactiveTab(item, true);
     });
     getElementByDataCy("completion-content-tab-backfill").click();
-    checkElementColorByDataCy("completion-content-tab-casing", "rgb(28, 40, 52)");
-
-    // Expand hydrogeology menu and check its child items
-    getElementByDataCy("hydrogeology-menu-item").click();
-    cy.wait("@codelist_GET");
-    [
-      "wateringress-menu-item",
-      "groundwaterlevelmeasurement-menu-item",
-      "fieldmeasurement-menu-item",
-      "hydrotest-menu-item",
-    ].forEach(item => {
-      checkElementColorByDataCy(item, "rgb(28, 40, 52)");
-    });
+    isInactiveTab("completion-content-tab-casing", true);
   });
 });

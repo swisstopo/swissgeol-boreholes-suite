@@ -16,6 +16,7 @@ import {
   setYesNoSelect,
   toggleMultiSelect,
 } from "../helpers/formHelpers.js";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   getElementByDataCy,
   goToRouteAndAcceptTerms,
@@ -244,8 +245,8 @@ describe("Tests for the layer form.", () => {
     waitForTableData();
     clickOnRowWithText("Andres Miller");
     startBoreholeEditing();
-    getElementByDataCy("stratigraphy-menu-item").click();
-    getElementByDataCy("lithology-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
+    navigateInSidebar(SidebarMenuItem.lithology);
     getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
     clickOnLayerAndWaitForForm("8");
     resetUpdatedValues();
@@ -296,8 +297,8 @@ describe("Tests for the layer form.", () => {
   it("creates a layer and fills all dropdowns with multiple selection.", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
-    getElementByDataCy("stratigraphy-menu-item").click();
-    getElementByDataCy("lithology-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
+    navigateInSidebar(SidebarMenuItem.lithology);
     addItem("addStratigraphy");
     cy.wait("@stratigraphy_POST");
     getElementByDataCy("add-layer-icon").click();
@@ -411,8 +412,8 @@ describe("Tests for the layer form.", () => {
     clickOnNextPage();
     waitForTableData();
     clickOnRowWithText("Anibal Conroy");
-    getElementByDataCy("stratigraphy-menu-item").click();
-    getElementByDataCy("lithology-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
+    navigateInSidebar(SidebarMenuItem.lithology);
 
     // click on layer and verify form values
     getElementByDataCy("styled-layer-8").should("contain", "gneiss, sedimentary, clayey gravel, medium, brown, beige");
@@ -440,8 +441,8 @@ describe("Tests for the layer form.", () => {
 
   it("saves zero values in number inputs", () => {
     goToRouteAndAcceptTerms(`/1001947`);
-    getElementByDataCy("stratigraphy-menu-item").click();
-    getElementByDataCy("lithology-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
+    navigateInSidebar(SidebarMenuItem.lithology);
     startBoreholeEditing();
 
     const evaluateInitialDepthValues = () => {

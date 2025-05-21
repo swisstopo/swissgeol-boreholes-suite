@@ -10,13 +10,11 @@ import {
   setSelect,
   setYesNoSelect,
 } from "../helpers/formHelpers";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
-  getElementByDataCy,
   goToRouteAndAcceptTerms,
   handlePrompt,
-  navigateToBoreholeTab,
-  navigateToLocationTab,
   newEditableBorehole,
   returnToOverview,
   startBoreholeEditing,
@@ -60,40 +58,38 @@ describe("Test for the borehole form.", () => {
 
     saveWithSaveBar();
     // navigate away and back to check if values are saved
-    cy.get("@borehole_id").then(id => {
-      navigateToBoreholeTab(id);
-      navigateToLocationTab(id);
-      evaluateSelect("restrictionId", "20111003");
-      evaluateYesNoSelect("nationalInterest", "Not specified");
-      evaluateSelect("originalReferenceSystem", "20104001");
-      evaluateSelect("locationPrecisionId", "20113002");
-      evaluateSelect("elevationPrecisionId", "20114002");
-      evaluateSelect("referenceElevationPrecisionId", "20114002");
-      evaluateSelect("referenceElevationTypeId", "20117004");
+    navigateInSidebar(SidebarMenuItem.borehole);
+    navigateInSidebar(SidebarMenuItem.location);
+    evaluateSelect("restrictionId", "20111003");
+    evaluateYesNoSelect("nationalInterest", "Not specified");
+    evaluateSelect("originalReferenceSystem", "20104001");
+    evaluateSelect("locationPrecisionId", "20113002");
+    evaluateSelect("elevationPrecisionId", "20114002");
+    evaluateSelect("referenceElevationPrecisionId", "20114002");
+    evaluateSelect("referenceElevationTypeId", "20117004");
 
-      // fill all dropdowns on borehole tab
-      navigateToBoreholeTab(id);
-      setSelect("purposeId", 1);
-      setSelect("typeId", 1);
-      setSelect("depthPrecisionId", 1);
-      setSelect("statusId", 1);
+    // fill all dropdowns on borehole tab
+    navigateInSidebar(SidebarMenuItem.borehole);
+    setSelect("purposeId", 1);
+    setSelect("typeId", 1);
+    setSelect("depthPrecisionId", 1);
+    setSelect("statusId", 1);
 
-      evaluateSelect("purposeId", "22103001");
-      evaluateSelect("typeId", "20101001");
-      evaluateSelect("depthPrecisionId", "22108001");
-      evaluateSelect("statusId", "22104001");
+    evaluateSelect("purposeId", "22103001");
+    evaluateSelect("typeId", "20101001");
+    evaluateSelect("depthPrecisionId", "22108001");
+    evaluateSelect("statusId", "22104001");
 
-      saveWithSaveBar();
+    saveWithSaveBar();
 
-      // navigate away and back to check if values are saved
-      navigateToLocationTab(id);
-      navigateToBoreholeTab(id);
+    // navigate away and back to check if values are saved
+    navigateInSidebar(SidebarMenuItem.location);
+    navigateInSidebar(SidebarMenuItem.borehole);
 
-      evaluateSelect("purposeId", "22103001");
-      evaluateSelect("typeId", "20101001");
-      evaluateSelect("depthPrecisionId", "22108001");
-      evaluateSelect("statusId", "22104001");
-    });
+    evaluateSelect("purposeId", "22103001");
+    evaluateSelect("typeId", "20101001");
+    evaluateSelect("depthPrecisionId", "22108001");
+    evaluateSelect("statusId", "22104001");
   });
 
   it("Fills all inputs on borehole tab and saves", () => {
@@ -118,14 +114,14 @@ describe("Test for the borehole form.", () => {
       setInput("remarks", "This is a test remark");
 
       // navigate away is blocked before saving
-      getElementByDataCy("location-menu-item").click();
+      navigateInSidebar(SidebarMenuItem.location);
 
       const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
       handlePrompt(messageUnsavedChanges, "cancel");
 
       saveWithSaveBar();
-      navigateToLocationTab(id);
-      navigateToBoreholeTab(id);
+      navigateInSidebar(SidebarMenuItem.location);
+      navigateInSidebar(SidebarMenuItem.borehole);
       evaluateSelect("lithostratigraphyTopBedrockId", "15300583");
       evaluateSelect("chronostratigraphyTopBedrockId", "15001001");
       cy.contains("Bodensee-Nagelfluh").should("exist");
@@ -150,8 +146,8 @@ describe("Test for the borehole form.", () => {
       saveWithSaveBar();
 
       // navigate away and return
-      navigateToLocationTab(id);
-      navigateToBoreholeTab(id);
+      navigateInSidebar(SidebarMenuItem.location);
+      navigateInSidebar(SidebarMenuItem.borehole);
       evaluateYesNoSelect("topBedrockIntersected", "Yes");
 
       // can save value for top bedrock intersected which does not correspond to automatically set values
@@ -159,8 +155,8 @@ describe("Test for the borehole form.", () => {
       saveWithSaveBar();
 
       // navigate away and return
-      navigateToLocationTab(id);
-      navigateToBoreholeTab(id);
+      navigateInSidebar(SidebarMenuItem.location);
+      navigateInSidebar(SidebarMenuItem.borehole);
       evaluateYesNoSelect("topBedrockIntersected", "No");
       evaluateInput("topBedrockFreshMd", "");
       evaluateInput("topBedrockFreshMd", "");
@@ -194,7 +190,7 @@ describe("Test for the borehole form.", () => {
       returnToOverview();
       showTableAndWaitForData();
       clickOnRowWithText("AAA_Penguin");
-      navigateToBoreholeTab(id);
+      navigateInSidebar(SidebarMenuItem.borehole);
       evaluateInput("totalDepth", "700");
       evaluateInput("topBedrockFreshMd", "0.60224");
       evaluateInput("topBedrockWeatheredMd", "78'945'100");
@@ -287,7 +283,7 @@ describe("Test for the borehole form.", () => {
       evaluateInput("elevationZ", "0");
       evaluateInput("referenceElevation", "0");
 
-      navigateToBoreholeTab(id);
+      navigateInSidebar(SidebarMenuItem.borehole);
 
       evaluateInput("totalDepth", "0");
       evaluateInput("topBedrockWeatheredMd", "0");

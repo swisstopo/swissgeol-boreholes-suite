@@ -1,5 +1,6 @@
 import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { evaluateSelect, setSelect } from "../helpers/formHelpers";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   delayedType,
   goToRouteAndAcceptTerms,
@@ -186,9 +187,9 @@ describe("Tests for editing coordinates of a borehole.", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(4000);
     // Navigate somewhere else and return
-    cy.get('[data-cy="borehole-menu-item"]').click();
+    navigateInSidebar(SidebarMenuItem.borehole);
     cy.contains("Borehole type");
-    cy.get('[data-cy="location-menu-item"]').click();
+    navigateInSidebar(SidebarMenuItem.location);
 
     cy.get('[data-cy="locationX-formCoordinate"] input').as("LV95X-input");
     cy.get('[data-cy="locationY-formCoordinate"] input').as("LV95Y-input");
