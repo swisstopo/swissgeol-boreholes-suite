@@ -15,27 +15,21 @@ interface PageSelectionProps {
   pageCount: number;
   activePage: number;
   setActivePage: (page: number) => void;
-  files?: {
-    count: number;
-    active: number;
-    setActive: (file: number) => void;
-  };
 }
 
-export const PageSelection: FC<PageSelectionProps> = ({ pageCount, activePage, setActivePage, files }) => {
-  const showFiles = !!files;
-  const showPages = showFiles || pageCount > 1;
+export const PageSelection: FC<PageSelectionProps> = ({ pageCount, activePage, setActivePage }) => {
+  const showPages = pageCount > 1;
 
   return (
     <ButtonGroup variant="contained" sx={{ px: 0.25, ...labelingButtonStyles }}>
-      {showFiles && (
+      {showPages && (
         <PageSelectionButton
           variant="text"
           color="secondary"
           onClick={() => {
-            files.setActive(files.active - 1);
+            setActivePage(1);
           }}
-          disabled={files.active === 1}
+          disabled={activePage === 1}
           data-cy="labeling-file-previous">
           <ChevronFirst />
         </PageSelectionButton>
@@ -67,14 +61,14 @@ export const PageSelection: FC<PageSelectionProps> = ({ pageCount, activePage, s
           <ChevronRight />
         </PageSelectionButton>
       )}
-      {showFiles && (
+      {showPages && (
         <PageSelectionButton
           variant="text"
           color="secondary"
           onClick={() => {
-            files.setActive(files.active + 1);
+            setActivePage(pageCount);
           }}
-          disabled={files.active === files.count}
+          disabled={activePage === pageCount}
           data-cy="labeling-file-next">
           <ChevronLast />
         </PageSelectionButton>
