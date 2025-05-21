@@ -30,7 +30,7 @@ export const PageSelection: FC<PageSelectionProps> = ({ pageCount, activePage, s
             setActivePage(1);
           }}
           disabled={activePage === 1}
-          data-cy="labeling-file-previous">
+          data-cy="labeling-page-first">
           <ChevronFirst />
         </PageSelectionButton>
       )}
@@ -69,7 +69,7 @@ export const PageSelection: FC<PageSelectionProps> = ({ pageCount, activePage, s
             setActivePage(pageCount);
           }}
           disabled={activePage === pageCount}
-          data-cy="labeling-file-next">
+          data-cy="labeling-page-last">
           <ChevronLast />
         </PageSelectionButton>
       )}
