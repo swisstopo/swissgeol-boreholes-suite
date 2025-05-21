@@ -1,17 +1,18 @@
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
-import { ReduxRootState } from "../api-lib/ReduxStateInterfaces.ts";
 import { Role, RolePriority } from "../api/apiInterfaces.ts";
+import { useBorehole } from "../api/borehole.ts";
 import { useCurrentUser } from "../api/user.ts";
+import { useRequiredParams } from "./useRequiredParams.ts";
 
 export const useUserRoleForBorehole = (): {
   hasUserPrivilege: (role: Role) => boolean;
 } => {
   const { data: user } = useCurrentUser();
-  const borehole = useSelector((state: ReduxRootState) => state.core_borehole);
+  const { id } = useRequiredParams<{ id: string }>();
+  const { data: borehole } = useBorehole(parseInt(id));
 
   const userPrivilegeLevel = useMemo(() => {
-    const boreholeWorkgroupId = borehole?.data?.workgroup?.id;
+    const boreholeWorkgroupId = borehole?.workgroup?.id;
     const userWorkgroupRoles = user?.workgroupRoles?.filter(wgr => wgr.workgroup?.id === boreholeWorkgroupId);
     if (!userWorkgroupRoles || userWorkgroupRoles.length === 0) {
       return null;
