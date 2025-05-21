@@ -13,12 +13,14 @@
 - Refactored save logic in the borehole detail view.
 - Refactored attachments tabs to unify the design and behavior of the tables.
 - Pagination in the side panel now navigates to first and last page of the document, instead of the next or previous file when clicking on the outer arrows.
+- Added codelist entry 'liner' to the codelist `casing_type`.
 
 ### Fixed
 - Boreholes were always copied to the default workgroup instead of the selected workgroup.
 - _view-sync_ failed if the source database had a default workgroup named `Default`.
 - Depths with thousand separators could not be input in lithostratigraphy and chronostratigraphy.
 - Fixed a bug where copy boreholes dialog could not always be closed.
+- Fixed French translation of codelist entry `grab drilling`.
 
 ## v2.1.1162 - 2025-04-10
 
