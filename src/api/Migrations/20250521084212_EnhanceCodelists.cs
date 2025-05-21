@@ -3,6 +3,7 @@
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class EnhanceCodelists : Migration
@@ -28,3 +29,4 @@ public partial class EnhanceCodelists : Migration
             UPDATE bdms.codelist SET order_cli = 15 WHERE id_cli = 25000107;");
     }
 }
+#pragma warning restore CA1505
