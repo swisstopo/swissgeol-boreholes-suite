@@ -150,11 +150,11 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       getElementByDataCy("lithostratigraphy-menu-item").should("be.visible");
       break;
     case SidebarMenuItem.lithology:
-      cy.wait("@lithological_description");
+      cy.wait("@stratigraphy_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/lithology$/);
       });
-      getElementByDataCy("name-formInput").should("exist");
+      getElementByDataCy("addstratigraphy-button").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.chronostratigraphy:
