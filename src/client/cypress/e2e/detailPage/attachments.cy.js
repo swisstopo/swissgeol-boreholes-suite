@@ -10,6 +10,7 @@ import {
   verifyTableLength,
 } from "../helpers/dataGridHelpers.js";
 import { evaluateInput, setInput } from "../helpers/formHelpers.js";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
   deleteBorehole,
@@ -57,7 +58,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       startBoreholeEditing();
       // navigate to attachments tab
-      getElementByDataCy("attachments-menu-item").click();
+      navigateInSidebar(SidebarMenuItem.attachments);
       uploadLoudSpatulaFile();
 
       // check list of attachments
@@ -174,7 +175,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       startBoreholeEditing();
       // navigate to photos tab
-      getElementByDataCy("attachments-menu-item").click();
+      navigateInSidebar(SidebarMenuItem.attachments);
       getElementByDataCy("photos-tab").click();
 
       uploadPhoto();
@@ -228,20 +229,20 @@ describe("Tests for 'Attachments' edit page.", () => {
       goToRouteAndAcceptTerms(`/${boreholeId}`);
       startBoreholeEditing();
     });
-    getElementByDataCy("attachments-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.attachments);
     uploadLoudSpatulaFile();
     verifyTableLength(1);
-    getElementByDataCy("borehole-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.borehole);
 
     // change something and save
     setInput("totalDepth", 465);
     saveWithSaveBar();
 
     // navigate back to attachments and return
-    getElementByDataCy("attachments-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.attachments);
     verifyTableLength(1);
 
-    getElementByDataCy("borehole-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.borehole);
     evaluateInput("totalDepth", "465");
     stopBoreholeEditing();
   });

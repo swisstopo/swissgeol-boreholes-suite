@@ -49,6 +49,7 @@ const StratigraphySelection = ({ id: selectedBoreholeId, noStratigraphiesMessage
       <TextField
         value={stratigraphyId}
         label={t("stratigraphy")}
+        data-cy={"stratigraphy-select"}
         select
         onChange={event => {
           setStratigraphyId(event.target.value);

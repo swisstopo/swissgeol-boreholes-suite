@@ -105,7 +105,6 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/boreholegeometry/getDepthInMasl?**").as("get-boreholegeometry-depth-masl");
   cy.intercept("/api/v2/boreholegeometry/getDepthMDFromMasl?**").as("get-boreholegeometry-depth-md");
 
-  cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("get-borehole-files");
   cy.intercept("/api/v2/boreholefile/getDataExtractionFileInfo*").as("extraction-file-info");
   cy.intercept({
     method: "GET",
@@ -303,22 +302,6 @@ export const stopBoreholeEditing = discardChanges => {
 export const returnToOverview = () => {
   cy.get('[data-cy="backButton"]').click();
   cy.wait(["@edit_list", "@borehole"]);
-};
-
-export const navigateToLocationTab = id => {
-  getElementByDataCy("location-menu-item").click();
-  cy.location().should(location => {
-    expect(location.pathname).to.eq(`/${id}/location`);
-  });
-  cy.contains("Spatial reference system");
-};
-
-export const navigateToBoreholeTab = id => {
-  getElementByDataCy("borehole-menu-item").click();
-  cy.location().should(location => {
-    expect(location.pathname).to.eq(`/${id}/borehole`);
-  });
-  cy.contains("Borehole type");
 };
 
 export const getElementByDataCy = attribute => {
