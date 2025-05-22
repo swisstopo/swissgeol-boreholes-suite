@@ -281,19 +281,6 @@ describe("Test labeling tool", () => {
     getElementByDataCy("labeling-file-selector-button").contains("WOLFHEART.pdf");
     getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_3.pdf").click();
     waitForLabelingImageLoaded();
-
-    // can select next file from page selection
-    getElementByDataCy("labeling-file-next").click();
-    getElementByDataCy("labeling-file-button-select").contains("WOLFHEART.pdf");
-    getElementByDataCy("labeling-file-next").should("be.disabled");
-
-    // can select previous file from page selection
-    getElementByDataCy("labeling-file-previous").click();
-    getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_3.pdf");
-
-    getElementByDataCy("labeling-file-previous").click();
-    getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
-    getElementByDataCy("labeling-file-previous").should("be.disabled");
   });
 
   it("can extract coordinates and reference system from image", () => {
@@ -398,6 +385,16 @@ describe("Test labeling tool", () => {
     assertPageCount(1, 3);
 
     clickCoordinateLabelingButton();
+
+    // can navigate with pagination
+    cy.get('[data-cy="labeling-page-last"]').click();
+    waitForLabelingImageLoaded();
+    assertPageCount(3, 3);
+
+    cy.get('[data-cy="labeling-page-first"]').click();
+    waitForLabelingImageLoaded();
+    assertPageCount(1, 3);
+
     cy.get('[data-cy="labeling-page-next"]').click();
     waitForLabelingImageLoaded();
     assertPageCount(2, 3);
