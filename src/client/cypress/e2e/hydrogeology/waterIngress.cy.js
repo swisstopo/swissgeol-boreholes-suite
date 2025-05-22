@@ -38,8 +38,6 @@ describe("Tests for the wateringress editor.", () => {
     navigateInSidebar(SidebarMenuItem.hydrogeology);
     navigateInSidebar(SidebarMenuItem.waterIngress);
 
-    cy.wait("@wateringress_GET");
-
     selectLanguage("de");
 
     // create wateringress
