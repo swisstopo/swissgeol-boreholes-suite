@@ -12,8 +12,8 @@ import {
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
-  goToDetailRouteAndAcceptTerms,
   getElementByDataCy,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
