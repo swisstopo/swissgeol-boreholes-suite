@@ -77,6 +77,7 @@ describe("Test for the detail page side navigation.", () => {
     });
 
     // Add chronostratigraphy
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
     navigateInSidebar(SidebarMenuItem.chronostratigraphy);
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
@@ -146,12 +147,13 @@ describe("Test for the detail page side navigation.", () => {
 
     // Expand completion menu and check content tabs
     navigateInSidebar(SidebarMenuItem.completion);
-    isActiveTab("completion-content-tab-casing", true);
+    isActiveTab("completion-content-tab-casing");
     cy.wait("@get-casings-by-completionId");
     ["completion-content-tab-instrumentation", "completion-content-tab-backfill"].forEach(item => {
       isInactiveTab(item, true);
     });
     getElementByDataCy("completion-content-tab-backfill").click();
+    cy.wait("@backfill_GET");
     isInactiveTab("completion-content-tab-casing", true);
   });
 });

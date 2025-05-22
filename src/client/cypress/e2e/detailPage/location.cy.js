@@ -12,6 +12,7 @@ import {
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -208,17 +209,13 @@ describe("Tests for 'Location' edit page.", () => {
     startBoreholeEditing();
     setOriginalName("FELIX_THE_BROOM");
 
-    navigateInSidebar(SidebarMenuItem.borehole);
+    getElementByDataCy("borehole-menu-item").click();
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/location`);
     });
 
-    navigateInSidebar(SidebarMenuItem.borehole);
-    handlePrompt(messageUnsavedChanges, "discardchanges");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
-    });
+    navigateInSidebar(SidebarMenuItem.borehole, "discardchanges");
   });
 
   it("adds edits and deletes borehole identifiers", () => {

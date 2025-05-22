@@ -13,6 +13,7 @@ import {
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -114,8 +115,7 @@ describe("Test for the borehole form.", () => {
       setInput("remarks", "This is a test remark");
 
       // navigate away is blocked before saving
-      navigateInSidebar(SidebarMenuItem.location);
-
+      getElementByDataCy("location-menu-item").click();
       const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
       handlePrompt(messageUnsavedChanges, "cancel");
 

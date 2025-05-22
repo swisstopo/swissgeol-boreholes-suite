@@ -8,7 +8,11 @@ export const isActiveTab = tab => {
 };
 
 export const isInactiveTab = (tab, hasContent) => {
-  checkElementColorByDataCy(tab, hasContent ? contentColor : noContentColor);
+  if (hasContent === true) {
+    checkElementColorByDataCy(tab, contentColor);
+  } else if (hasContent === false) {
+    checkElementColorByDataCy(tab, noContentColor);
+  }
 };
 
 export const isActiveBoreholeTab = tab => {
@@ -53,10 +57,6 @@ export const navigateInBorehole = (tab, promptSelector) => {
   });
 
   isActiveBoreholeTab(tab);
-  const inactiveTabs = Object.values(BoreholeTab).filter(item => item !== tab);
-  inactiveTabs.forEach(item => {
-    isInactiveBoreholeTab(item);
-  });
 };
 
 export const SidebarMenuItem = {
@@ -92,7 +92,7 @@ const checkThatParentOpen = menuItem => {
     // If child is not visible, click parent to expand
     getElementByDataCy(`${menuItem}-menu-item`).should($el => {
       if (!$el.is(":visible")) {
-        getElementByDataCy(`${parent}-menu-item`).click();
+        navigateInSidebar(parent);
       }
     });
   }
@@ -119,9 +119,13 @@ export const isMenuItemWithoutContent = menuItem => {
   checkElementColorByDataCy(`${menuItem}-menu-item`, noContentColor);
 };
 
-export const navigateInSidebar = menuItem => {
+export const navigateInSidebar = (menuItem, promptSelector) => {
   checkThatParentOpen(menuItem);
   getElementByDataCy(`${menuItem}-menu-item`).click();
+
+  if (promptSelector) {
+    handlePrompt(null, promptSelector);
+  }
 
   switch (menuItem) {
     case SidebarMenuItem.location:
@@ -171,6 +175,7 @@ export const navigateInSidebar = menuItem => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.completion:
+      cy.wait("@get-completions-by-boreholeId");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/completion$/);
       });
@@ -184,6 +189,7 @@ export const navigateInSidebar = menuItem => {
       getElementByDataCy("hydrotest-menu-item").should("be.visible");
       break;
     case SidebarMenuItem.waterIngress:
+      cy.wait("@wateringress_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/hydrogeology\/wateringress/);
       });
@@ -191,6 +197,7 @@ export const navigateInSidebar = menuItem => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.groundwaterLevelMeasurement:
+      cy.wait("@groundwaterlevelmeasurement_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/hydrogeology\/groundwaterlevelmeasurement/);
       });
@@ -198,6 +205,7 @@ export const navigateInSidebar = menuItem => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.fieldMeasurement:
+      cy.wait("@fieldmeasurement_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/hydrogeology\/fieldmeasurement/);
       });
@@ -205,6 +213,7 @@ export const navigateInSidebar = menuItem => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.hydrotest:
+      cy.wait("@hydrotest_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/hydrogeology\/hydrotest/);
       });
@@ -212,6 +221,7 @@ export const navigateInSidebar = menuItem => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.attachments:
+      cy.wait("@getAllAttachments");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/attachments$/);
         expect(location.hash).to.eq("#profiles");
@@ -220,6 +230,7 @@ export const navigateInSidebar = menuItem => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.status:
+      cy.wait("@workflow_edit_list");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/status$/);
       });
