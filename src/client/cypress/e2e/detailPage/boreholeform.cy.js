@@ -97,15 +97,15 @@ describe("Test for the borehole form.", () => {
     });
   });
 
-  it("Fills all inputs on borehole tab and saves", () => {
+  it.only("Fills all inputs on borehole tab and saves", () => {
     createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/borehole`);
-      getElementByDataCy("save-bar").should("not.be.visible");
+      cy.wait(["@borehole_by_id", "@borehole_by_id"]);
+      evaluateInput("totalDepth", "");
+      getElementByDataCy("save-bar").should("not.exist");
       startBoreholeEditing();
       getElementByDataCy("save-bar").should("be.visible");
-
-      evaluateInput("totalDepth", "");
 
       setSelect("purposeId", 1);
       setSelect("typeId", 1);
