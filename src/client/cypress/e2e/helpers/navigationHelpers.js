@@ -1,5 +1,38 @@
 import { checkElementColorByDataCy, getElementByDataCy, handlePrompt } from "./testHelpers.js";
 
+export const SidebarMenuItem = {
+  location: "location",
+  borehole: "borehole",
+  stratigraphy: "stratigraphy",
+  lithology: "lithology",
+  chronostratigraphy: "chronostratigraphy",
+  lithostratigraphy: "lithostratigraphy",
+  completion: "completion",
+  hydrogeology: "hydrogeology",
+  waterIngress: "wateringress",
+  groundwaterLevelMeasurement: "groundwaterlevelmeasurement",
+  fieldMeasurement: "fieldmeasurement",
+  hydrotest: "hydrotest",
+  attachments: "attachments",
+  status: "status",
+};
+
+const sidebarParentMap = {
+  lithology: SidebarMenuItem.stratigraphy,
+  chronostratigraphy: SidebarMenuItem.stratigraphy,
+  lithostratigraphy: SidebarMenuItem.stratigraphy,
+  waterIngress: SidebarMenuItem.hydrogeology,
+  groundwaterLevelMeasurement: SidebarMenuItem.hydrogeology,
+  fieldMeasurement: SidebarMenuItem.hydrogeology,
+  hydrotest: SidebarMenuItem.hydrogeology,
+};
+
+export const BoreholeTab = {
+  general: "general",
+  sections: "sections",
+  geometry: "geometry",
+};
+
 const noContentColor = "rgb(130, 142, 154)";
 const contentColor = "rgb(28, 40, 52)";
 
@@ -20,12 +53,6 @@ export const isActiveBoreholeTab = tab => {
 };
 export const isInactiveBoreholeTab = (tab, hasContent) => {
   isInactiveTab(`${tab}-tab`, hasContent);
-};
-
-export const BoreholeTab = {
-  general: "general",
-  sections: "sections",
-  geometry: "geometry",
 };
 
 export const navigateInBorehole = (tab, promptSelector) => {
@@ -57,33 +84,6 @@ export const navigateInBorehole = (tab, promptSelector) => {
   });
 
   isActiveBoreholeTab(tab);
-};
-
-export const SidebarMenuItem = {
-  location: "location",
-  borehole: "borehole",
-  stratigraphy: "stratigraphy",
-  lithology: "lithology",
-  chronostratigraphy: "chronostratigraphy",
-  lithostratigraphy: "lithostratigraphy",
-  completion: "completion",
-  hydrogeology: "hydrogeology",
-  waterIngress: "wateringress",
-  groundwaterLevelMeasurement: "groundwaterlevelmeasurement",
-  fieldMeasurement: "fieldmeasurement",
-  hydrotest: "hydrotest",
-  attachments: "attachments",
-  status: "status",
-};
-
-const sidebarParentMap = {
-  lithology: SidebarMenuItem.stratigraphy,
-  chronostratigraphy: SidebarMenuItem.stratigraphy,
-  lithostratigraphy: SidebarMenuItem.stratigraphy,
-  waterIngress: SidebarMenuItem.hydrogeology,
-  groundwaterLevelMeasurement: SidebarMenuItem.hydrogeology,
-  fieldMeasurement: SidebarMenuItem.hydrogeology,
-  hydrotest: SidebarMenuItem.hydrogeology,
 };
 
 const checkThatParentOpen = menuItem => {
