@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1200 - 2025-05-22
+
 ### Added
 - Added the photos tab to the borehole attachments.
 - Added photo viewer to the borehole sidepanel.
