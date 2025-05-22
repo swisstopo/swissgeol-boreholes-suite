@@ -35,6 +35,7 @@ describe("Tests the legacy publication workflow.", () => {
     createBorehole({ "extended.original_name": "Borehole to publish" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/status`);
+      cy.wait("@borehole_by_id");
     });
 
     const orange = "rgb(234, 88, 12)";

@@ -287,7 +287,7 @@ export const createBorehole = values => {
 
 export const startBoreholeEditing = () => {
   startEditing("detail-header");
-  cy.wait("@update-borehole");
+  cy.wait(["@update-borehole", "@borehole_by_id"]);
 };
 
 export const stopBoreholeEditing = discardChanges => {
@@ -296,8 +296,7 @@ export const stopBoreholeEditing = discardChanges => {
   if (discardChanges) {
     cy.get('[data-cy="prompt"]').find(`[data-cy="discardchanges-button"]`).click();
   }
-
-  cy.wait("@update-borehole");
+  cy.wait(["@update-borehole", "@borehole_by_id"]);
 };
 
 export const returnToOverview = () => {

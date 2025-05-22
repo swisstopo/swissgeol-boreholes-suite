@@ -1,13 +1,11 @@
 import React, { FC } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
 import { ChevronRight } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { Role, RolePriority, User } from "../../../../api/apiInterfaces.ts";
-import { useReloadBoreholes } from "../../../../api/borehole.ts";
+import { useBorehole, useReloadBoreholes } from "../../../../api/borehole.ts";
 import { useUsers } from "../../../../api/user.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { CancelButton } from "../../../../components/buttons/buttons.tsx";
@@ -25,14 +23,14 @@ export const RequestReviewDialog: FC<RequestReviewDialogProps> = ({ open, setOpe
   const { data: users } = useUsers();
   const { id } = useRequiredParams<{ id: string }>();
   const formMethods = useForm({ mode: "all" });
-  const borehole = useSelector((state: ReduxRootState) => state.core_borehole);
+  const { data: borehole } = useBorehole(parseInt(id));
   const queryClient = useQueryClient();
   const reloadBoreholes = useReloadBoreholes();
 
   const getUsersWithPrivilege = (role: Role): User[] => {
     if (!users) return [];
     return users?.filter(user => {
-      const boreholeWorkgroupId = borehole?.data?.workgroup?.id;
+      const boreholeWorkgroupId = borehole?.workgroup?.id;
       const workgroupRoles = user.workgroupRoles?.filter(wg => wg.workgroupId === boreholeWorkgroupId);
       if (!workgroupRoles) return false;
       const maxPrivilege = Math.max(...workgroupRoles.map(r => RolePriority[r.role]));
