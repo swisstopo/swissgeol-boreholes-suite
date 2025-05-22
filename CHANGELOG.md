@@ -12,6 +12,7 @@
 - Upgraded to React 19.1
 - Refactored save logic in the borehole detail view.
 - Refactored attachments tabs to unify the design and behavior of the tables.
+- Pagination in the side panel now navigates to first and last page of the document, instead of the next or previous file when clicking on the outer arrows.
 - Added codelist entry 'liner' to the codelist `casing_type`.
 
 ### Fixed
