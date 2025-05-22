@@ -197,21 +197,7 @@ const LabelingPanel: FC = () => {
         }}>
         <Box>
           {panelTab === PanelTab.profile && selectedFile && fileInfo?.count && (
-            <PageSelection
-              pageCount={fileInfo.count}
-              activePage={activePage}
-              setActivePage={setActivePage}
-              files={
-                files && {
-                  count: files.length,
-                  active: files.findIndex(f => f.id === selectedFile.id) + 1,
-                  setActive: (file: number) => {
-                    setSelectedAttachment(files[file - 1]);
-                    setActivePage(1);
-                  },
-                }
-              }
-            />
+            <PageSelection pageCount={fileInfo.count} activePage={activePage} setActivePage={setActivePage} />
           )}
           {panelTab === PanelTab.photo && selectedPhoto && files && (
             <PageSelection
