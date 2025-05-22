@@ -105,7 +105,6 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/boreholegeometry/getDepthInMasl?**").as("get-boreholegeometry-depth-masl");
   cy.intercept("/api/v2/boreholegeometry/getDepthMDFromMasl?**").as("get-boreholegeometry-depth-md");
 
-  cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("get-borehole-files");
   cy.intercept("/api/v2/boreholefile/getDataExtractionFileInfo*").as("extraction-file-info");
   cy.intercept({
     method: "GET",

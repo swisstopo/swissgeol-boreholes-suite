@@ -105,7 +105,7 @@ function selectLabelingAttachment() {
     fileName: "labeling_attachment.pdf",
   });
 
-  cy.wait("@get-borehole-files");
+  cy.wait("@getAllAttachments");
   waitForLabelingImageLoaded();
   cy.get('[data-cy="labeling-file-button-select"]').contains("labeling_attachment.pdf");
 }
@@ -218,7 +218,7 @@ describe("Test labeling tool", () => {
     getElementByDataCy("labeling-file-dropzone").attachFile("import/borehole_attachment_1.pdf", {
       subjectType: "drag-n-drop",
     });
-    cy.wait("@get-borehole-files");
+    cy.wait("@getAllAttachments");
     getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
 
     reloadPanel();
@@ -229,7 +229,7 @@ describe("Test labeling tool", () => {
     getElementByDataCy("labeling-panel").find('input[type="file"]').attachFile("import/borehole_attachment_3.pdf", {
       subjectType: "input",
     });
-    cy.wait("@get-borehole-files");
+    cy.wait("@getAllAttachments");
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
     cy.get('[data-cy="labeling-file-button-select"]').click();
     assertSelectContent(["borehole_attachment_1.pdf", "borehole_attachment_3.pdf", "Add profile"]);
