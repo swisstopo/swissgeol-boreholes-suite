@@ -1,33 +1,22 @@
-import { WorkflowStatus } from "@swisstopo/swissgeol-ui-core";
+import {
+  GenericWorkflow,
+  WorkflowChange as SwissgeolWorkflowChange,
+  WorkflowStatus,
+} from "@swisstopo/swissgeol-ui-core";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { User } from "../../../../api/apiInterfaces.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
 import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
 
 export { WorkflowStatus };
 
-export interface WorkflowV2 {
+export interface WorkflowV2 extends GenericWorkflow {
   id: number;
-  hasRequestedChanges: boolean;
-  status: WorkflowStatus;
-  boreholeId: number;
   reviewedTabs: TabStatus;
   publishedTabs: TabStatus;
-  assigneeId: number | null;
-  assignee: User | null;
-  changes: WorkflowChange[];
 }
 
-export interface WorkflowChange {
+export interface WorkflowChange extends SwissgeolWorkflowChange {
   id: number;
-  comment: string;
-  fromStatus: WorkflowStatus;
-  toStatus: WorkflowStatus;
-  createdById: number | null;
-  createdBy: User | null;
-  created: string;
-  assigneeId: number | null;
-  assignee: User | null;
 }
 
 export interface TabStatus {
