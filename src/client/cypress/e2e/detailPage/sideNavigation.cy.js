@@ -61,16 +61,16 @@ describe("Test for the detail page side navigation.", () => {
     addItem("addStratigraphy");
     cy.wait("@stratigraphy_POST");
 
-    cy.get('[data-cy="add-layer-icon"]').click();
+    getElementByDataCy("add-layer-icon").click();
     cy.wait("@layer");
-    cy.get('[data-cy="styled-layer-0"]').should("contain", "0 m MD");
-    cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
+    getElementByDataCy("styled-layer-0").should("contain", "0 m MD");
+    getElementByDataCy("styled-layer-0").find('[data-testid="ModeEditIcon"]').click();
     cy.wait("@get-layer-by-id");
     setInput("fromDepth", "0");
     setInput("toDepth", "50");
     saveForm();
     cy.wait(["@update-layer", "@layer"]);
-    cy.get('[data-cy="styled-layer-0"]').should("contain", "50 m MD");
+    getElementByDataCy("styled-layer-0").should("contain", "50 m MD");
 
     // Add chronostratigraphy
     navigateInSidebar(SidebarMenuItem.chronostratigraphy);
