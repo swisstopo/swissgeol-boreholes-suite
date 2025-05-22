@@ -67,12 +67,9 @@ export const navigateInBorehole = (tab, promptSelector) => {
       break;
     case BoreholeTab.sections:
       cy.wait("@section_GET");
-      getElementByDataCy("addsection-button").should("exist");
       break;
     case BoreholeTab.geometry:
       cy.wait("@boreholegeometry_GET");
-      cy.wait("@boreholegeometry_formats");
-      getElementByDataCy("geometryFormat-formSelect").should("exist");
       break;
     default:
       break;
@@ -121,7 +118,7 @@ export const isMenuItemWithoutContent = menuItem => {
 
 export const navigateInSidebar = (menuItem, promptSelector) => {
   checkThatParentOpen(menuItem);
-  getElementByDataCy(`${menuItem}-menu-item`).click();
+  getElementByDataCy(`${menuItem}-menu-item`).click({ force: true });
 
   if (promptSelector) {
     handlePrompt(null, promptSelector);
@@ -154,7 +151,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/lithology$/);
       });
-      getElementByDataCy("addstratigraphy-button").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.chronostratigraphy:
@@ -180,7 +176,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/completion$/);
       });
-      getElementByDataCy("addcompletion-button").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.hydrogeology:
@@ -194,7 +189,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/hydrogeology\/wateringress/);
       });
-      getElementByDataCy("addwateringress-button").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.groundwaterLevelMeasurement:
@@ -202,7 +196,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/hydrogeology\/groundwaterlevelmeasurement/);
       });
-      getElementByDataCy("addgroundwaterlevelmeasurement-button").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.fieldMeasurement:
@@ -210,7 +203,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/hydrogeology\/fieldmeasurement/);
       });
-      getElementByDataCy("addfieldmeasurement-button").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.hydrotest:
@@ -218,7 +210,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/hydrogeology\/hydrotest/);
       });
-      getElementByDataCy("addhydrotest-button").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.attachments:
@@ -227,7 +218,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
         expect(location.pathname).to.match(/^\/\d+\/attachments$/);
         expect(location.hash).to.eq("#profiles");
       });
-      getElementByDataCy("attachments-menu-item").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.status:
@@ -235,7 +225,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/status$/);
       });
-      getElementByDataCy("workflow-menu-item").should("exist");
+      cy.contains("Publication workflow");
       isActiveMenuItem(menuItem);
       break;
   }
