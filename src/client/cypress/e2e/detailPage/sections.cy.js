@@ -132,7 +132,6 @@ describe("Section crud tests", () => {
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
     handlePrompt(messageUnsavedChanges, "cancel");
     evaluateInput("totalDepth", "5");
-    cy.get('[data-cy="sections-tab"]').click();
     navigateInBorehole(BoreholeTab.sections, "discardchanges");
 
     // sections tab should be unchanged when retuning from borehole tab
