@@ -1,6 +1,6 @@
 import { addItem, deleteItem, saveForm, saveWithSaveBar, startEditing } from "../helpers/buttonHelpers";
 import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
-import { navigateInBorehole } from "../helpers/navigationHelpers.js";
+import { BoreholeTab, navigateInBorehole } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
   getElementByDataCy,
@@ -123,7 +123,7 @@ describe("Section crud tests", () => {
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
 
     // switch tab to borehole general tab and edit depth
-    navigateInBorehole("general");
+    navigateInBorehole(BoreholeTab.general);
     setInput("totalDepth", 5);
     evaluateInput("totalDepth", "5");
 
@@ -132,21 +132,20 @@ describe("Section crud tests", () => {
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
     handlePrompt(messageUnsavedChanges, "cancel");
     evaluateInput("totalDepth", "5");
-    cy.get('[data-cy="sections-tab"]').click();
-    navigateInBorehole("sections", "discardchanges");
+    navigateInBorehole(BoreholeTab.sections, "discardchanges");
 
     // sections tab should be unchanged when retuning from borehole tab
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
 
     // switch tab to borehole general tab and edit depth with saving
-    navigateInBorehole("general");
+    navigateInBorehole(BoreholeTab.general);
     evaluateInput("totalDepth", "");
     setInput("totalDepth", 7);
     evaluateInput("totalDepth", "7");
     saveWithSaveBar();
 
     // edit sections tab and save again
-    navigateInBorehole("sections");
+    navigateInBorehole(BoreholeTab.sections);
     startEditing();
     setSelect("sectionElements.0.drillingMudTypeId", 4);
     cy.get("body").type("{ctrl}s");
@@ -154,7 +153,7 @@ describe("Section crud tests", () => {
     evaluateDisplayValue("0.drilling_mud_type", "water-based non-dispersed");
 
     // borehole tab should still display saved depth value
-    navigateInBorehole("general");
+    navigateInBorehole(BoreholeTab.general);
     evaluateInput("totalDepth", "7");
   });
 
@@ -167,8 +166,8 @@ describe("Section crud tests", () => {
     cy.location().should(location => {
       expect(location.hash).to.eq("#sections");
     });
-    navigateInBorehole("geometry", "discardchanges");
-    navigateInBorehole("sections");
+    navigateInBorehole(BoreholeTab.geometry, "discardchanges");
+    navigateInBorehole(BoreholeTab.sections);
 
     // section was not saved
     cy.contains("No sections available");
@@ -180,8 +179,8 @@ describe("Section crud tests", () => {
     saveSection("POST");
     cy.get('[data-cy="section-card.0"]').should("exist");
 
-    navigateInBorehole("geometry");
-    navigateInBorehole("sections");
+    navigateInBorehole(BoreholeTab.geometry);
+    navigateInBorehole(BoreholeTab.sections);
 
     // section was saved
     cy.contains("AA_CAPYBARA");
