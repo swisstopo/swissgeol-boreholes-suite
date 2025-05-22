@@ -89,7 +89,6 @@ describe("Test for the detail page side navigation.", () => {
     // Add completion
     navigateInSidebar(SidebarMenuItem.completion);
     isActiveMenuItem(SidebarMenuItem.completion, false);
-    cy.wait(500);
     addItem("addCompletion");
     cy.location().should(location => {
       expect(location.pathname).to.match(/^\/\d+\/completion\/new$/);
