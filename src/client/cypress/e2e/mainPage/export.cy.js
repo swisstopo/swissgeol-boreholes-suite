@@ -15,6 +15,7 @@ import {
   showTableAndWaitForData,
 } from "../helpers/dataGridHelpers.js";
 import { evaluateInput, setInput, setOriginalName, setSelect } from "../helpers/formHelpers";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
   deleteDownloadedFile,
@@ -101,8 +102,8 @@ describe("Test for exporting boreholes.", () => {
     });
 
     // add geometry to borehole and verify export tvd changed
-    getElementByDataCy("borehole-menu-item").click();
     startBoreholeEditing();
+    navigateInSidebar(SidebarMenuItem.borehole);
     setInput("totalDepth", 700);
     setInput("topBedrockFreshMd", 800);
     setInput("topBedrockWeatheredMd", 900);
@@ -148,7 +149,7 @@ describe("Test for exporting boreholes.", () => {
     getElementByDataCy("general-tab").click();
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "674.87");
-    getElementByDataCy("location-menu-item").click();
+    navigateInSidebar(SidebarMenuItem.location);
     setOriginalName(secondBoreholeName); // change name to avoid potential CSV filename conflict
     saveWithSaveBar();
     stopBoreholeEditing();

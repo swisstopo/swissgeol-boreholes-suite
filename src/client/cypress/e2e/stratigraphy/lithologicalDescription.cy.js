@@ -1,5 +1,6 @@
 import { addItem, deleteItem, saveForm } from "../helpers/buttonHelpers";
 import { setInput } from "../helpers/formHelpers.js";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   getElementByDataCy,
   goToRouteAndAcceptTerms,
@@ -15,8 +16,8 @@ describe("Tests for the lithological description column.", () => {
     newEditableBorehole().as("borehole_id");
 
     // navigate to stratigraphy
-    cy.get('[data-cy="stratigraphy-menu-item"]').click();
-    cy.get('[data-cy="lithology-menu-item"]').click();
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
+    navigateInSidebar(SidebarMenuItem.lithology);
     addItem("addStratigraphy");
     cy.wait("@stratigraphy_POST");
 
@@ -58,9 +59,9 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-2"]').should("contain", "120 m MD");
 
     // workaround because close button of profile attributes is sometimes not clickable
-    cy.get('[data-cy="location-menu-item"]').click();
-    cy.get('[data-cy="stratigraphy-menu-item"]').click();
-    cy.get('[data-cy="lithology-menu-item"]').click();
+    navigateInSidebar(SidebarMenuItem.location);
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
+    navigateInSidebar(SidebarMenuItem.lithology);
 
     // add lithological description
     cy.wait("@layer");

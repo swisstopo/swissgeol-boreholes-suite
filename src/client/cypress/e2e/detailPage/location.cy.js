@@ -9,12 +9,12 @@ import {
   setOriginalName,
   setSelect,
 } from "../helpers/formHelpers";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
+  getElementByDataCy,
   goToRouteAndAcceptTerms,
   handlePrompt,
-  navigateToBoreholeTab,
-  navigateToLocationTab,
   newEditableBorehole,
   returnToOverview,
   startBoreholeEditing,
@@ -106,8 +106,8 @@ describe("Tests for 'Location' edit page.", () => {
       // should keep different alternate name when switching tabs
       setInput("name", "PHOTOMOUSE");
       saveWithSaveBar();
-      navigateToBoreholeTab(id);
-      navigateToLocationTab(id);
+      navigateInSidebar(SidebarMenuItem.borehole);
+      navigateInSidebar(SidebarMenuItem.location);
       evaluateInput("originalName", "PHOTOPIGEON");
       evaluateInput("name", "PHOTOMOUSE");
     });
@@ -166,18 +166,16 @@ describe("Tests for 'Location' edit page.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
 
-    cy.get("@borehole_id").then(id => {
-      setSelect("restrictionId", 3);
-      isDisabled("restrictionUntil", false);
-      setInput("restrictionUntil", "2012-11-14");
-      evaluateInput("restrictionUntil", "2012-11-14");
-      saveWithSaveBar();
-      // navigate away and back to check if values are saved
-      navigateToBoreholeTab(id);
-      navigateToLocationTab(id);
+    setSelect("restrictionId", 3);
+    isDisabled("restrictionUntil", false);
+    setInput("restrictionUntil", "2012-11-14");
+    evaluateInput("restrictionUntil", "2012-11-14");
+    saveWithSaveBar();
+    // navigate away and back to check if values are saved
+    navigateInSidebar(SidebarMenuItem.borehole);
+    navigateInSidebar(SidebarMenuItem.location);
 
-      evaluateInput("restrictionUntil", "2012-11-14");
-    });
+    evaluateInput("restrictionUntil", "2012-11-14");
   });
 
   it("saves with ctrl s", () => {
@@ -211,17 +209,13 @@ describe("Tests for 'Location' edit page.", () => {
     startBoreholeEditing();
     setOriginalName("FELIX_THE_BROOM");
 
-    cy.get('[data-cy="borehole-menu-item"]').click();
+    getElementByDataCy("borehole-menu-item").click();
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/location`);
     });
 
-    cy.get('[data-cy="borehole-menu-item"]').click();
-    handlePrompt(messageUnsavedChanges, "discardchanges");
-    cy.location().should(location => {
-      expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
-    });
+    navigateInSidebar(SidebarMenuItem.borehole, "discardchanges");
   });
 
   it("adds edits and deletes borehole identifiers", () => {
