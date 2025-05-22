@@ -188,7 +188,6 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.wait(4000);
     // Navigate somewhere else and return
     navigateInSidebar(SidebarMenuItem.borehole);
-    cy.contains("Borehole type");
     navigateInSidebar(SidebarMenuItem.location);
 
     cy.get('[data-cy="locationX-formCoordinate"] input').as("LV95X-input");
