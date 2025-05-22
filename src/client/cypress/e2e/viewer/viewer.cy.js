@@ -1,6 +1,5 @@
 import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { evaluateInput } from "../helpers/formHelpers";
-import { BoreholeTab, navigateInBorehole, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import { getElementByDataCy, loginAsViewer } from "../helpers/testHelpers";
 
 describe("Viewer tests", () => {
@@ -21,7 +20,7 @@ describe("Viewer tests", () => {
       });
 
     // click on Borehole tab
-    navigateInSidebar(SidebarMenuItem.borehole);
+    getElementByDataCy("borehole-menu-item").click();
     // verify all text inputs are readonly on Borehole tab
     cy.get(".MuiFormControl-root")
       .should("have.length", 16)
@@ -54,33 +53,33 @@ describe("Viewer tests", () => {
     showTableAndWaitForData();
     clickOnRowWithText("Aaron Rempel");
     evaluateInput("originalName", "Aaron Rempel");
-    navigateInSidebar(SidebarMenuItem.borehole);
+    getElementByDataCy("borehole-menu-item").click({ force: true });
     evaluateInput("total_depth_tvd", "1'913.61");
-    navigateInBorehole(BoreholeTab.sections);
+    getElementByDataCy("sections-tab").click({ force: true });
     cy.contains("No sections available").should("exist");
-    navigateInBorehole(BoreholeTab.geometry);
+    getElementByDataCy("geometry-tab").click({ force: true });
     cy.contains("Top view").should("exist");
-    navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
+    getElementByDataCy("stratigraphy-menu-item").click({ force: true });
+    getElementByDataCy("lithology-menu-item").click({ force: true });
     cy.contains("Ibrahim Bednar").should("exist");
-    navigateInSidebar(SidebarMenuItem.chronostratigraphy);
+    getElementByDataCy("chronostratigraphy-menu-item").click({ force: true });
     cy.contains("Phanerozoic").should("exist");
-    navigateInSidebar(SidebarMenuItem.lithostratigraphy);
+    getElementByDataCy("lithostratigraphy-menu-item").click({ force: true });
     cy.contains("Surbrunnen-Flysch").should("exist");
-    navigateInSidebar(SidebarMenuItem.completion);
+    getElementByDataCy("completion-menu-item").click({ force: true });
     cy.contains("No completion available").should("exist");
-    navigateInSidebar(SidebarMenuItem.hydrogeology);
-    navigateInSidebar(SidebarMenuItem.waterIngress);
+    getElementByDataCy("hydrogeology-menu-item").click({ force: true });
+    getElementByDataCy("wateringress-menu-item").click({ force: true });
     cy.contains("No water ingresses available").should("exist");
-    navigateInSidebar(SidebarMenuItem.groundwaterLevelMeasurement);
+    getElementByDataCy("groundwaterlevelmeasurement-menu-item").click({ force: true });
     cy.contains("No groundwater measurements available.").should("exist");
-    navigateInSidebar(SidebarMenuItem.fieldMeasurement);
+    getElementByDataCy("fieldmeasurement-menu-item").click({ force: true });
     cy.contains("No field measurements available.").should("exist");
-    navigateInSidebar(SidebarMenuItem.hydrotest);
+    getElementByDataCy("hydrotest-menu-item").click({ force: true });
     cy.contains("No hydrotests available").should("exist");
-    navigateInSidebar(SidebarMenuItem.attachments);
+    getElementByDataCy("attachments-menu-item").click({ force: true });
     cy.contains("No profiles available...").should("exist");
-    navigateInSidebar(SidebarMenuItem.status);
+    getElementByDataCy("status-menu-item").click({ force: true });
     cy.contains("Publication workflow").should("exist");
   });
 });
