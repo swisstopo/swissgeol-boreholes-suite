@@ -102,6 +102,7 @@ describe("Test for the borehole form.", () => {
     createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
+      cy.wait("@borehole_by_id");
       evaluateInput("totalDepth", "");
       getElementByDataCy("save-bar").should("not.exist");
       startBoreholeEditing();

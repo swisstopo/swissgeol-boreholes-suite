@@ -244,7 +244,7 @@ describe("Tests for the layer form.", () => {
     clickOnNextPage();
     waitForTableData();
     clickOnRowWithText("Andres Miller");
-    cy.wait("@borehole_by_id");
+    cy.wait(["@borehole_by_id", "@borehole_by_id"]);
     startBoreholeEditing();
     getElementByDataCy("stratigraphy-menu-item").click();
     getElementByDataCy("lithology-menu-item").click();
