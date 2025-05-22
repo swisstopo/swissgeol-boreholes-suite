@@ -1,5 +1,6 @@
 import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
   createCasing,
@@ -34,10 +35,8 @@ describe("Tests for the wateringress editor.", () => {
     // start editing session
     startBoreholeEditing();
 
-    cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
-    cy.get('[data-cy="wateringress-menu-item"]').click({ force: true });
-
-    cy.wait("@wateringress_GET");
+    navigateInSidebar(SidebarMenuItem.hydrogeology);
+    navigateInSidebar(SidebarMenuItem.waterIngress);
 
     selectLanguage("de");
 

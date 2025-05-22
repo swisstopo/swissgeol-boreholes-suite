@@ -1,3 +1,4 @@
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import { goToRouteAndAcceptTerms, newUneditableBorehole, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Messages for empty profiles", () => {
@@ -5,8 +6,8 @@ describe("Messages for empty profiles", () => {
     goToRouteAndAcceptTerms(`/`);
 
     newUneditableBorehole().as("borehole_id");
-    cy.get('[data-cy="stratigraphy-menu-item"]').click();
-    cy.get('[data-cy="lithology-menu-item"]').click();
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
+    navigateInSidebar(SidebarMenuItem.lithology);
     cy.get('[data-cy="stratigraphy-message"]').should("contain", "No stratigraphy available");
     startBoreholeEditing();
     cy.get('[data-cy="stratigraphy-message"]').should(

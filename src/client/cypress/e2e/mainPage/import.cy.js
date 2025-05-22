@@ -5,6 +5,7 @@ import {
   showTableAndWaitForData,
   verifyRowContains,
 } from "../helpers/dataGridHelpers.js";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
   getElementByDataCy,
@@ -158,7 +159,7 @@ describe("Test for importing boreholes.", () => {
       verifyRowContains("COLDWATERBATH", 0);
       verifyRowContains("COLDWATERDRINK", 1);
       clickOnRowWithText("COLDWATERBATH");
-      getElementByDataCy("attachments-menu-item").click();
+      navigateInSidebar(SidebarMenuItem.attachments);
       cy.contains("NICEANDCOOL.txt");
       cy.contains("BREWINGHOT.txt");
     });

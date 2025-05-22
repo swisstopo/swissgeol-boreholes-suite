@@ -7,6 +7,7 @@ import {
   setSelect,
   toggleMultiSelect,
 } from "../helpers/formHelpers";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
   createCasing,
@@ -39,8 +40,8 @@ describe("Tests for the hydrotest editor.", () => {
     });
     startBoreholeEditing();
 
-    cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
-    cy.get('[data-cy="hydrotest-menu-item"]').click({ force: true });
+    navigateInSidebar(SidebarMenuItem.hydrogeology);
+    navigateInSidebar(SidebarMenuItem.hydrotest);
 
     selectLanguage("de");
 
