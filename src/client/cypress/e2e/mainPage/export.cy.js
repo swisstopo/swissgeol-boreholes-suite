@@ -102,8 +102,8 @@ describe("Test for exporting boreholes.", () => {
     });
 
     // add geometry to borehole and verify export tvd changed
-    navigateInSidebar(SidebarMenuItem.borehole);
     startBoreholeEditing();
+    navigateInSidebar(SidebarMenuItem.borehole);
     setInput("totalDepth", 700);
     setInput("topBedrockFreshMd", 800);
     setInput("topBedrockWeatheredMd", 900);

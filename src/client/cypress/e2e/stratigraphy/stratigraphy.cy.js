@@ -30,7 +30,6 @@ describe("Tests for stratigraphy", () => {
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.stratigraphy);
     navigateInSidebar(SidebarMenuItem.lithology);
-    cy.wait("@stratigraphy_GET");
 
     // Add new stratigraphy
     addItem("addStratigraphy");

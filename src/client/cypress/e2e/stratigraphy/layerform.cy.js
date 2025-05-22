@@ -441,9 +441,9 @@ describe("Tests for the layer form.", () => {
 
   it("saves zero values in number inputs", () => {
     goToRouteAndAcceptTerms(`/1001947`);
+    startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.stratigraphy);
     navigateInSidebar(SidebarMenuItem.lithology);
-    startBoreholeEditing();
 
     const evaluateInitialDepthValues = () => {
       evaluateInput("fromDepth", "0");

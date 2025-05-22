@@ -150,6 +150,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       getElementByDataCy("lithostratigraphy-menu-item").should("be.visible");
       break;
     case SidebarMenuItem.lithology:
+      cy.wait("@lithological_description");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/lithology$/);
       });
