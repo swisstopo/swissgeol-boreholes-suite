@@ -11,6 +11,7 @@ import {
 } from "../helpers/formHelpers";
 import {
   createBorehole,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
   navigateToBoreholeTab,
@@ -74,7 +75,7 @@ describe("Tests for 'Location' edit page.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
 
       evaluateInput("originalName", "PHOTOSQUIRREL");
       evaluateInput("name", "PHOTOSQUIRREL");
@@ -118,7 +119,7 @@ describe("Tests for 'Location' edit page.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
 
       evaluateInput("originalName", "PHOTOSQUIRREL");
       evaluateInput("name", "PHOTOMOUSE");
@@ -136,7 +137,7 @@ describe("Tests for 'Location' edit page.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();
 
       verifyNoUnsavedChanges();

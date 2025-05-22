@@ -12,7 +12,7 @@ import {
 import {
   createBorehole,
   createCompletion,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -99,7 +99,7 @@ describe("completion crud tests", () => {
   it("adds, edits, copies and deletes completions", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/completion`);
+      goToDetailRouteAndAcceptTerms(`/${id}/completion`);
 
       cy.wait("@get-completions-by-boreholeId");
       cy.contains("No completion available");
@@ -174,7 +174,7 @@ describe("completion crud tests", () => {
     createBoreholeWithTwoCompletions();
     cy.get("@boreholeId").then(boreholeId => {
       cy.get("@completion2Id").then(completion2Id => {
-        goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
+        goToDetailRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
         cy.wait("@get-completions-by-boreholeId");
         startBoreholeEditing();
         // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -195,9 +195,9 @@ describe("completion crud tests", () => {
     cy.get("@boreholeId").then(boreholeId => {
       cy.get("@completion1Id").then(completion1Id => {
         cy.get("@completion2Id").then(completion2Id => {
-          goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion1Id}`);
+          goToDetailRouteAndAcceptTerms(`/${boreholeId}/completion/${completion1Id}`);
           assertLocationAndHash(boreholeId, completion1Id, "#casing");
-          goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
+          goToDetailRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
           assertLocationAndHash(boreholeId, completion2Id, "#casing");
           isHeaderTabSelected(1);
           // check hash updates on tab switch
@@ -215,7 +215,7 @@ describe("completion crud tests", () => {
     cy.get("@boreholeId").then(boreholeId => {
       cy.get("@completion1Id").then(completion1Id => {
         cy.get("@completion2Id").then(completion2Id => {
-          goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
+          goToDetailRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
           assertLocationAndHash(boreholeId, completion2Id, "#casing");
           startBoreholeEditing();
           // existing editing to other existing: no prompt should be displayed when no changes have been made
@@ -261,7 +261,7 @@ describe("completion crud tests", () => {
     cy.get("@boreholeId").then(boreholeId => {
       cy.get("@completion1Id").then(completion1Id => {
         cy.get("@completion2Id").then(completion2Id => {
-          goToRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
+          goToDetailRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
           startBoreholeEditing();
 
           // new to existing: no prompt should be displayed when no changes have been made
@@ -370,7 +370,7 @@ describe("completion crud tests", () => {
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/completion`);
+      goToDetailRouteAndAcceptTerms(`/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
 
@@ -599,7 +599,7 @@ describe("completion crud tests", () => {
     cy.get("@borehole_id").then(id => {
       cy.get("@completion1_id").then(completion1Id => {
         // Preserves hash when reloading
-        goToRouteAndAcceptTerms(`/${id}/completion/${completion1Id}`);
+        goToDetailRouteAndAcceptTerms(`/${id}/completion/${completion1Id}`);
 
         assertLocationAndHash(id, completion1Id, "#casing");
         cy.reload(forceReload);

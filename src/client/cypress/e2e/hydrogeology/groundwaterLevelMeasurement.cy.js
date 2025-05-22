@@ -4,7 +4,7 @@ import {
   createBorehole,
   createCasing,
   createCompletion,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   selectLanguage,
   startBoreholeEditing,
@@ -26,7 +26,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
       );
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
     });
     startBoreholeEditing();
 

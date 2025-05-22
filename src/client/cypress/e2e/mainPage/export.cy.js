@@ -20,6 +20,7 @@ import {
   deleteDownloadedFile,
   getElementByDataCy,
   getImportFileFromFixtures,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -97,7 +98,7 @@ describe("Test for exporting boreholes.", () => {
     createBorehole({ "extended.original_name": boreholeName, "custom.alternate_name": boreholeName }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
     });
 
     // add geometry to borehole and verify export tvd changed
@@ -244,7 +245,7 @@ describe("Test for exporting boreholes.", () => {
     deleteDownloadedFile(`${boreholeName}.csv`);
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       getElementByDataCy("edit-button").should("exist");
       getElementByDataCy("editingstop-button").should("not.exist");
       exportItem();
@@ -265,7 +266,7 @@ describe("Test for exporting boreholes.", () => {
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/attachments`);
+      goToDetailRouteAndAcceptTerms(`/${id}/attachments`);
       startBoreholeEditing();
 
       selectInputFile("FREEZINGCOLD.txt", "text/plain");
@@ -308,7 +309,7 @@ describe("Test for exporting boreholes.", () => {
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();
 
       // set two custom identifiers

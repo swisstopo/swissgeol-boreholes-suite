@@ -15,7 +15,7 @@ import {
   deleteBorehole,
   deleteDownloadedFile,
   getElementByDataCy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   readDownloadedFile,
   selectInputFile,
   startBoreholeEditing,
@@ -53,7 +53,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   it("creates, downloads and deletes attachments.", () => {
     createBorehole({ "extended.original_name": "JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
 
       startBoreholeEditing();
       // navigate to attachments tab
@@ -171,7 +171,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   it("creates, exports and deletes photos.", () => {
     createBorehole({ "extended.original_name": "JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
 
       startBoreholeEditing();
       // navigate to photos tab
@@ -227,7 +227,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   it("can save changes on a borehole with attachments.", () => {
     createBorehole({ "extended.original_name": "AAA_COBRA" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
       startBoreholeEditing();
     });
     getElementByDataCy("attachments-menu-item").click();

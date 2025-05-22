@@ -39,6 +39,7 @@ export const interceptApiCalls = () => {
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
   cy.intercept("PUT", "/api/v2/user").as("update-user");
   cy.intercept("GET", "/api/v2/user").as("get-user");
+  cy.intercept("GET", "/api/v2/user/self").as("get-current-user");
   cy.intercept("PUT", "/api/v2/workgroup").as("update-workgroup");
   cy.intercept("POST", "/api/v2/workgroup/setRoles").as("set_workgroup_roles");
 
@@ -169,14 +170,20 @@ export const login = user => {
   );
 };
 
-/**
- * Login into the application as admin.
- */
+export const goToDetailRouteAndAcceptTerms = route => {
+  cy.visit(route);
+  cy.get('[data-cy="accept-button"]').click();
+  cy.wait(["@borehole_by_id", "@get-current-user"]);
+};
 
 export const goToRouteAndAcceptTerms = route => {
   cy.visit(route);
   cy.get('[data-cy="accept-button"]').click();
 };
+
+/**
+ * Login into the application as admin.
+ */
 
 export const loginAsAdmin = () => {
   login("admin");

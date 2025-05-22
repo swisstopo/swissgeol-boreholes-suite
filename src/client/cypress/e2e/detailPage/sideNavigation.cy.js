@@ -13,7 +13,7 @@ import {
   createStratigraphy,
   createWateringress,
   getElementByDataCy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   navigateToBoreholeTab,
   returnToOverview,
   selectInputFile,
@@ -28,7 +28,7 @@ describe("Test for the detail page side navigation.", () => {
     );
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();
     });
 

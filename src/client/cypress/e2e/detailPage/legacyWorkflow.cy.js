@@ -1,6 +1,6 @@
 import {
   createBorehole,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
   stopBoreholeEditing,
@@ -34,8 +34,7 @@ describe("Tests the legacy publication workflow.", () => {
   it("Publishes a borehole without rejections", () => {
     createBorehole({ "extended.original_name": "Borehole to publish" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/status`);
-      cy.wait("@borehole_by_id");
+      goToDetailRouteAndAcceptTerms(`/${id}/status`);
     });
 
     const orange = "rgb(234, 88, 12)";
@@ -133,7 +132,7 @@ describe("Tests the legacy publication workflow.", () => {
   it("Deletes a borehole if its publication status is not Change in Progress", () => {
     createBorehole({ "extended.original_name": "Borehole in review to delete" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/status`);
+      goToDetailRouteAndAcceptTerms(`/${id}/status`);
     });
 
     // Submit for review

@@ -18,6 +18,7 @@ import {
 } from "../helpers/formHelpers.js";
 import {
   getElementByDataCy,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -243,6 +244,7 @@ describe("Tests for the layer form.", () => {
     clickOnNextPage();
     waitForTableData();
     clickOnRowWithText("Andres Miller");
+    cy.wait("@borehole_by_id");
     startBoreholeEditing();
     getElementByDataCy("stratigraphy-menu-item").click();
     getElementByDataCy("lithology-menu-item").click();
@@ -439,7 +441,7 @@ describe("Tests for the layer form.", () => {
   });
 
   it("saves zero values in number inputs", () => {
-    goToRouteAndAcceptTerms(`/1001947`);
+    goToDetailRouteAndAcceptTerms(`/1001947`);
     getElementByDataCy("stratigraphy-menu-item").click();
     getElementByDataCy("lithology-menu-item").click();
     startBoreholeEditing();

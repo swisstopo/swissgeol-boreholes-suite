@@ -3,7 +3,7 @@ import { addItem } from "../helpers/buttonHelpers";
 import { evaluateInput, evaluateSelect, evaluateSelectText, setInput, setSelect } from "../helpers/formHelpers.js";
 import {
   getElementByDataCy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
   stopBoreholeEditing,
@@ -25,7 +25,7 @@ describe("Tests for stratigraphy", () => {
     }
 
     // Navigate to borehole
-    goToRouteAndAcceptTerms("/1002057");
+    goToDetailRouteAndAcceptTerms("/1002057");
     startBoreholeEditing();
     getElementByDataCy("stratigraphy-menu-item").click();
     getElementByDataCy("lithology-menu-item").click();
