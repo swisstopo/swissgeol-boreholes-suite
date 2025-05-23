@@ -70,7 +70,7 @@ public class SyncBoreholesTaskTest
     [TestMethod]
     public async Task SyncBoreholesForEmpty()
     {
-        using var syncContext = await TestSyncContext.BuildAsync(useInMemory: true);
+        using var syncContext = await TestSyncContext.BuildAsync(seedTestDataInSourceContext: false);
         using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), GetDefaultConfiguration());
 
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;

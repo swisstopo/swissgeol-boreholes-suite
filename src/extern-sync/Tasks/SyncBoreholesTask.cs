@@ -14,25 +14,6 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
     /// <inheritdoc/>
     protected override async Task RunTaskAsync(CancellationToken cancellationToken)
     {
-        // Get published boreholes from the source database.
-        var publishedBoreholes = Source.BoreholesWithIncludes
-            .AsNoTrackingWithIdentityResolution()
-            .WithPublicationStatusPublished()
-            .ToList();
-
-        // Remove boreholes already available at the target database by comparing the depth and
-        // coordinates of each borehole if they are within a pre-defined radius.
-        var boreholesAtDestination = await Target.Boreholes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        publishedBoreholes = [.. publishedBoreholes.RemoveDuplicates(boreholesAtDestination)];
-
-        // Skip this sync task if there are no published boreholes available.
-        if (publishedBoreholes.Count == 0)
-        {
-            Logger.LogInformation(
-                "No (new) boreholes in publication status 'published' found on source database. Skipping task...");
-            return;
-        }
-
         // Get the default workgroup to assign synced boreholes with no matching workgroup to.
         var targetDefaultWorkgroupName = Configuration.GetValue<string>(SyncContextConstants.TargetDefaultWorkgroupNameEnvName)
             ?? throw new InvalidOperationException($"Environment variable <{SyncContextConstants.TargetDefaultWorkgroupNameEnvName}> was not set.");
@@ -52,6 +33,25 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
             ?? throw new InvalidOperationException(
                 $"No suitable default user was found at target database." +
                 $"Was looking for a user with sub id <{targetDefaultUserSub}>.");
+
+        // Get published boreholes from the source database.
+        var publishedBoreholes = Source.BoreholesWithIncludes
+            .AsNoTrackingWithIdentityResolution()
+            .WithPublicationStatusPublished()
+            .ToList();
+
+        // Remove boreholes already available at the target database and workgroup by comparing
+        // the depth and coordinates of each borehole if they are within a pre-defined radius.
+        var boreholesAtDestination = await Target.Boreholes.AsNoTracking().Where(x => x.WorkgroupId == targetDefaultWorkgroup.Id).ToListAsync(cancellationToken).ConfigureAwait(false);
+        publishedBoreholes = [.. publishedBoreholes.RemoveDuplicates(boreholesAtDestination)];
+
+        // Skip this sync task if there are no published boreholes available.
+        if (publishedBoreholes.Count == 0)
+        {
+            Logger.LogInformation(
+                "No (new) boreholes in publication status 'published' found on source database. Skipping task...");
+            return;
+        }
 
         Logger.LogInformation(
             "Target default workgroup: <{DefaultWorkgroupName}>\n" +
