@@ -39,12 +39,18 @@ internal class TestSyncContext : ISyncContext, IDisposable
     /// when source and target database contexts are created. This allows to execute
     /// raw SQL queries but comes with a performance penalty. When set to <c>true</c>
     /// an in-memory database is used instead.</param>
-    /// <param name="seedTestDataInSourceContext">Seeds some test data. This option only works when using a real
-    /// PostgreSQL database (<paramref name="useInMemory"/> != <c>true</c>).</param>
-    public static async Task<TestSyncContext> BuildAsync(bool useInMemory = false, bool seedTestDataInSourceContext = false)
+    /// <param name="seedTestDataInSourceContext">
+    /// Seeds some test data into source context. This option only works when using a real
+    /// PostgreSQL database (<paramref name="useInMemory"/> != <c>true</c>).
+    /// </param>
+    /// <param name="seedTestDataInTargetContext">
+    /// Seeds some test data into taget context. This option only works when using a real
+    /// PostgreSQL database (<paramref name="useInMemory"/> != <c>true</c>).
+    /// </param>
+    public static async Task<TestSyncContext> BuildAsync(bool useInMemory = false, bool seedTestDataInSourceContext = false, bool seedTestDataInTargetContext = false)
     {
         var source = CreateDbContextAsync(useInMemory, seedTestDataInSourceContext);
-        var target = CreateDbContextAsync(useInMemory, seedTestData: false);
+        var target = CreateDbContextAsync(useInMemory, seedTestDataInTargetContext);
         await Task.WhenAll(source, target).ConfigureAwait(false);
         return new TestSyncContext(source.Result, target.Result);
     }
@@ -53,7 +59,7 @@ internal class TestSyncContext : ISyncContext, IDisposable
     /// Gets a new instance of the <see cref="TestSyncContext"/> class using already running source and target
     /// databases created with the respective Docker compose 'docker-compose.services.yml'. This one is recommended
     /// to be used while in development to speed up implementation. The <see cref="PostgreSqlContainer"/> test containers
-    /// which are used in <see cref="BuildAsync(bool, bool)"/> take about 2 to 3 minutes until they are seeded and ready.
+    /// which are used in <see cref="BuildAsync(bool, bool, bool)"/> take about 2 to 3 minutes until they are seeded and ready.
     /// </summary>
     public static TestSyncContext GetUsingExistingDatabases()
     {
