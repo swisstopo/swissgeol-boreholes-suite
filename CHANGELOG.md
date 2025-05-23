@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Boreholes could not be exported in the _view_ environment.
+
 ## v2.1.1200 - 2025-05-22
 
 ### Added
