@@ -68,6 +68,30 @@ public class SyncBoreholesTaskTest
     }
 
     [TestMethod]
+    public async Task SyncBoreholesShouldSkipDuplicates()
+    {
+        // By seeding the target context with the same boreholes as in the source context, we can check if the sync task
+        // correctly skips the duplicates. The seeded boreholes in the target context have the publication status 'published'.
+        using var syncContext = await TestSyncContext.BuildAsync(seedTestDataInSourceContext: true, seedTestDataInTargetContext: true);
+        using var syncTask = new SyncBoreholesTask(syncContext, new Mock<ILogger<SyncBoreholesTask>>().Object, GetDefaultConfiguration());
+
+        var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
+        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_022, 1, Role.Publisher, cancellationToken);
+        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_099, 1, Role.Publisher, cancellationToken);
+
+        await syncContext.Source.FixCasingReferencesAsync(cancellationToken);
+
+        await syncTask.ExecuteAndValidateAsync(cancellationToken);
+
+        // Get boreholes with publication status 'published' from both sources.
+        var (publishedSourceBoreholes, publishedTargetBoreholes) = GetPublishedBoreholes(syncContext.Source, syncContext.Target);
+
+        // Expect an no boreholes to be synced to the target context, because they are already present in the target context.
+        Assert.AreEqual(2, publishedSourceBoreholes.Count());
+        Assert.AreEqual(0, publishedTargetBoreholes.Count());
+    }
+
+    [TestMethod]
     public async Task SyncBoreholesForEmpty()
     {
         using var syncContext = await TestSyncContext.BuildAsync(seedTestDataInSourceContext: false);

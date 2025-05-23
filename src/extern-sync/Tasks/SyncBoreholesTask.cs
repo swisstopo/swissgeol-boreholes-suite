@@ -40,11 +40,6 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
             .WithPublicationStatusPublished()
             .ToList();
 
-        // Remove boreholes already available at the target database and workgroup by comparing
-        // the depth and coordinates of each borehole if they are within a pre-defined radius.
-        var boreholesAtDestination = await Target.Boreholes.AsNoTracking().Where(x => x.WorkgroupId == targetDefaultWorkgroup.Id).ToListAsync(cancellationToken).ConfigureAwait(false);
-        publishedBoreholes = [.. publishedBoreholes.RemoveDuplicates(boreholesAtDestination)];
-
         // Skip this sync task if there are no published boreholes available.
         if (publishedBoreholes.Count == 0)
         {
@@ -60,13 +55,23 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
             targetDefaultUser.Name,
             targetDefaultUser.SubjectId);
 
-        // Process published and non duplicated boreholes.
-        foreach (var publishedBorehole in publishedBoreholes)
+        // Process published boreholes.
+        // Operate on a copy of the list, so that we can remove items from it if needed.
+        foreach (var publishedBorehole in publishedBoreholes.ToList())
         {
             // Search for a matching workgroup name
-            var matchingWorkgroup = await Target.Workgroups.AsNoTracking()
-                .SingleOrDefaultAsync(w => w.Name == publishedBorehole.Workgroup.Name, cancellationToken).ConfigureAwait(false);
+            var matchingWorkgroup = await Target.Workgroups.AsNoTracking().SingleOrDefaultAsync(w => w.Name == publishedBorehole.Workgroup.Name, cancellationToken).ConfigureAwait(false);
             var targetWorkgroup = matchingWorkgroup ?? targetDefaultWorkgroup;
+
+            // Skip duplicated boreholes by comparing the depth and coordinates of each borehole
+            // in the target workgroup if they are within a pre-defined radius.
+            var boreholesAtDestination = await Target.Boreholes.AsNoTracking().Where(x => x.WorkgroupId == targetWorkgroup.Id).ToListAsync(cancellationToken).ConfigureAwait(false);
+            if (publishedBorehole.IsWithinPredefinedTolerance(boreholesAtDestination))
+            {
+                publishedBoreholes.Remove(publishedBorehole);
+                Logger.LogInformation("Borehole <{BoreholeName}> already exists at target database. Skipping...", publishedBorehole.Name);
+                continue;
+            }
 
             // Set workgroup
             publishedBorehole.Workgroup = null;
