@@ -78,19 +78,6 @@ public static class SyncContextExtensions
     }
 
     /// <summary>
-    /// Removes duplicated <see cref="Borehole"/>s from <paramref name="boreholes"/> which already exists in
-    /// <paramref name="existingBoreholes"/>. To determine if a <see cref="Borehole"/> is duplicated, the coordinates
-    /// and depth get checked against <see cref="BoreholeExtensions.IsWithinPredefinedTolerance(Borehole, IEnumerable{Borehole})"/>.
-    /// </summary>
-    internal static IEnumerable<Borehole> RemoveDuplicates(this IEnumerable<Borehole> boreholes, IList<Borehole> existingBoreholes)
-    {
-        foreach (var borehole in boreholes.Where(b => !b.IsWithinPredefinedTolerance(existingBoreholes)))
-        {
-            yield return borehole;
-        }
-    }
-
-    /// <summary>
     /// Recursively marks the given <paramref name="items"/> and all their dependencies as new.
     /// </summary>
     internal static void MarkAsNew(this IEnumerable<IIdentifyable> items)
