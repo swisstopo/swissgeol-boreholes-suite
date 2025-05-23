@@ -105,9 +105,18 @@ builder.Services.AddScoped<PhotoCloudService>();
 builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
     var s3ConfigSection = builder.Configuration.GetSection("S3");
+    var serviceUrl = s3ConfigSection.GetValue<string>("ENDPOINT");
+
+    // Do not initialize S3 client if no service URL is specified or if the URL is invalid.
+    // This happens to be the case when running the application in view/anonymous mode.
+    if (string.IsNullOrEmpty(serviceUrl) || !Uri.TryCreate(serviceUrl, UriKind.Absolute, out _))
+    {
+        return default!;
+    }
+
     var clientConfig = new AmazonS3Config
     {
-        ServiceURL = s3ConfigSection.GetValue<string>("ENDPOINT"),
+        ServiceURL = serviceUrl,
         UseHttp = s3ConfigSection.GetValue<string>("SECURE") == "0",
     };
 
