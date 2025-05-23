@@ -59,7 +59,7 @@ internal class TestSyncContext : ISyncContext, IDisposable
     /// Gets a new instance of the <see cref="TestSyncContext"/> class using already running source and target
     /// databases created with the respective Docker compose 'docker-compose.services.yml'. This one is recommended
     /// to be used while in development to speed up implementation. The <see cref="PostgreSqlContainer"/> test containers
-    /// which are used in <see cref="BuildAsync(bool, bool)"/> take about 2 to 3 minutes until they are seeded and ready.
+    /// which are used in <see cref="BuildAsync(bool, bool, bool)"/> take about 2 to 3 minutes until they are seeded and ready.
     /// </summary>
     public static TestSyncContext GetUsingExistingDatabases()
     {
