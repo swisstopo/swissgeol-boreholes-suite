@@ -49,6 +49,8 @@ jobs:
 
       - working-directory: ./src/client
         run: npm run lint
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   cypress-tests:
     runs-on: ubuntu-latest
@@ -87,9 +89,10 @@ jobs:
         env:
           VITE_APP_VERSION: 0.0.99+dev
           TZ: Europe/Zurich
-          # Pass the GitHub token lets this action correctly
-          # determine the unique run id necessary to re-run the checks
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      # Pass the GitHub token lets this action correctly
+      # determine the unique run id necessary to re-run the checks
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   view-sync:
     runs-on: ubuntu-latest
