@@ -30,7 +30,7 @@ describe("Instrumentation crud tests", () => {
       goToRouteAndAcceptTerms(`/${id}/completion`);
     });
 
-    cy.wait("@get-completions-by-boreholeId");
+    cy.wait("@completion_GET");
 
     // start editing session
     startBoreholeEditing();

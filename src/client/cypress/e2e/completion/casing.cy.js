@@ -25,7 +25,7 @@ describe("Casing crud tests", () => {
       cy.wait(["@borehole", "@borehole_by_id"]);
     });
 
-    cy.wait("@get-completions-by-boreholeId");
+    cy.wait("@completion_GET");
 
     // start editing session
     startBoreholeEditing();

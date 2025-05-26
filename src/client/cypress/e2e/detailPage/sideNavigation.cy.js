@@ -96,7 +96,7 @@ describe("Test for the detail page side navigation.", () => {
     setInput("name", "Compl-1");
     setSelect("kindId", 1);
     saveForm("completion-header");
-    cy.wait("@get-completions-by-boreholeId");
+    cy.wait("@completion_GET");
 
     // After adding completion, borehole and with it the side navigation should be updated
     isActiveMenuItem(SidebarMenuItem.completion, true);
