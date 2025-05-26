@@ -207,13 +207,15 @@ class MapComponent extends React.Component {
     const popupEl = document.getElementById("popup-overlay");
 
     // Add hover event listener to the popup
-    popupEl.addEventListener("mouseenter", () => {
-      this.setState({ hoveringPopup: true });
-    });
-    popupEl.addEventListener("mouseleave", () => {
-      this.removePopup();
-      this.setState({ hoveringPopup: false });
-    });
+    if (popupEl) {
+      popupEl.addEventListener("mouseenter", () => {
+        this.setState({ hoveringPopup: true });
+      });
+      popupEl.addEventListener("mouseleave", () => {
+        this.removePopup();
+        this.setState({ hoveringPopup: false });
+      });
+    }
 
     // Zoom to cluster extent if clicked on cluster.
     this.map.on("click", event => {
