@@ -604,16 +604,17 @@ class MapComponent extends React.Component {
     }
 
     const feature = e.selected[0];
-    const isCluster = feature.values_.features?.length > 0;
+    const isCluster = feature?.values_.features?.length > 0;
     if (isCluster) {
       return;
     }
 
-    this.setState({ hover: features }, () => {
-      this.popup.setPosition(features[0].getGeometry().getCoordinates());
-      //this.props.hover?.(features[0].getId());
-      this.props.hover?.(features.map(f => f.getId()));
-    });
+    if (this.popup.getPosition() === undefined) {
+      this.setState({ hover: features }, () => {
+        this.popup.setPosition(features[0].getGeometry().getCoordinates());
+        this.props.hover?.(features.map(f => f.getId()));
+      });
+    }
   }
 
   removePopup() {
@@ -622,6 +623,7 @@ class MapComponent extends React.Component {
         this.setState(
           {
             hover: null,
+            hoveringPopup: false,
           },
           () => {
             this.popup.setPosition(undefined);
