@@ -1,14 +1,10 @@
+import { WorkflowStatus } from "@swisstopo/swissgeol-ui-core";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { User } from "../../../../api/apiInterfaces.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
 import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
 
-export enum WorkflowStatus {
-  Draft = "Draft",
-  InReview = "InReview",
-  Reviewed = "Reviewed",
-  Published = "Published",
-}
+export { WorkflowStatus };
 
 export interface WorkflowV2 {
   id: number;
