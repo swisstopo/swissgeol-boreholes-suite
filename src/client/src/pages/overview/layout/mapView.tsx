@@ -18,7 +18,7 @@ interface MapViewProps {
 
 export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
-  const [rowToHighlight, setRowToHighlight] = useState<number | null>(null);
+  const [rowsToHighlight, setRowsToHighlight] = useState<number[] | null>(null);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [isExporting, setIsExporting] = useState(false);
   const navigate = useNavigate();
@@ -100,8 +100,10 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           ...filters,
         }}
         highlighted={hover ? [hover] : []}
-        hover={(id: React.SetStateAction<number | null>) => {
-          setRowToHighlight(id);
+        hover={(featureIds: number[]) => {
+          if (featureIds?.length > 0) {
+            setRowsToHighlight(featureIds);
+          }
         }}
         layers={setting.data.map.explorer}
         selected={(id: string | null) => {
@@ -128,7 +130,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         filters={filters}
         selectionModel={selectionModel}
         setSelectionModel={setSelectionModel}
-        rowToHighlight={rowToHighlight}
+        rowsToHighlight={rowsToHighlight}
         setHover={setHover}
         setIsExporting={setIsExporting}
       />

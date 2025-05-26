@@ -611,7 +611,8 @@ class MapComponent extends React.Component {
 
     this.setState({ hover: features }, () => {
       this.popup.setPosition(features[0].getGeometry().getCoordinates());
-      this.props.hover?.(features[0].getId());
+      //this.props.hover?.(features[0].getId());
+      this.props.hover?.(features.map(f => f.getId()));
     });
   }
 
