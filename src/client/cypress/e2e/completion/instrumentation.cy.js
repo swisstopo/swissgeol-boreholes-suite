@@ -42,7 +42,7 @@ describe("Instrumentation crud tests", () => {
 
     // create instrumentation
     addItem("addInstrument");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_completion_GET");
 
     // fill out form
     setInput("notes", "Lorem.");
@@ -67,7 +67,7 @@ describe("Instrumentation crud tests", () => {
     startEditing();
 
     // We need the casings for the casing name dropdown
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_completion_GET");
     setInput("fromDepth", "222");
     setSelect("casingId", 2);
 
@@ -79,7 +79,7 @@ describe("Instrumentation crud tests", () => {
     evaluateDisplayValue("casingName", "test instruments - casing-1");
 
     startEditing();
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_completion_GET");
     setSelect("casingId", 1);
     saveForm();
     evaluateDisplayValue("casingName", "open hole");

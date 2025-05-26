@@ -63,7 +63,7 @@ const deleteCompletion = isLastCompletion => {
 
   cy.wait("@completion_DELETE");
   if (!isLastCompletion) {
-    cy.wait(["@casing_GET", "@instrumentation_GET", "@backfill_GET"]);
+    cy.wait(["@casing_by_completion_GET", "@instrumentation_GET", "@backfill_GET"]);
   }
 };
 
@@ -79,7 +79,7 @@ const setHeaderTab = (index, promptHandler) => {
   }
 
   if (!promptHandler || promptHandler !== "cancel") {
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_completion_GET");
     isHeaderTabSelected(index);
   }
 };
@@ -169,7 +169,7 @@ describe("completion crud tests", () => {
       cy.contains("Compl-1 (Clone)");
       // The casing request is triggered twice; once for the original completion and once for the copied. We have to await
       // both to make sure that the UI has completed loading. Otherwise, the header cannot yet be toggled open.
-      cy.wait(["@casing_GET", "@casing_GET", "@backfill_GET", "@backfill_GET"]);
+      cy.wait(["@casing_by_completion_GET", "@casing_by_completion_GET", "@backfill_GET", "@backfill_GET"]);
 
       // edit completion
       startEditHeader();
@@ -291,7 +291,7 @@ describe("completion crud tests", () => {
           assertNewCompletionCreated(boreholeId);
           cy.get(`[data-cy="name-formInput"]`).click();
           setHeaderTab(0);
-          cy.wait("@casing_GET");
+          cy.wait("@casing_by_completion_GET");
           assertLocationAndHash(boreholeId, completion1Id, "#casing");
 
           // new to existing: save option is disabled if form is invalid
@@ -432,7 +432,7 @@ describe("completion crud tests", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addBackfill");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_completion_GET");
     setInput("fromDepth", 0);
     setInput("toDepth", 10);
     setSelect("kindId", 1);
@@ -457,7 +457,7 @@ describe("completion crud tests", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addBackfill");
-    cy.wait("@casing_GET");
+    cy.wait("casing_by_completion_GET");
     setInput("fromDepth", 0);
     setInput("toDepth", 10);
     setSelect("kindId", 1);
@@ -477,7 +477,7 @@ describe("completion crud tests", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addInstrument");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_completion_GET");
     setInput("fromDepth", "0");
     setInput("toDepth", "10");
     setInput("name", "Inst-1");
@@ -527,7 +527,7 @@ describe("completion crud tests", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addInstrument");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_completion_GET");
     setInput("fromDepth", "0");
     setInput("toDepth", "10");
     setInput("name", "Inst-1");
@@ -549,7 +549,7 @@ describe("completion crud tests", () => {
 
     // save header changes, cancel content changes
     startEditing("instrumentation-card.0");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_completion_GETT");
     setInput("notes", "Lorem.");
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
@@ -582,7 +582,7 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="instrumentation-card.0"]').should("be.visible");
     evaluateDisplayValue("notes", "-");
     startEditing("instrumentation-card.0");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_completion_GET");
     setInput("notes", "Lorem.");
     startEditHeader();
     setInput("name", "Compl-1 updated again and again", "completion-header");
@@ -628,7 +628,7 @@ describe("completion crud tests", () => {
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(1000);
         cy.contains("test hash 2").click({ force: true });
-        cy.wait("@casing_GET");
+        cy.wait("@casing_by_completion_GET");
         cy.get("@completion2_id").then(completion2Id => {
           assertLocationAndHash(id, completion2Id, "#casing");
         });

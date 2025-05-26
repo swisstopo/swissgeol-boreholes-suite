@@ -70,7 +70,8 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/completion?boreholeId=**").as("completion_GET");
   cy.intercept("DELETE", "/api/v2/completion?id=**").as("completion_DELETE");
 
-  cy.intercept("/api/v2/casing?completionId=**").as("casing_GET");
+  cy.intercept("/api/v2/casing?completionId=**").as("casing_by_completion_GET");
+  cy.intercept("/api/v2/casing?boreholeId=**").as("casing_by_borehole_GET");
   cy.intercept("POST", "/api/v2/casing").as("casing_POST");
   cy.intercept("PUT", "/api/v2/casing").as("casing_PUT");
   cy.intercept("DELETE", "/api/v2/casing?id=**").as("casing_DELETE");
