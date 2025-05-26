@@ -617,9 +617,11 @@ class MapComponent extends React.Component {
     }
 
     // Ignore clusters
-    const feature = e.selected?.[0];
-    const isCluster = feature?.values_?.features?.length > 0;
-    if (isCluster) return;
+    if (features.length === 1) {
+      const potentialCluster = features[0];
+      const isCluster = potentialCluster?.values_?.features?.length > 0;
+      if (isCluster) return;
+    }
 
     // Show popup if features are found and it's not already open
     if (features.length > 0 && !popupOpen) {
