@@ -441,13 +441,13 @@ class MapComponent extends React.Component {
 
   setFeatureHighlight(feature, hoverCallback) {
     if (hoverCallback) {
-      hoverCallback(feature.getId());
+      hoverCallback([feature.getId()]);
     }
   }
 
   clearFeatureHighlight(hoverCallback) {
     if (hoverCallback) {
-      hoverCallback(null);
+      hoverCallback([]);
     }
   }
 
@@ -583,35 +583,49 @@ class MapComponent extends React.Component {
 
   onHover(e) {
     const pixel = this.map.getEventPixel(e.mapBrowserEvent.originalEvent);
-    const features = [];
-    this.map.forEachFeatureAtPixel(pixel, feature => {
-      if (feature.getGeometry().getType() !== "Polygon") {
-        features.push(feature);
-      }
-    });
+    const popupOpen = this.popup.getPosition() !== undefined;
 
-    // Remove any existing popover if no features are selected or drawing is active
+    // Early return if drawing is active
     if (this.state.drawActive) return;
 
-    // 👇 Ignore map "leave" events while hovering the popup
-    if (features.length === 0) {
+    // If popup is not open, search for features around the pixel
+    let features = [];
+    if (!popupOpen) {
+      const tolerance = 3;
+      const featureSet = new Set();
+      for (let dx = -tolerance; dx <= tolerance; dx++) {
+        for (let dy = -tolerance; dy <= tolerance; dy++) {
+          const nearbyPixel = [pixel[0] + dx, pixel[1] + dy];
+          this.map.forEachFeatureAtPixel(nearbyPixel, feature => {
+            if (feature.getGeometry().getType() !== "Polygon") {
+              featureSet.add(feature);
+            }
+          });
+        }
+      }
+      features = Array.from(featureSet);
+    }
+
+    // Close popup if not hovering over it
+    if (popupOpen) {
       setTimeout(() => {
         if (!this.state.hoveringPopup) {
           this.removePopup();
         }
-      }, 500); // 0.5 second delay to allow moving from point hover to popup hover
+      }, 500); // 0.5s grace period to allow moving pointer into popup
       return;
     }
 
-    const feature = e.selected[0];
-    const isCluster = feature?.values_.features?.length > 0;
-    if (isCluster) {
-      return;
-    }
+    // Ignore clusters
+    const feature = e.selected?.[0];
+    const isCluster = feature?.values_?.features?.length > 0;
+    if (isCluster) return;
 
-    if (this.popup.getPosition() === undefined) {
+    // Show popup if features are found and it's not already open
+    if (features.length > 0 && !popupOpen) {
       this.setState({ hover: features }, () => {
-        this.popup.setPosition(features[0].getGeometry().getCoordinates());
+        const coordinate = features[0].getGeometry().getCoordinates();
+        this.popup.setPosition(coordinate);
         this.props.hover?.(features.map(f => f.getId()));
       });
     }
@@ -627,7 +641,7 @@ class MapComponent extends React.Component {
           },
           () => {
             this.popup.setPosition(undefined);
-            this.props.hover(null);
+            this.props.hover([]);
           },
         );
       }

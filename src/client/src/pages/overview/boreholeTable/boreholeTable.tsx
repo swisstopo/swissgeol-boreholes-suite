@@ -35,7 +35,7 @@ export interface BoreholeTableProps {
   sortModel: GridSortModel;
   setSortModel: (model: GridSortModel) => void;
   setHover: React.Dispatch<React.SetStateAction<number | null>>;
-  rowsToHighlight: number[] | null;
+  rowsToHighlight: number[];
   isBusy: boolean;
 }
 
@@ -235,7 +235,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     if (params.row.lock) {
       css = "disabled-row ";
     }
-    if (rowsToHighlight?.includes(params.id as number)) {
+    if (rowsToHighlight.includes(params.id as number)) {
       css = "highlighted-row ";
     }
     return css;
