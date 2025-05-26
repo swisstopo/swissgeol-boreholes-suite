@@ -2,6 +2,7 @@ import React from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
+import { Language, SwissgeolCoreI18n } from "@swisstopo/swissgeol-ui-core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { theme } from "./AppTheme";
 import { AlertBanner } from "./components/alert/alertBanner";
@@ -12,6 +13,7 @@ import HeaderComponent from "./components/header/headerComponent";
 import { Prompt } from "./components/prompt/prompt";
 import { PromptProvider } from "./components/prompt/promptContext";
 import { AppBox } from "./components/styledComponents";
+import i18n from "./i18n";
 import { DetailProvider } from "./pages/detail/detailContext";
 import { DetailPage } from "./pages/detail/detailPage";
 import { LabelingProvider } from "./pages/detail/labeling/labelingContext";
@@ -61,13 +63,19 @@ class App extends React.Component {
     }
   };
 
+  handleLanguageChange = (language: Language) => {
+    SwissgeolCoreI18n.setLanguage(language);
+  };
+
   componentDidMount() {
     // Prevent showing the 'copy' cursor when dragging over the page.
     document.addEventListener("dragover", this.handleDragOver);
+    i18n.on("languageChanged", this.handleLanguageChange);
   }
 
   componentWillUnmount() {
     document.removeEventListener("dragover", this.handleDragOver);
+    i18n.off("languageChanged", this.handleLanguageChange);
   }
 
   render() {
