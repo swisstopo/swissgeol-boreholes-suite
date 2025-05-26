@@ -7,7 +7,7 @@ interface ClickablePopupProps {
   features?: Feature[];
 }
 
-const ClickablePopup: FC<ClickablePopupProps> = ({ features = [] }) => {
+export const ClickablePopup: FC<ClickablePopupProps> = ({ features = [] }) => {
   const navigate = useNavigate();
   return (
     <Box display="none">
@@ -25,5 +25,3 @@ const ClickablePopup: FC<ClickablePopupProps> = ({ features = [] }) => {
     </Box>
   );
 };
-
-export default ClickablePopup;

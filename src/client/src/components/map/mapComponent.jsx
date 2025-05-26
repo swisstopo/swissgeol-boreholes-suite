@@ -27,7 +27,7 @@ import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import MapControls from "../buttons/mapControls.jsx";
-import ClickablePopup from "./clickablePopup.tsx";
+import { ClickablePopup } from "./clickablePopup.tsx";
 import { projections } from "./mapProjections.js";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions.js";
 
@@ -195,6 +195,7 @@ class MapComponent extends React.Component {
 
     this.map.addInteraction(this.selectClick);
 
+    // Define popup to display on hover.
     this.popup = new Overlay({
       position: undefined,
       positioning: "bottom-center",
