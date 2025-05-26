@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Updated _extern-sync_ logic to filter published boreholes by target workgroup for duplication check.
+
 ### Fixed
 - Boreholes could not be exported in the _view_ environment.
 
