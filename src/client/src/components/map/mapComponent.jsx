@@ -27,9 +27,9 @@ import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import MapControls from "../buttons/mapControls.jsx";
+import ClickablePopup from "./clickablePopup.tsx";
 import { projections } from "./mapProjections.js";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions.js";
-import NamePopup from "./namePopup.jsx";
 
 class MapComponent extends React.Component {
   static contextType = BasemapContext;
@@ -37,7 +37,6 @@ class MapComponent extends React.Component {
   constructor(props) {
     super(props);
     this.onSelected = this.onSelected.bind(this);
-    this.setStateBound = this.setState.bind(this);
     this.fetchAndDisplayGeojson = this.fetchAndDisplayGeojson.bind(this);
     this.styleFunction = styleFunction.bind(this);
     this.clusterStyleFunction = clusterStyleFunction.bind(this);
@@ -74,6 +73,7 @@ class MapComponent extends React.Component {
     this.overlays = [];
     this.state = {
       hover: null,
+      hoveringPopup: false,
       displayedBaseMap: null,
       drawActive: false,
     };
@@ -195,7 +195,6 @@ class MapComponent extends React.Component {
 
     this.map.addInteraction(this.selectClick);
 
-    // Define popup to display on hover.
     this.popup = new Overlay({
       position: undefined,
       positioning: "bottom-center",
@@ -203,6 +202,17 @@ class MapComponent extends React.Component {
       stopEvent: false,
     });
     this.map.addOverlay(this.popup);
+
+    const popupEl = document.getElementById("popup-overlay");
+
+    // Add hover event listener to the popup
+    popupEl.addEventListener("mouseenter", () => {
+      this.setState({ hoveringPopup: true });
+    });
+    popupEl.addEventListener("mouseleave", () => {
+      this.removePopup();
+      this.setState({ hoveringPopup: false });
+    });
 
     // Zoom to cluster extent if clicked on cluster.
     this.map.on("click", event => {
@@ -572,49 +582,52 @@ class MapComponent extends React.Component {
   }
 
   onHover(e) {
-    this.removePopup();
+    const pixel = this.map.getEventPixel(e.mapBrowserEvent.originalEvent);
+    const features = [];
+    this.map.forEachFeatureAtPixel(pixel, feature => {
+      if (feature.getGeometry().getType() !== "Polygon") {
+        features.push(feature);
+      }
+    });
+
     // Remove any existing popover if no features are selected or drawing is active
-    if (e.selected.length === 0 || this.state.drawActive) return;
+    if (this.state.drawActive) return;
+
+    // 👇 Ignore map "leave" events while hovering the popup
+    if (features.length === 0) {
+      setTimeout(() => {
+        if (!this.state.hoveringPopup) {
+          this.removePopup();
+        }
+      }, 500); // 0.5 second delay to allow moving from point hover to popup hover
+      return;
+    }
 
     const feature = e.selected[0];
     const isCluster = feature.values_.features?.length > 0;
     if (isCluster) {
       return;
     }
-    if (feature?.getGeometry().getType() !== "Polygon") {
-      this.displayPopup(feature);
-    }
+
+    this.setState({ hover: features }, () => {
+      this.popup.setPosition(features[0].getGeometry().getCoordinates());
+      this.props.hover?.(features[0].getId());
+    });
   }
 
   removePopup() {
     if (this.popup.getPosition() !== undefined) {
-      const { hover: hoverCallback } = this.props;
-      if (hoverCallback !== undefined) {
+      if (this.props.hover !== undefined) {
         this.setState(
           {
             hover: null,
           },
           () => {
             this.popup.setPosition(undefined);
-            hoverCallback(null);
+            this.props.hover(null);
           },
         );
       }
-    }
-  }
-
-  displayPopup(feature) {
-    const { hover: hoverCallback } = this.props;
-    if (hoverCallback !== undefined) {
-      this.setState(
-        {
-          hover: feature,
-        },
-        () => {
-          this.popup.setPosition(feature.getGeometry().getCoordinates());
-          hoverCallback(feature.getId());
-        },
-      );
     }
   }
 
@@ -659,7 +672,7 @@ class MapComponent extends React.Component {
             position: "relative",
           }}
         />
-        <NamePopup state={this.state}></NamePopup>
+        <ClickablePopup features={this.state.hover} />
         <BasemapSelector marginBottom={"30px"} />
         <MapControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
       </Box>
