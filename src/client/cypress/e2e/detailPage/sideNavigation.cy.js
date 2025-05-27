@@ -40,6 +40,7 @@ describe("Test for the detail page side navigation.", () => {
 
     // Check borehole content tabs
     navigateInSidebar(SidebarMenuItem.borehole);
+    cy.wait("@codelist_GET");
     isInactiveBoreholeTab(BoreholeTab.sections, false);
     isInactiveBoreholeTab(BoreholeTab.geometry, false);
 
