@@ -1,13 +1,12 @@
-import { Box, Stack } from "@mui/material";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { useWorkflow, WorkflowChange } from "./workflow.ts";
-import "./../../../../swissgeol-ui-core.css";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { Box, Stack } from "@mui/material";
 import type { SgcWorkflowSelectionEntry } from "@swisstopo/swissgeol-ui-core";
-import { SgcWorkflow } from "@swisstopo/swissgeol-ui-core-react";
+import { SgcButton, SgcWorkflow } from "@swisstopo/swissgeol-ui-core-react";
 import { useCurrentUser } from "../../../../api/user.ts";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { DetailContext } from "../../detailContext.tsx";
+import { useWorkflow, WorkflowChange } from "./workflow.ts";
 import { WorkflowAssignedUserCard } from "./workflowAssignedUserCard.tsx";
 import { WorkflowStatusCard } from "./workflowStatusCard.tsx";
 import { WorkflowTabs } from "./workflowTabs.tsx";
