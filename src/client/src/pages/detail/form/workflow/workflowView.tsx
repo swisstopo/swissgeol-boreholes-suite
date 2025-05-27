@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack } from "@mui/material";
 import type { SgcWorkflowSelectionEntry } from "@swisstopo/swissgeol-ui-core";
-import { SgcButton, SgcWorkflow } from "@swisstopo/swissgeol-ui-core-react";
+import { SgcWorkflow } from "@swisstopo/swissgeol-ui-core-react";
 import { useCurrentUser } from "../../../../api/user.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { DetailContext } from "../../detailContext.tsx";
