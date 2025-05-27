@@ -6,7 +6,7 @@ import { usersQueryKey } from "./user.ts";
 
 export const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2("workgroup", "GET");
 
-export const fetchWorkgroupById = async (id: number) => await fetchApiV2(`workgroup/${id}`, "GET");
+export const fetchWorkgroupById = async (id: number): Promise<Workgroup> => await fetchApiV2(`workgroup/${id}`, "GET");
 
 export const createWorkgroup = async (workgroup: Workgroup) =>
   await fetchApiV2WithApiError("workgroup", "POST", workgroup);
