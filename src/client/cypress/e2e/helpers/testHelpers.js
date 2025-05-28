@@ -68,19 +68,22 @@ export const interceptApiCalls = () => {
   });
 
   cy.intercept("/api/v2/completion?boreholeId=**").as("get-completions-by-boreholeId");
+
   cy.intercept("/api/v2/casing?completionId=**").as("get-casings-by-completionId");
+  cy.intercept("/api/v2/casing?boreholeId=**").as("get-casings-by-boreholeId");
+  cy.intercept("POST", "/api/v2/casing").as("casing_POST");
+  cy.intercept("PUT", "/api/v2/casing").as("casing_PUT");
+  cy.intercept("DELETE", "/api/v2/casing?id=**").as("casing_DELETE");
 
-  cy.intercept("/api/v2/casing*", req => {
-    return (req.alias = `casing_${req.method}`);
-  });
+  cy.intercept("/api/v2/instrumentation?completionId=**").as("instrumentation_GET");
+  cy.intercept("POST", "/api/v2/instrumentation").as("instrumentation_POST");
+  cy.intercept("PUT", "/api/v2/instrumentation").as("instrumentation_PUT");
+  cy.intercept("DELETE", "/api/v2/instrumentation?id=**").as("instrumentation_DELETE");
 
-  cy.intercept("/api/v2/instrumentation*", req => {
-    return (req.alias = `instrumentation_${req.method}`);
-  });
-
-  cy.intercept("/api/v2/backfill*", req => {
-    return (req.alias = `backfill_${req.method}`);
-  });
+  cy.intercept("/api/v2/backfill?completionId=**").as("backfill_GET");
+  cy.intercept("POST", "/api/v2/backfill").as("backfill_POST");
+  cy.intercept("PUT", "/api/v2/backfill").as("backfill_PUT");
+  cy.intercept("DELETE", "/api/v2/backfill?id=**").as("backfill_DELETE");
 
   cy.intercept("/api/v2/codelist*", req => {
     return (req.alias = `codelist_${req.method}`);
