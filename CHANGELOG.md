@@ -4,7 +4,7 @@
 
 ### Changed
 - Updated _extern-sync_ logic to filter published boreholes by target workgroup for duplication check.
-- Workgroup names can be edited.
+- Administrators can now edit workgroup names on the settings page.
 
 ### Fixed
 - Boreholes could not be exported in the _view_ environment.
