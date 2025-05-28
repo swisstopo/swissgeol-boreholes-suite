@@ -134,8 +134,7 @@ const ImportPanel = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-          }}
-        >
+          }}>
           <CircularProgress />
         </Box>
       )}
