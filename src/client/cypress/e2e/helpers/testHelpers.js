@@ -69,8 +69,8 @@ export const interceptApiCalls = () => {
 
   cy.intercept("/api/v2/completion?boreholeId=**").as("get-completions-by-boreholeId");
 
-  cy.intercept("/api/v2/casing?completionId=**").as("get-casings-by-completionId");
-  cy.intercept("/api/v2/casing?boreholeId=**").as("get-casings-by-boreholeId");
+  cy.intercept("/api/v2/casing?completionId=**").as("casing_by_completion_GET");
+  cy.intercept("/api/v2/casing?boreholeId=**").as("casing_by_borehole_GET");
   cy.intercept("POST", "/api/v2/casing").as("casing_POST");
   cy.intercept("PUT", "/api/v2/casing").as("casing_PUT");
   cy.intercept("DELETE", "/api/v2/casing?id=**").as("casing_DELETE");

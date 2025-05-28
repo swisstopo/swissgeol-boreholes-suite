@@ -32,7 +32,7 @@ describe("Casing crud tests", () => {
 
     // select casing tab
     cy.get("[data-cy=completion-content-tab-casing]").click();
-    cy.wait("@get-casings-by-completionId");
+    cy.wait("@casing_by_completion_GET");
   });
 
   it("adds, edits and deletes casings", () => {
@@ -60,7 +60,7 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="casingElements.1.delete"]').click();
 
     saveForm();
-    cy.wait("@get-casings-by-completionId");
+    cy.wait("@casing_by_completion_GET");
 
     evaluateDisplayValue("name", "casing-1");
     evaluateDisplayValue("fromdepth", "0");
@@ -94,7 +94,7 @@ describe("Casing crud tests", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addInstrument");
-    cy.wait("@get-casings-by-completionId");
+    cy.wait("@casing_by_completion_GET");
 
     setInput("notes", "Lorem.");
     setInput("name", "Inst-1");
@@ -108,7 +108,7 @@ describe("Casing crud tests", () => {
     evaluateDisplayValue("name", "Inst-1");
 
     cy.get("[data-cy=completion-content-tab-casing]").click();
-    cy.wait("@get-casings-by-completionId");
+    cy.wait("@casing_by_completion_GET");
 
     deleteItem("casing-card.0");
     handlePrompt("Do you really want to delete this entry?", "delete");
@@ -153,7 +153,7 @@ describe("Casing crud tests", () => {
 
     setInput("casingElements.0.toDepth", "8");
     saveForm();
-    cy.wait("@get-casings-by-completionId");
+    cy.wait("@casing_by_completion_GET");
     cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains("casing-2");
     cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains("casing-1");
 
@@ -162,7 +162,7 @@ describe("Casing crud tests", () => {
     });
     setInput("casingElements.0.fromDepth", "3");
     saveForm();
-    cy.wait("@get-casings-by-completionId");
+    cy.wait("@casing_by_completion_GET");
     cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains("casing-1");
     cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains("casing-2");
   });

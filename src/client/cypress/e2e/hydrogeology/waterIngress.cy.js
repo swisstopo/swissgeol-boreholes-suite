@@ -42,7 +42,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // create wateringress
     addItem("addWaterIngress");
-    cy.wait("@get-casings-by-boreholeId");
+    cy.wait("@casing_by_borehole_GET");
 
     setSelect("quantityId", 2);
     setSelect("reliabilityId", 2);

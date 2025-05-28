@@ -38,7 +38,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // create groundwater level measurement
     addItem("addGroundwaterLevelMeasurement");
-    cy.wait("@get-casings-by-boreholeId");
+    cy.wait("@casing_by_borehole_GET");
 
     setSelect("kindId", 2);
     setSelect("casingId", 2);
