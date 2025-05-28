@@ -1,5 +1,5 @@
 import { hasPagination, showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
+import { evaluateSelectText, setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
 import {
   createBorehole,
   createLithologyLayer,
@@ -278,5 +278,14 @@ describe("Search filter tests", () => {
     getElementByDataCy("filter-chip-workgroup").should("exist");
     getElementByDataCy("all").click();
     getElementByDataCy("filter-chip-workgroup").should("not.exist");
+  });
+
+  it("shows additional values in domain filter", () => {
+    goToRouteAndAcceptTerms("/");
+    getElementByDataCy("show-filter-button").click();
+    cy.contains("Location").click();
+    getElementByDataCy("show-all-fields-switch").click();
+    setSelect("borehole_identifier", 0);
+    evaluateSelectText("borehole_identifier", "Boreholes.swissgeol.ch ID");
   });
 });

@@ -8,6 +8,7 @@
 
 ### Fixed
 - Boreholes could not be exported in the _view_ environment.
+- `Boreholes.swissgeol.ch ID` was not listed in the location type ID filter.
 
 ## v2.1.1200 - 2025-05-22
 

@@ -15,6 +15,12 @@ export interface SearchData {
   schema?: string;
   placeholder?: string;
   hideShowAllFields?: boolean;
+  additionalValues?: AdditionalValue[];
+}
+
+export interface AdditionalValue {
+  id: number;
+  translationId: string;
 }
 
 export interface FilterComponentProps {
