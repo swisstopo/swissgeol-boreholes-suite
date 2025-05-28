@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Box, Button, Link, Stack } from "@mui/material";
+import { Box, Button, CircularProgress, Link, Stack } from "@mui/material";
 import { importBoreholesCsv, importBoreholesJson, importBoreholesZip } from "../../../../api/borehole.ts";
 import { downloadCodelistCsv } from "../../../../api/fetchApiV2.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
@@ -28,6 +28,7 @@ const ImportPanel = ({
   const { showAlert } = useContext(AlertContext);
 
   const [file, setFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const refresh = () => {
     dispatch({ type: "SEARCH_EDITOR_FILTER_REFRESH" });
   };
@@ -43,6 +44,7 @@ const ImportPanel = ({
   };
 
   const handleImportResponse = async (response: Response) => {
+    setIsLoading(false);
     if (response.ok) {
       showAlert(`${await response.text()} ${t("boreholesImported")}.`, "success");
       setFile(null);
@@ -67,6 +69,7 @@ const ImportPanel = ({
   };
 
   const handleBoreholeImport = () => {
+    setIsLoading(true);
     const combinedFormData = new FormData();
     if (file !== null) {
       combinedFormData.append("boreholesFile", file);
@@ -88,35 +91,55 @@ const ImportPanel = ({
   };
 
   return (
-    <Stack direction="column" height={"100%"}>
-      <SideDrawerHeader title={t("import")} toggleDrawer={toggleDrawer} />
-      <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
-        <Stack direction="column" spacing={3}>
-          <WorkgroupSelect
-            workgroupId={workgroupId}
-            enabledWorkgroups={enabledWorkgroups}
-            setWorkgroupId={setWorkgroupId}
-          />
-          <BoreholeImportDropzone
-            file={file}
-            setFile={setFile}
-            acceptedFileTypes={["application/json", "text/csv", "application/zip", "application/x-zip-compressed"]}
-          />
-          <Box>
-            <Link sx={{ cursor: "pointer" }} variant="subtitle1" onClick={downloadCodelistCsv}>
-              {t("csvCodeListReferenceExplanation")}
-            </Link>
-          </Box>
-        </Stack>
-      </Box>
-      <Button
-        variant="contained"
-        data-cy={"import-button"}
-        disabled={!file || enabledWorkgroups?.length === 0}
-        onClick={handleBoreholeImport}>
-        {t("import")}
-      </Button>
-    </Stack>
+    <Box position="relative" height="100%">
+      <Stack direction="column" height={"100%"}>
+        <SideDrawerHeader title={t("import")} toggleDrawer={toggleDrawer} />
+        <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
+          <Stack direction="column" spacing={3}>
+            <WorkgroupSelect
+              workgroupId={workgroupId}
+              enabledWorkgroups={enabledWorkgroups}
+              setWorkgroupId={setWorkgroupId}
+            />
+            <BoreholeImportDropzone
+              file={file}
+              setFile={setFile}
+              acceptedFileTypes={["application/json", "text/csv", "application/zip", "application/x-zip-compressed"]}
+            />
+            <Box>
+              <Link sx={{ cursor: "pointer" }} variant="subtitle1" onClick={downloadCodelistCsv}>
+                {t("csvCodeListReferenceExplanation")}
+              </Link>
+            </Box>
+          </Stack>
+        </Box>
+        <Button
+          variant="contained"
+          data-cy={"import-button"}
+          disabled={!file || enabledWorkgroups?.length === 0}
+          onClick={handleBoreholeImport}>
+          {t("import")}
+        </Button>
+      </Stack>
+      {isLoading && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            bgcolor: "rgba(255,255,255,0.7)",
+            zIndex: 10,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
+    </Box>
   );
 };
 
