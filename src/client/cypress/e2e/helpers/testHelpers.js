@@ -76,12 +76,12 @@ export const interceptApiCalls = () => {
   cy.intercept("PUT", "/api/v2/casing").as("casing_PUT");
   cy.intercept("DELETE", "/api/v2/casing?id=**").as("casing_DELETE");
 
-  cy.intercept("/api/v2/instrumentation?completionId=**").as("instrumentation_GET");
+  cy.intercept("/api/v2/instrumentation?completionId=**").as("instrumentation_by_completion_GET");
   cy.intercept("POST", "/api/v2/instrumentation").as("instrumentation_POST");
   cy.intercept("PUT", "/api/v2/instrumentation").as("instrumentation_PUT");
   cy.intercept("DELETE", "/api/v2/instrumentation?id=**").as("instrumentation_DELETE");
 
-  cy.intercept("/api/v2/backfill?completionId=**").as("backfill_GET");
+  cy.intercept("/api/v2/backfill?completionId=**").as("backfill_by_completion_GET");
   cy.intercept("POST", "/api/v2/backfill").as("backfill_POST");
   cy.intercept("PUT", "/api/v2/backfill").as("backfill_PUT");
   cy.intercept("DELETE", "/api/v2/backfill?id=**").as("backfill_DELETE");

@@ -63,7 +63,7 @@ const deleteCompletion = isLastCompletion => {
 
   cy.wait("@completion_DELETE");
   if (!isLastCompletion) {
-    cy.wait(["@casing_by_completion_GET", "@instrumentation_GET", "@backfill_GET"]);
+    cy.wait(["@casing_by_completion_GET", "@instrumentation_by_completion_GET", "@backfill_by_completion_GET"]);
   }
 };
 
@@ -100,7 +100,7 @@ export const setContentTab = (tab, promptHandler) => {
   }
 
   if (!promptHandler || promptHandler !== "cancel") {
-    cy.wait(`@${tab}_GET`);
+    cy.wait(`@${tab}_by_completion_GET`);
     isContentTabSelected(tab);
     cy.get(".MuiCircularProgress-root").should("not.exist");
   }
@@ -158,7 +158,7 @@ describe("completion crud tests", () => {
       setInput("abandonDate", "2012-11-14");
       setInput("notes", "Lorem.");
       saveChanges();
-      cy.wait("@backfill_GET");
+      cy.wait("@backfill_by_completion_GET");
       cy.contains("Compl-1");
       cy.get('[data-cy="addcompletion-button"]').should("be.enabled");
 
@@ -169,7 +169,7 @@ describe("completion crud tests", () => {
       cy.contains("Compl-1 (Clone)");
       // The casing request is triggered twice; once for the original completion and once for the copied. We have to await
       // both to make sure that the UI has completed loading. Otherwise, the header cannot yet be toggled open.
-      cy.wait(["@casing_by_completion_GET", "@casing_by_completion_GET", "@backfill_GET", "@backfill_GET"]);
+      cy.wait(["@casing_by_completion_GET", "@casing_by_completion_GET", "@backfill_by_completion_GET", "@backfill_by_completion_GET"]);
 
       // edit completion
       startEditHeader();
@@ -180,7 +180,7 @@ describe("completion crud tests", () => {
       setInput("name", "Compl-2");
       toggleCheckbox("isPrimary");
       saveChanges();
-      cy.wait("@backfill_GET");
+      cy.wait("@backfill_by_completion_GET");
       cy.contains("Compl-2");
       startEditHeader();
       evaluateCheckbox("isPrimary", "true");
@@ -427,7 +427,7 @@ describe("completion crud tests", () => {
 
     // cancel switching header tabs when content changes are present
     setContentTab("backfill");
-    cy.wait("@backfill_GET");
+    cy.wait("@backfill_by_completion_GET");
 
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
@@ -449,7 +449,7 @@ describe("completion crud tests", () => {
     isHeaderTabSelected(1);
     cancelEditing();
     setContentTab("backfill");
-    cy.wait("@backfill_GET");
+    cy.wait("@backfill_by_completion_GET");
     cy.get('[data-cy="backfill-card.0"]').should("not.exist");
 
     // save content changes when switching header tabs
@@ -457,7 +457,7 @@ describe("completion crud tests", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     addItem("addBackfill");
-    cy.wait("casing_by_completion_GET");
+    cy.wait("@casing_by_completion_GET");
     setInput("fromDepth", 0);
     setInput("toDepth", 10);
     setSelect("kindId", 1);
@@ -467,12 +467,12 @@ describe("completion crud tests", () => {
     isHeaderTabSelected(1);
     cancelEditing();
     setContentTab("backfill");
-    cy.wait("@backfill_GET");
+    cy.wait("@backfill_by_completion_GET");
     cy.get('[data-cy="backfill-card.0"]').should("be.visible");
 
     // cancel header changes, no prompt should be displayed for content changes because tab switching was already canceled
     setContentTab("instrumentation");
-    cy.wait("@instrumentation_GET");
+    cy.wait("@instrumentation_by_completion_GET");
 
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
@@ -520,7 +520,7 @@ describe("completion crud tests", () => {
     setHeaderTab(0);
     evaluateDisplayValue("name", "Compl-1", "completion-header");
     setContentTab("instrumentation");
-    cy.wait("@instrumentation_GET");
+    cy.wait("@instrumentation_by_completion_GET");
     cy.get('[data-cy="instrumentation-card.0"]').should("not.exist");
 
     //reset header changes, save content changes
@@ -575,7 +575,7 @@ describe("completion crud tests", () => {
     setHeaderTab(0);
     evaluateDisplayValue("name", "Compl-1 updated again", "completion-header");
     setContentTab("instrumentation");
-    cy.wait("@instrumentation_GET");
+    cy.wait("@instrumentation_by_completion_GET");
     evaluateDisplayValue("notes", "-");
 
     // save header changes, save content changes
