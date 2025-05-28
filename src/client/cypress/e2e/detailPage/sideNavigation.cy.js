@@ -110,6 +110,7 @@ describe("Test for the detail page side navigation.", () => {
     navigateInSidebar(SidebarMenuItem.waterIngress);
     isActiveMenuItem(SidebarMenuItem.waterIngress, false);
     addItem("addWaterIngress");
+    cy.wait("@casing_GET");
     setSelect("quantityId", 2);
     saveForm();
     isMenuItemWithContent(SidebarMenuItem.hydrogeology);
@@ -118,6 +119,7 @@ describe("Test for the detail page side navigation.", () => {
     navigateInSidebar(SidebarMenuItem.groundwaterLevelMeasurement);
     isActiveMenuItem(SidebarMenuItem.groundwaterLevelMeasurement, false);
     addItem("addGroundwaterLevelMeasurement");
+    cy.wait("@casing_GET");
     setSelect("kindId", 2);
     saveForm();
     isActiveMenuItem(SidebarMenuItem.groundwaterLevelMeasurement, true);
@@ -125,6 +127,7 @@ describe("Test for the detail page side navigation.", () => {
     navigateInSidebar(SidebarMenuItem.fieldMeasurement);
     isActiveMenuItem(SidebarMenuItem.fieldMeasurement, false);
     addItem("addFieldMeasurement");
+    cy.wait("@casing_GET");
     setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
     setSelect("fieldMeasurementResults.0.parameterId", 0, 9);
     setInput("fieldMeasurementResults.0.value", "10");
@@ -134,6 +137,7 @@ describe("Test for the detail page side navigation.", () => {
     navigateInSidebar(SidebarMenuItem.hydrotest);
     isActiveMenuItem(SidebarMenuItem.hydrotest, false);
     addItem("addHydrotest");
+    cy.wait("@casing_GET");
     toggleMultiSelect("testKindId", [3]);
     saveForm();
     isActiveMenuItem(SidebarMenuItem.hydrotest, true);
