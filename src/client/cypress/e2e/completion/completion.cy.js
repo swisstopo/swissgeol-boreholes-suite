@@ -549,7 +549,7 @@ describe("completion crud tests", () => {
 
     // save header changes, cancel content changes
     startEditing("instrumentation-card.0");
-    cy.wait("@casing_by_completion_GETT");
+    cy.wait("@casing_by_completion_GET");
     setInput("notes", "Lorem.");
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
