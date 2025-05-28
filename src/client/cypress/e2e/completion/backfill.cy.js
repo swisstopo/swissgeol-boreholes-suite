@@ -63,7 +63,7 @@ describe("Backfill crud tests", () => {
 
     // edit backfill
     startEditing();
-    cy.wait("@casing_GET");
+    cy.wait("@get-casings-by-completionId");
 
     setInput("fromDepth", "222");
     setSelect("casingId", 2);
@@ -75,7 +75,7 @@ describe("Backfill crud tests", () => {
     evaluateDisplayValue("casingName", "test backfill - casing-1");
 
     startEditing();
-    cy.wait("@casing_GET");
+    cy.wait("@get-casings-by-completionId");
     setSelect("casingId", 1);
     saveForm();
     evaluateDisplayValue("casingName", "open hole");
