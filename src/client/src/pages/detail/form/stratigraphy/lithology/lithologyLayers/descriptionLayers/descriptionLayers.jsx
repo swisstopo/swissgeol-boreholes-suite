@@ -34,8 +34,6 @@ const DescriptionLayers = props => {
 
   const { t } = useTranslation();
 
-  if (!descriptions) return;
-
   const descriptionRefs = useMemo(
     () =>
       Array(displayDescriptions?.length)
@@ -67,6 +65,7 @@ const DescriptionLayers = props => {
   useEffect(() => {
     // include empty items in description column to signal missing descriptions
     const tempDescriptions = [];
+    if (!descriptions || !layers?.data) return;
     descriptions
       ?.sort((a, b) => a.fromDepth - b.fromDepth)
       .forEach((description, index) => {
@@ -92,9 +91,9 @@ const DescriptionLayers = props => {
 
   // updates description if layer is deleted
   useEffect(() => {
-    if (deleteParams && descriptions.length) {
+    if (deleteParams && descriptions?.length) {
       const { resolvingAction, layer } = deleteParams;
-      // delete description if the layer was deleted with extention
+      // delete description if the layer was deleted with extension
       if (resolvingAction !== 0) {
         deleteMutation.mutate(
           descriptions?.find(d => d.fromDepth === layer.fromDepth && d.toDepth === layer.toDepth)?.id,
