@@ -280,9 +280,7 @@ describe("Tests for the layer form.", () => {
     evaluateUpdatedFormState(true);
 
     // assert updated form values persist after saving
-    stopBoreholeEditing();
-    getElementByDataCy("show-all-fields-switch").should("not.exist");
-    clickOnLayerAndWaitForForm("9");
+    stopBoreholeEditing(); // layer 9 stays open when editing is stopped
     evaluateUpdatedFormState(false);
 
     // reset form values
@@ -291,10 +289,10 @@ describe("Tests for the layer form.", () => {
     resetUpdatedValues();
     evaluateInitialFormState(true);
     saveForm();
+    getElementByDataCy("show-all-fields-switch").should("not.exist");
 
     // assert updated form values persist after saving
     stopBoreholeEditing();
-    getElementByDataCy("show-all-fields-switch").should("not.exist");
     clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(false);
   });
