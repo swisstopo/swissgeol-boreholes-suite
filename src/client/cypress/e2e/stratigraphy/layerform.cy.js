@@ -191,6 +191,7 @@ function resetUpdatedValues() {
 
 function clickOnLayerAndWaitForForm(number) {
   getElementByDataCy(`styled-layer-${number}`).click();
+  cy.wait("@get-layer-by-id");
   cy.get(".loading-indicator").should("not.exist");
   cy.get(".MuiCircularProgress-root").should("not.exist");
   getElementByDataCy("show-all-fields-switch").click();
@@ -253,7 +254,7 @@ describe("Tests for the layer form.", () => {
     clickOnLayerAndWaitForForm("8");
     resetUpdatedValues();
     saveForm();
-    cy.wait("@update-layer");
+    cy.wait(["@update-layer", "@get-layers-by-profileId"]);
     getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
     clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(true);
@@ -273,7 +274,7 @@ describe("Tests for the layer form.", () => {
     // change some inputs then save
     updateInputsForEachType();
     saveForm();
-    cy.wait("@update-layer");
+    cy.wait(["@update-layer", "@get-layers-by-profileId"]);
     getElementByDataCy("styled-layer-9").should("contain", "marble, gravel, fine-medium-coarse");
     clickOnLayerAndWaitForForm("9");
     evaluateUpdatedFormState(true);
@@ -377,6 +378,7 @@ describe("Tests for the layer form.", () => {
 
     // verify all inputs have been reset
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
+    cy.wait("@get-layer-by-id");
     multiSelectAttributes.forEach(attribute => {
       evaluateMultiSelect(attribute.value, []);
     });
@@ -389,6 +391,7 @@ describe("Tests for the layer form.", () => {
     saveForm();
     getElementByDataCy("styled-layer-0").should("contain", "beige, dark brown");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
+    cy.wait("@get-layer-by-id");
 
     // remove some chips
     getElementByDataCy("remove-beige-chip").click();
@@ -404,6 +407,7 @@ describe("Tests for the layer form.", () => {
     stopBoreholeEditing();
     getElementByDataCy("styled-layer-0").should("contain", "dark brown");
     getElementByDataCy("styled-layer-0").click();
+    cy.wait("@get-layer-by-id");
     // verify chips are still visible when not editing
     multiSelectAttributes.forEach(attribute => {
       evaluateMultiSelect(attribute.value, attribute.updatedCodeValues);
@@ -460,20 +464,20 @@ describe("Tests for the layer form.", () => {
     setSelect("grainSize1Id", 4);
     evaluateInitialDepthValues();
     saveForm();
-    cy.wait("@update-layer");
+    cy.wait(["@update-layer", "@get-layers-by-profileId"]);
     clickOnLayerAndWaitForForm("0");
 
     evaluateInitialDepthValues();
     setInput("fromDepth", "1");
     saveForm();
-    cy.wait("@update-layer");
+    cy.wait(["@update-layer", "@get-layers-by-profileId"]);
     clickOnLayerAndWaitForForm("0");
 
     evaluateInput("fromDepth", "1");
     evaluateInput("toDepth", "10");
     setInput("fromDepth", "0");
     saveForm();
-    cy.wait("@update-layer");
+    cy.wait(["@update-layer", "@get-layers-by-profileId"]);
     clickOnLayerAndWaitForForm("0");
 
     evaluateInitialDepthValues();
