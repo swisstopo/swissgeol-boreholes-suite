@@ -1,9 +1,10 @@
 import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Box, Button, CircularProgress, Link, Stack } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Link, Stack } from "@mui/material";
 import { importBoreholesCsv, importBoreholesJson, importBoreholesZip } from "../../../../api/borehole.ts";
 import { downloadCodelistCsv } from "../../../../api/fetchApiV2.ts";
+import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import { ErrorResponse, NewBoreholeProps } from "../commons/actionsInterfaces.ts";
@@ -44,7 +45,6 @@ const ImportPanel = ({
   };
 
   const handleImportResponse = async (response: Response) => {
-    setIsLoading(false);
     if (response.ok) {
       showAlert(`${await response.text()} ${t("boreholesImported")}.`, "success");
       setFile(null);
@@ -66,6 +66,7 @@ const ImportPanel = ({
         showAlert(t("boreholesImportError"), "error");
       }
     }
+    setIsLoading(false);
   };
 
   const handleBoreholeImport = () => {
@@ -122,21 +123,15 @@ const ImportPanel = ({
         </Button>
       </Stack>
       {isLoading && (
-        <Box
+        <Backdrop
           sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            bgcolor: "rgba(255,255,255,0.7)",
-            zIndex: 10,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-          <CircularProgress />
-        </Box>
+            color: theme.palette.primary.main,
+            backgroundColor: theme.palette.background.backdrop,
+            zIndex: theme.zIndex.modal + 1,
+          }}
+          open={isLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
       )}
     </Box>
   );
