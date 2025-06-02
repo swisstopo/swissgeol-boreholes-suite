@@ -25,7 +25,7 @@ describe("Casing crud tests", () => {
       cy.wait(["@borehole", "@borehole_by_id"]);
     });
 
-    cy.wait("@get-completions-by-boreholeId");
+    cy.wait("@completion_GET");
 
     // start editing session
     startBoreholeEditing();
@@ -89,7 +89,7 @@ describe("Casing crud tests", () => {
     // delete casing
     // Precondition: instrumentation with reference to casing
     cy.get("[data-cy=completion-content-tab-instrumentation]").click();
-    cy.wait("@instrumentation_GET");
+    cy.wait("@instrumentation_by_completion_GET");
 
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
@@ -104,7 +104,7 @@ describe("Casing crud tests", () => {
     setSelect("statusId", 1);
     setSelect("casingId", 2);
     saveForm();
-    cy.wait("@instrumentation_GET");
+    cy.wait("@instrumentation_by_completion_GET");
     evaluateDisplayValue("name", "Inst-1");
 
     cy.get("[data-cy=completion-content-tab-casing]").click();
@@ -117,7 +117,7 @@ describe("Casing crud tests", () => {
     cy.contains("No casing available").should("exist");
 
     cy.get("[data-cy=completion-content-tab-instrumentation]").click();
-    cy.wait("@instrumentation_GET");
+    cy.wait("@instrumentation_by_completion_GET");
     evaluateDisplayValue("casingName", "-");
   });
 

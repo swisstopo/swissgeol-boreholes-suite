@@ -33,12 +33,12 @@ describe("Backfill crud tests", () => {
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/completion`);
     });
-    cy.wait("@get-completions-by-boreholeId");
+    cy.wait("@completion_GET");
 
     // start editing session
     startBoreholeEditing();
     cy.get("[data-cy=completion-content-tab-backfill]").click();
-    cy.wait("@backfill_GET");
+    cy.wait("@backfill_by_completion_GET");
 
     // add new backfill card
     addItem("addBackfill");
@@ -104,7 +104,7 @@ describe("Backfill crud tests", () => {
       startBoreholeEditing();
     });
     cy.get("[data-cy=completion-content-tab-backfill]").click();
-    cy.wait("@backfill_GET");
+    cy.wait("@backfill_by_completion_GET");
 
     cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("12");
     cy.get('[data-cy="backfill-card.1"] [data-cy="todepth-formDisplay"]').contains("10");

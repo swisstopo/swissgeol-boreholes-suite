@@ -67,23 +67,24 @@ export const interceptApiCalls = () => {
     return (req.alias = `hydrotest_${req.method}`);
   });
 
-  cy.intercept("/api/v2/completion?boreholeId=**").as("get-completions-by-boreholeId");
+  cy.intercept("/api/v2/completion?boreholeId=**").as("completion_GET");
+  cy.intercept("DELETE", "/api/v2/completion?id=**").as("completion_DELETE");
 
   cy.intercept("/api/v2/casing?completionId=**").as("casing_by_completion_GET");
   cy.intercept("/api/v2/casing?boreholeId=**").as("casing_by_borehole_GET");
-  cy.intercept("POST", "/api/v2/casing").as("casing_POST");
-  cy.intercept("PUT", "/api/v2/casing").as("casing_PUT");
-  cy.intercept("DELETE", "/api/v2/casing?id=**").as("casing_DELETE");
+  cy.intercept("/api/v2/casing*", req => {
+    return (req.alias = `casing_${req.method}`);
+  });
 
-  cy.intercept("/api/v2/instrumentation?completionId=**").as("instrumentation_GET");
-  cy.intercept("POST", "/api/v2/instrumentation").as("instrumentation_POST");
-  cy.intercept("PUT", "/api/v2/instrumentation").as("instrumentation_PUT");
-  cy.intercept("DELETE", "/api/v2/instrumentation?id=**").as("instrumentation_DELETE");
+  cy.intercept("/api/v2/instrumentation?completionId=**").as("instrumentation_by_completion_GET");
+  cy.intercept("/api/v2/instrumentation*", req => {
+    return (req.alias = `instrumentation_${req.method}`);
+  });
 
-  cy.intercept("/api/v2/backfill?completionId=**").as("backfill_GET");
-  cy.intercept("POST", "/api/v2/backfill").as("backfill_POST");
-  cy.intercept("PUT", "/api/v2/backfill").as("backfill_PUT");
-  cy.intercept("DELETE", "/api/v2/backfill?id=**").as("backfill_DELETE");
+  cy.intercept("/api/v2/backfill?completionId=**").as("backfill_by_completion_GET");
+  cy.intercept("/api/v2/backfill*", req => {
+    return (req.alias = `backfill_${req.method}`);
+  });
 
   cy.intercept("/api/v2/codelist*", req => {
     return (req.alias = `codelist_${req.method}`);
