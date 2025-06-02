@@ -6,7 +6,7 @@ import "./index.css";
 import "ol/ol.css";
 import { SettingsProvider } from "./api/SettingsContext.js";
 import App from "./App";
-import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.jsx";
+import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.tsx";
 import store from "./reducers";
 
 const container = document.getElementById("root");
