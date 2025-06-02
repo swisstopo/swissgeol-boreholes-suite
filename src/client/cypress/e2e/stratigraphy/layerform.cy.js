@@ -285,7 +285,6 @@ describe("Tests for the layer form.", () => {
 
     // reset form values
     startBoreholeEditing();
-    clickOnLayerAndWaitForForm("9");
     resetUpdatedValues();
     evaluateInitialFormState(true);
     saveForm();
