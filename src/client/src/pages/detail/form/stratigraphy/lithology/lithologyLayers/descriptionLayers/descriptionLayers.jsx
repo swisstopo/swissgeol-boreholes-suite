@@ -34,6 +34,8 @@ const DescriptionLayers = props => {
 
   const { t } = useTranslation();
 
+  if (!descriptions) return;
+
   const descriptionRefs = useMemo(
     () =>
       Array(displayDescriptions?.length)
@@ -66,9 +68,9 @@ const DescriptionLayers = props => {
     // include empty items in description column to signal missing descriptions
     const tempDescriptions = [];
     descriptions
-      .sort((a, b) => a.fromDepth - b.fromDepth)
+      ?.sort((a, b) => a.fromDepth - b.fromDepth)
       .forEach((description, index) => {
-        const expectedFromDepth = index === 0 ? 0 : descriptions[index - 1]?.toDepth;
+        const expectedFromDepth = index === 0 ? 0 : descriptions?.[index - 1]?.toDepth;
         if (description.fromDepth !== expectedFromDepth) {
           tempDescriptions.push({
             id: null,
