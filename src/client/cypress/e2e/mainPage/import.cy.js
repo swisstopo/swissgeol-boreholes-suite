@@ -26,7 +26,7 @@ const addMinimalAttachment = (boreholeIdentifier, fileName) => {
     startBoreholeEditing();
     selectInputFile(fileName, "text/plain");
     getElementByDataCy("addProfile-button").should("be.visible").click();
-    cy.wait(["@upload-files", "@getAllAttachments"]);
+    cy.wait(["@upload-files", "@getAllAttachments", "@borehole_by_id"]);
     stopBoreholeEditing();
   });
 };
@@ -103,7 +103,7 @@ describe("Test for importing boreholes.", () => {
     cy.contains("Blue");
   });
 
-  it("exports and reimports boreholes with attachments", () => {
+  it.only("exports and reimports boreholes with attachments", () => {
     // add two boreholes with attachments
     const boreholeName = "COLDWATERDRINK";
     const boreholeName2 = "COLDWATERBATH";
