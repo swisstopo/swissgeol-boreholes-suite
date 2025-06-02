@@ -33,8 +33,8 @@ export const BdmsAuthProvider: FC<PropsWithChildren> = props => {
 
     const userManager = new CognitoUserManager(oidcClientSettings);
 
-    const onSigninCallback = (user: User | void) => {
-      const preLoginState = JSON.parse(atob((user as User)?.url_state ?? ""));
+    const onSigninCallback = (user: User | undefined) => {
+      const preLoginState = JSON.parse(atob(user?.url_state ?? ""));
       // restore location after login.
       window.history.replaceState({}, document.title, preLoginState.href);
     };
