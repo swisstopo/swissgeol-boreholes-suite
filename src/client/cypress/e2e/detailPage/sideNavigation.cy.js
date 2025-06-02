@@ -97,7 +97,7 @@ describe("Test for the detail page side navigation.", () => {
     setInput("name", "Compl-1");
     setSelect("kindId", 1);
     saveForm("completion-header");
-    cy.wait("@get-completions-by-boreholeId");
+    cy.wait("@completion_GET");
 
     // After adding completion, borehole and with it the side navigation should be updated
     isActiveMenuItem(SidebarMenuItem.completion, true);
@@ -111,7 +111,7 @@ describe("Test for the detail page side navigation.", () => {
     navigateInSidebar(SidebarMenuItem.waterIngress);
     isActiveMenuItem(SidebarMenuItem.waterIngress, false);
     addItem("addWaterIngress");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_borehole_GET");
     setSelect("quantityId", 2);
     saveForm();
     isMenuItemWithContent(SidebarMenuItem.hydrogeology);
@@ -120,7 +120,7 @@ describe("Test for the detail page side navigation.", () => {
     navigateInSidebar(SidebarMenuItem.groundwaterLevelMeasurement);
     isActiveMenuItem(SidebarMenuItem.groundwaterLevelMeasurement, false);
     addItem("addGroundwaterLevelMeasurement");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_borehole_GET");
     setSelect("kindId", 2);
     saveForm();
     isActiveMenuItem(SidebarMenuItem.groundwaterLevelMeasurement, true);
@@ -128,7 +128,7 @@ describe("Test for the detail page side navigation.", () => {
     navigateInSidebar(SidebarMenuItem.fieldMeasurement);
     isActiveMenuItem(SidebarMenuItem.fieldMeasurement, false);
     addItem("addFieldMeasurement");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_borehole_GET");
     setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
     setSelect("fieldMeasurementResults.0.parameterId", 0, 9);
     setInput("fieldMeasurementResults.0.value", "10");
@@ -138,7 +138,7 @@ describe("Test for the detail page side navigation.", () => {
     navigateInSidebar(SidebarMenuItem.hydrotest);
     isActiveMenuItem(SidebarMenuItem.hydrotest, false);
     addItem("addHydrotest");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_borehole_GET");
     toggleMultiSelect("testKindId", [3]);
     saveForm();
     isActiveMenuItem(SidebarMenuItem.hydrotest, true);

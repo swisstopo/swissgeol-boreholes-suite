@@ -36,7 +36,7 @@ describe("Tests for the data cards in the editor.", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500);
     addItem("addwateringress");
-    cy.wait("@casing_GET");
+    cy.wait("@casing_by_borehole_GET");
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 2);
     setSelect("quantityId", 2);
