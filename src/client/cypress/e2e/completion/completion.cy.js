@@ -13,9 +13,8 @@ import { isActiveTab } from "../helpers/navigationHelpers";
 import {
   createBorehole,
   createCompletion,
-  goToDetailRouteAndAcceptTerms,
   getElementByDataCy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
