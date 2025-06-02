@@ -7,7 +7,8 @@
 - In the overview map when hovering over a borehole, clicking the tooltip text now navigates to the borehole detail view. If several boreholes are located at the same position, a list of boreholes is displayed in the tooltip and clicking on one of them navigates to the respective borehole detail view.
 - Administrators can now edit workgroup names on the settings page.
 - Show loading indicator when importing data.
-
+- Select input fields now filter and display only the options that match the user's input.
+- 
 ### Fixed
 - Boreholes could not be exported in the _view_ environment.
 - The lithostratigraphy was missing when copying a stratigraphy.
