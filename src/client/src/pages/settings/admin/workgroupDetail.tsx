@@ -1,14 +1,16 @@
-import { FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
+import _ from "lodash";
 import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { useUsers } from "../../../api/user.ts";
 import { useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
-import { FormInputDisplayOnly } from "../../../components/form/form.ts";
+import { FormInput } from "../../../components/form/form.ts";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
@@ -29,10 +31,33 @@ export const WorkgroupDetail: FC = () => {
   const { data: selectedWorkgroup } = useSelectedWorkgroup(parseInt(id));
   const {
     removeAllRoles: { mutate: removeAllWorkgroupRolesForUser },
+    update: { mutate: updateWorkgroup },
   } = useWorkgroupMutations();
   const { showPrompt } = useContext(PromptContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
+
+  const formMethods = useForm({
+    defaultValues: selectedWorkgroup,
+  });
+
+  const changeName = useCallback(
+    (name: string) => {
+      if (!selectedWorkgroup || !name || name === selectedWorkgroup.name) return;
+
+      const updatedWorkgroup = { ...selectedWorkgroup, name };
+      updateWorkgroup(updatedWorkgroup);
+    },
+    [selectedWorkgroup, updateWorkgroup],
+  );
+
+  const debouncedChangeName = useMemo(
+    () =>
+      _.debounce((name: string) => {
+        changeName(name);
+      }, 500),
+    [changeName],
+  );
 
   useEffect(() => {
     if (users) {
@@ -121,7 +146,20 @@ export const WorkgroupDetail: FC = () => {
         <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} titleTypographyProps={{ variant: "h5" }} />
         <CardContent sx={{ pt: 4, px: 3 }}>
           <Stack direction={"row"} alignItems={"center"}>
-            <FormInputDisplayOnly label={"workgroup"} value={selectedWorkgroup?.name ?? null} sx={{ maxWidth: 500 }} />
+            <FormProvider {...formMethods}>
+              <FormInput
+                label="workgroup"
+                fieldName="workgroup"
+                value={selectedWorkgroup?.name ?? ""}
+                readonly={false}
+                required
+                sx={{ maxWidth: 500 }}
+                onUpdate={value => debouncedChangeName(value)}
+                inputProps={{
+                  onBlur: e => changeName(e.target.value),
+                }}
+              />
+            </FormProvider>
           </Stack>
         </CardContent>
       </Card>

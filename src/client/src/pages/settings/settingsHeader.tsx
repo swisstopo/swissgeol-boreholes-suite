@@ -83,8 +83,8 @@ export const SettingsHeader: FC = () => {
   };
 
   const getInactiveToggle = () => {
-    if (!(selectedUser || selectedWorkgroup)) return null;
     const selectedEntity = selectedUser ?? selectedWorkgroup;
+    if (!selectedEntity) return null;
     return (
       <ToggleButtonGroup
         value={selectedEntity.isDisabled}

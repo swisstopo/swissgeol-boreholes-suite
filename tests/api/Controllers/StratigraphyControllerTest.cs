@@ -136,6 +136,10 @@ public class StratigraphyControllerTest
         Assert.AreNotEqual(originalStratigraphy.ChronostratigraphyLayers.First().Id, copiedStratigraphy.ChronostratigraphyLayers.First().Id);
         Assert.AreEqual(15001144, copiedStratigraphy.ChronostratigraphyLayers.First().ChronostratigraphyId);
 
+        Assert.AreNotSame(originalStratigraphy.LithostratigraphyLayers, copiedStratigraphy.LithostratigraphyLayers);
+        Assert.AreNotEqual(originalStratigraphy.LithostratigraphyLayers.First().Id, copiedStratigraphy.LithostratigraphyLayers.First().Id);
+        Assert.AreEqual(15304109, copiedStratigraphy.LithostratigraphyLayers.First().LithostratigraphyId);
+
         Assert.AreNotSame(originalStratigraphy.Layers.First().LayerGrainAngularityCodes, copiedStratigraphy.Layers.First().LayerGrainAngularityCodes);
         Assert.AreEqual(originalStratigraphy.Layers.First().LayerGrainAngularityCodes.Count, copiedStratigraphy.Layers.First().LayerGrainAngularityCodes.Count);
 
@@ -160,6 +164,7 @@ public class StratigraphyControllerTest
             .Include(s => s.LithologicalDescriptions)
             .Include(s => s.FaciesDescriptions)
             .Include(s => s.ChronostratigraphyLayers)
+            .Include(s => s.LithostratigraphyLayers)
             .SingleOrDefault(s => s.Id == id);
     }
 

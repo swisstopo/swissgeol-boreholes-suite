@@ -124,7 +124,7 @@ describe("User administration settings tests", () => {
     handlePrompt(inactiveWorkgroupDeletePrompt, "cancel");
   });
 
-  it("can add a new workgroup.", () => {
+  it("can add and edit a new workgroup.", () => {
     goToRouteAndAcceptTerms("//setting#workgroups");
     getElementByDataCy("addworkgroup-button").click();
     setInput("workgroup", "Coconut");
@@ -136,6 +136,10 @@ describe("User administration settings tests", () => {
     verifyRowWithContentAlsoContains("Coconut", "Active");
     clickOnRowWithText("Coconut");
     cy.contains("Coconut");
+
+    setInput("workgroup", "Coconut Updated");
+    getElementByDataCy("settings-header").contains("Coconut Updated");
+
     getElementByDataCy("deleteworkgroup-button").click();
     getElementByDataCy("delete-button").click();
   });

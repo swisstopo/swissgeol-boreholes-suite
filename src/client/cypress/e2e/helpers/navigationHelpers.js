@@ -172,7 +172,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.completion:
-      cy.wait("@get-completions-by-boreholeId");
+      cy.wait("@completion_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/completion$/);
       });
