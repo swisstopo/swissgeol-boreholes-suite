@@ -1,15 +1,14 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useDomains } from "../../api/fetchApiV2.ts";
-import { AdditionalValue } from "../../pages/overview/sidePanelContent/filter/filterData/filterInterfaces.ts";
 import { Codelist } from "../Codelist.ts";
 import { FormSelect } from "./form";
-import { FormSelectProps } from "./formSelect.tsx";
+import { FormSelectProps, FormSelectValue } from "./formSelect.tsx";
 
 export interface FormDomainSelectProps extends FormSelectProps {
   schemaName: string;
   prefilteredDomains?: Codelist[];
-  additionalValues?: AdditionalValue[];
+  additionalValues?: FormSelectValue[];
 }
 
 export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
@@ -24,8 +23,8 @@ export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
       selected={selected}
       values={[
         ...(additionalValues?.map(av => ({
-          key: av.id,
-          name: t(av.translationId as string),
+          key: av.key,
+          name: t(av.name),
         })) ?? []),
         ...((prefilteredDomains ?? domains)
           ?.filter((d: Codelist) => d.schema === schemaName)

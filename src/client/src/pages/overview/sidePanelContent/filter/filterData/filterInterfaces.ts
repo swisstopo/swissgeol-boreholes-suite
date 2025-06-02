@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { FormSelectValue } from "../../../../../components/form/formSelect.tsx";
 
 export interface SearchData {
   value: string;
@@ -15,12 +16,7 @@ export interface SearchData {
   schema?: string;
   placeholder?: string;
   hideShowAllFields?: boolean;
-  additionalValues?: AdditionalValue[];
-}
-
-export interface AdditionalValue {
-  id: number;
-  translationId: string;
+  additionalValues?: FormSelectValue[];
 }
 
 export interface FilterComponentProps {
