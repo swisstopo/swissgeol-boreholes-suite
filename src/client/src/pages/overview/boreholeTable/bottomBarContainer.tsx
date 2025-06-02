@@ -24,7 +24,7 @@ interface BottomBarContainerProps {
     featureIds: number[],
   ) => void;
   multipleSelected: (selection: GridRowSelectionModel, filter: Record<string, unknown>) => void;
-  rowToHighlight: number | null;
+  rowsToHighlight: number[];
   selectionModel: GridRowSelectionModel;
   setSelectionModel: React.Dispatch<React.SetStateAction<GridRowSelectionModel>>;
   setIsExporting: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,7 +36,7 @@ const BottomBarContainer = ({
   multipleSelected,
   filters,
   setHover,
-  rowToHighlight,
+  rowsToHighlight,
   selectionModel,
   setSelectionModel,
   setIsExporting,
@@ -114,7 +114,7 @@ const BottomBarContainer = ({
           setSelectionModel={setSelectionModel}
           sortModel={sortModel}
           setSortModel={setSortModel}
-          rowToHighlight={rowToHighlight}
+          rowsToHighlight={rowsToHighlight}
           setHover={setHover}
           isBusy={isBusy}
         />

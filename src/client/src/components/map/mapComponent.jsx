@@ -27,9 +27,9 @@ import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import MapControls from "../buttons/mapControls.jsx";
+import { ClickablePopup } from "./clickablePopup.tsx";
 import { projections } from "./mapProjections.js";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions.js";
-import NamePopup from "./namePopup.jsx";
 
 class MapComponent extends React.Component {
   static contextType = BasemapContext;
@@ -37,7 +37,6 @@ class MapComponent extends React.Component {
   constructor(props) {
     super(props);
     this.onSelected = this.onSelected.bind(this);
-    this.setStateBound = this.setState.bind(this);
     this.fetchAndDisplayGeojson = this.fetchAndDisplayGeojson.bind(this);
     this.styleFunction = styleFunction.bind(this);
     this.clusterStyleFunction = clusterStyleFunction.bind(this);
@@ -74,6 +73,7 @@ class MapComponent extends React.Component {
     this.overlays = [];
     this.state = {
       hover: null,
+      hoveringPopup: false,
       displayedBaseMap: null,
       drawActive: false,
     };
@@ -203,6 +203,19 @@ class MapComponent extends React.Component {
       stopEvent: false,
     });
     this.map.addOverlay(this.popup);
+
+    const popupEl = document.getElementById("popup-overlay");
+
+    // Add hover event listener to the popup
+    if (popupEl) {
+      popupEl.addEventListener("mouseenter", () => {
+        this.setState({ hoveringPopup: true });
+      });
+      popupEl.addEventListener("mouseleave", () => {
+        this.removePopup();
+        this.setState({ hoveringPopup: false });
+      });
+    }
 
     // Zoom to cluster extent if clicked on cluster.
     this.map.on("click", event => {
@@ -431,13 +444,13 @@ class MapComponent extends React.Component {
 
   setFeatureHighlight(feature, hoverCallback) {
     if (hoverCallback) {
-      hoverCallback(feature.getId());
+      hoverCallback([feature.getId()]);
     }
   }
 
   clearFeatureHighlight(hoverCallback) {
     if (hoverCallback) {
-      hoverCallback(null);
+      hoverCallback([]);
     }
   }
 
@@ -572,49 +585,71 @@ class MapComponent extends React.Component {
   }
 
   onHover(e) {
-    this.removePopup();
-    // Remove any existing popover if no features are selected or drawing is active
-    if (e.selected.length === 0 || this.state.drawActive) return;
+    const pixel = this.map.getEventPixel(e.mapBrowserEvent.originalEvent);
+    const popupOpen = this.popup.getPosition() !== undefined;
 
-    const feature = e.selected[0];
-    const isCluster = feature.values_.features?.length > 0;
-    if (isCluster) {
+    // Early return if drawing is active
+    if (this.state.drawActive) return;
+
+    // If popup is not open, search for features around the pixel
+    let features = [];
+    if (!popupOpen) {
+      const tolerance = 3;
+      const featureSet = new Set();
+      for (let dx = -tolerance; dx <= tolerance; dx++) {
+        for (let dy = -tolerance; dy <= tolerance; dy++) {
+          const nearbyPixel = [pixel[0] + dx, pixel[1] + dy];
+          this.map.forEachFeatureAtPixel(nearbyPixel, feature => {
+            if (feature.getGeometry().getType() !== "Polygon") {
+              featureSet.add(feature);
+            }
+          });
+        }
+      }
+      features = Array.from(featureSet);
+    }
+
+    // Close popup if not hovering over it
+    if (popupOpen) {
+      setTimeout(() => {
+        if (!this.state.hoveringPopup) {
+          this.removePopup();
+        }
+      }, 500); // 0.5s grace period to allow moving pointer into popup
       return;
     }
-    if (feature?.getGeometry().getType() !== "Polygon") {
-      this.displayPopup(feature);
+
+    // Ignore clusters
+    if (features.length === 1) {
+      const potentialCluster = features[0];
+      const isCluster = potentialCluster?.values_?.features?.length > 0;
+      if (isCluster) return;
+    }
+
+    // Show popup if features are found and it's not already open
+    if (features.length > 0 && !popupOpen) {
+      this.setState({ hover: features }, () => {
+        const coordinate = features[0].getGeometry().getCoordinates();
+        this.popup.setPosition(coordinate);
+        this.props.hover?.(features.map(f => f.getId()));
+      });
     }
   }
 
   removePopup() {
     if (this.popup.getPosition() !== undefined) {
-      const { hover: hoverCallback } = this.props;
-      if (hoverCallback !== undefined) {
+      if (this.props.hover !== undefined) {
         this.setState(
           {
             hover: null,
+            hoveringPopup: false,
           },
           () => {
             this.popup.setPosition(undefined);
-            hoverCallback(null);
+            this.props.hover([]);
           },
         );
       }
-    }
-  }
-
-  displayPopup(feature) {
-    const { hover: hoverCallback } = this.props;
-    if (hoverCallback !== undefined) {
-      this.setState(
-        {
-          hover: feature,
-        },
-        () => {
-          this.popup.setPosition(feature.getGeometry().getCoordinates());
-          hoverCallback(feature.getId());
-        },
-      );
     }
   }
 
@@ -659,7 +694,7 @@ class MapComponent extends React.Component {
             position: "relative",
           }}
         />
-        <NamePopup state={this.state}></NamePopup>
+        <ClickablePopup features={this.state.hover} />
         <BasemapSelector marginBottom={"30px"} />
         <MapControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
       </Box>
