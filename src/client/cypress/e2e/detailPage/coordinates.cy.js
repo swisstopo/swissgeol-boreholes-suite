@@ -148,7 +148,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("not.have.value", "");
 
     // verify original reference system has switched to LV95
-    cy.get("[name=originalReferenceSystem]").should("have.value", 20104001);
+    evaluateSelect("originalReferenceSystem", "LV95");
 
     // verify that all inputs have a precision of 2 decimal places
     checkDecimalPlaces("@LV95X-input", 2);
