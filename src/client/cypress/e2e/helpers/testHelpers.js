@@ -126,7 +126,7 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
   cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as("upload-files");
   cy.intercept("/api/v2/boreholefile/download?boreholeFileId=**").as("download-file");
-  cy.intercept("/api/v2/boreholefile/detachFile?boreholeId=**&boreholeFileId=**").as("delete-file");
+  cy.intercept("/api/v2/boreholefile/detachFile?boreholeFileId=**").as("delete-file");
   cy.intercept("/api/v2/photo/getAllForBorehole?boreholeId=**").as("getAllPhotos");
   cy.intercept("/api/v2/photo/upload?boreholeId=**").as("upload-photo");
   cy.intercept("/api/v2/photo/export?photoIds=**").as("export-photos");

@@ -203,7 +203,7 @@ public class BoreholeFileControllerTest
         context.ChangeTracker.Clear();
 
         // Detach borehole file from first borehole
-        await controller.DetachFromBorehole(firstBoreholeId, firstBoreholeAddedFile.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
+        await controller.DetachFromBorehole(firstBoreholeAddedFile.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
 
         // Check counts after detach
         Assert.AreEqual(filesCountBeforeUpload + 1, context.Files.Count());
@@ -248,7 +248,7 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(boreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
 
         // Detach borehole file from first borehole
-        await controller.DetachFromBorehole(firstBoreholeId, latestFileInDb.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
+        await controller.DetachFromBorehole(latestFileInDb.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
 
         // Check counts after detach
         Assert.AreEqual(filesCountBeforeUpload, context.Files.Count());
@@ -333,10 +333,7 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
-    public async Task DetachFromBoreholeWithMissingBoreholeId() => await AssertIsBadRequestResponse(() => controller.DetachFromBorehole(0, 5000));
-
-    [TestMethod]
-    public async Task DetachFromBoreholeWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.DetachFromBorehole(123, 0));
+    public async Task DetachFromBoreholeWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.DetachFromBorehole(0));
 
     [TestMethod]
     public async Task DetachFailsWithoutPermission()
@@ -371,7 +368,7 @@ public class BoreholeFileControllerTest
             .ReturnsAsync(false);
 
         // Detach borehole file from first borehole
-        var response = await controller.DetachFromBorehole(firstBoreholeId, latestFileInDb.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
+        var response = await controller.DetachFromBorehole(latestFileInDb.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
         ActionResultAssert.IsUnauthorized(response);
     }
 
