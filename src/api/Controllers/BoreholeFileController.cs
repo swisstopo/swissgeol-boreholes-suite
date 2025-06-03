@@ -189,19 +189,14 @@ public class BoreholeFileController : ControllerBase
     }
 
     /// <summary>
-    /// Detaches a <see cref="BoreholeFile"/> from the <see cref="Borehole"/> with <see cref="Borehole.Id"/> provided in <paramref name="boreholeId"/>.
+    /// Detaches a <see cref="BoreholeFile"/> from the <see cref="Borehole"/> and deletes the <see cref="Models.File"/>.
     /// </summary>
-    /// <param name="boreholeId">The <see cref="Borehole.Id"/> of the borehole to detach the file from.</param>
     /// <param name="boreholeFileId">The <see cref="BoreholeFile.FileId"/> of the file to detach from the borehole.</param>
     [HttpPost("detachFile")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> DetachFromBorehole([Required, Range(1, int.MaxValue)] int boreholeId, [Range(1, int.MaxValue)] int boreholeFileId)
+    public async Task<IActionResult> DetachFromBorehole([Range(1, int.MaxValue)] int boreholeFileId)
     {
-        if (boreholeId == 0) return BadRequest("No boreholeId provided.");
         if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
-
-        // Check if associated borehole is locked or user has permissions
-        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         try
         {
@@ -209,6 +204,9 @@ public class BoreholeFileController : ControllerBase
             var boreholeFile = await context.BoreholeFiles.Include(f => f.File).SingleOrDefaultAsync(f => f.FileId == boreholeFileId).ConfigureAwait(false);
 
             if (boreholeFile == null) return NotFound($"Borehole file for the provided {nameof(boreholeFileId)} not found.");
+
+            // Check if associated borehole is locked or user has permissions
+            if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeFile.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
             var fileId = boreholeFile.File.Id;
 
