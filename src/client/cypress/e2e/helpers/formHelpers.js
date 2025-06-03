@@ -79,11 +79,12 @@ export const setInput = (fieldName, value, parent) => {
  */
 export const evaluateInput = (fieldName, expectedValue, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formInput"] input`;
-  cy.get(selector)
-    .filter((k, input) => {
-      return input.value === expectedValue;
-    })
-    .should("have.length", 1);
+  cy.get(selector).then($input => {
+    const actualValue = $input.val();
+    expect(actualValue, `Expected ${fieldName} to have value ${expectedValue} but got ${actualValue}`).to.eq(
+      expectedValue,
+    );
+  });
 };
 
 /**
