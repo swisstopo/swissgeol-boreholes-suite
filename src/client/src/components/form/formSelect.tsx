@@ -1,5 +1,5 @@
 import { FC, useContext } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, SxProps, TextField } from "@mui/material";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
@@ -50,6 +50,12 @@ export const FormSelect: FC<FormSelectProps> = ({
   const { editingEnabled } = useContext(DetailContext);
   const isReadOnly = readonly ?? !editingEnabled;
 
+  // Synchronize Autocomplete with react hook form state
+  const fieldValue = useWatch({
+    control,
+    name: fieldName,
+  });
+
   const menuItems: FormSelectMenuItem[] = [];
 
   if (!isReadOnly && !required && canReset) {
@@ -91,6 +97,7 @@ export const FormSelect: FC<FormSelectProps> = ({
         // Display formSelect as Autocomplete when editable
         return (
           <Autocomplete
+            key={`${fieldName}-${fieldValue ?? "empty"}`}
             sx={{ flex: "1" }}
             options={menuItems}
             getOptionLabel={option => option.label}
