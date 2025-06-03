@@ -1,4 +1,4 @@
-import { evaluateSelect, setSelect } from "../helpers/formHelpers.js";
+import { evaluateSelectTextfield, setSelect } from "../helpers/formHelpers.js";
 import { getElementByDataCy, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("Hierachical data filter tests", () => {
@@ -38,7 +38,7 @@ describe("Hierachical data filter tests", () => {
       });
   });
 
-  it("check hierarchical filtering", () => {
+  it.only("check hierarchical filtering", () => {
     let filterValues = [
       { period: "eon", value: "Phanerozoic" },
       { period: "era", value: "Cenozoic" },
@@ -55,7 +55,7 @@ describe("Hierachical data filter tests", () => {
     cy.wait(["@edit_list", "@borehole_geojson"]);
     getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
     cy.wrap(filterValues).each(filter => {
-      return evaluateSelect(filter.period, filter.value);
+      return evaluateSelectTextfield(filter.period, filter.value);
     });
     cy.then(() => {
       // Reset age select
@@ -76,7 +76,7 @@ describe("Hierachical data filter tests", () => {
     ];
     // Verify that 2 levels are removed
     cy.wrap(filterValues).each(filter => {
-      return evaluateSelect(filter.period, filter.value);
+      return evaluateSelectTextfield(filter.period, filter.value);
     });
     cy.then(() => {
       // Reset period select
@@ -96,7 +96,7 @@ describe("Hierachical data filter tests", () => {
     ];
     // Verify that 4 levels are removed
     cy.wrap(filterValues).each(filter => {
-      return evaluateSelect(filter.period, filter.value);
+      return evaluateSelectTextfield(filter.period, filter.value);
     });
     cy.then(() => {
       // Reset all filters and verify they're cleared
@@ -105,7 +105,7 @@ describe("Hierachical data filter tests", () => {
     cy.wait("@edit_list");
     getElementByDataCy("filter-chip-chronostratigraphy_id").should("not.exist");
     filterValues.forEach(filter => {
-      evaluateSelect(filter.period, null);
+      evaluateSelectTextfield(filter.period, null);
     });
   });
 });
