@@ -181,11 +181,6 @@ export const evaluateYesNoSelect = (fieldName, expectedValue, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
   cy.get(selector).then($input => {
     const actualValue = $input.val();
-    // If input is not readonly it is evaluated as a select component using the keys of the select
-    if (!$input.hasClass("MuiInputBase-readOnly")) {
-      expectedValue = expectedValue === "Yes" ? "1" : expectedValue === "No" ? "0" : "2";
-    }
-    // If input is readonly it is evaluated as an input component
     expect(actualValue, `Expected ${fieldName} to have value ${expectedValue} but got ${actualValue}`).to.eq(
       expectedValue,
     );
