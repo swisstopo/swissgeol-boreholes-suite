@@ -101,7 +101,7 @@ export const FormSelect: FC<FormSelectProps> = ({
                 : menuItems.find(opt => opt.value === field.value)
             }
             onChange={(_, newValue) => {
-              if (newValue?.key === 0) {
+              if (newValue?.label.toLowerCase() === t("reset").toLowerCase()) {
                 // Clear autocomplete if reset option is clicked
                 field.onChange(null);
                 if (onUpdate) onUpdate(null);
