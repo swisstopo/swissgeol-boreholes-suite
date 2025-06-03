@@ -10,13 +10,14 @@ export default defineConfig({
     viewportWidth: 1920,
     viewportHeight: 1080,
     supportFile: "cypress/support/e2e.js",
-    setupNodeEvents(on) {
+    experimentalMemoryManagement: true, // Helps with memory issues
+
+    setupNodeEvents(on, config) {
       on("file:preprocessor", vitePreprocessor());
 
       on("task", {
         log(message) {
           console.log(message);
-
           return null;
         },
         fileExistsInDownloadFolder(filename) {
@@ -25,6 +26,22 @@ export default defineConfig({
       });
 
       on("before:browser:launch", (browser, launchOptions) => {
+        //Optimize test execution for electron
+        if (browser.name === "electron") {
+          launchOptions.env = launchOptions.env || {};
+          launchOptions.env.NODE_OPTIONS = "--max-old-space-size=4096";
+
+          launchOptions.preferences = {
+            ...(launchOptions.preferences || {}),
+            webPreferences: {
+              ...(launchOptions.preferences?.webPreferences || {}),
+              backgroundThrottling: false,
+              nodeIntegration: true,
+              contextIsolation: false,
+            },
+          };
+        }
+
         launchOptions.preferences.width = 1920;
         launchOptions.preferences.height = 1080;
         launchOptions.preferences.frame = false;
@@ -32,6 +49,8 @@ export default defineConfig({
 
         return launchOptions;
       });
+
+      return config;
     },
     retries: {
       runMode: 3,
@@ -46,4 +65,8 @@ export default defineConfig({
   },
   defaultCommandTimeout: 10000,
   waitForAnimations: false,
+  numTestsKeptInMemory: 10,
+  pageLoadTimeout: 60000,
+  watchForFileChanges: false,
+  chromeWebSecurity: false, // Helps with cross-origin issues
 });
