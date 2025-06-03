@@ -10,6 +10,7 @@
 ### Fixed
 - Boreholes could not be exported in the _view_ environment.
 - The lithostratigraphy was missing when copying a stratigraphy.
+- Loading a page by url did not work after a redirect from the login page.
 
 ## v2.1.1200 - 2025-05-22
 

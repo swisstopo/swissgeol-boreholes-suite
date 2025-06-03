@@ -1,5 +1,6 @@
 import { FC, PropsWithChildren, useEffect, useState } from "react";
 import { AuthProviderProps, AuthProvider as OidcAuthProvider } from "react-oidc-context";
+import { DataRouter } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { User, WebStorageStateStore } from "oidc-client-ts";
 import { useSettings } from "../api/useSettings";
@@ -9,11 +10,15 @@ import { BdmsAuthContext, BdmsAuthContextProps } from "./BdmsAuthContext";
 import { CognitoUserManager } from "./CognitoUserManager";
 import { SplashScreen } from "./SplashScreen";
 
+interface BdmsAuthProviderProps {
+  router: DataRouter;
+}
+
 type OidcConfig = AuthProviderProps & {
   customSettings: BdmsAuthContextProps;
 };
 
-export const BdmsAuthProvider: FC<PropsWithChildren> = props => {
+export const BdmsAuthProvider: FC<PropsWithChildren<BdmsAuthProviderProps>> = ({ router, children }) => {
   const [oidcConfig, setOidcConfig] = useState<OidcConfig | undefined>(undefined);
   const settings = useSettings();
 
@@ -36,7 +41,7 @@ export const BdmsAuthProvider: FC<PropsWithChildren> = props => {
     const onSigninCallback = (user: User | undefined) => {
       const preLoginState = JSON.parse(atob(user?.url_state ?? ""));
       // restore location after login.
-      window.history.replaceState({}, document.title, preLoginState.href);
+      router.navigate(preLoginState.path, { replace: true });
     };
 
     setOidcConfig({
@@ -46,7 +51,7 @@ export const BdmsAuthProvider: FC<PropsWithChildren> = props => {
         anonymousModeEnabled: serverConfig.anonymousModeEnabled,
       },
     });
-  }, [settings]);
+  }, [router, settings]);
 
   if (!oidcConfig) {
     return (
@@ -60,7 +65,7 @@ export const BdmsAuthProvider: FC<PropsWithChildren> = props => {
     <OidcAuthProvider {...oidcConfig}>
       <BdmsAuthContext.Provider value={oidcConfig.customSettings}>
         <AuthenticationStoreSync />
-        <AuthOverlay>{props.children}</AuthOverlay>
+        <AuthOverlay>{children}</AuthOverlay>
       </BdmsAuthContext.Provider>
     </OidcAuthProvider>
   );

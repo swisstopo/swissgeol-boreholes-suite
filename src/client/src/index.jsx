@@ -6,7 +6,6 @@ import "./index.css";
 import "ol/ol.css";
 import { SettingsProvider } from "./api/SettingsContext.js";
 import App from "./App";
-import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.tsx";
 import store from "./reducers";
 
 const container = document.getElementById("root");
@@ -16,9 +15,7 @@ root.render(
   <I18nextProvider i18n={i18n}>
     <Provider store={store}>
       <SettingsProvider>
-        <BdmsAuthProvider>
-          <App />
-        </BdmsAuthProvider>
+        <App />
       </SettingsProvider>
     </Provider>
   </I18nextProvider>,
