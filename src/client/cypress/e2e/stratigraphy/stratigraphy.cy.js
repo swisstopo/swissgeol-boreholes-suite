@@ -33,7 +33,15 @@ describe("Tests for stratigraphy", () => {
 
     // Add new stratigraphy
     addItem("addStratigraphy");
-    cy.wait(["@stratigraphy_POST", "@stratigraphy_GET", "@stratigraphy_GET", "@get-layers-by-profileId"]);
+    cy.wait([
+      "@stratigraphy_POST",
+      "@stratigraphy_GET",
+      "@stratigraphy_GET",
+      "@get-layers-by-profileId",
+      "@layer",
+      "@lithological_description",
+      "@facies_description",
+    ]);
 
     // evaluate existing stratigraphy
     evaluateInput("name", "Leanna Aufderhar");
@@ -42,7 +50,16 @@ describe("Tests for stratigraphy", () => {
     cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
 
     cy.contains("Not specified").click(); // click on newly added stratigraphy
-
+    cy.wait([
+      "@stratigraphy_GET",
+      "@get-layers-by-profileId",
+      "@get-layers-by-profileId",
+      "@layer",
+      "@lithological_description",
+      "@facies_description",
+      "@lithological_description",
+      "@facies_description",
+    ]);
     // Add input values
     addTestStratigraphyValues();
 
