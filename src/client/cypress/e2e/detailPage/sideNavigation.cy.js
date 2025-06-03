@@ -96,6 +96,9 @@ describe("Test for the detail page side navigation.", () => {
     // Add completion
     navigateInSidebar(SidebarMenuItem.completion);
     isActiveMenuItem(SidebarMenuItem.completion, false);
+    cy.contains("No completion available").should("exist");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
     addItem("addCompletion");
     cy.wait("@codelist_by_schema_GET");
     cy.location().should(location => {
@@ -126,7 +129,7 @@ describe("Test for the detail page side navigation.", () => {
     cy.wait("@casing_by_borehole_GET");
     setSelect("quantityId", 2);
     saveForm();
-    cy.wait(["@water_ingress_POST", "@water_ingress_GET", "@borehole_by_id"]);
+    cy.wait(["@wateringress_POST", "@wateringress_GET", "@borehole_by_id"]);
     isMenuItemWithContent(SidebarMenuItem.hydrogeology);
     isActiveMenuItem(SidebarMenuItem.waterIngress, true);
 
@@ -155,7 +158,7 @@ describe("Test for the detail page side navigation.", () => {
     addItem("addHydrotest");
     cy.wait("@casing_by_borehole_GET");
     toggleMultiSelect("testKindId", [3]);
-    cy.wait("codelist_by_testKindIds_GET");
+    cy.wait("@codelist_by_testKindIds_GET");
     saveForm();
     cy.wait(["@hydrotest_POST", "@hydrotest_GET", "@borehole_by_id"]);
     isActiveMenuItem(SidebarMenuItem.hydrotest, true);
