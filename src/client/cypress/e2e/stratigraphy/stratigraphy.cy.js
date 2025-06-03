@@ -1,6 +1,6 @@
 // adds updates and deletes stratigraphies, makes them primary and unselect other when one is primary
 import { addItem } from "../helpers/buttonHelpers";
-import { evaluateInput, evaluateSelect, evaluateSelectText, setInput, setSelect } from "../helpers/formHelpers.js";
+import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers.js";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   getElementByDataCy,
@@ -20,7 +20,7 @@ describe("Tests for stratigraphy", () => {
     }
     function evaluateAddedStratigraphy() {
       evaluateInput("name", "Test Stratigraphy");
-      evaluateSelectText("qualityId", "good");
+      evaluateSelect("qualityId", "good");
       evaluateInput("date", "2024-03-20");
       cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
     }
@@ -37,7 +37,7 @@ describe("Tests for stratigraphy", () => {
 
     // evaluate existing stratigraphy
     evaluateInput("name", "Leanna Aufderhar");
-    evaluateSelectText("qualityId", "not specified");
+    evaluateSelect("qualityId", "not specified");
     evaluateInput("date", "2021-01-03");
     cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
 
@@ -84,7 +84,7 @@ describe("Tests for stratigraphy", () => {
     cy.contains("Test Stratigraphy (Clone)").click();
 
     evaluateInput("name", "Test Stratigraphy (Clone)");
-    evaluateSelectText("qualityId", "good");
+    evaluateSelect("qualityId", "good");
     evaluateInput("date", "2024-03-20");
     getElementByDataCy("isprimary-switch").should("not.be.checked");
 
@@ -95,7 +95,7 @@ describe("Tests for stratigraphy", () => {
       "cancel",
     );
     evaluateInput("name", "Test Stratigraphy (Clone)");
-    evaluateSelectText("qualityId", "good");
+    evaluateSelect("qualityId", "good");
     evaluateInput("date", "2024-03-20");
     getElementByDataCy("isprimary-switch").should("not.be.checked");
 

@@ -55,10 +55,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     //switch reference system and show prompt
     setSelect("originalReferenceSystem", 1);
     handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "cancel");
-    evaluateSelect("originalReferenceSystem", "20104001");
+    evaluateSelect("originalReferenceSystem", "LV95");
     setSelect("originalReferenceSystem", 1);
     handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "confirm");
-    evaluateSelect("originalReferenceSystem", "20104002");
+    evaluateSelect("originalReferenceSystem", "LV03");
 
     // verify all inputs are empty
     cy.get("@LV95X-input").should("be.empty");
@@ -71,7 +71,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     // no prompt should appear if coordinate fields are empty
     setSelect("originalReferenceSystem", 1);
-    evaluateSelect("originalReferenceSystem", "20104002");
+    evaluateSelect("originalReferenceSystem", "LV03");
   });
 
   it("validates inputs", () => {

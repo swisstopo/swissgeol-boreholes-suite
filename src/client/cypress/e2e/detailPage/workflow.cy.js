@@ -1,4 +1,4 @@
-import { evaluateSelectText, setInput, setSelect } from "../helpers/formHelpers.js";
+import { evaluateSelect, setInput, setSelect } from "../helpers/formHelpers.js";
 import {
   getElementByDataCy,
   goToRouteAndAcceptTerms,
@@ -47,7 +47,7 @@ describe("Tests the publication workflow.", () => {
     getElementByDataCy("workflow-status-InReview-inactive").should("exist");
     getElementByDataCy("workflow-status-Reviewed-inactive").should("exist");
     getElementByDataCy("request-review-button").click();
-    evaluateSelectText("newAssigneeId", null);
+    evaluateSelect("newAssigneeId", null);
     cy.get('textarea[name="comment"]').should("be.empty");
     getElementByDataCy("request-review-dialog-button").should("be.disabled");
     getElementByDataCy("newAssigneeId-formSelect").click();
@@ -65,7 +65,7 @@ describe("Tests the publication workflow.", () => {
       .should("not.exist");
 
     getElementByDataCy("request-review-button").click();
-    evaluateSelectText("newAssigneeId", null);
+    evaluateSelect("newAssigneeId", null);
     cy.get('textarea[name="comment"]').should("be.empty");
     setSelect("newAssigneeId", 5); // Validator User
     setInput("comment", "I requested a review!");

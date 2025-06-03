@@ -195,15 +195,15 @@ export const evaluateYesNoSelect = (fieldName, expectedValue, parent) => {
 /**
  * Evaluates the state of a select form element.
  * @param {string} fieldName The name of the select field.
- * @param {string} expectedValue The expected value of the select (a code for the selected option).
+ * @param {string } expectedText The text that should be displayed in the select.
  * @param {string} parent (optional) The parent of the form element.
  */
-export const evaluateSelect = (fieldName, expectedValue, parent) => {
+export const evaluateSelect = (fieldName, expectedText, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
   cy.get(selector).then($input => {
     const actualValue = $input.val();
-    expect(actualValue, `Expected ${fieldName} to have value ${expectedValue} but got ${actualValue}`).to.eq(
-      expectedValue,
+    expect(actualValue, `Expected ${fieldName} to have value ${expectedText} but got ${actualValue}`).to.eq(
+      expectedText,
     );
   });
 };
@@ -225,7 +225,7 @@ export const evaluateSelectText = (fieldName, expectedText, editable = true) => 
     if (expectedText === null) {
       cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("be.empty");
     } else {
-      cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("have.value", expectedText);
+      evaluateSelect(fieldName, expectedText);
     }
   }
 };
