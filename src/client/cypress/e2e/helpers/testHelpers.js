@@ -88,10 +88,13 @@ export const interceptApiCalls = () => {
     return (req.alias = `backfill_${req.method}`);
   });
 
+  cy.intercept("/api/v2/codelist?schema=**").as("codelist_by_schema_GET");
+  cy.intercept("/api/v2/codelist?testKindIds=**").as("codelist_by_testKindIds_GET");
   cy.intercept("/api/v2/codelist*", req => {
     return (req.alias = `codelist_${req.method}`);
   });
 
+  cy.intercept("/api/v2/stratigraphy?boreholeId=**").as("stratigraphy_by_borehole_GET");
   cy.intercept("/api/v2/stratigraphy*", req => {
     return (req.alias = `stratigraphy_${req.method}`);
   });
@@ -110,6 +113,7 @@ export const interceptApiCalls = () => {
 
   cy.intercept("/api/v2/boreholegeometry/getDepthInMasl?**").as("get-boreholegeometry-depth-masl");
   cy.intercept("/api/v2/boreholegeometry/getDepthMDFromMasl?**").as("get-boreholegeometry-depth-md");
+  cy.intercept("/api/v2/boreholegeometry/getDepthTVD?**").as("get-depth-tvd");
 
   cy.intercept("/api/v2/boreholefile/getDataExtractionFileInfo*").as("extraction-file-info");
   cy.intercept({
