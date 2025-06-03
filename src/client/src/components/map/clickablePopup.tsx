@@ -2,6 +2,7 @@ import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import Feature from "ol/Feature";
+import { theme } from "../../AppTheme";
 
 interface ClickablePopupProps {
   features?: Feature[];
@@ -17,7 +18,16 @@ export const ClickablePopup: FC<ClickablePopupProps> = ({ features = [] }) => {
             const featureId = feature.getId();
             const name = feature.get("name") ?? featureId;
             return (
-              <Typography noWrap key={featureId} onClick={() => navigate("/" + featureId)} sx={{ cursor: "pointer" }}>
+              <Typography
+                noWrap
+                key={featureId}
+                onClick={() => navigate("/" + featureId)}
+                sx={{
+                  cursor: "pointer",
+                  "&:hover": {
+                    color: theme.palette.primary.main,
+                  },
+                }}>
                 {name}
               </Typography>
             );
