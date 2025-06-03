@@ -108,7 +108,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
     cy.get('[data-cy$="-formInput"] input[type=text]').should("have.length", 1);
-    cy.get('[data-cy$="-formInput"] input[type=text]').each(($input, index) => {
+    cy.get('[data-cy$="-formInput"] input[type=text]').each($input => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).should("have.value", "");
     });
