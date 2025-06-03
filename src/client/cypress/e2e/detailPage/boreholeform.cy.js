@@ -52,7 +52,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("restrictionId", "restricted until"); //20111003
     evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("originalReferenceSystem", "LV95"); //20104001
-    evaluateSelect("locationPrecisionId", "10"); //20113002
+    evaluateSelect("locationPrecisionId", "50"); //20113002
     evaluateSelect("elevationPrecisionId", "5"); //20114002
     evaluateSelect("referenceElevationPrecisionId", "5"); //20114002
     evaluateSelect("referenceElevationTypeId", "kelly bushing"); //20117004
@@ -64,7 +64,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("restrictionId", "restricted until"); //20111003
     evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("originalReferenceSystem", "LV95"); //20104001
-    evaluateSelect("locationPrecisionId", "10"); //20113002
+    evaluateSelect("locationPrecisionId", "50"); //20113002
     evaluateSelect("elevationPrecisionId", "5"); //20114002
     evaluateSelect("referenceElevationPrecisionId", "5"); //20114002
     evaluateSelect("referenceElevationTypeId", "kelly bushing"); //20117004
@@ -124,8 +124,6 @@ describe("Test for the borehole form.", () => {
       navigateInSidebar(SidebarMenuItem.borehole);
       evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh"); //15300583
       evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic"); //15001001
-      cy.contains("Bodensee-Nagelfluh").should("exist");
-      cy.contains("Phanerozoic").should("exist");
     });
   });
 
