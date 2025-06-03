@@ -345,7 +345,7 @@ describe("Test for the borehole form.", () => {
       evaluateSelect("depthPrecisionId", "1"); //22108002
       evaluateSelect("statusId", "filled"); //22104002
       evaluateSelect("lithologyTopBedrockId", "amphibolite, banded"); //15104450
-      evaluateSelect("lithostratigraphyTopBedrockId", "Sex-du-Tronc-Kalk"); //15300495
+      evaluateSelect("lithostratigraphyTopBedrockId", "Tannenwald-Schichten"); //15300495
       evaluateSelect("chronostratigraphyTopBedrockId", "15001002"); //15001002
       evaluateTextarea("remarks", "Updated remark");
 
