@@ -15,7 +15,7 @@ describe("Tests for stratigraphy", () => {
     function addTestStratigraphyValues() {
       setInput("name", "Test Stratigraphy");
       setInput("date", "2024-03-20");
-      setSelect("qualityId", 4);
+      setSelect("qualityId", 4); // quality "good"
       getElementByDataCy("isprimary-switch").click();
     }
     function evaluateAddedStratigraphy() {
@@ -78,7 +78,14 @@ describe("Tests for stratigraphy", () => {
 
     // Copy added stratigraphy
     getElementByDataCy("copy-button").click();
-    cy.wait(["@stratigraphy_GET", "@stratigraphy_GET", "@get-layers-by-profileId"]);
+    cy.wait([
+      "@stratigraphy_GET",
+      "@stratigraphy_GET",
+      "@get-layers-by-profileId",
+      "@layer",
+      "@lithological_description",
+      "@facies_description",
+    ]);
 
     cy.contains("Test Stratigraphy (Clone)").should("exist");
     cy.contains("Test Stratigraphy (Clone)").click();

@@ -43,6 +43,8 @@ export const interceptApiCalls = () => {
   cy.intercept("POST", "/api/v2/workgroup/setRoles").as("set_workgroup_roles");
 
   cy.intercept("/api/v2/lithologicaldescription*").as("lithological_description");
+  cy.intercept("/api/v2/faciesdescription*").as("facies_description");
+
   cy.intercept("/api/v2/chronostratigraphy*", req => {
     return (req.alias = `chronostratigraphy_${req.method}`);
   });
