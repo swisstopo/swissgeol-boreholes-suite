@@ -83,7 +83,7 @@ const layerAttributes = [
   {
     value: "grainSize2Id",
     type: "Select",
-    initial: null,
+    initial: "",
   },
   {
     value: "uscs_3",
@@ -155,7 +155,7 @@ const layerAttributes = [
   {
     value: "humidityId",
     type: "Select",
-    initial: null,
+    initial: "",
   },
   {
     value: "alterationId",

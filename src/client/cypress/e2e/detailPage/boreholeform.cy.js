@@ -55,7 +55,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("locationPrecisionId", "50"); //20113002
     evaluateSelect("elevationPrecisionId", "5"); //20114002
     evaluateSelect("referenceElevationPrecisionId", "5"); //20114002
-    evaluateSelect("referenceElevationTypeId", "kelly bushing"); //20117004
+    evaluateSelect("referenceElevationTypeId", "manhole cover"); //20117004
 
     saveWithSaveBar();
     // navigate away and back to check if values are saved
@@ -67,7 +67,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("locationPrecisionId", "50"); //20113002
     evaluateSelect("elevationPrecisionId", "5"); //20114002
     evaluateSelect("referenceElevationPrecisionId", "5"); //20114002
-    evaluateSelect("referenceElevationTypeId", "kelly bushing"); //20117004
+    evaluateSelect("referenceElevationTypeId", "manhole cover"); //20117004
 
     // fill all dropdowns on borehole tab
     navigateInSidebar(SidebarMenuItem.borehole);
@@ -346,7 +346,7 @@ describe("Test for the borehole form.", () => {
       evaluateSelect("statusId", "filled"); //22104002
       evaluateSelect("lithologyTopBedrockId", "amphibolite, banded"); //15104450
       evaluateSelect("lithostratigraphyTopBedrockId", "Tannenwald-Schichten"); //15300495
-      evaluateSelect("chronostratigraphyTopBedrockId", "15001002"); //15001002
+      evaluateSelect("chronostratigraphyTopBedrockId", "Cenozoic"); //15001002
       evaluateTextarea("remarks", "Updated remark");
 
       discardChanges();
