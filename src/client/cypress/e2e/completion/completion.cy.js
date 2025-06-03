@@ -125,7 +125,7 @@ const assertNewCompletionCreated = boreholeId => {
 };
 
 describe("completion crud tests", () => {
-  it.only("adds, edits, copies and deletes completions", () => {
+  it("adds, edits, copies and deletes completions", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToRouteAndAcceptTerms(`/${id}/completion`);
