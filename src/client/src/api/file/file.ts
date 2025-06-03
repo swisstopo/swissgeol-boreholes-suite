@@ -30,8 +30,8 @@ export async function uploadFile(boreholeId: number, file: File) {
   }
 }
 
-export const detachFile = async (boreholeId: string, boreholeFileId: number) => {
-  return await fetchApiV2(`boreholefile/detachFile?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`, "POST");
+export const detachFile = async (boreholeFileId: number) => {
+  return await fetchApiV2(`boreholefile/detachFile?boreholeFileId=${boreholeFileId}`, "POST");
 };
 
 export async function getFiles<FileResponse>(boreholeId: number): Promise<FileResponse[]> {
