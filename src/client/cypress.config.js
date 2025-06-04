@@ -67,7 +67,5 @@ export default defineConfig({
   defaultCommandTimeout: 10000,
   waitForAnimations: false,
   numTestsKeptInMemory: 10,
-  pageLoadTimeout: 60000,
-  watchForFileChanges: false,
   chromeWebSecurity: false,
 });
