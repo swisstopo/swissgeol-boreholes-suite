@@ -24,7 +24,7 @@ public class Document : IIdentifyable, IChangeTracking
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>.
     /// </summary>
-    public Borehole Borehole { get; set; }
+    public Borehole? Borehole { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Document"/>'s url.
