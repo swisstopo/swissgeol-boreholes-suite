@@ -94,7 +94,7 @@ export const FormSelect: FC<FormSelectProps> = ({
             />
           );
         }
-        // Display formSelect as Autocomplete when editable
+        // Display FormSelect as Autocomplete when editable
         return (
           <Autocomplete
             key={`${fieldName}-${fieldValue ?? "empty"}`}
