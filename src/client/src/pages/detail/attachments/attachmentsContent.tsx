@@ -1,4 +1,4 @@
-import { FC, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -11,11 +11,11 @@ import { TableSearchField } from "../../../components/table/tableSearchField.tsx
 import { DetailContext } from "../detailContext.tsx";
 import { AddAttachmentButton } from "./addAttachmentButton.tsx";
 
-interface AttachmentContentProps {
+interface AttachmentContentProps<T extends GridValidRowModel> {
   apiRef: RefObject<GridApiCommunity>;
   isLoading: boolean;
-  rows: GridValidRowModel[] | undefined;
-  columns: GridColDef<GridValidRowModel>[];
+  rows: T[] | undefined;
+  columns: GridColDef<T>[];
   addAttachment: (file: File) => Promise<void>;
   acceptedFileTypes?: string;
   deleteAttachments: () => Promise<void>;
@@ -24,7 +24,7 @@ interface AttachmentContentProps {
   noAttachmentsText: string;
 }
 
-export const AttachmentContent: FC<AttachmentContentProps> = ({
+export const AttachmentContent = <T extends GridValidRowModel>({
   apiRef,
   isLoading,
   rows,
@@ -35,7 +35,7 @@ export const AttachmentContent: FC<AttachmentContentProps> = ({
   exportAttachments,
   addAttachmentButtonLabel,
   noAttachmentsText,
-}) => {
+}: AttachmentContentProps<T>) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(DetailContext);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
