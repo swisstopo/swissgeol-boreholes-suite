@@ -1,4 +1,4 @@
-import { interceptApiCalls, loginAndResetState } from "../e2e/helpers/testHelpers";
+import { interceptApiCalls, loginAndResetState, stopBoreholeEditing } from "../e2e/helpers/testHelpers";
 import "cypress-file-upload";
 
 Cypress.on("uncaught:exception", () => {
@@ -25,6 +25,12 @@ const failFlakyTests = false; // Set this to true to fail test run if at least o
 let testFailures = [];
 
 afterEach(function () {
+  // Stop editing even if the test fails
+  cy.get("body").then($body => {
+    if ($body.find('[data-cy="editingstop-button"]').length > 0) {
+      stopBoreholeEditing();
+    }
+  });
   if (this.currentTest.state === "failed") {
     testFailures.push(this.currentTest.fullTitle());
   }
