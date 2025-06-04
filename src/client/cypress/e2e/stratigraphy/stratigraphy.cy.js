@@ -112,6 +112,7 @@ describe("Tests for stratigraphy", () => {
 
     cy.wait(["@stratigraphy_GET", "@stratigraphy_GET"]);
     waitForStratigraphyContent();
+    cy.wait(["@layer", "@lithological_description", "@facies_description"]);
 
     evaluateInput("name", "Test Stratigraphy (Clone)");
     evaluateSelect("qualityId", "good");
