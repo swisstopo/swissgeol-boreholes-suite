@@ -1,16 +1,18 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Typography } from "@mui/material";
 import { ChevronDownIcon } from "lucide-react";
 import _ from "lodash";
 import { register } from "ol/proj/proj4";
 import { Options, optionsFromCapabilities } from "ol/source/WMTS";
 import proj4 from "proj4";
-import { patchCodeConfig, patchSettings } from "../../api-lib";
+import { patchSettings } from "../../api-lib";
 import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
+import { Codelist, useCodelistMutations, useCodelists } from "../../components/codelist.ts";
+import { FullPageCentered } from "../../components/styledComponents.ts";
 import GeneralSettingList from "./components/editorSettingList/generalSettingList.tsx";
 import { MapSettings } from "./components/editorSettingList/mapSettings";
 import { boreholeEditorData } from "./data/boreholeEditorData.ts";
@@ -35,17 +37,109 @@ const projections = {
 const GeneralSettings = () => {
   const { showAlert } = useContext(AlertContext);
   const { i18n, t } = useTranslation();
+  const { data: codelists, isLoading } = useCodelists();
+  const {
+    update: { mutate: updateCodelist },
+  } = useCodelistMutations();
 
   const setting = useSelector((state: ReduxRootState) => state.setting);
-
   const dispatch = useDispatch();
+  const confCodelist: Codelist | undefined = codelists?.find(c => c.id === 3000);
+  const [state, setState] = useState({
+    fields: false,
+    identifiers: false,
+    codeLists: false,
+    searchFiltersBoreholes: false,
+    searchFiltersLayers: false,
+    map: false,
+
+    wmtsFetch: false,
+    searchWmts: "",
+    searchWmtsUser: "",
+    wmts: null,
+
+    wmsFetch: false,
+    searchWms: "",
+    searchWmsUser: "",
+    wms: null,
+  });
+
+  const [searchList, setSearchList] = useState([
+    {
+      id: 0,
+      name: "location",
+      translationId: "searchFilterLocation",
+      isSelected: false,
+    },
+    {
+      id: 1,
+      name: "borehole",
+      translationId: "searchFiltersBoreholes",
+      isSelected: false,
+    },
+
+    {
+      id: 2,
+      name: "lithology",
+      translationId: "searchFiltersLayers",
+      isSelected: false,
+    },
+    {
+      id: 3,
+      name: "lithologyfields",
+      translationId: "lithologyfields",
+      isSelected: false,
+    },
+    {
+      id: 4,
+      name: "registration",
+      translationId: "searchFilterRegistration",
+      isSelected: false,
+    },
+  ]);
+
+  if (isLoading || !confCodelist)
+    return (
+      <FullPageCentered>
+        <CircularProgress />
+      </FullPageCentered>
+    );
+
+  const updateFieldsInConfig = (
+    fieldUpdates: Record<string, boolean>,
+    updateCodelistFunction: (updatedCodelist: Codelist) => void,
+  ) => {
+    const configObject = JSON.parse(confCodelist?.conf);
+    const updatedConfig = {
+      ...configObject,
+      fields: {
+        ...configObject.fields,
+        ...fieldUpdates,
+      },
+    };
+    const updatedCodelist: Codelist = {
+      ...confCodelist,
+      conf: JSON.stringify(updatedConfig),
+    };
+    updateCodelistFunction(updatedCodelist);
+  };
+
+  // Update a single field
+  const toggleField = (filter: string, enabled: boolean) => {
+    updateFieldsInConfig({ [filter]: enabled }, updateCodelist);
+  };
+
+  // Update multiple fields
   const toggleFieldArray = (filter: string[], enabled: boolean) => {
-    const newFilter: string[] = [];
-    filter.forEach(element => {
-      newFilter.push(`fields.${element}`);
-    });
-    // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
-    dispatch(patchCodeConfig(newFilter, enabled));
+    const fieldUpdates = filter.reduce(
+      (acc, element) => {
+        acc[element] = enabled;
+        return acc;
+      },
+      {} as Record<string, boolean>,
+    );
+
+    updateFieldsInConfig(fieldUpdates, updateCodelist);
   };
 
   const toggleFilterArray = (filter: string[], enabled: boolean) => {
@@ -57,10 +151,6 @@ const GeneralSettings = () => {
     dispatch(patchSettings(newFilter, enabled));
   };
 
-  const toggleField = (filter: string, enabled: boolean) => {
-    // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
-    dispatch(patchCodeConfig(`fields.${filter}`, enabled));
-  };
   const toggleFilter = (filter: string, enabled: boolean) => {
     // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
     dispatch(patchSettings(`efilter.${filter}`, enabled));
@@ -135,57 +225,6 @@ const GeneralSettings = () => {
     proj4.defs(srs, proj);
   });
   register(proj4);
-  const [searchList, setSearchList] = useState([
-    {
-      id: 0,
-      name: "location",
-      translationId: "searchFilterLocation",
-      isSelected: false,
-    },
-    {
-      id: 1,
-      name: "borehole",
-      translationId: "searchFiltersBoreholes",
-      isSelected: false,
-    },
-
-    {
-      id: 2,
-      name: "lithology",
-      translationId: "searchFiltersLayers",
-      isSelected: false,
-    },
-    {
-      id: 3,
-      name: "lithologyfields",
-      translationId: "lithologyfields",
-      isSelected: false,
-    },
-    {
-      id: 4,
-      name: "registration",
-      translationId: "searchFilterRegistration",
-      isSelected: false,
-    },
-  ]);
-  const [state, setState] = useState({
-    fields: false,
-    identifiers: false,
-    codeLists: false,
-    searchFiltersBoreholes: false,
-    searchFiltersLayers: false,
-    map: false,
-
-    wmtsFetch: false,
-    searchWmts: "",
-    searchWmtsUser: "",
-    wmts: null,
-
-    wmsFetch: false,
-    searchWms: "",
-    searchWmsUser: "",
-    wms: null,
-  });
 
   const handleButtonSelected = (name: string, isSelected: boolean): SettingsItem[] => {
     let selectedData: SettingsItem[];
