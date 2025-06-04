@@ -109,7 +109,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
       </Stack>
       {inProgress && (
         <Backdrop
-          sx={{ color: theme.palette.primary.main, backgroundColor: "rgba(0, 0, 0, 0.2)" }}
+          sx={{ color: theme.palette.primary.main, backgroundColor: theme.palette.background.backdrop }}
           open={inProgress}
           onClick={closeExportDialog}>
           <CircularProgress color="inherit" />
