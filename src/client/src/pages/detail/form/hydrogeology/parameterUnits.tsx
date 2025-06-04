@@ -1,4 +1,4 @@
-import { Codelist } from "../../../../components/Codelist.ts";
+import { Codelist } from "../../../../components/codelist.ts";
 
 interface Units {
   [key: number]: string;

@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { useDomains } from "../../api/fetchApiV2.ts";
-import { Codelist } from "../Codelist.ts";
+import { Codelist, useCodelists } from "../codelist.ts";
 import { FormMultiSelect } from "./form.ts";
 import { FormMultiSelectProps } from "./formMultiSelect.tsx";
 
@@ -12,7 +11,7 @@ export interface FormDomainMultiSelectProps extends FormMultiSelectProps {
 
 export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
   const { label, selected, schemaName, prefilteredDomains } = props;
-  const { data: domains } = useDomains();
+  const { data: codelists } = useCodelists();
   const { i18n } = useTranslation();
 
   return (
@@ -20,7 +19,7 @@ export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
       {...props}
       label={label}
       selected={selected}
-      values={(prefilteredDomains ?? domains)
+      values={(prefilteredDomains ?? codelists)
         ?.filter((d: Codelist) => d.schema === schemaName)
         .sort((a: Codelist, b: Codelist) => a.order - b.order)
         .map((d: Codelist) => ({ key: d.id, name: d[i18n.language] }))}

@@ -19,9 +19,9 @@ import {
 import { LockKeyhole } from "lucide-react";
 import _ from "lodash";
 import { BoreholeAttributes, Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { useDomains } from "../../../api/fetchApiV2.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { useCodelists } from "../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../components/form/formUtils.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
@@ -53,7 +53,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 }: BoreholeTableProps) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const domains = useDomains();
+  const codelists = useCodelists();
   const apiRef = useGridApiRef();
   const auth = useAuth();
   const firstRender = useRef(true);
@@ -149,7 +149,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     {
       field: "borehole_type",
       valueGetter: (value: number) => {
-        const domain = domains?.data?.find((d: { id: number }) => d.id === value);
+        const domain = codelists?.data?.find((d: { id: number }) => d.id === value);
         if (domain) {
           return domain[i18n.language];
         }
@@ -168,7 +168,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       field: "purpose",
       valueGetter: (value, row) => {
         if (!row.extended) return "";
-        const domain = domains?.data?.find((d: { id: number }) => d.id === row.extended.purpose);
+        const domain = codelists?.data?.find((d: { id: number }) => d.id === row.extended.purpose);
         return domain ? domain[i18n.language] : "";
       },
       headerName: t("purpose"),

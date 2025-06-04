@@ -1,8 +1,7 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
-import { useDomains } from "../../../../../api/fetchApiV2.js";
-import { Codelist } from "../../../../../components/Codelist.ts";
+import { Codelist, useCodelists } from "../../../../../components/codelist.ts";
 import DataDisplayCard from "../../../../../components/dataCard/dataDisplayCard.js";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../../components/form/form.ts";
 import { FormResultTableDisplay } from "../../../../../components/form/formResultTableDisplay.tsx";
@@ -14,7 +13,7 @@ import { deleteHydrotest, Hydrotest, HydrotestResult } from "./Hydrotest.ts";
 
 export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
   const { t, i18n } = useTranslation();
-  const domains = useDomains();
+  const codelists = useCodelists();
 
   return (
     <DataDisplayCard<Hydrotest> item={item} deleteData={deleteHydrotest}>
@@ -52,13 +51,13 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
                   ...parameterTableHeaderStyles,
                 }}
                 data-cy={`hydrotestResult.${index}.parameter-formDisplay`}>
-                {domains?.data?.find((d: Codelist) => d.id === result.parameterId)?.[i18n.language] ?? ""}
+                {codelists?.data?.find((d: Codelist) => d.id === result.parameterId)?.[i18n.language] ?? ""}
               </TableCell>
               <TableCell sx={styles} data-cy={`hydrotestResult.${index}.value-formDisplay`}>
                 {result?.value && (
                   <>
                     <span>{formatNumberForDisplay(result?.value) + " "}</span>
-                    {getHydrotestParameterUnits(result.parameterId, domains.data)}
+                    {getHydrotestParameterUnits(result.parameterId, codelists.data)}
                   </>
                 )}
               </TableCell>
@@ -66,7 +65,7 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
                 {result?.minValue && (
                   <>
                     <span>{formatNumberForDisplay(result?.minValue) + " "}</span>
-                    {getHydrotestParameterUnits(result.parameterId, domains.data)}
+                    {getHydrotestParameterUnits(result.parameterId, codelists.data)}
                   </>
                 )}
               </TableCell>
@@ -74,7 +73,7 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
                 {result?.maxValue && (
                   <>
                     <span>{formatNumberForDisplay(result?.maxValue) + " "}</span>
-                    {getHydrotestParameterUnits(result.parameterId, domains.data)}
+                    {getHydrotestParameterUnits(result.parameterId, codelists.data)}
                   </>
                 )}
               </TableCell>

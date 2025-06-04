@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import { deleteCasing, useDomains } from "../../../../api/fetchApiV2.js";
+import { deleteCasing } from "../../../../api/fetchApiV2.js";
+import { useCodelists } from "../../../../components/codelist.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.js";
@@ -9,7 +10,7 @@ import { extractCasingDepth } from "./casingUtils";
 const CasingDisplay = props => {
   const { item } = props;
   const { t, i18n } = useTranslation();
-  const domains = useDomains();
+  const codelists = useCodelists();
 
   var depth = extractCasingDepth(item);
 
@@ -58,10 +59,10 @@ const CasingDisplay = props => {
                     {formatNumberForDisplay(element.toDepth)}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.kindId-formDisplay`}>
-                    {domains?.data?.find(d => d.id === element.kindId)?.[i18n.language] ?? ""}
+                    {codelists?.data?.find(d => d.id === element.kindId)?.[i18n.language] ?? ""}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.materialId-formDisplay`}>
-                    {domains?.data?.find(d => d.id === element.materialId)?.[i18n.language] ?? ""}
+                    {codelists?.data?.find(d => d.id === element.materialId)?.[i18n.language] ?? ""}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.innerDiameter-formDisplay`}>
                     {formatNumberForDisplay(element.innerDiameter)}
