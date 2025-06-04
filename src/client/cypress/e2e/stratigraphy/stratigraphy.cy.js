@@ -58,8 +58,17 @@ describe("Tests for stratigraphy", () => {
     cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
 
     cy.contains("Not specified").click(); // click on newly added stratigraphy
-    cy.wait(["@stratigraphy_GET"]);
-    waitForStratigraphyContent();
+    cy.wait([
+      "@stratigraphy_GET",
+      "@stratigraphy_by_borehole_GET",
+      "@get-layers-by-profileId",
+      "@facies_description",
+      "@lithological_description",
+      "@layer",
+      "@layer",
+      "@lithological_description",
+      "@facies_description",
+    ]);
     // Add input values
     addTestStratigraphyValues();
 
