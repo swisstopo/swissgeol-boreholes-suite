@@ -31,6 +31,7 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
         "plugin:@typescript-eslint/recommended",
         "plugin:cypress/recommended",
         "plugin:jsx-a11y/recommended",
+        "plugin:@tanstack/query/recommended",
     )),
     plugins: {
         "@typescript-eslint": fixupPluginRules(typescriptEslint),
