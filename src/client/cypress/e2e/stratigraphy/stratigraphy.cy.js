@@ -25,6 +25,21 @@ describe("Tests for stratigraphy", () => {
       cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
     }
 
+    function waitForStratigraphyContent() {
+      cy.wait([
+        "@get-layers-by-profileId",
+        "@get-layers-by-profileId",
+        "@layer",
+        "@layer",
+        "@lithological_description",
+        "@lithological_description",
+        "@facies_description",
+        "@facies_description",
+        "@stratigraphy_by_borehole_GET",
+        "@stratigraphy_by_borehole_GET",
+      ]);
+    }
+
     // Navigate to borehole
     goToRouteAndAcceptTerms("/1002057");
     startBoreholeEditing();
@@ -33,15 +48,8 @@ describe("Tests for stratigraphy", () => {
 
     // Add new stratigraphy
     addItem("addStratigraphy");
-    cy.wait([
-      "@stratigraphy_POST",
-      "@stratigraphy_GET",
-      "@stratigraphy_GET",
-      "@get-layers-by-profileId",
-      "@layer",
-      "@lithological_description",
-      "@facies_description",
-    ]);
+    cy.wait(["@stratigraphy_POST", "@stratigraphy_GET", "@stratigraphy_GET"]);
+    waitForStratigraphyContent();
 
     // evaluate existing stratigraphy
     evaluateInput("name", "Leanna Aufderhar");
@@ -50,16 +58,8 @@ describe("Tests for stratigraphy", () => {
     cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
 
     cy.contains("Not specified").click(); // click on newly added stratigraphy
-    cy.wait([
-      "@stratigraphy_GET",
-      "@get-layers-by-profileId",
-      "@get-layers-by-profileId",
-      "@layer",
-      "@lithological_description",
-      "@facies_description",
-      "@lithological_description",
-      "@facies_description",
-    ]);
+    cy.wait(["@stratigraphy_GET"]);
+    waitForStratigraphyContent();
     // Add input values
     addTestStratigraphyValues();
 
@@ -95,17 +95,14 @@ describe("Tests for stratigraphy", () => {
 
     // Copy added stratigraphy
     getElementByDataCy("copy-button").click();
-    cy.wait([
-      "@stratigraphy_GET",
-      "@stratigraphy_GET",
-      "@get-layers-by-profileId",
-      "@layer",
-      "@lithological_description",
-      "@facies_description",
-    ]);
+    cy.wait(["@stratigraphy_GET", "@stratigraphy_GET"]);
+    waitForStratigraphyContent();
 
     cy.contains("Test Stratigraphy (Clone)").should("exist");
     cy.contains("Test Stratigraphy (Clone)").click();
+
+    cy.wait(["@stratigraphy_GET", "@stratigraphy_GET"]);
+    waitForStratigraphyContent();
 
     evaluateInput("name", "Test Stratigraphy (Clone)");
     evaluateSelect("qualityId", "good");
