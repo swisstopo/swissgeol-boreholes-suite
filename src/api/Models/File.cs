@@ -61,10 +61,10 @@ public class File : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Borehole"/>s that have this <see cref="File"/> attached.
     /// </summary>
-    public ICollection<Borehole> Boreholes { get; }
+    public ICollection<Borehole>? Boreholes { get; }
 
     /// <summary>
     /// Gets the <see cref="BoreholeFile"/> join table entities.
     /// </summary>
-    public ICollection<BoreholeFile> BoreholeFiles { get; }
+    public ICollection<BoreholeFile>? BoreholeFiles { get; }
 }
