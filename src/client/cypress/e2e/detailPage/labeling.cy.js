@@ -585,7 +585,7 @@ describe("Test labeling tool", () => {
 
     // can save other changes on a borehole with photos
     getElementByDataCy("labeling-tab-profile").click({ force: true }); // close select
-    cy.get('[data-cy="labeling-toggle-button"]').click();
+    getElementByDataCy("labeling-toggle-button").click();
     navigateInSidebar(SidebarMenuItem.borehole);
     startBoreholeEditing();
     setSelect("purposeId", 1);
