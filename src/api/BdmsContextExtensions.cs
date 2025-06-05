@@ -362,12 +362,12 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Description, f => f.Random.Words().OrNull(f, .5f))
             .RuleFor(o => o.Public, f => f.Random.Bool(.9f))
-            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime().OrNull(f, .5f))
-            .RuleFor(o => o.UpdatedById, (f, bf) => bf.Updated == null ? null : f.PickRandom(userRange))
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
             .RuleFor(o => o.UpdatedBy, f => default!)
-            .RuleFor(o => o.CreatedById, _ => default!)
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
             .RuleFor(o => o.CreatedBy, _ => default!)
-            .RuleFor(o => o.Created, _ => default!);
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime());
 
         Document SeededDocuments(int seed) => fakeDocuments.UseSeed(seed).Generate();
         context.BulkInsert(documentsRange.Select(SeededDocuments).ToList(), bulkConfig);
