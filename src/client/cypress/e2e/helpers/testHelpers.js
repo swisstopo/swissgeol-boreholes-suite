@@ -131,6 +131,10 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/photo/upload?boreholeId=**").as("upload-photo");
   cy.intercept("/api/v2/photo/export?photoIds=**").as("export-photos");
   cy.intercept("DELETE", "/api/v2/photo?photoIds=**").as("delete-photos");
+  cy.intercept("GET", "/api/v2/document/getAllForBorehole?boreholeId=**").as("getAllDocuments");
+  cy.intercept("POST", "/api/v2/document").as("create-document");
+  cy.intercept("PUT", "/api/v2/document").as("update-documents");
+  cy.intercept("DELETE", "/api/v2/document?documentIds=**").as("delete-documents");
 };
 
 /**
