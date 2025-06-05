@@ -7,6 +7,8 @@ import {
   Casing,
   Chronostratigraphy,
   Completion,
+  Document,
+  DocumentUpdate,
   FaciesDescription,
   GeometryFormat,
   Instrumentation,
@@ -589,4 +591,20 @@ export const getPhotoImageData = async (photoId: number): Promise<Blob> => {
     throw new ApiError("errorLoadingImage", response.status);
   }
   return await response.blob();
+};
+
+export const getDocumentsByBoreholeId = async (boreholeId: number): Promise<Document[]> => {
+  return await fetchApiV2(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
+};
+
+export const createDocument = async (document: Document): Promise<Document> => {
+  return await fetchApiV2("document", "POST", document);
+};
+
+export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Document> => {
+  return await fetchApiV2("document", "PUT", documents);
+};
+
+export const deleteDocuments = async (documentIds: number[]): Promise<Response> => {
+  return await fetchApiV2(`document?${documentIds.map(id => `documentIds=${id}`).join("&")}`, "DELETE");
 };
