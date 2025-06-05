@@ -35,7 +35,7 @@ const tableStructure = [
   },
   {
     groupLabel: "attachments",
-    fields: ["profile", "photo"],
+    fields: ["profile", "photo", "document"],
   },
 ];
 
