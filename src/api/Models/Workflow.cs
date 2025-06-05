@@ -50,7 +50,7 @@ public class Workflow : IIdentifyable, IUserAttached<User, int>
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>.
     /// </summary>
-    public Borehole Borehole { get; set; }
+    public Borehole? Borehole { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Role"/>.

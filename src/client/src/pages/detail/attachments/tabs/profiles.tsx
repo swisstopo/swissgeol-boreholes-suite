@@ -36,8 +36,8 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   };
 
   const deleteAttachments = async (ids: number[]) => {
-    const downloadPromises = ids.map(id => detachFile(boreholeId.toString(), id));
-    await Promise.all(downloadPromises);
+    const detachPromises = ids.map(id => detachFile(id));
+    await Promise.all(detachPromises);
   };
 
   const exportAttachments = async (ids: number[]) => {

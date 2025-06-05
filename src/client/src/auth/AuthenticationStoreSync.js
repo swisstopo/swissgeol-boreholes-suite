@@ -20,4 +20,6 @@ export const AuthenticationStoreSync = () => {
       dispatch(unsetAuthentication());
     }
   }, [auth.user, userValueExpired, dispatch, auth.isLoading]);
+
+  return null;
 };
