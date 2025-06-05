@@ -27,8 +27,10 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     }));
   }, [boreholeId]);
 
-  const addAttachment = async (file: File) => {
-    await uploadFile(boreholeId, file);
+  const addAttachment = async (file?: File) => {
+    if (file) {
+      await uploadFile(boreholeId, file);
+    }
   };
 
   const deleteAttachments = async (ids: number[]) => {
@@ -174,6 +176,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       columns={columns}
       rows={rows}
       addAttachment={onAdd}
+      requireFileOnAdd
       deleteAttachments={onDelete}
       exportAttachments={onExport}
       addAttachmentButtonLabel="addProfile"

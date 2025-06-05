@@ -27,8 +27,10 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     return getPhotosByBoreholeId(boreholeId);
   }, [boreholeId]);
 
-  const addAttachment = async (file: File) => {
-    await uploadPhoto(boreholeId, file);
+  const addAttachment = async (file?: File) => {
+    if (file) {
+      await uploadPhoto(boreholeId, file);
+    }
   };
 
   const deleteAttachments = async (ids: number[]) => {
@@ -103,6 +105,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
       rows={rows}
       addAttachment={onAdd}
       acceptedFileTypes="image/*"
+      requireFileOnAdd
       deleteAttachments={onDelete}
       exportAttachments={onExport}
       addAttachmentButtonLabel="addPhoto"

@@ -16,7 +16,7 @@ export interface AttachmentWithPublicState {
 interface UseAttachmentsProps<T extends AttachmentWithPublicState> {
   apiRef: RefObject<GridApiCommunity>;
   loadAttachments: () => Promise<T[]>;
-  addAttachment: (file: File) => Promise<void>;
+  addAttachment: (file?: File) => Promise<void>;
   updateAttachments: (updatedRows: Map<GridRowId, T>) => Promise<void>;
   deleteAttachments: (ids: number[]) => Promise<void>;
   exportAttachments: (ids: number[]) => Promise<void>;
@@ -50,7 +50,7 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
   }, [loadAttachments]);
 
   const onAdd = useCallback(
-    async (file: File) => {
+    async (file?: File) => {
       try {
         setIsLoading(true);
         await addAttachment(file);
