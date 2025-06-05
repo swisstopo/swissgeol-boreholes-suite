@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../api/fetchApiV2.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 
@@ -29,7 +29,7 @@ const garbageCollectionTime15Min = 15 * 60 * 1000;
 const codelistQueryKey = "codelists";
 
 export const useCodelists = () =>
-  useQuery({
+  useSuspenseQuery<Codelist[]>({
     queryKey: [codelistQueryKey],
     queryFn: fetchCodelists,
     staleTime: staleTime10Min,

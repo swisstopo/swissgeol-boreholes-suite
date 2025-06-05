@@ -22,7 +22,7 @@ export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
       values={(prefilteredDomains ?? codelists)
         ?.filter((d: Codelist) => d.schema === schemaName)
         .sort((a: Codelist, b: Codelist) => a.order - b.order)
-        .map((d: Codelist) => ({ key: d.id, name: d[i18n.language] }))}
+        .map((d: Codelist) => ({ key: d.id, name: String(d[i18n.language]) }))}
     />
   );
 };
