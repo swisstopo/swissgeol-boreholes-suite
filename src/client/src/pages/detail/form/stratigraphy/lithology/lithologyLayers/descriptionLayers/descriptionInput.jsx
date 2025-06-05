@@ -107,7 +107,7 @@ const DescriptionInput = props => {
         <MenuItem value="">
           <em>{t("reset")}</em>
         </MenuItem>
-        {codelists?.data
+        {codelists.data
           ?.filter(d => d.schema === "description_quality")
           .sort((a, b) => a.order - b.order)
           .map(d => (

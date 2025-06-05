@@ -30,7 +30,7 @@ export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }
         renderBody={(result, index, styles) => (
           <>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.sampleType-formDisplay`}>
-              {codelists?.data?.find((d: Codelist) => d.id === result.sampleTypeId)?.[i18n.language] ?? ""}
+              {codelists.data?.find((d: Codelist) => d.id === result.sampleTypeId)?.[i18n.language] ?? ""}
             </TableCell>
             <TableCell
               component="th"
@@ -40,7 +40,7 @@ export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }
                 ...parameterTableHeaderStyles,
               }}
               data-cy={`fieldMeasurementResult.${index}.parameter-formDisplay`}>
-              {codelists?.data?.find((d: Codelist) => d.id === result.parameterId)?.[i18n.language] ?? ""}
+              {codelists.data?.find((d: Codelist) => d.id === result.parameterId)?.[i18n.language] ?? ""}
             </TableCell>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.value-formDisplay`}>
               {result?.value && result?.parameterId && (

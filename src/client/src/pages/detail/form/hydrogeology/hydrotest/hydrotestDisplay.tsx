@@ -51,7 +51,7 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
                   ...parameterTableHeaderStyles,
                 }}
                 data-cy={`hydrotestResult.${index}.parameter-formDisplay`}>
-                {codelists?.data?.find((d: Codelist) => d.id === result.parameterId)?.[i18n.language] ?? ""}
+                {codelists.data?.find((d: Codelist) => d.id === result.parameterId)?.[i18n.language] ?? ""}
               </TableCell>
               <TableCell sx={styles} data-cy={`hydrotestResult.${index}.value-formDisplay`}>
                 {result?.value && (

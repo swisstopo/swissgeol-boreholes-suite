@@ -28,13 +28,13 @@ const SectionDisplay = ({ item }) => {
               <FormDisplay
                 prefix={`${index}.`}
                 label="drilling_method"
-                value={codelists?.data?.find(d => d.id === element.drillingMethodId)}
+                value={codelists.data?.find(d => d.id === element.drillingMethodId)}
                 type={FormValueType.Domain}
               />
               <FormDisplay
                 prefix={`${index}.`}
                 label="cuttings"
-                value={codelists?.data?.find(d => d.id === element.cuttingsId)}
+                value={codelists.data?.find(d => d.id === element.cuttingsId)}
                 type={FormValueType.Domain}
               />
             </FormContainer>
@@ -42,13 +42,13 @@ const SectionDisplay = ({ item }) => {
               <FormDisplay
                 prefix={`${index}.`}
                 label="drilling_mud_type"
-                value={codelists?.data?.find(d => d.id === element.drillingMudTypeId)}
+                value={codelists.data?.find(d => d.id === element.drillingMudTypeId)}
                 type={FormValueType.Domain}
               />
               <FormDisplay
                 prefix={`${index}.`}
                 label="drilling_mud_subtype"
-                value={codelists?.data?.find(d => d.id === element.drillingMudSubtypeId)}
+                value={codelists.data?.find(d => d.id === element.drillingMudSubtypeId)}
                 type={FormValueType.Domain}
               />
             </FormContainer>

@@ -59,10 +59,10 @@ const CasingDisplay = props => {
                     {formatNumberForDisplay(element.toDepth)}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.kindId-formDisplay`}>
-                    {codelists?.data?.find(d => d.id === element.kindId)?.[i18n.language] ?? ""}
+                    {codelists.data?.find(d => d.id === element.kindId)?.[i18n.language] ?? ""}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.materialId-formDisplay`}>
-                    {codelists?.data?.find(d => d.id === element.materialId)?.[i18n.language] ?? ""}
+                    {codelists.data?.find(d => d.id === element.materialId)?.[i18n.language] ?? ""}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.innerDiameter-formDisplay`}>
                     {formatNumberForDisplay(element.innerDiameter)}

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { Suspense, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Typography } from "@mui/material";
@@ -37,14 +37,14 @@ const projections = {
 const GeneralSettings = () => {
   const { showAlert } = useContext(AlertContext);
   const { i18n, t } = useTranslation();
-  const { data: codelists, isLoading } = useCodelists();
+  const { data: codelists } = useCodelists();
   const {
     update: { mutate: updateCodelist },
   } = useCodelistMutations();
 
   const setting = useSelector((state: ReduxRootState) => state.setting);
   const dispatch = useDispatch();
-  const confCodelist: Codelist | undefined = codelists?.find(c => c.id === 3000);
+  const confCodelist: Codelist | undefined = codelists.find(c => c.id === 3000);
   const [state, setState] = useState({
     fields: false,
     identifiers: false,
@@ -98,30 +98,25 @@ const GeneralSettings = () => {
     },
   ]);
 
-  if (isLoading || !confCodelist)
-    return (
-      <FullPageCentered>
-        <CircularProgress />
-      </FullPageCentered>
-    );
-
   const updateFieldsInConfig = (
     fieldUpdates: Record<string, boolean>,
     updateCodelistFunction: (updatedCodelist: Codelist) => void,
   ) => {
-    const configObject = JSON.parse(confCodelist?.conf);
-    const updatedConfig = {
-      ...configObject,
-      fields: {
-        ...configObject.fields,
-        ...fieldUpdates,
-      },
-    };
-    const updatedCodelist: Codelist = {
-      ...confCodelist,
-      conf: JSON.stringify(updatedConfig),
-    };
-    updateCodelistFunction(updatedCodelist);
+    if (confCodelist?.conf) {
+      const configObject = JSON.parse(confCodelist?.conf);
+      const updatedConfig = {
+        ...configObject,
+        fields: {
+          ...configObject.fields,
+          ...fieldUpdates,
+        },
+      };
+      const updatedCodelist: Codelist = {
+        ...confCodelist,
+        conf: JSON.stringify(updatedConfig),
+      };
+      updateCodelistFunction(updatedCodelist);
+    }
   };
 
   // Update a single field
@@ -250,55 +245,62 @@ const GeneralSettings = () => {
 
   return (
     <Box>
-      <MapSettings
-        setting={setting}
-        i18n={i18n}
-        rmExplorerMap={rmExplorerMap}
-        addExplorerMap={addExplorerMap}
-        handleOnChange={(value: string) => {
-          setState({ ...state, wmsFetch: false, wms: null, wmts: null });
-          handleOnChange(value);
-        }}
-        state={state}
-        setState={setState}></MapSettings>
+      <Suspense
+        fallback={
+          <FullPageCentered>
+            <CircularProgress />
+          </FullPageCentered>
+        }>
+        <MapSettings
+          setting={setting}
+          i18n={i18n}
+          rmExplorerMap={rmExplorerMap}
+          addExplorerMap={addExplorerMap}
+          handleOnChange={(value: string) => {
+            setState({ ...state, wmsFetch: false, wms: null, wmts: null });
+            handleOnChange(value);
+          }}
+          state={state}
+          setState={setState}></MapSettings>
 
-      {searchList?.map((filter, idx) => (
-        <Accordion key={filter.id} expanded={filter.isSelected} onChange={() => updateSearchList(idx)}>
-          <AccordionSummary
-            expandIcon={<ChevronDownIcon />}
-            id={`panel${idx}-header`}
-            sx={{
-              flexDirection: "row",
-              display: "flex",
-              cursor: "pointer",
-              backgroundColor: filter.isSelected
-                ? theme.palette.background.lightgrey
-                : theme.palette.background.default,
-              padding: 2,
-            }}>
-            <Box
+        {searchList?.map((filter, idx) => (
+          <Accordion key={filter.id} expanded={filter.isSelected} onChange={() => updateSearchList(idx)}>
+            <AccordionSummary
+              expandIcon={<ChevronDownIcon />}
+              id={`panel${idx}-header`}
               sx={{
+                flexDirection: "row",
                 display: "flex",
-                alignItems: "center",
+                cursor: "pointer",
+                backgroundColor: filter.isSelected
+                  ? theme.palette.background.lightgrey
+                  : theme.palette.background.default,
+                padding: 2,
               }}>
-              <Typography variant="body1">{t(filter.translationId)}</Typography>
-            </Box>
-          </AccordionSummary>
-          <AccordionDetails>
-            {filter.isSelected && handleButtonSelected(filter.name, filter.isSelected) !== null && (
-              <GeneralSettingList
-                settingsItems={handleButtonSelected(filter.name, filter.isSelected)}
-                data={setting.data.efilter}
-                listName={filter.name}
-                toggleField={toggleField}
-                toggleFilter={toggleFilter}
-                toggleFieldArray={toggleFieldArray}
-                toggleFilterArray={toggleFilterArray}
-              />
-            )}
-          </AccordionDetails>
-        </Accordion>
-      ))}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}>
+                <Typography variant="body1">{t(filter.translationId)}</Typography>
+              </Box>
+            </AccordionSummary>
+            <AccordionDetails>
+              {filter.isSelected && handleButtonSelected(filter.name, filter.isSelected) !== null && (
+                <GeneralSettingList
+                  settingsItems={handleButtonSelected(filter.name, filter.isSelected)}
+                  data={setting.data.efilter}
+                  listName={filter.name}
+                  toggleField={toggleField}
+                  toggleFilter={toggleFilter}
+                  toggleFieldArray={toggleFieldArray}
+                  toggleFilterArray={toggleFilterArray}
+                />
+              )}
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </Suspense>
     </Box>
   );
 };
