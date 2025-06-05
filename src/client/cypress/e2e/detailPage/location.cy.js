@@ -250,32 +250,32 @@ describe("Tests for 'Location' edit page.", () => {
     returnToFormAndStartEditing();
 
     evaluateInput("boreholeCodelists.0.value", "pandas_for_life");
-    evaluateSelect("boreholeCodelists.0.codelistId", "100000000");
+    evaluateSelect("boreholeCodelists.0.codelistId", "ID GeODin-Shortname");
     evaluateInput("boreholeCodelists.1.value", "freedom_for_felix");
-    evaluateSelect("boreholeCodelists.1.codelistId", "100000004");
+    evaluateSelect("boreholeCodelists.1.codelistId", "ID Original");
 
     // edit identifier
-    setSelect("boreholeCodelists.0.codelistId", 3); // codelistId 100000010
+    setSelect("boreholeCodelists.0.codelistId", 3); // ID GeODin
     setInput("boreholeCodelists.0.value", "we_must_stop_felix");
     // save and return
     saveFormAndReturnToOverview();
     returnToFormAndStartEditing();
 
     evaluateInput("boreholeCodelists.0.value", "freedom_for_felix");
-    evaluateSelect("boreholeCodelists.0.codelistId", "100000004");
+    evaluateSelect("boreholeCodelists.0.codelistId", "ID Original");
     evaluateInput("boreholeCodelists.1.value", "we_must_stop_felix");
-    evaluateSelect("boreholeCodelists.1.codelistId", "100000010");
+    evaluateSelect("boreholeCodelists.1.codelistId", "ID GeODin");
 
     // delete identifier
     cy.get('[data-cy="boreholeCodelists.0.delete"]').click();
     // identifier on position 1 should now be on position 0
     evaluateInput("boreholeCodelists.0.value", "we_must_stop_felix");
-    evaluateSelect("boreholeCodelists.0.codelistId", "100000010");
+    evaluateSelect("boreholeCodelists.0.codelistId", "ID GeODin");
 
     saveFormAndReturnToOverview();
     returnToFormAndStartEditing();
 
     evaluateInput("boreholeCodelists.0.value", "we_must_stop_felix");
-    evaluateSelect("boreholeCodelists.0.codelistId", "100000010");
+    evaluateSelect("boreholeCodelists.0.codelistId", "ID GeODin");
   });
 });

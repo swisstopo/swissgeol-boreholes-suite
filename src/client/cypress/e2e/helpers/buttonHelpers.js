@@ -164,8 +164,8 @@ export const addItem = itemLabel => {
   button().scrollIntoView();
   button().should("be.visible");
   button().should("be.enabled");
-  button().click({ force: true });
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
+  button().click({ force: true });
   cy.get(".MuiCircularProgress-root").should("not.exist");
 };

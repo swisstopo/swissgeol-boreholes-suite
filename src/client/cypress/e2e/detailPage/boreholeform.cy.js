@@ -49,25 +49,25 @@ describe("Test for the borehole form.", () => {
     setSelect("referenceElevationPrecisionId", 2);
     setSelect("referenceElevationTypeId", 4);
 
-    evaluateSelect("restrictionId", "20111003");
+    evaluateSelect("restrictionId", "restricted until"); //20111003
     evaluateYesNoSelect("nationalInterest", "Not specified");
-    evaluateSelect("originalReferenceSystem", "20104001");
-    evaluateSelect("locationPrecisionId", "20113002");
-    evaluateSelect("elevationPrecisionId", "20114002");
-    evaluateSelect("referenceElevationPrecisionId", "20114002");
-    evaluateSelect("referenceElevationTypeId", "20117004");
+    evaluateSelect("originalReferenceSystem", "LV95"); //20104001
+    evaluateSelect("locationPrecisionId", "50"); //20113002
+    evaluateSelect("elevationPrecisionId", "5"); //20114002
+    evaluateSelect("referenceElevationPrecisionId", "5"); //20114002
+    evaluateSelect("referenceElevationTypeId", "manhole cover"); //20117004
 
     saveWithSaveBar();
     // navigate away and back to check if values are saved
     navigateInSidebar(SidebarMenuItem.borehole);
     navigateInSidebar(SidebarMenuItem.location);
-    evaluateSelect("restrictionId", "20111003");
+    evaluateSelect("restrictionId", "restricted until"); //20111003
     evaluateYesNoSelect("nationalInterest", "Not specified");
-    evaluateSelect("originalReferenceSystem", "20104001");
-    evaluateSelect("locationPrecisionId", "20113002");
-    evaluateSelect("elevationPrecisionId", "20114002");
-    evaluateSelect("referenceElevationPrecisionId", "20114002");
-    evaluateSelect("referenceElevationTypeId", "20117004");
+    evaluateSelect("originalReferenceSystem", "LV95"); //20104001
+    evaluateSelect("locationPrecisionId", "50"); //20113002
+    evaluateSelect("elevationPrecisionId", "5"); //20114002
+    evaluateSelect("referenceElevationPrecisionId", "5"); //20114002
+    evaluateSelect("referenceElevationTypeId", "manhole cover"); //20117004
 
     // fill all dropdowns on borehole tab
     navigateInSidebar(SidebarMenuItem.borehole);
@@ -76,10 +76,10 @@ describe("Test for the borehole form.", () => {
     setSelect("depthPrecisionId", 1);
     setSelect("statusId", 1);
 
-    evaluateSelect("purposeId", "22103001");
-    evaluateSelect("typeId", "20101001");
-    evaluateSelect("depthPrecisionId", "22108001");
-    evaluateSelect("statusId", "22104001");
+    evaluateSelect("purposeId", "geotechnics"); //22103001
+    evaluateSelect("typeId", "borehole"); //20101001
+    evaluateSelect("depthPrecisionId", "2"); //22108001
+    evaluateSelect("statusId", "open, no completion"); //22104001
 
     saveWithSaveBar();
 
@@ -87,10 +87,10 @@ describe("Test for the borehole form.", () => {
     navigateInSidebar(SidebarMenuItem.location);
     navigateInSidebar(SidebarMenuItem.borehole);
 
-    evaluateSelect("purposeId", "22103001");
-    evaluateSelect("typeId", "20101001");
-    evaluateSelect("depthPrecisionId", "22108001");
-    evaluateSelect("statusId", "22104001");
+    evaluateSelect("purposeId", "geotechnics"); //22103001
+    evaluateSelect("typeId", "borehole"); //20101001
+    evaluateSelect("depthPrecisionId", "2"); //22108001
+    evaluateSelect("statusId", "open, no completion"); //22104001
   });
 
   it("Fills all inputs on borehole tab and saves", () => {
@@ -122,10 +122,8 @@ describe("Test for the borehole form.", () => {
       saveWithSaveBar();
       navigateInSidebar(SidebarMenuItem.location);
       navigateInSidebar(SidebarMenuItem.borehole);
-      evaluateSelect("lithostratigraphyTopBedrockId", "15300583");
-      evaluateSelect("chronostratigraphyTopBedrockId", "15001001");
-      cy.contains("Bodensee-Nagelfluh").should("exist");
-      cy.contains("Phanerozoic").should("exist");
+      evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh"); //15300583
+      evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic"); //15001001
     });
   });
 
@@ -317,13 +315,13 @@ describe("Test for the borehole form.", () => {
       evaluateInput("totalDepth", "1'234");
       evaluateInput("topBedrockFreshMd", "5'678");
       evaluateInput("topBedrockWeatheredMd", "9'101");
-      evaluateSelect("purposeId", "22103001");
-      evaluateSelect("typeId", "20101001");
-      evaluateSelect("depthPrecisionId", "22108001");
-      evaluateSelect("statusId", "22104001");
-      evaluateSelect("lithologyTopBedrockId", "15104449");
-      evaluateSelect("lithostratigraphyTopBedrockId", "15300583");
-      evaluateSelect("chronostratigraphyTopBedrockId", "15001001");
+      evaluateSelect("purposeId", "geotechnics"); //22103001
+      evaluateSelect("typeId", "borehole"); //20101001
+      evaluateSelect("depthPrecisionId", "2"); //22108001
+      evaluateSelect("statusId", "open, no completion"); //22104001
+      evaluateSelect("lithologyTopBedrockId", "amphibolite"); //15104449
+      evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh"); //15300583
+      evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic"); //15001001;
       evaluateTextarea("remarks", "New remark");
 
       // update values
@@ -342,13 +340,13 @@ describe("Test for the borehole form.", () => {
       evaluateInput("totalDepth", "100");
       evaluateInput("topBedrockFreshMd", "100");
       evaluateInput("topBedrockWeatheredMd", "100");
-      evaluateSelect("purposeId", "22103002");
-      evaluateSelect("typeId", "30000307");
-      evaluateSelect("depthPrecisionId", "22108002");
-      evaluateSelect("statusId", "22104002");
-      evaluateSelect("lithologyTopBedrockId", "15104450");
-      evaluateSelect("lithostratigraphyTopBedrockId", "15300495");
-      evaluateSelect("chronostratigraphyTopBedrockId", "15001002");
+      evaluateSelect("purposeId", "geothermal exploration"); //22103002
+      evaluateSelect("typeId", "virtual borehole"); //30000307
+      evaluateSelect("depthPrecisionId", "1"); //22108002
+      evaluateSelect("statusId", "filled"); //22104002
+      evaluateSelect("lithologyTopBedrockId", "amphibolite, banded"); //15104450
+      evaluateSelect("lithostratigraphyTopBedrockId", "Tannenwald-Schichten"); //15300495
+      evaluateSelect("chronostratigraphyTopBedrockId", "Cenozoic"); //15001002
       evaluateTextarea("remarks", "Updated remark");
 
       discardChanges();
@@ -356,13 +354,13 @@ describe("Test for the borehole form.", () => {
       evaluateInput("totalDepth", "1'234");
       evaluateInput("topBedrockFreshMd", "5'678");
       evaluateInput("topBedrockWeatheredMd", "9'101");
-      evaluateSelect("purposeId", "22103001");
-      evaluateSelect("typeId", "20101001");
-      evaluateSelect("depthPrecisionId", "22108001");
-      evaluateSelect("statusId", "22104001");
-      evaluateSelect("lithologyTopBedrockId", "15104449");
-      evaluateSelect("lithostratigraphyTopBedrockId", "15300583");
-      evaluateSelect("chronostratigraphyTopBedrockId", "15001001");
+      evaluateSelect("purposeId", "geotechnics"); //22103001
+      evaluateSelect("typeId", "borehole"); //20101001
+      evaluateSelect("depthPrecisionId", "2"); //22108001
+      evaluateSelect("statusId", "open, no completion"); //22104001
+      evaluateSelect("lithologyTopBedrockId", "amphibolite"); //15104449
+      evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh"); //15300583
+      evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic"); //15001001
       evaluateTextarea("remarks", "New remark");
     });
   });
