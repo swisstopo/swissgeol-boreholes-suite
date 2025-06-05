@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, SxProps, Typography } from "@mui/material";
 import { Language } from "../../appInterfaces.ts";
-import { Codelist } from "../Codelist.ts";
+import { Codelist } from "../codelist.ts";
 import { FormValueType } from "./form";
 import { formatNumberForDisplay } from "./formUtils.ts";
 

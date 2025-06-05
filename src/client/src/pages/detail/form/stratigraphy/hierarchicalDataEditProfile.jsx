@@ -14,7 +14,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { useDomainSchema } from "../../../../api/fetchApiV2.ts";
+import { useCodelistSchema } from "../../../../components/codelist.ts";
 import { DetailContext } from "../../detailContext.tsx";
 import LayerCard from "./layerCard.jsx";
 import LayerGap from "./layerGap.jsx";
@@ -29,7 +29,7 @@ const HierarchicalDataEditProfile = ({
   deleteLayer, // function that deletes a layer
   updateLayer, // function that updates a layer
   headerLabels, // array of translation keys
-  domainSchemaName, // string that specifies the codelist schema to use
+  codelistSchemaName, // string that specifies the codelist schema to use
   dataProperty, // string that specifies the property of the layer object that contains the data
   titel, // The titel, displayed in the header
   selectedStratigraphyID,
@@ -44,7 +44,7 @@ const HierarchicalDataEditProfile = ({
   const [header, setHeader] = useState(headerLabels.map(h => ({ title: h, isVisible: true })));
   const { editingEnabled } = useContext(DetailContext);
 
-  const { data: schemaData } = useDomainSchema(domainSchemaName);
+  const { data: schemaData } = useCodelistSchema(codelistSchemaName);
 
   // create options array from codelist schema
   // The options are the same for all layers

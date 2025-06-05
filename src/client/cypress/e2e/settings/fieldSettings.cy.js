@@ -6,11 +6,46 @@ it("checks that the field settings control the field visibility.", () => {
   const waitForSettings = () => {
     cy.wait(["@setting"]);
   };
+
+  const waitForCodelistUpdate = () => {
+    cy.wait(["@codelist_PUT", "@codelist_GET"]);
+  };
   getElementByDataCy("settings-button").click();
   getElementByDataCy("general-tab").click();
-  cy.contains("Lithology fields").click();
-  cy.contains("Select all").click();
   waitForSettings();
+  cy.contains("Lithology fields").click();
+  cy.contains("Unselect all").click();
+  waitForCodelistUpdate();
+
+  cy.get('input[type="checkbox"]')
+    .should("have.length", 26)
+    .each($el => {
+      cy.wrap($el).should("not.be.checked");
+    });
+
+  cy.contains("Select all").click();
+  waitForCodelistUpdate();
+
+  cy.get('input[type="checkbox"]')
+    .should("have.length", 26)
+    .each($el => {
+      cy.wrap($el).should("be.checked");
+    });
+
+  // change tab and return and check if checkboxes are still checked
+  getElementByDataCy("about-tab").click();
+  cy.location().should(location => {
+    expect(location.pathname).to.eq(`/setting`);
+    expect(location.hash).to.eq("#about");
+  });
+  cy.contains("example-js (Version 0.0.999)").should("exist");
+  getElementByDataCy("general-tab").click();
+  cy.contains("Lithology fields").click();
+  cy.get('input[type="checkbox"]')
+    .should("have.length", 26)
+    .each($el => {
+      cy.wrap($el).should("be.checked");
+    });
 
   goToRouteAndAcceptTerms("/1001140/stratigraphy/lithology");
   cy.get('[data-cy="styled-layer-9"]').click();
@@ -48,7 +83,7 @@ it("checks that the field settings control the field visibility.", () => {
   getElementByDataCy("general-tab").click();
   cy.contains("Lithology fields").click();
   cy.contains("Unselect all").click();
-  waitForSettings();
+  waitForCodelistUpdate();
 
   goToRouteAndAcceptTerms("/1001140/stratigraphy/lithology");
   cy.get('[data-cy="styled-layer-9"]').click();
@@ -82,8 +117,8 @@ it("checks that the field settings control the field visibility.", () => {
   returnToOverview();
   getElementByDataCy("settings-button").click();
   getElementByDataCy("general-tab").click();
-  cy.contains("Lithology fields").click();
   waitForSettings();
+  cy.contains("Lithology fields").click();
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(500);
 

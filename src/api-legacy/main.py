@@ -110,7 +110,6 @@ if __name__ == "__main__":
         TermsAdminHandler,
 
         # Other handlers
-        CodeListHandler,
         Wms,
     )
 
@@ -147,7 +146,6 @@ if __name__ == "__main__":
         (r'/api/v1/borehole/profile/layer', ProfileLayerViewerHandler),
 
         # Other handlers
-        (r'/api/v1/borehole/codes', CodeListHandler),
         (r"/api/v1/geoapi/wms/swisstopo", Wms),
 
     ], **settings)

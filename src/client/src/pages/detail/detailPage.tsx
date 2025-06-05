@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
+import { FC, Suspense, useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { Box, CircularProgress, Stack } from "@mui/material";
@@ -6,7 +6,7 @@ import { loadBorehole } from "../../api-lib";
 import { Borehole, ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { getBoreholeById } from "../../api/borehole.ts";
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
-import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import { FullPageCentered, LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsContext.tsx";
 import { DetailContext, DetailContextProps } from "./detailContext.tsx";
@@ -98,31 +98,38 @@ export const DetailPage: FC = () => {
         <SidebarBox>
           <DetailSideNav borehole={borehole} />
         </SidebarBox>
-        <Stack width="100%" direction="column" sx={{ overflowX: "auto" }}>
-          <Box
-            sx={{
-              display: "flex",
-              flexGrow: 1,
-              overflow: "auto",
-              flexDirection: panelPosition === "right" ? "row" : "column",
-              width: "100%",
-            }}>
-            <MainContentBox
+        <Suspense
+          fallback={
+            <FullPageCentered>
+              <CircularProgress />
+            </FullPageCentered>
+          }>
+          <Stack width="100%" direction="column" sx={{ overflowX: "auto" }}>
+            <Box
               sx={{
-                width: panelOpen && panelPosition === "right" ? "50%" : "100%",
-                height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+                display: "flex",
+                flexGrow: 1,
+                overflow: "auto",
+                flexDirection: panelPosition === "right" ? "row" : "column",
+                width: "100%",
               }}>
-              <SidePanelToggleButton
-                panelOpen={panelOpen}
-                panelPosition={panelPosition}
-                onClick={() => togglePanel()}
-              />
-              <DetailPageContent borehole={borehole} panelOpen={panelOpen} />
-            </MainContentBox>
-            {panelOpen && <LabelingPanel />}
-          </Box>
-          {editingEnabled && showSaveBar && <SaveBar />}
-        </Stack>
+              <MainContentBox
+                sx={{
+                  width: panelOpen && panelPosition === "right" ? "50%" : "100%",
+                  height: panelOpen && panelPosition === "bottom" ? "50%" : "100%",
+                }}>
+                <SidePanelToggleButton
+                  panelOpen={panelOpen}
+                  panelPosition={panelPosition}
+                  onClick={() => togglePanel()}
+                />
+                <DetailPageContent borehole={borehole} panelOpen={panelOpen} />
+              </MainContentBox>
+              {panelOpen && <LabelingPanel />}
+            </Box>
+            {editingEnabled && showSaveBar && <SaveBar />}
+          </Stack>
+        </Suspense>
       </LayoutBox>
     </>
   );

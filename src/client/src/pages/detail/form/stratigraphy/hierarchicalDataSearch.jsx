@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, MenuItem, TextField } from "@mui/material";
-import { useDomainSchema } from "../../../../api/fetchApiV2.ts";
-import { FormContainer } from "../../../../components/form/form.js";
+import { useCodelistSchema } from "../../../../components/codelist.ts";
+import { FormContainer } from "../../../../components/form/form.ts";
 
 const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
   const { i18n, t } = useTranslation();
-  const { data: schemaData } = useDomainSchema(schema);
+  const { data: schemaData } = useCodelistSchema(schema);
 
   const [levels, setLevels] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);

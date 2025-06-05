@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Codelist } from "../components/Codelist.ts";
+import { Codelist } from "../components/codelist.ts";
 import store from "../reducers";
 import {
   ApiError,
@@ -236,26 +236,6 @@ export const updateStratigraphy = async (stratigraphy: Stratigraphy): Promise<St
 
 const staleTime10Min = 10 * 60 * 1000;
 const garbageCollectionTime15Min = 15 * 60 * 1000;
-
-export const useDomains = () =>
-  useQuery({
-    queryKey: ["domains"],
-    queryFn: () => {
-      return fetchApiV2("codelist", "GET");
-    },
-    staleTime: staleTime10Min,
-    gcTime: garbageCollectionTime15Min,
-  });
-
-export const useDomainSchema = (schema: string) =>
-  useQuery({
-    queryKey: ["domains", schema],
-    queryFn: async () => {
-      return await fetchApiV2(`codelist?schema=${schema}`, "GET");
-    },
-    staleTime: staleTime10Min,
-    gcTime: garbageCollectionTime15Min,
-  });
 
 export const useCantons = () =>
   useQuery({
