@@ -103,4 +103,10 @@ public class TabStatus : IIdentifyable
     /// </summary>
     [Column("photo")]
     public bool Photo { get; set; }
+
+    /// <summary>
+    /// Gets or sets the status of the document tab of the borehole attachments.
+    /// </summary>
+    [Column("document")]
+    public bool Document { get; set; }
 }

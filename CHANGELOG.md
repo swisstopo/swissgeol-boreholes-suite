@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Added the documents tab to the borehole attachments.
+
 ### Changed
 - Updated _extern-sync_ logic to filter published boreholes by target workgroup for duplication check.
 - In the overview map when hovering over a borehole, clicking the tooltip text now navigates to the borehole detail view. If several boreholes are located at the same position, a list of boreholes is displayed in the tooltip and clicking on one of them navigates to the respective borehole detail view.
