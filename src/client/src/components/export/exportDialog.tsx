@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogTitle,
   Stack,
-  Typography,
 } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
