@@ -213,6 +213,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.BoreholeFiles, _ => new Collection<BoreholeFile>())
            .RuleFor(o => o.TopBedrockIntersected, f => f.Random.Bool().OrNull(f, .2f))
            .RuleFor(o => o.Photos, _ => new Collection<Photo>())
+           .RuleFor(o => o.Documents, _ => new Collection<Document>())
            .FinishWith((f, o) => { o.Name = o.OriginalName; });
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
@@ -349,6 +350,27 @@ public static class BdmsContextExtensions
 
         Photo SeededPhotos(int seed) => fakePhotos.UseSeed(seed).Generate();
         context.BulkInsert(photosRange.Select(SeededPhotos).ToList(), bulkConfig);
+
+        // Seed documents
+        var document_ids = 5_000_000;
+        var documentsRange = Enumerable.Range(document_ids, 80);
+        var fakeDocuments = new Faker<Document>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, _ => document_ids++)
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange))
+            .RuleFor(o => o.Borehole, f => default!)
+            .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
+            .RuleFor(o => o.Description, f => f.Random.Words().OrNull(f, .5f))
+            .RuleFor(o => o.Public, f => f.Random.Bool(.9f))
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, f => default!)
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime());
+
+        Document SeededDocuments(int seed) => fakeDocuments.UseSeed(seed).Generate();
+        context.BulkInsert(documentsRange.Select(SeededDocuments).ToList(), bulkConfig);
 
         // Seed stratigraphy
         var stratigraphy_ids = 6_000_000;
@@ -1101,6 +1123,7 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.tab_status', 'tab_status_id'), {tabStatus_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_v2', 'workflow_id'), {workflowV2_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_change', 'workflow_change_id'), {workflowChange_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.document', 'id'), {document_ids - 1})");
     }
 }
 #pragma warning restore CA1505

@@ -1,6 +1,7 @@
-import { deleteItem, exportItem, saveWithSaveBar } from "../helpers/buttonHelpers.js";
+import { deleteItem, exportItem, saveForm, saveWithSaveBar } from "../helpers/buttonHelpers.js";
 import {
   checkAllVisibleRows,
+  checkRowWithIndex,
   checkRowWithText,
   uncheckAllVisibleRows,
   unCheckRowWithText,
@@ -8,6 +9,7 @@ import {
   verifyRowWithContentAlsoContains,
   verifyRowWithTextCheckState,
   verifyTableLength,
+  waitForTableData,
 } from "../helpers/dataGridHelpers.js";
 import { evaluateInput, setInput } from "../helpers/formHelpers.js";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
@@ -245,5 +247,69 @@ describe("Tests for 'Attachments' edit page.", () => {
     navigateInSidebar(SidebarMenuItem.borehole);
     evaluateInput("totalDepth", "465");
     stopBoreholeEditing();
+  });
+
+  it("creates, edits and deletes documents.", () => {
+    createBorehole({ "extended.original_name": "HAPPYBOOK" }).as("borehole_id");
+    cy.get("@borehole_id").then(boreholeId => {
+      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      startBoreholeEditing();
+
+      navigateInSidebar(SidebarMenuItem.attachments);
+      getElementByDataCy("documents-tab").click();
+      cy.wait("@getAllDocuments");
+
+      // create 2 documents
+      getElementByDataCy("addDocument-button").should("be.visible").click();
+      cy.wait(["@document_POST", "@getAllDocuments"]);
+      verifyTableLength(1);
+      getElementByDataCy("addDocument-button").should("be.visible").click();
+      cy.wait(["@document_POST", "@getAllDocuments"]);
+      verifyTableLength(2);
+
+      // add data to the first document
+      cy.get(".MuiDataGrid-row")
+        .first()
+        .find(`[data-cy="document-url"]`)
+        .find("input:visible")
+        .type("https://localhost/document1.pdf");
+      cy.get(".MuiDataGrid-row")
+        .first()
+        .find(`[data-cy="document-description"]`)
+        .find("textarea:visible")
+        .type("some description");
+
+      // add data to the second document
+      cy.get(".MuiDataGrid-row")
+        .eq(1)
+        .find(`[data-cy="document-url"]`)
+        .find("input:visible")
+        .type("https://localhost/document2.pdf");
+
+      saveForm();
+      cy.wait(["@document_PUT", "@getAllDocuments"]);
+      waitForTableData();
+      stopBoreholeEditing();
+
+      verifyRowContains("https://localhost/document1.pdf", 0);
+      verifyRowContains("some description", 0);
+      verifyRowContains("https://localhost/document2.pdf", 1);
+
+      cy.contains("a", "https://localhost/document1.pdf").should(
+        "have.attr",
+        "href",
+        "https://localhost/document1.pdf",
+      );
+
+      // delete the first document
+      startBoreholeEditing();
+      checkRowWithIndex(0);
+      deleteItem("attachment-table-container");
+      cy.wait(["@document_DELETE", "@getAllDocuments"]);
+      verifyTableLength(1);
+
+      // reset test data
+      deleteBorehole(boreholeId);
+    });
   });
 });

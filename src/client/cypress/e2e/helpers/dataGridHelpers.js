@@ -88,8 +88,12 @@ export const verifyRowWithTextCheckState = (text, checked, column) => {
 };
 
 export const checkTwoFirstRows = () => {
-  cy.get(".MuiDataGrid-row").eq(0).find('.MuiDataGrid-cellCheckbox input[type="checkbox"]').check({ force: true });
-  cy.get(".MuiDataGrid-row").eq(1).find('.MuiDataGrid-cellCheckbox input[type="checkbox"]').check({ force: true });
+  checkRowWithIndex(0);
+  checkRowWithIndex(1);
+};
+
+export const checkRowWithIndex = index => {
+  cy.get(".MuiDataGrid-row").eq(index).find('.MuiDataGrid-cellCheckbox input[type="checkbox"]').check({ force: true });
 };
 
 export const clickOnRowWithText = text => {
