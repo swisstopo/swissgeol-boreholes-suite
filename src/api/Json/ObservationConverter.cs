@@ -54,11 +54,8 @@ public class ObservationConverter : JsonConverter<Observation>
             case GroundwaterLevelMeasurement groundwaterLevelMeasurement:
                 JsonSerializer.Serialize(writer, groundwaterLevelMeasurement, options);
                 break;
-            case Observation observation:
-                JsonSerializer.Serialize(writer, observation, options);
-                break;
             default:
-                throw new NotSupportedException("Observation type is not supported");
+                break;
         }
     }
 }

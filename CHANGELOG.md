@@ -20,6 +20,7 @@
 - Loading a page by url did not work after a redirect from the login page.
 - When changing settings for lithology fields, the state of the checkboxes would be lost when navigating away and returning.
 - Editing boreholes with photos would cause an error.
+- Boreholes with observations could not be exported as JSON.
 
 ## v2.1.1200 - 2025-05-22
 
