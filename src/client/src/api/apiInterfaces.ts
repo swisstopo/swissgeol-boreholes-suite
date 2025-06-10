@@ -164,4 +164,23 @@ export interface Photo {
   updated?: Date | string;
 }
 
+export interface Document {
+  id: number;
+  boreholeId: number;
+  url: string;
+  description?: string;
+  public: boolean;
+  createdBy?: User;
+  created?: Date | string;
+  updatedBy?: User;
+  updated?: Date | string;
+}
+
+export interface DocumentUpdate {
+  id: number;
+  url: string;
+  description?: string;
+  public: boolean;
+}
+
 export type BoreholeAttachment = File | Photo;
