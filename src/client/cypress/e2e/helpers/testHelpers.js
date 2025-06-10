@@ -380,11 +380,9 @@ export const loginAndResetState = () => {
       url: "/api/v2/stratigraphy",
       auth: bearerAuth(token),
     }).then(response => {
-      console.log(response.body);
       response.body
         .filter(st => st.id > 6002999) // max id in seed data.
         .forEach(st => {
-          console.log(st.id);
           deleteStratigraphy(st.id);
         });
     });
