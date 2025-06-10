@@ -203,12 +203,10 @@ export const evaluateSelect = (fieldName, expectedText, parent = null, editable 
         expectedText,
       );
     });
+  } else if (!expectedText) {
+    cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("be.empty");
   } else {
-    if (!expectedText) {
-      cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("be.empty");
-    } else {
-      cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("have.value", expectedText);
-    }
+    cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("have.value", expectedText);
   }
 };
 
