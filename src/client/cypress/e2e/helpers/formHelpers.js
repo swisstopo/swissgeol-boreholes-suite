@@ -190,7 +190,7 @@ export const evaluateYesNoSelect = (fieldName, expectedValue, parent) => {
 /**
  * Evaluates the state of a select form element.
  * @param {string} fieldName The name of the select field.
- * @param {string } expectedText The text that should be displayed in the select.
+ * @param {string} expectedText The text that should be displayed in the select.
  * @param {string} parent (optional) The parent of the form element.
  * @param {boolean} editable (optional) Defines whether the select is being evaluated in the editable or uneditable state.
  */
@@ -204,7 +204,7 @@ export const evaluateSelect = (fieldName, expectedText, parent = null, editable 
       );
     });
   } else {
-    if (expectedText === null) {
+    if (!expectedText) {
       cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("be.empty");
     } else {
       cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("have.value", expectedText);
