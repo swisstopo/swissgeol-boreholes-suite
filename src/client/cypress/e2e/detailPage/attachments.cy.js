@@ -261,10 +261,10 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // create 2 documents
       getElementByDataCy("addDocument-button").should("be.visible").click();
-      cy.wait(["@create-document", "@getAllDocuments"]);
+      cy.wait(["@document_POST", "@getAllDocuments"]);
       verifyTableLength(1);
       getElementByDataCy("addDocument-button").should("be.visible").click();
-      cy.wait(["@create-document", "@getAllDocuments"]);
+      cy.wait(["@document_POST", "@getAllDocuments"]);
       verifyTableLength(2);
 
       // add data to the first document
@@ -287,7 +287,7 @@ describe("Tests for 'Attachments' edit page.", () => {
         .type("https://localhost/document2.pdf");
 
       saveForm();
-      cy.wait(["@update-documents", "@getAllDocuments"]);
+      cy.wait(["@document_PUT", "@getAllDocuments"]);
       waitForTableData();
       stopBoreholeEditing();
 
@@ -305,7 +305,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       startBoreholeEditing();
       checkRowWithIndex(0);
       deleteItem("attachment-table-container");
-      cy.wait(["@delete-documents", "@getAllDocuments"]);
+      cy.wait(["@document_DELETE", "@getAllDocuments"]);
       verifyTableLength(1);
 
       // reset test data
