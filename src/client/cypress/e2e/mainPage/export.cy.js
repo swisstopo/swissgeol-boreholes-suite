@@ -17,7 +17,7 @@ import {
 import { evaluateInput, setInput, setOriginalName, setSelect } from "../helpers/formHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
-  createBorehole,
+  createBorehole, createWateringress,
   deleteDownloadedFile,
   getElementByDataCy,
   getImportFileFromFixtures,
@@ -279,6 +279,54 @@ describe("Test for exporting boreholes.", () => {
     });
 
     readDownloadedFile(`${boreholeName}.zip`);
+  });
+
+  it("exports a single borehole with observations", () => {
+    const boreholeName = "AQUABED";
+    const fileName = `${boreholeName}.json`;
+    createBorehole({
+      "extended.original_name": boreholeName,
+      "custom.alternate_name": boreholeName,
+    }).as("borehole_id");
+
+    cy.get("@borehole_id").then(id => {
+      createWateringress(id, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
+      goToRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
+
+      exportItem("detail-header");
+      exportJsonItem();
+
+      cy.wait("@borehole_export_json").its("response.statusCode").should("eq", 200);
+      readDownloadedFile(fileName);
+
+      const expectedObservation = {
+        CasingId: null,
+        Comment: null,
+        ConditionsId: null,
+        Duration: null,
+        EndTime: null,
+        FromDepthM: 0,
+        FromDepthMasl: null,
+        IsOpenBorehole: false,
+        OriginalVerticalReferenceSystem: 0,
+        QuantityId: 15203161,
+        ReliabilityId: 15203157,
+        StartTime: "2012-11-14T12:06:00Z",
+        ToDepthM: 10,
+        ToDepthMasl: null,
+        Type: 1,
+      };
+
+      cy.readFile(prepareDownloadPath(fileName)).then(fileContent => {
+        const json = typeof fileContent === "string" ? JSON.parse(fileContent) : fileContent;
+        expect(json).to.be.an("array");
+        expect(json[0]).to.have.property("Observations");
+        expect(json[0].Observations).to.be.an("array");
+        expect(json[0].Observations).to.deep.include(expectedObservation);
+      });
+
+      deleteDownloadedFile(fileName);
+    });
   });
 
   it("displays an error message when file was not found on S3 store", () => {
