@@ -66,6 +66,4 @@ export default defineConfig({
   },
   defaultCommandTimeout: 10000,
   waitForAnimations: false,
-  numTestsKeptInMemory: 10,
-  chromeWebSecurity: false,
 });
