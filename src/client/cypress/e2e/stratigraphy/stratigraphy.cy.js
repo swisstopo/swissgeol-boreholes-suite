@@ -25,19 +25,18 @@ describe("Tests for stratigraphy", () => {
       cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
     }
 
+    function waitForLayerWithDescriptions() {
+      cy.wait(["@layer", "@facies_description", "@lithological_description"]);
+    }
+
     function waitForStratigraphyContent() {
       cy.wait([
         "@get-layers-by-profileId",
         "@get-layers-by-profileId",
-        "@layer",
-        "@layer",
-        "@lithological_description",
-        "@lithological_description",
-        "@facies_description",
-        "@facies_description",
         "@stratigraphy_by_borehole_GET",
         "@stratigraphy_by_borehole_GET",
       ]);
+      waitForLayerWithDescriptions();
     }
 
     // Navigate to borehole
@@ -58,17 +57,9 @@ describe("Tests for stratigraphy", () => {
     cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
 
     cy.contains("Not specified").click(); // click on newly added stratigraphy
-    cy.wait([
-      "@stratigraphy_GET",
-      "@stratigraphy_by_borehole_GET",
-      "@get-layers-by-profileId",
-      "@facies_description",
-      "@lithological_description",
-      "@layer",
-      "@layer",
-      "@lithological_description",
-      "@facies_description",
-    ]);
+    cy.wait(["@stratigraphy_GET", "@stratigraphy_by_borehole_GET", "@get-layers-by-profileId"]);
+    waitForLayerWithDescriptions();
+    waitForLayerWithDescriptions();
     // Add input values
     addTestStratigraphyValues();
 
@@ -112,7 +103,9 @@ describe("Tests for stratigraphy", () => {
 
     cy.wait(["@stratigraphy_GET", "@stratigraphy_GET"]);
     waitForStratigraphyContent();
-    cy.wait(["@layer", "@lithological_description", "@facies_description"]);
+    waitForLayerWithDescriptions();
+    waitForLayerWithDescriptions();
+    cy.wait(["@get-layers-by-profileId"]);
 
     evaluateInput("name", "Test Stratigraphy (Clone)");
     evaluateSelect("qualityId", "good");
