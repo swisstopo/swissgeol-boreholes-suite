@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import {
@@ -35,35 +35,38 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
   const canExportAttachments = !auth.anonymousModeEnabled && user.data.roles.includes("EDIT");
   const { showAlert } = useContext(AlertContext);
 
-  const closeExportDialog = () => {
+  const closeExportDialog = useCallback(() => {
     setInProgress(false);
     setIsExporting(false);
-  };
+  }, [setIsExporting]);
 
-  const handleExport = async (exportFunction: (ids: number[] | GridRowSelectionModel) => Promise<Response | void>) => {
-    setInProgress(true);
-    const startTime = Date.now();
-    try {
-      await exportFunction(selectionModel.slice(0, 100));
-    } catch (error) {
-      if (error instanceof ApiError) {
-        showAlert(t(error.message), "error");
-      } else {
-        showAlert(t("errorDuringExport"), "error");
-      }
-    } finally {
-      // Display spinner for at least 1 second to improve UX
-      const endTime = Date.now();
-      const elapsedTime = endTime - startTime;
-      if (elapsedTime < 1000) {
-        setTimeout(() => {
+  const handleExport = useCallback(
+    async (exportFunction: (ids: number[] | GridRowSelectionModel) => Promise<Response | void>) => {
+      setInProgress(true);
+      const startTime = Date.now();
+      try {
+        await exportFunction(selectionModel.slice(0, 100));
+      } catch (error) {
+        if (error instanceof ApiError) {
+          showAlert(t(error.message), "error");
+        } else {
+          showAlert(t("errorDuringExport"), "error");
+        }
+      } finally {
+        // Display spinner for at least 1 second to improve UX
+        const endTime = Date.now();
+        const elapsedTime = endTime - startTime;
+        if (elapsedTime < 1000) {
+          setTimeout(() => {
+            closeExportDialog();
+          }, 1000 - elapsedTime);
+        } else {
           closeExportDialog();
-        }, 1000 - elapsedTime);
-      } else {
-        closeExportDialog();
+        }
       }
-    }
-  };
+    },
+    [closeExportDialog, selectionModel, showAlert, t],
+  );
 
   const onExportJson = async () => {
     await handleExport(exportJson);
@@ -77,14 +80,14 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
     await handleExport(exportJsonWithAttachmentsBorehole);
   };
 
-  const exportJson = async () => {
-    const exportJsonResponse = await exportJsonBoreholes(selectionModel);
+  const exportJson = async (ids: number[] | GridRowSelectionModel) => {
+    const exportJsonResponse = await exportJsonBoreholes(ids);
     const jsonString = JSON.stringify(exportJsonResponse);
     downloadData(jsonString, `${fileName}.json`, "application/json");
   };
 
-  const exportCsv = async () => {
-    const csvData = await exportCSVBorehole(selectionModel.slice(0, 100));
+  const exportCsv = async (ids: number[] | GridRowSelectionModel) => {
+    const csvData = await exportCSVBorehole(ids);
     downloadData(csvData, `${fileName}.csv`, "text/csv");
   };
 
