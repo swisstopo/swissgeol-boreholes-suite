@@ -63,7 +63,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // check list of attachments
       verifyTableLength(1);
-      verifyRowContains("text/plain", 0);
+      verifyRowContains("LOUDSPATULA.txt", 0);
 
       // create file "IRATETRINITY.pdf" for input
       selectInputFile("IRATETRINITY.pdf", "application/pdf");
