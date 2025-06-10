@@ -128,12 +128,6 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         renderEditCell: params => getDescriptionField(params),
       },
       {
-        field: "type",
-        headerName: t("type"),
-        flex: 0.5,
-        valueGetter: (value, row) => row.file.type,
-      },
-      {
         field: "created",
         headerName: t("uploaded"),
         resizable: false,
