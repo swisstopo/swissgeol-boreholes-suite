@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MenuItem, Stack, TextField } from "@mui/material";
-import { useDomains } from "../../../../../../../api/fetchApiV2.ts";
+import { useCodelists } from "../../../../../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../../../../../components/form/formUtils.js";
 
 const DescriptionInput = props => {
@@ -11,7 +11,7 @@ const DescriptionInput = props => {
   const [toDepthOptions, setToDepthOptions] = useState();
 
   const { t, i18n } = useTranslation();
-  const domains = useDomains();
+  const codelists = useCodelists();
 
   const getFromDepthOptions = useCallback(() => {
     const closestTopLayer = descriptions[descriptions.indexOf(item) - 1];
@@ -107,7 +107,7 @@ const DescriptionInput = props => {
         <MenuItem value="">
           <em>{t("reset")}</em>
         </MenuItem>
-        {domains?.data
+        {codelists.data
           ?.filter(d => d.schema === "description_quality")
           .sort((a, b) => a.order - b.order)
           .map(d => (

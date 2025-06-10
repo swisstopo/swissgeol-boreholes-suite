@@ -3,8 +3,8 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-import { useDomains } from "../../../../../api/fetchApiV2.js";
 import { AddButton } from "../../../../../components/buttons/buttons.tsx";
+import { useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard/saveAndCancelButtons.tsx";
 import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
@@ -32,7 +32,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   const { triggerReload } = useContext(DataCardContext);
   const { reloadBorehole } = useContext(DetailContext);
   useBlockNavigation();
-  const domains = useDomains();
+  const codelists = useCodelists();
 
   const formMethods = useForm<FieldMeasurement>({
     mode: "all",
@@ -83,7 +83,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
     getValues()["fieldMeasurementResults"].forEach((element, index) => {
       currentUnits = {
         ...currentUnits,
-        [index]: getFieldMeasurementParameterUnits(element.parameterId as number, domains.data),
+        [index]: getFieldMeasurementParameterUnits(element.parameterId as number, codelists.data),
       };
     });
     setUnits(currentUnits);
@@ -148,7 +148,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
                   required={true}
                   schemaName={hydrogeologySchemaConstants.fieldMeasurementParameter}
                   onUpdate={value => {
-                    setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value as number, domains.data) });
+                    setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value as number, codelists.data) });
                   }}
                 />
                 <FormInput

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchApiV2 } from "../../../../../api/fetchApiV2.ts";
-import { Codelist } from "../../../../../components/Codelist.ts";
+import { Codelist } from "../../../../../components/codelist.ts";
 import { Observation, ObservationType } from "../Observation.ts";
 
 export interface Hydrotest extends Observation {
@@ -55,7 +55,7 @@ export const useHydrotestDomains = (testKindIds: number[]) => {
   });
 
   return useQuery({
-    queryKey: ["domains", queryString],
+    queryKey: ["codelists", queryString],
     queryFn: async () => {
       return await fetchApiV2(`codelist?${queryString}`, "GET");
     },

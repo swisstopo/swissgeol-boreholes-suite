@@ -3,9 +3,8 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-import { useDomains } from "../../../../../api/fetchApiV2.ts";
 import { AddButton } from "../../../../../components/buttons/buttons";
-import { Codelist } from "../../../../../components/Codelist";
+import { Codelist, useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext";
 import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard/saveAndCancelButtons.tsx";
 import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
@@ -27,7 +26,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
   const { reloadBorehole } = useContext(DetailContext);
   useBlockNavigation();
-  const domains = useDomains();
+  const codelists = useCodelists();
 
   const formMethods = useForm<Hydrotest>({
     mode: "all",
@@ -132,12 +131,12 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     const currentUnits: Record<number, string> = {};
 
     getValues().hydrotestResults.forEach((element, index) => {
-      currentUnits[index] = getHydrotestParameterUnits(element.parameterId, domains.data);
+      currentUnits[index] = getHydrotestParameterUnits(element.parameterId, codelists.data);
     });
 
     setUnits(currentUnits);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getValues().hydrotestResults, domains.data]);
+  }, [getValues().hydrotestResults, codelists.data]);
 
   useEffect(() => {
     const currentValues = getValues();
@@ -254,7 +253,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
                     schemaName={hydrogeologySchemaConstants.hydrotestResultParameter}
                     prefilteredDomains={filteredTestKindDomains?.data}
                     onUpdate={value => {
-                      setUnits({ ...units, [index]: getHydrotestParameterUnits(value as number, domains.data) });
+                      setUnits({ ...units, [index]: getHydrotestParameterUnits(value as number, codelists.data) });
                     }}
                   />
                   <FormInput

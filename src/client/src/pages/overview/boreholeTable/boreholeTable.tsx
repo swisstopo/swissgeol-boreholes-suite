@@ -1,6 +1,19 @@
-import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  Suspense,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
 import { Box } from "@mui/system";
 import {
   GridCellCheckboxRenderer,
@@ -19,10 +32,11 @@ import {
 import { LockKeyhole } from "lucide-react";
 import _ from "lodash";
 import { BoreholeAttributes, Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { useDomains } from "../../../api/fetchApiV2.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { useCodelists } from "../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../components/form/formUtils.ts";
+import { FullPageCentered } from "../../../components/styledComponents.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 
@@ -34,7 +48,7 @@ export interface BoreholeTableProps {
   setSelectionModel: (model: GridRowSelectionModel) => void;
   sortModel: GridSortModel;
   setSortModel: (model: GridSortModel) => void;
-  setHover: React.Dispatch<React.SetStateAction<number | null>>;
+  setHover: Dispatch<SetStateAction<number | null>>;
   rowsToHighlight: number[];
   isBusy: boolean;
 }
@@ -53,7 +67,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 }: BoreholeTableProps) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const domains = useDomains();
+  const codelists = useCodelists();
   const apiRef = useGridApiRef();
   const auth = useAuth();
   const firstRender = useRef(true);
@@ -84,7 +98,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 
   const renderHeaderCheckbox = useCallback(
     (params: GridColumnHeaderParams) => {
-      const handleHeaderCheckboxClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const handleHeaderCheckboxClick = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
           setSelectionModel(boreholes.filtered_borehole_ids);
         } else {
@@ -107,7 +121,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 
   const renderCellCheckbox = useCallback(
     (params: GridRenderCellParams) => {
-      const handleCheckBoxClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const handleCheckBoxClick = (event: ChangeEvent<HTMLInputElement>) => {
         const rowId = params.id as number;
         if (event.target.checked) {
           setSelectionModel([...new Set([...selectionModel, rowId])]);
@@ -149,7 +163,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     {
       field: "borehole_type",
       valueGetter: (value: number) => {
-        const domain = domains?.data?.find((d: { id: number }) => d.id === value);
+        const domain = codelists.data?.find((d: { id: number }) => d.id === value);
         if (domain) {
           return domain[i18n.language];
         }
@@ -168,7 +182,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       field: "purpose",
       valueGetter: (value, row) => {
         if (!row.extended) return "";
-        const domain = domains?.data?.find((d: { id: number }) => d.id === row.extended.purpose);
+        const domain = codelists.data?.find((d: { id: number }) => d.id === row.extended.purpose);
         return domain ? domain[i18n.language] : "";
       },
       headerName: t("purpose"),
@@ -296,26 +310,33 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   }, [apiRef, isLoading, tableScrollPosition]);
 
   return (
-    <Table<BoreholeAttributes>
-      rows={boreholes.data}
-      columns={columns}
-      dataCy={"borehole-table"}
-      apiRef={apiRef}
-      onRowClick={handleRowClick}
-      getRowClassName={getRowClassName}
-      sortModel={sortModel}
-      onSortModelChange={setSortModel}
-      isLoading={isLoading}
-      paginationModel={paginationModel}
-      onPaginationModelChange={setPaginationModel}
-      rowCount={rowCount}
-      paginationMode="server"
-      sortingMode="server"
-      checkboxSelection={true}
-      isRowSelectable={(params: GridRowParams) => params.row.lock === null}
-      rowSelectionModel={selectionModel}
-      showQuickFilter={false}
-      sx={{ border: "none" }}
-    />
+    <Suspense
+      fallback={
+        <FullPageCentered>
+          <CircularProgress />
+        </FullPageCentered>
+      }>
+      <Table<BoreholeAttributes>
+        rows={boreholes.data}
+        columns={columns}
+        dataCy={"borehole-table"}
+        apiRef={apiRef}
+        onRowClick={handleRowClick}
+        getRowClassName={getRowClassName}
+        sortModel={sortModel}
+        onSortModelChange={setSortModel}
+        isLoading={isLoading}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        rowCount={rowCount}
+        paginationMode="server"
+        sortingMode="server"
+        checkboxSelection={true}
+        isRowSelectable={(params: GridRowParams) => params.row.lock === null}
+        rowSelectionModel={selectionModel}
+        showQuickFilter={false}
+        sx={{ border: "none" }}
+      />
+    </Suspense>
   );
 };

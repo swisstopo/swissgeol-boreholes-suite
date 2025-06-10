@@ -1,10 +1,11 @@
 import { Divider } from "@mui/material";
-import { deleteSection, useDomains } from "../../../../api/fetchApiV2.ts";
+import { deleteSection } from "../../../../api/fetchApiV2.ts";
+import { useCodelists } from "../../../../components/codelist.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 
 const SectionDisplay = ({ item }) => {
-  const domains = useDomains();
+  const codelists = useCodelists();
 
   return (
     <DataDisplayCard item={item} deleteData={deleteSection}>
@@ -27,13 +28,13 @@ const SectionDisplay = ({ item }) => {
               <FormDisplay
                 prefix={`${index}.`}
                 label="drilling_method"
-                value={domains?.data?.find(d => d.id === element.drillingMethodId)}
+                value={codelists.data?.find(d => d.id === element.drillingMethodId)}
                 type={FormValueType.Domain}
               />
               <FormDisplay
                 prefix={`${index}.`}
                 label="cuttings"
-                value={domains?.data?.find(d => d.id === element.cuttingsId)}
+                value={codelists.data?.find(d => d.id === element.cuttingsId)}
                 type={FormValueType.Domain}
               />
             </FormContainer>
@@ -41,13 +42,13 @@ const SectionDisplay = ({ item }) => {
               <FormDisplay
                 prefix={`${index}.`}
                 label="drilling_mud_type"
-                value={domains?.data?.find(d => d.id === element.drillingMudTypeId)}
+                value={codelists.data?.find(d => d.id === element.drillingMudTypeId)}
                 type={FormValueType.Domain}
               />
               <FormDisplay
                 prefix={`${index}.`}
                 label="drilling_mud_subtype"
-                value={domains?.data?.find(d => d.id === element.drillingMudSubtypeId)}
+                value={codelists.data?.find(d => d.id === element.drillingMudSubtypeId)}
                 type={FormValueType.Domain}
               />
             </FormContainer>
