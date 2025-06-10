@@ -1,15 +1,7 @@
 import React, { useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import {
-  Backdrop,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-} from "@mui/material";
+import { Backdrop, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { ApiError } from "../../api/apiInterfaces.ts";
