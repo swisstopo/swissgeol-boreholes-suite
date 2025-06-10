@@ -105,7 +105,6 @@ describe("Tests for stratigraphy", () => {
     waitForStratigraphyContent();
     waitForLayerWithDescriptions();
     waitForLayerWithDescriptions();
-    cy.wait(["@get-layers-by-profileId"]);
 
     evaluateInput("name", "Test Stratigraphy (Clone)");
     evaluateSelect("qualityId", "good");
