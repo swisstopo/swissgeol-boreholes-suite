@@ -94,9 +94,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
   return (
     <Dialog open={isExporting}>
       <Stack sx={{ minWidth: "326px" }}>
-        <DialogTitle>
-          <Typography variant="h2">{t("export")}</Typography>
-        </DialogTitle>
+        <DialogTitle>{t("export")}</DialogTitle>
         <DialogContent>
           <Stack gap={1} sx={{ mt: 3 }}>
             <ExportButton label={"CSV"} onClick={onExportCsv} />
