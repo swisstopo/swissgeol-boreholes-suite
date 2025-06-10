@@ -65,7 +65,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // check list of attachments
       verifyTableLength(1);
-      verifyRowContains("text/plain", 0);
+      verifyRowContains("LOUDSPATULA.txt", 0);
 
       // create file "IRATETRINITY.pdf" for input
       selectInputFile("IRATETRINITY.pdf", "application/pdf");
@@ -75,7 +75,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
       verifyTableLength(2);
-      verifyRowContains("application/pdf", 1);
+      verifyRowContains("IRATETRINITY.pdf", 1);
 
       // Upload and verify file "IRATETRINITY.pdf" for the second time but with different file name.
       selectInputFile("IRATETRINITY_2.pdf", "application/pdf");
@@ -83,14 +83,14 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
       verifyTableLength(3);
-      verifyRowContains("application/pdf", 2);
+      verifyRowContains("IRATETRINITY_2.pdf", 2);
 
       // Upload and verify file "WHITE   SPACE.pdf" to test file names with white spaces.
       selectInputFile("WHITE   SPACE.pdf", "application/pdf");
       cy.get('[data-cy="addProfile-button"]').should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
       verifyTableLength(4);
-      verifyRowContains("application/pdf", 3);
+      verifyRowContains("WHITE___SPACE.pdf", 3);
 
       // Ensure files does not exist in download folder before download. If so, delete them.
       deleteDownloadedFile("IRATETRINITY_2.pdf");
