@@ -8,14 +8,10 @@ import { theme } from "../../../../AppTheme.ts";
 import { formatDate } from "../../../../utils.ts";
 import { DetailContext } from "../../detailContext";
 import { AttachmentContent } from "../attachmentsContent";
-import { AttachmentWithPublicState, useAttachments } from "../useAttachments.tsx";
+import { useAttachments } from "../useAttachments.tsx";
 
 interface ProfilesProps {
   boreholeId: number;
-}
-
-interface Profile extends AttachmentWithPublicState {
-  description?: string;
 }
 
 export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
@@ -31,8 +27,10 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     }));
   }, [boreholeId]);
 
-  const addAttachment = async (file: File) => {
-    await uploadFile(boreholeId, file);
+  const addAttachment = async (file?: File) => {
+    if (file) {
+      await uploadFile(boreholeId, file);
+    }
   };
 
   const deleteAttachments = async (ids: number[]) => {
@@ -46,7 +44,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   };
 
   const updateAttachments = useCallback(
-    async (updatedRows: Map<GridRowId, Profile>) => {
+    async (updatedRows: Map<GridRowId, BoreholeFile>) => {
       const updatePromises = Array.from(updatedRows.entries()).map(([id, row]) => {
         const data = apiRef.current.getRowWithUpdatedValues(id, "description");
         if (data) {
@@ -73,7 +71,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     getPublicColumnCell,
     updatedRows,
     setUpdatedRows,
-  } = useAttachments({
+  } = useAttachments<BoreholeFile>({
     apiRef,
     loadAttachments,
     addAttachment,
@@ -86,7 +84,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     (id: GridRowId, description: string) => {
       setUpdatedRows(prevRows => {
         const newMap = new Map(prevRows);
-        const row: Profile = newMap.get(id) ?? ({ description: "" } as Profile);
+        const row: BoreholeFile = newMap.get(id) ?? ({ description: "" } as BoreholeFile);
         row.description = description;
         newMap.set(id, row);
         return newMap;
@@ -101,14 +99,14 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         data-cy="profile-description"
         multiline
         sx={{ margin: 1 }}
-        defaultValue={(updatedRows.get(params.id) as Profile)?.description ?? params.value ?? ""}
+        defaultValue={(updatedRows.get(params.id) as BoreholeFile)?.description ?? params.value ?? ""}
         onChange={event => updateDescription(params.id, event.target.value)}
       />
     ),
     [updateDescription, updatedRows],
   );
 
-  const columns = useMemo<GridColDef[]>(
+  const columns = useMemo<GridColDef<BoreholeFile>[]>(
     () => [
       {
         field: "name",
@@ -125,24 +123,9 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
           editingEnabled ? (
             getDescriptionField(params)
           ) : (
-            <Typography sx={{ margin: `${theme.spacing(1)} 0` }}>
-              {params.value
-                ? params.value.split("\n").map((line: string, i: number) => (
-                    <span key={`profile-description-${line}-${params.id}`}>
-                      {line}
-                      {i < params.value.split("\n").length - 1 && <br />}
-                    </span>
-                  ))
-                : ""}
-            </Typography>
+            <Typography sx={{ margin: `${theme.spacing(1)} 0`, whiteSpace: "pre-line" }}>{params.value}</Typography>
           ),
         renderEditCell: params => getDescriptionField(params),
-      },
-      {
-        field: "type",
-        headerName: t("type"),
-        flex: 0.5,
-        valueGetter: (value, row) => row.file.type,
       },
       {
         field: "created",
@@ -172,12 +155,13 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   );
 
   return (
-    <AttachmentContent
+    <AttachmentContent<BoreholeFile>
       apiRef={apiRef}
       isLoading={isLoading}
       columns={columns}
       rows={rows}
       addAttachment={onAdd}
+      requireFileOnAdd
       deleteAttachments={onDelete}
       exportAttachments={onExport}
       addAttachmentButtonLabel="addProfile"
