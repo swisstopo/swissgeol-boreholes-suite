@@ -342,6 +342,18 @@ export const deleteBorehole = id => {
   });
 };
 
+export const deleteStratigraphy = id => {
+  cy.get("@id_token").then(token => {
+    cy.request({
+      method: "DELETE",
+      url: `/api/v2/stratigraphy?id=${id}`,
+      auth: bearerAuth(token),
+    }).then(res => {
+      expect(res.status).to.equal(200);
+    });
+  });
+};
+
 export const loginAndResetState = () => {
   loginAsAdmin();
   cy.get("@id_token").then(token => {
@@ -358,6 +370,21 @@ export const loginAndResetState = () => {
         .filter(id => id > 1002999) // max id in seed data.
         .forEach(id => {
           deleteBorehole(id);
+        });
+    });
+
+    // Reset stratigraphies
+    cy.request({
+      method: "GET",
+      url: "/api/v2/stratigraphy",
+      auth: bearerAuth(token),
+    }).then(response => {
+      console.log(response.body);
+      response.body
+        .filter(st => st.id > 6002999) // max id in seed data.
+        .forEach(st => {
+          console.log(st.id);
+          deleteStratigraphy(st.id);
         });
     });
 
