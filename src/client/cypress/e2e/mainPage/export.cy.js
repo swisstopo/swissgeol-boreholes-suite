@@ -17,7 +17,8 @@ import {
 import { evaluateInput, setInput, setOriginalName, setSelect } from "../helpers/formHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
-  createBorehole, createWateringress,
+  createBorehole,
+  createWateringress,
   deleteDownloadedFile,
   getElementByDataCy,
   getImportFileFromFixtures,
