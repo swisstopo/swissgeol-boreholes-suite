@@ -1,4 +1,4 @@
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { Stack } from "@mui/material";
 import { Box } from "@mui/system";
 import { Stratigraphy } from "../../../../../api/stratigraphy.ts";
@@ -35,6 +35,10 @@ export const Lithology: FC<LithologyProps> = ({ stratigraphy }) => {
       setReloadAttribute(reloadAttribute => reloadAttribute + 1);
     }
   };
+
+  useEffect(() => {
+    setSelectedLayer(null);
+  }, [editingEnabled]);
 
   return (
     <Stack direction="row" sx={{ overflow: "auto" }}>

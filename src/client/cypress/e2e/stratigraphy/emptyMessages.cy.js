@@ -7,12 +7,8 @@ describe("Messages for empty profiles", () => {
 
     newUneditableBorehole().as("borehole_id");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
-    cy.get('[data-cy="stratigraphy-message"]').should("contain", "No stratigraphy available");
+    cy.contains("No stratigraphies available...");
     startBoreholeEditing();
-    cy.get('[data-cy="stratigraphy-message"]').should(
-      "contain",
-      "For the recording of a stratigraphic profile please click the plus symbol at the top left",
-    );
+    cy.contains("button", "Create empty stratigraphy").should("be.visible").and("be.enabled");
   });
 });

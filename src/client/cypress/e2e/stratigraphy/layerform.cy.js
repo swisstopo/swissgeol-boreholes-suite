@@ -246,7 +246,6 @@ describe("Tests for the layer form.", () => {
     clickOnRowWithText("Andres Miller");
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
     getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
     clickOnLayerAndWaitForForm("8");
     resetUpdatedValues();
@@ -287,9 +286,11 @@ describe("Tests for the layer form.", () => {
     resetUpdatedValues();
     evaluateInitialFormState(true);
     saveForm();
+    cy.wait(["@update-layer", "@get-layers-by-profileId"]);
 
     // assert updated form values persist after saving
     stopBoreholeEditing();
+    getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
     clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(false);
   });
@@ -298,8 +299,7 @@ describe("Tests for the layer form.", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
-    addItem("addStratigraphy");
+    addItem("addEmptyStratigraphy");
     cy.wait("@stratigraphy_POST");
     getElementByDataCy("add-layer-icon").click();
     cy.wait("@layer");
@@ -413,7 +413,6 @@ describe("Tests for the layer form.", () => {
     waitForTableData();
     clickOnRowWithText("Anibal Conroy");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
 
     // click on layer and verify form values
     getElementByDataCy("styled-layer-8").should("contain", "gneiss, sedimentary, clayey gravel, medium, brown, beige");
@@ -443,7 +442,6 @@ describe("Tests for the layer form.", () => {
     goToRouteAndAcceptTerms(`/1001947`);
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
 
     const evaluateInitialDepthValues = () => {
       evaluateInput("fromDepth", "0");

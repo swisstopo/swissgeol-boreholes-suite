@@ -21,7 +21,7 @@ export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
 
   return (
     <ButtonSelect
-      fieldName="stratigraphy-add-button"
+      fieldName="addStratigraphy"
       variant="contained"
       items={[
         { key: Actions.addEmpty, value: t("addEmptyStratigraphy") },

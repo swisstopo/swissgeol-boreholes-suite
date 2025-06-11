@@ -17,8 +17,7 @@ describe("Tests for the lithological description column.", () => {
 
     // navigate to stratigraphy
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
-    addItem("addStratigraphy");
+    addItem("addEmptyStratigraphy");
     cy.wait("@stratigraphy_POST");
 
     // add three layers
@@ -61,7 +60,6 @@ describe("Tests for the lithological description column.", () => {
     // workaround because close button of profile attributes is sometimes not clickable
     navigateInSidebar(SidebarMenuItem.location);
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
 
     // add lithological description
     cy.wait("@layer");

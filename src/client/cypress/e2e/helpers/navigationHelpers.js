@@ -4,9 +4,6 @@ export const SidebarMenuItem = {
   location: "location",
   borehole: "borehole",
   stratigraphy: "stratigraphy",
-  lithology: "lithology",
-  chronostratigraphy: "chronostratigraphy",
-  lithostratigraphy: "lithostratigraphy",
   completion: "completion",
   hydrogeology: "hydrogeology",
   waterIngress: "wateringress",
@@ -18,9 +15,6 @@ export const SidebarMenuItem = {
 };
 
 const sidebarParentMap = {
-  lithology: SidebarMenuItem.stratigraphy,
-  chronostratigraphy: SidebarMenuItem.stratigraphy,
-  lithostratigraphy: SidebarMenuItem.stratigraphy,
   waterIngress: SidebarMenuItem.hydrogeology,
   groundwaterLevelMeasurement: SidebarMenuItem.hydrogeology,
   fieldMeasurement: SidebarMenuItem.hydrogeology,
@@ -142,34 +136,10 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.stratigraphy:
-      getElementByDataCy("lithology-menu-item").should("be.visible");
-      getElementByDataCy("chronostratigraphy-menu-item").should("be.visible");
-      getElementByDataCy("lithostratigraphy-menu-item").should("be.visible");
-      break;
-    case SidebarMenuItem.lithology:
-      cy.wait("@stratigraphy_GET");
-      cy.location().should(location => {
-        expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/lithology$/);
-      });
       isActiveMenuItem(menuItem);
-      break;
-    case SidebarMenuItem.chronostratigraphy:
-      cy.wait("@get-layers-by-profileId");
-      cy.wait("@chronostratigraphy_GET");
       cy.location().should(location => {
-        expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/chronostratigraphy$/);
+        expect(location.pathname).to.match(/^\/\d+\/stratigraphy(\/|$)/);
       });
-      getElementByDataCy("stratigraphy-select").should("exist");
-      isActiveMenuItem(menuItem);
-      break;
-    case SidebarMenuItem.lithostratigraphy:
-      cy.wait("@get-layers-by-profileId");
-      cy.wait("@lithostratigraphy_GET");
-      cy.location().should(location => {
-        expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/lithostratigraphy$/);
-      });
-      getElementByDataCy("stratigraphy-select").should("exist");
-      isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.completion:
       cy.wait("@completion_GET");

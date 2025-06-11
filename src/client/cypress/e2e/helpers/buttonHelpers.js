@@ -169,3 +169,9 @@ export const addItem = itemLabel => {
   cy.wait(1000);
   cy.get(".MuiCircularProgress-root").should("not.exist");
 };
+
+export const addStratigraphy = () => {
+  getElementByDataCy("addStratigraphy-button-select").scrollIntoView();
+  getElementByDataCy("addStratigraphy-button-select").click();
+  getElementByDataCy("addEmpty-button-select-item").click();
+};
