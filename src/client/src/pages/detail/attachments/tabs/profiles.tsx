@@ -98,7 +98,6 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       <TextField
         data-cy="profile-description"
         multiline
-        sx={{ margin: 1 }}
         defaultValue={(updatedRows.get(params.id) as BoreholeFile)?.description ?? params.value ?? ""}
         onChange={event => updateDescription(params.id, event.target.value)}
       />
@@ -123,7 +122,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
           editingEnabled ? (
             getDescriptionField(params)
           ) : (
-            <Typography sx={{ margin: `${theme.spacing(1)} 0`, whiteSpace: "pre-line" }}>{params.value}</Typography>
+            <Typography sx={{ whiteSpace: "pre-line" }}>{params.value}</Typography>
           ),
         renderEditCell: params => getDescriptionField(params),
       },

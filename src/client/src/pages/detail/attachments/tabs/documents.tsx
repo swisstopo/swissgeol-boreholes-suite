@@ -111,11 +111,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
           editingEnabled ? (
             getUrlField(params)
           ) : (
-            <Link
-              href={params.value}
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{ margin: `${theme.spacing(1)} 0`, wordBreak: "break-all" }}>
+            <Link href={params.value} target="_blank" rel="noopener noreferrer" sx={{ wordBreak: "break-all" }}>
               {params.value}
             </Link>
           ),
@@ -130,7 +126,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
           editingEnabled ? (
             getDescriptionField(params)
           ) : (
-            <Typography sx={{ margin: `${theme.spacing(1)} 0`, whiteSpace: "pre-line" }}>{params.value}</Typography>
+            <Typography sx={{ whiteSpace: "pre-line", wordBreak: "break-all" }}>{params.value}</Typography>
           ),
         renderEditCell: getDescriptionField,
       },
