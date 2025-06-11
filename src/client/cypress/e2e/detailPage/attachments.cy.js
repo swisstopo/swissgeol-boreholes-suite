@@ -1,4 +1,4 @@
-import { deleteItem, exportItem, saveForm, saveWithSaveBar } from "../helpers/buttonHelpers.js";
+import { deleteItem, exportItem, saveWithSaveBar } from "../helpers/buttonHelpers.js";
 import {
   checkAllVisibleRows,
   checkRowWithIndex,
@@ -271,7 +271,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get(".MuiDataGrid-row")
         .first()
         .find(`[data-cy="document-url"]`)
-        .find("input:visible")
+        .find("textarea:visible")
         .type("https://localhost/document1.pdf");
       cy.get(".MuiDataGrid-row")
         .first()
@@ -283,17 +283,23 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.get(".MuiDataGrid-row")
         .eq(1)
         .find(`[data-cy="document-url"]`)
-        .find("input:visible")
+        .find("textarea:visible")
         .type("https://localhost/document2.pdf");
 
-      saveForm();
+      saveWithSaveBar();
       cy.wait(["@document_PUT", "@getAllDocuments"]);
       waitForTableData();
+      checkRowWithText("https://localhost/document2.pdf", "public");
+      saveWithSaveBar();
+      cy.wait(["@document_PUT", "@getAllDocuments"]);
+      waitForTableData();
+
       stopBoreholeEditing();
 
       verifyRowContains("https://localhost/document1.pdf", 0);
       verifyRowContains("some description", 0);
       verifyRowContains("https://localhost/document2.pdf", 1);
+      checkPublicStatus("https://localhost/document2.pdf", true, false);
 
       cy.contains("a", "https://localhost/document1.pdf").should(
         "have.attr",
