@@ -100,8 +100,6 @@ export const FormSelect: FC<FormSelectProps> = ({
             key={`${fieldName}-${fieldValue ?? "empty"}`}
             sx={{ flex: "1" }}
             options={menuItems}
-            autoHighlight={true}
-            disablePortal={true}
             getOptionLabel={option => option.label}
             isOptionEqualToValue={(option, value) => option.key === value.key}
             value={
