@@ -38,15 +38,26 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
 
   const exportAttachments = async () => {};
 
-  const updateAttachments = useCallback(async (updatedRows: Map<GridRowId, Document>) => {
-    const updatedRowsArray = Array.from(updatedRows.entries()).map<DocumentUpdate>(([key, value]) => ({
-      id: key as number,
-      url: value.url ?? "",
-      description: value.description,
-      public: value.public ?? false,
-    }));
-    await updateDocuments(updatedRowsArray);
-  }, []);
+  const updateAttachments = useCallback(
+    async (updatedRows: Map<GridRowId, Document>) => {
+      const updatedRowsArray = Array.from(updatedRows.entries())
+        .map<DocumentUpdate | undefined>(([key, value]) => {
+          const data = apiRef.current.getRowWithUpdatedValues(key, "url");
+          if (data) {
+            return {
+              id: key as number,
+              url: value.url ?? data.url,
+              description: value.description ?? data.description,
+              public: value.public ?? false,
+            };
+          }
+          return undefined;
+        })
+        .filter((row): row is DocumentUpdate => row !== undefined);
+      await updateDocuments(updatedRowsArray);
+    },
+    [apiRef],
+  );
 
   const { isLoading, rows, onAdd, onDelete, getPublicColumnHeader, getPublicColumnCell, updatedRows, setUpdatedRows } =
     useAttachments<Document>({
