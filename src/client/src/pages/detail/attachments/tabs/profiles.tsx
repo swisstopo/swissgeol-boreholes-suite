@@ -4,7 +4,6 @@ import { TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { detachFile, downloadFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces";
-import { theme } from "../../../../AppTheme.ts";
 import { formatDate } from "../../../../utils.ts";
 import { DetailContext } from "../../detailContext";
 import { AttachmentContent } from "../attachmentsContent";

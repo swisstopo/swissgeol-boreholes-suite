@@ -9,7 +9,6 @@ import {
   getDocumentsByBoreholeId,
   updateDocuments,
 } from "../../../../api/fetchApiV2.ts";
-import { theme } from "../../../../AppTheme.ts";
 import { formatDate } from "../../../../utils.ts";
 import { DetailContext } from "../../detailContext.tsx";
 import { AttachmentContent } from "../attachmentsContent.tsx";
