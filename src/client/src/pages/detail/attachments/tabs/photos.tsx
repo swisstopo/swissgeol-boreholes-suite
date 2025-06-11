@@ -63,6 +63,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
       {
         field: "name",
         headerName: t("name"),
+        flex: 1,
       },
       {
         field: "created",
@@ -75,6 +76,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
         field: "createdBy",
         headerName: t("user"),
         valueGetter: (value, row) => row.createdBy?.name ?? "-",
+        flex: 0.25,
       },
       {
         field: "depth",
