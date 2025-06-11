@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Stack } from "@mui/material";
 import useResizeObserver from "@react-hook/resize-observer";
 import { clamp } from "./clamp.js";
@@ -106,6 +106,12 @@ export class NavState {
   }
 }
 
+const preventVerticalScroll = event => {
+  if (event.deltaY !== 0) {
+    event.preventDefault();
+  }
+};
+
 /**
  * This component holds the NavState and distributes it to its children through the renderItems callback.
  */
@@ -141,6 +147,13 @@ const NavigationContainer = ({ renderItems, sx }) => {
         }),
     );
   };
+
+  useEffect(() => {
+    containerRef.current?.addEventListener("wheel", preventVerticalScroll, { passive: false });
+    return () => {
+      containerRef.current?.removeEventListener("wheel", preventVerticalScroll);
+    };
+  }, [containerRef]);
 
   return (
     <Stack ref={containerRef} direction="row" sx={{ flex: "1", overflowX: "auto", ...sx }} onWheel={handleOnWheel}>

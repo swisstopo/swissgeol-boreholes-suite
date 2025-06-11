@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Box, Card, CircularProgress, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useLithologyStratigraphies } from "../../../../api/fetchApiV2.ts";
@@ -9,6 +9,7 @@ import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel.jsx";
 import { Lithology } from "./lithology/lithology.tsx";
 import InfoList from "./lithology/lithologyInfo/infoList/InfoList.jsx";
 
@@ -17,6 +18,7 @@ export const StratigraphyPanel: FC = () => {
   const params = useParams();
   const stratigraphyId = params.stratigraphyId ? Number(params.stratigraphyId) : undefined;
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: stratigraphyData, refetch: refetchStratigraphyData } = useLithologyStratigraphies(
     Number(selectedBoreholeId),
   );
@@ -24,9 +26,15 @@ export const StratigraphyPanel: FC = () => {
 
   const navigateToStratigraphy = useCallback(
     (stratigraphyId: number, replace = false) => {
-      navigate(`/${selectedBoreholeId}/stratigraphy/${stratigraphyId}`, { replace });
+      navigate(
+        {
+          pathname: `/${selectedBoreholeId}/stratigraphy/${stratigraphyId}`,
+          hash: location.hash,
+        },
+        { replace },
+      );
     },
-    [navigate, selectedBoreholeId],
+    [location.hash, navigate, selectedBoreholeId],
   );
 
   const selectedTabIndex = stratigraphyData?.findIndex(x => x.id === stratigraphyId) ?? -1;
@@ -92,6 +100,11 @@ export const StratigraphyPanel: FC = () => {
             label: t("lithology"),
             hash: "#lithology",
             component: selectedStratigraphy && <Lithology stratigraphy={selectedStratigraphy} />,
+          },
+          {
+            label: t("chronostratigraphy"),
+            hash: "#chronostratigraphy",
+            component: selectedStratigraphy && <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
           },
         ]}
       />
