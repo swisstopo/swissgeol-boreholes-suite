@@ -12,6 +12,7 @@ import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel.jsx";
 import { Lithology } from "./lithology/lithology.tsx";
 import InfoList from "./lithology/lithologyInfo/infoList/InfoList.jsx";
+import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel.jsx";
 
 export const StratigraphyPanel: FC = () => {
   const { id: selectedBoreholeId } = useRequiredParams();
@@ -105,6 +106,11 @@ export const StratigraphyPanel: FC = () => {
             label: t("chronostratigraphy"),
             hash: "#chronostratigraphy",
             component: selectedStratigraphy && <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+          },
+          {
+            label: t("lithostratigraphy"),
+            hash: "#lithostratigraphy",
+            component: selectedStratigraphy && <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
           },
         ]}
       />
