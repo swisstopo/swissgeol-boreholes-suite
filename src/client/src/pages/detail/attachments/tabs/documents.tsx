@@ -1,6 +1,6 @@
 import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { TextField, Typography } from "@mui/material";
+import { Link, TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { Document, DocumentUpdate } from "../../../../api/apiInterfaces.ts";
 import {
@@ -76,6 +76,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
     (params: GridRenderCellParams<Document>) => (
       <TextField
         data-cy="document-url"
+        multiline
         type="url"
         required
         sx={{ margin: 1 }}
@@ -106,7 +107,18 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
         headerName: t("url"),
         editable: editingEnabled,
         flex: 1,
-        renderCell: params => (editingEnabled ? getUrlField(params) : <a href={params.value}>{params.value}</a>),
+        renderCell: params =>
+          editingEnabled ? (
+            getUrlField(params)
+          ) : (
+            <Link
+              href={params.value}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ margin: `${theme.spacing(1)} 0`, wordBreak: "break-all" }}>
+              {params.value}
+            </Link>
+          ),
         renderEditCell: getUrlField,
       },
       {
