@@ -16,10 +16,10 @@ import {
   LithologicalDescription,
   Lithostratigraphy,
   Photo,
-  Stratigraphy,
 } from "./apiInterfaces";
 import { getAuthorizationHeader } from "./authentication";
 import { Section } from "./section.ts";
+import { Stratigraphy } from "./stratigraphy.ts";
 
 export async function fetchApiV2Base(
   url: string,
@@ -280,7 +280,7 @@ export const useLithologyStratigraphies = (boreholeId?: number) => {
   return useQuery({
     queryKey: ["lithologyStratigraphies", boreholeId],
     queryFn: async () => {
-      return await fetchApiV2(`stratigraphy?boreholeId=${boreholeId}`, "GET");
+      return await fetchStratigraphyByBoreholeId(boreholeId!);
     },
     enabled: !!boreholeId,
   });
