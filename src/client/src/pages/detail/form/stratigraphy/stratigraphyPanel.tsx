@@ -7,7 +7,9 @@ import { useLithologyStratigraphies } from "../../../../api/fetchApiV2.ts";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
+import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { Lithology } from "./lithology/lithology.tsx";
 import InfoList from "./lithology/lithologyInfo/infoList/InfoList.jsx";
 
 export const StratigraphyPanel: FC = () => {
@@ -84,6 +86,15 @@ export const StratigraphyPanel: FC = () => {
           />
         )}
       </BoreholeTabContentBox>
+      <TabPanel
+        tabs={[
+          {
+            label: t("lithology"),
+            hash: "#lithology",
+            component: selectedStratigraphy && <Lithology stratigraphy={selectedStratigraphy} />,
+          },
+        ]}
+      />
     </Box>
   );
 };

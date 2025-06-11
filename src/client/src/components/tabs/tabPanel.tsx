@@ -26,11 +26,14 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
       setActiveIndex(newActiveIndex);
     } else {
       // Redirect to the first tab if hash is not valid
-      navigate({
-        pathname: pathname,
-        search: searchParams.toString(),
-        hash: tabs[0].hash,
-      });
+      navigate(
+        {
+          pathname: pathname,
+          search: searchParams.toString(),
+          hash: tabs[0].hash,
+        },
+        { replace: true },
+      );
     }
   }, [navigate, tabs, hash, pathname, searchParams]);
 
