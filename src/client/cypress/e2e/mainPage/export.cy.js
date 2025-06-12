@@ -125,6 +125,7 @@ describe("Test for exporting boreholes.", () => {
     startBoreholeEditing();
 
     getElementByDataCy("geometry-tab").click();
+    cy.wait(["@boreholegeometry_GET", "@boreholegeometry_formats"]);
     getElementByDataCy("boreholegeometryimport-button").should("be.disabled");
 
     // upload geometry csv file
@@ -142,6 +143,7 @@ describe("Test for exporting boreholes.", () => {
       });
     });
 
+    getElementByDataCy("boreholegeometryimport-button").should("be.enabled");
     setSelect("geometryFormat", 1);
     getElementByDataCy("boreholegeometryimport-button").click();
     cy.wait(["@boreholegeometry_POST", "@boreholegeometry_GET"]);
