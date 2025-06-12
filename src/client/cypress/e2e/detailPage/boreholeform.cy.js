@@ -175,6 +175,10 @@ describe("Test for the borehole form.", () => {
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
+      cy.wait(["@borehole_by_id"]);
+      cy.location().should(location => {
+        expect(location.hash).to.eq("#general");
+      });
       evaluateYesNoSelect("topBedrockIntersected", "Not specified");
       setInput("totalDepth", 700);
       setInput("topBedrockFreshMd", 0.60224);

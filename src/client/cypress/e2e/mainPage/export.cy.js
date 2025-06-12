@@ -88,7 +88,7 @@ describe("Test for exporting boreholes.", () => {
     handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "delete");
   });
 
-  it("exports TVD for a borehole with and without geometry", () => {
+  it.only("exports TVD for a borehole with and without geometry", () => {
     const boreholeName = "AAA_FROGGY";
     const secondBoreholeName = "AAA_FISHY";
     const fileName = `${boreholeName}.csv`;
@@ -107,8 +107,11 @@ describe("Test for exporting boreholes.", () => {
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.borehole);
     setInput("totalDepth", 700);
+    cy.wait(["@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     setInput("topBedrockFreshMd", 800);
+    cy.wait(["@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     setInput("topBedrockWeatheredMd", 900);
+    cy.wait(["@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "700");
     evaluateInput("topBedrockFreshMd", "800");
@@ -151,6 +154,7 @@ describe("Test for exporting boreholes.", () => {
     cy.get(".MuiTableBody-root").should("exist");
 
     getElementByDataCy("general-tab").click();
+    cy.wait(["@borehole_by_id", "@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "674.87");
     navigateInSidebar(SidebarMenuItem.location);

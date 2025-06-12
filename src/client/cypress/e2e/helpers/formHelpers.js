@@ -78,13 +78,8 @@ export const setInput = (fieldName, value, parent) => {
  * @param {string} parent (optional) The parent of the form element.
  */
 export const evaluateInput = (fieldName, expectedValue, parent) => {
-  const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formInput"] input`;
-  cy.get(selector).then($input => {
-    const actualValue = $input.val();
-    expect(actualValue, `Expected ${fieldName} to have value ${expectedValue} but got ${actualValue}`).to.eq(
-      expectedValue,
-    );
-  });
+  const selector = `${createBaseSelector(parent)}[data-cy="${fieldName}-formInput"] input`;
+  cy.get(selector).should("have.value", expectedValue);
 };
 
 /**
