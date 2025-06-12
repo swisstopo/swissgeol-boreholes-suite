@@ -149,9 +149,10 @@ const NavigationContainer = ({ renderItems, sx }) => {
   };
 
   useEffect(() => {
-    containerRef.current?.addEventListener("wheel", preventVerticalScroll, { passive: false });
+    const container = containerRef.current;
+    container?.addEventListener("wheel", preventVerticalScroll, { passive: false });
     return () => {
-      containerRef.current?.removeEventListener("wheel", preventVerticalScroll);
+      container?.removeEventListener("wheel", preventVerticalScroll);
     };
   }, [containerRef]);
 
