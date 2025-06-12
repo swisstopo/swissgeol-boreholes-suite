@@ -3,6 +3,7 @@ import {
   checkAllVisibleRows,
   checkRowWithIndex,
   checkRowWithText,
+  setTextInRow,
   uncheckAllVisibleRows,
   unCheckRowWithText,
   verifyRowContains,
@@ -53,7 +54,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.wait(["@upload-photo", "@getAllPhotos"]);
   };
 
-  it("creates, downloads and deletes attachments.", () => {
+  it("creates, downloads and deletes profile.", () => {
     createBorehole({ "extended.original_name": "JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToRouteAndAcceptTerms(`/${boreholeId}`);
@@ -135,12 +136,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       checkPublicStatus("WHITE___SPACE.pdf", false, true);
       checkRowWithText("IRATETRINITY_2.pdf", "public");
 
-      cy.contains(".MuiDataGrid-row", "IRATETRINITY_2.pdf").find(`[data-cy="profile-description"]`).click();
-      cy.contains(".MuiDataGrid-row", "IRATETRINITY_2.pdf")
-        .find(`[data-cy="profile-description"]`)
-        .find("textarea:visible")
-        .type("a brand new description");
-
+      setTextInRow("IRATETRINITY_2.pdf", "profile-description", "a brand new description");
       saveWithSaveBar();
 
       // stop editing and verify table content
@@ -267,25 +263,10 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.wait(["@document_POST", "@getAllDocuments"]);
       verifyTableLength(2);
 
-      // add data to the first document
-      cy.get(".MuiDataGrid-row")
-        .first()
-        .find(`[data-cy="document-url"]`)
-        .find("textarea:visible")
-        .type("https://localhost/document1.pdf");
-      cy.get(".MuiDataGrid-row")
-        .first()
-        .find(`[data-cy="document-description"]`)
-        .find("textarea:visible")
-        .type("some description");
-
-      // add data to the second document
-      cy.get(".MuiDataGrid-row")
-        .eq(1)
-        .find(`[data-cy="document-url"]`)
-        .find("textarea:visible")
-        .type("https://localhost/document2.pdf");
-
+      // add data
+      setTextInRow(0, "document-url", "https://localhost/document1.pdf");
+      setTextInRow(0, "document-description", "some description");
+      setTextInRow(1, "document-url", "https://localhost/document2.pdf");
       saveWithSaveBar();
       cy.wait(["@document_PUT", "@getAllDocuments"]);
       waitForTableData();
