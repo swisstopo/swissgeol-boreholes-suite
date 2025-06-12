@@ -93,14 +93,17 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   );
 
   const getDescriptionField = useCallback(
-    (params: GridRenderCellParams) => (
-      <TextField
-        data-cy="profile-description"
-        multiline
-        defaultValue={(updatedRows.get(params.id) as BoreholeFile)?.description ?? params.value ?? ""}
-        onChange={event => updateDescription(params.id, event.target.value)}
-      />
-    ),
+    (params: GridRenderCellParams<BoreholeFile>, focused: boolean) => {
+      const value = updatedRows.get(params.id)?.description ?? params.value ?? "";
+      return (
+        <TextField
+          data-cy="profile-description"
+          multiline
+          {...(focused ? { defaultValue: value } : { value })}
+          onChange={event => updateDescription(params.id, event.target.value)}
+        />
+      );
+    },
     [updateDescription, updatedRows],
   );
 
@@ -119,11 +122,11 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         flex: 1,
         renderCell: (params: GridRenderCellParams) =>
           editingEnabled ? (
-            getDescriptionField(params)
+            getDescriptionField(params, false)
           ) : (
             <Typography sx={{ whiteSpace: "pre-line" }}>{params.value}</Typography>
           ),
-        renderEditCell: params => getDescriptionField(params),
+        renderEditCell: params => getDescriptionField(params, true),
       },
       {
         field: "created",

@@ -83,30 +83,34 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
   );
 
   const getUrlField = useCallback(
-    (params: GridRenderCellParams<Document>) => (
-      <TextField
-        data-cy="document-url"
-        multiline
-        type="url"
-        required
-        sx={{ margin: 1 }}
-        defaultValue={updatedRows.get(params.id)?.url ?? params.value ?? ""}
-        onChange={event => updateRow(params.id, { url: event.target.value })}
-      />
-    ),
+    (params: GridRenderCellParams<Document>, focused: boolean) => {
+      const value = updatedRows.get(params.id)?.url ?? params.value ?? "";
+      return (
+        <TextField
+          data-cy="document-url"
+          multiline
+          type="url"
+          required
+          {...(focused ? { defaultValue: value } : { value })}
+          onChange={event => updateRow(params.id, { url: event.target.value })}
+        />
+      );
+    },
     [updateRow, updatedRows],
   );
 
   const getDescriptionField = useCallback(
-    (params: GridRenderCellParams<Document>) => (
-      <TextField
-        data-cy="document-description"
-        multiline
-        sx={{ margin: 1 }}
-        defaultValue={updatedRows.get(params.id)?.description ?? params.value ?? ""}
-        onChange={event => updateRow(params.id, { description: event.target.value })}
-      />
-    ),
+    (params: GridRenderCellParams<Document>, focused: boolean) => {
+      const value = updatedRows.get(params.id)?.description ?? params.value ?? "";
+      return (
+        <TextField
+          data-cy="document-description"
+          multiline
+          {...(focused ? { defaultValue: value } : { value })}
+          onChange={event => updateRow(params.id, { description: event.target.value })}
+        />
+      );
+    },
     [updateRow, updatedRows],
   );
 
@@ -119,26 +123,28 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
         flex: 1,
         renderCell: params =>
           editingEnabled ? (
-            getUrlField(params)
+            getUrlField(params, false)
           ) : (
             <Link href={params.value} target="_blank" rel="noopener noreferrer" sx={{ wordBreak: "break-all" }}>
               {params.value}
             </Link>
           ),
-        renderEditCell: getUrlField,
+        renderEditCell: params => getUrlField(params, true),
       },
       {
         field: "description",
         headerName: t("description"),
         editable: editingEnabled,
         flex: 1,
-        renderCell: params =>
-          editingEnabled ? (
-            getDescriptionField(params)
+        renderCell: params => {
+          console.log("Rendering description cell:", params);
+          return editingEnabled ? (
+            getDescriptionField(params, false)
           ) : (
             <Typography sx={{ whiteSpace: "pre-line", wordBreak: "break-all" }}>{params.value}</Typography>
-          ),
-        renderEditCell: getDescriptionField,
+          );
+        },
+        renderEditCell: params => getDescriptionField(params, true),
       },
       {
         field: "created",
