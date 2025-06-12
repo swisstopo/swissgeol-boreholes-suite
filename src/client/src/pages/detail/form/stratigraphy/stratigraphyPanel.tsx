@@ -90,7 +90,7 @@ export const StratigraphyPanel: FC = () => {
     <Box>
       <Box sx={{ position: "relative" }}>
         <BoreholeTabs
-          value={selectedTabIndex}
+          value={selectedTabIndex === -1 ? 0 : selectedTabIndex}
           onChange={(_, newValue) => navigateToStratigraphy(stratigraphyData[newValue].id)}>
           {stratigraphyData.map(stratigraphy => (
             <BoreholeTab
@@ -101,6 +101,12 @@ export const StratigraphyPanel: FC = () => {
             />
           ))}
         </BoreholeTabs>
+        {editingEnabled && (
+          <AddStratigraphyButton
+            addEmptyStratigraphy={addEmptyStratigraphy}
+            extractStratigraphyFromProfile={extractStratigraphyFromProfile}
+          />
+        )}
         <BoreholeTabContentBox sx={{ mb: 2 }}>
           {selectedStratigraphy && (
             <InfoList
@@ -111,34 +117,33 @@ export const StratigraphyPanel: FC = () => {
               }}
             />
           )}
+          <Box sx={{ position: "relative", mt: 2 }}>
+            <TabPanel
+              variant="list"
+              tabs={[
+                {
+                  label: t("lithology"),
+                  hash: "#lithology",
+                  component: selectedStratigraphy && <Lithology stratigraphy={selectedStratigraphy} />,
+                },
+                {
+                  label: t("chronostratigraphy"),
+                  hash: "#chronostratigraphy",
+                  component: selectedStratigraphy && (
+                    <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />
+                  ),
+                },
+                {
+                  label: t("lithostratigraphy"),
+                  hash: "#lithostratigraphy",
+                  component: selectedStratigraphy && (
+                    <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />
+                  ),
+                },
+              ]}
+            />
+          </Box>
         </BoreholeTabContentBox>
-        {editingEnabled && (
-          <AddStratigraphyButton
-            addEmptyStratigraphy={addEmptyStratigraphy}
-            extractStratigraphyFromProfile={extractStratigraphyFromProfile}
-          />
-        )}
-      </Box>
-      <Box sx={{ position: "relative" }}>
-        <TabPanel
-          tabs={[
-            {
-              label: t("lithology"),
-              hash: "#lithology",
-              component: selectedStratigraphy && <Lithology stratigraphy={selectedStratigraphy} />,
-            },
-            {
-              label: t("chronostratigraphy"),
-              hash: "#chronostratigraphy",
-              component: selectedStratigraphy && <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
-            },
-            {
-              label: t("lithostratigraphy"),
-              hash: "#lithostratigraphy",
-              component: selectedStratigraphy && <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
-            },
-          ]}
-        />
       </Box>
     </Box>
   );

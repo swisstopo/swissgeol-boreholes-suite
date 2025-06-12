@@ -502,9 +502,13 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           fontFamily: "Inter",
-          fontWeight: "bold",
+          fontWeight: 400,
           textTransform: "none",
           fontSize: "16px",
+          "&.Mui-selected": {
+            color: themePalette.background.menuItemActive,
+            fontWeight: 500,
+          },
         },
       },
     },
@@ -516,6 +520,10 @@ export const theme = createTheme({
         },
         scroller: {
           overflow: "visible !important",
+        },
+        indicator: {
+          backgroundColor: themePalette.background.menuItemActive,
+          transition: "none",
         },
       },
     },
