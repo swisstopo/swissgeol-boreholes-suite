@@ -4,6 +4,7 @@ import { Box } from "@mui/material";
 import { Tab, TabPanel } from "../../../components/tabs/tabPanel.tsx";
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { Documents } from "./tabs/documents.tsx";
 import { Photos } from "./tabs/photos.tsx";
 import { Profiles } from "./tabs/profiles.tsx";
 
@@ -24,6 +25,11 @@ export const Attachments: FC = () => {
         label: t("photos"),
         hash: "#photos",
         component: <Photos boreholeId={boreholeId} />,
+      },
+      {
+        label: t("documents"),
+        hash: "#documents",
+        component: <Documents boreholeId={boreholeId} />,
       },
     ],
     [boreholeId, t],

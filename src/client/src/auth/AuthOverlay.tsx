@@ -28,8 +28,9 @@ export const AuthOverlay: FC<PropsWithChildren> = ({ children }) => {
   const { t } = useTranslation();
 
   const signIn = () => {
+    const path = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     auth.signinRedirect({
-      url_state: btoa(JSON.stringify({ href: window.location.href })),
+      url_state: btoa(JSON.stringify({ path })),
     });
   };
 

@@ -2,16 +2,25 @@
 
 ## [Unreleased]
 
+### Added
+- Added the documents tab to the borehole attachments.
+
 ### Changed
 - Updated _extern-sync_ logic to filter published boreholes by target workgroup for duplication check.
 - In the overview map when hovering over a borehole, clicking the tooltip text now navigates to the borehole detail view. If several boreholes are located at the same position, a list of boreholes is displayed in the tooltip and clicking on one of them navigates to the respective borehole detail view.
 - Administrators can now edit workgroup names on the settings page.
 - Show loading indicator when importing data.
+- Remove type from profile table.
 - Select input fields now filter and display only the options that match the user's input.
 
 ### Fixed
 - Boreholes could not be exported in the _view_ environment.
+- `Boreholes.swissgeol.ch ID` was not listed in the location type ID filter.
 - The lithostratigraphy was missing when copying a stratigraphy.
+- Loading a page by url did not work after a redirect from the login page.
+- When changing settings for lithology fields, the state of the checkboxes would be lost when navigating away and returning.
+- Editing boreholes with photos would cause an error.
+- Boreholes with observations could not be exported as JSON.
 
 ## v2.1.1200 - 2025-05-22
 

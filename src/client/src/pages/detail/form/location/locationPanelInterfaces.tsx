@@ -1,6 +1,6 @@
 import { BasicIdentifier, BoreholeV2, Identifier } from "../../../../api/borehole.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
-import { Codelist } from "../../../../components/Codelist.ts";
+import { Codelist } from "../../../../components/codelist.ts";
 import { WorkflowV2 } from "../workflow/workflow.ts";
 import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 

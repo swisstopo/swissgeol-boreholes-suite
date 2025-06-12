@@ -1,3 +1,5 @@
+import { User } from "../apiInterfaces";
+
 export const maxFileSizeKB = 210_000_000;
 
 export interface File {
@@ -16,6 +18,10 @@ export interface BoreholeFile {
   boreholeId: number;
   fileId: number;
   file: File;
+  user?: User;
+  attached?: Date | string;
+  description?: string;
+  public?: boolean;
 }
 
 export interface DataExtractionResponse {

@@ -1,4 +1,11 @@
-import { evaluateCoordinate, evaluateSelect, hasAiStyle, hasError, isDisabled } from "../helpers/formHelpers.js";
+import {
+  evaluateCoordinate,
+  evaluateSelect,
+  hasAiStyle,
+  hasError,
+  isDisabled,
+  setSelect,
+} from "../helpers/formHelpers.js";
 import {
   getElementByDataCy,
   goToRouteAndAcceptTerms,
@@ -10,7 +17,8 @@ import {
 } from "../helpers/testHelpers.js";
 import "cypress-real-events/support";
 import { getArea } from "ol/sphere.js";
-import { discardChanges } from "../helpers/buttonHelpers.js";
+import { discardChanges, saveForm } from "../helpers/buttonHelpers.js";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 
 const isFileActive = (fileName, isActive) => {
   cy.contains("span", fileName)
@@ -574,5 +582,14 @@ describe("Test labeling tool", () => {
     assertSelectContent(["12.00 - 34.00", "123.00 - 456.00"]);
     getElementByDataCy("labeling-file-button-select-search").type("456");
     assertSelectContent(["123.00 - 456.00"]);
+
+    // can save other changes on a borehole with photos
+    getElementByDataCy("labeling-tab-profile").click({ force: true }); // close select
+    getElementByDataCy("labeling-toggle-button").click();
+    navigateInSidebar(SidebarMenuItem.borehole);
+    startBoreholeEditing();
+    setSelect("purposeId", 1);
+    saveForm();
+    stopBoreholeEditing();
   });
 });

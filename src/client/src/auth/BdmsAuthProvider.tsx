@@ -1,21 +1,25 @@
-import { useEffect, useState } from "react";
-import { AuthProvider as OidcAuthProvider } from "react-oidc-context";
+import { FC, PropsWithChildren, useEffect, useState } from "react";
+import { AuthProviderProps, AuthProvider as OidcAuthProvider } from "react-oidc-context";
+import { DataRouter } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
-import { WebStorageStateStore } from "oidc-client-ts";
+import { User, WebStorageStateStore } from "oidc-client-ts";
 import { useSettings } from "../api/useSettings";
 import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
 import { AuthOverlay } from "./AuthOverlay";
-import { BdmsAuthContext } from "./BdmsAuthContext";
+import { BdmsAuthContext, BdmsAuthContextProps } from "./BdmsAuthContext";
 import { CognitoUserManager } from "./CognitoUserManager";
 import { SplashScreen } from "./SplashScreen";
 
-/**
- * Fetches app settings, configures authentication, and initializes Google Analytics if needed.
- * @param {Object} props
- * @param {React.ReactNode} props.children - The child components that require authentication.
- */
-export const BdmsAuthProvider = props => {
-  const [oidcConfig, setOidcConfig] = useState(undefined);
+interface BdmsAuthProviderProps {
+  router: DataRouter;
+}
+
+type OidcConfig = AuthProviderProps & {
+  customSettings: BdmsAuthContextProps;
+};
+
+export const BdmsAuthProvider: FC<PropsWithChildren<BdmsAuthProviderProps>> = ({ router, children }) => {
+  const [oidcConfig, setOidcConfig] = useState<OidcConfig | undefined>(undefined);
   const settings = useSettings();
 
   useEffect(() => {
@@ -32,12 +36,12 @@ export const BdmsAuthProvider = props => {
       userStore: new WebStorageStateStore({ store: window.localStorage }),
     };
 
-    var userManager = new CognitoUserManager(oidcClientSettings);
+    const userManager = new CognitoUserManager(oidcClientSettings);
 
-    const onSigninCallback = user => {
-      const preLoginState = JSON.parse(atob(user.url_state));
+    const onSigninCallback = (user: User | undefined) => {
+      const preLoginState = JSON.parse(atob(user?.url_state ?? ""));
       // restore location after login.
-      window.history.replaceState({}, document.title, preLoginState.href);
+      router.navigate(preLoginState.path, { replace: true });
     };
 
     setOidcConfig({
@@ -47,7 +51,7 @@ export const BdmsAuthProvider = props => {
         anonymousModeEnabled: serverConfig.anonymousModeEnabled,
       },
     });
-  }, [settings]);
+  }, [router, settings]);
 
   if (!oidcConfig) {
     return (
@@ -61,7 +65,7 @@ export const BdmsAuthProvider = props => {
     <OidcAuthProvider {...oidcConfig}>
       <BdmsAuthContext.Provider value={oidcConfig.customSettings}>
         <AuthenticationStoreSync />
-        <AuthOverlay>{props.children}</AuthOverlay>
+        <AuthOverlay>{children}</AuthOverlay>
       </BdmsAuthContext.Provider>
     </OidcAuthProvider>
   );

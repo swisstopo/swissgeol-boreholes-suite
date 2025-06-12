@@ -1,7 +1,7 @@
 import { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox, Stack, Typography } from "@mui/material";
-import { GridColumnHeaderParams, GridRenderCellParams, GridRowId, GridValidRowModel } from "@mui/x-data-grid";
+import { GridColumnHeaderParams, GridRenderCellParams, GridRowId } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
 import { RefObject } from "@mui/x-internals/types";
 import { CheckIcon } from "lucide-react";
@@ -11,26 +11,26 @@ import { EditStateContext } from "../editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "../saveContext.tsx";
 
 export interface AttachmentWithPublicState {
-  public: boolean | undefined;
+  public?: boolean;
 }
 
-interface UseAttachmentsProps {
+interface UseAttachmentsProps<T extends AttachmentWithPublicState> {
   apiRef: RefObject<GridApiCommunity>;
-  loadAttachments: () => Promise<GridValidRowModel[]>;
-  addAttachment: (file: File) => Promise<void>;
-  updateAttachments: (updatedRows: Map<GridRowId, AttachmentWithPublicState>) => Promise<void>;
+  loadAttachments: () => Promise<T[]>;
+  addAttachment: (file?: File) => Promise<void>;
+  updateAttachments: (updatedRows: Map<GridRowId, T>) => Promise<void>;
   deleteAttachments: (ids: number[]) => Promise<void>;
   exportAttachments: (ids: number[]) => Promise<void>;
 }
 
-export const useAttachments = ({
+export const useAttachments = <T extends AttachmentWithPublicState>({
   apiRef,
   loadAttachments,
   addAttachment,
   updateAttachments,
   deleteAttachments,
   exportAttachments,
-}: UseAttachmentsProps) => {
+}: UseAttachmentsProps<T>) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } =
@@ -38,8 +38,8 @@ export const useAttachments = ({
   const { showAlert } = useContext(AlertContext);
   const reloadBoreholes = useReloadBoreholes();
 
-  const [rows, setRows] = useState<GridValidRowModel[]>();
-  const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, AttachmentWithPublicState>>(new Map());
+  const [rows, setRows] = useState<T[]>();
+  const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, T>>(new Map());
   const [allPublic, setAllPublic] = useState(false);
   const [somePublic, setSomePublic] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +52,7 @@ export const useAttachments = ({
   }, [loadAttachments]);
 
   const onAdd = useCallback(
-    async (file: File) => {
+    async (file?: File) => {
       try {
         setIsLoading(true);
         await addAttachment(file);
@@ -66,12 +66,23 @@ export const useAttachments = ({
     [addAttachment, onLoad, reloadBoreholes, showAlert, t],
   );
 
+  const removeCellFocus = useCallback(() => {
+    const editRows = apiRef.current.state.editRows;
+    const rowId = Object.keys(editRows)[0];
+    const field = rowId ? Object.keys(editRows[rowId])[0] : undefined;
+
+    if (rowId && field) {
+      apiRef.current.stopCellEditMode({ id: rowId, field });
+    }
+  }, [apiRef]);
+
   const onSave = useCallback(async () => {
     setIsLoading(true);
+    removeCellFocus();
     await updateAttachments(updatedRows);
     setUpdatedRows(new Map());
     await onLoad();
-  }, [updateAttachments, updatedRows, onLoad]);
+  }, [updateAttachments, updatedRows, onLoad, removeCellFocus]);
 
   const onDelete = useCallback(async () => {
     setIsLoading(true);
@@ -99,7 +110,7 @@ export const useAttachments = ({
     (id: GridRowId, checked: boolean) => {
       setUpdatedRows(prevRows => {
         const newMap = new Map(prevRows);
-        const row = newMap.get(id) ?? { public: false };
+        const row = newMap.get(id) ?? ({ public: false } as T);
         row.public = checked;
         newMap.set(id, row);
         return newMap;
@@ -114,14 +125,14 @@ export const useAttachments = ({
       const checked = event.target.checked;
       const currentRows = apiRef.current.getRowModels();
       Array.from(currentRows.keys()).forEach(id => {
-        togglePublicValueForRow(id as GridRowId, checked);
+        togglePublicValueForRow(id, checked);
       });
     },
     [apiRef, togglePublicValueForRow],
   );
 
   const getPublicColumnHeader = useCallback(
-    (params: GridColumnHeaderParams) => {
+    (params: GridColumnHeaderParams<T>) => {
       return editingEnabled ? (
         <Stack direction="row" justifyContent="flex-start" alignItems="center" gap={1} data-cy={"public-header"}>
           <Checkbox checked={allPublic} indeterminate={somePublic && !allPublic} onChange={toggleAllPublicValues} />
@@ -133,7 +144,7 @@ export const useAttachments = ({
   );
 
   const getPublicColumnCell = useCallback(
-    (params: GridRenderCellParams) => {
+    (params: GridRenderCellParams<T>) => {
       const readonlyContent = (
         <Stack direction="row" alignItems="center" justifyContent="center">
           {params.value ? <CheckIcon /> : null}
@@ -144,7 +155,7 @@ export const useAttachments = ({
         <Stack direction="row" alignItems="center" justifyContent="flex-start" width="100%" pl={1.25}>
           <Checkbox
             checked={params.row.public}
-            onChange={event => togglePublicValueForRow(params.row.id, event.target.checked)}
+            onChange={event => togglePublicValueForRow(params.id, event.target.checked)}
           />
         </Stack>
       );
@@ -161,8 +172,8 @@ export const useAttachments = ({
   useEffect(() => {
     const currentRows = apiRef.current?.getRowModels?.();
     if (currentRows) {
-      setAllPublic(Array.from(currentRows.values()).every(row => (row as AttachmentWithPublicState).public));
-      setSomePublic(Array.from(currentRows.values()).some(row => (row as AttachmentWithPublicState).public));
+      setAllPublic(Array.from(currentRows.values()).every(row => (row as T).public));
+      setSomePublic(Array.from(currentRows.values()).some(row => (row as T).public));
     }
   }, [apiRef, updatedRows, rows]);
 

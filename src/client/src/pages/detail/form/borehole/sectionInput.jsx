@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import { Divider, IconButton } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
-import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2.ts";
+import { addSection, updateSection } from "../../../../api/fetchApiV2.ts";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
+import { useCodelists } from "../../../../components/codelist.js";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
 import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
@@ -18,7 +19,7 @@ import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
-  const { data: domains } = useDomains();
+  const { data: codelists } = useCodelists();
   const { i18n } = useTranslation();
   useBlockNavigation();
 
@@ -37,7 +38,7 @@ const SectionInput = ({ item, parentId }) => {
 
   // prepare the options for the drillingMudType and drillingMudSubtype select fields
   const drillingMudTypeOptions = new Map(
-    domains
+    codelists
       ?.filter(d => d.schema === "drilling_mud_type")
       ?.sort((a, b) => a.order - b.order)
       ?.map(d => [

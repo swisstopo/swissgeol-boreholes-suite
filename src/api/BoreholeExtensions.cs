@@ -140,6 +140,7 @@ public static class BoreholeExtensions
         borehole.Sections?.MarkAsNew();
         borehole.Observations?.MarkAsNew();
         borehole.BoreholeGeometry?.MarkAsNew();
+        borehole.Documents?.MarkAsNew();
 
         // Do not import any workflows but add a new unfinished workflow for the current user.
         borehole.Workflows.Clear();

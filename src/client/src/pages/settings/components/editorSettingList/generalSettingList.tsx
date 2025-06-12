@@ -1,9 +1,8 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, Checkbox } from "@mui/material";
-import { useDomains } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
-import { Codelist } from "../../../../components/Codelist.ts";
+import { Codelist, useCodelists } from "../../../../components/codelist.ts";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { SettingsItem } from "../../data/SettingsItem.ts";
 
@@ -28,7 +27,7 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
 }) => {
   const { t } = useTranslation();
   const [checkedStates, setCheckedStates] = useState<{ [key: string]: boolean }>({});
-  const { data: domains } = useDomains();
+  const { data: domains } = useCodelists();
 
   useEffect(() => {
     const isChecked = (item: SettingsItem) => {

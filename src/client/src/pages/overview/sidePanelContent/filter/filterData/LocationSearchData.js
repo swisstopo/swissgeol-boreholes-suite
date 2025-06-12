@@ -10,28 +10,8 @@ export const LocationSearchData = [
     isVisibleValue: "custom.borehole_identifier",
     additionalValues: [
       {
-        id: 0,
-        code: "0",
-        conf: null,
-        de: {
-          text: "",
-          descr: "",
-        },
-        en: {
-          text: "",
-          descr: "",
-        },
-        fr: {
-          text: "",
-          descr: "",
-        },
-        it: {
-          text: "",
-          descr: "",
-        },
-        level: null,
-        path: null,
-        translationId: "borehole_technical_id",
+        key: 0,
+        name: "borehole_technical_id",
       },
     ],
   },

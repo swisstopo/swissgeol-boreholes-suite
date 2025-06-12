@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { useDomains } from "../../../../api/fetchApiV2.ts";
-import { Codelist } from "../../../../components/Codelist.ts";
+import { Codelist, useCodelists } from "../../../../components/codelist.ts";
 import { FormContainer, FormDomainSelect, FormInput, FormInputDisplayOnly } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
@@ -11,7 +10,7 @@ interface ElevationSegmentProps extends LocationBaseProps {
 }
 
 const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) => {
-  const { data: domains } = useDomains();
+  const { data: codelists } = useCodelists();
 
   return (
     <FormSegmentBox>
@@ -54,7 +53,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) 
           />
           <FormInputDisplayOnly
             label={"height_reference_system"}
-            value={domains?.find((d: Codelist) => d.id === borehole.hrsId)?.en}
+            value={codelists.find((d: Codelist) => d.id === borehole.hrsId)?.en}
           />
         </FormContainer>
       </FormContainer>

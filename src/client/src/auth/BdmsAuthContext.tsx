@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-interface BdmsAuthContextProps {
+export interface BdmsAuthContextProps {
   anonymousModeEnabled: boolean;
 }
 

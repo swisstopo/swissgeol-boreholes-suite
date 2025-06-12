@@ -1,5 +1,5 @@
 import { fetchApiV2 } from "../../../../../api/fetchApiV2.ts";
-import { Codelist } from "../../../../../components/Codelist.ts";
+import { Codelist } from "../../../../../components/codelist.ts";
 import { Observation } from "../Observation.ts";
 
 export interface WaterIngress extends Observation {

@@ -44,6 +44,7 @@ WHERE username <> 'Anonymous';
 DELETE FROM bdms.borehole_files WHERE true;
 DELETE FROM bdms.files WHERE true;
 DELETE FROM bdms.photo WHERE true;
+DELETE FROM bdms.document WHERE true;
 
 -- Purge non-free and non-published boreholes
 DELETE FROM bdms.borehole WHERE id_bho NOT IN (

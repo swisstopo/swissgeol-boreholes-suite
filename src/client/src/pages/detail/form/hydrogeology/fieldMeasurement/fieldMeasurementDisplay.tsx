@@ -1,8 +1,7 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
-import { useDomains } from "../../../../../api/fetchApiV2.js";
-import { Codelist } from "../../../../../components/Codelist.ts";
+import { Codelist, useCodelists } from "../../../../../components/codelist.ts";
 import DataDisplayCard from "../../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormResultTableDisplay } from "../../../../../components/form/formResultTableDisplay.js";
 import { parameterTableHeaderStyles } from "../../../../../components/form/formResultTableDisplayStyles.js";
@@ -12,7 +11,7 @@ import { getFieldMeasurementParameterUnits } from "../parameterUnits.js";
 import { deleteFieldMeasurement, FieldMeasurement, FieldMeasurementResult } from "./FieldMeasurement.ts";
 
 export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }) => {
-  const domains = useDomains();
+  const codelists = useCodelists();
   const { t, i18n } = useTranslation();
 
   return (
@@ -31,7 +30,7 @@ export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }
         renderBody={(result, index, styles) => (
           <>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.sampleType-formDisplay`}>
-              {domains?.data?.find((d: Codelist) => d.id === result.sampleTypeId)?.[i18n.language] ?? ""}
+              {codelists.data?.find((d: Codelist) => d.id === result.sampleTypeId)?.[i18n.language] ?? ""}
             </TableCell>
             <TableCell
               component="th"
@@ -41,13 +40,13 @@ export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }
                 ...parameterTableHeaderStyles,
               }}
               data-cy={`fieldMeasurementResult.${index}.parameter-formDisplay`}>
-              {domains?.data?.find((d: Codelist) => d.id === result.parameterId)?.[i18n.language] ?? ""}
+              {codelists.data?.find((d: Codelist) => d.id === result.parameterId)?.[i18n.language] ?? ""}
             </TableCell>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.value-formDisplay`}>
               {result?.value && result?.parameterId && (
                 <>
                   <span>{formatNumberForDisplay(result?.value) + " "}</span>
-                  {getFieldMeasurementParameterUnits(result.parameterId, domains.data)}
+                  {getFieldMeasurementParameterUnits(result.parameterId, codelists.data)}
                 </>
               )}
             </TableCell>

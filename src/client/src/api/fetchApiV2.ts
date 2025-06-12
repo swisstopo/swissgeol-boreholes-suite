@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Codelist } from "../components/Codelist.ts";
+import { Codelist } from "../components/codelist.ts";
 import store from "../reducers";
 import {
   ApiError,
@@ -7,6 +7,8 @@ import {
   Casing,
   Chronostratigraphy,
   Completion,
+  Document,
+  DocumentUpdate,
   FaciesDescription,
   GeometryFormat,
   Instrumentation,
@@ -236,26 +238,6 @@ export const updateStratigraphy = async (stratigraphy: Stratigraphy): Promise<St
 
 const staleTime10Min = 10 * 60 * 1000;
 const garbageCollectionTime15Min = 15 * 60 * 1000;
-
-export const useDomains = () =>
-  useQuery({
-    queryKey: ["domains"],
-    queryFn: () => {
-      return fetchApiV2("codelist", "GET");
-    },
-    staleTime: staleTime10Min,
-    gcTime: garbageCollectionTime15Min,
-  });
-
-export const useDomainSchema = (schema: string) =>
-  useQuery({
-    queryKey: ["domains", schema],
-    queryFn: async () => {
-      return await fetchApiV2(`codelist?schema=${schema}`, "GET");
-    },
-    staleTime: staleTime10Min,
-    gcTime: garbageCollectionTime15Min,
-  });
 
 export const useCantons = () =>
   useQuery({
@@ -589,4 +571,20 @@ export const getPhotoImageData = async (photoId: number): Promise<Blob> => {
     throw new ApiError("errorLoadingImage", response.status);
   }
   return await response.blob();
+};
+
+export const getDocumentsByBoreholeId = async (boreholeId: number): Promise<Document[]> => {
+  return await fetchApiV2(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
+};
+
+export const createDocument = async (document: Document): Promise<Document> => {
+  return await fetchApiV2("document", "POST", document);
+};
+
+export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Document> => {
+  return await fetchApiV2("document", "PUT", documents);
+};
+
+export const deleteDocuments = async (documentIds: number[]): Promise<Response> => {
+  return await fetchApiV2(`document?${documentIds.map(id => `documentIds=${id}`).join("&")}`, "DELETE");
 };

@@ -4,6 +4,7 @@ import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { theme } from "./AppTheme";
+import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.tsx";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { AlertProvider } from "./components/alert/alertContext";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext";
@@ -81,32 +82,34 @@ class App extends React.Component {
             },
           }}
         />
-        <DataLoader>
-          <AnalyticsProvider>
-            <AcceptTerms>
-              <AlertProvider>
-                <AlertBanner />
-                <PromptProvider>
-                  <Prompt />
-                  <DataCardProvider>
-                    <BasemapProvider>
-                      <FilterProvider>
-                        <OverviewProvider>
-                          <QueryClientProvider client={queryClient}>
-                            <AppBox>
-                              <HeaderComponent />
-                              <RouterProvider router={router} />
-                            </AppBox>
-                          </QueryClientProvider>
-                        </OverviewProvider>
-                      </FilterProvider>
-                    </BasemapProvider>
-                  </DataCardProvider>
-                </PromptProvider>
-              </AlertProvider>
-            </AcceptTerms>
-          </AnalyticsProvider>
-        </DataLoader>
+        <BdmsAuthProvider router={router}>
+          <DataLoader>
+            <AnalyticsProvider>
+              <AcceptTerms>
+                <AlertProvider>
+                  <AlertBanner />
+                  <PromptProvider>
+                    <Prompt />
+                    <DataCardProvider>
+                      <BasemapProvider>
+                        <FilterProvider>
+                          <OverviewProvider>
+                            <QueryClientProvider client={queryClient}>
+                              <AppBox>
+                                <HeaderComponent />
+                                <RouterProvider router={router} />
+                              </AppBox>
+                            </QueryClientProvider>
+                          </OverviewProvider>
+                        </FilterProvider>
+                      </BasemapProvider>
+                    </DataCardProvider>
+                  </PromptProvider>
+                </AlertProvider>
+              </AcceptTerms>
+            </AnalyticsProvider>
+          </DataLoader>
+        </BdmsAuthProvider>
       </ThemeProvider>
     );
   }

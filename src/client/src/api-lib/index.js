@@ -9,7 +9,6 @@ import {
   patchBoreholes,
   updateBorehole,
 } from "./actions/borehole";
-import { loadDomains, patchCodeConfig } from "./actions/domains";
 import { getWms } from "./actions/geoapi";
 import { getProfileLayers } from "./actions/profile";
 import { loadSettings, patchSettings } from "./actions/settings";
@@ -56,8 +55,6 @@ export {
   deleteLayer,
   gapLayer,
   getProfileLayers,
-  loadDomains,
-  patchCodeConfig,
   getWms,
 
   // Reducers

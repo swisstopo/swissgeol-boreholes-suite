@@ -113,6 +113,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
                     selected={_.isNil(filters.filter?.[item.value]) ? null : (filters.filter[item.value] as number)}
                     canReset={false}
                     schemaName={item.schema}
+                    additionalValues={item.additionalValues}
                     onUpdate={value => {
                       updateChange(item.value, value);
                     }}

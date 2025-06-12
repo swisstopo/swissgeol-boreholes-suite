@@ -1,6 +1,7 @@
 import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { GridColDef, GridRowId, useGridApiRef } from "@mui/x-data-grid";
+import { Photo } from "../../../../api/apiInterfaces.ts";
 import {
   deletePhotos,
   exportPhotos,
@@ -11,7 +12,7 @@ import {
 import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { AttachmentContent } from "../attachmentsContent.tsx";
-import { AttachmentWithPublicState, useAttachments } from "../useAttachments.tsx";
+import { useAttachments } from "../useAttachments.tsx";
 
 interface PhotosProps {
   boreholeId: number;
@@ -26,8 +27,10 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     return getPhotosByBoreholeId(boreholeId);
   }, [boreholeId]);
 
-  const addAttachment = async (file: File) => {
-    await uploadPhoto(boreholeId, file);
+  const addAttachment = async (file?: File) => {
+    if (file) {
+      await uploadPhoto(boreholeId, file);
+    }
   };
 
   const deleteAttachments = async (ids: number[]) => {
@@ -38,7 +41,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     await exportPhotos(ids);
   };
 
-  const updateAttachments = useCallback(async (updatedRows: Map<GridRowId, AttachmentWithPublicState>) => {
+  const updateAttachments = useCallback(async (updatedRows: Map<GridRowId, Photo>) => {
     const updatedRowsArray = Array.from(updatedRows.entries()).map(([key, value]) => ({
       id: key as number,
       public: value.public ?? false,
@@ -55,11 +58,12 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     updateAttachments,
   });
 
-  const columns = useMemo<GridColDef[]>(
+  const columns = useMemo<GridColDef<Photo>[]>(
     () => [
       {
         field: "name",
         headerName: t("name"),
+        flex: 1,
       },
       {
         field: "created",
@@ -72,6 +76,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
         field: "createdBy",
         headerName: t("user"),
         valueGetter: (value, row) => row.createdBy?.name ?? "-",
+        flex: 0.25,
       },
       {
         field: "depth",
@@ -95,13 +100,14 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
   );
 
   return (
-    <AttachmentContent
+    <AttachmentContent<Photo>
       apiRef={apiRef}
       isLoading={isLoading}
       columns={columns}
       rows={rows}
       addAttachment={onAdd}
       acceptedFileTypes="image/*"
+      requireFileOnAdd
       deleteAttachments={onDelete}
       exportAttachments={onExport}
       addAttachmentButtonLabel="addPhoto"

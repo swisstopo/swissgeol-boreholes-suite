@@ -46,6 +46,7 @@ public class BdmsContext : DbContext
         .Include(b => b.Workflows)
         .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
         .Include(b => b.Photos)
+        .Include(b => b.Documents)
         .Include(b => b.BoreholeGeometry)
         .Include(b => b.Workgroup)
         .Include(b => b.UpdatedBy);
@@ -166,6 +167,8 @@ public class BdmsContext : DbContext
     public DbSet<BoreholeCodelist> BoreholeCodelists { get; set; }
 
     public DbSet<Photo> Photos { get; set; }
+
+    public DbSet<Document> Documents { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)
@@ -445,6 +448,7 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Hydrotest).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Profile).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Photo).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Document).HasDefaultValue(false);
 
         // Configure delete behavior for all non-nullable foreign keys for Codelists.
         modelBuilder.Entity<CasingElement>()

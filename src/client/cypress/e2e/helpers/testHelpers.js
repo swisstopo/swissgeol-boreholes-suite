@@ -35,6 +35,7 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
   cy.intercept("/api/v2/export/csv**").as("borehole_export_csv");
+  cy.intercept("/api/v2/export/json**").as("borehole_export_json");
   cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
   cy.intercept("PUT", "/api/v2/user").as("update-user");
@@ -133,11 +134,15 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
   cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as("upload-files");
   cy.intercept("/api/v2/boreholefile/download?boreholeFileId=**").as("download-file");
-  cy.intercept("/api/v2/boreholefile/detachFile?boreholeId=**&boreholeFileId=**").as("delete-file");
+  cy.intercept("/api/v2/boreholefile/detachFile?boreholeFileId=**").as("delete-file");
   cy.intercept("/api/v2/photo/getAllForBorehole?boreholeId=**").as("getAllPhotos");
   cy.intercept("/api/v2/photo/upload?boreholeId=**").as("upload-photo");
   cy.intercept("/api/v2/photo/export?photoIds=**").as("export-photos");
   cy.intercept("DELETE", "/api/v2/photo?photoIds=**").as("delete-photos");
+  cy.intercept("GET", "/api/v2/document/getAllForBorehole?boreholeId=**").as("getAllDocuments");
+  cy.intercept("/api/v2/document*", req => {
+    return (req.alias = `document_${req.method}`);
+  });
 };
 
 /**

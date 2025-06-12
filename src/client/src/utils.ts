@@ -19,7 +19,7 @@ export const downloadDataFromBlob = (blob: Blob, fileName: string) => {
   URL.revokeObjectURL(url);
 };
 
-export const formatDate = (date: string | Date | null, withTime = false) => {
+export const formatDate = (date: string | Date | null | undefined, withTime = false) => {
   if (!date) return "";
   const options: Intl.DateTimeFormatOptions = {
     day: "2-digit",

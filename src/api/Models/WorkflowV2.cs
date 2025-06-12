@@ -35,7 +35,7 @@ public class WorkflowV2 : IIdentifyable
     /// <summary>
     /// Gets or sets the borehole of this <see cref="WorkflowV2"/>.
     /// </summary>
-    public Borehole Borehole { get; set; }
+    public Borehole? Borehole { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="ReviewedTabs"/>.
