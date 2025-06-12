@@ -1,6 +1,6 @@
 // adds updates and deletes stratigraphies, makes them primary and unselect other when one is primary
 import { addItem } from "../helpers/buttonHelpers";
-import { evaluateInput, evaluateSelect, evaluateSelectText, setInput, setSelect } from "../helpers/formHelpers.js";
+import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers.js";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   getElementByDataCy,
@@ -15,14 +15,28 @@ describe("Tests for stratigraphy", () => {
     function addTestStratigraphyValues() {
       setInput("name", "Test Stratigraphy");
       setInput("date", "2024-03-20");
-      setSelect("qualityId", 4);
+      setSelect("qualityId", 4); // quality "good"
       getElementByDataCy("isprimary-switch").click();
     }
     function evaluateAddedStratigraphy() {
       evaluateInput("name", "Test Stratigraphy");
-      evaluateSelectText("qualityId", "good");
+      evaluateSelect("qualityId", "good");
       evaluateInput("date", "2024-03-20");
       cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
+    }
+
+    function waitForLayerWithDescriptions() {
+      cy.wait(["@layer", "@facies_description", "@lithological_description"]);
+    }
+
+    function waitForStratigraphyContent() {
+      cy.wait([
+        "@get-layers-by-profileId",
+        "@get-layers-by-profileId",
+        "@stratigraphy_by_borehole_GET",
+        "@stratigraphy_by_borehole_GET",
+      ]);
+      waitForLayerWithDescriptions();
     }
 
     // Navigate to borehole
@@ -33,16 +47,19 @@ describe("Tests for stratigraphy", () => {
 
     // Add new stratigraphy
     addItem("addStratigraphy");
-    cy.wait(["@stratigraphy_POST", "@stratigraphy_GET", "@stratigraphy_GET", "@get-layers-by-profileId"]);
+    cy.wait(["@stratigraphy_POST", "@stratigraphy_GET", "@stratigraphy_GET"]);
+    waitForStratigraphyContent();
 
     // evaluate existing stratigraphy
     evaluateInput("name", "Leanna Aufderhar");
-    evaluateSelectText("qualityId", "not specified");
+    evaluateSelect("qualityId", "not specified");
     evaluateInput("date", "2021-01-03");
     cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
 
     cy.contains("Not specified").click(); // click on newly added stratigraphy
-
+    cy.wait(["@stratigraphy_GET", "@stratigraphy_by_borehole_GET", "@get-layers-by-profileId"]);
+    waitForLayerWithDescriptions();
+    waitForLayerWithDescriptions();
     // Add input values
     addTestStratigraphyValues();
 
@@ -78,13 +95,22 @@ describe("Tests for stratigraphy", () => {
 
     // Copy added stratigraphy
     getElementByDataCy("copy-button").click();
-    cy.wait(["@stratigraphy_GET", "@stratigraphy_GET", "@get-layers-by-profileId"]);
+    cy.wait(["@stratigraphy_GET", "@stratigraphy_GET"]);
+    waitForStratigraphyContent();
 
     cy.contains("Test Stratigraphy (Clone)").should("exist");
     cy.contains("Test Stratigraphy (Clone)").click();
 
+    cy.wait(["@stratigraphy_GET", "@stratigraphy_GET"]);
+    waitForStratigraphyContent();
+    waitForLayerWithDescriptions();
+    waitForLayerWithDescriptions();
+
     evaluateInput("name", "Test Stratigraphy (Clone)");
-    evaluateSelectText("qualityId", "good");
+    // Stratigraphy form will soon be redesigned
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
+    evaluateSelect("qualityId", "good");
     evaluateInput("date", "2024-03-20");
     getElementByDataCy("isprimary-switch").should("not.be.checked");
 
@@ -95,7 +121,10 @@ describe("Tests for stratigraphy", () => {
       "cancel",
     );
     evaluateInput("name", "Test Stratigraphy (Clone)");
-    evaluateSelectText("qualityId", "good");
+    // Stratigraphy form will soon be redesigned
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
+    evaluateSelect("qualityId", "good");
     evaluateInput("date", "2024-03-20");
     getElementByDataCy("isprimary-switch").should("not.be.checked");
 

@@ -84,7 +84,7 @@ describe("Instrumentation crud tests", () => {
     saveForm();
     evaluateDisplayValue("casingName", "open hole");
     startEditing();
-    evaluateSelect("casingId", "-1");
+    evaluateSelect("casingId", "open hole");
     cancelEditing();
 
     // delete instrumentation

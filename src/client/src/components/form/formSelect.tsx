@@ -1,8 +1,7 @@
 import { FC, useContext } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { MenuItem, SxProps } from "@mui/material";
-import { TextField } from "@mui/material/";
+import { Autocomplete, SxProps, TextField } from "@mui/material";
 import { DetailContext } from "../../pages/detail/detailContext.tsx";
 import { getFormFieldError } from "./form";
 import { getFieldBorderColor } from "./formUtils.ts";
@@ -51,6 +50,12 @@ export const FormSelect: FC<FormSelectProps> = ({
   const { editingEnabled } = useContext(DetailContext);
   const isReadOnly = readonly ?? !editingEnabled;
 
+  // Synchronize Autocomplete with react hook form state
+  const fieldValue = useWatch({
+    control,
+    name: fieldName,
+  });
+
   const menuItems: FormSelectMenuItem[] = [];
 
   if (!isReadOnly && !required && canReset) {
@@ -72,45 +77,64 @@ export const FormSelect: FC<FormSelectProps> = ({
       name={fieldName}
       control={control}
       defaultValue={selected ?? ""}
-      rules={{
-        required: required ?? false,
-        onChange: e => {
-          const value = e.target.value === "" ? null : e.target.value;
-          if (onUpdate) {
-            onUpdate(value);
-          }
-        },
-      }}
+      rules={{ required: required ?? false }}
       render={({ field, formState }) => {
-        // displaying formSelect as a standard textfield in readonly mode, so that text becomes selectable
-        const fieldValue = isReadOnly
-          ? menuItems.find(option => option.value === field.value)?.label
-          : (field.value ?? "");
+        // Display FormSelect as a standard TextField in readonly mode, so that text becomes selectable
+        if (isReadOnly) {
+          const selectedLabel = menuItems.find(option => option.value === field.value)?.label ?? "";
+          return (
+            <TextField
+              value={selectedLabel}
+              label={t(label)}
+              InputProps={{ readOnly: isReadOnly, disabled: disabled }}
+              sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
+              className={`readonly ${className ?? ""}`}
+              data-cy={fieldName + "-formSelect"}
+              disabled={disabled ?? false}
+            />
+          );
+        }
+        // Display FormSelect as Autocomplete when editable
         return (
-          <TextField
-            select={!isReadOnly}
-            required={required ?? false}
-            error={getFormFieldError(fieldName, formState.errors)}
-            sx={{
-              ...sx,
-              ...getFieldBorderColor(isReadOnly),
+          <Autocomplete
+            key={`${fieldName}-${fieldValue ?? "empty"}`}
+            sx={{ flex: "1" }}
+            options={menuItems}
+            getOptionLabel={option => option.label}
+            isOptionEqualToValue={(option, value) => option.key === value.key}
+            value={
+              field.value === null || field.value === undefined
+                ? undefined
+                : menuItems.find(opt => opt.value === field.value)
+            }
+            onChange={(_, newValue) => {
+              if (newValue?.label.toLowerCase() === t("reset").toLowerCase()) {
+                // Clear autocomplete if reset option is clicked
+                field.onChange(null);
+                if (onUpdate) onUpdate(null);
+              } else {
+                field.onChange(newValue?.key ?? null);
+                if (onUpdate) onUpdate(newValue?.key ?? null);
+              }
             }}
-            className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
-            label={t(label)}
-            name={field.name}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            inputRef={field.ref}
-            value={fieldValue}
-            disabled={disabled ?? false}
-            data-cy={fieldName + "-formSelect"}
-            InputProps={{ readOnly: isReadOnly, disabled: disabled }}>
-            {menuItems.map(item => (
-              <MenuItem key={item.key} value={item.value as number}>
-                {item.italic ? <em>{item.label}</em> : item.label}
-              </MenuItem>
-            ))}
-          </TextField>
+            renderInput={params => (
+              <TextField
+                {...params}
+                label={t(label)}
+                required={required}
+                error={getFormFieldError(fieldName, formState.errors)}
+                sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
+                className={className}
+                data-cy={fieldName + "-formSelect"}
+                disabled={disabled}
+              />
+            )}
+            renderOption={(props, option) => (
+              <li {...props}>{option.italic ? <em>{option.label}</em> : option.label}</li>
+            )}
+            disabled={disabled}
+            disableClearable
+          />
         );
       }}
     />

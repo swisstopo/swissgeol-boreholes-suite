@@ -1,5 +1,5 @@
 import { hasPagination, showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { evaluateSelectText, setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
+import { evaluateSelect, setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
 import {
   createBorehole,
   createLithologyLayer,
@@ -286,6 +286,6 @@ describe("Search filter tests", () => {
     cy.contains("Location").click();
     getElementByDataCy("show-all-fields-switch").click();
     setSelect("borehole_identifier", 0);
-    evaluateSelectText("borehole_identifier", "Boreholes.swissgeol.ch ID");
+    evaluateSelect("borehole_identifier", "Boreholes.swissgeol.ch ID");
   });
 });

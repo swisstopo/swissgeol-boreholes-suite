@@ -341,7 +341,7 @@ describe("Test labeling tool", () => {
     clickCoordinateLabelingButton();
     assertInputsHaveAiStyle();
     assertInputsHaveNoError();
-    evaluateSelect("originalReferenceSystem", "20104001");
+    evaluateSelect("originalReferenceSystem", "LV95");
     evaluateCoordinate("locationX", "");
     evaluateCoordinate("locationY", "");
     evaluateCoordinate("locationXLV03", "");
@@ -353,7 +353,7 @@ describe("Test labeling tool", () => {
     drawBox(400, 140, 600, 250);
     cy.wait(["@location", "@location", "@location", "@geodesy", "@geodesy"]);
     assertBoundingBoxes(0, 0); // no bounding box preview for coordinate extraction
-    evaluateSelect("originalReferenceSystem", "20104001");
+    evaluateSelect("originalReferenceSystem", "LV95");
     assertInputsHaveNoError();
     assertLV03InputsAreDisabled();
     evaluateCoordinate("locationX", "2'646'359.7");
@@ -378,7 +378,7 @@ describe("Test labeling tool", () => {
     assertInputsHaveNormalStyle();
     assertEmptyInputsForLV95HaveError();
     assertLV03InputsAreDisabled();
-    evaluateSelect("originalReferenceSystem", "20104001");
+    evaluateSelect("originalReferenceSystem", "LV95");
     evaluateCoordinate("locationX", "");
     evaluateCoordinate("locationY", "");
     evaluateCoordinate("locationXLV03", "");
@@ -425,7 +425,7 @@ describe("Test labeling tool", () => {
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 120, 600, 300);
     cy.wait("@location");
-    evaluateSelect("originalReferenceSystem", "20104002");
+    evaluateSelect("originalReferenceSystem", "LV03");
     evaluateCoordinate("locationXLV03", "646'465.97");
     hasError("locationXLV03", false);
     isDisabled("locationXLV03", false);

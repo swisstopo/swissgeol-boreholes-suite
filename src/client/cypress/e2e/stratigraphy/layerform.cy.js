@@ -8,7 +8,7 @@ import {
 import {
   evaluateInput,
   evaluateMultiSelect,
-  evaluateSelectText,
+  evaluateSelect,
   evaluateTextarea,
   evaluateYesNoSelect,
   setInput,
@@ -83,7 +83,7 @@ const layerAttributes = [
   {
     value: "grainSize2Id",
     type: "Select",
-    initial: null,
+    initial: "",
   },
   {
     value: "uscs_3",
@@ -155,7 +155,7 @@ const layerAttributes = [
   {
     value: "humidityId",
     type: "Select",
-    initial: null,
+    initial: "",
   },
   {
     value: "alterationId",
@@ -203,7 +203,7 @@ describe("Tests for the layer form.", () => {
           evaluateMultiSelect(attribute.value, attribute.initial);
         }
         if (attribute.type === "Select") {
-          evaluateSelectText(attribute.value, attribute.initial, editable);
+          evaluateSelect(attribute.value, attribute.initial, null, editable);
         }
         if (attribute.type === "Input") {
           evaluateInput(attribute.value, attribute.initial);
@@ -224,7 +224,7 @@ describe("Tests for the layer form.", () => {
             evaluateMultiSelect(attribute.value, attribute.updated);
           }
           if (attribute.type === "Select") {
-            evaluateSelectText(attribute.value, attribute.updated, editable);
+            evaluateSelect(attribute.value, attribute.updated, null, editable);
           }
           if (attribute.type === "Input") {
             evaluateInput(attribute.value, attribute.updated);
@@ -420,7 +420,7 @@ describe("Tests for the layer form.", () => {
     clickOnLayerAndWaitForForm("8");
     evaluateInput("fromDepth", "80");
     evaluateInput("toDepth", "90");
-    evaluateSelectText("descriptionQualityId", "good", false);
+    evaluateSelect("descriptionQualityId", "good", null, false);
     evaluateMultiSelect("grain_shape", ["21110003"]);
     evaluateYesNoSelect("isStriae", "No");
     evaluateInput("notes", "hacking Analyst Investment Account index");
@@ -433,7 +433,7 @@ describe("Tests for the layer form.", () => {
     clickOnLayerAndWaitForForm("7");
     evaluateInput("fromDepth", "70");
     evaluateInput("toDepth", "80");
-    evaluateSelectText("descriptionQualityId", "very good", false);
+    evaluateSelect("descriptionQualityId", "very good", null, false);
     evaluateMultiSelect("grain_shape", ["21110002"]);
     evaluateYesNoSelect("isStriae", "Yes", false);
     evaluateInput("notes", "full-range circuit Cambridgeshire Senior");
