@@ -155,6 +155,8 @@ const exportFileType = fileType => {
   const selector = `[data-cy="${fileType}-button"]`;
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
+  cy.get(".MuiCircularProgress-root").should("exist");
+  cy.get(".MuiCircularProgress-root").should("not.exist");
 };
 /**
  * Clicks on the copy button.
@@ -176,8 +178,8 @@ export const addItem = itemLabel => {
   button().scrollIntoView();
   button().should("be.visible");
   button().should("be.enabled");
-  button().click({ force: true });
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
+  button().click({ force: true });
   cy.get(".MuiCircularProgress-root").should("not.exist");
 };
