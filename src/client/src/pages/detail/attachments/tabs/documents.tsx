@@ -137,7 +137,6 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
         editable: editingEnabled,
         flex: 1,
         renderCell: params => {
-          console.log("Rendering description cell:", params);
           return editingEnabled ? (
             getDescriptionField(params, false)
           ) : (
