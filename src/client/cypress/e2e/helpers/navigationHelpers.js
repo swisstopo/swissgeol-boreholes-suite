@@ -27,6 +27,12 @@ export const BoreholeTab = {
   geometry: "geometry",
 };
 
+export const StratigraphyTab = {
+  lithology: "lithology",
+  chronostratigraphy: "chronostratigraphy",
+  lithostratigraphy: "lithostratigraphy",
+};
+
 const noContentColor = "rgb(130, 142, 154)";
 const contentColor = "rgb(28, 40, 52)";
 
@@ -75,6 +81,15 @@ export const navigateInBorehole = (tab, promptSelector) => {
   });
 
   isActiveBoreholeTab(tab);
+};
+
+export const navigateInStratigraphy = tab => {
+  getElementByDataCy(`${tab}-tab`).click();
+
+  cy.location().should(location => {
+    expect(location.pathname).to.match(/^\/\d+\/stratigraphy(\/|$)/);
+    expect(location.hash).to.eq(`#${tab}`);
+  });
 };
 
 const checkThatParentOpen = menuItem => {
@@ -138,7 +153,8 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
     case SidebarMenuItem.stratigraphy:
       isActiveMenuItem(menuItem);
       cy.location().should(location => {
-        expect(location.pathname).to.match(/^\/\d+\/stratigraphy(\/|$)/);
+        expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/\d+$/);
+        expect(location.hash).to.eq("#lithology");
       });
       break;
     case SidebarMenuItem.completion:
