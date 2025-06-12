@@ -1,4 +1,10 @@
-import { addItem, saveWithSaveBar, stopEditing } from "../helpers/buttonHelpers";
+import {
+  addItem,
+  saveWithSaveBar,
+  stopEditing,
+  verifyNoUnsavedChanges,
+  verifyUnsavedChanges,
+} from "../helpers/buttonHelpers";
 import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import {
   clearInput,
@@ -22,26 +28,6 @@ import {
 } from "../helpers/testHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
-  const getButtons = () => {
-    const saveButton = () => cy.get('[data-cy="save-button"]');
-    const discardButton = () => cy.get('[data-cy="discardchanges-button"]');
-    return { saveButton, discardButton };
-  };
-
-  const verifyNoUnsavedChanges = () => {
-    const { saveButton, discardButton } = getButtons();
-    saveButton().should("be.disabled");
-    discardButton().should("be.disabled");
-    cy.contains("Unsaved changes").should("not.exist");
-  };
-
-  const verifyUnsavedChanges = () => {
-    const { saveButton, discardButton } = getButtons();
-    saveButton().should("not.be.disabled");
-    discardButton().should("not.be.disabled");
-    cy.contains("Unsaved changes").should("exist");
-  };
-
   it("creates and deletes a borehole.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole();
@@ -150,14 +136,13 @@ describe("Tests for 'Location' edit page.", () => {
       // discard changes with button
       setSelect("restrictionId", 3);
       verifyUnsavedChanges();
-      const { saveButton, discardButton } = getButtons();
-      discardButton().click();
+      cy.get('[data-cy="discardchanges-button"]').click();
       verifyNoUnsavedChanges();
 
       // save changes
       setSelect("restrictionId", 3);
       verifyUnsavedChanges();
-      saveButton().click();
+      cy.get('[data-cy="save-button"]').click();
       verifyNoUnsavedChanges();
     });
   });

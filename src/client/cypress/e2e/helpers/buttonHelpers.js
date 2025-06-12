@@ -30,6 +30,18 @@ export const saveWithSaveBar = parent => {
   getElementByDataCy("save-bar-text").should("not.exist");
 };
 
+export const verifyNoUnsavedChanges = () => {
+  cy.get('[data-cy="save-button"]').should("be.disabled");
+  cy.get('[data-cy="discardchanges-button"]').should("be.disabled");
+  cy.contains("Unsaved changes").should("not.exist");
+};
+
+export const verifyUnsavedChanges = () => {
+  cy.get('[data-cy="save-button"]').should("not.be.disabled");
+  cy.get('[data-cy="discardchanges-button"]').should("not.be.disabled");
+  cy.contains("Unsaved changes").should("exist");
+};
+
 /**
  * Clicks on the save button.
  * @param {string} parent (optional) The parent of the button.
