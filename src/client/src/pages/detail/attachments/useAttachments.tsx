@@ -64,12 +64,23 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
     [addAttachment, onLoad, reloadBorehole, showAlert, t],
   );
 
+  const removeCellFocus = useCallback(() => {
+    const editRows = apiRef.current.state.editRows;
+    const rowId = Object.keys(editRows)[0];
+    const field = rowId ? Object.keys(editRows[rowId])[0] : undefined;
+
+    if (rowId && field) {
+      apiRef.current.stopCellEditMode({ id: rowId, field });
+    }
+  }, [apiRef]);
+
   const onSave = useCallback(async () => {
     setIsLoading(true);
+    removeCellFocus();
     await updateAttachments(updatedRows);
     setUpdatedRows(new Map());
     await onLoad();
-  }, [updateAttachments, updatedRows, onLoad]);
+  }, [updateAttachments, updatedRows, onLoad, removeCellFocus]);
 
   const onDelete = useCallback(async () => {
     setIsLoading(true);

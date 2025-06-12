@@ -99,3 +99,14 @@ export const checkRowWithIndex = index => {
 export const clickOnRowWithText = text => {
   cy.contains(".MuiDataGrid-row", text).click();
 };
+
+export const setTextInRow = (row, field, text) => {
+  const rowSelector =
+    typeof row === "number"
+      ? cy.get(".MuiDataGrid-row").eq(row).find(`[data-cy="${field}"]`)
+      : cy.contains(".MuiDataGrid-row", row).find(`[data-cy="${field}"]`);
+
+  rowSelector.click();
+  cy.focused().clear();
+  rowSelector.type(text, { delay: 10 });
+};

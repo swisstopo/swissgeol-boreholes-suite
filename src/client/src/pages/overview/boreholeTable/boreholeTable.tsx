@@ -130,7 +130,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         }
       };
       return (
-        <Box sx={{ p: 1 }}>
+        <Box sx={{ pl: 1 }}>
           <GridCellCheckboxRenderer
             {...params}
             // @ts-expect-error onChange is not in the GridColumnHeaderParams type, but can be used
