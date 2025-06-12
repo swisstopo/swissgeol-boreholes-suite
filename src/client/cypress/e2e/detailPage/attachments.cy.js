@@ -250,7 +250,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   it("creates, edits and deletes documents.", () => {
     createBorehole({ "extended.original_name": "HAPPYBOOK" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
       startBoreholeEditing();
 
       navigateInSidebar(SidebarMenuItem.attachments);
@@ -305,7 +305,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   it("saves with ctrl s", () => {
     createBorehole({ "extended.original_name": "HAPPYBOOK" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
       startBoreholeEditing();
 
       navigateInSidebar(SidebarMenuItem.attachments);
