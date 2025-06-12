@@ -10,7 +10,7 @@ export default defineConfig({
     viewportWidth: 1920,
     viewportHeight: 1080,
     supportFile: "cypress/support/e2e.js",
-    experimentalMemoryManagement: true, // Helps with memory issues
+    experimentalMemoryManagement: true,
 
     setupNodeEvents(on, config) {
       on("file:preprocessor", vitePreprocessor());
@@ -18,6 +18,7 @@ export default defineConfig({
       on("task", {
         log(message) {
           console.log(message);
+
           return null;
         },
         fileExistsInDownloadFolder(filename) {
@@ -65,8 +66,4 @@ export default defineConfig({
   },
   defaultCommandTimeout: 10000,
   waitForAnimations: false,
-  numTestsKeptInMemory: 10,
-  pageLoadTimeout: 60000,
-  watchForFileChanges: false,
-  chromeWebSecurity: false, // Helps with cross-origin issues
 });

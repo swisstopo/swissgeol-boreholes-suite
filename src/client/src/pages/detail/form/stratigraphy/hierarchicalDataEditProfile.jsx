@@ -115,7 +115,7 @@ const HierarchicalDataEditProfile = ({
           <IconButton
             aria-label={t("add")}
             onClick={() => {
-              const newFromDepth = layers.at(-1)?.toDepth ?? 0;
+              const newFromDepth = layers?.at(-1)?.toDepth ?? 0;
               const newToDepth = newFromDepth + 10; // new layer is created with a depth of 10m
               addLayer({
                 stratigraphyId: selectedStratigraphyID,

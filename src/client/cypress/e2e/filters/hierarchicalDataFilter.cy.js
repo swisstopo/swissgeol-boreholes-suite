@@ -38,7 +38,7 @@ describe("Hierachical data filter tests", () => {
       });
   });
 
-  it.only("check hierarchical filtering", () => {
+  it("check hierarchical filtering", () => {
     let filterValues = [
       { period: "eon", value: "Phanerozoic" },
       { period: "era", value: "Cenozoic" },

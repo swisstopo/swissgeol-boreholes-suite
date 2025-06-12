@@ -25,19 +25,18 @@ describe("Tests for stratigraphy", () => {
       cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
     }
 
+    function waitForLayerWithDescriptions() {
+      cy.wait(["@layer", "@facies_description", "@lithological_description"]);
+    }
+
     function waitForStratigraphyContent() {
       cy.wait([
         "@get-layers-by-profileId",
         "@get-layers-by-profileId",
-        "@layer",
-        "@layer",
-        "@lithological_description",
-        "@lithological_description",
-        "@facies_description",
-        "@facies_description",
         "@stratigraphy_by_borehole_GET",
         "@stratigraphy_by_borehole_GET",
       ]);
+      waitForLayerWithDescriptions();
     }
 
     // Navigate to borehole
@@ -58,8 +57,9 @@ describe("Tests for stratigraphy", () => {
     cy.get('[data-cy="isprimary-switch"] input').should("have.value", "true");
 
     cy.contains("Not specified").click(); // click on newly added stratigraphy
-    cy.wait(["@stratigraphy_GET"]);
-    waitForStratigraphyContent();
+    cy.wait(["@stratigraphy_GET", "@stratigraphy_by_borehole_GET", "@get-layers-by-profileId"]);
+    waitForLayerWithDescriptions();
+    waitForLayerWithDescriptions();
     // Add input values
     addTestStratigraphyValues();
 
@@ -103,8 +103,13 @@ describe("Tests for stratigraphy", () => {
 
     cy.wait(["@stratigraphy_GET", "@stratigraphy_GET"]);
     waitForStratigraphyContent();
+    waitForLayerWithDescriptions();
+    waitForLayerWithDescriptions();
 
     evaluateInput("name", "Test Stratigraphy (Clone)");
+    // Stratigraphy form will soon be redesigned
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
     evaluateSelect("qualityId", "good");
     evaluateInput("date", "2024-03-20");
     getElementByDataCy("isprimary-switch").should("not.be.checked");
@@ -116,6 +121,9 @@ describe("Tests for stratigraphy", () => {
       "cancel",
     );
     evaluateInput("name", "Test Stratigraphy (Clone)");
+    // Stratigraphy form will soon be redesigned
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
     evaluateSelect("qualityId", "good");
     evaluateInput("date", "2024-03-20");
     getElementByDataCy("isprimary-switch").should("not.be.checked");
