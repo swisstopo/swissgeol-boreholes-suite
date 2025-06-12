@@ -1,9 +1,4 @@
-import {
-  deleteItem,
-  exportItem,
-  saveWithSaveBar,
-  verifyNoUnsavedChanges,
-} from "../helpers/buttonHelpers.js";
+import { deleteItem, exportItem, saveWithSaveBar, verifyNoUnsavedChanges } from "../helpers/buttonHelpers.js";
 import {
   checkAllVisibleRows,
   checkRowWithIndex,
