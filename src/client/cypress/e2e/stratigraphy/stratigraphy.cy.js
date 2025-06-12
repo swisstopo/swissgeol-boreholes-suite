@@ -107,6 +107,9 @@ describe("Tests for stratigraphy", () => {
     waitForLayerWithDescriptions();
 
     evaluateInput("name", "Test Stratigraphy (Clone)");
+    // Stratigraphy form will soon be redesigned
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
     evaluateSelect("qualityId", "good");
     evaluateInput("date", "2024-03-20");
     getElementByDataCy("isprimary-switch").should("not.be.checked");
@@ -118,6 +121,9 @@ describe("Tests for stratigraphy", () => {
       "cancel",
     );
     evaluateInput("name", "Test Stratigraphy (Clone)");
+    // Stratigraphy form will soon be redesigned
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
     evaluateSelect("qualityId", "good");
     evaluateInput("date", "2024-03-20");
     getElementByDataCy("isprimary-switch").should("not.be.checked");
