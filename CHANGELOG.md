@@ -11,6 +11,7 @@
 - Administrators can now edit workgroup names on the settings page.
 - Show loading indicator when importing data.
 - Remove type from profile table.
+- Lithology, Lithostratigraphy and Chronostratigraphy are combined into one menu item.
 
 ### Fixed
 - Boreholes could not be exported in the _view_ environment.

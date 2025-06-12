@@ -59,7 +59,9 @@ describe("Tests for the lithostratigraphy editor.", () => {
 
     // open lithostratigraphy editor
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/stratigraphy/lithostratigraphy`);
+      cy.get("@stratigraphy_id").then(stratigraphyId => {
+        goToRouteAndAcceptTerms(`/${id}/stratigraphy/${stratigraphyId}#lithostratigraphy`);
+      });
     });
     cy.wait("@get-layers-by-profileId");
 

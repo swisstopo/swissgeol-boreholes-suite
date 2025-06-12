@@ -1,6 +1,13 @@
 import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { evaluateInput } from "../helpers/formHelpers";
-import { BoreholeTab, navigateInBorehole, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
+import {
+  BoreholeTab,
+  navigateInBorehole,
+  navigateInSidebar,
+  navigateInStratigraphy,
+  SidebarMenuItem,
+  StratigraphyTab,
+} from "../helpers/navigationHelpers.js";
 import { getElementByDataCy, loginAsViewer } from "../helpers/testHelpers";
 
 describe("Viewer tests", () => {
@@ -61,11 +68,10 @@ describe("Viewer tests", () => {
     navigateInBorehole(BoreholeTab.geometry);
     cy.contains("Top view").should("exist");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
     cy.contains("Ibrahim Bednar").should("exist");
-    navigateInSidebar(SidebarMenuItem.chronostratigraphy);
+    navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
     cy.contains("Phanerozoic").should("exist");
-    navigateInSidebar(SidebarMenuItem.lithostratigraphy);
+    navigateInStratigraphy(StratigraphyTab.lithostratigraphy);
     cy.contains("Surbrunnen-Flysch").should("exist");
     navigateInSidebar(SidebarMenuItem.completion);
     cy.contains("No completion available").should("exist");

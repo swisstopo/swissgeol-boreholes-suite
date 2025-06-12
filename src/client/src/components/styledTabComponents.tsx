@@ -50,3 +50,19 @@ export const BoreholeTab = styled(({ ...props }: BoreholeTabProps) => <Tab disab
     backgroundColor: "rgba(100, 95, 228, 0.32)",
   },
 }));
+
+export const TabsWithDivider = styled(Tabs)(({ theme }) => ({
+  borderBottom: `1px solid ${theme.palette.border.light}`,
+  "& .MuiTabs-indicator": {
+    transform: "translateY(1px)",
+  },
+}));
+
+export const TabWithContent = styled(({ ...props }: BoreholeTabProps) => <Tab disableRipple {...props} />, {
+  shouldForwardProp: prop => prop !== "hasContent",
+})(({ theme, hasContent }) => ({
+  color: hasContent === false ? theme.palette.buttonStates.outlined.disabled.color : theme.palette.secondary.main,
+  "&.Mui-focusVisible": {
+    backgroundColor: "rgba(100, 95, 228, 0.32)",
+  },
+}));
