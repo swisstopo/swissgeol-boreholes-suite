@@ -3,11 +3,15 @@ import { setInput, setSelect, toggleMultiSelect } from "../helpers/formHelpers.j
 import {
   BoreholeTab,
   isActiveMenuItem,
+  isActiveTab,
   isInactiveBoreholeTab,
+  isInactiveTab,
   isMenuItemWithContent,
   isMenuItemWithoutContent,
   navigateInSidebar,
+  navigateInStratigraphy,
   SidebarMenuItem,
+  StratigraphyTab,
 } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
@@ -44,11 +48,9 @@ describe("Test for the detail page side navigation.", () => {
     isInactiveBoreholeTab(BoreholeTab.sections, false);
     isInactiveBoreholeTab(BoreholeTab.geometry, false);
 
-    // Expand Stratigraphy menu and check its child items
+    // Check empty Stratigraphy
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    isMenuItemWithoutContent(SidebarMenuItem.lithology);
-    isMenuItemWithoutContent(SidebarMenuItem.chronostratigraphy);
-    isMenuItemWithoutContent(SidebarMenuItem.lithostratigraphy);
+    cy.contains("No stratigraphies available...");
 
     // Expand Hydrogeology menu and check its child items
     navigateInSidebar(SidebarMenuItem.hydrogeology);
@@ -58,8 +60,8 @@ describe("Test for the detail page side navigation.", () => {
     isMenuItemWithoutContent(SidebarMenuItem.hydrotest);
 
     // Add stratigraphy and Lithology
-    navigateInSidebar(SidebarMenuItem.lithology);
-    addItem("addStratigraphy");
+    navigateInSidebar(SidebarMenuItem.stratigraphy);
+    addItem("addEmptyStratigraphy");
     cy.wait("@stratigraphy_POST");
 
     getElementByDataCy("add-layer-icon").click();
@@ -74,14 +76,14 @@ describe("Test for the detail page side navigation.", () => {
     getElementByDataCy("styled-layer-0").should("contain", "50 m MD");
 
     // Add chronostratigraphy
-    navigateInSidebar(SidebarMenuItem.chronostratigraphy);
+    navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
     cy.wait("@chronostratigraphy_POST");
 
     // Add lithostratigraphy
-    navigateInSidebar(SidebarMenuItem.lithostratigraphy);
+    navigateInStratigraphy(StratigraphyTab.lithostratigraphy);
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
     getElementByDataCy("add-layer-button").click({ force: true });
@@ -103,9 +105,9 @@ describe("Test for the detail page side navigation.", () => {
     isActiveMenuItem(SidebarMenuItem.completion, true);
     isMenuItemWithContent(SidebarMenuItem.stratigraphy);
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    isMenuItemWithContent(SidebarMenuItem.lithology);
-    isMenuItemWithContent(SidebarMenuItem.chronostratigraphy);
-    isMenuItemWithContent(SidebarMenuItem.lithostratigraphy);
+    isActiveTab(StratigraphyTab.lithology + "-tab");
+    isInactiveTab(StratigraphyTab.chronostratigraphy + "-tab", true);
+    isInactiveTab(StratigraphyTab.lithostratigraphy + "-tab", true);
 
     navigateInSidebar(SidebarMenuItem.hydrogeology);
     navigateInSidebar(SidebarMenuItem.waterIngress);

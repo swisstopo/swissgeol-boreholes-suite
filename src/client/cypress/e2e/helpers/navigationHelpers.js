@@ -86,10 +86,24 @@ export const navigateInBorehole = (tab, promptSelector) => {
 export const navigateInStratigraphy = tab => {
   getElementByDataCy(`${tab}-tab`).click();
 
+  switch (tab) {
+    case StratigraphyTab.lithology:
+      getElementByDataCy("name-formInput").should("exist");
+      break;
+    case StratigraphyTab.chronostratigraphy:
+      cy.wait("@chronostratigraphy_GET");
+      break;
+    case StratigraphyTab.lithostratigraphy:
+      cy.wait("@lithostratigraphy_GET");
+      break;
+  }
+
   cy.location().should(location => {
     expect(location.pathname).to.match(/^\/\d+\/stratigraphy(\/|$)/);
     expect(location.hash).to.eq(`#${tab}`);
   });
+
+  getElementByDataCy(`${tab}-tab`).should("have.class", "Mui-selected");
 };
 
 const checkThatParentOpen = menuItem => {
@@ -153,8 +167,13 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
     case SidebarMenuItem.stratigraphy:
       isActiveMenuItem(menuItem);
       cy.location().should(location => {
-        expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/\d+$/);
-        expect(location.hash).to.eq("#lithology");
+        if (!location.hash) {
+          // No stratigraphy
+          expect(location.pathname).to.match(/^\/\d+\/stratigraphy$/);
+        } else {
+          expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/\d+$/);
+          expect(location.hash).to.eq("#lithology");
+        }
       });
       break;
     case SidebarMenuItem.completion:
