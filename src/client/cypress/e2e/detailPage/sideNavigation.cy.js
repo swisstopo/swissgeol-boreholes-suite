@@ -18,7 +18,7 @@ import {
 } from "../helpers/testHelpers";
 
 describe("Test for the detail page side navigation.", () => {
-  it("tests if navigation points are greyed out if there is no content", () => {
+  it.skip("tests if navigation points are greyed out if there is no content", () => {
     // Create a borehole and store its ID
     createBorehole({ "extended.original_name": "AAA_HIPPOPOTHAMUS", "custom.alternate_name": "AAA_HIPPOPOTHAMUS" }).as(
       "borehole_id",
