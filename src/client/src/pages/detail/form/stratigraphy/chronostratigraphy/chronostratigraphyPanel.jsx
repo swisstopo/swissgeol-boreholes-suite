@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
+import { useLithostratigraphies } from "../../../../../api/fetchApiV2.ts";
 import LithologyViewProfile from "../lithologyViewProfile.jsx";
 import LithostratigraphyViewProfile from "../lithostratigraphy/lithostratigraphyViewProfile.jsx";
 import NavigationChild from "../navigationChild.jsx";
@@ -9,11 +10,14 @@ import Scale from "../scale.jsx";
 import ChronostratigraphyEditProfile from "./chronostratigraphyEditProfile.jsx";
 
 const ChronostratigraphyPanel = ({ stratigraphyId }) => {
+  const { data: layers } = useLithostratigraphies(stratigraphyId);
   const { t } = useTranslation();
+
+  const minHeight = Math.max(500, layers?.length * 100 ?? 0);
 
   return (
     <NavigationContainer
-      sx={{ gap: "0.5em", minHeight: "800px" }}
+      sx={{ gap: "0.5em", minHeight: minHeight + "px" }}
       renderItems={(navState, setNavState) => {
         return (
           <>
