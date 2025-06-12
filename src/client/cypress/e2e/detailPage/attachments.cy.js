@@ -1,4 +1,9 @@
-import { deleteItem, exportItem, saveWithSaveBar } from "../helpers/buttonHelpers.js";
+import {
+  deleteItem,
+  exportItem,
+  saveWithSaveBar,
+  verifyNoUnsavedChanges,
+} from "../helpers/buttonHelpers.js";
 import {
   checkAllVisibleRows,
   checkRowWithIndex,
@@ -297,6 +302,32 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // reset test data
       deleteBorehole(boreholeId);
+    });
+  });
+
+  it("saves with ctrl s", () => {
+    createBorehole({ "extended.original_name": "HAPPYBOOK" }).as("borehole_id");
+    cy.get("@borehole_id").then(boreholeId => {
+      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      startBoreholeEditing();
+
+      navigateInSidebar(SidebarMenuItem.attachments);
+      getElementByDataCy("documents-tab").click();
+      cy.wait("@getAllDocuments");
+
+      getElementByDataCy("addDocument-button").should("be.visible").click();
+      cy.wait(["@document_POST", "@getAllDocuments"]);
+      verifyTableLength(1);
+      setTextInRow(0, "document-url", "https://localhost/document1.pdf");
+      setTextInRow(0, "document-description", "some description");
+      cy.get("body").type("{ctrl}s");
+      verifyNoUnsavedChanges();
+      verifyRowContains("https://localhost/document1.pdf", 0);
+      verifyRowContains("some description", 0);
+
+      stopBoreholeEditing();
+      verifyRowContains("https://localhost/document1.pdf", 0);
+      verifyRowContains("some description", 0);
     });
   });
 });
