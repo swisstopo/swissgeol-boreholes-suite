@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1230 - 2025-06-13
+
 ### Added
 - Added the documents tab to the borehole attachments.
 
