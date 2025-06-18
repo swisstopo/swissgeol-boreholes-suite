@@ -13,7 +13,7 @@ import {
   createCasing,
   createCompletion,
   createHydrotest,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   selectLanguage,
   startBoreholeEditing,
@@ -35,8 +35,8 @@ describe("Tests for the hydrotest editor.", () => {
       );
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
-      cy.wait(["@borehole", "@borehole_by_id"]);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
+      cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
 
@@ -113,8 +113,8 @@ describe("Tests for the hydrotest editor.", () => {
       .then(id => {
         createHydrotest(id, "2012-11-14T12:06Z", 15203157, [15203175], null, 0, 10);
         createHydrotest(id, "2012-11-14T12:07Z", 15203157, [15203174], null, 0, 12);
-        goToRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
-        cy.wait(["@borehole", "@borehole_by_id"]);
+        goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
+        cy.wait(["@borehole"]);
       });
     startBoreholeEditing();
 
@@ -145,8 +145,8 @@ describe("Tests for the hydrotest editor.", () => {
   it("checks for unsaved changes when switching between cards", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
-      cy.wait(["@borehole", "@borehole_by_id"]);
+      goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
+      cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
     cy.wait("@hydrotest_GET");

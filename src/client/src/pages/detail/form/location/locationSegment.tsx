@@ -4,7 +4,7 @@ import { Card, Grid, Stack } from "@mui/material";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
 import PointComponent from "../../../../components/map/pointComponent";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import CantonMunicipalitySegment from "./cantonMunicipalitySegment.tsx";
 import { referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.ts";
 import { Location, ReferenceSystemCode, ReferenceSystemKey } from "./coordinateSegmentInterfaces.ts";
@@ -20,7 +20,7 @@ interface LocationSegmentProps extends LocationBaseProps {
 const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationSegmentProps) => {
   const [currentLV95X, setCurrentLV95X] = useState(borehole.locationX ? Number(borehole.locationX) : null);
   const [currentLV95Y, setCurrentLV95Y] = useState(borehole.locationY ? Number(borehole.locationY) : null);
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const transformCoordinates = useCallback(async (referenceSystem: string, x: number, y: number) => {
     let apiUrl;
     if (referenceSystem === referenceSystems.LV95.name) {

@@ -55,6 +55,7 @@ class LegacyWorkflowForm extends React.Component {
 
   componentDidMount() {
     this.load(this.state.id);
+    this.props.dispatch(loadBorehole(this.props.id));
   }
 
   componentDidUpdate(prevProps) {
@@ -87,8 +88,8 @@ class LegacyWorkflowForm extends React.Component {
   }
 
   handleChange(value) {
-    const { t } = this.props;
-    if (this.props.borehole.data.lock === null || this.props.borehole.data.lock.id !== this.props.user.data.id) {
+    const { boreholeV2, t, user } = this.props;
+    if (boreholeV2.locked === null || boreholeV2.lockedById !== user.data.id) {
       this.context.showAlert(t("common:errorStartEditing"), "error");
     } else {
       this.props.updateWorkflow(value);
@@ -109,15 +110,15 @@ class LegacyWorkflowForm extends React.Component {
   }
 
   render() {
-    const { borehole, id, t, user, workflow, workflows } = this.props;
+    const { borehole: legacyBorehole, boreholeV2, id, t, user, workflow, workflows } = this.props;
 
     if (_.isNil(id)) {
       return null;
     }
 
     const filtered = workflows.data.filter(flow => flow.finished !== null);
-    const readOnly = borehole.data.lock === null || borehole.data.lock.id !== user.data.id;
-    if (borehole.isFetching || workflow.isFetching) {
+    const readOnly = boreholeV2.locked === null || boreholeV2.lockedById !== user.data.id;
+    if (legacyBorehole.isFetching || workflow.isFetching) {
       return;
     }
 
@@ -334,10 +335,10 @@ class LegacyWorkflowForm extends React.Component {
                                   <br />
                                   <DateText date={status[role].finished} hours />
                                 </span>
-                              ) : borehole.data.id !== null &&
+                              ) : legacyBorehole.data.id !== null &&
                                 user.data.workgroups
-                                  .find(workgroup => workgroup.id === borehole.data.workgroup.id)
-                                  ?.roles.indexOf(borehole.data.role) === -1 ? (
+                                  .find(workgroup => workgroup.id === legacyBorehole.data.workgroup.id)
+                                  ?.roles.indexOf(legacyBorehole.data.role) === -1 ? (
                                 <span
                                   style={{
                                     fontSize: "0.9em",
@@ -357,10 +358,10 @@ class LegacyWorkflowForm extends React.Component {
                             }}>
                             <>
                               {role !== "EDIT" &&
-                                borehole.data.id !== null &&
+                                legacyBorehole.data.id !== null &&
                                 user.data.workgroups
-                                  .find(workgroup => workgroup.id === borehole.data.workgroup.id)
-                                  ?.roles.indexOf(borehole.data.role) > -1 &&
+                                  .find(workgroup => workgroup.id === legacyBorehole.data.workgroup.id)
+                                  ?.roles.indexOf(legacyBorehole.data.role) > -1 &&
                                 (status[role].finished === null ||
                                   (status[role].finished && role === "PUBLIC" && current === null)) && (
                                   <Button
@@ -382,10 +383,10 @@ class LegacyWorkflowForm extends React.Component {
                                   </Button>
                                 )}
                               {status[role].finished === null &&
-                                borehole.data.id !== null &&
+                                legacyBorehole.data.id !== null &&
                                 user.data.workgroups
-                                  .find(workgroup => workgroup.id === borehole.data.workgroup.id)
-                                  ?.roles.indexOf(borehole.data.role) > -1 && (
+                                  .find(workgroup => workgroup.id === legacyBorehole.data.workgroup.id)
+                                  ?.roles.indexOf(legacyBorehole.data.role) > -1 && (
                                   <>
                                     {role !== "EDIT" && (
                                       <Button

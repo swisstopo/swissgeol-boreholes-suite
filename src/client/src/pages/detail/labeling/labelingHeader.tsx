@@ -6,7 +6,7 @@ import { FileImageIcon, FileTextIcon, Plus } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
-import { DetailContext } from "../detailContext.tsx";
+import { EditStateContext } from "../editStateContext.tsx";
 import { LabelingContext } from "./labelingContext.tsx";
 import { PanelTab } from "./labelingInterfaces.tsx";
 import { labelingButtonStyles } from "./labelingStyles.ts";
@@ -41,7 +41,7 @@ export const LabelingHeader: FC<{
   showSearch?: boolean;
 }> = ({ selectedAttachment, setSelectedAttachment, setActivePage, fileInputRef, files, showSearch }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const { panelTab, setPanelTab } = useContext(LabelingContext);
   const [search, setSearch] = useState("");
 

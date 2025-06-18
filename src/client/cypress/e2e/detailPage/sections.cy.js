@@ -4,7 +4,7 @@ import { BoreholeTab, navigateInBorehole } from "../helpers/navigationHelpers.js
 import {
   createBorehole,
   getElementByDataCy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -21,7 +21,7 @@ describe("Section crud tests", () => {
 
     // open section editor
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/borehole#sections`);
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole#sections`);
     });
 
     // start editing session

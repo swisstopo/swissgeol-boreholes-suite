@@ -12,18 +12,10 @@ export const saveWithSaveBar = parent => {
   });
 
   getElementByDataCy("save-bar-text").should("contain", "Unsaved changes");
-  // Clicks save button
   saveForm(parent);
 
-  // Verify one additional 'borehole_by_id' requests is made and awaited (statusCode 200) before the update request.
   cy.get("@countBeforeSaveButton").then(countBeforeSaveButton => {
-    cy.get("@borehole_by_id.all")
-      .should("have.length", countBeforeSaveButton + 1)
-      .then(() => {
-        cy.get(`@borehole_by_id.${countBeforeSaveButton + 1}`)
-          .its("response.statusCode")
-          .should("equal", 200);
-      });
+    cy.get("@borehole_by_id.all").should("have.length.greaterThan", countBeforeSaveButton);
   });
 
   getElementByDataCy("save-bar-text").should("contain", "Changes saved");

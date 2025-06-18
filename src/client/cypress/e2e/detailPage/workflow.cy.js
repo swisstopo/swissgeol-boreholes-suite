@@ -1,17 +1,17 @@
 import { evaluateSelect, setInput, setSelect } from "../helpers/formHelpers.js";
 import {
   getElementByDataCy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers.js";
 
 describe("Tests the publication workflow.", () => {
   it("Displays DEV workflow when feature flag is set", () => {
-    goToRouteAndAcceptTerms(`/1000036/status`);
+    goToDetailRouteAndAcceptTerms(`/1000036/status`);
     // displays legacy workflow form by default
     cy.contains("h4", "Publication workflow").should("exist");
-    goToRouteAndAcceptTerms(`/1000036/status?dev=true`);
+    goToDetailRouteAndAcceptTerms(`/1000036/status?dev=true`);
     cy.contains("h4", "Publication workflow").should("not.exist");
 
     getElementByDataCy("workflow-status-card").contains("h5", "Status").should("exist");
@@ -39,7 +39,7 @@ describe("Tests the publication workflow.", () => {
   });
 
   it("Can request review from users with controller privilege", () => {
-    goToRouteAndAcceptTerms(`/1000011/status?dev=true`);
+    goToDetailRouteAndAcceptTerms(`/1000011/status?dev=true`);
     startBoreholeEditing();
     getElementByDataCy("workflow-status-chip").should("contain", "Draft");
     // assert that the draft step is active

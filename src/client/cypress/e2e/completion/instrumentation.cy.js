@@ -5,7 +5,7 @@ import {
   createCasing,
   createCompletion,
   createInstrument,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -27,7 +27,7 @@ describe("Instrumentation crud tests", () => {
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/completion`);
+      goToDetailRouteAndAcceptTerms(`/${id}/completion`);
     });
 
     cy.wait("@completion_GET");

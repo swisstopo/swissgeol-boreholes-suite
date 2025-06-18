@@ -5,7 +5,7 @@ import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui
 import { detachFile, downloadFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces";
 import { formatDate } from "../../../../utils.ts";
-import { DetailContext } from "../../detailContext";
+import { EditStateContext } from "../../editStateContext";
 import { AttachmentContent } from "../attachmentsContent";
 import { useAttachments } from "../useAttachments.tsx";
 
@@ -15,7 +15,7 @@ interface ProfilesProps {
 
 export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
 
   const loadAttachments = useCallback(async () => {

@@ -78,12 +78,8 @@ export const setInput = (fieldName, value, parent) => {
  * @param {string} parent (optional) The parent of the form element.
  */
 export const evaluateInput = (fieldName, expectedValue, parent) => {
-  const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formInput"] input`;
-  cy.get(selector)
-    .filter((k, input) => {
-      return input.value === expectedValue;
-    })
-    .should("have.length", 1);
+  const selector = `${createBaseSelector(parent)}[data-cy="${fieldName}-formInput"] input`;
+  cy.get(selector).should("have.value", expectedValue);
 };
 
 /**
@@ -179,12 +175,7 @@ export const setYesNoSelect = (fieldName, option, expected, parent) => {
  */
 export const evaluateYesNoSelect = (fieldName, expectedValue, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
-  cy.get(selector).then($input => {
-    const actualValue = $input.val();
-    expect(actualValue, `Expected ${fieldName} to have value ${expectedValue} but got ${actualValue}`).to.eq(
-      expectedValue,
-    );
-  });
+  cy.get(selector).should("have.value", expectedValue, `Expected ${fieldName} to have value ${expectedValue}`);
 };
 
 /**
@@ -197,12 +188,7 @@ export const evaluateYesNoSelect = (fieldName, expectedValue, parent) => {
 export const evaluateSelect = (fieldName, expectedText, parent = null, editable = true) => {
   if (editable) {
     const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
-    cy.get(selector).then($input => {
-      const actualValue = $input.val();
-      expect(actualValue, `Expected ${fieldName} to have value ${expectedText} but got ${actualValue}`).to.eq(
-        expectedText,
-      );
-    });
+    cy.get(selector).should("have.value", expectedText, `Expected ${fieldName} to have value ${expectedText}`);
   } else if (!expectedText) {
     cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("be.empty");
   } else {

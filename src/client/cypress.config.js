@@ -29,9 +29,6 @@ export default defineConfig({
       on("before:browser:launch", (browser, launchOptions) => {
         //Optimize test execution for electron
         if (browser.name === "electron") {
-          launchOptions.env = launchOptions.env || {};
-          launchOptions.env.NODE_OPTIONS = "--max-old-space-size=4096";
-
           launchOptions.preferences = {
             ...(launchOptions.preferences || {}),
             webPreferences: {

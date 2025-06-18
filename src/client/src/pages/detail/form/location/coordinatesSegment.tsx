@@ -10,7 +10,7 @@ import {
 } from "../../../../components/form/formUtils.js";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import { useLabelingContext } from "../../labeling/labelingContext.tsx";
 import { Coordinate, ExtractionState } from "../../labeling/labelingInterfaces";
 import { boundingBox, referenceSystems } from "./coordinateSegmentConstants";
@@ -34,7 +34,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 }) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const { extractionObject, setExtractionObject, setExtractionState, extractionState } = useLabelingContext();
 
   // --- State variables ---

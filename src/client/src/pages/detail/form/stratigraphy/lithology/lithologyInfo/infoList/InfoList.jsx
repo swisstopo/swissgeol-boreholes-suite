@@ -10,14 +10,14 @@ import { DataCardButtonContainer } from "../../../../../../../components/dataCar
 import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../../../../../../../components/form/form";
 import { ensureDatetime } from "../../../../../../../components/form/formUtils";
 import { PromptContext } from "../../../../../../../components/prompt/promptContext";
-import { DetailContext } from "../../../../../detailContext";
+import { EditStateContext } from "../../../../../editStateContext.js";
 import { updateStratigraphyAttributes } from "../api/index.ts";
 
 const InfoList = ({ id, profileInfo, onUpdated }) => {
   const { t } = useTranslation();
   const formMethods = useForm({ mode: "all" });
   const { showPrompt } = useContext(PromptContext);
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
 
   useEffect(() => {
     formMethods.reset({

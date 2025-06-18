@@ -12,7 +12,7 @@ import {
 import {
   createBorehole,
   getElementByDataCy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   selectInputFile,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -25,7 +25,7 @@ describe("Test for the detail page side navigation.", () => {
     );
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();
     });
 

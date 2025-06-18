@@ -19,6 +19,7 @@ import {
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   getElementByDataCy,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -190,9 +191,15 @@ function resetUpdatedValues() {
 
 function clickOnLayerAndWaitForForm(number) {
   getElementByDataCy(`styled-layer-${number}`).click();
+  cy.wait("@get-layer-by-id");
   cy.get(".loading-indicator").should("not.exist");
   cy.get(".MuiCircularProgress-root").should("not.exist");
   getElementByDataCy("show-all-fields-switch").click();
+}
+
+function saveLayerForm() {
+  saveForm();
+  cy.wait(["@update-layer", "@get-layers-by-profileId", "@layer"]);
 }
 
 describe("Tests for the layer form.", () => {
@@ -244,14 +251,14 @@ describe("Tests for the layer form.", () => {
     clickOnNextPage();
     waitForTableData();
     clickOnRowWithText("Andres Miller");
+    cy.wait(["@borehole_by_id", "@borehole_by_id"]);
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.stratigraphy);
     navigateInSidebar(SidebarMenuItem.lithology);
     getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
     clickOnLayerAndWaitForForm("8");
     resetUpdatedValues();
-    saveForm();
-    cy.wait("@update-layer");
+    saveLayerForm();
     getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
     clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(true);
@@ -270,23 +277,21 @@ describe("Tests for the layer form.", () => {
 
     // change some inputs then save
     updateInputsForEachType();
-    saveForm();
-    cy.wait("@update-layer");
+    saveLayerForm();
     getElementByDataCy("styled-layer-9").should("contain", "marble, gravel, fine-medium-coarse");
     clickOnLayerAndWaitForForm("9");
     evaluateUpdatedFormState(true);
 
     // assert updated form values persist after saving
-    stopBoreholeEditing();
-    clickOnLayerAndWaitForForm("9");
+    stopBoreholeEditing(); // layer 9 stays open when editing is stopped
     evaluateUpdatedFormState(false);
 
     // reset form values
     startBoreholeEditing();
-    clickOnLayerAndWaitForForm("9");
     resetUpdatedValues();
     evaluateInitialFormState(true);
-    saveForm();
+    saveLayerForm();
+    getElementByDataCy("show-all-fields-switch").should("not.exist");
 
     // assert updated form values persist after saving
     stopBoreholeEditing();
@@ -373,6 +378,7 @@ describe("Tests for the layer form.", () => {
 
     // verify all inputs have been reset
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
+    cy.wait("@get-layer-by-id");
     multiSelectAttributes.forEach(attribute => {
       evaluateMultiSelect(attribute.value, []);
     });
@@ -382,9 +388,10 @@ describe("Tests for the layer form.", () => {
       toggleMultiSelect(attribute.value, attribute.dropdownPosition);
     });
 
-    saveForm();
+    saveLayerForm();
     getElementByDataCy("styled-layer-0").should("contain", "beige, dark brown");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
+    cy.wait("@get-layer-by-id");
 
     // remove some chips
     getElementByDataCy("remove-beige-chip").click();
@@ -395,11 +402,12 @@ describe("Tests for the layer form.", () => {
     multiSelectAttributes.forEach(attribute => {
       evaluateMultiSelect(attribute.value, attribute.updatedCodeValues);
     });
-    saveForm();
+    saveLayerForm();
     getElementByDataCy("styled-layer-0").should("contain", "dark brown");
     stopBoreholeEditing();
     getElementByDataCy("styled-layer-0").should("contain", "dark brown");
     getElementByDataCy("styled-layer-0").click();
+    cy.wait("@get-layer-by-id");
     // verify chips are still visible when not editing
     multiSelectAttributes.forEach(attribute => {
       evaluateMultiSelect(attribute.value, attribute.updatedCodeValues);
@@ -440,7 +448,7 @@ describe("Tests for the layer form.", () => {
   });
 
   it("saves zero values in number inputs", () => {
-    goToRouteAndAcceptTerms(`/1001947`);
+    goToDetailRouteAndAcceptTerms(`/1001947`);
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.stratigraphy);
     navigateInSidebar(SidebarMenuItem.lithology);
@@ -455,21 +463,18 @@ describe("Tests for the layer form.", () => {
     // change anything then save
     setSelect("grainSize1Id", 4);
     evaluateInitialDepthValues();
-    saveForm();
-    cy.wait("@update-layer");
+    saveLayerForm();
     clickOnLayerAndWaitForForm("0");
 
     evaluateInitialDepthValues();
     setInput("fromDepth", "1");
-    saveForm();
-    cy.wait("@update-layer");
+    saveLayerForm();
     clickOnLayerAndWaitForForm("0");
 
     evaluateInput("fromDepth", "1");
     evaluateInput("toDepth", "10");
     setInput("fromDepth", "0");
-    saveForm();
-    cy.wait("@update-layer");
+    saveLayerForm();
     clickOnLayerAndWaitForForm("0");
 
     evaluateInitialDepthValues();

@@ -1,11 +1,10 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
-import { deleteBorehole, lockBorehole, unlockBorehole } from "../../api-lib";
-import { BoreholeV2 } from "../../api/borehole.ts";
+import { BoreholeV2, useBoreholeMutations } from "../../api/borehole.ts";
+import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import {
   DeleteButton,
@@ -18,7 +17,7 @@ import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { formatDate } from "../../utils.ts";
-import { DetailContext, DetailContextProps } from "./detailContext.tsx";
+import { EditStateContext } from "./editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 interface DetailHeaderProps {
@@ -29,21 +28,25 @@ interface DetailHeaderProps {
 const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { data: currentUser } = useCurrentUser();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const { showPrompt } = useContext(PromptContext);
-  const { editingEnabled, setEditingEnabled } = useContext<DetailContextProps>(DetailContext);
+  const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);
   const { hasChanges, triggerReset } = useContext<SaveContextProps>(SaveContext);
   const auth = useAuth();
+  const {
+    update: { mutate: updateBorehole },
+    delete: { mutate: deleteBorehole },
+  } = useBoreholeMutations();
 
   const toggleEditing = (editing: boolean) => {
+    if (!currentUser) return;
+    borehole.workflow = null;
     if (!editing) {
-      // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
-      dispatch(unlockBorehole(borehole.id));
+      updateBorehole({ ...borehole, locked: null, lockedById: null });
     } else {
-      // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
-      dispatch(lockBorehole(borehole.id));
+      updateBorehole({ ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id });
     }
     setEditingEnabled(editing);
   };
@@ -93,8 +96,8 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
     ]);
   };
 
-  const handleDelete = async () => {
-    await deleteBorehole(borehole.id);
+  const handleDelete = () => {
+    deleteBorehole(borehole.id);
     navigate("/");
   };
 
@@ -109,13 +112,14 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
     navigate("/");
   };
 
+  if (!borehole) return;
   // get unfinished or latest workflow
   const workflows = borehole?.workflows.sort((a, b) => new Date(b.finished).getTime() - new Date(a.finished).getTime());
   const currentWorkflow = workflows?.find(workflow => workflow.finished == null) || workflows[0];
   const hasDevFlag = searchParams.get("dev") === "true";
   const statusLabel = hasDevFlag
     ? t(`statuses.${borehole.workflow?.status}`)
-    : t(`status${currentWorkflow.role.toLowerCase()}`);
+    : t(`status${currentWorkflow?.role.toLowerCase()}`);
 
   return (
     <DetailHeaderStack direction="row" alignItems="center">
@@ -133,8 +137,8 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
           <Chip
             data-cy="workflow-status-chip"
             label={statusLabel}
-            color={currentWorkflow.finished != null ? "success" : "warning"}
-            icon={currentWorkflow.finished != null ? <Check /> : <div />}
+            color={currentWorkflow?.finished != null ? "success" : "warning"}
+            icon={currentWorkflow?.finished != null ? <Check /> : <div />}
           />
         )}
       </Stack>

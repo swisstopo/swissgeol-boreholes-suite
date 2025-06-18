@@ -14,7 +14,7 @@
 - Show loading indicator when importing data.
 - Select input fields now filter and display only the options that match the user's input.
 - Remove type from profile table.
-
+- 
 ### Fixed
 - Boreholes could not be exported in the _view_ environment.
 - `Boreholes.swissgeol.ch ID` was not listed in the location type ID filter.

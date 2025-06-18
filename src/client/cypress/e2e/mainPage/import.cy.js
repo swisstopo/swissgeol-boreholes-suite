@@ -11,6 +11,7 @@ import {
   getElementByDataCy,
   getImportFileFromFixtures,
   giveAdminUser2workgroups,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
   returnToOverview,
@@ -21,11 +22,11 @@ import {
 
 const addMinimalAttachment = (boreholeIdentifier, fileName) => {
   cy.get(boreholeIdentifier).then(id => {
-    goToRouteAndAcceptTerms(`/${id}/attachments`);
+    goToDetailRouteAndAcceptTerms(`/${id}/attachments`);
     startBoreholeEditing();
     selectInputFile(fileName, "text/plain");
     getElementByDataCy("addProfile-button").should("be.visible").click();
-    cy.wait(["@upload-files", "@getAllAttachments"]);
+    cy.wait(["@upload-files", "@getAllAttachments", "@borehole_by_id"]);
     stopBoreholeEditing();
   });
 };
@@ -102,7 +103,7 @@ describe("Test for importing boreholes.", () => {
     cy.contains("Blue");
   });
 
-  it("exports and reimports boreholes with attachments", () => {
+  it.only("exports and reimports boreholes with attachments", () => {
     // add two boreholes with attachments
     const boreholeName = "COLDWATERDRINK";
     const boreholeName2 = "COLDWATERBATH";

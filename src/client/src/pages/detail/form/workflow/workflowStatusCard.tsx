@@ -18,7 +18,7 @@ import { Role } from "../../../../api/apiInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { useUserRoleForBorehole } from "../../../../hooks/useUserRoleForBorehole.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import { RequestReviewDialog } from "./requestReviewDialog.tsx";
 import { WorkflowCard } from "./styledWorkflowComponents.tsx";
 import { useWorkflow, WorkflowStatus } from "./workflow.ts";
@@ -58,7 +58,7 @@ export const WorkflowStatusCard = () => {
   const { t } = useTranslation();
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: workflow } = useWorkflow(parseInt(boreholeId));
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const [open, setOpen] = useState<boolean>(false);
   const activeStep = steps.findIndex(step => step === workflow?.status);
   const { hasUserPrivilege } = useUserRoleForBorehole();

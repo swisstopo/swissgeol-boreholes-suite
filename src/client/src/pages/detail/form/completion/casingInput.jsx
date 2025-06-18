@@ -3,6 +3,7 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
+import { useReloadBoreholes } from "../../../../api/borehole.ts";
 import { addCasing, updateCasing } from "../../../../api/fetchApiV2.js";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
@@ -14,7 +15,6 @@ import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../
 import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.js";
-import { DetailContext } from "../../detailContext.js";
 import { extractCasingDepth } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { prepareEntityDataForSubmit } from "./completionUtils.js";
@@ -23,7 +23,8 @@ const CasingInput = props => {
   const { t } = useTranslation();
   const { item, parentId } = props;
   const { triggerReload } = useContext(DataCardContext);
-  const { reloadBorehole } = useContext(DetailContext);
+  const reloadBoreholes = useReloadBoreholes();
+
   useBlockNavigation();
   const formMethods = useForm({
     mode: "all",
@@ -71,7 +72,7 @@ const CasingInput = props => {
         ...data,
       }).then(() => {
         triggerReload();
-        reloadBorehole();
+        reloadBoreholes();
       });
     } else {
       updateCasing({

@@ -13,8 +13,8 @@ import HeaderComponent from "./components/header/headerComponent";
 import { Prompt } from "./components/prompt/prompt";
 import { PromptProvider } from "./components/prompt/promptContext";
 import { AppBox } from "./components/styledComponents";
-import { DetailProvider } from "./pages/detail/detailContext";
 import { DetailPage } from "./pages/detail/detailPage";
+import { EditStateProvider } from "./pages/detail/editStateContext.tsx";
 import { LabelingProvider } from "./pages/detail/labeling/labelingContext";
 import { SaveProvider } from "./pages/detail/saveContext.tsx";
 import { OverviewProvider } from "./pages/overview/overViewContext";
@@ -36,11 +36,11 @@ const router = createBrowserRouter([
     path: "/:id/*",
     element: (
       <LabelingProvider>
-        <DetailProvider>
+        <EditStateProvider>
           <SaveProvider>
             <DetailPage />
           </SaveProvider>
-        </DetailProvider>
+        </EditStateProvider>
       </LabelingProvider>
     ),
   },

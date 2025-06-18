@@ -5,6 +5,7 @@ import {
   createLithologyLayer,
   createStratigraphy,
   getElementByDataCy,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   returnToOverview,
   startBoreholeEditing,
@@ -195,7 +196,7 @@ describe("Search filter tests", () => {
   it("filters boreholes by status", () => {
     createBorehole({ "extended.original_name": "Filter by status" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/status`);
+      goToDetailRouteAndAcceptTerms(`/${id}/status`);
       startBoreholeEditing();
       getElementByDataCy("workflow_submit").click();
       getElementByDataCy("workflow_dialog_submit").click();

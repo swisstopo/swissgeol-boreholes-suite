@@ -2,7 +2,7 @@ import { addItem, cancelEditing, saveForm, startEditing } from "./helpers/button
 import { evaluateDisplayValue, evaluateTextarea, setInput, setSelect } from "./helpers/formHelpers";
 import {
   createBorehole,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
   stopBoreholeEditing,
@@ -12,8 +12,8 @@ describe("Tests for the data cards in the editor.", () => {
   it("resets datacards when stop editing or cancel", () => {
     createBorehole({ "extended.original_name": "FISHTRUCK" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
-      cy.wait(["@borehole", "@borehole_by_id"]);
+      goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
+      cy.wait(["@borehole"]);
     });
 
     startBoreholeEditing();
@@ -51,8 +51,8 @@ describe("Tests for the data cards in the editor.", () => {
   it("checks for unsaved changes when switching between cards", () => {
     createBorehole({ "extended.original_name": "FROGPHONE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
-      cy.wait(["@borehole", "@borehole_by_id"]);
+      goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
+      cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
     cy.wait("@wateringress_GET");

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
+import { useReloadBoreholes } from "../../../../api/borehole.ts";
 import {
   addCompletion,
   copyCompletion,
@@ -16,7 +17,7 @@ import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import CompletionContent from "./completionContent.jsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";
 import CompletionHeaderInput from "./completionHeaderInput.jsx";
@@ -24,7 +25,7 @@ import CompletionHeaderInput from "./completionHeaderInput.jsx";
 const Completion = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { showPrompt } = useContext(PromptContext);
-  const { reloadBorehole, editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const { id: boreholeId } = useRequiredParams();
   const { completionId } = useParams();
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ const Completion = () => {
   });
   const [checkContentDirty, setCheckContentDirty] = useState(false);
   const [completionToBeSaved, setCompletionToBeSaved] = useState(null);
+  const reloadBoreholes = useReloadBoreholes();
 
   const resetState = () => {
     setState({
@@ -185,7 +187,7 @@ const Completion = () => {
         if (!preventReload) {
           loadData();
         }
-        reloadBorehole();
+        reloadBoreholes();
       });
     } else {
       updateCompletion(completion).then(() => {
@@ -245,7 +247,7 @@ const Completion = () => {
     setState({ ...state, switchTabTo: newTabIndex });
     deleteCompletion(state.selected.id).then(() => {
       loadData();
-      reloadBorehole();
+      reloadBoreholes();
     });
   };
 

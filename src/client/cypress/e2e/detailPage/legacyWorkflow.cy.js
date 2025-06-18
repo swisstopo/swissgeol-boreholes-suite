@@ -1,4 +1,10 @@
-import { createBorehole, goToRouteAndAcceptTerms, handlePrompt, startBoreholeEditing } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  goToDetailRouteAndAcceptTerms,
+  handlePrompt,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 
 const verifyColorForStatus = (status, color) => {
   cy.get(`[data-cy="workflow_status_color_${status}"]`).should("have.css", "background-color", color);
@@ -28,7 +34,7 @@ describe("Tests the legacy publication workflow.", () => {
   it("Publishes a borehole without rejections", () => {
     createBorehole({ "extended.original_name": "Borehole to publish" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/status`);
+      goToDetailRouteAndAcceptTerms(`/${id}/status`);
     });
 
     const orange = "rgb(234, 88, 12)";
@@ -51,6 +57,7 @@ describe("Tests the legacy publication workflow.", () => {
     verifyColorForStatus("control", orange);
 
     // Restart workflow
+    stopBoreholeEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_restart"]').click();
     cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
@@ -62,6 +69,7 @@ describe("Tests the legacy publication workflow.", () => {
     verifyColorForStatus("control", red);
 
     // Submit for review
+    stopBoreholeEditing();
     startBoreholeEditing();
     cy.get("[data-cy=workflow_submit]").click();
     cy.get("[data-cy=workflow_dialog_submit]").click();
@@ -73,6 +81,7 @@ describe("Tests the legacy publication workflow.", () => {
     verifyColorForStatus("control", orange);
 
     // Submit for validation
+    stopBoreholeEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -85,6 +94,7 @@ describe("Tests the legacy publication workflow.", () => {
     verifyColorForStatus("valid", orange);
 
     // Submit for publication
+    stopBoreholeEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -98,6 +108,7 @@ describe("Tests the legacy publication workflow.", () => {
     verifyColorForStatus("public", orange);
 
     // Publish
+    stopBoreholeEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
@@ -106,6 +117,7 @@ describe("Tests the legacy publication workflow.", () => {
     verifyColorForStatus("public", green);
 
     // Restart workflow
+    stopBoreholeEditing();
     startBoreholeEditing();
     cy.get('[data-cy="workflow_restart"]').click();
     cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
@@ -120,7 +132,7 @@ describe("Tests the legacy publication workflow.", () => {
   it("Deletes a borehole if its publication status is not Change in Progress", () => {
     createBorehole({ "extended.original_name": "Borehole in review to delete" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/status`);
+      goToDetailRouteAndAcceptTerms(`/${id}/status`);
     });
 
     // Submit for review
@@ -130,9 +142,9 @@ describe("Tests the legacy publication workflow.", () => {
     cy.wait("@workflow_edit_list");
 
     // Delete
+    stopBoreholeEditing();
     startBoreholeEditing();
     cy.get("[data-cy=deleteborehole-button]").click();
     handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "delete");
-    cy.wait(["@edit_list", "@borehole"]);
   });
 });

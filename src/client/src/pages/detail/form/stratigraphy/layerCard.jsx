@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { NumericFormatWithThousandSeparator } from "../../../../components/form/numericFormatWithThousandSeparator.js";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 
 const State = Object.freeze({
   EDITING: Symbol("Editing"),
@@ -43,7 +43,7 @@ const LayerCard = ({
   const [toDepth, setToDepth] = useState(null);
   const [selection, setSelection] = useState(null);
   const [cardState, setCardState] = useState(null);
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
 
   const minPixelHeightForDepthLabels = 65;
 
