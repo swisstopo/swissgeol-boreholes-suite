@@ -103,7 +103,7 @@ describe("Test for importing boreholes.", () => {
     cy.contains("Blue");
   });
 
-  it.only("exports and reimports boreholes with attachments", () => {
+  it("exports and reimports boreholes with attachments", () => {
     // add two boreholes with attachments
     const boreholeName = "COLDWATERDRINK";
     const boreholeName2 = "COLDWATERBATH";
