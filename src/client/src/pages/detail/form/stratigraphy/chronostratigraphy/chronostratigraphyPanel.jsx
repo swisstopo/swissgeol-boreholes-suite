@@ -13,7 +13,8 @@ const ChronostratigraphyPanel = ({ stratigraphyId }) => {
   const { data: layers } = useLithostratigraphies(stratigraphyId);
   const { t } = useTranslation();
 
-  const minHeight = Math.max(500, layers?.length * 100 ?? 0);
+  const layerCount = layers?.length ?? 0;
+  const minHeight = Math.max(500, (layerCount + 1) * 150);
 
   return (
     <NavigationContainer
