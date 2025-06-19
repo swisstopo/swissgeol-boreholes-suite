@@ -198,7 +198,6 @@ export const goToRouteAndAcceptTerms = route => {
 /**
  * Login into the application as admin.
  */
-
 export const loginAsAdmin = () => {
   login("admin");
   cy.intercept("/api/v1/user", {
