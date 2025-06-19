@@ -114,6 +114,8 @@ describe("Test for the detail page side navigation.", () => {
       "@backfill_by_completion_GET",
     ]);
 
+    cy.get(".MuiCircularProgress-root").should("not.exist");
+
     // After adding completion, borehole and with it the side navigation should be updated
     isActiveMenuItem(SidebarMenuItem.completion, true);
     isMenuItemWithContent(SidebarMenuItem.stratigraphy);
