@@ -3,6 +3,7 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
+import { useReloadBoreholes } from "../../../../../api/borehole.ts";
 import { AddButton } from "../../../../../components/buttons/buttons.tsx";
 import { useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext.tsx";
@@ -14,7 +15,6 @@ import { parseFloatWithThousandsSeparator } from "../../../../../components/form
 import { useFormDirtyChanges } from "../../../../../components/form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { useBlockNavigation } from "../../../../../hooks/useBlockNavigation.tsx";
-import { DetailContext } from "../../../detailContext.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
@@ -30,9 +30,9 @@ import {
 export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, parentId }) => {
   const { t } = useTranslation();
   const { triggerReload } = useContext(DataCardContext);
-  const { reloadBorehole } = useContext(DetailContext);
   useBlockNavigation();
   const codelists = useCodelists();
+  const reloadBoreholes = useReloadBoreholes();
 
   const formMethods = useForm<FieldMeasurement>({
     mode: "all",
@@ -56,7 +56,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
         ...data,
       }).then(() => {
         triggerReload();
-        reloadBorehole();
+        reloadBoreholes();
       });
     } else {
       updateFieldMeasurement({

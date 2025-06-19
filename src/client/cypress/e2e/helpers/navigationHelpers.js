@@ -151,6 +151,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/lithology$/);
       });
+      cy.get(".MuiCircularProgress-root").should("not.exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.chronostratigraphy:
@@ -176,6 +177,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/completion$/);
       });
+      cy.get(".MuiCircularProgress-root").should("not.exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.hydrogeology:

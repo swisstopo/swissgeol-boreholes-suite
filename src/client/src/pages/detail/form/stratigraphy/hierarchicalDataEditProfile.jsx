@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useCodelistSchema } from "../../../../components/codelist.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import LayerCard from "./layerCard.jsx";
 import LayerGap from "./layerGap.jsx";
 import NavigationChild from "./navigationChild.jsx";
@@ -42,7 +42,7 @@ const HierarchicalDataEditProfile = ({
   const [id] = useState(Math.random().toString(36).substring(2, 10));
   const [options, setOptions] = useState(null);
   const [header, setHeader] = useState(headerLabels.map(h => ({ title: h, isVisible: true })));
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
 
   const { data: schemaData } = useCodelistSchema(codelistSchemaName);
 

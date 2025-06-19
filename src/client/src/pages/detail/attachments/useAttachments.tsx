@@ -5,8 +5,9 @@ import { GridColumnHeaderParams, GridRenderCellParams, GridRowId } from "@mui/x-
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
 import { RefObject } from "@mui/x-internals/types";
 import { CheckIcon } from "lucide-react";
+import { useReloadBoreholes } from "../../../api/borehole.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
-import { DetailContext } from "../detailContext.tsx";
+import { EditStateContext } from "../editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "../saveContext.tsx";
 
 export interface AttachmentWithPublicState {
@@ -31,10 +32,11 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
   exportAttachments,
 }: UseAttachmentsProps<T>) => {
   const { t } = useTranslation();
-  const { editingEnabled, reloadBorehole } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } =
     useContext<SaveContextProps>(SaveContext);
   const { showAlert } = useContext(AlertContext);
+  const reloadBoreholes = useReloadBoreholes();
 
   const [rows, setRows] = useState<T[]>();
   const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, T>>(new Map());
@@ -55,13 +57,13 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
         setIsLoading(true);
         await addAttachment(file);
         await onLoad();
-        reloadBorehole();
+        reloadBoreholes();
       } catch (error) {
         showAlert(t((error as Error).message), "error");
         setIsLoading(false);
       }
     },
-    [addAttachment, onLoad, reloadBorehole, showAlert, t],
+    [addAttachment, onLoad, reloadBoreholes, showAlert, t],
   );
 
   const removeCellFocus = useCallback(() => {
@@ -87,8 +89,8 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
     const ids = Array.from(apiRef.current.getSelectedRows().keys()).map(id => Number(id));
     await deleteAttachments(ids);
     await onLoad();
-    reloadBorehole();
-  }, [apiRef, deleteAttachments, onLoad, reloadBorehole]);
+    reloadBoreholes();
+  }, [apiRef, deleteAttachments, onLoad, reloadBoreholes]);
 
   const onExport = useCallback(async () => {
     setIsLoading(true);

@@ -14,6 +14,7 @@ import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers
 import {
   createBorehole,
   getElementByDataCy,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -36,6 +37,7 @@ describe("Test for the borehole form.", () => {
     goToRouteAndAcceptTerms(`/`);
     // create boreholes
     newEditableBorehole().as("borehole_id");
+    getElementByDataCy("save-bar").should("be.visible");
 
     // fills and evaluates all mui dropdowns on location tab (identifiers are tested separately)
     setSelect("restrictionId", 2);
@@ -96,8 +98,12 @@ describe("Test for the borehole form.", () => {
   it("Fills all inputs on borehole tab and saves", () => {
     createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
+      cy.wait("@borehole_by_id");
+      evaluateInput("totalDepth", "");
+      getElementByDataCy("save-bar").should("not.exist");
       startBoreholeEditing();
+      getElementByDataCy("save-bar").should("be.visible");
 
       setSelect("purposeId", 1);
       setSelect("typeId", 1);
@@ -130,7 +136,7 @@ describe("Test for the borehole form.", () => {
   it("Updates topbedrock intersected when top bedrock values change", () => {
     createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
 
       // updated top bedrock intersected when top bedrock values change
@@ -167,8 +173,12 @@ describe("Test for the borehole form.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
+      cy.wait(["@borehole_by_id"]);
+      cy.location().should(location => {
+        expect(location.hash).to.eq("#general");
+      });
       evaluateYesNoSelect("topBedrockIntersected", "Not specified");
       setInput("totalDepth", 700);
       setInput("topBedrockFreshMd", 0.60224);
@@ -242,8 +252,8 @@ describe("Test for the borehole form.", () => {
     createBorehole({ "extended.original_name": "LSENALZE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
-      goToRouteAndAcceptTerms(`/${id}/borehole`);
-      cy.wait(["@borehole", "@borehole_by_id"]);
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
+      cy.wait(["@borehole"]);
     });
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
@@ -277,7 +287,7 @@ describe("Test for the borehole form.", () => {
       reference_elevation: 0.0,
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/location`);
+      goToDetailRouteAndAcceptTerms(`/${id}/location`);
       evaluateInput("elevationZ", "0");
       evaluateInput("referenceElevation", "0");
 
@@ -296,7 +306,7 @@ describe("Test for the borehole form.", () => {
   it("Resets borehole form values on reset button click", () => {
     createBorehole({ "extended.original_name": "AAA_EEL", "custom.alternate_name": "AAA_EEL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
       setInput("totalDepth", 1234);
       setInput("topBedrockFreshMd", 5678);
@@ -368,7 +378,7 @@ describe("Test for the borehole form.", () => {
   it("verifies textfield border color for editing enabled or disabled", () => {
     createBorehole({ "extended.original_name": "AAA_EEL", "custom.alternate_name": "AAA_EEL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       cy.get('[data-cy="topBedrockWeatheredMd-formInput"] fieldset').should(
         "have.css",
         "border-color",
@@ -402,7 +412,7 @@ describe("Test for the borehole form.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       ensureEditingDisabled();
       startBoreholeEditing();
       ensureEditingEnabled();

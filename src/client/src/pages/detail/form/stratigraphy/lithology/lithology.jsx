@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { CircularProgress, Stack } from "@mui/material";
 import { theme } from "../../../../../AppTheme";
 import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
-import { FullPageCentered } from "../../../../../components/styledComponents.js";
+import { FullPageCentered } from "../../../../../components/styledComponents.ts";
+import { EditStateContext } from "../../../editStateContext.tsx";
 import { stratigraphyData } from "./data/stratigraphydata.js";
 import LithologyAttributes from "./lithologyAttributes";
 import ProfileHeader from "./lithologyHeader";
@@ -12,12 +12,7 @@ import ProfileLayers from "./lithologyLayers";
 import * as Styled from "./styles.js";
 
 const Lithology = () => {
-  const { user, borehole } = useSelector(state => ({
-    borehole: state.core_borehole,
-    user: state.core_user,
-  }));
-
-  const [isEditable, setIsEditable] = useState(false);
+  const { editingEnabled } = useContext(EditStateContext);
   const [selectedStratigraphy, setSelectedStratigraphy] = useState(null);
   const [selectedLayer, setSelectedLayer] = useState(null);
   const [reloadLayer, setReloadLayer] = useState(0);
@@ -55,16 +50,9 @@ const Lithology = () => {
   };
 
   useEffect(() => {
-    if (
-      !(borehole?.data?.lock === null || borehole?.data?.lock.id !== user?.data?.id || borehole?.data?.role !== "EDIT")
-    ) {
-      setIsEditable(true);
-    } else {
-      setIsEditable(false);
-    }
     setAttributesBasedKind(stratigraphyData);
     onUpdated("newAttribute");
-  }, [setIsEditable, borehole, user]);
+  }, []);
 
   const set = useCallback(
     e => {
@@ -88,18 +76,13 @@ const Lithology = () => {
         backgroundColor: theme.palette.background.default,
         border: `1px solid ${theme.palette.border.light}`,
       }}>
-      {borehole.data.id && (
-        <ProfileHeader
-          boreholeID={borehole.data.id}
-          isEditable={isEditable}
-          reloadHeader={reloadHeader}
-          selectedStratigraphy={selectedStratigraphy}
-          setSelectedStratigraphy={set}
-          setSelectedStratigraphyNull={setSelectedStratigraphyNull}
-          setIsLoadingData={setIsLoadingData}
-        />
-      )}
-
+      <ProfileHeader
+        reloadHeader={reloadHeader}
+        selectedStratigraphy={selectedStratigraphy}
+        setSelectedStratigraphy={set}
+        setSelectedStratigraphyNull={setSelectedStratigraphyNull}
+        setIsLoadingData={setIsLoadingData}
+      />
       {isLoadingData && (
         <FullPageCentered>
           <CircularProgress />
@@ -108,7 +91,7 @@ const Lithology = () => {
 
       {!isLoadingData && !selectedStratigraphy && (
         <Styled.Empty data-cy="stratigraphy-message">
-          <TranslationText id={borehole.data.lock ? "msgAddStratigraphy" : "msgStratigraphyEmpty"} />
+          <TranslationText id={editingEnabled ? "msgAddStratigraphy" : "msgStratigraphyEmpty"} />
         </Styled.Empty>
       )}
 
@@ -125,7 +108,7 @@ const Lithology = () => {
             <ProfileLayers
               data={{
                 selectedStratigraphyID: selectedStratigraphy ? selectedStratigraphy.id : null,
-                isEditable,
+                isEditable: editingEnabled,
                 selectedLayer,
                 setSelectedLayer: e => {
                   setSelectedLayer(e);
@@ -144,7 +127,7 @@ const Lithology = () => {
                 setSelectedLayer={setSelectedLayer}
                 data={{
                   selectedStratigraphyID: selectedStratigraphy?.id,
-                  isEditable,
+                  isEditable: editingEnabled,
                   onUpdated,
                   reloadAttribute,
                   layerAttributes: attributesBasedKind?.profileAttribute,

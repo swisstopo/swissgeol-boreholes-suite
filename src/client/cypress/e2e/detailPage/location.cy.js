@@ -19,6 +19,7 @@ import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers
 import {
   createBorehole,
   getElementByDataCy,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -60,7 +61,7 @@ describe("Tests for 'Location' edit page.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
 
       evaluateInput("originalName", "PHOTOSQUIRREL");
       evaluateInput("name", "PHOTOSQUIRREL");
@@ -104,7 +105,7 @@ describe("Tests for 'Location' edit page.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
 
       evaluateInput("originalName", "PHOTOSQUIRREL");
       evaluateInput("name", "PHOTOMOUSE");
@@ -122,7 +123,7 @@ describe("Tests for 'Location' edit page.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();
 
       verifyNoUnsavedChanges();

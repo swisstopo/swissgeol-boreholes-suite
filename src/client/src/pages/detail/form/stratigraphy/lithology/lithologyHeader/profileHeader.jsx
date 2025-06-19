@@ -1,13 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Box, Stack } from "@mui/material";
 import { fetchStratigraphyByBoreholeId } from "../../../../../../api/fetchApiV2.ts";
 import { AddButton } from "../../../../../../components/buttons/buttons";
+import { useRequiredParams } from "../../../../../../hooks/useRequiredParams.js";
+import { EditStateContext } from "../../../../editStateContext.tsx";
 import { createNewStratigraphy } from "./api";
 import ProfileHeaderList from "./profileHeaderList";
 
 const ProfileHeader = props => {
-  const { boreholeID, isEditable, reloadHeader, selectedStratigraphy, setSelectedStratigraphy, setIsLoadingData } =
-    props;
+  const { editingEnabled } = useContext(EditStateContext);
+  const { id: boreholeId } = useRequiredParams();
+  const { reloadHeader, selectedStratigraphy, setSelectedStratigraphy, setIsLoadingData } = props;
   const [profiles, setProfiles] = useState([]);
 
   const setStratigraphy = useCallback(
@@ -39,14 +42,14 @@ const ProfileHeader = props => {
   );
 
   useEffect(() => {
-    if (boreholeID) {
-      setData(boreholeID);
+    if (boreholeId) {
+      setData(boreholeId);
     }
-  }, [boreholeID, reloadHeader, setData]);
+  }, [boreholeId, reloadHeader, setData]);
 
   const createStratigraphy = () => {
-    createNewStratigraphy(boreholeID).then(data => {
-      if (data) setData(boreholeID);
+    createNewStratigraphy(boreholeId).then(data => {
+      if (data) setData(boreholeId);
     });
   };
 
@@ -57,7 +60,7 @@ const ProfileHeader = props => {
         selectedStratigraphy={selectedStratigraphy}
         setSelectedStratigraphy={setStratigraphy}
       />
-      {isEditable && (
+      {editingEnabled && (
         <Box sx={{ marginLeft: "auto" }}>
           <AddButton label={"addStratigraphy"} onClick={createStratigraphy} />
         </Box>

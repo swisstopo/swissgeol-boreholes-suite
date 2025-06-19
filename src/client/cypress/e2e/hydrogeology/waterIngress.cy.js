@@ -6,7 +6,7 @@ import {
   createCasing,
   createCompletion,
   createWateringress,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   selectLanguage,
   startBoreholeEditing,
@@ -29,7 +29,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
     });
 
     // start editing session
@@ -77,7 +77,7 @@ describe("Tests for the wateringress editor.", () => {
     cy.get("@borehole_id").then(id => {
       createWateringress(id, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
       createWateringress(id, "2012-11-14T12:07Z", 15203157, 15203162, null, 0, 12);
-      goToRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
+      goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
     });
     startBoreholeEditing();
 
@@ -110,7 +110,7 @@ describe("Tests for the wateringress editor.", () => {
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
+      goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
       startBoreholeEditing();
 
       // Create water ingress and check states of depth inputs

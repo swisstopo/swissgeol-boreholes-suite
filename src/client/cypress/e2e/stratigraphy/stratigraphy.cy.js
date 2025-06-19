@@ -4,7 +4,7 @@ import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/f
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   getElementByDataCy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
   stopBoreholeEditing,
@@ -40,7 +40,7 @@ describe("Tests for stratigraphy", () => {
     }
 
     // Navigate to borehole
-    goToRouteAndAcceptTerms("/1002057");
+    goToDetailRouteAndAcceptTerms("/1002057");
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.stratigraphy);
     navigateInSidebar(SidebarMenuItem.lithology);

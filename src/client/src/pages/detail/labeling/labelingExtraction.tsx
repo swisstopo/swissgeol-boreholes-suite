@@ -10,7 +10,7 @@ import {
 } from "../../../api/file/file.ts";
 import { theme } from "../../../AppTheme.ts";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
-import { DetailContext } from "../detailContext.tsx";
+import { EditStateContext } from "../editStateContext.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 import { ExtractionBoundingBox, ExtractionRequest, ExtractionState } from "./labelingInterfaces.tsx";
@@ -43,7 +43,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   const [pageBoundingBoxes, setPageBoundingBoxes] = useState<ExtractionBoundingBox[]>([]);
   const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
 
   const setTextToClipboard = useCallback(
     async (text: string) => {

@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
-import { DetailContext } from "../../pages/detail/detailContext.tsx";
+import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FieldMeasurement } from "../../pages/detail/form/hydrogeology/fieldMeasurement/FieldMeasurement.ts";
 import { GroundwaterLevelMeasurement } from "../../pages/detail/form/hydrogeology/groundwaterLevelMeasurement/GroundwaterLevelMeasurement.ts";
 import { Hydrotest } from "../../pages/detail/form/hydrogeology/hydrotest/Hydrotest.ts";
@@ -62,7 +62,7 @@ export const DataCards = <T extends DataCardEntity>({
   const { displayedCards, selectedCard, addCard, selectCard, shouldReload, setLoadedCards } =
     useContext(DataCardContext);
   const { switchToCard } = useContext(DataCardSwitchContext);
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
 
   const loadData = () => {
     setIsLoadingData(true);

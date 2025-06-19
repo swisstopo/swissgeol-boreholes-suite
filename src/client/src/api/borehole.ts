@@ -1,6 +1,8 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/codelist.ts";
+import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { WorkflowV2 } from "../pages/detail/form/workflow/workflow.ts";
@@ -73,7 +75,7 @@ export interface BoreholeV2 {
   updatedById: number;
   updatedBy: User;
   stratigraphies: Stratigraphy[] | null;
-  locked: boolean | null;
+  locked: Date | string | null;
   lockedById: number | null;
   completions: Completion[] | null;
   observations: Observation[] | null;
@@ -122,8 +124,61 @@ export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | 
   return await download(`export/zip?${getIdQuery(boreholeIds)}`);
 };
 
-export const getBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
+export const fetchBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
 
 export const updateBorehole = async (borehole: BoreholeV2) => {
   return await fetchApiV2("borehole", "PUT", borehole);
+};
+export const deleteBorehole = async (id: number) => await fetchApiV2(`borehole?id=${id}`, "DELETE");
+
+export const boreholeQueryKey = "boreholes";
+
+export const useBorehole = (id: number) => {
+  const query = useQuery({
+    queryKey: [boreholeQueryKey, id],
+    queryFn: async () => {
+      return await fetchBoreholeById(id);
+    },
+    enabled: !!id,
+  });
+
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
+
+export const useBoreholeMutations = () => {
+  const queryClient = useQueryClient();
+  const useUpdateBorehole = useMutation({
+    mutationFn: async (borehole: BoreholeV2) => {
+      return await updateBorehole(borehole);
+    },
+    onSettled: (_data, _error, updatedBorehole) => {
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, updatedBorehole.id] });
+    },
+  });
+
+  const useDeleteBorehole = useMutation({
+    mutationFn: async (boreholeId: number) => {
+      return await deleteBorehole(boreholeId);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey],
+      });
+    },
+  });
+
+  useShowAlertOnError(useUpdateBorehole.isError, useUpdateBorehole.error);
+  useShowAlertOnError(useDeleteBorehole.isError, useDeleteBorehole.error);
+  return {
+    update: useUpdateBorehole,
+    delete: useDeleteBorehole,
+  };
+};
+
+export const useReloadBoreholes = () => {
+  const queryClient = useQueryClient();
+  return () => {
+    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+  };
 };

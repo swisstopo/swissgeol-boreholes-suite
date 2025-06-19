@@ -5,6 +5,7 @@ import {
   createBorehole,
   giveAdminUser1workgroup,
   giveAdminUser2workgroups,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -180,7 +181,7 @@ describe("Test the borehole bulk edit feature.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
       goToRouteAndAcceptTerms(`/`);
       showTableAndWaitForData();
