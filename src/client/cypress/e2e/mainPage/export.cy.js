@@ -88,7 +88,7 @@ describe("Test for exporting boreholes.", () => {
     handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "delete");
   });
 
-  it.only("exports TVD for a borehole with and without geometry", () => {
+  it("exports TVD for a borehole with and without geometry", () => {
     const boreholeName = "AAA_FROGGY";
     const secondBoreholeName = "AAA_FISHY";
     const fileName = `${boreholeName}.csv`;
