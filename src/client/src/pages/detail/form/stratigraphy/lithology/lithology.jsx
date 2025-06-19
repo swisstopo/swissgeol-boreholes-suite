@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { CircularProgress, Stack } from "@mui/material";
 import { theme } from "../../../../../AppTheme";
 import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
-import { FullPageCentered } from "../../../../../components/styledComponents.js";
+import { FullPageCentered } from "../../../../../components/styledComponents.ts";
 import { EditStateContext } from "../../../editStateContext.tsx";
 import { stratigraphyData } from "./data/stratigraphydata.js";
 import LithologyAttributes from "./lithologyAttributes";

@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { DevTool } from "../../../../../../../hookformDevtools.js";
 import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.ts";
 import { CancelButton, SaveButton } from "../../../../../../components/buttons/buttons.js";
-import { useCodelists } from "../../../../../../components/codelist.js";
+import { useCodelists } from "../../../../../../components/codelist.ts";
 import { DataCardButtonContainer } from "../../../../../../components/dataCard/dataCard.js";
 import { parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.js";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.js";

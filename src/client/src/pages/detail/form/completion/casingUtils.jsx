@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 
 /**
  * Extract the minimum and maximum depth of the casing elements from the casing object

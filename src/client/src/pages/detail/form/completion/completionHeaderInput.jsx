@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
-import { SaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
+import { SaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.tsx";
 import {
   FormCheckbox,
   FormContainer,
