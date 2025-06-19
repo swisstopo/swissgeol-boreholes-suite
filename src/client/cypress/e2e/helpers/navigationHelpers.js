@@ -166,6 +166,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       break;
     case SidebarMenuItem.stratigraphy:
       isActiveMenuItem(menuItem);
+      cy.get(".MuiCircularProgress-root").should("not.exist");
       cy.location().should(location => {
         if (!location.hash) {
           // No stratigraphy
@@ -181,6 +182,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/completion$/);
       });
+      cy.get(".MuiCircularProgress-root").should("not.exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.hydrogeology:

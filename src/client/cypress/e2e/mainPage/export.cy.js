@@ -22,6 +22,7 @@ import {
   deleteDownloadedFile,
   getElementByDataCy,
   getImportFileFromFixtures,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -99,15 +100,18 @@ describe("Test for exporting boreholes.", () => {
     createBorehole({ "extended.original_name": boreholeName, "custom.alternate_name": boreholeName }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
     });
 
     // add geometry to borehole and verify export tvd changed
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.borehole);
     setInput("totalDepth", 700);
+    cy.wait(["@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     setInput("topBedrockFreshMd", 800);
+    cy.wait(["@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     setInput("topBedrockWeatheredMd", 900);
+    cy.wait(["@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "700");
     evaluateInput("topBedrockFreshMd", "800");
@@ -125,6 +129,7 @@ describe("Test for exporting boreholes.", () => {
     startBoreholeEditing();
 
     getElementByDataCy("geometry-tab").click();
+    cy.wait(["@boreholegeometry_GET", "@boreholegeometry_formats"]);
     getElementByDataCy("boreholegeometryimport-button").should("be.disabled");
 
     // upload geometry csv file
@@ -142,12 +147,14 @@ describe("Test for exporting boreholes.", () => {
       });
     });
 
+    getElementByDataCy("boreholegeometryimport-button").should("be.enabled");
     setSelect("geometryFormat", 1);
     getElementByDataCy("boreholegeometryimport-button").click();
     cy.wait(["@boreholegeometry_POST", "@boreholegeometry_GET"]);
     cy.get(".MuiTableBody-root").should("exist");
 
     getElementByDataCy("general-tab").click();
+    cy.wait(["@borehole_by_id", "@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "674.87");
     navigateInSidebar(SidebarMenuItem.location);
@@ -246,7 +253,7 @@ describe("Test for exporting boreholes.", () => {
     deleteDownloadedFile(`${boreholeName}.csv`);
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       getElementByDataCy("edit-button").should("exist");
       getElementByDataCy("editingstop-button").should("not.exist");
       exportItem();
@@ -267,7 +274,7 @@ describe("Test for exporting boreholes.", () => {
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/attachments`);
+      goToDetailRouteAndAcceptTerms(`/${id}/attachments`);
       startBoreholeEditing();
 
       selectInputFile("FREEZINGCOLD.txt", "text/plain");
@@ -358,7 +365,7 @@ describe("Test for exporting boreholes.", () => {
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();
 
       // set two custom identifiers

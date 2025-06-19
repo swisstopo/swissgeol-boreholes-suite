@@ -2,7 +2,7 @@ import { setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   getImportFileFromFixtures,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
@@ -12,11 +12,13 @@ describe("Geometry crud tests", () => {
 
     // open section editor
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/borehole#geometry`);
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole#geometry`);
+      cy.wait(["@boreholegeometry_GET"]);
     });
 
     // start editing session
     startBoreholeEditing();
+    cy.wait(["@boreholegeometry_GET", "@boreholegeometry_formats"]);
   });
 
   it("adds and deletes borehole geometry", () => {

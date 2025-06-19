@@ -4,9 +4,8 @@ import { TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { detachFile, downloadFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces";
-import { theme } from "../../../../AppTheme.ts";
 import { formatDate } from "../../../../utils.ts";
-import { DetailContext } from "../../detailContext";
+import { EditStateContext } from "../../editStateContext";
 import { AttachmentContent } from "../attachmentsContent";
 import { useAttachments } from "../useAttachments.tsx";
 
@@ -16,7 +15,7 @@ interface ProfilesProps {
 
 export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
 
   const loadAttachments = useCallback(async () => {
@@ -94,15 +93,17 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   );
 
   const getDescriptionField = useCallback(
-    (params: GridRenderCellParams) => (
-      <TextField
-        data-cy="profile-description"
-        multiline
-        sx={{ margin: 1 }}
-        defaultValue={(updatedRows.get(params.id) as BoreholeFile)?.description ?? params.value ?? ""}
-        onChange={event => updateDescription(params.id, event.target.value)}
-      />
-    ),
+    (params: GridRenderCellParams<BoreholeFile>, focused: boolean) => {
+      const value = updatedRows.get(params.id)?.description ?? params.value ?? "";
+      return (
+        <TextField
+          data-cy="profile-description"
+          multiline
+          {...(focused ? { defaultValue: value } : { value })}
+          onChange={event => updateDescription(params.id, event.target.value)}
+        />
+      );
+    },
     [updateDescription, updatedRows],
   );
 
@@ -121,11 +122,11 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         flex: 1,
         renderCell: (params: GridRenderCellParams) =>
           editingEnabled ? (
-            getDescriptionField(params)
+            getDescriptionField(params, false)
           ) : (
-            <Typography sx={{ margin: `${theme.spacing(1)} 0`, whiteSpace: "pre-line" }}>{params.value}</Typography>
+            <Typography sx={{ whiteSpace: "pre-line" }}>{params.value}</Typography>
           ),
-        renderEditCell: params => getDescriptionField(params),
+        renderEditCell: params => getDescriptionField(params, true),
       },
       {
         field: "created",
@@ -137,7 +138,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       {
         field: "createdBy",
         headerName: t("user"),
-        flex: 0.5,
+        flex: 0.25,
         valueGetter: (value, row) => row.user?.name ?? "-",
       },
       {

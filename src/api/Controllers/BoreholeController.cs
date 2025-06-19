@@ -177,6 +177,11 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         borehole.OriginalName += " (Copy)";
         borehole.Name += " (Copy)";
 
+        // Do not copy borehole locked status
+        borehole.Locked = null;
+        borehole.LockedById = null;
+        borehole.LockedBy = null;
+
         var entityEntry = await Context.AddAsync(borehole).ConfigureAwait(false);
         await Context.SaveChangesAsync().ConfigureAwait(false);
 

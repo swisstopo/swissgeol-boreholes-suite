@@ -10,7 +10,7 @@ import {
   uploadPhoto,
 } from "../../../../api/fetchApiV2.ts";
 import { formatDate } from "../../../../utils.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import { AttachmentContent } from "../attachmentsContent.tsx";
 import { useAttachments } from "../useAttachments.tsx";
 
@@ -20,7 +20,7 @@ interface PhotosProps {
 
 export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
 
   const loadAttachments = useCallback(() => {
@@ -63,6 +63,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
       {
         field: "name",
         headerName: t("name"),
+        flex: 1,
       },
       {
         field: "created",
@@ -75,6 +76,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
         field: "createdBy",
         headerName: t("user"),
         valueGetter: (value, row) => row.createdBy?.name ?? "-",
+        flex: 0.25,
       },
       {
         field: "depth",

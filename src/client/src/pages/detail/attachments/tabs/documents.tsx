@@ -1,6 +1,6 @@
 import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { TextField, Typography } from "@mui/material";
+import { Link, TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { Document, DocumentUpdate } from "../../../../api/apiInterfaces.ts";
 import {
@@ -9,9 +9,8 @@ import {
   getDocumentsByBoreholeId,
   updateDocuments,
 } from "../../../../api/fetchApiV2.ts";
-import { theme } from "../../../../AppTheme.ts";
 import { formatDate } from "../../../../utils.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import { AttachmentContent } from "../attachmentsContent.tsx";
 import { useAttachments } from "../useAttachments.tsx";
 
@@ -21,7 +20,7 @@ interface DocumentsProps {
 
 export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
 
   const loadAttachments = useCallback(async () => {
@@ -38,15 +37,26 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
 
   const exportAttachments = async () => {};
 
-  const updateAttachments = useCallback(async (updatedRows: Map<GridRowId, Document>) => {
-    const updatedRowsArray = Array.from(updatedRows.entries()).map<DocumentUpdate>(([key, value]) => ({
-      id: key as number,
-      url: value.url ?? "",
-      description: value.description,
-      public: value.public ?? false,
-    }));
-    await updateDocuments(updatedRowsArray);
-  }, []);
+  const updateAttachments = useCallback(
+    async (updatedRows: Map<GridRowId, Document>) => {
+      const updatedRowsArray = Array.from(updatedRows.entries())
+        .map<DocumentUpdate | undefined>(([key, value]) => {
+          const data = apiRef.current.getRowWithUpdatedValues(key, "url");
+          if (data) {
+            return {
+              id: key as number,
+              url: value.url ?? data.url,
+              description: value.description ?? data.description,
+              public: value.public ?? false,
+            };
+          }
+          return undefined;
+        })
+        .filter((row): row is DocumentUpdate => row !== undefined);
+      await updateDocuments(updatedRowsArray);
+    },
+    [apiRef],
+  );
 
   const { isLoading, rows, onAdd, onDelete, getPublicColumnHeader, getPublicColumnCell, updatedRows, setUpdatedRows } =
     useAttachments<Document>({
@@ -73,29 +83,34 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
   );
 
   const getUrlField = useCallback(
-    (params: GridRenderCellParams<Document>) => (
-      <TextField
-        data-cy="document-url"
-        type="url"
-        required
-        sx={{ margin: 1 }}
-        defaultValue={updatedRows.get(params.id)?.url ?? params.value ?? ""}
-        onChange={event => updateRow(params.id, { url: event.target.value })}
-      />
-    ),
+    (params: GridRenderCellParams<Document>, focused: boolean) => {
+      const value = updatedRows.get(params.id)?.url ?? params.value ?? "";
+      return (
+        <TextField
+          data-cy="document-url"
+          multiline
+          type="url"
+          required
+          {...(focused ? { defaultValue: value } : { value })}
+          onChange={event => updateRow(params.id, { url: event.target.value })}
+        />
+      );
+    },
     [updateRow, updatedRows],
   );
 
   const getDescriptionField = useCallback(
-    (params: GridRenderCellParams<Document>) => (
-      <TextField
-        data-cy="document-description"
-        multiline
-        sx={{ margin: 1 }}
-        defaultValue={updatedRows.get(params.id)?.description ?? params.value ?? ""}
-        onChange={event => updateRow(params.id, { description: event.target.value })}
-      />
-    ),
+    (params: GridRenderCellParams<Document>, focused: boolean) => {
+      const value = updatedRows.get(params.id)?.description ?? params.value ?? "";
+      return (
+        <TextField
+          data-cy="document-description"
+          multiline
+          {...(focused ? { defaultValue: value } : { value })}
+          onChange={event => updateRow(params.id, { description: event.target.value })}
+        />
+      );
+    },
     [updateRow, updatedRows],
   );
 
@@ -106,21 +121,29 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
         headerName: t("url"),
         editable: editingEnabled,
         flex: 1,
-        renderCell: params => (editingEnabled ? getUrlField(params) : <a href={params.value}>{params.value}</a>),
-        renderEditCell: getUrlField,
+        renderCell: params =>
+          editingEnabled ? (
+            getUrlField(params, false)
+          ) : (
+            <Link href={params.value} target="_blank" rel="noopener noreferrer" sx={{ wordBreak: "break-all" }}>
+              {params.value}
+            </Link>
+          ),
+        renderEditCell: params => getUrlField(params, true),
       },
       {
         field: "description",
         headerName: t("description"),
         editable: editingEnabled,
         flex: 1,
-        renderCell: params =>
-          editingEnabled ? (
-            getDescriptionField(params)
+        renderCell: params => {
+          return editingEnabled ? (
+            getDescriptionField(params, false)
           ) : (
-            <Typography sx={{ margin: `${theme.spacing(1)} 0`, whiteSpace: "pre-line" }}>{params.value}</Typography>
-          ),
-        renderEditCell: getDescriptionField,
+            <Typography sx={{ whiteSpace: "pre-line", wordBreak: "break-all" }}>{params.value}</Typography>
+          );
+        },
+        renderEditCell: params => getDescriptionField(params, true),
       },
       {
         field: "created",
@@ -132,7 +155,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
       {
         field: "createdBy",
         headerName: t("user"),
-        flex: 0.5,
+        flex: 0.25,
         valueGetter: (value, row) => row.createdBy?.name ?? "-",
       },
       {

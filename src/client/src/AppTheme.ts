@@ -625,10 +625,29 @@ export const theme = createTheme({
               fontWeight: 400,
             },
           },
+          "& .MuiDataGrid-row--dynamicHeight": {
+            "& .MuiDataGrid-cell": {
+              minHeight: "44px",
+              display: "flex",
+              alignItems: "start",
+              padding: themeSpacing(1),
+            },
+          },
           "& .MuiDataGrid-cell--editable": {
             padding: "0 !important",
             backgroundColor: "transparent !important",
             boxShadow: "none !important",
+
+            "& .MuiFormControl-root": {
+              margin: themeSpacing(1),
+
+              "& .MuiInputBase-root": {
+                padding: `${themeSpacing(0.5)} ${themeSpacing(1)}`,
+              },
+            },
+          },
+          "& .MuiDataGrid-cellCheckbox": {
+            padding: "0 !important",
           },
           "& .MuiDataGrid-toolbarContainer": {
             paddingLeft: "2px !important",

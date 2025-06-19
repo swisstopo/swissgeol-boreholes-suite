@@ -16,7 +16,7 @@ import {
 import {
   createBorehole,
   getElementByDataCy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   selectInputFile,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -29,7 +29,7 @@ describe("Test for the detail page side navigation.", () => {
     );
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();
     });
 
@@ -62,7 +62,17 @@ describe("Test for the detail page side navigation.", () => {
     // Add stratigraphy and Lithology
     navigateInSidebar(SidebarMenuItem.stratigraphy);
     addItem("addEmptyStratigraphy");
-    cy.wait("@stratigraphy_POST");
+    cy.wait([
+      "@stratigraphy_POST",
+      "@stratigraphy_by_borehole_GET",
+      "@stratigraphy_by_borehole_GET",
+      "@stratigraphy_GET",
+      "@get-layers-by-profileId",
+      "@lithological_description",
+      "@facies_description",
+      "@layer",
+      "@layer",
+    ]);
 
     getElementByDataCy("add-layer-icon").click();
     cy.wait("@layer");
@@ -72,34 +82,41 @@ describe("Test for the detail page side navigation.", () => {
     setInput("fromDepth", "0");
     setInput("toDepth", "50");
     saveForm();
-    cy.wait(["@update-layer", "@layer"]);
+    cy.wait(["@update-layer", "@layer", "@get-layers-by-profileId"]);
     getElementByDataCy("styled-layer-0").should("contain", "50 m MD");
 
     // Add chronostratigraphy
     navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
     getElementByDataCy("add-layer-button").click({ force: true });
-    getElementByDataCy("add-layer-button").click({ force: true });
-    getElementByDataCy("add-layer-button").click({ force: true });
-    cy.wait("@chronostratigraphy_POST");
+    cy.wait(["@chronostratigraphy_POST", "@chronostratigraphy_GET"]);
 
     // Add lithostratigraphy
     navigateInStratigraphy(StratigraphyTab.lithostratigraphy);
     getElementByDataCy("add-layer-button").click({ force: true });
-    getElementByDataCy("add-layer-button").click({ force: true });
-    getElementByDataCy("add-layer-button").click({ force: true });
-    cy.wait("@lithostratigraphy_POST");
+    cy.wait(["@lithostratigraphy_POST", "@lithostratigraphy_GET"]);
 
     // Add completion
     navigateInSidebar(SidebarMenuItem.completion);
     isActiveMenuItem(SidebarMenuItem.completion, false);
+    cy.contains("No completion available").should("exist");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
     addItem("addCompletion");
+    cy.wait("@codelist_by_schema_GET");
     cy.location().should(location => {
       expect(location.pathname).to.match(/^\/\d+\/completion\/new$/);
     });
     setInput("name", "Compl-1");
     setSelect("kindId", 1);
     saveForm("completion-header");
-    cy.wait("@completion_GET");
+    cy.wait([
+      "@completion_GET",
+      "@casing_by_completion_GET",
+      "@instrumentation_by_completion_GET",
+      "@backfill_by_completion_GET",
+    ]);
+
+    cy.get(".MuiCircularProgress-root").should("not.exist");
 
     // After adding completion, borehole and with it the side navigation should be updated
     isActiveMenuItem(SidebarMenuItem.completion, true);
@@ -116,6 +133,7 @@ describe("Test for the detail page side navigation.", () => {
     cy.wait("@casing_by_borehole_GET");
     setSelect("quantityId", 2);
     saveForm();
+    cy.wait(["@wateringress_POST", "@wateringress_GET", "@borehole_by_id"]);
     isMenuItemWithContent(SidebarMenuItem.hydrogeology);
     isActiveMenuItem(SidebarMenuItem.waterIngress, true);
 
@@ -125,6 +143,7 @@ describe("Test for the detail page side navigation.", () => {
     cy.wait("@casing_by_borehole_GET");
     setSelect("kindId", 2);
     saveForm();
+    cy.wait(["@groundwaterlevelmeasurement_POST", "@groundwaterlevelmeasurement_GET", "@borehole_by_id"]);
     isActiveMenuItem(SidebarMenuItem.groundwaterLevelMeasurement, true);
 
     navigateInSidebar(SidebarMenuItem.fieldMeasurement);
@@ -135,6 +154,7 @@ describe("Test for the detail page side navigation.", () => {
     setSelect("fieldMeasurementResults.0.parameterId", 0, 9);
     setInput("fieldMeasurementResults.0.value", "10");
     saveForm();
+    cy.wait(["@fieldmeasurement_POST", "@fieldmeasurement_GET", "@borehole_by_id"]);
     isActiveMenuItem(SidebarMenuItem.fieldMeasurement, true);
 
     navigateInSidebar(SidebarMenuItem.hydrotest);
@@ -142,7 +162,9 @@ describe("Test for the detail page side navigation.", () => {
     addItem("addHydrotest");
     cy.wait("@casing_by_borehole_GET");
     toggleMultiSelect("testKindId", [3]);
+    cy.wait("@codelist_by_testKindIds_GET");
     saveForm();
+    cy.wait(["@hydrotest_POST", "@hydrotest_GET", "@borehole_by_id"]);
     isActiveMenuItem(SidebarMenuItem.hydrotest, true);
     isMenuItemWithContent(SidebarMenuItem.waterIngress);
     isMenuItemWithContent(SidebarMenuItem.groundwaterLevelMeasurement);

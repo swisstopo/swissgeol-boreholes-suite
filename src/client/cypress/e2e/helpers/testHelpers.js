@@ -40,10 +40,13 @@ export const interceptApiCalls = () => {
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
   cy.intercept("PUT", "/api/v2/user").as("update-user");
   cy.intercept("GET", "/api/v2/user").as("get-user");
+  cy.intercept("GET", "/api/v2/user/self").as("get-current-user");
   cy.intercept("PUT", "/api/v2/workgroup").as("update-workgroup");
   cy.intercept("POST", "/api/v2/workgroup/setRoles").as("set_workgroup_roles");
 
   cy.intercept("/api/v2/lithologicaldescription*").as("lithological_description");
+  cy.intercept("/api/v2/faciesdescription*").as("facies_description");
+
   cy.intercept("/api/v2/chronostratigraphy*", req => {
     return (req.alias = `chronostratigraphy_${req.method}`);
   });
@@ -87,10 +90,13 @@ export const interceptApiCalls = () => {
     return (req.alias = `backfill_${req.method}`);
   });
 
+  cy.intercept("/api/v2/codelist?schema=**").as("codelist_by_schema_GET");
+  cy.intercept("/api/v2/codelist?testKindIds=**").as("codelist_by_testKindIds_GET");
   cy.intercept("/api/v2/codelist*", req => {
     return (req.alias = `codelist_${req.method}`);
   });
 
+  cy.intercept("/api/v2/stratigraphy?boreholeId=**").as("stratigraphy_by_borehole_GET");
   cy.intercept("/api/v2/stratigraphy*", req => {
     return (req.alias = `stratigraphy_${req.method}`);
   });
@@ -109,6 +115,7 @@ export const interceptApiCalls = () => {
 
   cy.intercept("/api/v2/boreholegeometry/getDepthInMasl?**").as("get-boreholegeometry-depth-masl");
   cy.intercept("/api/v2/boreholegeometry/getDepthMDFromMasl?**").as("get-boreholegeometry-depth-md");
+  cy.intercept("/api/v2/boreholegeometry/getDepthTVD?**").as("get-depth-tvd");
 
   cy.intercept("/api/v2/boreholefile/getDataExtractionFileInfo*").as("extraction-file-info");
   cy.intercept({
@@ -177,14 +184,20 @@ export const login = user => {
   );
 };
 
-/**
- * Login into the application as admin.
- */
+export const goToDetailRouteAndAcceptTerms = route => {
+  cy.visit(route);
+  cy.get('[data-cy="accept-button"]').click();
+  cy.wait(["@borehole_by_id", "@get-current-user"]);
+};
 
 export const goToRouteAndAcceptTerms = route => {
   cy.visit(route);
   cy.get('[data-cy="accept-button"]').click();
 };
+
+/**
+ * Login into the application as admin.
+ */
 
 export const loginAsAdmin = () => {
   login("admin");
@@ -295,7 +308,7 @@ export const createBorehole = values => {
 
 export const startBoreholeEditing = () => {
   startEditing("detail-header");
-  cy.wait("@edit_lock");
+  cy.wait(["@update-borehole", "@borehole_by_id"]);
 };
 
 export const stopBoreholeEditing = discardChanges => {
@@ -304,8 +317,7 @@ export const stopBoreholeEditing = discardChanges => {
   if (discardChanges) {
     cy.get('[data-cy="prompt"]').find(`[data-cy="discardchanges-button"]`).click();
   }
-
-  cy.wait("@edit_unlock");
+  cy.wait(["@update-borehole", "@borehole_by_id"]);
 };
 
 export const returnToOverview = () => {
@@ -337,6 +349,18 @@ export const deleteBorehole = id => {
   });
 };
 
+export const deleteStratigraphy = id => {
+  cy.get("@id_token").then(token => {
+    cy.request({
+      method: "DELETE",
+      url: `/api/v2/stratigraphy?id=${id}`,
+      auth: bearerAuth(token),
+    }).then(res => {
+      expect(res.status).to.equal(200);
+    });
+  });
+};
+
 export const loginAndResetState = () => {
   loginAsAdmin();
   cy.get("@id_token").then(token => {
@@ -353,6 +377,19 @@ export const loginAndResetState = () => {
         .filter(id => id > 1002999) // max id in seed data.
         .forEach(id => {
           deleteBorehole(id);
+        });
+    });
+
+    // Reset stratigraphies
+    cy.request({
+      method: "GET",
+      url: "/api/v2/stratigraphy",
+      auth: bearerAuth(token),
+    }).then(response => {
+      response.body
+        .filter(st => st.id > 6002999) // max id in seed data.
+        .forEach(st => {
+          deleteStratigraphy(st.id);
         });
     });
 

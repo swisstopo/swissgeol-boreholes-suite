@@ -5,7 +5,7 @@ import {
   createBorehole,
   createCasing,
   createCompletion,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -31,7 +31,7 @@ describe("Backfill crud tests", () => {
 
   it("adds, edits and deletes backfills", () => {
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/completion`);
+      goToDetailRouteAndAcceptTerms(`/${id}/completion`);
     });
     cy.wait("@completion_GET");
 
@@ -80,7 +80,7 @@ describe("Backfill crud tests", () => {
     saveForm();
     evaluateDisplayValue("casingName", "open hole");
     startEditing();
-    evaluateSelect("casingId", "-1");
+    evaluateSelect("casingId", "open hole");
     cancelEditing();
 
     // delete backfill
@@ -100,7 +100,7 @@ describe("Backfill crud tests", () => {
     });
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/completion`);
+      goToDetailRouteAndAcceptTerms(`/${id}/completion`);
       startBoreholeEditing();
     });
     cy.get("[data-cy=completion-content-tab-backfill]").click();

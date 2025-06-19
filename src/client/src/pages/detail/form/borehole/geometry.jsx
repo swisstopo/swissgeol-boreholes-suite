@@ -5,7 +5,7 @@ import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../a
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import GeometryChartNE from "./geometryChartNE.jsx";
 import { GeometryChartZE, GeometryChartZInteractive, GeometryChartZN } from "./geometryChartZ.jsx";
 import GeometryImport from "./geometryImport.jsx";
@@ -21,7 +21,7 @@ import GeometryTable from "./geometryTable.jsx";
  */
 const Geometry = ({ measuredDepth }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const { id: boreholeId } = useRequiredParams();
   const { data } = useBoreholeGeometry(boreholeId);
   const {

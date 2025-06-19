@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import i18n from "./i18n";
 import "./index.css";
 import "ol/ol.css";
-import { SettingsProvider } from "./api/SettingsContext.js";
+import { SettingsProvider } from "./api/SettingsContext.tsx";
 import App from "./App";
 import store from "./reducers";
 

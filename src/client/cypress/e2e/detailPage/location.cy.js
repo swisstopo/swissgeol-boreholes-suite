@@ -1,4 +1,10 @@
-import { addItem, saveWithSaveBar, stopEditing } from "../helpers/buttonHelpers";
+import {
+  addItem,
+  saveWithSaveBar,
+  stopEditing,
+  verifyNoUnsavedChanges,
+  verifyUnsavedChanges,
+} from "../helpers/buttonHelpers";
 import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import {
   clearInput,
@@ -13,6 +19,7 @@ import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers
 import {
   createBorehole,
   getElementByDataCy,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
   newEditableBorehole,
@@ -22,26 +29,6 @@ import {
 } from "../helpers/testHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
-  const getButtons = () => {
-    const saveButton = () => cy.get('[data-cy="save-button"]');
-    const discardButton = () => cy.get('[data-cy="discardchanges-button"]');
-    return { saveButton, discardButton };
-  };
-
-  const verifyNoUnsavedChanges = () => {
-    const { saveButton, discardButton } = getButtons();
-    saveButton().should("be.disabled");
-    discardButton().should("be.disabled");
-    cy.contains("Unsaved changes").should("not.exist");
-  };
-
-  const verifyUnsavedChanges = () => {
-    const { saveButton, discardButton } = getButtons();
-    saveButton().should("not.be.disabled");
-    discardButton().should("not.be.disabled");
-    cy.contains("Unsaved changes").should("exist");
-  };
-
   it("creates and deletes a borehole.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole();
@@ -74,7 +61,7 @@ describe("Tests for 'Location' edit page.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
 
       evaluateInput("originalName", "PHOTOSQUIRREL");
       evaluateInput("name", "PHOTOSQUIRREL");
@@ -118,7 +105,7 @@ describe("Tests for 'Location' edit page.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
 
       evaluateInput("originalName", "PHOTOSQUIRREL");
       evaluateInput("name", "PHOTOMOUSE");
@@ -136,7 +123,7 @@ describe("Tests for 'Location' edit page.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();
 
       verifyNoUnsavedChanges();
@@ -150,14 +137,13 @@ describe("Tests for 'Location' edit page.", () => {
       // discard changes with button
       setSelect("restrictionId", 3);
       verifyUnsavedChanges();
-      const { saveButton, discardButton } = getButtons();
-      discardButton().click();
+      cy.get('[data-cy="discardchanges-button"]').click();
       verifyNoUnsavedChanges();
 
       // save changes
       setSelect("restrictionId", 3);
       verifyUnsavedChanges();
-      saveButton().click();
+      cy.get('[data-cy="save-button"]').click();
       verifyNoUnsavedChanges();
     });
   });
@@ -250,32 +236,32 @@ describe("Tests for 'Location' edit page.", () => {
     returnToFormAndStartEditing();
 
     evaluateInput("boreholeCodelists.0.value", "pandas_for_life");
-    evaluateSelect("boreholeCodelists.0.codelistId", "100000000");
+    evaluateSelect("boreholeCodelists.0.codelistId", "ID GeODin-Shortname");
     evaluateInput("boreholeCodelists.1.value", "freedom_for_felix");
-    evaluateSelect("boreholeCodelists.1.codelistId", "100000004");
+    evaluateSelect("boreholeCodelists.1.codelistId", "ID Original");
 
     // edit identifier
-    setSelect("boreholeCodelists.0.codelistId", 3); // codelistId 100000010
+    setSelect("boreholeCodelists.0.codelistId", 3); // ID GeODin
     setInput("boreholeCodelists.0.value", "we_must_stop_felix");
     // save and return
     saveFormAndReturnToOverview();
     returnToFormAndStartEditing();
 
     evaluateInput("boreholeCodelists.0.value", "freedom_for_felix");
-    evaluateSelect("boreholeCodelists.0.codelistId", "100000004");
+    evaluateSelect("boreholeCodelists.0.codelistId", "ID Original");
     evaluateInput("boreholeCodelists.1.value", "we_must_stop_felix");
-    evaluateSelect("boreholeCodelists.1.codelistId", "100000010");
+    evaluateSelect("boreholeCodelists.1.codelistId", "ID GeODin");
 
     // delete identifier
     cy.get('[data-cy="boreholeCodelists.0.delete"]').click();
     // identifier on position 1 should now be on position 0
     evaluateInput("boreholeCodelists.0.value", "we_must_stop_felix");
-    evaluateSelect("boreholeCodelists.0.codelistId", "100000010");
+    evaluateSelect("boreholeCodelists.0.codelistId", "ID GeODin");
 
     saveFormAndReturnToOverview();
     returnToFormAndStartEditing();
 
     evaluateInput("boreholeCodelists.0.value", "we_must_stop_felix");
-    evaluateSelect("boreholeCodelists.0.codelistId", "100000010");
+    evaluateSelect("boreholeCodelists.0.codelistId", "ID GeODin");
   });
 });

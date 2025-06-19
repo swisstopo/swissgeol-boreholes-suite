@@ -1,8 +1,9 @@
-import { deleteItem, exportItem, saveForm, saveWithSaveBar } from "../helpers/buttonHelpers.js";
+import { deleteItem, exportItem, saveWithSaveBar, verifyNoUnsavedChanges } from "../helpers/buttonHelpers.js";
 import {
   checkAllVisibleRows,
   checkRowWithIndex,
   checkRowWithText,
+  setTextInRow,
   uncheckAllVisibleRows,
   unCheckRowWithText,
   verifyRowContains,
@@ -18,7 +19,7 @@ import {
   deleteBorehole,
   deleteDownloadedFile,
   getElementByDataCy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   readDownloadedFile,
   selectInputFile,
   startBoreholeEditing,
@@ -53,10 +54,10 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.wait(["@upload-photo", "@getAllPhotos"]);
   };
 
-  it("creates, downloads and deletes attachments.", () => {
+  it("creates, downloads and deletes profile.", () => {
     createBorehole({ "extended.original_name": "JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
 
       startBoreholeEditing();
       // navigate to attachments tab
@@ -135,12 +136,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       checkPublicStatus("WHITE___SPACE.pdf", false, true);
       checkRowWithText("IRATETRINITY_2.pdf", "public");
 
-      cy.contains(".MuiDataGrid-row", "IRATETRINITY_2.pdf").find(`[data-cy="profile-description"]`).click();
-      cy.contains(".MuiDataGrid-row", "IRATETRINITY_2.pdf")
-        .find(`[data-cy="profile-description"]`)
-        .find("textarea:visible")
-        .type("a brand new description");
-
+      setTextInRow("IRATETRINITY_2.pdf", "profile-description", "a brand new description");
       saveWithSaveBar();
 
       // stop editing and verify table content
@@ -167,13 +163,14 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // reset test data
       deleteBorehole(boreholeId);
+      stopBoreholeEditing();
     });
   });
 
   it("creates, exports and deletes photos.", () => {
     createBorehole({ "extended.original_name": "JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
 
       startBoreholeEditing();
       // navigate to photos tab
@@ -222,13 +219,14 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // reset test data
       deleteBorehole(boreholeId);
+      stopBoreholeEditing();
     });
   });
 
   it("can save changes on a borehole with attachments.", () => {
     createBorehole({ "extended.original_name": "AAA_COBRA" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
       startBoreholeEditing();
     });
     navigateInSidebar(SidebarMenuItem.attachments);
@@ -252,7 +250,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   it("creates, edits and deletes documents.", () => {
     createBorehole({ "extended.original_name": "HAPPYBOOK" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToRouteAndAcceptTerms(`/${boreholeId}`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
       startBoreholeEditing();
 
       navigateInSidebar(SidebarMenuItem.attachments);
@@ -267,33 +265,24 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.wait(["@document_POST", "@getAllDocuments"]);
       verifyTableLength(2);
 
-      // add data to the first document
-      cy.get(".MuiDataGrid-row")
-        .first()
-        .find(`[data-cy="document-url"]`)
-        .find("input:visible")
-        .type("https://localhost/document1.pdf");
-      cy.get(".MuiDataGrid-row")
-        .first()
-        .find(`[data-cy="document-description"]`)
-        .find("textarea:visible")
-        .type("some description");
-
-      // add data to the second document
-      cy.get(".MuiDataGrid-row")
-        .eq(1)
-        .find(`[data-cy="document-url"]`)
-        .find("input:visible")
-        .type("https://localhost/document2.pdf");
-
-      saveForm();
+      // add data
+      setTextInRow(0, "document-url", "https://localhost/document1.pdf");
+      setTextInRow(0, "document-description", "some description");
+      setTextInRow(1, "document-url", "https://localhost/document2.pdf");
+      saveWithSaveBar();
       cy.wait(["@document_PUT", "@getAllDocuments"]);
       waitForTableData();
+      checkRowWithText("https://localhost/document2.pdf", "public");
+      saveWithSaveBar();
+      cy.wait(["@document_PUT", "@getAllDocuments"]);
+      waitForTableData();
+
       stopBoreholeEditing();
 
       verifyRowContains("https://localhost/document1.pdf", 0);
       verifyRowContains("some description", 0);
       verifyRowContains("https://localhost/document2.pdf", 1);
+      checkPublicStatus("https://localhost/document2.pdf", true, false);
 
       cy.contains("a", "https://localhost/document1.pdf").should(
         "have.attr",
@@ -310,6 +299,32 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // reset test data
       deleteBorehole(boreholeId);
+    });
+  });
+
+  it("saves with ctrl s", () => {
+    createBorehole({ "extended.original_name": "HAPPYBOOK" }).as("borehole_id");
+    cy.get("@borehole_id").then(boreholeId => {
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
+      startBoreholeEditing();
+
+      navigateInSidebar(SidebarMenuItem.attachments);
+      getElementByDataCy("documents-tab").click();
+      cy.wait("@getAllDocuments");
+
+      getElementByDataCy("addDocument-button").should("be.visible").click();
+      cy.wait(["@document_POST", "@getAllDocuments"]);
+      verifyTableLength(1);
+      setTextInRow(0, "document-url", "https://localhost/document1.pdf");
+      setTextInRow(0, "document-description", "some description");
+      cy.get("body").type("{ctrl}s");
+      verifyNoUnsavedChanges();
+      verifyRowContains("https://localhost/document1.pdf", 0);
+      verifyRowContains("some description", 0);
+
+      stopBoreholeEditing();
+      verifyRowContains("https://localhost/document1.pdf", 0);
+      verifyRowContains("some description", 0);
     });
   });
 });

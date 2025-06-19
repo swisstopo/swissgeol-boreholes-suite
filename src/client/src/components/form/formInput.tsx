@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { InputProps, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { isValid } from "date-fns";
-import { DetailContext } from "../../pages/detail/detailContext.tsx";
+import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FormValueType, getFormFieldError } from "./form";
 import { getFieldBorderColor } from "./formUtils.ts";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
@@ -47,7 +47,7 @@ export const FormInput: FC<FormInputProps> = ({
   placeholder,
 }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const { formState, register, setValue } = useFormContext();
   const isDateTimeInput = type === FormValueType.DateTime;
   const isDateInput = type === FormValueType.Date;

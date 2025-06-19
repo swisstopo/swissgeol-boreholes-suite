@@ -4,11 +4,11 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { CopyButton, DeleteButton, EditButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 
 const CompletionHeaderDisplay = ({ completion, setEditing, copyCompletion, deleteCompletion }) => {
   const [expanded, setExpanded] = useState(false);
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const toggleHeader = () => {
     setExpanded(!expanded);
   };

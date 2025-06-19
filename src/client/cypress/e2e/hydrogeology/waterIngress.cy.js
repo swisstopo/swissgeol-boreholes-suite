@@ -6,7 +6,7 @@ import {
   createCasing,
   createCompletion,
   createWateringress,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   handlePrompt,
   selectLanguage,
   startBoreholeEditing,
@@ -29,7 +29,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}`);
+      goToDetailRouteAndAcceptTerms(`/${id}`);
     });
 
     // start editing session
@@ -77,7 +77,7 @@ describe("Tests for the wateringress editor.", () => {
     cy.get("@borehole_id").then(id => {
       createWateringress(id, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
       createWateringress(id, "2012-11-14T12:07Z", 15203157, 15203162, null, 0, 12);
-      goToRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
+      goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
     });
     startBoreholeEditing();
 
@@ -110,7 +110,7 @@ describe("Tests for the wateringress editor.", () => {
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
+      goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
       startBoreholeEditing();
 
       // Create water ingress and check states of depth inputs
@@ -121,7 +121,7 @@ describe("Tests for the wateringress editor.", () => {
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthM-formInput"] input').should("not.be.disabled");
       cy.get(
         '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',
-      ).should("have.value", "1");
+      ).should("have.value", "Measured Depth [m MD]");
 
       // Save with minimal info
       setSelect("quantityId", 2);
@@ -142,7 +142,7 @@ describe("Tests for the wateringress editor.", () => {
       // Ensure depth input dropdown is set to "Measured Depth" and switch to "Meters above sea level"
       cy.get(
         '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',
-      ).should("have.value", "1");
+      ).should("have.value", "Measured Depth [m MD]");
       setSelect("originalVerticalReferenceSystem", 1);
 
       // Check states of depth inputs
@@ -185,7 +185,7 @@ describe("Tests for the wateringress editor.", () => {
       // Ensure depth input dropdown is set to "Meters above sea level" and switch to "Measured Depth"
       cy.get(
         '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',
-      ).should("have.value", "2");
+      ).should("have.value", "Meters above sea level [m a.s.l.]");
       setSelect("originalVerticalReferenceSystem", 0);
       handlePrompt(
         "Changing the vertical reference system will reset the depth values. Do you want to continue?",
@@ -195,7 +195,7 @@ describe("Tests for the wateringress editor.", () => {
       // Check that the state of the depth inputs did not change
       cy.get(
         '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',
-      ).should("have.value", "2");
+      ).should("have.value", "Meters above sea level [m a.s.l.]");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should("be.enabled");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("be.enabled");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("be.disabled");
@@ -208,7 +208,7 @@ describe("Tests for the wateringress editor.", () => {
       );
       cy.get(
         '[data-cy="waterIngress-card.0.edit"] [data-cy="originalVerticalReferenceSystem-formSelect"] input',
-      ).should("have.value", "1");
+      ).should("have.value", "Measured Depth [m MD]");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthMasl-formInput"] input').should("be.disabled");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="toDepthMasl-formInput"] input').should("be.disabled");
       cy.get('[data-cy="waterIngress-card.0.edit"] [data-cy="fromDepthM-formInput"] input').should("be.enabled");

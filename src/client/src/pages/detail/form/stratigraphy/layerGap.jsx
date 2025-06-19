@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { AddCircle, ArrowDownward, ArrowUpward, Warning } from "@mui/icons-material";
 import { Card, CardActionArea, Stack, Typography } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 
 const IconTypography = ({ icon, text }) => {
   return (
@@ -27,7 +27,7 @@ const IconTypography = ({ icon, text }) => {
  */
 const LayerGap = ({ addLayer, updateLayer, previousLayer, nextLayer, height }) => {
   const { t } = useTranslation();
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
 
   return (
     <Card square variant="outlined">

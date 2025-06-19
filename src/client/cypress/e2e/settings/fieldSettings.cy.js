@@ -1,4 +1,9 @@
-import { getElementByDataCy, goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers";
+import {
+  getElementByDataCy,
+  goToDetailRouteAndAcceptTerms,
+  goToRouteAndAcceptTerms,
+  returnToOverview,
+} from "../helpers/testHelpers";
 
 it("checks that the field settings control the field visibility.", () => {
   goToRouteAndAcceptTerms("/");
@@ -47,7 +52,7 @@ it("checks that the field settings control the field visibility.", () => {
       cy.wrap($el).should("be.checked");
     });
 
-  goToRouteAndAcceptTerms("/1001140/stratigraphy/lithology");
+  goToDetailRouteAndAcceptTerms("/1001140/stratigraphy/lithology");
   cy.get('[data-cy="styled-layer-9"]').click();
   cy.contains("From depth [m MD]").should("exist");
   cy.contains("To depth [m MD]").should("exist");
@@ -85,7 +90,7 @@ it("checks that the field settings control the field visibility.", () => {
   cy.contains("Unselect all").click();
   waitForCodelistUpdate();
 
-  goToRouteAndAcceptTerms("/1001140/stratigraphy/lithology");
+  goToDetailRouteAndAcceptTerms("/1001140/stratigraphy/lithology");
   cy.get('[data-cy="styled-layer-9"]').click();
   cy.contains("From depth [m MD]").should("exist");
   cy.contains("To depth [m MD]").should("exist");

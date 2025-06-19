@@ -2,7 +2,7 @@ import {
   bearerAuth,
   createBorehole,
   createStratigraphy,
-  goToRouteAndAcceptTerms,
+  goToDetailRouteAndAcceptTerms,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -60,7 +60,7 @@ describe("Tests for the lithostratigraphy editor.", () => {
     // open lithostratigraphy editor
     cy.get("@borehole_id").then(id => {
       cy.get("@stratigraphy_id").then(stratigraphyId => {
-        goToRouteAndAcceptTerms(`/${id}/stratigraphy/${stratigraphyId}#lithostratigraphy`);
+        goToDetailRouteAndAcceptTerms(`/${id}/stratigraphy/${stratigraphyId}#lithostratigraphy`);
       });
     });
     cy.wait("@get-layers-by-profileId");

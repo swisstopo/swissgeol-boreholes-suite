@@ -8,7 +8,7 @@ import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import { maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { AddButton, BoreholesBaseButton } from "../../../components/buttons/buttons.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
-import { DetailContext } from "../detailContext.tsx";
+import { EditStateContext } from "../editStateContext.tsx";
 import { labelingFileFormat, PanelTab } from "./labelingInterfaces.tsx";
 
 const dashedOutlineImage = `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23fff' stroke-width='4' stroke-dasharray='12%2C 24' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E")`;
@@ -32,7 +32,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
 }) => {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const { id } = useRequiredParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();

@@ -7,7 +7,7 @@ import Markdown from "markdown-to-jsx";
 import PropTypes from "prop-types";
 import { draftTerms, getTermsDraft, publishTerms } from "../../api-lib/index";
 import TranslationKeys from "../../auth/translationKeys";
-import { PromptContext } from "../../components/prompt/promptContext.js";
+import { PromptContext } from "../../components/prompt/promptContext.tsx";
 
 class TermSettings extends React.Component {
   static contextType = PromptContext;

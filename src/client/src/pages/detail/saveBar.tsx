@@ -29,6 +29,7 @@ export const SaveBar = () => {
       direction="row"
       alignItems="center"
       justifyContent="flex-end"
+      data-cy="save-bar"
       p={1}
       sx={{
         boxShadow: theme.shadows[2],
@@ -44,14 +45,8 @@ export const SaveBar = () => {
         {showSaveFeedback && !hasChanges && savedMessage}
       </Stack>
       <Stack spacing={1} direction="row">
-        <DeleteButton
-          disabled={!hasChanges}
-          label="discardchanges"
-          onClick={() => {
-            triggerReset();
-          }}
-        />
-        <SaveButton disabled={!hasChanges} variant="contained" onClick={() => triggerSave()} />
+        <DeleteButton disabled={!hasChanges} label="discardchanges" onClick={triggerReset} />
+        <SaveButton disabled={!hasChanges} variant="contained" onClick={triggerSave} />
       </Stack>
     </Stack>
   );

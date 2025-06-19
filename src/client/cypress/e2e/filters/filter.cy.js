@@ -1,10 +1,11 @@
 import { hasPagination, showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { evaluateSelectText, setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
+import { evaluateSelect, setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
 import {
   createBorehole,
   createLithologyLayer,
   createStratigraphy,
   getElementByDataCy,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   returnToOverview,
   startBoreholeEditing,
@@ -195,7 +196,7 @@ describe("Search filter tests", () => {
   it("filters boreholes by status", () => {
     createBorehole({ "extended.original_name": "Filter by status" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/status`);
+      goToDetailRouteAndAcceptTerms(`/${id}/status`);
       startBoreholeEditing();
       getElementByDataCy("workflow_submit").click();
       getElementByDataCy("workflow_dialog_submit").click();
@@ -286,6 +287,6 @@ describe("Search filter tests", () => {
     cy.contains("Location").click();
     getElementByDataCy("show-all-fields-switch").click();
     setSelect("borehole_identifier", 0);
-    evaluateSelectText("borehole_identifier", "Boreholes.swissgeol.ch ID");
+    evaluateSelect("borehole_identifier", "Boreholes.swissgeol.ch ID");
   });
 });

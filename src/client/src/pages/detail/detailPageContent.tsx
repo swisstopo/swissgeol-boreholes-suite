@@ -1,11 +1,7 @@
-import { useContext } from "react";
-import { useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Box } from "@mui/material";
-import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
-import { AlertContext } from "../../components/alert/alertContext";
 import { Attachments } from "./attachments/attachments.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import Completion from "./form/completion/completion.jsx";
@@ -23,18 +19,9 @@ interface DetailPageContentProps {
 }
 
 export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProps) => {
-  const { showAlert } = useContext(AlertContext);
-  const legacyBorehole = useSelector((state: ReduxRootState) => state.core_borehole);
-
-  if (legacyBorehole.error !== null) {
-    showAlert(legacyBorehole.error, "error");
-  }
-
-  const boreholeLoaded = borehole && legacyBorehole;
-
   return (
     <>
-      {boreholeLoaded && (
+      {borehole && (
         <Box
           sx={{
             height: "100%",

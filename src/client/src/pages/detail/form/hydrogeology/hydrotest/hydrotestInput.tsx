@@ -3,6 +3,7 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
+import { useReloadBoreholes } from "../../../../../api/borehole.ts";
 import { AddButton } from "../../../../../components/buttons/buttons";
 import { Codelist, useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext";
@@ -13,7 +14,6 @@ import { parseFloatWithThousandsSeparator } from "../../../../../components/form
 import { useFormDirtyChanges } from "../../../../../components/form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { useBlockNavigation } from "../../../../../hooks/useBlockNavigation.tsx";
-import { DetailContext } from "../../../detailContext.tsx";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation";
@@ -24,9 +24,9 @@ import { addHydrotest, Hydrotest, HydrotestInputProps, updateHydrotest, useHydro
 export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const { t } = useTranslation();
   const { triggerReload } = useContext(DataCardContext);
-  const { reloadBorehole } = useContext(DetailContext);
   useBlockNavigation();
   const codelists = useCodelists();
+  const reloadBoreholes = useReloadBoreholes();
 
   const formMethods = useForm<Hydrotest>({
     mode: "all",
@@ -52,7 +52,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
         ...hydrotest,
       }).then(() => {
         triggerReload();
-        reloadBorehole();
+        reloadBoreholes();
       });
     } else {
       updateHydrotest({

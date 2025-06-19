@@ -2,7 +2,7 @@ import { FC, useContext, useEffect, useState } from "react";
 import { Stack } from "@mui/material";
 import { Box } from "@mui/system";
 import { Stratigraphy } from "../../../../../api/stratigraphy.ts";
-import { DetailContext } from "../../../detailContext.tsx";
+import { EditStateContext } from "../../../editStateContext.tsx";
 import { stratigraphyData } from "./data/stratigraphydata.js";
 import LithologyAttributes from "./lithologyAttributes";
 import ProfileLayers from "./lithologyLayers";
@@ -12,7 +12,7 @@ interface LithologyProps {
 }
 
 export const Lithology: FC<LithologyProps> = ({ stratigraphy }) => {
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const [selectedLayer, setSelectedLayer] = useState<{ id: number } | null>(null);
   const [reloadLayer, setReloadLayer] = useState(0);
   const [reloadAttribute, setReloadAttribute] = useState(0);

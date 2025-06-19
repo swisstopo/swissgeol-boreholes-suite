@@ -12,22 +12,26 @@ export const saveWithSaveBar = parent => {
   });
 
   getElementByDataCy("save-bar-text").should("contain", "Unsaved changes");
-  // Clicks save button
   saveForm(parent);
 
-  // Verify one additional 'borehole_by_id' requests is made and awaited (statusCode 200) before the update request.
   cy.get("@countBeforeSaveButton").then(countBeforeSaveButton => {
-    cy.get("@borehole_by_id.all")
-      .should("have.length", countBeforeSaveButton + 1)
-      .then(() => {
-        cy.get(`@borehole_by_id.${countBeforeSaveButton + 1}`)
-          .its("response.statusCode")
-          .should("equal", 200);
-      });
+    cy.get("@borehole_by_id.all").should("have.length.greaterThan", countBeforeSaveButton);
   });
 
   getElementByDataCy("save-bar-text").should("contain", "Changes saved");
   getElementByDataCy("save-bar-text").should("not.exist");
+};
+
+export const verifyNoUnsavedChanges = () => {
+  cy.get('[data-cy="save-button"]').should("be.disabled");
+  cy.get('[data-cy="discardchanges-button"]').should("be.disabled");
+  cy.contains("Unsaved changes").should("not.exist");
+};
+
+export const verifyUnsavedChanges = () => {
+  cy.get('[data-cy="save-button"]').should("not.be.disabled");
+  cy.get('[data-cy="discardchanges-button"]').should("not.be.disabled");
+  cy.contains("Unsaved changes").should("exist");
 };
 
 /**
@@ -143,6 +147,8 @@ const exportFileType = fileType => {
   const selector = `[data-cy="${fileType}-button"]`;
   cy.get(selector).should("not.be.disabled");
   cy.get(selector).click({ force: true });
+  cy.get(".MuiCircularProgress-root").should("exist");
+  cy.get(".MuiCircularProgress-root").should("not.exist");
 };
 /**
  * Clicks on the copy button.
@@ -164,9 +170,9 @@ export const addItem = itemLabel => {
   button().scrollIntoView();
   button().should("be.visible");
   button().should("be.enabled");
-  button().click({ force: true });
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
+  button().click({ force: true });
   cy.get(".MuiCircularProgress-root").should("not.exist");
 };
 

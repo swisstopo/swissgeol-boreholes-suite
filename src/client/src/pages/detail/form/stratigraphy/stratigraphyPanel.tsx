@@ -9,7 +9,7 @@ import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { DetailContext } from "../../detailContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import { AddStratigraphyButton } from "./addStratigraphyButton.tsx";
 import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel.jsx";
 import { Lithology } from "./lithology/lithology.tsx";
@@ -23,7 +23,7 @@ export const StratigraphyPanel: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: stratigraphyData, refetch: refetchStratigraphyData } = useLithologyStratigraphies(Number(boreholeId));
-  const { editingEnabled } = useContext(DetailContext);
+  const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
 
   const navigateToStratigraphy = useCallback(

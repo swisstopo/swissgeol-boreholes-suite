@@ -1,10 +1,11 @@
 import { saveForm } from "../helpers/buttonHelpers.js";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
-import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
+import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
   giveAdminUser1workgroup,
   giveAdminUser2workgroups,
+  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -68,8 +69,8 @@ describe("Test the borehole bulk edit feature.", () => {
     // select all bulk edit fields and insert values
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
-    cy.get("input[type=text]").should("have.length", 1);
-    cy.get("input[type=text]").each(($input, index) => {
+    cy.get('[data-cy$="-formInput"] input[type=text]').should("have.length", 1);
+    cy.get('[data-cy$="-formInput"] input[type=text]').each(($input, index) => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).clear();
       cy.wrap($input).type(`A${index}`);
@@ -107,8 +108,8 @@ describe("Test the borehole bulk edit feature.", () => {
     startBulkEditing();
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
-    cy.get("input[type=text]").should("have.length", 1);
-    cy.get("input[type=text]").each($input => {
+    cy.get('[data-cy$="-formInput"] input[type=text]').should("have.length", 1);
+    cy.get('[data-cy$="-formInput"] input[type=text]').each($input => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).should("have.value", "");
     });
@@ -125,8 +126,8 @@ describe("Test the borehole bulk edit feature.", () => {
       cy.wrap($input).should("have.value", "");
     });
 
-    cy.get("input.MuiSelect-nativeInput").should("have.length", 14);
-    cy.get("input.MuiSelect-nativeInput").each($input => {
+    cy.get('[data-cy$="-formSelect"] input[type=text]').should("have.length", 14);
+    cy.get('[data-cy$="-formSelect"] input[type=text]').each($input => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).should("have.value", "");
     });
@@ -163,16 +164,16 @@ describe("Test the borehole bulk edit feature.", () => {
 
     cy.get("h6").contains("Project name").scrollIntoView();
     evaluateInput("custom.project_name", "new name");
-    cy.contains(".MuiDialog-container", "restricted until").should("exist");
-    cy.contains(".MuiDialog-container", "Blue").should("exist");
-    cy.contains(".MuiDialog-container", "Yes").should("exist");
+    evaluateSelect("restriction", "restricted until");
+    evaluateSelect("workgroup", "Blue");
+    evaluateSelect("national_interest", "Yes");
 
     cy.get('[data-cy="bulk-edit-reset-button"]').click({ multiple: true, force: true });
     cy.get("h6").contains("Project name").scrollIntoView();
     evaluateInput("custom.project_name", "");
-    cy.contains(".MuiDialog-container", "restricted until").should("not.exist");
-    cy.contains(".MuiDialog-container", "Blue").should("not.exist");
-    cy.contains(".MuiDialog-container", "Yes").should("not.exist");
+    evaluateSelect("restriction", "");
+    evaluateSelect("workgroup", "");
+    evaluateSelect("national_interest", "");
   });
 
   it("cannot select locked boreholes for bulk edit", () => {
@@ -180,7 +181,7 @@ describe("Test the borehole bulk edit feature.", () => {
       "borehole_id",
     );
     cy.get("@borehole_id").then(id => {
-      goToRouteAndAcceptTerms(`/${id}/borehole`);
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
       goToRouteAndAcceptTerms(`/`);
       showTableAndWaitForData();
