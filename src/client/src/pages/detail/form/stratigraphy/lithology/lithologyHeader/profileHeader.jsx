@@ -3,7 +3,7 @@ import { Box, Stack } from "@mui/material";
 import { fetchStratigraphyByBoreholeId } from "../../../../../../api/fetchApiV2.ts";
 import { AddButton } from "../../../../../../components/buttons/buttons";
 import { useRequiredParams } from "../../../../../../hooks/useRequiredParams.js";
-import { EditStateContext } from "../../../../editStateContext.js";
+import { EditStateContext } from "../../../../editStateContext.tsx";
 import { createNewStratigraphy } from "./api";
 import ProfileHeaderList from "./profileHeaderList";
 
