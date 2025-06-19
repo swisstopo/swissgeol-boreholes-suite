@@ -10,9 +10,7 @@ import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMea
 import Hydrotest from "./form/hydrogeology/hydrotest/hydrotest.tsx";
 import WaterIngress from "./form/hydrogeology/waterIngress/waterIngress.tsx";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
-import ChronostratigraphyPanel from "./form/stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
-import Lithology from "./form/stratigraphy/lithology";
-import LithostratigraphyPanel from "./form/stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
+import { StratigraphyPanel } from "./form/stratigraphy/stratigraphyPanel.tsx";
 import { WorkflowPanel } from "./form/workflow/workflowPanel.tsx";
 
 interface DetailPageContentProps {
@@ -43,10 +41,8 @@ export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProp
           <Routes>
             <Route path="location" element={<LocationPanel borehole={borehole} labelingPanelOpen={panelOpen} />} />
             <Route path="borehole" element={<BoreholePanel borehole={borehole} />} />
-            <Route path="stratigraphy/lithology" element={<Lithology />} />
-            <Route path="stratigraphy/chronostratigraphy" element={<ChronostratigraphyPanel />} />
-            <Route path="stratigraphy/lithostratigraphy" element={<LithostratigraphyPanel />} />
-            <Route path="stratigraphy" element={<Navigate to="stratigraphy/lithology" replace />} />
+            <Route path="stratigraphy/:stratigraphyId" element={<StratigraphyPanel />} />
+            <Route path="stratigraphy" element={<StratigraphyPanel />} />
             <Route path="attachments" element={<Attachments />} />
             <Route path="hydrogeology/wateringress" element={<WaterIngress />} />
             <Route path="hydrogeology/groundwaterlevelmeasurement" element={<GroundwaterLevelMeasurement />} />

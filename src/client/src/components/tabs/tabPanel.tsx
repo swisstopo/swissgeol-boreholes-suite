@@ -1,9 +1,15 @@
-import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
+import { FC, ReactNode, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Box } from "@mui/system";
 import { AddWorkgroupDialog } from "../../pages/settings/admin/dialogs/AddWorkgroupDialog.tsx";
 import { AddButton } from "../buttons/buttons.tsx";
-import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../styledTabComponents.tsx";
+import {
+  BoreholeTab,
+  BoreholeTabContentBox,
+  BoreholeTabs,
+  TabsWithDivider,
+  TabWithContent,
+} from "../styledTabComponents.tsx";
 
 export interface Tab {
   label: string;
@@ -12,12 +18,25 @@ export interface Tab {
   hasContent?: boolean;
 }
 
-export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
+interface TabPanelProps {
+  tabs: Tab[];
+  variant?: "card" | "list";
+}
+
+export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card" }) => {
   const navigate = useNavigate();
   const { pathname, hash } = useLocation();
   const [searchParams] = useSearchParams();
   const [activeIndex, setActiveIndex] = useState(0);
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
+
+  const { Tabs, Tab, TabContent } = useMemo(
+    () =>
+      variant === "list"
+        ? { Tabs: TabsWithDivider, Tab: TabWithContent, TabContent: Box }
+        : { Tabs: BoreholeTabs, Tab: BoreholeTab, TabContent: BoreholeTabContentBox },
+    [variant],
+  );
 
   // Initialize and update activeIndex based on the current URL hash
   useEffect(() => {
@@ -26,11 +45,14 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
       setActiveIndex(newActiveIndex);
     } else {
       // Redirect to the first tab if hash is not valid
-      navigate({
-        pathname: pathname,
-        search: searchParams.toString(),
-        hash: tabs[0].hash,
-      });
+      navigate(
+        {
+          pathname: pathname,
+          search: searchParams.toString(),
+          hash: tabs[0].hash,
+        },
+        { replace: true },
+      );
     }
   }, [navigate, tabs, hash, pathname, searchParams]);
 
@@ -51,9 +73,9 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
 
   return (
     <>
-      <BoreholeTabs value={activeIndex} onChange={handleIndexChange}>
+      <Tabs value={activeIndex} onChange={handleIndexChange}>
         {tabs.map(tab => (
-          <BoreholeTab
+          <Tab
             data-cy={`${tab.hash.replace("#", "")}-tab`}
             label={tab.label}
             key={tab.hash}
@@ -62,8 +84,8 @@ export const TabPanel = ({ tabs }: { tabs: Tab[] }) => {
         ))}
         <Box sx={{ flexGrow: 1 }}></Box>
         {hash === "#workgroups" && <AddButton label={"addWorkgroup"} variant={"contained"} onClick={addWorkgroup} />}
-      </BoreholeTabs>
-      <BoreholeTabContentBox>{tabs[activeIndex].component}</BoreholeTabContentBox>
+      </Tabs>
+      <TabContent>{tabs[activeIndex].component}</TabContent>
       <AddWorkgroupDialog open={workgroupDialogOpen} setOpen={setWorkgroupDialogOpen} />
     </>
   );

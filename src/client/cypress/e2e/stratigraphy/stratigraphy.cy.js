@@ -1,5 +1,5 @@
 // adds updates and deletes stratigraphies, makes them primary and unselect other when one is primary
-import { addItem } from "../helpers/buttonHelpers";
+import { addStratigraphy } from "../helpers/buttonHelpers";
 import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers.js";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
@@ -43,10 +43,9 @@ describe("Tests for stratigraphy", () => {
     goToDetailRouteAndAcceptTerms("/1002057");
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
 
     // Add new stratigraphy
-    addItem("addStratigraphy");
+    addStratigraphy();
     cy.wait(["@stratigraphy_POST", "@stratigraphy_GET", "@stratigraphy_GET"]);
     waitForStratigraphyContent();
 

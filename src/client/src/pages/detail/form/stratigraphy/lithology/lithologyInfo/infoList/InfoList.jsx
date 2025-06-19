@@ -28,9 +28,10 @@ const InfoList = ({ id, profileInfo, onUpdated }) => {
     });
   }, [profileInfo, formMethods]);
 
-  const submitForm = data => {
+  const submitForm = async data => {
     data.date = data?.date ? ensureDatetime(data.date.toString()) : null;
-    updateStratigraphyAttributes(id, data);
+    await updateStratigraphyAttributes(id, data);
+    onUpdated("saveStratigraphy");
   };
 
   useEffect(() => {

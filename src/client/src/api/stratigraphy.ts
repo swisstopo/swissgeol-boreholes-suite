@@ -7,9 +7,12 @@ export interface Stratigraphy {
   borehole: BoreholeV2 | null;
   isPrimary: boolean;
   date: string;
+  created: Date | string | null;
+  createdById: number;
+  createdBy?: User;
   updated: Date | string | null;
   updatedById: number;
-  updatedBy: User;
+  updatedBy?: User;
   name: string;
   qualityId: number;
   notes: string;
