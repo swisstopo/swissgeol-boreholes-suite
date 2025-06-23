@@ -71,7 +71,6 @@ describe("Test for the detail page side navigation.", () => {
       "@lithological_description",
       "@facies_description",
       "@layer",
-      "@layer",
     ]);
 
     getElementByDataCy("add-layer-icon").click();
