@@ -17,12 +17,10 @@ import InfoList from "./lithology/lithologyInfo/infoList/InfoList.jsx";
 import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel.jsx";
 
 export const StratigraphyPanel: FC = () => {
-  const params = useRequiredParams();
-  const boreholeId = Number(params.id);
-  const stratigraphyId = params.stratigraphyId ? Number(params.stratigraphyId) : undefined;
+  const { id: boreholeId, stratigraphyId } = useRequiredParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: stratigraphyData, refetch: refetchStratigraphyData } = useLithologyStratigraphies(Number(boreholeId));
+  const { data: stratigraphies, refetch: refetchStratigraphyData } = useLithologyStratigraphies(Number(boreholeId));
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
 
@@ -40,45 +38,45 @@ export const StratigraphyPanel: FC = () => {
   );
 
   const addEmptyStratigraphy = useCallback(async () => {
-    const stratigraphy = await createStratigraphy(boreholeId);
+    const stratigraphy = await createStratigraphy(Number(boreholeId));
     await refetchStratigraphyData();
     navigateToStratigraphy(stratigraphy.id);
   }, [boreholeId, navigateToStratigraphy, refetchStratigraphyData]);
 
   const extractStratigraphyFromProfile = useCallback(() => {}, []);
 
-  const selectedTabIndex = stratigraphyData?.findIndex(x => x.id === stratigraphyId) ?? -1;
+  const selectedTabIndex = stratigraphies?.findIndex(x => x.id === Number(stratigraphyId)) ?? -1;
   const hasSelectedTab = selectedTabIndex !== -1;
-  const selectedStratigraphy = hasSelectedTab ? stratigraphyData?.[selectedTabIndex] : undefined;
+  const selectedStratigraphy = hasSelectedTab ? stratigraphies?.[selectedTabIndex] : undefined;
 
   useEffect(() => {
     // select stratigraphy if none is selected
-    if (stratigraphyData && !hasSelectedTab) {
-      const autoSelectedId = stratigraphyData.find(x => x.isPrimary)?.id ?? stratigraphyData[0]?.id;
+    if (stratigraphies && !hasSelectedTab) {
+      const autoSelectedId = stratigraphies.find(x => x.isPrimary)?.id ?? stratigraphies[0]?.id;
       if (autoSelectedId !== undefined) {
         navigateToStratigraphy(autoSelectedId, true);
       }
     }
-  }, [navigateToStratigraphy, stratigraphyData, hasSelectedTab]);
+  }, [navigateToStratigraphy, stratigraphies, hasSelectedTab]);
 
-  if (!stratigraphyData) {
+  if (!stratigraphies) {
     return (
       <FullPageCentered>
         <CircularProgress />
       </FullPageCentered>
     );
-  } else if (stratigraphyData.length === 0) {
+  } else if (stratigraphies.length === 0) {
     return (
       <Card sx={{ p: 4 }}>
         <Typography variant="body2">{t("noStratigraphy")}</Typography>
         {editingEnabled && (
           <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-            <AddButton label="addEmptyStratigraphy" variant="contained" onClick={() => addEmptyStratigraphy()} />
+            <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />
             <AddButton
               label="extractStratigraphyFromProfile"
               variant="contained"
               disabled
-              onClick={() => extractStratigraphyFromProfile()}
+              onClick={extractStratigraphyFromProfile}
             />
           </Stack>
         )}
@@ -91,8 +89,8 @@ export const StratigraphyPanel: FC = () => {
       <Box sx={{ position: "relative" }}>
         <BoreholeTabs
           value={selectedTabIndex === -1 ? 0 : selectedTabIndex}
-          onChange={(_, newValue) => navigateToStratigraphy(stratigraphyData[newValue].id)}>
-          {stratigraphyData.map(stratigraphy => (
+          onChange={(_, newValue) => navigateToStratigraphy(stratigraphies[newValue].id)}>
+          {stratigraphies.map(stratigraphy => (
             <BoreholeTab
               data-cy={`stratigraphy-tab-${stratigraphy.id}`}
               key={String(stratigraphy.id)}
@@ -109,40 +107,32 @@ export const StratigraphyPanel: FC = () => {
         )}
         <BoreholeTabContentBox sx={{ mb: 2 }}>
           {selectedStratigraphy && (
-            <InfoList
-              id={stratigraphyId}
-              profileInfo={selectedStratigraphy}
-              onUpdated={() => {
-                refetchStratigraphyData();
-              }}
-            />
+            <>
+              <InfoList id={stratigraphyId} profileInfo={selectedStratigraphy} onUpdated={refetchStratigraphyData} />
+              <Box sx={{ position: "relative", mt: 2 }}>
+                <TabPanel
+                  variant="list"
+                  tabs={[
+                    {
+                      label: t("lithology"),
+                      hash: "#lithology",
+                      component: <Lithology stratigraphy={selectedStratigraphy} />,
+                    },
+                    {
+                      label: t("chronostratigraphy"),
+                      hash: "#chronostratigraphy",
+                      component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                    },
+                    {
+                      label: t("lithostratigraphy"),
+                      hash: "#lithostratigraphy",
+                      component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                    },
+                  ]}
+                />
+              </Box>
+            </>
           )}
-          <Box sx={{ position: "relative", mt: 2 }}>
-            <TabPanel
-              variant="list"
-              tabs={[
-                {
-                  label: t("lithology"),
-                  hash: "#lithology",
-                  component: selectedStratigraphy && <Lithology stratigraphy={selectedStratigraphy} />,
-                },
-                {
-                  label: t("chronostratigraphy"),
-                  hash: "#chronostratigraphy",
-                  component: selectedStratigraphy && (
-                    <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />
-                  ),
-                },
-                {
-                  label: t("lithostratigraphy"),
-                  hash: "#lithostratigraphy",
-                  component: selectedStratigraphy && (
-                    <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />
-                  ),
-                },
-              ]}
-            />
-          </Box>
         </BoreholeTabContentBox>
       </Box>
     </Box>
