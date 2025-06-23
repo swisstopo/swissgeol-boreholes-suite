@@ -47,7 +47,7 @@ export const BoreholeTab = styled(({ ...props }: BoreholeTabProps) => <Tab disab
     top: "1px",
   },
   "&.Mui-focusVisible": {
-    backgroundColor: "rgba(100, 95, 228, 0.32)",
+    backgroundColor: theme.palette.background.tabFocus,
   },
 }));
 
@@ -63,6 +63,6 @@ export const TabWithContent = styled(({ ...props }: BoreholeTabProps) => <Tab di
 })(({ theme, hasContent }) => ({
   color: hasContent === false ? theme.palette.buttonStates.outlined.disabled.color : theme.palette.secondary.main,
   "&.Mui-focusVisible": {
-    backgroundColor: "rgba(100, 95, 228, 0.32)",
+    backgroundColor: theme.palette.background.tabFocus,
   },
 }));

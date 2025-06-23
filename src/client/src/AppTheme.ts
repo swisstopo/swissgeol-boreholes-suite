@@ -70,6 +70,7 @@ const themePalette: AppThemePalette = {
     filterItemActive: "#1C2834",
     listItemActive: "#DFE4E9",
     backdrop: "rgba(255,255,255,0.7)",
+    tabFocus: "rgba(100, 95, 228, 0.32)",
   },
   transparent: "rgba(0,0,0,0)",
   buttonStates: {
