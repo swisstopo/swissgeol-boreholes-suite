@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Sparkles } from "lucide-react";
 import { ButtonSelect } from "../../../../components/buttons/buttonSelect";
 
 interface AddStratigraphyButtonProps {
@@ -25,7 +24,8 @@ export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
       variant="contained"
       items={[
         { key: Actions.addEmpty, value: t("addEmptyStratigraphy") },
-        { key: Actions.extract, value: t("extractStratigraphyFromProfile"), startIcon: <Sparkles /> },
+        // extract from profile is not implemented yet
+        // { key: Actions.extract, value: t("extractStratigraphyFromProfile"), startIcon: <Sparkles /> },
       ]}
       selectedItem={{ key: "new", value: t("newStratigraphy") }}
       onItemSelected={item => {
