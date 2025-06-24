@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Card, CircularProgress, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { createStratigraphy, useLithologyStratigraphies } from "../../../../api/fetchApiV2.ts";
+import { createStratigraphy, useLithologyStratigraphies } from "../../../../api/stratigraphy.ts";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";

@@ -1,5 +1,4 @@
-import { Stratigraphy } from "../../../../../../../api/apiInterfaces.ts";
-import { fetchStratigraphy, updateStratigraphy } from "../../../../../../../api/fetchApiV2.ts";
+import { fetchStratigraphy, Stratigraphy, updateStratigraphy } from "../../../../../../../api/stratigraphy.ts";
 
 export const updateStratigraphyAttributes = async (id: number, attributeValues: Partial<Stratigraphy>) => {
   try {

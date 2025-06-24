@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Box, FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../../../../hookformDevtools";
-import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2";
+import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/stratigraphy.ts";
 import { CancelButton, CopyButton, DeleteButton, SaveButton } from "../../../../../../../components/buttons/buttons";
 import { DataCardButtonContainer } from "../../../../../../../components/dataCard/dataCard";
 import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../../../../../../../components/form/form";
