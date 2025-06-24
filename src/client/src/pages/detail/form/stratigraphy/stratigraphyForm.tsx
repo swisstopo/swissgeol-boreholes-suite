@@ -1,44 +1,47 @@
-import { useContext, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Box, FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2 } from "lucide-react";
-import { DevTool } from "../../../../../../../../hookformDevtools";
-import { useStratigraphyMutations } from "../../../../../../../api/stratigraphy.ts";
-import { CancelButton, CopyButton, DeleteButton, SaveButton } from "../../../../../../../components/buttons/buttons";
-import { DataCardButtonContainer } from "../../../../../../../components/dataCard/dataCard";
-import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../../../../../../../components/form/form";
-import { ensureDatetime } from "../../../../../../../components/form/formUtils";
-import { PromptContext } from "../../../../../../../components/prompt/promptContext";
-import { EditStateContext } from "../../../../../editStateContext.tsx";
+import { DevTool } from "../../../../../hookformDevtools.ts";
+import { Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
+import { CancelButton, CopyButton, DeleteButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.tsx";
+import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../../../../components/form/form.ts";
+import { ensureDatetime } from "../../../../components/form/formUtils.ts";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 
-const InfoList = ({ profileInfo, onUpdated }) => {
+interface StratigraphyFormProps {
+  stratigraphy: Stratigraphy;
+}
+
+export const StratigraphyForm: FC<StratigraphyFormProps> = ({ stratigraphy }) => {
   const { t } = useTranslation();
-  const formMethods = useForm({ mode: "all" });
+  const formMethods = useForm<Stratigraphy>({ mode: "all" });
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(EditStateContext);
   const {
-    copy: { mutateAsync: copyStratigraphy },
-    update: { mutateAsync: updateStratigraphy },
-    delete: { mutateAsync: deleteStratigraphy },
+    copy: { mutate: copyStratigraphy },
+    update: { mutate: updateStratigraphy },
+    delete: { mutate: deleteStratigraphy },
   } = useStratigraphyMutations();
 
   useEffect(() => {
     formMethods.reset({
-      ...profileInfo,
-      date: profileInfo.date?.toString().slice(0, 10) ?? null,
+      ...stratigraphy,
+      date: stratigraphy.date?.toString().slice(0, 10) ?? "",
     });
-  }, [profileInfo, formMethods]);
+  }, [formMethods, stratigraphy]);
 
-  const submitForm = async data => {
-    data.date = data?.date ? ensureDatetime(data.date.toString()) : null;
-    await updateStratigraphy(data);
-    onUpdated("saveStratigraphy");
+  const submitForm = async (data: Stratigraphy) => {
+    data.date = data.date ? ensureDatetime(data.date.toString()) : "";
+    updateStratigraphy(data);
   };
 
   useEffect(() => {
-    formMethods.setValue("date", profileInfo?.date?.toString().slice(0, 10) ?? "");
-  }, [profileInfo?.date, formMethods]);
+    formMethods.setValue("date", stratigraphy.date?.toString().slice(0, 10) ?? "");
+  }, [formMethods, stratigraphy.date]);
 
   return (
     <FormProvider {...formMethods}>
@@ -48,22 +51,23 @@ const InfoList = ({ profileInfo, onUpdated }) => {
           <FormInput
             fieldName={"name"}
             label={"stratigraphy_name"}
-            value={profileInfo.name}
+            value={stratigraphy.name}
             readonly={!editingEnabled}
-            type={FormValueType.Text}></FormInput>
+            type={FormValueType.Text}
+          />
           <FormControlLabel
             control={
               <Controller
                 name="isPrimary"
                 control={formMethods.control}
-                defaultValue={profileInfo?.isPrimary}
+                defaultValue={stratigraphy.isPrimary}
                 render={({ field }) => (
                   <Switch
                     {...field}
                     data-cy={"isprimary-switch"}
                     checked={field.value}
                     color="secondary"
-                    disabled={!editingEnabled || profileInfo?.isPrimary}
+                    disabled={!editingEnabled || stratigraphy.isPrimary}
                   />
                 )}
               />
@@ -76,13 +80,13 @@ const InfoList = ({ profileInfo, onUpdated }) => {
             fieldName={"date"}
             label="date"
             readonly={!editingEnabled}
-            value={profileInfo.date}
+            value={stratigraphy.date}
             type={FormValueType.Date}
           />
           <FormDomainSelect
             fieldName={"qualityId"}
             label={"stratigraphy_quality"}
-            selected={profileInfo.qualityId}
+            selected={stratigraphy.qualityId}
             readonly={!editingEnabled}
             schemaName={"description_quality"}
           />
@@ -92,46 +96,29 @@ const InfoList = ({ profileInfo, onUpdated }) => {
           {editingEnabled && (
             <>
               <DataCardButtonContainer>
-                <CopyButton
-                  onClick={() => {
-                    copyStratigraphy(profileInfo).then(() => {
-                      onUpdated("cloneStratigraphy");
-                    });
-                  }}></CopyButton>
+                <CopyButton onClick={() => copyStratigraphy(stratigraphy)} />
                 <DeleteButton
                   onClick={() => {
                     showPrompt("deleteMessage", [
                       {
                         label: "cancel",
-                        action: null,
                       },
                       {
                         label: "delete",
                         icon: <Trash2 />,
                         variant: "contained",
-                        action: () => {
-                          deleteStratigraphy(profileInfo).then(() => {
-                            onUpdated("deleteStratigraphy");
-                          });
-                        },
+                        action: () => deleteStratigraphy(stratigraphy),
                       },
                     ]);
                   }}
                 />
               </DataCardButtonContainer>
               <DataCardButtonContainer>
-                <CancelButton
-                  dataCy={"stratigraphy-cancel-button"}
-                  onClick={() => {
-                    formMethods.reset();
-                  }}
-                />
+                <CancelButton dataCy={"stratigraphy-cancel-button"} onClick={() => formMethods.reset()} />
                 <SaveButton
-                  dataCy={"" + "stratigraphy-save-button"}
+                  dataCy={"stratigraphy-save-button"}
                   disabled={!formMethods.formState.isValid}
-                  onClick={() => {
-                    formMethods.handleSubmit(submitForm)();
-                  }}
+                  onClick={() => formMethods.handleSubmit(submitForm)()}
                 />
               </DataCardButtonContainer>
             </>
@@ -141,5 +128,3 @@ const InfoList = ({ profileInfo, onUpdated }) => {
     </FormProvider>
   );
 };
-
-export default InfoList;

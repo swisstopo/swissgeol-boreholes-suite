@@ -13,14 +13,14 @@ import { EditStateContext } from "../../editStateContext.tsx";
 import { AddStratigraphyButton } from "./addStratigraphyButton.tsx";
 import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel.jsx";
 import { Lithology } from "./lithology/lithology.tsx";
-import InfoList from "./lithology/lithologyInfo/infoList/InfoList.jsx";
 import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel.jsx";
+import { StratigraphyForm } from "./stratigraphyForm.tsx";
 
 export const StratigraphyPanel: FC = () => {
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: stratigraphies, refetch: refetchStratigraphyData } = useStratigraphiesByBoreholeId(Number(boreholeId));
+  const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
   const {
     add: { mutateAsync: addStratigraphyAsync },
   } = useStratigraphyMutations();
@@ -110,7 +110,7 @@ export const StratigraphyPanel: FC = () => {
         <BoreholeTabContentBox sx={{ mb: 2 }}>
           {selectedStratigraphy && (
             <>
-              <InfoList profileInfo={selectedStratigraphy} onUpdated={refetchStratigraphyData} />
+              <StratigraphyForm stratigraphy={selectedStratigraphy} />
               <Box sx={{ position: "relative", mt: 2 }}>
                 <TabPanel
                   variant="list"
