@@ -1,5 +1,5 @@
 // adds updates and deletes stratigraphies, makes them primary and unselect other when one is primary
-import { addItem } from "../helpers/buttonHelpers";
+import { addStratigraphy } from "../helpers/buttonHelpers";
 import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers.js";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
@@ -30,12 +30,7 @@ describe("Tests for stratigraphy", () => {
     }
 
     function waitForStratigraphyContent() {
-      cy.wait([
-        "@get-layers-by-profileId",
-        "@get-layers-by-profileId",
-        "@stratigraphy_by_borehole_GET",
-        "@stratigraphy_by_borehole_GET",
-      ]);
+      cy.wait(["@get-layers-by-profileId", "@stratigraphy_by_borehole_GET"]);
       waitForLayerWithDescriptions();
     }
 
@@ -43,11 +38,10 @@ describe("Tests for stratigraphy", () => {
     goToDetailRouteAndAcceptTerms("/1002057");
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    navigateInSidebar(SidebarMenuItem.lithology);
 
     // Add new stratigraphy
-    addItem("addStratigraphy");
-    cy.wait(["@stratigraphy_POST", "@stratigraphy_GET", "@stratigraphy_GET"]);
+    addStratigraphy();
+    cy.wait(["@stratigraphy_POST", "@stratigraphy_GET"]);
     waitForStratigraphyContent();
 
     // evaluate existing stratigraphy
@@ -58,7 +52,6 @@ describe("Tests for stratigraphy", () => {
 
     cy.contains("Not specified").click(); // click on newly added stratigraphy
     cy.wait(["@stratigraphy_GET", "@stratigraphy_by_borehole_GET", "@get-layers-by-profileId"]);
-    waitForLayerWithDescriptions();
     waitForLayerWithDescriptions();
     // Add input values
     addTestStratigraphyValues();
@@ -95,15 +88,14 @@ describe("Tests for stratigraphy", () => {
 
     // Copy added stratigraphy
     getElementByDataCy("copy-button").click();
-    cy.wait(["@stratigraphy_GET", "@stratigraphy_GET"]);
+    cy.wait(["@stratigraphy_GET"]);
     waitForStratigraphyContent();
 
     cy.contains("Test Stratigraphy (Clone)").should("exist");
     cy.contains("Test Stratigraphy (Clone)").click();
 
-    cy.wait(["@stratigraphy_GET", "@stratigraphy_GET"]);
+    cy.wait(["@stratigraphy_GET"]);
     waitForStratigraphyContent();
-    waitForLayerWithDescriptions();
     waitForLayerWithDescriptions();
 
     evaluateInput("name", "Test Stratigraphy (Clone)");

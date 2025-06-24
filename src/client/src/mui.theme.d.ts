@@ -83,6 +83,7 @@ declare module "@mui/material/styles" {
       filterItemActive: string;
       listItemActive: string;
       backdrop: string;
+      tabFocus: string;
     };
     transparent: string;
     buttonStates: {

@@ -74,7 +74,9 @@ describe("Tests for the chronostratigraphy editor.", () => {
 
     // open chronostratigraphy editor
     cy.get("@borehole_id").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id}/stratigraphy/chronostratigraphy`);
+      cy.get("@stratigraphy_id").then(stratigraphyId => {
+        goToDetailRouteAndAcceptTerms(`/${id}/stratigraphy/${stratigraphyId}#chronostratigraphy`);
+      });
     });
     cy.wait("@get-layers-by-profileId");
 

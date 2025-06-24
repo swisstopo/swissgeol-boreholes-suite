@@ -16,7 +16,6 @@ interface DetailSideNavProps {
 }
 
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
-  const [stratigraphyIsVisible, setStratigraphyIsVisible] = useState(false);
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const { id } = useRequiredParams<{ id: string }>();
   const location = useLocation();
@@ -27,9 +26,6 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
 
   const {
     hasStratigraphy,
-    hasLithology,
-    hasChronoStratigraphy,
-    hasLithoStratigraphy,
     hasCompletion,
     hasObservation,
     hasWaterIngress,
@@ -39,9 +35,6 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
     hasAttachments,
   } = useMemo(() => {
     const hasStratigraphy = (borehole.stratigraphies?.length ?? 0) > 0;
-    const hasLithology = borehole.stratigraphies?.some(s => s.layers?.length > 0) ?? false;
-    const hasChronoStratigraphy = borehole.stratigraphies?.some(s => s.chronostratigraphyLayers?.length > 0) ?? false;
-    const hasLithoStratigraphy = borehole.stratigraphies?.some(s => s.lithostratigraphyLayers?.length > 0) ?? false;
     const hasCompletion = (borehole.completions?.length ?? 0) > 0;
     const hasObservation = (borehole.observations?.length ?? 0) > 0;
     const hasWaterIngress =
@@ -59,9 +52,6 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
 
     return {
       hasStratigraphy,
-      hasLithology,
-      hasChronoStratigraphy,
-      hasLithoStratigraphy,
       hasCompletion,
       hasObservation,
       hasWaterIngress,
@@ -73,7 +63,6 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   }, [borehole]);
 
   useEffect(() => {
-    setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
     setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
   }, [location, id]);
 
@@ -117,45 +106,13 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             <Typography data-cy="borehole-menu-item">{capitalizeFirstLetter(t("borehole"))}</Typography>
           </ParentListItem>
           <ParentListItem
-            active={false}
+            active={location.pathname.includes(`/${id}/stratigraphy`)}
             hasContent={hasStratigraphy}
             onClick={() => {
-              setStratigraphyIsVisible(!stratigraphyIsVisible);
+              navigateTo(`/${id}/stratigraphy`);
             }}>
             <Typography data-cy="stratigraphy-menu-item">{capitalizeFirstLetter(t("stratigraphy"))}</Typography>
           </ParentListItem>
-          {stratigraphyIsVisible && (
-            <>
-              <ChildListItem
-                active={location.pathname === `/${id}/stratigraphy/lithology`}
-                hasContent={hasLithology}
-                onClick={() => {
-                  navigateTo(`/${id}/stratigraphy/lithology`);
-                }}>
-                <Typography data-cy="lithology-menu-item">{capitalizeFirstLetter(t("lithology"))}</Typography>
-              </ChildListItem>
-              <ChildListItem
-                active={location.pathname === `/${id}/stratigraphy/chronostratigraphy`}
-                hasContent={hasChronoStratigraphy}
-                onClick={() => {
-                  navigateTo(`/${id}/stratigraphy/chronostratigraphy`);
-                }}>
-                <Typography data-cy="chronostratigraphy-menu-item">
-                  {capitalizeFirstLetter(t("chronostratigraphy"))}
-                </Typography>
-              </ChildListItem>
-              <ChildListItem
-                active={location.pathname === `/${id}/stratigraphy/lithostratigraphy`}
-                hasContent={hasLithoStratigraphy}
-                onClick={() => {
-                  navigateTo(`/${id}/stratigraphy/lithostratigraphy`);
-                }}>
-                <Typography data-cy="lithostratigraphy-menu-item">
-                  {capitalizeFirstLetter(t("lithostratigraphy"))}
-                </Typography>
-              </ChildListItem>
-            </>
-          )}
           <ParentListItem
             active={location.pathname.includes(`/${id}/completion`)}
             hasContent={hasCompletion}

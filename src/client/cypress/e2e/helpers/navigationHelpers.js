@@ -4,9 +4,6 @@ export const SidebarMenuItem = {
   location: "location",
   borehole: "borehole",
   stratigraphy: "stratigraphy",
-  lithology: "lithology",
-  chronostratigraphy: "chronostratigraphy",
-  lithostratigraphy: "lithostratigraphy",
   completion: "completion",
   hydrogeology: "hydrogeology",
   waterIngress: "wateringress",
@@ -18,9 +15,6 @@ export const SidebarMenuItem = {
 };
 
 const sidebarParentMap = {
-  lithology: SidebarMenuItem.stratigraphy,
-  chronostratigraphy: SidebarMenuItem.stratigraphy,
-  lithostratigraphy: SidebarMenuItem.stratigraphy,
   waterIngress: SidebarMenuItem.hydrogeology,
   groundwaterLevelMeasurement: SidebarMenuItem.hydrogeology,
   fieldMeasurement: SidebarMenuItem.hydrogeology,
@@ -31,6 +25,12 @@ export const BoreholeTab = {
   general: "general",
   sections: "sections",
   geometry: "geometry",
+};
+
+export const StratigraphyTab = {
+  lithology: "lithology",
+  chronostratigraphy: "chronostratigraphy",
+  lithostratigraphy: "lithostratigraphy",
 };
 
 const noContentColor = "rgb(130, 142, 154)";
@@ -81,6 +81,29 @@ export const navigateInBorehole = (tab, promptSelector) => {
   });
 
   isActiveBoreholeTab(tab);
+};
+
+export const navigateInStratigraphy = tab => {
+  getElementByDataCy(`${tab}-tab`).click();
+
+  switch (tab) {
+    case StratigraphyTab.lithology:
+      getElementByDataCy("name-formInput").should("exist");
+      break;
+    case StratigraphyTab.chronostratigraphy:
+      cy.wait("@chronostratigraphy_GET");
+      break;
+    case StratigraphyTab.lithostratigraphy:
+      cy.wait("@lithostratigraphy_GET");
+      break;
+  }
+
+  cy.location().should(location => {
+    expect(location.pathname).to.match(/^\/\d+\/stratigraphy(\/|$)/);
+    expect(location.hash).to.eq(`#${tab}`);
+  });
+
+  getElementByDataCy(`${tab}-tab`).should("have.class", "Mui-selected");
 };
 
 const checkThatParentOpen = menuItem => {
@@ -142,35 +165,17 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.stratigraphy:
-      getElementByDataCy("lithology-menu-item").should("be.visible");
-      getElementByDataCy("chronostratigraphy-menu-item").should("be.visible");
-      getElementByDataCy("lithostratigraphy-menu-item").should("be.visible");
-      break;
-    case SidebarMenuItem.lithology:
-      cy.wait(["@stratigraphy_GET", "@stratigraphy_GET", "@stratigraphy_GET"]);
-      cy.location().should(location => {
-        expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/lithology$/);
-      });
+      isActiveMenuItem(menuItem);
       cy.get(".MuiCircularProgress-root").should("not.exist");
-      isActiveMenuItem(menuItem);
-      break;
-    case SidebarMenuItem.chronostratigraphy:
-      cy.wait("@get-layers-by-profileId");
-      cy.wait("@chronostratigraphy_GET");
       cy.location().should(location => {
-        expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/chronostratigraphy$/);
+        if (!location.hash) {
+          // No stratigraphy
+          expect(location.pathname).to.match(/^\/\d+\/stratigraphy$/);
+        } else {
+          expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/\d+$/);
+          expect(location.hash).to.eq("#lithology");
+        }
       });
-      getElementByDataCy("stratigraphy-select").should("exist");
-      isActiveMenuItem(menuItem);
-      break;
-    case SidebarMenuItem.lithostratigraphy:
-      cy.wait("@get-layers-by-profileId");
-      cy.wait("@lithostratigraphy_GET");
-      cy.location().should(location => {
-        expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/lithostratigraphy$/);
-      });
-      getElementByDataCy("stratigraphy-select").should("exist");
-      isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.completion:
       cy.wait("@completion_GET");
