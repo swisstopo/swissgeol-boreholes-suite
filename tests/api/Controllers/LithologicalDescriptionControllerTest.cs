@@ -70,7 +70,7 @@ public class LithologicalDescriptionControllerTest
         Assert.AreEqual(9_000_015, lithologicalDescription.Id);
         Assert.AreEqual(50, lithologicalDescription.FromDepth);
         Assert.AreEqual(60, lithologicalDescription.ToDepth);
-        Assert.AreEqual("Metrics Mountains Practical", lithologicalDescription.Description);
+        Assert.AreEqual("Sleek Metrics Mountains", lithologicalDescription.Description);
         Assert.AreEqual(6_000_001, lithologicalDescription.StratigraphyId);
     }
 
@@ -105,9 +105,9 @@ public class LithologicalDescriptionControllerTest
 
         var lithologicalDescriptionToEdit = context.LithologicalDescriptions.Single(c => c.Id == id);
         Assert.AreEqual(1, lithologicalDescriptionToEdit.CreatedById);
-        Assert.AreEqual(5, lithologicalDescriptionToEdit.UpdatedById);
+        Assert.AreEqual(1, lithologicalDescriptionToEdit.UpdatedById);
         Assert.AreEqual(6_000_006, lithologicalDescriptionToEdit.StratigraphyId);
-        Assert.AreEqual("Libyan Dinar 1080p leading edge", lithologicalDescriptionToEdit.Description);
+        Assert.AreEqual("frame Libyan Dinar 1080p", lithologicalDescriptionToEdit.Description);
 
         // Update LithologicalDescription
         var response = await controller.EditAsync(newLithologicalDescription);
