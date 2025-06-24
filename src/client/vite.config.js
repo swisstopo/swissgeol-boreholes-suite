@@ -1,5 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 import svgr from "vite-plugin-svgr";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 
@@ -10,6 +11,14 @@ export default defineConfig({
     viteTsconfigPaths(),
     svgr({
       include: "**/*.svg?react",
+    }),
+    viteStaticCopy({
+      targets: [
+        {
+          src: "node_modules/@swisstopo/swissgeol-ui-core/dist/swissgeol-ui-core/assets/*",
+          dest: "assets",
+        },
+      ],
     }),
   ],
   server: {

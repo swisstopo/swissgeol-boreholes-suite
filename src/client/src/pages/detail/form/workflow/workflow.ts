@@ -1,33 +1,23 @@
-import { WorkflowStatus } from "@swisstopo/swissgeol-ui-core";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { User } from "../../../../api/apiInterfaces.ts";
+import {
+  GenericWorkflow,
+  WorkflowChange as SwissgeolWorkflowChange,
+  WorkflowStatus,
+} from "@swisstopo/swissgeol-ui-core";
+import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
 import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
 
 export { WorkflowStatus };
 
-export interface WorkflowV2 {
+export interface WorkflowV2 extends GenericWorkflow {
   id: number;
-  hasRequestedChanges: boolean;
-  status: WorkflowStatus;
-  boreholeId: number;
   reviewedTabs: TabStatus;
   publishedTabs: TabStatus;
-  assigneeId: number | null;
-  assignee: User | null;
-  changes: WorkflowChange[];
 }
 
-export interface WorkflowChange {
+export interface WorkflowChange extends SwissgeolWorkflowChange {
   id: number;
-  comment: string;
-  fromStatus: WorkflowStatus;
-  toStatus: WorkflowStatus;
-  createdById: number | null;
-  createdBy: User | null;
-  created: string;
-  assigneeId: number | null;
-  assignee: User | null;
 }
 
 export interface TabStatus {
@@ -51,8 +41,8 @@ export interface TabStatus {
 
 export interface WorkflowChangeRequest {
   boreholeId: string;
-  comment: string;
-  newAssigneeId: number | null;
+  comment: string | null;
+  newAssigneeId: number | undefined;
   newStatus: WorkflowStatus;
 }
 
@@ -76,4 +66,26 @@ export const useWorkflow = (boreholeId: number): UseQueryResult<WorkflowV2> => {
 
   useShowAlertOnError(query.isError, query.error);
   return query;
+};
+
+export const useWorkflowMutation = () => {
+  const queryClient = useQueryClient();
+
+  const updateWorkflow = useMutation({
+    mutationFn: (request: WorkflowChangeRequest) => sendWorkflowChangeRequest(request),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [workflowQueryKey, Number(variables.boreholeId)],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey, Number(variables.boreholeId)],
+      });
+    },
+  });
+
+  useShowAlertOnError(updateWorkflow.isError, updateWorkflow.error);
+
+  return {
+    update: updateWorkflow,
+  };
 };
