@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import ListItem from "@mui/material/ListItem";
 import { styled } from "@mui/system";
 import { theme } from "../AppTheme";
@@ -105,3 +105,7 @@ export const ParentListItem = styled(ListItem, {
 export const ChildListItem = styled(ParentListItem)(() => ({
   paddingLeft: "50px !important",
 }));
+
+export const StyledTypography = styled(Typography)({
+  fontSize: "14px !important",
+});
