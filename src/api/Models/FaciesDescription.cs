@@ -51,18 +51,6 @@ public class FaciesDescription : ILayerDescription, IChangeTracking, IIdentifyab
     [Column("description")]
     public string? Description { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the quality of the <see cref="FaciesDescription"/>'s description.
-    /// </summary>
-    [IncludeInExport]
-    [Column("qt_description_id")]
-    public int? DescriptionQualityId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the quality of the <see cref="FaciesDescription"/>'s description.
-    /// </summary>
-    public Codelist? DescriptionQuality { get; set; }
-
     /// <inheritdoc />
     [IncludeInExport]
     [Column("depth_from")]
