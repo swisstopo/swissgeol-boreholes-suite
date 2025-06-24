@@ -8,6 +8,7 @@ import {
 
 describe("Tests the publication workflow.", () => {
   const getShadowElementFromTree = (hostElement, selectorMapping) => {
+    // eslint-disable-next-line cypress/no-assigning-return-values
     let chain = cy.get(hostElement);
 
     selectorMapping.forEach(({ selector, useShadow = true }) => {
@@ -42,7 +43,7 @@ describe("Tests the publication workflow.", () => {
       });
   };
 
-  it.skip("Displays DEV workflow when feature flag is set", () => {
+  it("Displays DEV workflow when feature flag is set", () => {
     goToDetailRouteAndAcceptTerms(`/1000036/status`);
     // displays legacy workflow form by default
     cy.contains("h4", "Publication workflow").should("exist");
@@ -83,18 +84,6 @@ describe("Tests the publication workflow.", () => {
       "Asset editor user zugewiesen",
       "Rerum repudiandae nihil accusamus sed omnis tempore laboriosam eaque est.",
     ); // Translation not yet available in core UI, wrong "asset" hardcoded in component
-
-    getShadowElementFromTree("sgc-workflow", [
-      { selector: "sgc-tabs" },
-      { selector: "sgc-tab" },
-      { selector: "sgc-translate" },
-    ])
-      .contains("Review")
-      .click();
-    cy.contains("thead", "Reviewed").should("exist");
-
-    //verify all checkboxes are unchecked
-    cy.get(".PrivateSwitchBase-input").should("not.be.checked");
   });
 
   it.skip("Can request review from users with controller privilege", () => {

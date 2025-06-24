@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
 import {
-  Role,
   SgcWorkflowChangeEventDetail,
   SgcWorkflowCustomEvent,
   SgcWorkflowSelectionChangeEventDetails,
@@ -11,19 +10,12 @@ import {
   WorkflowChange,
 } from "@swisstopo/swissgeol-ui-core";
 import { SgcWorkflow } from "@swisstopo/swissgeol-ui-core-react";
-import { RolePriority } from "../../../../api/apiInterfaces.ts";
 import { useBorehole } from "../../../../api/borehole.ts";
 import { useUsers } from "../../../../api/user.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useUserRoleForBorehole } from "../../../../hooks/useUserRoleForBorehole.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { useWorkflow, useWorkflowMutation, WorkflowChangeRequest } from "./workflow.ts";
-
-const CoreRolePriority: Record<Role, number> = {
-  Reader: 0,
-  Editor: 1,
-  Reviewer: 2,
-  Publisher: 3,
-};
 
 export const WorkflowView = () => {
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
@@ -32,6 +24,7 @@ export const WorkflowView = () => {
   const { data: users } = useUsers();
   const { data: borehole } = useBorehole(parseInt(boreholeId));
   const { t } = useTranslation();
+  const { canUserEditBorehole, mapMaxRole } = useUserRoleForBorehole();
   const {
     update: { mutate: updateWorkflow },
   } = useWorkflowMutation();
@@ -66,20 +59,14 @@ export const WorkflowView = () => {
 
   if (!workflow) return;
 
-  const getUsersWithPrivilege = (role: Role): SimpleUser[] => {
+  const getUsersWithEditPrivilege = (): SimpleUser[] => {
     if (!users) return [];
     return users
-      ?.map(user => ({
+      .filter(user => canUserEditBorehole(user, borehole))
+      .map(user => ({
         ...user,
-        role: Role.Reviewer, // todo fix this, it should be dynamic based on the role
-      }))
-      .filter(user => {
-        const boreholeWorkgroupId = borehole?.workgroup?.id;
-        const workgroupRoles = user.workgroupRoles?.filter(wg => wg.workgroupId === boreholeWorkgroupId);
-        if (!workgroupRoles) return false;
-        const maxPrivilege = Math.max(...workgroupRoles.map(r => RolePriority[r.role]));
-        return maxPrivilege >= CoreRolePriority[role];
-      });
+        role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role)),
+      }));
   };
 
   const handleWorkflowChange = (changeEvent: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => {
@@ -99,10 +86,7 @@ export const WorkflowView = () => {
         workflow={workflow}
         review={workflow.reviewedTabs}
         approval={workflow.publishedTabs}
-        availableAssignees={getUsersWithPrivilege(Role.Reviewer).map(user => ({
-          ...user,
-          role: Role.Reviewer,
-        }))}
+        availableAssignees={getUsersWithEditPrivilege()}
         isReadOnly={!editingEnabled}
         selection={makeSelectionEntries()}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>

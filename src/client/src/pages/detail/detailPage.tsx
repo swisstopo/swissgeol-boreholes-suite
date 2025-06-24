@@ -51,6 +51,7 @@ export const DetailPage: FC = () => {
     const isStatusPage = location.pathname.endsWith("/status");
     const isBoreholeInEditWorkflow = currentBoreholeStatus === Role.Editor;
 
+    // Todo : Adapt to new workflowV2 once implemented
     setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
   }, [
     borehole?.locked,
