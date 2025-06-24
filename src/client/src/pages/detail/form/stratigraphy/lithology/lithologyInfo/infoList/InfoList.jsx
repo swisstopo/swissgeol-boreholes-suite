@@ -4,33 +4,35 @@ import { useTranslation } from "react-i18next";
 import { Box, FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../../../../hookformDevtools";
-import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/stratigraphy.ts";
+import { useStratigraphyMutations } from "../../../../../../../api/stratigraphy.ts";
 import { CancelButton, CopyButton, DeleteButton, SaveButton } from "../../../../../../../components/buttons/buttons";
 import { DataCardButtonContainer } from "../../../../../../../components/dataCard/dataCard";
 import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../../../../../../../components/form/form";
 import { ensureDatetime } from "../../../../../../../components/form/formUtils";
 import { PromptContext } from "../../../../../../../components/prompt/promptContext";
 import { EditStateContext } from "../../../../../editStateContext.tsx";
-import { updateStratigraphyAttributes } from "../api/index.ts";
 
-const InfoList = ({ id, profileInfo, onUpdated }) => {
+const InfoList = ({ profileInfo, onUpdated }) => {
   const { t } = useTranslation();
   const formMethods = useForm({ mode: "all" });
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(EditStateContext);
+  const {
+    copy: { mutateAsync: copyStratigraphy },
+    update: { mutateAsync: updateStratigraphy },
+    delete: { mutateAsync: deleteStratigraphy },
+  } = useStratigraphyMutations();
 
   useEffect(() => {
     formMethods.reset({
-      name: profileInfo.name,
+      ...profileInfo,
       date: profileInfo.date?.toString().slice(0, 10) ?? null,
-      qualityId: profileInfo.qualityId,
-      isPrimary: profileInfo.isPrimary,
     });
   }, [profileInfo, formMethods]);
 
   const submitForm = async data => {
     data.date = data?.date ? ensureDatetime(data.date.toString()) : null;
-    await updateStratigraphyAttributes(id, data);
+    await updateStratigraphy(data);
     onUpdated("saveStratigraphy");
   };
 
@@ -92,7 +94,7 @@ const InfoList = ({ id, profileInfo, onUpdated }) => {
               <DataCardButtonContainer>
                 <CopyButton
                   onClick={() => {
-                    copyStratigraphy(profileInfo?.id).then(() => {
+                    copyStratigraphy(profileInfo).then(() => {
                       onUpdated("cloneStratigraphy");
                     });
                   }}></CopyButton>
@@ -108,7 +110,7 @@ const InfoList = ({ id, profileInfo, onUpdated }) => {
                         icon: <Trash2 />,
                         variant: "contained",
                         action: () => {
-                          deleteStratigraphy(profileInfo?.id).then(() => {
+                          deleteStratigraphy(profileInfo).then(() => {
                             onUpdated("deleteStratigraphy");
                           });
                         },

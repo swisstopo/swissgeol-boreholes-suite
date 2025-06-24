@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Card, CircularProgress, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { createStratigraphy, useLithologyStratigraphies } from "../../../../api/stratigraphy.ts";
+import { useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
@@ -20,7 +20,10 @@ export const StratigraphyPanel: FC = () => {
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: stratigraphies, refetch: refetchStratigraphyData } = useLithologyStratigraphies(Number(boreholeId));
+  const { data: stratigraphies, refetch: refetchStratigraphyData } = useStratigraphiesByBoreholeId(Number(boreholeId));
+  const {
+    add: { mutateAsync: addStratigraphyAsync },
+  } = useStratigraphyMutations();
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
 
@@ -38,10 +41,9 @@ export const StratigraphyPanel: FC = () => {
   );
 
   const addEmptyStratigraphy = useCallback(async () => {
-    const stratigraphy = await createStratigraphy(Number(boreholeId));
-    await refetchStratigraphyData();
+    const stratigraphy = await addStratigraphyAsync(Number(boreholeId));
     navigateToStratigraphy(stratigraphy.id);
-  }, [boreholeId, navigateToStratigraphy, refetchStratigraphyData]);
+  }, [addStratigraphyAsync, boreholeId, navigateToStratigraphy]);
 
   const extractStratigraphyFromProfile = useCallback(() => {}, []);
 
@@ -108,7 +110,7 @@ export const StratigraphyPanel: FC = () => {
         <BoreholeTabContentBox sx={{ mb: 2 }}>
           {selectedStratigraphy && (
             <>
-              <InfoList id={stratigraphyId} profileInfo={selectedStratigraphy} onUpdated={refetchStratigraphyData} />
+              <InfoList profileInfo={selectedStratigraphy} onUpdated={refetchStratigraphyData} />
               <Box sx={{ position: "relative", mt: 2 }}>
                 <TabPanel
                   variant="list"
