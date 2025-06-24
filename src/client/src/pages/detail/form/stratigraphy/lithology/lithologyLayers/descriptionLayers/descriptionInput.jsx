@@ -1,17 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MenuItem, Stack, TextField } from "@mui/material";
-import { useCodelists } from "../../../../../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../../../../../components/form/formUtils.js";
 
 const DescriptionInput = props => {
-  const { item, setFromDepth, setDescription, setToDepth, setDescriptionQualityId, selectableDepths, descriptions } =
+  const { item, setFromDepth, setDescription, setToDepth, selectableDepths, descriptions } =
     props;
   const [fromDepthOptions, setFromDepthOptions] = useState();
   const [toDepthOptions, setToDepthOptions] = useState();
 
-  const { t, i18n } = useTranslation();
-  const codelists = useCodelists();
+  const { t } = useTranslation();
 
   const getFromDepthOptions = useCallback(() => {
     const closestTopLayer = descriptions[descriptions.indexOf(item) - 1];
@@ -92,30 +90,6 @@ const DescriptionInput = props => {
         type="text"
         sx={{ flex: "1", margin: "10px", mt: 2 }}
       />
-      <TextField
-        select
-        sx={{ flex: "1", margin: "10px", mt: 2 }}
-        variant="outlined"
-        size="small"
-        label={t("description_quality")}
-        defaultValue={item.descriptionQualityId ?? ""}
-        data-cy="qt-decription-select"
-        onChange={e => {
-          e.stopPropagation();
-          setDescriptionQualityId(e.target.value);
-        }}>
-        <MenuItem value="">
-          <em>{t("reset")}</em>
-        </MenuItem>
-        {codelists.data
-          ?.filter(d => d.schema === "description_quality")
-          .sort((a, b) => a.order - b.order)
-          .map(d => (
-            <MenuItem key={d.id} value={d.id}>
-              {d[i18n.language]}
-            </MenuItem>
-          ))}
-      </TextField>
       {toDepthOptions?.length > 0 && (
         <TextField
           select

@@ -1,10 +1,8 @@
-import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { formatNumberForDisplay } from "../../../../../../../components/form/formUtils.js";
 
 const DescriptionDisplay = props => {
   const { item, layerHeight } = props;
-  const { t, i18n } = useTranslation();
 
   const fontSize = layerHeight >= 5 ? 13 : (4 * layerHeight) / 1.1;
 
@@ -22,18 +20,13 @@ const DescriptionDisplay = props => {
           <Typography
             sx={{
               fontWeight: "bold",
-              overflow: "auto",
+              overflow: "hidden",
               display: "-webkit-box",
               WebkitLineClamp: "2",
               WebkitBoxOrient: "vertical",
             }}>
             {item.description}
           </Typography>
-          {item.id !== null && (
-            <Typography variant="subtitle2">
-              {t("description_quality")}: {item.descriptionQuality?.[i18n.language] ?? "-"}
-            </Typography>
-          )}
         </>
       )}
       <Typography
