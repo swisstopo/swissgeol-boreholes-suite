@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { FormControl, FormControlLabel, IconButton, Radio, RadioGroup } from "@mui/material";
 import { Check, TriangleAlert, Wrench } from "lucide-react";
 import { deleteLayer, gapLayer } from "../../../../../../api-lib";
-import { addBedrock, fetchLayerById } from "../../../../../../api/fetchApiV2.ts";
+import { addBedrock, fetchLayerById } from "../../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import {
   AddButton,
