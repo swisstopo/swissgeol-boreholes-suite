@@ -15,6 +15,7 @@
 - Select input fields now filter and display only the options that match the user's input.
 - Remove type from profile table.
 - Lithology, lithostratigraphy and chronostratigraphy are combined into one menu item.
+- Removed description quality of lithological descriptions and facies descriptions.
 
 ### Fixed
 - Boreholes could not be exported in the _view_ environment.
