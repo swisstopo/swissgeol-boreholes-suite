@@ -34,7 +34,7 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ stratigraphy }) =>
     });
   }, [formMethods, stratigraphy]);
 
-  const submitForm = async (data: Stratigraphy) => {
+  const submitForm = (data: Stratigraphy) => {
     data.date = data.date ? ensureDatetime(data.date.toString()) : "";
     updateStratigraphy(data);
   };
