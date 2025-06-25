@@ -70,8 +70,7 @@ public class FaciesDescriptionControllerTest
         Assert.AreEqual(10_000_014, faciesDescription.Id);
         Assert.AreEqual(40, faciesDescription.FromDepth);
         Assert.AreEqual(50, faciesDescription.ToDepth);
-        Assert.AreEqual("radical Technician Personal Loan Account", faciesDescription.Description);
-        Assert.AreEqual(9003, faciesDescription.DescriptionQualityId);
+        Assert.AreEqual("Hawaii radical Technician", faciesDescription.Description);
         Assert.AreEqual(6_000_001, faciesDescription.StratigraphyId);
     }
 
@@ -79,22 +78,6 @@ public class FaciesDescriptionControllerTest
     public async Task EditFaciesDescriptionWithCompleteFaciesDescription()
     {
         var id = 10_000_039;
-        var originalFaciesDescription = new FaciesDescription
-        {
-            CreatedBy = null,
-            CreatedById = 4,
-            Created = new DateTime(2021, 12, 23, 8, 57, 51).ToUniversalTime(),
-            Description = "bandwidth impactful connecting",
-            FromDepth = 90,
-            ToDepth = 100,
-            Id = 10_000_039,
-            DescriptionQuality = null,
-            DescriptionQualityId = 9003,
-            Updated = new DateTime(2021, 11, 14, 8, 3, 19).ToUniversalTime(),
-            UpdatedBy = null,
-            UpdatedById = 2,
-            StratigraphyId = 6_000_003,
-        };
 
         var newFaciesDescription = new FaciesDescription
         {
@@ -104,14 +87,13 @@ public class FaciesDescriptionControllerTest
             Created = new DateTime(2021, 3, 31, 16, 55, 02).ToUniversalTime(),
             StratigraphyId = 6_000_010,
             Description = "solid state web-enabled Maryland",
-            DescriptionQualityId = 9001,
         };
 
         var faciesDescriptionToEdit = context.FaciesDescriptions.Single(c => c.Id == id);
-        Assert.AreEqual(4, faciesDescriptionToEdit.CreatedById);
-        Assert.AreEqual(2, faciesDescriptionToEdit.UpdatedById);
+        Assert.AreEqual(1, faciesDescriptionToEdit.CreatedById);
+        Assert.AreEqual(4, faciesDescriptionToEdit.UpdatedById);
         Assert.AreEqual(6_000_003, faciesDescriptionToEdit.StratigraphyId);
-        Assert.AreEqual("bandwidth impactful connecting", faciesDescriptionToEdit.Description);
+        Assert.AreEqual("Home Loan Account bandwidth impactful", faciesDescriptionToEdit.Description);
 
         // Update FaciesDescription
         var response = await controller.EditAsync(newFaciesDescription);
@@ -124,7 +106,6 @@ public class FaciesDescriptionControllerTest
         Assert.AreEqual(1, updatedFaciesDescription.UpdatedById);
         Assert.AreEqual(6_000_010, updatedFaciesDescription.StratigraphyId);
         Assert.AreEqual("solid state web-enabled Maryland", updatedFaciesDescription.Description);
-        Assert.AreEqual(9001, updatedFaciesDescription.DescriptionQualityId);
     }
 
     [TestMethod]
@@ -159,7 +140,6 @@ public class FaciesDescriptionControllerTest
             Created = new DateTime(2022, 10, 4, 13, 19, 34).ToUniversalTime(),
             StratigraphyId = 6_000_010,
             Description = "SILDOV",
-            DescriptionQualityId = 9003,
         };
 
         var response = await controller.CreateAsync(faciesDescription);

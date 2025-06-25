@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+- Lithology, lithostratigraphy and chronostratigraphy are combined into one menu item.
+- Removed description quality of lithological descriptions and facies descriptions.
+
 ## v2.1.1230 - 2025-06-13
 
 ### Added
@@ -14,7 +18,6 @@
 - Show loading indicator when importing data.
 - Select input fields now filter and display only the options that match the user's input.
 - Remove type from profile table.
-- Lithology, lithostratigraphy and chronostratigraphy are combined into one menu item.
 
 ### Fixed
 - Boreholes could not be exported in the _view_ environment.

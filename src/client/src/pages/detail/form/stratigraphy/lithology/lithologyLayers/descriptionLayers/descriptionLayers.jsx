@@ -25,7 +25,6 @@ const DescriptionLayers = props => {
   const [fromDepth, setFromDepth] = useState(null);
   const [toDepth, setToDepth] = useState(null);
   const [description, setDescription] = useState(null);
-  const [descriptionQualityId, setDescriptionQualityId] = useState(null);
   const [displayDescriptions, setDisplayDescriptions] = useState(null);
   const [descriptionIdSelectedForDelete, setDescriptionIdSelectedForDelete] = useState(0);
   const [selectableDepths, setSelectableDepths] = useState([]);
@@ -81,7 +80,6 @@ const DescriptionLayers = props => {
                 <WarningIcon />
               </Stack>
             ),
-            descriptionQuality: null,
           });
         }
         tempDescriptions.push(description);
@@ -125,19 +123,17 @@ const DescriptionLayers = props => {
         draft.fromDepth = parseFloat(fromDepth);
         draft.toDepth = parseFloat(toDepth);
         draft.description = description;
-        draft.descriptionQualityId = parseInt(descriptionQualityId);
       });
       updateMutation.mutate(updatedDescription);
     }
     // eslint-disable-next-line
-  }, [description, descriptionQualityId, toDepth, fromDepth]);
+  }, [description, toDepth, fromDepth]);
 
   const selectItem = item => {
     if (item) {
       setFromDepth(item.fromDepth);
       setToDepth(item.toDepth);
       setDescription(item.description);
-      setDescriptionQualityId(item.descriptionQualityId);
     }
     setSelectedDescription(item);
   };
@@ -227,12 +223,10 @@ const DescriptionLayers = props => {
                       <DescriptionInput
                         setFromDepth={setFromDepth}
                         description={description}
-                        descriptionQualityId={descriptionQualityId}
                         fromDepth={fromDepth}
                         toDepth={toDepth}
                         setDescription={setDescription}
                         setToDepth={setToDepth}
-                        setDescriptionQualityId={setDescriptionQualityId}
                         selectableDepths={selectableDepths}
                         descriptions={descriptions}
                         item={item}
