@@ -16,18 +16,16 @@ const DescriptionDisplay = props => {
         {formatNumberForDisplay(item.fromDepth)} m MD
       </Typography>
       {layerHeight >= 10 && (
-        <>
-          <Typography
-            sx={{
-              fontWeight: "bold",
-              overflow: "hidden",
-              display: "-webkit-box",
-              WebkitLineClamp: "2",
-              WebkitBoxOrient: "vertical",
-            }}>
-            {item.description}
-          </Typography>
-        </>
+        <Typography
+          sx={{
+            fontWeight: "bold",
+            overflow: "hidden",
+            display: "-webkit-box",
+            WebkitLineClamp: "2",
+            WebkitBoxOrient: "vertical",
+          }}>
+          {item.description}
+        </Typography>
       )}
       <Typography
         variant="subtitle1"
