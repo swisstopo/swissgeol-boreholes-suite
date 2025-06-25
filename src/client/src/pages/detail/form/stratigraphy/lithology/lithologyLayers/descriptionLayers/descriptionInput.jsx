@@ -4,8 +4,7 @@ import { MenuItem, Stack, TextField } from "@mui/material";
 import { formatNumberForDisplay } from "../../../../../../../components/form/formUtils.js";
 
 const DescriptionInput = props => {
-  const { item, setFromDepth, setDescription, setToDepth, selectableDepths, descriptions } =
-    props;
+  const { item, setFromDepth, setDescription, setToDepth, selectableDepths, descriptions } = props;
   const [fromDepthOptions, setFromDepthOptions] = useState();
   const [toDepthOptions, setToDepthOptions] = useState();
 
