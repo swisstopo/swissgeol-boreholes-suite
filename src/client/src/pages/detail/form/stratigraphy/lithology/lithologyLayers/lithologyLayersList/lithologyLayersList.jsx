@@ -6,7 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { Stack, Tooltip, Typography } from "@mui/material";
 import { TriangleAlert } from "lucide-react";
-import { useLithostratigraphies } from "../../../../../../../api/fetchApiV2.ts";
+import { useLithostratigraphies } from "../../../../../../../api/stratigraphy.ts";
 import * as Styled from "./styles.js";
 
 const LithologyLayersList = props => {

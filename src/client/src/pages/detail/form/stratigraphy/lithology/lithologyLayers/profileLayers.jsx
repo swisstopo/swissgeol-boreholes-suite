@@ -27,7 +27,7 @@ import {
   useFaciesDescription,
   useLayers,
   useLithoDescription,
-} from "../../../../../../api/fetchApiV2.ts";
+} from "../../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { createLayerApi, getData } from "./api";
 import DescriptionLayers from "./descriptionLayers/descriptionLayers.jsx";
