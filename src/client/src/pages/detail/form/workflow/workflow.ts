@@ -48,7 +48,7 @@ export interface WorkflowChangeRequest {
   newStatus: WorkflowStatus;
 }
 
-export const fetchWorkflowByBoreholeId = async (boreholeId: number) =>
+export const fetchWorkflowByBoreholeId = async (boreholeId: number): Promise<WorkflowV2> =>
   await fetchApiV2(`workflow/${boreholeId}`, "GET");
 
 export const sendWorkflowChangeRequest = async (workflowChangeRequest: WorkflowChangeRequest) => {
