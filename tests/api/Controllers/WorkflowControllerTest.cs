@@ -209,4 +209,105 @@ public class WorkflowControllerTest
         Assert.AreEqual(originalStatus, result.Status);
         Assert.AreEqual(2, result.AssigneeId);
     }
+
+    [TestMethod]
+    public async Task SuccessfullyUpdatesTabStatus()
+    {
+        async Task TestTabStatus(TabType tabType, Func<WorkflowV2, TabStatus> getTabStatus, string field, bool newStatus)
+        {
+            var request = new TabStatusChangeRequest
+            {
+                BoreholeId = boreholeTestId,
+                Tab = tabType,
+                Field = field,
+                NewStatus = newStatus,
+            };
+
+            var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
+            var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
+            var actual = (bool?)typeof(TabStatus).GetProperty(field)?.GetValue(getTabStatus(result)) ?? !newStatus;
+            if (newStatus)
+                Assert.IsTrue(actual);
+            else
+                Assert.IsFalse(actual);
+        }
+
+        var fieldToUpdate = "Lithology";
+
+        // Test ReviewedTabs: set to true, then false
+        await TestTabStatus(TabType.Reviewed, w => w.ReviewedTabs, fieldToUpdate, true);
+        await TestTabStatus(TabType.Reviewed, w => w.ReviewedTabs, fieldToUpdate, false);
+
+        // Test PublishedTabs: set to true, then false
+        await TestTabStatus(TabType.Published, w => w.PublishedTabs, fieldToUpdate, true);
+        await TestTabStatus(TabType.Published, w => w.PublishedTabs, fieldToUpdate, false);
+    }
+
+    [TestMethod]
+    public async Task TabStatusChangeWithInvalidFieldReturnsBadRequest()
+    {
+        var request = new TabStatusChangeRequest
+        {
+            BoreholeId = boreholeTestId,
+            Tab = TabType.Reviewed,
+            Field = "NonExistentField",
+            NewStatus = true,
+        };
+
+        var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
+
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task TabStatusChangeWithInvalidTabReturnsBadRequest()
+    {
+        var request = new TabStatusChangeRequest
+        {
+            BoreholeId = boreholeTestId,
+            Tab = (TabType)999, // Invalid tab type
+            Field = "Chronostratigraphy",
+            NewStatus = true,
+        };
+
+        var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
+
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task TabStatusChangeWithNonexistentBoreholeReturnsNotFound()
+    {
+        var request = new TabStatusChangeRequest
+        {
+            BoreholeId = 9999999, // Non-existent borehole
+            Tab = TabType.Reviewed,
+            Field = "Chronostratigraphy",
+            NewStatus = true,
+        };
+
+        var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
+
+        ActionResultAssert.IsNotFound(response);
+    }
+
+    [TestMethod]
+    public async Task TabStatusChangeUserWithoutEditPermissionReturnsUnauthorized()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(false);
+
+        var request = new TabStatusChangeRequest
+        {
+            BoreholeId = boreholeTestId,
+            Tab = TabType.Reviewed,
+            Field = "Chronostratigraphy",
+            NewStatus = true,
+        };
+
+        var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(response);
+    }
 }
