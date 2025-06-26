@@ -35,7 +35,6 @@ describe("Tests the publication workflow.", () => {
           .shadow()
           .within(() => {
             cy.get(".heading .highlight").should("contain", user);
-            // cy.get(".heading .date").should("contain", date); // Fix date format issue
           });
 
         cy.get("sgc-workflow-change-template li[slot='mutations']").should("contain", statusChange);

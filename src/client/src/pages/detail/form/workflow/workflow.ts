@@ -1,5 +1,6 @@
 import {
   GenericWorkflow,
+  LocalDate,
   WorkflowChange as SwissgeolWorkflowChange,
   WorkflowStatus,
 } from "@swisstopo/swissgeol-ui-core";
@@ -16,8 +17,9 @@ export interface WorkflowV2 extends GenericWorkflow {
   publishedTabs: TabStatus;
 }
 
-export interface WorkflowChange extends SwissgeolWorkflowChange {
-  id: number;
+export interface WorkflowChange extends Omit<SwissgeolWorkflowChange, "createdAt"> {
+  created?: Date | string | null;
+  createdAt: LocalDate | string;
 }
 
 export interface TabStatus {

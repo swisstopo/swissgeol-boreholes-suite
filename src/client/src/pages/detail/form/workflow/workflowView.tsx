@@ -2,12 +2,12 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
 import {
+  LocalDate,
   SgcWorkflowChangeEventDetail,
   SgcWorkflowCustomEvent,
   SgcWorkflowSelectionChangeEventDetails,
   SgcWorkflowSelectionEntry,
   SimpleUser,
-  WorkflowChange,
 } from "@swisstopo/swissgeol-ui-core";
 import { SgcWorkflow } from "@swisstopo/swissgeol-ui-core-react";
 import { useBorehole } from "../../../../api/borehole.ts";
@@ -15,7 +15,7 @@ import { useUsers } from "../../../../api/user.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { useUserRoleForBorehole } from "../../../../hooks/useUserRoleForBorehole.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
-import { useWorkflow, useWorkflowMutation, WorkflowChangeRequest } from "./workflow.ts";
+import { useWorkflow, useWorkflowMutation, WorkflowChange, WorkflowChangeRequest } from "./workflow.ts";
 
 export const WorkflowView = () => {
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
@@ -83,7 +83,13 @@ export const WorkflowView = () => {
   return (
     <Stack gap={1.5} direction="row">
       <SgcWorkflow
-        workflow={workflow}
+        workflow={{
+          ...workflow,
+          changes: workflow.changes.map(change => ({
+            ...change,
+            createdAt: LocalDate.fromDate(new Date(String(change.createdAt))),
+          })),
+        }}
         review={workflow.reviewedTabs}
         approval={workflow.publishedTabs}
         availableAssignees={getUsersWithEditPrivilege()}
