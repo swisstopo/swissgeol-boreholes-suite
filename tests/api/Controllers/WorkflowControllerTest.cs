@@ -244,7 +244,6 @@ public class WorkflowControllerTest
     [TestMethod]
     public async Task TabStatusChangeWithInvalidFieldReturnsBadRequest()
     {
-        // Arrange
         var request = new TabStatusChangeRequest
         {
             BoreholeId = boreholeTestId,
