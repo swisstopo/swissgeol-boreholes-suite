@@ -274,7 +274,7 @@ public class WorkflowControllerTest
     }
 
     [TestMethod]
-    public async Task TabStatusChangeWithNonexistantBoreholeReturnsNotFound()
+    public async Task TabStatusChangeWithNonexistentBoreholeReturnsNotFound()
     {
         var request = new TabStatusChangeRequest
         {
