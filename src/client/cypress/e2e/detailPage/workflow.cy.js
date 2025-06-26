@@ -22,7 +22,7 @@ describe("Tests the publication workflow.", () => {
     return chain;
   };
 
-  const checkWorkflowChangeContent = (index, user, date, statusChange, comment) => {
+  const checkWorkflowChangeContent = (index, user, statusChange, comment) => {
     getShadowElementFromTree("sgc-workflow", [
       { selector: "sgc-tabs", useShadow: true },
       { selector: 'div[slot="panels"] > sgc-workflow-history', useShadow: false },
@@ -69,17 +69,10 @@ describe("Tests the publication workflow.", () => {
       .contains("validator user")
       .should("exist");
 
-    checkWorkflowChangeContent(
-      1,
-      "editor user",
-      "16. Nov. 2021",
-      "Status von Published zu Reviewed geändert",
-      "Omnis ut in.",
-    );
+    checkWorkflowChangeContent(1, "editor user", "Status von Published zu Reviewed geändert", "Omnis ut in.");
     checkWorkflowChangeContent(
       2,
       "controller user",
-      "16. Nov. 2021",
       "Asset editor user zugewiesen",
       "Rerum repudiandae nihil accusamus sed omnis tempore laboriosam eaque est.",
     ); // Translation not yet available in core UI, wrong "asset" hardcoded in component
