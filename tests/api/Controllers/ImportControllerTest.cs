@@ -262,8 +262,6 @@ public class ImportControllerTest
         Assert.IsNotNull(lithologicalDescription.UpdatedById, nameof(lithologicalDescription.UpdatedById).ShouldNotBeNullMessage());
         Assert.IsNotNull(lithologicalDescription.Stratigraphy, nameof(lithologicalDescription.Stratigraphy).ShouldNotBeNullMessage());
         Assert.AreEqual("Bouvet Island (Bouvetoya) Borders networks", lithologicalDescription.Description, nameof(lithologicalDescription.Description));
-        Assert.AreEqual(9005, lithologicalDescription.DescriptionQualityId, nameof(lithologicalDescription.DescriptionQualityId));
-        Assert.IsNull(lithologicalDescription.DescriptionQuality, nameof(lithologicalDescription.DescriptionQuality).ShouldBeNullMessage());
         Assert.AreEqual(0.1, lithologicalDescription.FromDepth, nameof(lithologicalDescription.FromDepth));
         Assert.AreEqual(10, lithologicalDescription.ToDepth, nameof(lithologicalDescription.ToDepth));
 
@@ -276,8 +274,6 @@ public class ImportControllerTest
         Assert.IsNotNull(faciesDescription.UpdatedById, nameof(faciesDescription.UpdatedById).ShouldNotBeNullMessage());
         Assert.IsNotNull(faciesDescription.Stratigraphy, nameof(faciesDescription.Stratigraphy).ShouldNotBeNullMessage());
         Assert.AreEqual("Bouvet Island (Bouvetoya) Borders networks", faciesDescription.Description, nameof(faciesDescription.Description));
-        Assert.AreEqual(9005, faciesDescription.DescriptionQualityId, nameof(faciesDescription.DescriptionQualityId));
-        Assert.IsNull(faciesDescription.DescriptionQuality, nameof(faciesDescription.DescriptionQuality).ShouldBeNullMessage());
         Assert.AreEqual(0.1, faciesDescription.FromDepth, nameof(faciesDescription.FromDepth));
         Assert.AreEqual(10, faciesDescription.ToDepth, nameof(faciesDescription.ToDepth));
 

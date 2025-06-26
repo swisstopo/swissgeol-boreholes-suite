@@ -5,7 +5,7 @@ import { Box, Card, FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { DevTool } from "../../../../../../../hookformDevtools.js";
-import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/fetchApiV2.ts";
+import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/stratigraphy.ts";
 import { CancelButton, SaveButton } from "../../../../../../components/buttons/buttons.js";
 import { useCodelists } from "../../../../../../components/codelist.ts";
 import { DataCardButtonContainer } from "../../../../../../components/dataCard/dataCard.js";

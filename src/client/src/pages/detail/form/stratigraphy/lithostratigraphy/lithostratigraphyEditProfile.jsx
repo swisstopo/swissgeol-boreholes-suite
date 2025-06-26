@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useLithostratigraphies, useLithostratigraphyMutations } from "../../../../../api/fetchApiV2.ts";
+import { useLithostratigraphies, useLithostratigraphyMutations } from "../../../../../api/stratigraphy.ts";
 import HierarchicalDataEditProfile from "../hierarchicalDataEditProfile.jsx";
 
 /**

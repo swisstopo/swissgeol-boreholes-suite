@@ -72,17 +72,11 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="description-textfield"]').find("textarea").first().clear();
     cy.get('[data-cy="description-textfield"]').find("textarea").first().type("A new description.");
 
-    // fill quality dropdown
-    cy.get('[data-cy="qt-decription-select"]').find('[role="combobox"]').click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]').find('[role="option"]').eq(5).click();
-
     // stop editing
     cy.get('[data-cy="description-0"] [data-testid="ClearIcon"]').click();
 
     cy.get('[data-cy="description-0"]').contains("0 m");
     cy.get('[data-cy="description-0"]').contains("A new description.");
-    cy.get('[data-cy="description-0"]').contains("Quality of the description: very good");
     cy.get('[data-cy="description-0"]').contains("50 m");
 
     // add lithological description that stretches two layers
@@ -144,9 +138,6 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="description-1"]').contains("There is an undefined interval in the sequence");
     // refill the middle
     cy.get('[data-cy="description-1"] [data-testid="AddCircleIcon"] ').click();
-
-    // assert no error message
-    cy.get('[data-cy="description-1"]').contains("Quality of the description: -");
 
     // stop editing
     stopBoreholeEditing();
