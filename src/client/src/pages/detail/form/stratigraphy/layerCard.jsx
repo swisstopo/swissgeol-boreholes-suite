@@ -181,6 +181,7 @@ const LayerCard = ({
         display: "flex",
         alignItems: "flex-start",
         padding: "0.2rem 1rem",
+        pt: 2,
         position: "absolute",
         top: "0",
         left: "0",
@@ -332,6 +333,7 @@ const LayerCard = ({
           <Box
             onWheel={e => e.stopPropagation()}
             sx={{
+              minHeight: "220px",
               height: height + "px",
               overflowY: "auto",
             }}>

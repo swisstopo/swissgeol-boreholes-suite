@@ -62,7 +62,6 @@ export const SidePanelToggleButton: FC<SidePanelToggleButtonProps> = props => {
         color={"primary"}
         sx={{
           position: "absolute",
-          zIndex: 1000,
           width: "44px",
           height: "44px",
           borderRadius: panelPosition === "right" ? "4px 0 0 4px" : "4px 0 0 0",

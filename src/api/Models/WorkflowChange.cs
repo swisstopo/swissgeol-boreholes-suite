@@ -92,4 +92,22 @@ public class WorkflowChange : IIdentifyable, IChangeTracking
     [NotMapped]
     [JsonIgnore]
     DateTime? IChangeTracking.Updated { get; set; }
+
+    /// <summary>
+    /// Gets the creation date (swissgeol ui core alias for Created).
+    /// </summary>
+    [NotMapped]
+    public DateTime? CreatedAt => Created;
+
+    /// <summary>
+    /// Gets the user who created the entity (swissgeol ui core alias for CreatedBy).
+    /// </summary>
+    [NotMapped]
+    public User? Creator => CreatedBy;
+
+    /// <summary>
+    /// Gets the <see cref="User"/> who is assigned to the change (swissgeol ui core alias for Assignee).
+    /// </summary>
+    [NotMapped]
+    public User? ToAssignee => Assignee;
 }

@@ -18,7 +18,6 @@ const HeaderComponent = () => {
       sx={{
         borderBottom: "1px solid " + theme.palette.border.light,
         padding: "21.5px",
-        zIndex: "10",
       }}>
       <Box sx={{ flex: "1 1 100%", padding: 0 }}>
         <img

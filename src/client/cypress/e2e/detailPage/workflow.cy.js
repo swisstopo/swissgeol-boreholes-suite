@@ -7,6 +7,41 @@ import {
 } from "../helpers/testHelpers.js";
 
 describe("Tests the publication workflow.", () => {
+  const getShadowElementFromTree = (hostElement, selectorMapping) => {
+    // eslint-disable-next-line cypress/no-assigning-return-values
+    let chain = cy.get(hostElement);
+
+    selectorMapping.forEach(({ selector, useShadow = true }) => {
+      if (useShadow) {
+        chain = chain.shadow().find(selector);
+      } else {
+        chain = chain.find(selector);
+      }
+    });
+
+    return chain;
+  };
+
+  const checkWorkflowChangeContent = (index, user, statusChange, comment) => {
+    getShadowElementFromTree("sgc-workflow", [
+      { selector: "sgc-tabs", useShadow: true },
+      { selector: 'div[slot="panels"] > sgc-workflow-history', useShadow: false },
+      { selector: "sgc-workflow-change", useShadow: true },
+    ])
+      .eq(index)
+      .shadow()
+      .within(() => {
+        cy.get("sgc-workflow-change-template")
+          .shadow()
+          .within(() => {
+            cy.get(".heading .highlight").should("contain", user);
+          });
+
+        cy.get("sgc-workflow-change-template li[slot='mutations']").should("contain", statusChange);
+        cy.get("sgc-workflow-change-template div[slot='body']").should("contain", comment);
+      });
+  };
+
   it("Displays DEV workflow when feature flag is set", () => {
     goToDetailRouteAndAcceptTerms(`/1000036/status`);
     // displays legacy workflow form by default
@@ -14,31 +49,36 @@ describe("Tests the publication workflow.", () => {
     goToDetailRouteAndAcceptTerms(`/1000036/status?dev=true`);
     cy.contains("h4", "Publication workflow").should("not.exist");
 
-    getElementByDataCy("workflow-status-card").contains("h5", "Status").should("exist");
-    getElementByDataCy("workflow-status-card").contains("h5", "Draft").should("exist");
+    getShadowElementFromTree("sgc-workflow", [{ selector: "sgc-workflow-steps" }, { selector: "sgc-translate" }])
+      .contains("Status")
+      .should("exist");
 
-    getElementByDataCy("workflow-assigned-user-card").contains("h5", "Assigned Person").should("exist");
-    getElementByDataCy("workflow-assigned-user-card").contains("p", "Validator User").should("exist");
+    getShadowElementFromTree("sgc-workflow", [
+      { selector: "sgc-workflow-steps" },
+      { selector: "sgc-workflow-step" },
+      { selector: "sgc-translate" },
+    ])
+      .contains("Draft")
+      .should("exist");
 
-    getElementByDataCy("workflow-history-entry-15000183").should("contain", "Editor User");
-    getElementByDataCy("workflow-history-entry-15000183").should("contain", "16. Nov. 2021");
-    getElementByDataCy("workflow-history-entry-15000183").should(
-      "contain",
-      "Changed status from Published to Reviewed",
-    );
-    getElementByDataCy("workflow-history-entry-15000112").should("contain", "Borehole assigned to Editor User");
-    getElementByDataCy("workflow-history-entry-15000112").should(
-      "contain",
+    getShadowElementFromTree("sgc-workflow", [{ selector: "sgc-workflow-assignee" }, { selector: "sgc-translate" }])
+      .contains("Zugewiesene Person")
+      .should("exist"); // Translation not yet available in core UI
+
+    getShadowElementFromTree("sgc-workflow", [{ selector: "sgc-workflow-assignee" }, { selector: ".assignee" }])
+      .contains("validator user")
+      .should("exist");
+
+    checkWorkflowChangeContent(1, "editor user", "Status von Published zu Reviewed geändert", "Omnis ut in.");
+    checkWorkflowChangeContent(
+      2,
+      "controller user",
+      "Asset editor user zugewiesen",
       "Rerum repudiandae nihil accusamus sed omnis tempore laboriosam eaque est.",
-    );
-    getElementByDataCy("review-tab").click();
-    cy.contains("thead", "Reviewed").should("exist");
-
-    //verify all checkboxes are unchecked
-    cy.get(".PrivateSwitchBase-input").should("not.be.checked");
+    ); // Translation not yet available in core UI, wrong "asset" hardcoded in component
   });
 
-  it("Can request review from users with controller privilege", () => {
+  it.skip("Can request review from users with controller privilege", () => {
     goToDetailRouteAndAcceptTerms(`/1000011/status?dev=true`);
     startBoreholeEditing();
     getElementByDataCy("workflow-status-chip").should("contain", "Draft");

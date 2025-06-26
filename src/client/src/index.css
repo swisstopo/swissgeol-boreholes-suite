@@ -1,3 +1,9 @@
+:root {
+  --sgc-color-brand: #a65462;
+  --sgc-color-primary--active: #a65462;
+  --sgc-color-secondary--active: #ffd6dc;
+}
+
 .lucide {
   width: 20px;
   height: 20px;
@@ -48,8 +54,8 @@
   content: "✖";
 }
 .ol-dragbox {
-    border: 2px solid #5B21B6 !important;  /* theme.palette.ai.main */
-    background-color: rgba(91, 33, 182, 0.2) !important; /* theme.palette.ai.mainTransparent */
+  border: 2px solid #5b21b6 !important; /* theme.palette.ai.main */
+  background-color: rgba(91, 33, 182, 0.2) !important; /* theme.palette.ai.mainTransparent */
 }
 
 .stbg {
@@ -76,51 +82,9 @@
   margin-right: 0px !important;
 }
 
-.flex_row {
-  display: flex;
-  flex-direction: row;
-}
-
-.flex_col {
-  display: flex;
-  flex-direction: column;
-}
-
-.flex_fill {
-  flex: 1 1 100%;
-}
-
-.bdms-padding-1 {
-  padding: 1em;
-}
-
-.bdms-padding-2 {
-  padding: 2em;
-}
-
-.bdms-padding-4 {
-  padding: 4em;
-}
-
-.bdms-margin-1 {
-  margin: 1em;
-}
-
-.bdms_bold {
-  font-weight: bold;
-}
-
-.bdms-text-small {
-  font-size: 0.8em;
-}
-
 .bdms-header {
   font-weight: bold;
   font-size: 1.28em;
-}
-
-.bdms-grey {
-  color: rgba(0, 0, 0, 0.4);
 }
 
 .linker {
