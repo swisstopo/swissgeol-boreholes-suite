@@ -17,16 +17,19 @@ public class TabStatusChangeRequest
     /// <summary>
     /// Gets or sets the tab for which the field status changes.
     /// </summary>
+    [Required]
     public TabType Tab { get; set; }
 
     /// <summary>
     /// Gets or sets the field for which the status changes.
     /// </summary>
+    [Required]
     public string Field { get; set; }
 
     /// <summary>
     /// Gets or sets the new status of the field.
     /// </summary>
+    [Required]
     public bool NewStatus { get; set; }
 }
 

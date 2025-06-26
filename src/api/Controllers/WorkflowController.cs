@@ -172,13 +172,13 @@ public class WorkflowController : ControllerBase
         }
     }
 
-    private bool IsValidTabStatusField(string fieldName)
+    private static bool IsValidTabStatusField(string fieldName)
     {
         var prop = typeof(TabStatus).GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
         return prop != null && prop.PropertyType == typeof(bool);
     }
 
-    private void SetTabStatusField(TabStatus tabStatus, string fieldName, bool value)
+    private static void SetTabStatusField(TabStatus tabStatus, string fieldName, bool value)
     {
         var prop = typeof(TabStatus).GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
         if (prop == null || prop.PropertyType != typeof(bool))

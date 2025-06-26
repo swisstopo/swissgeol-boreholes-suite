@@ -226,19 +226,21 @@ public class WorkflowControllerTest
             var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
             var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
             var actual = (bool?)typeof(TabStatus).GetProperty(field)?.GetValue(getTabStatus(result)) ?? !newStatus;
-            if (newStatus == true)
+            if (newStatus)
                 Assert.IsTrue(actual);
             else
                 Assert.IsFalse(actual);
         }
 
+        var fieldToUpdate = "Lithology";
+
         // Test ReviewedTabs: set to true, then false
-        await TestTabStatus(TabType.Reviewed, w => w.ReviewedTabs, "Lithology", true);
-        await TestTabStatus(TabType.Reviewed, w => w.ReviewedTabs, "Lithology", false);
+        await TestTabStatus(TabType.Reviewed, w => w.ReviewedTabs, fieldToUpdate, true);
+        await TestTabStatus(TabType.Reviewed, w => w.ReviewedTabs, fieldToUpdate, false);
 
         // Test PublishedTabs: set to true, then false
-        await TestTabStatus(TabType.Published, w => w.PublishedTabs, "Lithology", true);
-        await TestTabStatus(TabType.Published, w => w.PublishedTabs, "Lithology", false);
+        await TestTabStatus(TabType.Published, w => w.PublishedTabs, fieldToUpdate, true);
+        await TestTabStatus(TabType.Published, w => w.PublishedTabs, fieldToUpdate, false);
     }
 
     [TestMethod]
