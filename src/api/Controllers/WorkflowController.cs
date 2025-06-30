@@ -147,10 +147,11 @@ public class WorkflowController : ControllerBase
         {
             if (!IsValidTabStatusField(request.Field))
                 return BadRequest($"Invalid field name {request.Field} for tab status change.");
+
             TabStatus tabStatus;
             if (request.Tab == TabType.Reviewed)
             {
-                  tabStatus = workflow.ReviewedTabs;
+                tabStatus = workflow.ReviewedTabs;
             }
             else if (request.Tab == TabType.Published)
             {
