@@ -67,12 +67,12 @@ public class WorkflowChange : IIdentifyable, IChangeTracking
     /// Gets or sets the id of the <see cref="User"/> who is assigned to the change.
     /// </summary>
     [Column("assignee_id")]
-    [JsonPropertyName("toAssignee")]
     public int? AssigneeId { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/> who is assigned to the change.
     /// </summary>
+    [JsonPropertyName("toAssignee")]
     public User? Assignee { get; set; }
 
     /// <summary>
