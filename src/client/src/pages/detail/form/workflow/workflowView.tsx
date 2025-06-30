@@ -53,7 +53,7 @@ export const WorkflowView = () => {
       },
       {
         name: () => t("attachments"),
-        fields: [field("profiles"), field("photo")],
+        fields: [field("profiles"), field("photos"), field("documents")],
       },
     ];
   };
