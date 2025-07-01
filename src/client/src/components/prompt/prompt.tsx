@@ -14,7 +14,7 @@ export const Prompt = () => {
         data-cy="prompt"
         sx={{
           margin: "auto",
-          width: "420px",
+          width: "460px",
           position: "absolute",
           "& .MuiDialog-paper": {
             p: 3,

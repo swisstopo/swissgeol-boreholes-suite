@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import Box from "@mui/material/Box";
+import { Box, Typography } from "@mui/material";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
-import { ChildListItem, ParentListItem, StyledTypography } from "../../components/styledComponents.ts";
+import { ChildListItem, ParentListItem } from "../../components/styledComponents.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../utils";
 import { ObservationType } from "./form/hydrogeology/Observation.ts";
@@ -95,14 +95,14 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo(`/${id}/location`);
             }}>
-            <StyledTypography data-cy="location-menu-item">{capitalizeFirstLetter(t("location"))}</StyledTypography>
+            <Typography data-cy="location-menu-item">{capitalizeFirstLetter(t("location"))}</Typography>
           </ParentListItem>
           <ParentListItem
             active={location.pathname === `/${id}/borehole`}
             onClick={() => {
               navigateTo(`/${id}/borehole`);
             }}>
-            <StyledTypography data-cy="borehole-menu-item">{capitalizeFirstLetter(t("borehole"))}</StyledTypography>
+            <Typography data-cy="borehole-menu-item">{capitalizeFirstLetter(t("borehole"))}</Typography>
           </ParentListItem>
           <ParentListItem
             active={location.pathname.includes(`/${id}/stratigraphy`)}
@@ -110,9 +110,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo(`/${id}/stratigraphy`);
             }}>
-            <StyledTypography data-cy="stratigraphy-menu-item">
-              {capitalizeFirstLetter(t("stratigraphy"))}
-            </StyledTypography>
+            <Typography data-cy="stratigraphy-menu-item">{capitalizeFirstLetter(t("stratigraphy"))}</Typography>
           </ParentListItem>
           <ParentListItem
             active={location.pathname.includes(`/${id}/completion`)}
@@ -120,7 +118,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo(`/${id}/completion`);
             }}>
-            <StyledTypography data-cy="completion-menu-item">{capitalizeFirstLetter(t("completion"))}</StyledTypography>
+            <Typography data-cy="completion-menu-item">{capitalizeFirstLetter(t("completion"))}</Typography>
           </ParentListItem>
           <ParentListItem
             active={false}
@@ -128,9 +126,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               setHydrogeologyIsVisible(!hydrogeologyIsVisible);
             }}>
-            <StyledTypography data-cy="hydrogeology-menu-item">
-              {capitalizeFirstLetter(t("hydrogeology"))}
-            </StyledTypography>
+            <Typography data-cy="hydrogeology-menu-item">{capitalizeFirstLetter(t("hydrogeology"))}</Typography>
           </ParentListItem>
           {hydrogeologyIsVisible && (
             <>
@@ -140,9 +136,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 onClick={() => {
                   navigateTo(`/${id}/hydrogeology/wateringress`);
                 }}>
-                <StyledTypography data-cy="wateringress-menu-item">
-                  {capitalizeFirstLetter(t("waterIngress"))}
-                </StyledTypography>
+                <Typography data-cy="wateringress-menu-item">{capitalizeFirstLetter(t("waterIngress"))}</Typography>
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
@@ -150,9 +144,9 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 onClick={() => {
                   navigateTo(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
                 }}>
-                <StyledTypography data-cy="groundwaterlevelmeasurement-menu-item">
+                <Typography data-cy="groundwaterlevelmeasurement-menu-item">
                   {capitalizeFirstLetter(t("groundwaterLevelMeasurement"))}
-                </StyledTypography>
+                </Typography>
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
@@ -160,9 +154,9 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 onClick={() => {
                   navigateTo(`/${id}/hydrogeology/fieldmeasurement`);
                 }}>
-                <StyledTypography data-cy="fieldmeasurement-menu-item">
+                <Typography data-cy="fieldmeasurement-menu-item">
                   {capitalizeFirstLetter(t("fieldMeasurement"))}
-                </StyledTypography>
+                </Typography>
               </ChildListItem>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/hydrotest`}
@@ -170,9 +164,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 onClick={() => {
                   navigateTo(`/${id}/hydrogeology/hydrotest`);
                 }}>
-                <StyledTypography data-cy="hydrotest-menu-item">
-                  {capitalizeFirstLetter(t("hydrotest"))}
-                </StyledTypography>
+                <Typography data-cy="hydrotest-menu-item">{capitalizeFirstLetter(t("hydrotest"))}</Typography>
               </ChildListItem>
             </>
           )}
@@ -184,9 +176,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 onClick={() => {
                   navigateTo(`/${id}/attachments`);
                 }}>
-                <StyledTypography data-cy="attachments-menu-item">
-                  {capitalizeFirstLetter(t("attachments"))}
-                </StyledTypography>
+                <Typography data-cy="attachments-menu-item">{capitalizeFirstLetter(t("attachments"))}</Typography>
               </ParentListItem>
               <ParentListItem
                 active={location.pathname === `/${id}/status`}
@@ -194,7 +184,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 onClick={() => {
                   navigateTo(`/${id}/status`);
                 }}>
-                <StyledTypography data-cy="status-menu-item">{capitalizeFirstLetter(t("status"))}</StyledTypography>
+                <Typography data-cy="status-menu-item">{capitalizeFirstLetter(t("status"))}</Typography>
               </ParentListItem>
             </>
           )}

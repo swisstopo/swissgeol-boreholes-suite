@@ -159,6 +159,9 @@ export const theme = createTheme({
       color: "#787878",
       lineHeight: "1.4em",
     },
+    body1: {
+      fontSize: "14px",
+    },
     body2: {
       fontSize: "16px",
     },
