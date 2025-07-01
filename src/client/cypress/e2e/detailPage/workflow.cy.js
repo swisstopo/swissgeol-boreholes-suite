@@ -78,6 +78,7 @@ describe("Tests the publication workflow.", () => {
     ); // Translation not yet available in core UI, wrong "asset" hardcoded in component
   });
 
+  // This test is skipped until a decision about testing the UI Core workflow component with shadow DOMs is made.
   it.skip("Can request review from users with controller privilege", () => {
     goToDetailRouteAndAcceptTerms(`/1000011/status?dev=true`);
     startBoreholeEditing();
