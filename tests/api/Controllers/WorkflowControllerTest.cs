@@ -213,9 +213,9 @@ public class WorkflowControllerTest
     [TestMethod]
     public async Task SuccessfullyUpdatesTabStatus()
     {
-        async Task TestTabStatus(TabType tabType, Func<WorkflowV2, TabStatus> getTabStatus, string field, bool newStatus)
+        async Task TestTabStatus(WorkflowTabType tabType, Func<WorkflowV2, TabStatus> getTabStatus, WorkflowStatusField field, bool newStatus)
         {
-            var request = new TabStatusChangeRequest
+            var request = new WorkflowTabStatusChangeRequest
             {
                 BoreholeId = boreholeTestId,
                 Tab = tabType,
@@ -225,32 +225,32 @@ public class WorkflowControllerTest
 
             var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
             var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
-            var actual = (bool?)typeof(TabStatus).GetProperty(field)?.GetValue(getTabStatus(result)) ?? !newStatus;
+            var actual = (bool?)typeof(TabStatus).GetProperty(field.ToString())?.GetValue(getTabStatus(result)) ?? !newStatus;
             if (newStatus)
                 Assert.IsTrue(actual);
             else
                 Assert.IsFalse(actual);
         }
 
-        var fieldToUpdate = "Lithology";
+        var fieldToUpdate = WorkflowStatusField.Lithology;
 
         // Test ReviewedTabs: set to true, then false
-        await TestTabStatus(TabType.Reviewed, w => w.ReviewedTabs, fieldToUpdate, true);
-        await TestTabStatus(TabType.Reviewed, w => w.ReviewedTabs, fieldToUpdate, false);
+        await TestTabStatus(WorkflowTabType.Reviewed, w => w.ReviewedTabs, fieldToUpdate, true);
+        await TestTabStatus(WorkflowTabType.Reviewed, w => w.ReviewedTabs, fieldToUpdate, false);
 
         // Test PublishedTabs: set to true, then false
-        await TestTabStatus(TabType.Published, w => w.PublishedTabs, fieldToUpdate, true);
-        await TestTabStatus(TabType.Published, w => w.PublishedTabs, fieldToUpdate, false);
+        await TestTabStatus(WorkflowTabType.Published, w => w.PublishedTabs, fieldToUpdate, true);
+        await TestTabStatus(WorkflowTabType.Published, w => w.PublishedTabs, fieldToUpdate, false);
     }
 
     [TestMethod]
     public async Task TabStatusChangeWithInvalidFieldReturnsBadRequest()
     {
-        var request = new TabStatusChangeRequest
+        var request = new WorkflowTabStatusChangeRequest
         {
             BoreholeId = boreholeTestId,
-            Tab = TabType.Reviewed,
-            Field = "NonExistentField",
+            Tab = WorkflowTabType.Reviewed,
+            Field = (WorkflowStatusField)999, // Invalid field type
             NewStatus = true,
         };
 
@@ -262,11 +262,11 @@ public class WorkflowControllerTest
     [TestMethod]
     public async Task TabStatusChangeWithInvalidTabReturnsBadRequest()
     {
-        var request = new TabStatusChangeRequest
+        var request = new WorkflowTabStatusChangeRequest
         {
             BoreholeId = boreholeTestId,
-            Tab = (TabType)999, // Invalid tab type
-            Field = "Chronostratigraphy",
+            Tab = (WorkflowTabType)999, // Invalid tab type
+            Field = WorkflowStatusField.Chronostratigraphy,
             NewStatus = true,
         };
 
@@ -278,11 +278,11 @@ public class WorkflowControllerTest
     [TestMethod]
     public async Task TabStatusChangeWithNonexistentBoreholeReturnsNotFound()
     {
-        var request = new TabStatusChangeRequest
+        var request = new WorkflowTabStatusChangeRequest
         {
             BoreholeId = 9999999, // Non-existent borehole
-            Tab = TabType.Reviewed,
-            Field = "Chronostratigraphy",
+            Tab = WorkflowTabType.Reviewed,
+            Field = WorkflowStatusField.Chronostratigraphy,
             NewStatus = true,
         };
 
@@ -298,16 +298,33 @@ public class WorkflowControllerTest
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(false);
 
-        var request = new TabStatusChangeRequest
+        var request = new WorkflowTabStatusChangeRequest
         {
             BoreholeId = boreholeTestId,
-            Tab = TabType.Reviewed,
-            Field = "Chronostratigraphy",
+            Tab = WorkflowTabType.Reviewed,
+            Field = WorkflowStatusField.Chronostratigraphy,
             NewStatus = true,
         };
 
         var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
 
         ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
+    public void WorkflowStatusFieldEnumMatchesTabStatus()
+    {
+        var tabStatusProps = typeof(TabStatus)
+            .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+            .Where(p => p.PropertyType == typeof(bool))
+            .Select(p => p.Name)
+            .OrderBy(n => n)
+            .ToList();
+
+        var enumNames = Enum.GetNames(typeof(WorkflowStatusField))
+            .OrderBy(n => n)
+            .ToList();
+
+        CollectionAssert.AreEqual(tabStatusProps, enumNames, "WorkflowStatusField enum and TabStatus properties are out of sync.");
     }
 }

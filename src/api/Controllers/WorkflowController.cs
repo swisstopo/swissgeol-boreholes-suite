@@ -129,7 +129,7 @@ public class WorkflowController : ControllerBase
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized to change tab status.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Workflow not found for the specified borehole.")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "Server error while applying tab status change.")]
-    public async Task<IActionResult> ApplyTabStatusChangeAsync([FromBody] TabStatusChangeRequest request)
+    public async Task<IActionResult> ApplyTabStatusChangeAsync([FromBody] WorkflowTabStatusChangeRequest request)
     {
         var subjectId = HttpContext.GetUserSubjectId();
 
@@ -145,15 +145,18 @@ public class WorkflowController : ControllerBase
 
         try
         {
-            if (!IsValidTabStatusField(request.Field))
+
+            if (!Enum.IsDefined(typeof(WorkflowStatusField), request.Field))
+            {
                 return BadRequest($"Invalid field name {request.Field} for tab status change.");
+            }
 
             TabStatus tabStatus;
-            if (request.Tab == TabType.Reviewed)
+            if (request.Tab == WorkflowTabType.Reviewed)
             {
                 tabStatus = workflow.ReviewedTabs;
             }
-            else if (request.Tab == TabType.Published)
+            else if (request.Tab == WorkflowTabType.Published)
             {
                 tabStatus = workflow.PublishedTabs;
             }
@@ -173,17 +176,11 @@ public class WorkflowController : ControllerBase
         }
     }
 
-    private static bool IsValidTabStatusField(string fieldName)
+    private static void SetTabStatusField(TabStatus tabStatus, WorkflowStatusField field, bool value)
     {
-        var prop = typeof(TabStatus).GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-        return prop != null && prop.PropertyType == typeof(bool);
-    }
-
-    private static void SetTabStatusField(TabStatus tabStatus, string fieldName, bool value)
-    {
-        var prop = typeof(TabStatus).GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        var prop = typeof(TabStatus).GetProperty(field.ToString(), BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
         if (prop == null || prop.PropertyType != typeof(bool))
-            throw new ArgumentException($"Invalid field: {fieldName}");
+            throw new ArgumentException($"Invalid field: {field}");
 
         prop.SetValue(tabStatus, value);
     }
