@@ -11,7 +11,7 @@ import {
 } from "@swisstopo/swissgeol-ui-core";
 import { SgcWorkflow } from "@swisstopo/swissgeol-ui-core-react";
 import { useBorehole } from "../../../../api/borehole.ts";
-import { useUsers } from "../../../../api/user.ts";
+import { useCurrentUser, useUsers } from "../../../../api/user.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { useUserRoleForBorehole } from "../../../../hooks/useUserRoleForBorehole.ts";
@@ -21,6 +21,7 @@ import { useWorkflow, useWorkflowMutation, WorkflowChange, WorkflowChangeRequest
 export const WorkflowView = () => {
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: workflow, isLoading } = useWorkflow(parseInt(boreholeId));
+  const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
   const { editingEnabled } = useContext(EditStateContext);
   const { data: users } = useUsers();
   const { data: borehole } = useBorehole(parseInt(boreholeId));
@@ -29,6 +30,7 @@ export const WorkflowView = () => {
   const {
     update: { mutate: updateWorkflow },
   } = useWorkflowMutation();
+
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
     const field = (name: string) => ({
       field: name,
@@ -58,14 +60,14 @@ export const WorkflowView = () => {
     ];
   };
 
-  if (isLoading)
+  if (isLoading || isCurrentUserLoading)
     return (
       <FullPageCentered>
         <CircularProgress />
       </FullPageCentered>
     );
 
-  if (!workflow) return;
+  if (!workflow || !currentUser) return;
 
   const getUsersWithEditPrivilege = (): SimpleUser[] => {
     if (!users) return [];
@@ -98,10 +100,12 @@ export const WorkflowView = () => {
         })),
       }}
       review={workflow.reviewedTabs}
+      item={"Borehole"}
       approval={workflow.publishedTabs}
       availableAssignees={getUsersWithEditPrivilege()}
       isReadOnly={!editingEnabled}
       selection={makeSelectionEntries()}
+      canChangeStatus={canUserEditBorehole(currentUser, borehole)}
       onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
         console.log("On review change", e.detail)
       }
