@@ -67,7 +67,7 @@ export const WorkflowView = () => {
       </FullPageCentered>
     );
 
-  if (!workflow || !currentUser) return;
+  if (!workflow || !currentUser) return null;
 
   const getUsersWithEditPrivilege = (): SimpleUser[] => {
     if (!users) return [];
