@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { CircularProgress } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import {
   LocalDate,
   SgcWorkflowChangeEventDetail,
@@ -91,29 +91,31 @@ export const WorkflowView = () => {
   };
 
   return (
-    <SgcWorkflow
-      workflow={{
-        ...workflow,
-        changes: workflow.changes.map(change => ({
-          ...change,
-          createdAt: LocalDate.fromDate(new Date(String(change.createdAt))),
-        })),
-      }}
-      review={workflow.reviewedTabs}
-      item={"Borehole"}
-      approval={workflow.publishedTabs}
-      availableAssignees={getUsersWithEditPrivilege()}
-      isReadOnly={!editingEnabled}
-      selection={makeSelectionEntries()}
-      canChangeStatus={canUserEditBorehole(currentUser, borehole)}
-      onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
-        console.log("On review change", e.detail)
-      }
-      onSgcWorkflowApprovalChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
-        console.log("On approval change", e.detail)
-      }
-      onSgcWorkflowChange={(e: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => handleWorkflowChange(e)}
-      onSgcWorkflowPublish={(e: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => handleWorkflowChange(e)}
-    />
+    <Box sx={{ minHeight: "1300px" }} /*min height ensures scrollbar is always visible and avoids jumping UI */>
+      <SgcWorkflow
+        workflow={{
+          ...workflow,
+          changes: workflow.changes.map(change => ({
+            ...change,
+            createdAt: LocalDate.fromDate(new Date(String(change.createdAt))),
+          })),
+        }}
+        review={workflow.reviewedTabs}
+        item={"Borehole"}
+        approval={workflow.publishedTabs}
+        availableAssignees={getUsersWithEditPrivilege()}
+        isReadOnly={!editingEnabled}
+        selection={makeSelectionEntries()}
+        canChangeStatus={canUserEditBorehole(currentUser, borehole)}
+        onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
+          console.log("On review change", e.detail)
+        }
+        onSgcWorkflowApprovalChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
+          console.log("On approval change", e.detail)
+        }
+        onSgcWorkflowChange={(e: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => handleWorkflowChange(e)}
+        onSgcWorkflowPublish={(e: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => handleWorkflowChange(e)}
+      />
+    </Box>
   );
 };
