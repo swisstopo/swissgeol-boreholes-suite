@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace BDMS.Controllers;
 
@@ -115,5 +117,70 @@ public class WorkflowController : ControllerBase
             logger?.LogError(ex, errorMessage);
             return Problem(errorMessage);
         }
+    }
+
+    /// <summary>
+    /// Applies a tab status change to the workflow of a borehole.
+    /// </summary>
+    [HttpPost("tabstatuschange")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    [SwaggerResponse(StatusCodes.Status200OK, "Tab status change applied successfully.")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid input for tab status change.")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized to change tab status.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Workflow not found for the specified borehole.")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Server error while applying tab status change.")]
+    public async Task<IActionResult> ApplyTabStatusChangeAsync([FromBody] WorkflowTabStatusChangeRequest request)
+    {
+        var subjectId = HttpContext.GetUserSubjectId();
+
+        if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, request.BoreholeId, true).ConfigureAwait(false)) return Unauthorized();
+
+        var workflow = await context.WorkflowsV2WithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == request.BoreholeId).ConfigureAwait(false);
+        if (workflow == null)
+        {
+            var workflowNotFoundMessage = $"Workflow for borehole with {request.BoreholeId} not found.";
+            logger?.LogWarning(workflowNotFoundMessage);
+            return NotFound(workflowNotFoundMessage);
+        }
+
+        try
+        {
+            if (!Enum.IsDefined(typeof(WorkflowStatusField), request.Field))
+            {
+                return BadRequest($"Invalid field name {request.Field} for tab status change.");
+            }
+
+            TabStatus tabStatus;
+            if (request.Tab == WorkflowTabType.Reviewed)
+            {
+                tabStatus = workflow.ReviewedTabs;
+            }
+            else if (request.Tab == WorkflowTabType.Published)
+            {
+                tabStatus = workflow.PublishedTabs;
+            }
+            else
+            {
+                return BadRequest($"Invalid tab type {request.Tab} for tab status change.");
+            }
+
+            SetTabStatusField(tabStatus, request.Field, request.NewStatus);
+            await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return Ok(workflow);
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(ex, "Error applying tab status change.");
+            return Problem("An error occurred while applying the tab status change.");
+        }
+    }
+
+    private static void SetTabStatusField(TabStatus tabStatus, WorkflowStatusField field, bool value)
+    {
+        var prop = typeof(TabStatus).GetProperty(field.ToString(), BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        if (prop == null || prop.PropertyType != typeof(bool))
+            throw new ArgumentException($"Invalid field: {field}");
+
+        prop.SetValue(tabStatus, value);
     }
 }
