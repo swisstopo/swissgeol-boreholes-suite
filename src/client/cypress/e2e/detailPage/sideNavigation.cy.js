@@ -99,7 +99,6 @@ describe("Test for the detail page side navigation.", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500);
     addItem("addCompletion");
-    cy.wait("@codelist_by_schema_GET");
     cy.location().should(location => {
       expect(location.pathname).to.match(/^\/\d+\/completion\/new$/);
     });

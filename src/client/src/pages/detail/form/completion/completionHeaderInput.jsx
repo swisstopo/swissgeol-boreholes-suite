@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
+import { CircularProgress } from "@mui/material";
+import { useCodelistSchema } from "../../../../components/codelist.js";
 import { SaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.tsx";
 import {
   FormCheckbox,
@@ -12,6 +13,7 @@ import {
 } from "../../../../components/form/form";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import { FullPageCentered } from "../../../../components/styledComponents.js";
 import { completionSchemaConstants } from "./completionSchemaConstants.js";
 
 const CompletionHeaderInput = props => {
@@ -19,21 +21,7 @@ const CompletionHeaderInput = props => {
   const { showPrompt } = useContext(PromptContext);
   const formMethods = useForm({ mode: "all" });
   const { t } = useTranslation();
-  const [kindOptions, setKindOptions] = useState();
-
-  const loadKindOptions = async () => {
-    const response = await fetchApiV2(`codelist?schema=${completionSchemaConstants.completionKind}`, "GET");
-    if (response) {
-      setKindOptions(response);
-    }
-  };
-
-  useEffect(() => {
-    if (kindOptions === undefined) {
-      loadKindOptions();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { data: schemaData, isLoading } = useCodelistSchema(completionSchemaConstants.completionKind);
 
   const [selectedCompletion, setSelectedCompletion] = useState({
     ...completion,
@@ -87,6 +75,13 @@ const CompletionHeaderInput = props => {
     saveCompletion({ ...completion, ...data });
   };
 
+  if (isLoading)
+    return (
+      <FullPageCentered>
+        <CircularProgress />
+      </FullPageCentered>
+    );
+
   return (
     <>
       <FormProvider {...formMethods}>
@@ -112,7 +107,7 @@ const CompletionHeaderInput = props => {
                   selected={selectedCompletion?.kindId}
                   required={true}
                   schemaName={completionSchemaConstants.completionKind}
-                  prefilteredDomains={kindOptions}
+                  prefilteredDomains={schemaData}
                 />
                 <FormCheckbox
                   fieldName="isPrimary"
