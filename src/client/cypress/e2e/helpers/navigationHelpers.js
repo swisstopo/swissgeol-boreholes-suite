@@ -35,9 +35,10 @@ export const StratigraphyTab = {
 
 const noContentColor = "rgb(130, 142, 154)";
 const contentColor = "rgb(28, 40, 52)";
+const activeColor = "rgb(166, 84, 98)";
 
 export const isActiveTab = tab => {
-  getElementByDataCy(tab).should("have.css", "color", "rgb(166, 84, 98)");
+  getElementByDataCy(tab).should("have.css", "color", activeColor);
 };
 
 export const isInactiveTab = (tab, hasContent) => {
@@ -120,10 +121,10 @@ const checkThatParentOpen = menuItem => {
 
 export const isActiveMenuItem = (menuItem, hasContent) => {
   const selector = `${menuItem}-menu-item`;
-  getElementByDataCy(selector).parent().should("have.css", "border-left-color", "rgb(153, 25, 30)");
+  getElementByDataCy(selector).should("have.css", "border-left-color", activeColor);
 
   if (hasContent === true) {
-    checkElementColorByDataCy(selector, "rgb(153, 25, 30)");
+    checkElementColorByDataCy(selector, activeColor);
   } else if (hasContent === false) {
     checkElementColorByDataCy(selector, noContentColor);
   }

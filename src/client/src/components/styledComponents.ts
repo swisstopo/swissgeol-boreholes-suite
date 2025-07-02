@@ -1,5 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
-import ListItem from "@mui/material/ListItem";
+import { Box, Stack } from "@mui/material";
 import { styled } from "@mui/system";
 import { theme } from "../AppTheme";
 
@@ -69,43 +68,4 @@ export const DetailHeaderStack = styled(Stack)({
   borderBottom: "1px solid " + theme.palette.border.light,
   padding: "24px",
   minHeight: "89px",
-});
-
-interface ParentListItemProps {
-  active: boolean;
-  hasContent?: boolean;
-}
-
-export const ParentListItem = styled(ListItem, {
-  shouldForwardProp: prop => prop !== "active" && prop !== "hasContent",
-})<ParentListItemProps>(({ active, hasContent }) => {
-  let textColor = "inherit";
-  if (hasContent === false) {
-    textColor = theme.palette.buttonStates.outlined.disabled.color;
-  } else if (active) {
-    textColor = theme.palette.error.main;
-  }
-
-  return {
-    padding: "1em",
-    display: "flex",
-    height: "40px",
-    cursor: "pointer",
-    paddingLeft: "35.5px",
-    color: textColor,
-    borderTop: `1px solid ${theme.palette.border.light}`,
-    borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : "none",
-    backgroundColor: active ? theme.palette.background.lightgrey : "transparent",
-    "&:hover": {
-      backgroundColor: theme.palette.hover.main,
-    },
-  };
-});
-
-export const ChildListItem = styled(ParentListItem)(() => ({
-  paddingLeft: "50px !important",
-}));
-
-export const StyledTypography = styled(Typography)({
-  fontSize: "14px !important",
 });
