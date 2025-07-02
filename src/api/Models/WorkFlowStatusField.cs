@@ -5,6 +5,7 @@
 /// </summary>
 public enum WorkflowStatusField
 {
+    Unknown = 0,
     General,
     Section,
     Geometry,

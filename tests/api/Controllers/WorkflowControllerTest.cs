@@ -322,6 +322,7 @@ public class WorkflowControllerTest
             .ToList();
 
         var enumNames = Enum.GetNames(typeof(WorkflowStatusField))
+            .Where(name => name != "Unknown")
             .OrderBy(n => n)
             .ToList();
 

@@ -65,6 +65,7 @@ dotnet_diagnostic.CA1003.severity = warning
 dotnet_diagnostic.CA1004.severity = warning
 dotnet_diagnostic.CA1005.severity = warning
 dotnet_diagnostic.CA1007.severity = warning
+dotnet_diagnostic.CA1008.severity = warning
 dotnet_diagnostic.CA1009.severity = warning
 dotnet_diagnostic.CA1010.severity = warning
 dotnet_diagnostic.CA1013.severity = warning
@@ -293,6 +294,8 @@ csharp_style_deconstructed_variable_declaration = true:suggestion
 csharp_style_unused_value_assignment_preference = discard_variable:suggestion
 csharp_style_unused_value_expression_statement_preference = discard_variable:silent
 csharp_style_prefer_method_group_conversion = true:silent
+csharp_style_prefer_top_level_statements = true:silent
+csharp_style_prefer_primary_constructors = true:suggestion
 
 [*.{cs,vb}]
 indent_size = 4

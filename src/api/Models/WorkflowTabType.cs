@@ -5,6 +5,7 @@
 /// </summary>
 public enum WorkflowTabType
 {
+    Unknown = 0,
     Reviewed,
     Published,
 }
