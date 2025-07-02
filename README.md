@@ -14,8 +14,6 @@ Folgende Komponenten müssen auf dem Entwicklungsrechner installiert sein:
 ✔️ Node.js 20 LTS  
 ✔️ Optional, um die Onlinehilfe zu erstellen: [MkDocs](https://www.mkdocs.org/)
 
-Um die [swissgeol-ui-core](https://github.com/swisstopo/swissgeol-ui-core) npm Libraries lokal installieren zu können, muss ein GitHub Access Token erstellt werden und in den Umgebungsvariablen des Users als `GITHUB_TOKEN` gespeichert werden. Der Token muss die Berechtigung `read:packages` beinhalten.
-
 ### Entwicklung mit Visual Studio 2022
 
 Es wird eine lokale Installation von Node.js benötigt. Diese kann mit Visual Studio 2022 oder mit [nvm](https://github.com/coreybutler/nvm-windows/releases) installiert werden, um mehrere Node Version zu verwalten. Anschliessend kann mit `nvm use` die im Projekt verwendete Node Version aktiviert werden.

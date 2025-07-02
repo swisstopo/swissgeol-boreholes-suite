@@ -3,7 +3,7 @@ import {
   LocalDate,
   WorkflowChange as SwissgeolWorkflowChange,
   WorkflowStatus,
-} from "@swisstopo/swissgeol-ui-core";
+} from "@swissgeol/ui-core";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
