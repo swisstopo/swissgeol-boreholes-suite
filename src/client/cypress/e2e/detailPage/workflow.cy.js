@@ -1,6 +1,7 @@
 import {
   assertEmptyRequestReviewModal,
   assertWorkflowSteps,
+  checkWorkflowChangeContent,
   clickSgcButtonWithContent,
   evaluateComment,
 } from "../helpers/swissgeolCoreHelpers.js";
@@ -13,12 +14,6 @@ import {
 } from "../helpers/testHelpers.js";
 
 describe("Tests the publication workflow.", () => {
-  const checkWorkflowChangeContent = (index, user, statusChange, comment) => {
-    cy.get(".heading .highlight").should("contain", user);
-    cy.get("sgc-workflow-change-template li[slot='mutations']").should("contain", statusChange);
-    cy.get("sgc-workflow-change-template div[slot='body']").should("contain", comment);
-  };
-
   it("Displays DEV workflow when feature flag is set", () => {
     goToDetailRouteAndAcceptTerms(`/1000036/status`);
     // displays legacy workflow form by default
@@ -31,9 +26,8 @@ describe("Tests the publication workflow.", () => {
     cy.get("sgc-translate").contains("Zugewiesene Person").should("exist");
     cy.get(".assignee").contains("validator user").should("exist");
 
-    checkWorkflowChangeContent(1, "editor user", "Status von Published zu Reviewed geändert", "Omnis ut in.");
+    checkWorkflowChangeContent("editor user", "Status von Published zu Reviewed geändert", "Omnis ut in.");
     checkWorkflowChangeContent(
-      2,
       "controller user",
       "Borehole editor user zugewiesen",
       "Rerum repudiandae nihil accusamus sed omnis tempore laboriosam eaque est.",

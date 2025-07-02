@@ -18,3 +18,9 @@ export function assertEmptyRequestReviewModal() {
   cy.get(".select-trigger span").should("be.empty"); // Assignee select should be empty
   cy.get("sgc-text-area").find("textarea").should("be.empty"); // Comment input should be empty
 }
+
+export function checkWorkflowChangeContent(userName: string, statusChange: string, comment: string) {
+  cy.get(".heading .highlight").should("contain", userName);
+  cy.get("sgc-workflow-change-template li[slot='mutations']").should("contain", statusChange);
+  cy.get("sgc-workflow-change-template div[slot='body']").should("contain", comment);
+}
