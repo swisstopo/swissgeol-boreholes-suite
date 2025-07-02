@@ -54,7 +54,8 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
     {
         // Check if associated borehole is locked
         var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
-        // Case when entity created is a new borehole
+
+        // Case when the entity being created is a new borehole
         if (boreholeId == 0)
         {
             if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), boreholeId, Role.Editor).ConfigureAwait(false))
