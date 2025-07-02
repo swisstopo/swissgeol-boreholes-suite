@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 import { Box, CircularProgress } from "@mui/material";
 import {
   LocalDate,
@@ -26,6 +27,7 @@ export const WorkflowView = () => {
   const { data: users } = useUsers();
   const { data: borehole } = useBorehole(parseInt(boreholeId));
   const { t } = useTranslation();
+  const location = useLocation();
   const { canUserEditBorehole, mapMaxRole } = useUserRoleForBorehole();
   const {
     update: { mutate: updateWorkflow },
@@ -73,7 +75,7 @@ export const WorkflowView = () => {
     if (!users) return [];
     return users
       .filter(user => canUserEditBorehole(user, borehole))
-      .map(user => ({
+      ?.map(user => ({
         ...user,
         role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role)),
       }));
@@ -91,11 +93,11 @@ export const WorkflowView = () => {
   };
 
   return (
-    <Box sx={{ minHeight: "1300px" }} /*min height ensures scrollbar is always visible and avoids jumping UI */>
+    <Box sx={{ mr: location.hash !== "review" && location.hash !== "approval" ? 20 : 0 }}>
       <SgcWorkflow
         workflow={{
           ...workflow,
-          changes: workflow.changes.map(change => ({
+          changes: workflow.changes?.map(change => ({
             ...change,
             createdAt: LocalDate.fromDate(new Date(String(change.createdAt))),
           })),
