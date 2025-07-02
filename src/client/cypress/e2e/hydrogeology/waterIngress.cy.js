@@ -106,7 +106,7 @@ describe("Tests for the wateringress editor.", () => {
   it("calculates and sets depth automatically", () => {
     createBorehole({
       originalName: "INTEADAL",
-      reference_elevation: 4000,
+      referenceElevation: 4000,
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {

@@ -110,15 +110,15 @@ describe("Test for importing boreholes.", () => {
     createBorehole({
       originalName: boreholeName,
       name: boreholeName,
-      location_x: 100,
-      location_y: 200,
+      locationX: 100,
+      locationY: 200,
     }).as("borehole_id");
 
     createBorehole({
       originalName: boreholeName2,
       name: boreholeName2,
-      location_x: 300,
-      location_y: 400,
+      locationX: 300,
+      locationY: 400,
     }).as("borehole_id2");
 
     addMinimalAttachment("@borehole_id", "FREEZINGCOLD.txt");

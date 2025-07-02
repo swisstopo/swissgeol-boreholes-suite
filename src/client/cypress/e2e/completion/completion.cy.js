@@ -173,7 +173,6 @@ describe("completion crud tests", () => {
         "@casing_by_completion_GET",
         "@casing_by_completion_GET",
         "@backfill_by_completion_GET",
-        "@backfill_by_completion_GET",
         "@instrumentation_by_completion_GET",
         "@instrumentation_by_completion_GET",
       ]);
@@ -187,7 +186,6 @@ describe("completion crud tests", () => {
       setInput("name", "Compl-2");
       toggleCheckbox("isPrimary");
       saveChanges();
-      cy.wait("@backfill_by_completion_GET");
       cy.contains("Compl-2");
       startEditHeader();
       evaluateCheckbox("isPrimary", "true");

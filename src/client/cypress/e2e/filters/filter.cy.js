@@ -68,7 +68,7 @@ describe("Search filter tests", () => {
     createBorehole({
       originalName: "Borehole 1 with striae: true",
       name: "striae true / null",
-      national_interest: false,
+      nationalInterest: false,
     })
       .as("borehole_id")
       .then(boreholeId => {
@@ -83,7 +83,7 @@ describe("Search filter tests", () => {
     createBorehole({
       originalName: "Borehole 1 with striae: false",
       name: "striae false / null",
-      national_interest: false,
+      nationalInterest: false,
     })
       .as("borehole_id2")
       .then(boreholeId2 => {
@@ -98,7 +98,7 @@ describe("Search filter tests", () => {
     createBorehole({
       originalName: "Borehole 2 with striae: false",
       name: "striae false / null",
-      national_interest: false,
+      nationalInterest: false,
     })
       .as("borehole_id3")
       .then(boreholeId3 => {
@@ -112,7 +112,7 @@ describe("Search filter tests", () => {
     createBorehole({
       originalName: "Borehole 3 with striae: false",
       name: "striae false, national_interest null",
-      national_interest: null,
+      nationalInterest: null,
     })
       .as("borehole_id3")
       .then(boreholeId3 => {
