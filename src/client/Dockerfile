@@ -1,7 +1,6 @@
 FROM node:20-buster-slim AS development
 ARG VERSION
 ARG REVISION
-ARG GITHUB_TOKEN
 ENV VITE_APP_VERSION=${VERSION}+${REVISION}
 RUN apt-get -y update
 RUN apt-get -y install git vim curl htop python3 python3-pip
@@ -9,7 +8,7 @@ RUN python3 -m pip install mkdocs
 RUN mkdir -p /app/src/client
 WORKDIR /app/src/client
 
-COPY ./package.json ./package-lock.json .npmrc ./
+COPY ./package.json ./package-lock.json ./
 RUN npm ci
 
 # Build docs

@@ -49,8 +49,6 @@ jobs:
 
       - working-directory: ./src/client
         run: npm run lint
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   cypress-tests:
     runs-on: ubuntu-latest

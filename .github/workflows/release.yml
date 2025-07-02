@@ -133,10 +133,6 @@ jobs:
           build-args: |
             VERSION=${{ env.VERSION }}
             REVISION=${{ env.REVISION }}
-            // The GitHub token is used in order to be able to fetch the
-            // swissgeol-ui-core-react library while creating the Docker image.
-            // The token is not available in the final Docker image.
-            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           tags: ${{ steps.meta-client.outputs.tags }}
           labels: ${{ steps.meta-client.outputs.labels }}
           cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-client:edge
