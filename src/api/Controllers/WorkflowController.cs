@@ -145,7 +145,6 @@ public class WorkflowController : ControllerBase
 
         try
         {
-
             if (!Enum.IsDefined(typeof(WorkflowStatusField), request.Field))
             {
                 return BadRequest($"Invalid field name {request.Field} for tab status change.");
