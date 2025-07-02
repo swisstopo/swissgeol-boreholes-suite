@@ -160,10 +160,10 @@ export const theme = createTheme({
       lineHeight: "1.4em",
     },
     body1: {
-      fontSize: "14px",
+      fontSize: "16px",
     },
     body2: {
-      fontSize: "16px",
+      fontSize: "14px",
     },
     fullPageMessage: {
       fontSize: "23px",
@@ -603,6 +603,7 @@ export const theme = createTheme({
     MuiDataGrid: {
       styleOverrides: {
         root: {
+          fontSize: "16px",
           cursor: "pointer",
           borderColor: themePalette.border.darker,
           "& .MuiDataGrid-columnHeader": {
