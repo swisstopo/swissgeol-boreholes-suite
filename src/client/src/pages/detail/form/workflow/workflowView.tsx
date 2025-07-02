@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
 import { Box, CircularProgress } from "@mui/material";
 import {
   LocalDate,
@@ -27,7 +26,6 @@ export const WorkflowView = () => {
   const { data: users } = useUsers();
   const { data: borehole } = useBorehole(parseInt(boreholeId));
   const { t } = useTranslation();
-  const location = useLocation();
   const { canUserEditBorehole, mapMaxRole } = useUserRoleForBorehole();
   const {
     update: { mutate: updateWorkflow },
@@ -93,7 +91,7 @@ export const WorkflowView = () => {
   };
 
   return (
-    <Box sx={{ mr: location.hash !== "review" && location.hash !== "approval" ? 20 : 0 }}>
+    <Box sx={{ minHeight: "100dvh" }}>
       <SgcWorkflow
         workflow={{
           ...workflow,
