@@ -1,4 +1,4 @@
-import { WorkflowStatus } from "@swisstopo/swissgeol-ui-core";
+import { WorkflowStatus } from "@swissgeol/ui-core";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { User } from "../../../../api/apiInterfaces.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
