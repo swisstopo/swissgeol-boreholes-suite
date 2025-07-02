@@ -15,7 +15,7 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: "node_modules/@swisstopo/swissgeol-ui-core/dist/swissgeol-ui-core/assets/*",
+          src: "node_modules/@swissgeol/ui-core/dist/swissgeol-ui-core/assets/*",
           dest: "assets",
         },
       ],
