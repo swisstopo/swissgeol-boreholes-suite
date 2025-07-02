@@ -1,33 +1,23 @@
-import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Stack } from "@mui/material";
-import { createBorehole } from "../../../api-lib";
-import { AlertContext } from "../../../components/alert/alertContext.tsx";
+import { useBoreholeMutations } from "../../../api/borehole.ts";
 import { SideDrawerHeader } from "../layout/sideDrawerHeader.tsx";
 import { NewBoreholeProps } from "./commons/actionsInterfaces.ts";
 import WorkgroupSelect from "./commons/workgroupSelect.tsx";
 
 const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, toggleDrawer }: NewBoreholeProps) => {
   const navigate = useNavigate();
-  const { showAlert } = useContext(AlertContext);
+  const {
+    add: { mutateAsync: addBoreholeAsync },
+  } = useBoreholeMutations();
   const { t } = useTranslation();
 
-  const handleBoreholeCreate = () => {
-    // @ts-expect-error : The createBorehole function is not typed
-    createBorehole(parseInt(workgroupId))
-      // @ts-expect-error : The return of the createBorehole function is not typed
-      .then((response: { data: { success: boolean; id: string; message: string } }) => {
-        if (response.data.success) {
-          navigate("/" + response.data.id);
-        } else {
-          showAlert(response.data.message, "error");
-          window.location.reload();
-        }
-      })
-      .catch(function (error: string) {
-        console.log(error);
-      });
+  const handleBoreholeCreate = async () => {
+    if (workgroupId) {
+      const borehole = await addBoreholeAsync(workgroupId);
+      navigate("/" + borehole.id);
+    }
   };
 
   return (

@@ -36,13 +36,6 @@ export function loadEditingBoreholes(
   });
 }
 
-export function createBorehole(id = null) {
-  return fetch("/borehole/edit", {
-    action: "CREATE",
-    id: id, // workgroup id
-  });
-}
-
 export function patchBoreholes(ids, fields) {
   return fetch("/borehole/edit", {
     action: "MULTIPATCH",

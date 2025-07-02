@@ -108,6 +108,10 @@ export const importBoreholesZip = async (workgroupId: number | null, combinedFor
   return await upload(`import/zip?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
+export const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
+  return await fetchApiV2(`borehole`, "POST", { workgroupId });
+};
+
 export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
   return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
@@ -148,6 +152,13 @@ export const useBorehole = (id: number) => {
 
 export const useBoreholeMutations = () => {
   const queryClient = useQueryClient();
+
+  const useAddBorehole = useMutation({
+    mutationFn: async (workgroupId: number) => {
+      return await createBorehole(workgroupId);
+    },
+  });
+
   const useUpdateBorehole = useMutation({
     mutationFn: async (borehole: BoreholeV2) => {
       return await updateBorehole(borehole);
@@ -168,9 +179,11 @@ export const useBoreholeMutations = () => {
     },
   });
 
+  useShowAlertOnError(useAddBorehole.isError, useAddBorehole.error);
   useShowAlertOnError(useUpdateBorehole.isError, useUpdateBorehole.error);
   useShowAlertOnError(useDeleteBorehole.isError, useDeleteBorehole.error);
   return {
+    add: useAddBorehole,
     update: useUpdateBorehole,
     delete: useDeleteBorehole,
   };
