@@ -110,12 +110,7 @@ export const navigateInStratigraphy = tab => {
 const checkThatParentOpen = menuItem => {
   const parent = sidebarParentMap[menuItem];
   if (parent) {
-    // If child is not visible, click parent to expand
-    getElementByDataCy(`${menuItem}-menu-item`).should($el => {
-      if (!$el.is(":visible")) {
-        navigateInSidebar(parent);
-      }
-    });
+    getElementByDataCy(`${menuItem}-menu-item`).should("be.visible");
   }
 };
 
