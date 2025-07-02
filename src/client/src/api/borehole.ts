@@ -4,6 +4,7 @@ import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/codelist.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
+import { referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { WorkflowV2 } from "../pages/detail/form/workflow/workflow.ts";
 import { Photo, User, Workgroup } from "./apiInterfaces.ts";
@@ -109,7 +110,7 @@ export const importBoreholesZip = async (workgroupId: number | null, combinedFor
 };
 
 export const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
-  return await fetchApiV2(`borehole`, "POST", { workgroupId });
+  return await fetchApiV2(`borehole`, "POST", { workgroupId, originalReferenceSystem: referenceSystems.LV95.code });
 };
 
 export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
