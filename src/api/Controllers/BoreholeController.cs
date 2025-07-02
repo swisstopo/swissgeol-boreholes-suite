@@ -32,6 +32,19 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             ReviewedTabs = new(),
             PublishedTabs = new(),
         };
+
+        // temporarily add legacy workflow until WorkflowV2 is fully implemented
+        var user = await Context.Users
+            .Include(u => u.WorkgroupRoles)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+        if (user == null || user.WorkgroupRoles == null || !user.WorkgroupRoles.Any(w => w.WorkgroupId == entity.WorkgroupId && w.Role == Role.Editor))
+        {
+            return Unauthorized();
+        }
+
+        entity.Workflows.Add(new Workflow { UserId = user.Id, Role = Role.Editor });
         return await base.CreateAsync(entity).ConfigureAwait(false);
     }
 

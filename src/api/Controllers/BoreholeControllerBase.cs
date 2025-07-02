@@ -54,9 +54,20 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
     {
         // Check if associated borehole is locked
         var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
-        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
+        // Case when entity created is a new borehole
+        if (boreholeId == 0)
         {
-            return Problem("The borehole is locked by another user or you are missing permissions.");
+            if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), boreholeId, Role.Editor).ConfigureAwait(false))
+            {
+                return Problem("You are missing permissions to create a borehole.");
+            }
+        }
+        else
+        {
+            if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
+            {
+                return Problem("The borehole is locked by another user or you are missing permissions.");
+            }
         }
 
         await context.AddAsync(entity).ConfigureAwait(false);
