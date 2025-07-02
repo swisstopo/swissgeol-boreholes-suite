@@ -73,7 +73,7 @@ describe("Tests the publication workflow.", () => {
     checkWorkflowChangeContent(
       2,
       "controller user",
-      "Asset editor user zugewiesen",
+      "Borehole editor user zugewiesen",
       "Rerum repudiandae nihil accusamus sed omnis tempore laboriosam eaque est.",
     ); // Translation not yet available in core UI, wrong "asset" hardcoded in component
   });
