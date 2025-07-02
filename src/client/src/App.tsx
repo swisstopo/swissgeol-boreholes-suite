@@ -2,7 +2,7 @@ import React from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
-import { Language, SwissgeolCoreI18n } from "@swisstopo/swissgeol-ui-core";
+import { Language, SwissgeolCoreI18n } from "@swissgeol/ui-core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { theme } from "./AppTheme";
 import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.tsx";

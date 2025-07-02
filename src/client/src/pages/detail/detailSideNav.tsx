@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Box } from "@mui/material";
-import { SgcMenuItem } from "@swisstopo/swissgeol-ui-core-react";
+import { SgcMenuItem } from "@swissgeol/ui-core-react";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";

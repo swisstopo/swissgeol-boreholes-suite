@@ -8,8 +8,8 @@ import {
   SgcWorkflowSelectionChangeEventDetails,
   SgcWorkflowSelectionEntry,
   SimpleUser,
-} from "@swisstopo/swissgeol-ui-core";
-import { SgcWorkflow } from "@swisstopo/swissgeol-ui-core-react";
+} from "@swissgeol/ui-core";
+import { SgcWorkflow } from "@swissgeol/ui-core-react";
 import { useBorehole } from "../../../../api/borehole.ts";
 import { useCurrentUser, useUsers } from "../../../../api/user.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";

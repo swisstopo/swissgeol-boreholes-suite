@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Role, WorkflowStatus } from "@swisstopo/swissgeol-ui-core";
+import { Role, WorkflowStatus } from "@swissgeol/ui-core";
 import { Role as LegacyRole, User } from "../api/apiInterfaces.ts";
 import { BoreholeV2, useBorehole } from "../api/borehole.ts";
 import { useRequiredParams } from "./useRequiredParams.ts";

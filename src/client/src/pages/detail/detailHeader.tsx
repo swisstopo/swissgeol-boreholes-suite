@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
-import { WorkflowStatus } from "@swisstopo/swissgeol-ui-core";
+import { WorkflowStatus } from "@swissgeol/ui-core";
 import { BoreholeV2, useBoreholeMutations } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
