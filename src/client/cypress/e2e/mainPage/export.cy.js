@@ -1,3 +1,4 @@
+import { referenceSystems } from "../../../src/pages/detail/form/location/coordinateSegmentConstants.ts";
 import {
   addItem,
   deleteItem,
@@ -358,6 +359,7 @@ describe("Test for exporting boreholes.", () => {
     createBorehole({
       originalName: boreholeName,
       name: boreholeName,
+      originalReferenceSystem: referenceSystems.LV95.code,
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
