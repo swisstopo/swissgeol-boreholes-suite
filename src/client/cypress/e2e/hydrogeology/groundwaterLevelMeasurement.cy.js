@@ -14,7 +14,7 @@ import {
 describe("Tests for the groundwater level measurement editor.", () => {
   it("Creates, updates and deletes groundwater level measurement", () => {
     // Create borehole with completion and casing
-    createBorehole({ "extended.original_name": "INTEADAL" })
+    createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
         createCompletion("test groundwaterlevel measurement", id, 16000002, true)

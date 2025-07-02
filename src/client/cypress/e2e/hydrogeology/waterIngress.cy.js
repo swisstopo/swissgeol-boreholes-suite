@@ -15,7 +15,7 @@ import {
 describe("Tests for the wateringress editor.", () => {
   it("Creates, updates and deletes wateringresses", () => {
     // Create borehole with completion and casing
-    createBorehole({ "extended.original_name": "INTEADAL" })
+    createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
         createCompletion("test wateringress", id, 16000002, true)
@@ -73,7 +73,7 @@ describe("Tests for the wateringress editor.", () => {
   });
 
   it("sorts wateringress", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       createWateringress(id, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
       createWateringress(id, "2012-11-14T12:07Z", 15203157, 15203162, null, 0, 12);
@@ -105,7 +105,7 @@ describe("Tests for the wateringress editor.", () => {
 
   it("calculates and sets depth automatically", () => {
     createBorehole({
-      "extended.original_name": "INTEADAL",
+      originalName: "INTEADAL",
       reference_elevation: 4000,
     }).as("borehole_id");
 

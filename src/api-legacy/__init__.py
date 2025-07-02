@@ -39,7 +39,6 @@ from bms.v1.terms.handler import TermsHandler
 from bms.v1.terms.admin import TermsAdminHandler
 
 # Actions
-from bms.v1.borehole import CreateBorehole
 from bms.v1.borehole import ListBorehole
 from bms.v1.borehole import BoreholeIds
 from bms.v1.borehole import GetBorehole

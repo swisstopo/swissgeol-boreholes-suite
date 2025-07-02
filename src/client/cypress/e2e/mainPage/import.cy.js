@@ -108,15 +108,15 @@ describe("Test for importing boreholes.", () => {
     const boreholeName = "COLDWATERDRINK";
     const boreholeName2 = "COLDWATERBATH";
     createBorehole({
-      "extended.original_name": boreholeName,
-      "custom.alternate_name": boreholeName,
+      originalName: boreholeName,
+      name: boreholeName,
       location_x: 100,
       location_y: 200,
     }).as("borehole_id");
 
     createBorehole({
-      "extended.original_name": boreholeName2,
-      "custom.alternate_name": boreholeName2,
+      originalName: boreholeName2,
+      name: boreholeName2,
       location_x: 300,
       location_y: 400,
     }).as("borehole_id2");

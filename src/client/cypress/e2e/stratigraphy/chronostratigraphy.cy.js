@@ -10,7 +10,7 @@ import {
 describe("Tests for the chronostratigraphy editor.", () => {
   beforeEach(function () {
     // Add new borehole with some lithology layers
-    createBorehole({ "extended.original_name": "INTEADAL" })
+    createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id => createStratigraphy(id, 3000).as("stratigraphy_id"))
       .then(stratigraphyId => {

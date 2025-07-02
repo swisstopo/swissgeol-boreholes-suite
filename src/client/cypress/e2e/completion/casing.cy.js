@@ -11,7 +11,7 @@ import {
 
 describe("Casing crud tests", () => {
   beforeEach(() => {
-    createBorehole({ "extended.original_name": "INTEADAL" })
+    createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id => createCompletion("test casing", id, 16000002, true))
       .as("completion_id")

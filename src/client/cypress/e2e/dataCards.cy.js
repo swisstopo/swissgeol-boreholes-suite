@@ -10,7 +10,7 @@ import {
 
 describe("Tests for the data cards in the editor.", () => {
   it("resets datacards when stop editing or cancel", () => {
-    createBorehole({ "extended.original_name": "FISHTRUCK" }).as("borehole_id");
+    createBorehole({ originalName: "FISHTRUCK" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
       cy.wait(["@borehole"]);
@@ -49,7 +49,7 @@ describe("Tests for the data cards in the editor.", () => {
   });
 
   it("checks for unsaved changes when switching between cards", () => {
-    createBorehole({ "extended.original_name": "FROGPHONE" }).as("borehole_id");
+    createBorehole({ originalName: "FROGPHONE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
       cy.wait(["@borehole"]);

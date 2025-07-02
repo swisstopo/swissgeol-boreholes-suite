@@ -66,8 +66,8 @@ describe("Search filter tests", () => {
 
   it("filters boreholes national_interest and striae", () => {
     createBorehole({
-      "extended.original_name": "Borehole 1 with striae: true",
-      "custom.alternate_name": "striae true / null",
+      originalName: "Borehole 1 with striae: true",
+      name: "striae true / null",
       national_interest: false,
     })
       .as("borehole_id")
@@ -81,8 +81,8 @@ describe("Search filter tests", () => {
       });
 
     createBorehole({
-      "extended.original_name": "Borehole 1 with striae: false",
-      "custom.alternate_name": "striae false / null",
+      originalName: "Borehole 1 with striae: false",
+      name: "striae false / null",
       national_interest: false,
     })
       .as("borehole_id2")
@@ -96,8 +96,8 @@ describe("Search filter tests", () => {
       });
 
     createBorehole({
-      "extended.original_name": "Borehole 2 with striae: false",
-      "custom.alternate_name": "striae false / null",
+      originalName: "Borehole 2 with striae: false",
+      name: "striae false / null",
       national_interest: false,
     })
       .as("borehole_id3")
@@ -110,8 +110,8 @@ describe("Search filter tests", () => {
       });
 
     createBorehole({
-      "extended.original_name": "Borehole 3 with striae: false",
-      "custom.alternate_name": "striae false, national_interest null",
+      originalName: "Borehole 3 with striae: false",
+      name: "striae false, national_interest null",
       national_interest: null,
     })
       .as("borehole_id3")
@@ -194,7 +194,7 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by status", () => {
-    createBorehole({ "extended.original_name": "Filter by status" }).as("borehole_id");
+    createBorehole({ originalName: "Filter by status" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/status`);
       startBoreholeEditing();

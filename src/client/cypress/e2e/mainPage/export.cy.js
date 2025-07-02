@@ -65,12 +65,8 @@ describe("Test for exporting boreholes.", () => {
   it("bulk exports boreholes to json and csv", () => {
     deleteDownloadedFile(jsonFileName);
     deleteDownloadedFile(csvFileName);
-    createBorehole({ "extended.original_name": "AAA_NINTIC", "custom.alternate_name": "AAA_NINTIC" }).as(
-      "borehole_id_1",
-    );
-    createBorehole({ "extended.original_name": "AAA_LOMONE", "custom.alternate_name": "AAA_LOMONE" }).as(
-      "borehole_id_2",
-    );
+    createBorehole({ originalName: "AAA_NINTIC", name: "AAA_NINTIC" }).as("borehole_id_1");
+    createBorehole({ originalName: "AAA_LOMONE", name: "AAA_LOMONE" }).as("borehole_id_2");
     goToRouteAndAcceptTerms("/");
     showTableAndWaitForData();
     checkRowWithText("AAA_NINTIC");
@@ -97,7 +93,7 @@ describe("Test for exporting boreholes.", () => {
     deleteDownloadedFile(fileName);
     deleteDownloadedFile(secondFileName);
 
-    createBorehole({ "extended.original_name": boreholeName, "custom.alternate_name": boreholeName }).as("borehole_id");
+    createBorehole({ originalName: boreholeName, name: boreholeName }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}`);
@@ -245,8 +241,8 @@ describe("Test for exporting boreholes.", () => {
   it("exports a single borehole as csv and json", () => {
     const boreholeName = "AAA_HIPPOPOTHAMUS";
     createBorehole({
-      "extended.original_name": boreholeName,
-      "custom.alternate_name": boreholeName,
+      originalName: boreholeName,
+      name: boreholeName,
     }).as("borehole_id");
 
     deleteDownloadedFile(`${boreholeName}.json`);
@@ -269,8 +265,8 @@ describe("Test for exporting boreholes.", () => {
   it("exports a single borehole with attachment as zip file", () => {
     const boreholeName = "COLDWATER";
     createBorehole({
-      "extended.original_name": boreholeName,
-      "custom.alternate_name": boreholeName,
+      originalName: boreholeName,
+      name: boreholeName,
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
@@ -293,8 +289,8 @@ describe("Test for exporting boreholes.", () => {
     const boreholeName = "AQUABED";
     const fileName = `${boreholeName}.json`;
     createBorehole({
-      "extended.original_name": boreholeName,
-      "custom.alternate_name": boreholeName,
+      originalName: boreholeName,
+      name: boreholeName,
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
@@ -360,8 +356,8 @@ describe("Test for exporting boreholes.", () => {
   it("exports and reimports a borehole using csv", () => {
     const boreholeName = "AAA_WALRUS";
     createBorehole({
-      "extended.original_name": boreholeName,
-      "custom.alternate_name": boreholeName,
+      originalName: boreholeName,
+      name: boreholeName,
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {

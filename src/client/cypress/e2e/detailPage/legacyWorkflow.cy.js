@@ -32,7 +32,7 @@ const verifyStatusTextsNotInHeader = status => {
 // Skip the test until deleting of boreholes is fixed (see github issue #1188)
 describe("Tests the legacy publication workflow.", () => {
   it("Publishes a borehole without rejections", () => {
-    createBorehole({ "extended.original_name": "Borehole to publish" }).as("borehole_id");
+    createBorehole({ originalName: "Borehole to publish" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/status`);
     });
@@ -130,7 +130,7 @@ describe("Tests the legacy publication workflow.", () => {
   });
 
   it("Deletes a borehole if its publication status is not Change in Progress", () => {
-    createBorehole({ "extended.original_name": "Borehole in review to delete" }).as("borehole_id");
+    createBorehole({ originalName: "Borehole in review to delete" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/status`);
     });

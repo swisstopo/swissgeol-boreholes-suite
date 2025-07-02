@@ -12,7 +12,7 @@ import {
 } from "../helpers/testHelpers";
 
 beforeEach(() => {
-  createBorehole({ "extended.original_name": "INTEADAL" })
+  createBorehole({ originalName: "INTEADAL" })
     .as("borehole_id")
     .then(id =>
       createCompletion("test fieldmeasurement", id, 16000002, true)
