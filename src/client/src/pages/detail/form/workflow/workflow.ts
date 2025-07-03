@@ -48,11 +48,27 @@ export interface WorkflowChangeRequest {
   newStatus: WorkflowStatus;
 }
 
+export interface TabStatusChangeRequest {
+  boreholeId: string;
+  tab: TabType;
+  field: string;
+  newStatus: boolean;
+}
+
+export enum TabType {
+  Reviewed,
+  Published,
+}
+
 export const fetchWorkflowByBoreholeId = async (boreholeId: number): Promise<WorkflowV2> =>
   await fetchApiV2(`workflow/${boreholeId}`, "GET");
 
 export const sendWorkflowChangeRequest = async (workflowChangeRequest: WorkflowChangeRequest) => {
   await fetchApiV2(`workflow/change`, "POST", workflowChangeRequest);
+};
+
+export const sendTabStatusChangeRequest = async (tabStatusChangeRequest: TabStatusChangeRequest) => {
+  await fetchApiV2(`workflow/tabstatuschange`, "POST", tabStatusChangeRequest);
 };
 
 export const workflowQueryKey = "workflows";
@@ -73,21 +89,30 @@ export const useWorkflow = (boreholeId: number): UseQueryResult<WorkflowV2> => {
 export const useWorkflowMutation = () => {
   const queryClient = useQueryClient();
 
+  function invalidateBoreholeAndWorkflowQueries(boreholeId: string) {
+    queryClient.invalidateQueries({ queryKey: [workflowQueryKey, Number(boreholeId)] });
+    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
+  }
+
   const updateWorkflow = useMutation({
     mutationFn: (request: WorkflowChangeRequest) => sendWorkflowChangeRequest(request),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: [workflowQueryKey, Number(variables.boreholeId)],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [boreholeQueryKey, Number(variables.boreholeId)],
-      });
+      invalidateBoreholeAndWorkflowQueries(variables.boreholeId);
+    },
+  });
+
+  const updateTabStatus = useMutation({
+    mutationFn: (request: TabStatusChangeRequest) => sendTabStatusChangeRequest(request),
+    onSuccess: (_, variables) => {
+      invalidateBoreholeAndWorkflowQueries(variables.boreholeId);
     },
   });
 
   useShowAlertOnError(updateWorkflow.isError, updateWorkflow.error);
+  useShowAlertOnError(updateTabStatus.isError, updateTabStatus.error);
 
   return {
-    update: updateWorkflow,
+    updateWorkflow,
+    updateTabStatus,
   };
 };

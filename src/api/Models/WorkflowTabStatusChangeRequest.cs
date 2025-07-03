@@ -24,7 +24,7 @@ public class WorkflowTabStatusChangeRequest
     /// Gets or sets the field for which the status changes.
     /// </summary>
     [Required]
-    public required WorkflowStatusField Field { get; set; }
+    public required string Field { get; set; }
 
     /// <summary>
     /// Gets or sets the new status of the field.
