@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
+import { WorkflowStatus } from "@swissgeol/ui-core";
 import { BoreholeV2, useBoreholeMutations } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
@@ -120,6 +121,26 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
     ? t(`statuses.${borehole.workflow?.status}`)
     : t(`status${currentWorkflow?.role.toLowerCase()}`);
 
+  const statusColor = hasDevFlag
+    ? borehole.workflow?.status === WorkflowStatus.Published
+      ? "success"
+      : "warning"
+    : currentWorkflow?.finished != null
+      ? "success"
+      : "warning";
+
+  const statusIcon = hasDevFlag ? (
+    borehole.workflow?.status === WorkflowStatus.Published ? (
+      <Check />
+    ) : (
+      <div />
+    )
+  ) : currentWorkflow?.finished != null ? (
+    <Check />
+  ) : (
+    <div />
+  );
+
   return (
     <DetailHeaderStack direction="row" alignItems="center">
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={3}>
@@ -132,14 +153,7 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
             </Typography>
           )}
         </Stack>
-        {workflows && (
-          <Chip
-            data-cy="workflow-status-chip"
-            label={statusLabel}
-            color={currentWorkflow?.finished != null ? "success" : "warning"}
-            icon={currentWorkflow?.finished != null ? <Check /> : <div />}
-          />
-        )}
+        {workflows && <Chip data-cy="workflow-status-chip" label={statusLabel} color={statusColor} icon={statusIcon} />}
       </Stack>
       <Stack direction="row" data-cy="detail-header" gap={2}>
         <ExportButton

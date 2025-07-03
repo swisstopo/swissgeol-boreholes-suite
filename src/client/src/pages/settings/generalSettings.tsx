@@ -282,7 +282,7 @@ const GeneralSettings = () => {
                   display: "flex",
                   alignItems: "center",
                 }}>
-                <Typography variant="body1">{t(filter.translationId)}</Typography>
+                <Typography>{t(filter.translationId)}</Typography>
               </Box>
             </AccordionSummary>
             <AccordionDetails>
