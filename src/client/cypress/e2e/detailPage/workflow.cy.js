@@ -52,11 +52,11 @@ describe("Tests the publication workflow.", () => {
       // assert that the draft step is active
       assertWorkflowSteps("Draft");
 
-      cy.get("sgc-button").find("sgc-translate").contains("Review anfordern").click();
+      clickSgcButtonWithContent("Review anfordern");
       assertEmptyRequestReviewModal();
 
       // button in modal to request review should be disabled
-      cy.get("sgc-button[disabled]").find("sgc-translate").contains("Review anfordern");
+      cy.get("sgc-button[disabled]").contains("Review anfordern");
 
       cy.get(".select-trigger").click();
 
@@ -88,7 +88,7 @@ describe("Tests the publication workflow.", () => {
       cy.get(".select-option").contains("validator user").click();
       cy.get("sgc-text-area").find("textarea").type("I requested a review!");
 
-      cy.get("sgc-modal-wrapper").find("sgc-button").find("sgc-translate").contains("Review anfordern").click();
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
 
       // assert new history entry
       cy.get("sgc-workflow-change-template").find(".highlight").contains("Admin User").scrollIntoView();

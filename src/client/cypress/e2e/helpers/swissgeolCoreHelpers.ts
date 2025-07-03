@@ -6,7 +6,7 @@ export function assertWorkflowSteps(activeStep: string) {
 }
 
 export function clickSgcButtonWithContent(content: string) {
-  cy.get("sgc-button").find("sgc-translate").contains(content).click();
+  cy.get("sgc-button").contains(content).click();
 }
 
 export function evaluateComment(content: string, exists: boolean) {
