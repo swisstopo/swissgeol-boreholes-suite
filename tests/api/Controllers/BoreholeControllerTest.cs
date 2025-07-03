@@ -18,6 +18,7 @@ public class BoreholeControllerTest
     private BdmsContext context;
     private BoreholeController controller;
     private static int testBoreholeId = 1000068;
+    private static int noPermissionWorkgroupId = 91350978;
 
     [TestInitialize]
     public void TestInitialize()
@@ -33,7 +34,10 @@ public class BoreholeControllerTest
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
-            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<Role>()))
+            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), noPermissionWorkgroupId, It.IsAny<Role>()))
+            .ReturnsAsync(false);
+        boreholePermissionServiceMock
+            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), It.IsNotIn(noPermissionWorkgroupId), It.IsAny<Role>()))
             .ReturnsAsync(true);
         return new BoreholeController(testContext, new Mock<ILogger<BoreholeController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
@@ -251,7 +255,7 @@ public class BoreholeControllerTest
     {
         var borehole = new Borehole
         {
-            WorkgroupId = 91350978, // Workgroup where the user has no permissions
+            WorkgroupId = noPermissionWorkgroupId,
         };
 
         var result = await controller.CreateAsync(borehole);
