@@ -1,5 +1,4 @@
-﻿using Azure;
-using BDMS.Authentication;
+﻿using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -245,6 +244,19 @@ public class BoreholeControllerTest
         Assert.IsNotNull(createdBorehole);
         Assert.IsTrue(createdBorehole.Id > 0, "Borehole Id should be set by the database.");
         Assert.AreEqual(DefaultWorkgroupId, createdBorehole.WorkgroupId);
+    }
+
+    [TestMethod]
+    public async Task AddBoreholeToWorkgroupWithoutPermissionsReturnsUnauthorized()
+    {
+        var borehole = new Borehole
+        {
+            WorkgroupId = 91350978, // Workgroup where the user has no permissions
+        };
+
+        var result = await controller.CreateAsync(borehole);
+
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
 
     [TestMethod]

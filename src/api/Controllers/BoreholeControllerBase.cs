@@ -63,7 +63,8 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
             }
             else
             {
-                if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), boreholeId, Role.Editor).ConfigureAwait(false))
+                var borehole = entity as Borehole;
+                if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), borehole.WorkgroupId, Role.Editor).ConfigureAwait(false))
                 {
                     return Problem("You are missing permissions to create a borehole.");
                 }
