@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { Typography } from "@mui/material";
-import Box from "@mui/material/Box";
+import { Box } from "@mui/material";
+import { SgcMenuItem } from "@swissgeol/ui-core-react";
 import { BoreholeV2 } from "../../api/borehole.ts";
-import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
-import { ChildListItem, ParentListItem } from "../../components/styledComponents.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../utils";
 import { ObservationType } from "./form/hydrogeology/Observation.ts";
@@ -90,103 +88,115 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
           overflow: "auto",
         }}>
         <Box>
-          <ParentListItem
-            style={{ borderTop: "none" }}
+          <SgcMenuItem
             active={location.pathname === `/${id}/location`}
+            data-cy="location-menu-item"
             onClick={() => {
               navigateTo(`/${id}/location`);
             }}>
-            <Typography data-cy="location-menu-item">{capitalizeFirstLetter(t("location"))}</Typography>
-          </ParentListItem>
-          <ParentListItem
+            {capitalizeFirstLetter(t("location"))}{" "}
+          </SgcMenuItem>
+
+          <SgcMenuItem
             active={location.pathname === `/${id}/borehole`}
+            data-cy="borehole-menu-item"
             onClick={() => {
               navigateTo(`/${id}/borehole`);
             }}>
-            <Typography data-cy="borehole-menu-item">{capitalizeFirstLetter(t("borehole"))}</Typography>
-          </ParentListItem>
-          <ParentListItem
+            {capitalizeFirstLetter(t("borehole"))}{" "}
+          </SgcMenuItem>
+
+          <SgcMenuItem
             active={location.pathname.includes(`/${id}/stratigraphy`)}
-            hasContent={hasStratigraphy}
+            empty={!hasStratigraphy}
+            data-cy="stratigraphy-menu-item"
             onClick={() => {
               navigateTo(`/${id}/stratigraphy`);
             }}>
-            <Typography data-cy="stratigraphy-menu-item">{capitalizeFirstLetter(t("stratigraphy"))}</Typography>
-          </ParentListItem>
-          <ParentListItem
+            {capitalizeFirstLetter(t("stratigraphy"))}{" "}
+          </SgcMenuItem>
+
+          <SgcMenuItem
             active={location.pathname.includes(`/${id}/completion`)}
-            hasContent={hasCompletion}
+            empty={!hasCompletion}
+            data-cy="completion-menu-item"
             onClick={() => {
               navigateTo(`/${id}/completion`);
             }}>
-            <Typography data-cy="completion-menu-item">{capitalizeFirstLetter(t("completion"))}</Typography>
-          </ParentListItem>
-          <ParentListItem
+            {capitalizeFirstLetter(t("completion"))}{" "}
+          </SgcMenuItem>
+          <SgcMenuItem
             active={false}
-            hasContent={hasObservation}
+            empty={!hasObservation}
+            data-cy="hydrogeology-menu-item"
             onClick={() => {
               setHydrogeologyIsVisible(!hydrogeologyIsVisible);
             }}>
-            <Typography data-cy="hydrogeology-menu-item">{capitalizeFirstLetter(t("hydrogeology"))}</Typography>
-          </ParentListItem>
+            {capitalizeFirstLetter(t("hydrogeology"))}
+          </SgcMenuItem>
           {hydrogeologyIsVisible && (
             <>
-              <ChildListItem
+              <SgcMenuItem
                 active={location.pathname === `/${id}/hydrogeology/wateringress`}
-                hasContent={hasWaterIngress}
+                child
+                empty={!hasWaterIngress}
+                data-cy="wateringress-menu-item"
                 onClick={() => {
                   navigateTo(`/${id}/hydrogeology/wateringress`);
                 }}>
-                <Typography data-cy="wateringress-menu-item">{capitalizeFirstLetter(t("waterIngress"))}</Typography>
-              </ChildListItem>
-              <ChildListItem
+                {capitalizeFirstLetter(t("waterIngress"))}
+              </SgcMenuItem>
+              <SgcMenuItem
                 active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
-                hasContent={hasGroundwaterLevelMeasurement}
+                child
+                empty={!hasGroundwaterLevelMeasurement}
+                data-cy="groundwaterlevelmeasurement-menu-item"
                 onClick={() => {
                   navigateTo(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
                 }}>
-                <Typography data-cy="groundwaterlevelmeasurement-menu-item">
-                  {capitalizeFirstLetter(t("groundwaterLevelMeasurement"))}
-                </Typography>
-              </ChildListItem>
-              <ChildListItem
+                {capitalizeFirstLetter(t("groundwaterLevelMeasurement"))}
+              </SgcMenuItem>
+              <SgcMenuItem
                 active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
-                hasContent={hasFieldMeasurement}
+                child
+                empty={!hasFieldMeasurement}
+                data-cy="fieldmeasurement-menu-item"
                 onClick={() => {
                   navigateTo(`/${id}/hydrogeology/fieldmeasurement`);
                 }}>
-                <Typography data-cy="fieldmeasurement-menu-item">
-                  {capitalizeFirstLetter(t("fieldMeasurement"))}
-                </Typography>
-              </ChildListItem>
-              <ChildListItem
+                {capitalizeFirstLetter(t("fieldMeasurement"))}
+              </SgcMenuItem>
+              <SgcMenuItem
                 active={location.pathname === `/${id}/hydrogeology/hydrotest`}
-                hasContent={hasHydroTest}
+                child
+                empty={!hasHydroTest}
+                data-cy="hydrotest-menu-item"
                 onClick={() => {
                   navigateTo(`/${id}/hydrogeology/hydrotest`);
                 }}>
-                <Typography data-cy="hydrotest-menu-item">{capitalizeFirstLetter(t("hydrotest"))}</Typography>
-              </ChildListItem>
+                {capitalizeFirstLetter(t("hydrotest"))}
+              </SgcMenuItem>
             </>
           )}
           {!auth.anonymousModeEnabled && (
             <>
-              <ParentListItem
+              <SgcMenuItem
                 active={location.pathname === `/${id}/attachments`}
-                hasContent={hasAttachments}
+                empty={!hasAttachments}
+                data-cy="attachments-menu-item"
                 onClick={() => {
                   navigateTo(`/${id}/attachments`);
                 }}>
-                <Typography data-cy="attachments-menu-item">{capitalizeFirstLetter(t("attachments"))}</Typography>
-              </ParentListItem>
-              <ParentListItem
+                {capitalizeFirstLetter(t("attachments"))}
+              </SgcMenuItem>
+              <SgcMenuItem
                 active={location.pathname === `/${id}/status`}
-                style={{ borderBottom: `1px solid ${theme.palette.border.light}` }}
+                data-cy="status-menu-item"
                 onClick={() => {
                   navigateTo(`/${id}/status`);
                 }}>
-                <Typography data-cy="status-menu-item">{capitalizeFirstLetter(t("flowPublicationStatus"))}</Typography>
-              </ParentListItem>
+                {capitalizeFirstLetter(t("status"))}
+              </SgcMenuItem>
             </>
           )}
         </Box>

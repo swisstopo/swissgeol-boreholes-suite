@@ -70,7 +70,7 @@ export const StratigraphyPanel: FC = () => {
   } else if (stratigraphies.length === 0) {
     return (
       <Card sx={{ p: 4 }}>
-        <Typography variant="body2">{t("noStratigraphy")}</Typography>
+        <Typography>{t("noStratigraphy")}</Typography>
         {editingEnabled && (
           <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
             <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />

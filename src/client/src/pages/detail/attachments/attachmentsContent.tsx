@@ -96,7 +96,7 @@ export const AttachmentContent = <T extends GridValidRowModel>({
           </Box>
         </Box>
       ) : (
-        <Typography variant="body2">{t(noAttachmentsText)}</Typography>
+        <Typography>{t(noAttachmentsText)}</Typography>
       )}
     </>
   );

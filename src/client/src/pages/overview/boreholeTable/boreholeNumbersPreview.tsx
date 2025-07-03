@@ -13,11 +13,11 @@ export const BoreholeNumbersPreview: FC<BoreholeNumbersPreviewProps> = ({ isFetc
   const { t } = useTranslation();
   return (
     <>
-      <Typography>{capitalizeFirstLetter(t("boreholes"))}: </Typography>
+      <Typography variant="body2">{capitalizeFirstLetter(t("boreholes"))}: </Typography>
       {isFetching ? (
         <CircularProgress sx={{ marginLeft: "15px", width: "15px !important", height: "15px !important" }} />
       ) : (
-        <Typography>
+        <Typography variant="body2">
           <NumericFormat
             data-cy="boreholes-number-preview"
             value={boreholeCount}

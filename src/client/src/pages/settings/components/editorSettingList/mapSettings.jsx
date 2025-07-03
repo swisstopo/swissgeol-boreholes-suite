@@ -165,7 +165,7 @@ export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, hand
   return (
     <Accordion>
       <AccordionSummary sx={{ padding: 2 }} expandIcon={<ChevronDownIcon />}>
-        <Typography variant="body1"> {t("map")}</Typography>
+        <Typography> {t("map")}</Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Box style={{ margin: 0 }}>

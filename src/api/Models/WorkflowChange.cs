@@ -53,12 +53,14 @@ public class WorkflowChange : IIdentifyable, IChangeTracking
     /// <summary>
     /// Gets or sets the <see cref="User"/> who created the entity.
     /// </summary>
+    [JsonPropertyName("creator")]
     public User? CreatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the creation date.
     /// </summary>
     [Column("created_at")]
+    [JsonPropertyName("createdAt")]
     public DateTime? Created { get; set; }
 
     /// <summary>
@@ -70,6 +72,7 @@ public class WorkflowChange : IIdentifyable, IChangeTracking
     /// <summary>
     /// Gets or sets the <see cref="User"/> who is assigned to the change.
     /// </summary>
+    [JsonPropertyName("toAssignee")]
     public User? Assignee { get; set; }
 
     /// <summary>

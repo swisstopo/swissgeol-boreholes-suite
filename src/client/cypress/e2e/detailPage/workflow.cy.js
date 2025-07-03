@@ -1,5 +1,12 @@
-import { evaluateSelect, setInput, setSelect } from "../helpers/formHelpers.js";
 import {
+  assertEmptyRequestReviewModal,
+  assertWorkflowSteps,
+  checkWorkflowChangeContent,
+  clickSgcButtonWithContent,
+  evaluateComment,
+} from "../helpers/swissgeolCoreHelpers.js";
+import {
+  createBorehole,
   getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   startBoreholeEditing,
@@ -14,79 +21,95 @@ describe("Tests the publication workflow.", () => {
     goToDetailRouteAndAcceptTerms(`/1000036/status?dev=true`);
     cy.contains("h4", "Publication workflow").should("not.exist");
 
-    getElementByDataCy("workflow-status-card").contains("h5", "Status").should("exist");
-    getElementByDataCy("workflow-status-card").contains("h5", "Draft").should("exist");
+    cy.get("sgc-translate").contains("Status").should("exist");
+    cy.get("sgc-translate").contains("Draft").should("exist");
+    cy.get("sgc-translate").contains("Zugewiesene Person").should("exist");
+    cy.get(".assignee").contains("validator user").should("exist");
 
-    getElementByDataCy("workflow-assigned-user-card").contains("h5", "Assigned Person").should("exist");
-    getElementByDataCy("workflow-assigned-user-card").contains("p", "Validator User").should("exist");
-
-    getElementByDataCy("workflow-history-entry-15000183").should("contain", "Editor User");
-    getElementByDataCy("workflow-history-entry-15000183").should("contain", "16. Nov. 2021");
-    getElementByDataCy("workflow-history-entry-15000183").should(
-      "contain",
-      "Changed status from Published to Reviewed",
-    );
-    getElementByDataCy("workflow-history-entry-15000112").should("contain", "Borehole assigned to Editor User");
-    getElementByDataCy("workflow-history-entry-15000112").should(
-      "contain",
+    checkWorkflowChangeContent("editor user", "Status von Published zu Reviewed geändert", "Omnis ut in.");
+    checkWorkflowChangeContent(
+      "controller user",
+      "Borehole editor user zugewiesen",
       "Rerum repudiandae nihil accusamus sed omnis tempore laboriosam eaque est.",
-    );
-    getElementByDataCy("review-tab").click();
-    cy.contains("thead", "Reviewed").should("exist");
-
-    //verify all checkboxes are unchecked
-    cy.get(".PrivateSwitchBase-input").should("not.be.checked");
+    ); // Translation not yet available in core UI
   });
 
   it("Can request review from users with controller privilege", () => {
-    goToDetailRouteAndAcceptTerms(`/1000011/status?dev=true`);
-    startBoreholeEditing();
-    getElementByDataCy("workflow-status-chip").should("contain", "Draft");
-    // assert that the draft step is active
-    getElementByDataCy("workflow-status-Draft-active").should("exist");
-    getElementByDataCy("workflow-status-InReview-inactive").should("exist");
-    getElementByDataCy("workflow-status-Reviewed-inactive").should("exist");
-    getElementByDataCy("request-review-button").click();
-    evaluateSelect("newAssigneeId", "");
-    cy.get('textarea[name="comment"]').should("be.empty");
-    getElementByDataCy("request-review-dialog-button").should("be.disabled");
-    getElementByDataCy("newAssigneeId-formSelect").click();
-    // 5 users with controller privileges should be selectable
-    cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option").should("have.length", 6);
-    cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option").contains("Viewer User").should("not.exist");
-    cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option").contains("Editor User").should("not.exist");
-    cy.get(".MuiAutocomplete-popper .MuiAutocomplete-option").contains("Controller User").should("exist");
-    cy.get("body").click(0, 0); // click on dialog title to close dropdown again
-    setInput("comment", "I wanted to request a review, but then cancelled");
-    getElementByDataCy("cancel-button").click();
+    createBorehole({
+      "extended.original_name": "Flinchy clown fish",
+      "custom.alternate_name": "Flinchy clown fish",
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/status?dev=true`);
+      startBoreholeEditing();
 
-    cy.get('[data-cy^="workflow-history-entry-"]')
-      .contains("I wanted to request a review, but then cancelled")
-      .should("not.exist");
+      // temporary workaround to update boreholeV1 to borehole V2 and get WorkflowV2 until borehole is created with api v2
+      stopBoreholeEditing();
+      goToDetailRouteAndAcceptTerms(`/${id}/status?dev=true`);
+      startBoreholeEditing();
 
-    getElementByDataCy("request-review-button").click();
-    evaluateSelect("newAssigneeId", "");
-    cy.get('textarea[name="comment"]').should("be.empty");
-    setSelect("newAssigneeId", 5); // Validator User
-    setInput("comment", "I requested a review!");
-    getElementByDataCy("request-review-dialog-button").should("not.be.disabled");
-    getElementByDataCy("request-review-dialog-button").click();
+      getElementByDataCy("workflow-status-chip").should("contain", "Draft");
+      // assert that the draft step is active
+      assertWorkflowSteps("Draft");
 
-    // assert new history entry
-    cy.get('[data-cy^="workflow-history-entry-"]').contains("Admin User").should("be.visible");
-    cy.get('[data-cy^="workflow-history-entry-"]').contains("Changed status from Draft to Review").should("be.visible");
-    cy.get('[data-cy^="workflow-history-entry-"]').contains("I requested a review!").should("be.visible");
+      clickSgcButtonWithContent("Review anfordern");
+      assertEmptyRequestReviewModal();
 
-    // assert status update
-    getElementByDataCy("workflow-status-Draft-inactive").should("exist");
-    getElementByDataCy("workflow-status-InReview-active").should("exist");
-    getElementByDataCy("workflow-status-Reviewed-inactive").should("exist");
+      // button in modal to request review should be disabled
+      cy.get("sgc-button[disabled]").contains("Review anfordern");
 
-    // assert new assigned user
-    getElementByDataCy("assigned-user-name").should("contain", "Validator User");
+      cy.get(".select-trigger").click();
 
-    // assert status update in header
-    getElementByDataCy("workflow-status-chip").should("contain", "Review");
-    stopBoreholeEditing();
+      cy.get(".select-option").should("have.length", 6);
+      // 2 users without controller privileges should not exist
+      cy.get(".select-option").contains("viewer user").should("not.exist");
+      cy.get(".select-option").contains("editor user").should("not.exist");
+
+      // 6 users with controller privileges should be selectable
+      cy.get(".select-option").contains("controller user").should("exist");
+      cy.get(".select-option").contains("publisher user").should("exist");
+      cy.get(".select-option").contains("user_that_can be_deleted").should("exist");
+      cy.get(".select-option").contains("user_that_only has_files").should("exist");
+      cy.get(".select-option").contains("validator user").should("exist");
+      cy.get(".select-option").contains("Admin User").should("exist");
+
+      cy.contains("Weiterleiten").click(); // click on dialog title to close dropdown again
+
+      cy.get("sgc-text-area").find("textarea").type("I wanted to request a review, but then cancelled");
+      clickSgcButtonWithContent("Abbrechen");
+      // no comment should be added
+      cy.get("sgc-workflow-change-template").find(".comment").should("not.exist");
+      clickSgcButtonWithContent("Review anfordern");
+
+      assertEmptyRequestReviewModal();
+
+      cy.get(".select-trigger").click();
+      // 5 users with controller privileges should be selectable
+      cy.get(".select-option").contains("validator user").click();
+      cy.get("sgc-text-area").find("textarea").type("I requested a review!");
+
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
+
+      // assert new history entry
+      cy.get("sgc-workflow-change-template").find(".highlight").contains("Admin User").scrollIntoView();
+      cy.get("sgc-workflow-change-template").find(".highlight").contains("Admin User").should("be.visible");
+
+      cy.get("sgc-workflow-change-template")
+        .find("li")
+        .contains("Status von Draft zu Review geändert")
+        .should("be.visible");
+
+      evaluateComment("I requested a review!", true);
+
+      // assert status update
+      assertWorkflowSteps("Review");
+
+      // assert new assigned user
+      cy.get(".assignee").should("contain", "validator user");
+
+      // assert status update in header
+      getElementByDataCy("workflow-status-chip").should("contain", "Review");
+      stopBoreholeEditing();
+    });
   });
 });

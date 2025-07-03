@@ -69,7 +69,8 @@
     "react-router-dom": "^7.5.2",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
-    "styled-components": "^6.1.1"
+    "styled-components": "^6.1.1",
+    "vite-plugin-static-copy": "^3.0.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.24.7",

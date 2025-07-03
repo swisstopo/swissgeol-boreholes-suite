@@ -93,7 +93,7 @@ describe("Tests for the lithological description column.", () => {
     // stop editing
     cy.get('[data-cy="description-1"] [data-testid="ClearIcon"]').click();
 
-    cy.get('[data-cy="description-1"]').should("have.css", "height", "280px");
+    cy.get('[data-cy="description-1"]').should("have.css", "height", "320px");
     // delete last layer
     cy.get('[data-cy="description-1"] [data-testid="DeleteIcon"] ').click();
 
