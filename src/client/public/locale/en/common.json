@@ -551,7 +551,6 @@
   "type": "Type",
   "unsavedChanges": "Unsaved changes",
   "unsavedChangesMessage": "{{where}}: You have unsaved changes. How would you like to proceed?",
-  "unsavedChangesTitle": "{{where}}: Unsaved changes",
   "unselectAll": "Unselect all",
   "upload": "Upload",
   "uploadPhotosAsAttachments": "Photos need to be uploaded in tab \"Attachments\".",
