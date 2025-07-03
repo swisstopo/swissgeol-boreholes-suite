@@ -8,7 +8,7 @@ import {
 
 describe("Geometry crud tests", () => {
   beforeEach(() => {
-    createBorehole({ "extended.original_name": "LSENALZE" }).as("borehole_id");
+    createBorehole({ originalName: "LSENALZE" }).as("borehole_id");
 
     // open section editor
     cy.get("@borehole_id").then(id => {

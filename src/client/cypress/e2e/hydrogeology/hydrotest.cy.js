@@ -22,7 +22,7 @@ import {
 describe("Tests for the hydrotest editor.", () => {
   it("Creates, updates and deletes hydrotests", () => {
     // Create borehole with completion and casing
-    createBorehole({ "extended.original_name": "INTEADAL" })
+    createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
         createCompletion("test hydrotest", id, 16000002, true)
@@ -108,7 +108,7 @@ describe("Tests for the hydrotest editor.", () => {
   });
 
   it("sorts hydrotest", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" })
+    createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id => {
         createHydrotest(id, "2012-11-14T12:06Z", 15203157, [15203175], null, 0, 10);
@@ -143,7 +143,7 @@ describe("Tests for the hydrotest editor.", () => {
   });
 
   it("checks for unsaved changes when switching between cards", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
       cy.wait(["@borehole"]);

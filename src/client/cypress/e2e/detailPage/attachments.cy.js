@@ -55,7 +55,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   };
 
   it("creates, downloads and deletes profile.", () => {
-    createBorehole({ "extended.original_name": "JUNIORSOUFFLE" }).as("borehole_id");
+    createBorehole({ originalName: "JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
 
@@ -168,7 +168,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   });
 
   it("creates, exports and deletes photos.", () => {
-    createBorehole({ "extended.original_name": "JUNIORSOUFFLE" }).as("borehole_id");
+    createBorehole({ originalName: "JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
 
@@ -224,7 +224,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   });
 
   it("can save changes on a borehole with attachments.", () => {
-    createBorehole({ "extended.original_name": "AAA_COBRA" }).as("borehole_id");
+    createBorehole({ originalName: "AAA_COBRA" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
       startBoreholeEditing();
@@ -248,7 +248,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   });
 
   it("creates, edits and deletes documents.", () => {
-    createBorehole({ "extended.original_name": "HAPPYBOOK" }).as("borehole_id");
+    createBorehole({ originalName: "HAPPYBOOK" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
       startBoreholeEditing();
@@ -303,7 +303,7 @@ describe("Tests for 'Attachments' edit page.", () => {
   });
 
   it("saves with ctrl s", () => {
-    createBorehole({ "extended.original_name": "HAPPYBOOK" }).as("borehole_id");
+    createBorehole({ originalName: "HAPPYBOOK" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
       startBoreholeEditing();

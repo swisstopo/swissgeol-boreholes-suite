@@ -96,7 +96,7 @@ describe("Test for the borehole form.", () => {
   });
 
   it("Fills all inputs on borehole tab and saves", () => {
-    createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
+    createBorehole({ originalName: "AAA_Ferret", name: "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       cy.wait("@borehole_by_id");
@@ -134,7 +134,7 @@ describe("Test for the borehole form.", () => {
   });
 
   it("Updates topbedrock intersected when top bedrock values change", () => {
-    createBorehole({ "extended.original_name": "AAA_Ferret", "custom.alternate_name": "AAA_Ferret" }).as("borehole_id");
+    createBorehole({ originalName: "AAA_Ferret", name: "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
@@ -169,9 +169,7 @@ describe("Test for the borehole form.", () => {
   });
 
   it("Updates TVD Values when depth values change in boreholeform", () => {
-    createBorehole({ "extended.original_name": "AAA_Penguin", "custom.alternate_name": "AAA_Penguin" }).as(
-      "borehole_id",
-    );
+    createBorehole({ originalName: "AAA_Penguin", name: "AAA_Penguin" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
@@ -249,7 +247,7 @@ describe("Test for the borehole form.", () => {
 
   it("switches tabs", () => {
     let boreholeId;
-    createBorehole({ "extended.original_name": "LSENALZE" }).as("borehole_id");
+    createBorehole({ originalName: "LSENALZE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
@@ -278,13 +276,13 @@ describe("Test for the borehole form.", () => {
   it("displays 0 in input fields", () => {
     // create borehole with 0 in all numeric inputs
     createBorehole({
-      "extended.original_name": "AAA_RINO",
-      "custom.alternate_name": "AAA_RINO",
-      total_depth: 0,
-      "extended.top_bedrock_fresh_md": 0.0,
-      "custom.top_bedrock_weathered_md": 0.0,
-      elevation_z: 0,
-      reference_elevation: 0.0,
+      originalName: "AAA_RINO",
+      name: "AAA_RINO",
+      totalDepth: 0,
+      topBedrockFreshMd: 0.0,
+      topBedrockWeatheredMd: 0.0,
+      elevationZ: 0,
+      referenceElevation: 0.0,
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/location`);
@@ -304,7 +302,7 @@ describe("Test for the borehole form.", () => {
   });
 
   it("Resets borehole form values on reset button click", () => {
-    createBorehole({ "extended.original_name": "AAA_EEL", "custom.alternate_name": "AAA_EEL" }).as("borehole_id");
+    createBorehole({ originalName: "AAA_EEL", name: "AAA_EEL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       startBoreholeEditing();
@@ -376,7 +374,7 @@ describe("Test for the borehole form.", () => {
   });
 
   it("verifies textfield border color for editing enabled or disabled", () => {
-    createBorehole({ "extended.original_name": "AAA_EEL", "custom.alternate_name": "AAA_EEL" }).as("borehole_id");
+    createBorehole({ originalName: "AAA_EEL", name: "AAA_EEL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       cy.get('[data-cy="topBedrockWeatheredMd-formInput"] fieldset').should(
@@ -408,9 +406,7 @@ describe("Test for the borehole form.", () => {
   });
 
   it("stops editing when going back to overview", () => {
-    createBorehole({ "extended.original_name": "AAA_HIPPOPOTHAMUS", "custom.alternate_name": "AAA_HIPPOPOTHAMUS" }).as(
-      "borehole_id",
-    );
+    createBorehole({ originalName: "AAA_HIPPOPOTHAMUS", name: "AAA_HIPPOPOTHAMUS" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}`);
       ensureEditingDisabled();

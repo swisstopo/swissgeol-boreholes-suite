@@ -1,6 +1,5 @@
 import { getHeight } from "./actions";
 import {
-  createBorehole,
   deleteBoreholes,
   getGeojson,
   loadBorehole,
@@ -41,7 +40,6 @@ export {
   updateBorehole,
   loadBoreholes,
   loadEditingBoreholes,
-  createBorehole,
   deleteBoreholes,
   patchBoreholes,
   getGeojson,

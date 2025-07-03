@@ -10,7 +10,7 @@ import {
 
 describe("Test copying of boreholes", () => {
   it("copies a borehole", () => {
-    createBorehole({ "extended.original_name": "NINTIC" }).as("borehole_id_1");
+    createBorehole({ originalName: "NINTIC" }).as("borehole_id_1");
 
     goToRouteAndAcceptTerms("/");
     showTableAndWaitForData();
@@ -31,7 +31,7 @@ describe("Test copying of boreholes", () => {
 
   it("copies a borehole to the default selected workgroup", () => {
     giveAdminUser2workgroups();
-    createBorehole({ "extended.original_name": "AIRBOUNCE" }).as("borehole_id_1");
+    createBorehole({ originalName: "AIRBOUNCE" }).as("borehole_id_1");
 
     goToRouteAndAcceptTerms("/");
     showTableAndWaitForData();
@@ -61,7 +61,7 @@ describe("Test copying of boreholes", () => {
       body: "123456",
     }).as("borehole_copy");
 
-    createBorehole({ "extended.original_name": "STELLARLIGHT" }).as("borehole_id_1");
+    createBorehole({ originalName: "STELLARLIGHT" }).as("borehole_id_1");
 
     goToRouteAndAcceptTerms("/");
     showTableAndWaitForData();

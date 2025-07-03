@@ -14,7 +14,6 @@ from bms.v1.borehole import (
     StartEditing,
     Lock,
     Unlock,
-    CreateBorehole,
     DeleteBorehole,
     DeleteBoreholes,
     ListEditingBorehole,
@@ -69,7 +68,6 @@ class BoreholeProducerHandler(Producer):
         action = request.pop('action', None)
 
         if action in [
-            'CREATE',
             'COPY',
             'LOCK',
             'UNLOCK',
@@ -117,21 +115,6 @@ class BoreholeProducerHandler(Producer):
 
                 if (
                     action in [
-                        'CREATE'
-                    ]
-                ):
-                    # Check if Workgroup is not freezed
-                    for w in self.user['workgroups']:
-                        if w['id'] == request['id']:
-
-                            if w['disabled'] is not None:
-                                raise WorkgroupFreezed()
-
-                            elif 'EDIT' not in w['roles']:
-                                raise AuthorizationException()
-
-                if (
-                    action in [
                         'COPY',
                     ]
                 ):
@@ -145,11 +128,9 @@ class BoreholeProducerHandler(Producer):
                             elif 'EDIT' not in w['roles']:
                                 raise AuthorizationException()
 
-                if action == 'CREATE':
-                    exe = CreateBorehole(conn)
-                    request['user'] = self.user
 
-                elif action == 'LOCK':
+
+                if action == 'LOCK':
                     exe = Lock(conn)
                     request['user'] = self.user
 

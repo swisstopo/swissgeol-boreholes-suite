@@ -24,9 +24,7 @@ import {
 describe("Test for the detail page side navigation.", () => {
   it("tests if navigation points are greyed out if there is no content", () => {
     // Create a borehole and store its ID
-    createBorehole({ "extended.original_name": "AAA_HIPPOPOTHAMUS", "custom.alternate_name": "AAA_HIPPOPOTHAMUS" }).as(
-      "borehole_id",
-    );
+    createBorehole({ originalName: "AAA_HIPPOPOTHAMUS", name: "AAA_HIPPOPOTHAMUS" }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}`);
@@ -101,7 +99,6 @@ describe("Test for the detail page side navigation.", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500);
     addItem("addCompletion");
-    cy.wait("@codelist_by_schema_GET");
     cy.location().should(location => {
       expect(location.pathname).to.match(/^\/\d+\/completion\/new$/);
     });

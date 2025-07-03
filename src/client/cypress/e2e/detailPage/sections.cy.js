@@ -17,7 +17,7 @@ const saveSection = method => {
 
 describe("Section crud tests", () => {
   beforeEach(() => {
-    createBorehole({ "extended.original_name": "GRICICAD" }).as("borehole_id");
+    createBorehole({ originalName: "GRICICAD" }).as("borehole_id");
 
     // open section editor
     cy.get("@borehole_id").then(id => {

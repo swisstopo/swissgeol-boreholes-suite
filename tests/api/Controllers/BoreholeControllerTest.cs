@@ -18,6 +18,7 @@ public class BoreholeControllerTest
     private BdmsContext context;
     private BoreholeController controller;
     private static int testBoreholeId = 1000068;
+    private static int noPermissionWorkgroupId = 91350978;
 
     [TestInitialize]
     public void TestInitialize()
@@ -31,6 +32,12 @@ public class BoreholeControllerTest
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(true);
+        boreholePermissionServiceMock
+            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), noPermissionWorkgroupId, It.IsAny<Role>()))
+            .ReturnsAsync(false);
+        boreholePermissionServiceMock
+            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), It.IsNotIn(noPermissionWorkgroupId), It.IsAny<Role>()))
             .ReturnsAsync(true);
         return new BoreholeController(testContext, new Mock<ILogger<BoreholeController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
@@ -221,6 +228,54 @@ public class BoreholeControllerTest
 
         var boreholeWithDeletedIdentifiers = ActionResultAssert.IsOkObjectResult<Borehole>(deletedIdentifiersResponse.Result);
         Assert.AreEqual(0, boreholeWithDeletedIdentifiers.BoreholeCodelists.Count);
+    }
+
+    [TestMethod]
+    public async Task AddBoreholeWithOnlyWorkgroupId()
+    {
+        var borehole = new Borehole
+        {
+            WorkgroupId = DefaultWorkgroupId,
+        };
+
+        var result = await controller.CreateAsync(borehole);
+
+        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+
+        var createdBorehole = okResult.Value as Borehole;
+        Assert.IsNotNull(createdBorehole);
+        Assert.IsTrue(createdBorehole.Id > 0, "Borehole Id should be set by the database.");
+        Assert.AreEqual(DefaultWorkgroupId, createdBorehole.WorkgroupId);
+    }
+
+    [TestMethod]
+    public async Task AddBoreholeToWorkgroupWithoutPermissionsReturnsUnauthorized()
+    {
+        var borehole = new Borehole
+        {
+            WorkgroupId = noPermissionWorkgroupId,
+        };
+
+        var result = await controller.CreateAsync(borehole);
+
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public async Task AddBoreholeWithDefinedIdReturnsProblem()
+    {
+        var borehole = new Borehole
+        {
+            Id = 123,
+            WorkgroupId = DefaultWorkgroupId,
+        };
+
+        var response = await controller.CreateAsync(borehole);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ActionResultAssert.IsInternalServerError(response.Result, "You cannot create a new borehole with a defined Id.");
     }
 
     [TestMethod]

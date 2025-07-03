@@ -4,6 +4,7 @@ import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/codelist.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
+import { referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { WorkflowV2 } from "../pages/detail/form/workflow/workflow.ts";
 import { Photo, User, Workgroup } from "./apiInterfaces.ts";
@@ -108,6 +109,10 @@ export const importBoreholesZip = async (workgroupId: number | null, combinedFor
   return await upload(`import/zip?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
+export const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
+  return await fetchApiV2(`borehole`, "POST", { workgroupId, originalReferenceSystem: referenceSystems.LV95.code });
+};
+
 export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
   return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
@@ -148,6 +153,13 @@ export const useBorehole = (id: number) => {
 
 export const useBoreholeMutations = () => {
   const queryClient = useQueryClient();
+
+  const useAddBorehole = useMutation({
+    mutationFn: async (workgroupId: number) => {
+      return await createBorehole(workgroupId);
+    },
+  });
+
   const useUpdateBorehole = useMutation({
     mutationFn: async (borehole: BoreholeV2) => {
       return await updateBorehole(borehole);
@@ -168,9 +180,11 @@ export const useBoreholeMutations = () => {
     },
   });
 
+  useShowAlertOnError(useAddBorehole.isError, useAddBorehole.error);
   useShowAlertOnError(useUpdateBorehole.isError, useUpdateBorehole.error);
   useShowAlertOnError(useDeleteBorehole.isError, useDeleteBorehole.error);
   return {
+    add: useAddBorehole,
     update: useUpdateBorehole,
     delete: useDeleteBorehole,
   };

@@ -3,6 +3,7 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
 
@@ -32,7 +33,42 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             ReviewedTabs = new(),
             PublishedTabs = new(),
         };
-        return await base.CreateAsync(entity).ConfigureAwait(false);
+
+        var subjectId = HttpContext.GetUserSubjectId();
+
+        if (!await BoreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, entity.WorkgroupId, Role.Editor).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        if (entity.Id > 0)
+        {
+            var errorMessage = "You cannot create a new borehole with a defined Id.";
+            Logger?.LogError(errorMessage);
+            return Problem(errorMessage);
+        }
+
+        // TODO: Temporarily add legacy workflow. Remove this as soon as WorkflowV2 is fully implemented.
+        var user = await Context.Users
+            .Include(u => u.WorkgroupRoles)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
+            .ConfigureAwait(false);
+
+        entity.Workflows.Add(new Workflow { UserId = user.Id, Role = Role.Editor });
+
+        await Context.AddAsync(entity).ConfigureAwait(false);
+        try
+        {
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return Ok(entity);
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while saving the entity changes.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
     }
 
     /// <inheritdoc />

@@ -13,7 +13,7 @@ import {
 describe("Backfill crud tests", () => {
   beforeEach(() => {
     // Create borehole with completion and casings
-    createBorehole({ "extended.original_name": "INTEADAL" })
+    createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
         createCompletion("test backfill", id, 16000002, true)

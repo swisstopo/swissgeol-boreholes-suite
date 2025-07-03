@@ -57,9 +57,7 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("completes alternate name", () => {
-    createBorehole({ "extended.original_name": "PHOTOSQUIRREL", "custom.alternate_name": "PHOTOSQUIRREL" }).as(
-      "borehole_id",
-    );
+    createBorehole({ originalName: "PHOTOSQUIRREL", name: "PHOTOSQUIRREL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}`);
 
@@ -101,9 +99,7 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("does not overwrite alternate name if it is different from original name", () => {
-    createBorehole({ "extended.original_name": "PHOTOSQUIRREL", "custom.alternate_name": "PHOTOMOUSE" }).as(
-      "borehole_id",
-    );
+    createBorehole({ originalName: "PHOTOSQUIRREL", name: "PHOTOMOUSE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}`);
 
@@ -119,9 +115,7 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("displays unsaved changes message if unsaved changes are present", () => {
-    createBorehole({ "extended.original_name": "PHOTOSQUIRREL", "custom.alternate_name": "PHOTOPIGEON" }).as(
-      "borehole_id",
-    );
+    createBorehole({ originalName: "PHOTOSQUIRREL", name: "PHOTOPIGEON" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();

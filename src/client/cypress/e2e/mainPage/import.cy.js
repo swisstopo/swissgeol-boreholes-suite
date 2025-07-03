@@ -108,17 +108,17 @@ describe("Test for importing boreholes.", () => {
     const boreholeName = "COLDWATERDRINK";
     const boreholeName2 = "COLDWATERBATH";
     createBorehole({
-      "extended.original_name": boreholeName,
-      "custom.alternate_name": boreholeName,
-      location_x: 100,
-      location_y: 200,
+      originalName: boreholeName,
+      name: boreholeName,
+      locationX: 100,
+      locationY: 200,
     }).as("borehole_id");
 
     createBorehole({
-      "extended.original_name": boreholeName2,
-      "custom.alternate_name": boreholeName2,
-      location_x: 300,
-      location_y: 400,
+      originalName: boreholeName2,
+      name: boreholeName2,
+      locationX: 300,
+      locationY: 400,
     }).as("borehole_id2");
 
     addMinimalAttachment("@borehole_id", "FREEZINGCOLD.txt");

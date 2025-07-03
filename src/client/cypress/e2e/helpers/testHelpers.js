@@ -38,6 +38,7 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/export/json**").as("borehole_export_json");
   cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
+  cy.intercept("POST", "/api/v2/borehole").as("post-borehole");
   cy.intercept("PUT", "/api/v2/user").as("update-user");
   cy.intercept("GET", "/api/v2/user").as("get-user");
   cy.intercept("GET", "/api/v2/user/self").as("get-current-user");
@@ -261,48 +262,38 @@ export const newUneditableBorehole = () => {
   cy.get('[data-cy="new-borehole-button"]').click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();
-  cy.wait(["@borehole", "@borehole_by_id"]);
+  cy.wait(["@borehole_by_id"]);
   return id;
 };
 
 const waitForCreation = () => {
-  return cy.wait(["@edit_create"]).then(interception => {
+  return cy.wait(["@post-borehole"]).then(interception => {
     cy.task("log", "Created new borehole with id:" + interception.response.body.id);
     return cy.wrap(interception.response.body.id);
   });
 };
 
-export const createBorehole = values => {
-  return cy.get("@id_token").then(token =>
-    cy
+export const createBorehole = borehole => {
+  return cy.get("@id_token").then(token => {
+    return cy
       .request({
         method: "POST",
-        url: "/api/v1/borehole/edit",
+        url: "/api/v2/borehole",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: {
-          action: "CREATE",
-          id: 1,
+          workgroupId: 1,
+          ...borehole,
         },
         auth: bearerAuth(token),
       })
       .then(res => {
-        expect(res.body).to.have.property("success", true);
-        let boreholeId = res.body.id;
-        let fields = Object.entries(values).map(([key, value]) => [key, value]);
-        if (fields.length > 0) {
-          cy.request({
-            method: "POST",
-            url: "/api/v1/borehole/edit",
-            body: {
-              action: "MULTIPATCH",
-              fields: fields,
-              ids: [boreholeId],
-            },
-            auth: bearerAuth(token),
-          }).then(res => expect(res.body).to.have.property("success", true));
-        }
-        return cy.wrap(boreholeId);
-      }),
-  );
+        return cy.wrap(res.body.id);
+      });
+  });
 };
 
 export const startBoreholeEditing = () => {

@@ -30,7 +30,7 @@ const toggleHeaderOpen = () => {
 };
 
 const createBoreholeWithTwoCompletions = () => {
-  return createBorehole({ "extended.original_name": "INTEADAL" }).then(boreholeId => {
+  return createBorehole({ originalName: "INTEADAL" }).then(boreholeId => {
     cy.wrap(boreholeId).as("boreholeId");
     createCompletion("Compl-1", boreholeId, 16000002, true).as("completion1Id");
     createCompletion("Compl-2", boreholeId, 16000002, false).as("completion2Id");
@@ -126,7 +126,7 @@ const assertNewCompletionCreated = boreholeId => {
 
 describe("completion crud tests", () => {
   it("adds, edits, copies and deletes completions", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);
 
@@ -173,7 +173,6 @@ describe("completion crud tests", () => {
         "@casing_by_completion_GET",
         "@casing_by_completion_GET",
         "@backfill_by_completion_GET",
-        "@backfill_by_completion_GET",
         "@instrumentation_by_completion_GET",
         "@instrumentation_by_completion_GET",
       ]);
@@ -187,7 +186,6 @@ describe("completion crud tests", () => {
       setInput("name", "Compl-2");
       toggleCheckbox("isPrimary");
       saveChanges();
-      cy.wait("@backfill_by_completion_GET");
       cy.contains("Compl-2");
       startEditHeader();
       evaluateCheckbox("isPrimary", "true");
@@ -386,7 +384,7 @@ describe("completion crud tests", () => {
   });
 
   it("checks completion content validation", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" })
+    createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id => createCompletion("Compl-1", id, 16000001, true))
       .then(response => {
@@ -606,7 +604,7 @@ describe("completion crud tests", () => {
   });
 
   it("checks if hash is preserved when reloading", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" })
+    createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id => {
         createCompletion("test hash 1", id, 16000002, true).as("completion1_id");
