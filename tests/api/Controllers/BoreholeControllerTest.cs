@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Azure;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -229,15 +230,12 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task AddBoreholeWithOnlyWorkgroupId()
     {
-        var testContext = context;
-        var testController = GetTestController(testContext);
-
         var borehole = new Borehole
         {
             WorkgroupId = DefaultWorkgroupId,
         };
 
-        var result = await testController.CreateAsync(borehole);
+        var result = await controller.CreateAsync(borehole);
 
         Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
         var okResult = result.Result as OkObjectResult;
@@ -247,6 +245,21 @@ public class BoreholeControllerTest
         Assert.IsNotNull(createdBorehole);
         Assert.IsTrue(createdBorehole.Id > 0, "Borehole Id should be set by the database.");
         Assert.AreEqual(DefaultWorkgroupId, createdBorehole.WorkgroupId);
+    }
+
+    [TestMethod]
+    public async Task AddBoreholeWithDefinedIdReturnsProblem()
+    {
+        var borehole = new Borehole
+        {
+            Id = 123,
+            WorkgroupId = DefaultWorkgroupId,
+        };
+
+        var response = await controller.CreateAsync(borehole);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ActionResultAssert.IsInternalServerError(response.Result, "You cannot create a new borehole with a defined Id.");
     }
 
     [TestMethod]

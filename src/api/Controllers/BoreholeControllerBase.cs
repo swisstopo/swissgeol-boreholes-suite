@@ -52,17 +52,25 @@ public abstract class BoreholeControllerBase<TEntity> : ControllerBase
     [HttpPost]
     public virtual async Task<ActionResult<TEntity>> CreateAsync(TEntity entity)
     {
-        // Check if associated borehole is locked
         var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
 
-        // Case when the entity being created is a new borehole
-        if (boreholeId == 0)
+        // If no boreholeId is present the entity being created is a new borehole
+        if (entity is Borehole)
         {
-            if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), boreholeId, Role.Editor).ConfigureAwait(false))
+            if (boreholeId > 0)
             {
-                return Problem("You are missing permissions to create a borehole.");
+                return Problem("You cannot create a new borehole with a defined Id.");
+            }
+            else
+            {
+                if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), boreholeId, Role.Editor).ConfigureAwait(false))
+                {
+                    return Problem("You are missing permissions to create a borehole.");
+                }
             }
         }
+
+        // Otherwise check if the borehole associated with the entity is locked
         else
         {
             if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
