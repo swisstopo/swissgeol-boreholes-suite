@@ -18,12 +18,10 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     // Limit the maximum number of items per request to 100.
     // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
     private const int MaxPageSize = 100;
-    private readonly IBoreholePermissionService boreholePermissionService;
 
     public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger, IBoreholePermissionService boreholePermissionService)
     : base(context, logger, boreholePermissionService)
     {
-        this.boreholePermissionService = boreholePermissionService;
     }
 
     /// <inheritdoc />
@@ -36,7 +34,9 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             PublishedTabs = new(),
         };
 
-        if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), entity.WorkgroupId, Role.Editor).ConfigureAwait(false))
+        var subjectId = HttpContext.GetUserSubjectId();
+
+        if (!await BoreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, entity.WorkgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
         }
@@ -52,7 +52,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         var user = await Context.Users
             .Include(u => u.WorkgroupRoles)
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
             .ConfigureAwait(false);
 
         entity.Workflows.Add(new Workflow { UserId = user.Id, Role = Role.Editor });
