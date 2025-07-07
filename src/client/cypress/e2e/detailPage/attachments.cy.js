@@ -247,7 +247,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     stopBoreholeEditing();
   });
 
-  it("creates, edits and deletes documents.", () => {
+  it.only("creates, edits and deletes documents.", () => {
     createBorehole({ originalName: "HAPPYBOOK" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
@@ -273,6 +273,16 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.wait(["@document_PUT", "@getAllDocuments"]);
       waitForTableData();
       checkRowWithText("https://localhost/document2.pdf", "public");
+
+      // add another document
+      getElementByDataCy("addDocument-button").should("be.visible").click();
+      cy.wait(["@document_POST", "@getAllDocuments"]);
+      verifyTableLength(3);
+
+      // verify all table data public state is still up to date
+      checkPublicStatus("https://localhost/document1.pdf", false, true);
+      checkPublicStatus("https://localhost/document2.pdf", true, true);
+
       saveWithSaveBar();
       cy.wait(["@document_PUT", "@getAllDocuments"]);
       waitForTableData();
@@ -282,6 +292,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       verifyRowContains("https://localhost/document1.pdf", 0);
       verifyRowContains("some description", 0);
       verifyRowContains("https://localhost/document2.pdf", 1);
+      checkPublicStatus("https://localhost/document1.pdf", false, false);
       checkPublicStatus("https://localhost/document2.pdf", true, false);
 
       cy.contains("a", "https://localhost/document1.pdf").should(
@@ -295,7 +306,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       checkRowWithIndex(0);
       deleteItem("attachment-table-container");
       cy.wait(["@document_DELETE", "@getAllDocuments"]);
-      verifyTableLength(1);
+      verifyTableLength(2);
 
       // reset test data
       deleteBorehole(boreholeId);
