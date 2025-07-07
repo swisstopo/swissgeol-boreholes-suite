@@ -44,7 +44,8 @@ export const interceptApiCalls = () => {
   cy.intercept("GET", "/api/v2/user/self").as("get-current-user");
   cy.intercept("PUT", "/api/v2/workgroup").as("update-workgroup");
   cy.intercept("POST", "/api/v2/workgroup/setRoles").as("set_workgroup_roles");
-
+  cy.intercept("POST", "/api/v2/workflow/tabstatuschange").as("tabstatuschange");
+  cy.intercept("GET", "/api/v2/workflow/**").as("workflow_by_id");
   cy.intercept("/api/v2/lithologicaldescription*").as("lithological_description");
   cy.intercept("/api/v2/faciesdescription*").as("facies_description");
 

@@ -24,3 +24,31 @@ export function checkWorkflowChangeContent(userName: string, statusChange: strin
   cy.get("sgc-workflow-change-template li[slot='mutations']").should("contain", statusChange);
   cy.get("sgc-workflow-change-template div[slot='body']").should("contain", comment);
 }
+
+export function waitForTabStatusUpdate() {
+  cy.wait(["@tabstatuschange", "@workflow_by_id", "@borehole_by_id"]);
+}
+
+function getTabStatusBox(tab: string, title: string) {
+  return cy.get(`#${tab}`).find(".name").contains(title).siblings(".checkbox").children().eq(0);
+}
+
+export function clickTabStatusCheckbox(tab: string, title: string) {
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(10);
+  getTabStatusBox(tab, title).click();
+  waitForTabStatusUpdate();
+}
+
+export function isCheckedTabStatusBox(tab: string, title: string) {
+  getTabStatusBox(tab, title).should("have.class", "is-checked");
+}
+
+export function isIntermediateTabStatusBox(tab: string, title: string) {
+  getTabStatusBox(tab, title).should("have.class", "is-indeterminate");
+}
+
+export function isUncheckedTabStatusBox(tab: string, title: string) {
+  getTabStatusBox(tab, title).should("be.visible", { timeout: 10000 });
+  getTabStatusBox(tab, title).should("have.attr", "aria-checked", "false");
+}

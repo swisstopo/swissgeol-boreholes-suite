@@ -15,8 +15,16 @@ import { useCurrentUser, useUsers } from "../../../../api/user.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { useUserRoleForBorehole } from "../../../../hooks/useUserRoleForBorehole.ts";
+import { capitalizeFirstLetter } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
-import { useWorkflow, useWorkflowMutation, WorkflowChange, WorkflowChangeRequest } from "./workflow.ts";
+import {
+  TabStatusChangeRequest,
+  TabType,
+  useWorkflow,
+  useWorkflowMutation,
+  WorkflowChange,
+  WorkflowChangeRequest,
+} from "./workflow.ts";
 
 export const WorkflowView = () => {
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
@@ -28,7 +36,8 @@ export const WorkflowView = () => {
   const { t } = useTranslation();
   const { canUserEditBorehole, mapMaxRole } = useUserRoleForBorehole();
   const {
-    update: { mutate: updateWorkflow },
+    updateWorkflow: { mutate: updateWorkflow },
+    updateTabStatus: { mutate: updateTabStatus },
   } = useWorkflowMutation();
 
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
@@ -81,13 +90,28 @@ export const WorkflowView = () => {
 
   const handleWorkflowChange = (changeEvent: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => {
     const changes: WorkflowChange = changeEvent.detail.changes;
+    const assigneeId = changes.toAssignee?.id ?? changes.toAssignee?.id;
     const workflowChangeRequest: WorkflowChangeRequest = {
       boreholeId: boreholeId,
       comment: changes.comment,
-      newAssigneeId: changes.toAssignee ? Number(changes.toAssignee.id) : undefined,
+      newAssigneeId: assigneeId != undefined ? Number(assigneeId) : undefined,
       newStatus: changes.toStatus,
     };
     updateWorkflow(workflowChangeRequest);
+  };
+
+  const handleTabStatusUpdate = (
+    changeEvent: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>,
+    tab: TabType,
+  ) => {
+    const [[field, status]] = Object.entries(changeEvent.detail.changes);
+    const tabStatusChangeRequest: TabStatusChangeRequest = {
+      boreholeId: boreholeId,
+      tab: tab,
+      field: capitalizeFirstLetter(field),
+      newStatus: status!,
+    };
+    updateTabStatus(tabStatusChangeRequest);
   };
 
   return (
@@ -108,10 +132,10 @@ export const WorkflowView = () => {
         selection={makeSelectionEntries()}
         canChangeStatus={canUserEditBorehole(currentUser, borehole)}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
-          console.log("On review change", e.detail)
+          handleTabStatusUpdate(e, TabType.Reviewed)
         }
         onSgcWorkflowApprovalChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
-          console.log("On approval change", e.detail)
+          handleTabStatusUpdate(e, TabType.Published)
         }
         onSgcWorkflowChange={(e: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => handleWorkflowChange(e)}
         onSgcWorkflowPublish={(e: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => handleWorkflowChange(e)}
