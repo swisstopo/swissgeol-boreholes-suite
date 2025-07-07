@@ -44,7 +44,6 @@ describe("Tests the publication workflow.", () => {
     cy.wait("@borehole_by_id");
     startBoreholeEditing();
     getElementByDataCy("workflow-status-chip").should("contain", "Draft");
-    // assert that the draft step is active
     assertWorkflowSteps("Draft");
   }
 
@@ -116,7 +115,7 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  it.only("Can update tab status on review tab", () => {
+  it("Can update tab status on review tab", () => {
     createBorehole({
       "extended.original_name": "Zoo director",
       "custom.alternate_name": "Zoo director",
