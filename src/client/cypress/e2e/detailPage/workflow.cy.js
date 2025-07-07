@@ -189,7 +189,6 @@ describe("Tests the publication workflow.", () => {
       cy.get("sgc-tab").contains("Review").click();
 
       // Check all checkboxes on review tab
-      //cy.get(`#review`).find('sgc-checklist[data-level="1"]').find("sgc-checkbox").click();
       cy.get("#review").find("sgc-checkbox").first().click();
       waitForTabStatusUpdate();
       cy.get(`#review`).find("sgc-checkbox").should("have.class", "is-checked");
