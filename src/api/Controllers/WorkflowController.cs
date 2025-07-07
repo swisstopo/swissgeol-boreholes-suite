@@ -78,12 +78,16 @@ public class WorkflowController : ControllerBase
             return NotFound(workflowNotFoundMessage);
         }
 
-        var newAssignee = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Id == workflowChangeRequest.NewAssigneeId).ConfigureAwait(false);
-        if (newAssignee == null)
+        User? newAssignee = null;
+        if (workflowChangeRequest.NewAssigneeId != null)
         {
-            var userNotFoundMessage = $"New assignee with id {workflowChangeRequest.NewAssigneeId} not found.";
-            logger?.LogWarning(userNotFoundMessage);
-            return NotFound(userNotFoundMessage);
+            newAssignee = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Id == workflowChangeRequest.NewAssigneeId).ConfigureAwait(false);
+            if (newAssignee == null)
+            {
+                var userNotFoundMessage = $"New assignee with id {workflowChangeRequest.NewAssigneeId} not found.";
+                logger?.LogWarning(userNotFoundMessage);
+                return NotFound(userNotFoundMessage);
+            }
         }
 
         var user = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.SubjectId == subjectId).ConfigureAwait(false);
@@ -97,7 +101,7 @@ public class WorkflowController : ControllerBase
             Comment = workflowChangeRequest.Comment ?? "",
             Created = DateTime.UtcNow,
             CreatedById = user.Id,
-            AssigneeId = newAssignee.Id,
+            AssigneeId = newAssignee?.Id,
         };
 
         // Update the workflow state

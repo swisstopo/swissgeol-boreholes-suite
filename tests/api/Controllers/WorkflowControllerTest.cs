@@ -146,6 +146,20 @@ public class WorkflowControllerTest
     }
 
     [TestMethod]
+    public async Task CanUpdateWorkflowWithoutSupplyingAssignee()
+    {
+        var request = new WorkflowChangeRequest
+        {
+            BoreholeId = boreholeTestId,
+            NewAssigneeId = null,
+        };
+
+        var response = await controller.ApplyWorkflowChangeAsync(request).ConfigureAwait(false);
+        var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
+        Assert.AreEqual(null, result.AssigneeId);
+    }
+
+    [TestMethod]
     public async Task WorkflowChangeRequestByUserWithoutEditPermissions()
     {
         boreholePermissionServiceMock
