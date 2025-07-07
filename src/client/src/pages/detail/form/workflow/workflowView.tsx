@@ -93,7 +93,7 @@ export const WorkflowView = () => {
     const workflowChangeRequest: WorkflowChangeRequest = {
       boreholeId: boreholeId,
       comment: changes.comment,
-      newAssigneeId: changes.toAssignee ? Number(changes.toAssignee.id) : undefined,
+      newAssigneeId: changes.toAssignee ? Number(changes.toAssignee.id) : Number(workflow.assignee?.id),
       newStatus: changes.toStatus,
     };
     updateWorkflow(workflowChangeRequest);

@@ -56,6 +56,7 @@ export interface TabStatusChangeRequest {
 }
 
 export enum TabType {
+  Unknown,
   Reviewed,
   Published,
 }
