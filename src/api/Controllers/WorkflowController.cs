@@ -170,6 +170,7 @@ public class WorkflowController : ControllerBase
                 {
                     return BadRequest($"Invalid field name {kvp.Key} for tab status change.");
                 }
+
                 SetTabStatusField(tabStatus, fieldEnum, kvp.Value);
             }
 

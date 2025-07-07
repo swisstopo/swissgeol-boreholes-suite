@@ -301,7 +301,6 @@ public class WorkflowControllerTest
         });
     }
 
-
     [TestMethod]
     public async Task TabStatusChangeWithInvalidFieldReturnsBadRequest()
     {
