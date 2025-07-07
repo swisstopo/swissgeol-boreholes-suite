@@ -21,7 +21,7 @@ public class WorkflowTabStatusChangeRequest
     public required WorkflowTabType Tab { get; set; }
 
     /// <summary>
-    /// Gets or sets the field for which the status changes.
+    /// Gets or sets the field for which the status changes. The provided field must be a valid field type contained in <see cref="WorkflowStatusField"/>.
     /// </summary>
     [Required]
     public required string Field { get; set; }
