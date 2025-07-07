@@ -108,7 +108,7 @@ export const WorkflowView = () => {
       boreholeId: boreholeId,
       tab: tab,
       field: capitalizeFirstLetter(field),
-      newStatus: Boolean(status),
+      newStatus: status!,
     };
     updateTabStatus(tabStatusChangeRequest);
   };
