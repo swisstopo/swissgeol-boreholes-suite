@@ -233,8 +233,7 @@ public class WorkflowControllerTest
             {
                 BoreholeId = boreholeTestId,
                 Tab = tabType,
-                Field = field,
-                NewStatus = newStatus,
+                Changes = new Dictionary<string, bool> { { field, newStatus } },
             };
 
             var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
@@ -258,14 +257,59 @@ public class WorkflowControllerTest
     }
 
     [TestMethod]
+    public async Task SuccessfullyUpdatesMultipleTabStatus()
+    {
+        async Task TestTabStatusAsync(Dictionary<string, bool> fieldDict)
+        {
+            var request = new WorkflowTabStatusChangeRequest
+            {
+                BoreholeId = boreholeTestId,
+                Tab = WorkflowTabType.Reviewed,
+                Changes = fieldDict,
+            };
+
+            var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
+            var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
+            var reviewedTabs = result.ReviewedTabs;
+
+            foreach (var kvp in fieldDict)
+            {
+                var property = typeof(TabStatus).GetProperty(kvp.Key);
+                Assert.IsNotNull(property, $"Property '{kvp.Key}' not found on TabStatus.");
+                var actual = (bool)property.GetValue(reviewedTabs)!;
+                Assert.AreEqual(kvp.Value, actual, $"Field '{kvp.Key}' should be '{kvp.Value}'");
+            }
+        }
+
+        await TestTabStatusAsync(new Dictionary<string, bool>
+        {
+            { "Instrumentation", true },
+            { "Casing", true },
+            { "Geometry", true },
+        });
+
+        await TestTabStatusAsync(new Dictionary<string, bool>
+        {
+            { "Instrumentation", false },
+            { "Casing", true },
+            { "Geometry", false },
+        });
+
+        await TestTabStatusAsync(new Dictionary<string, bool>
+        {
+            { "Instrumentation", true },
+        });
+    }
+
+
+    [TestMethod]
     public async Task TabStatusChangeWithInvalidFieldReturnsBadRequest()
     {
         var request = new WorkflowTabStatusChangeRequest
         {
             BoreholeId = boreholeTestId,
             Tab = WorkflowTabType.Reviewed,
-            Field = "UndefinedField", // Invalid field type
-            NewStatus = true,
+            Changes = new Dictionary<string, bool> { { "Undefined field", true } },
         };
 
         var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
@@ -280,8 +324,7 @@ public class WorkflowControllerTest
         {
             BoreholeId = boreholeTestId,
             Tab = (WorkflowTabType)999, // Invalid tab type
-            Field = "Chronostratigraphy",
-            NewStatus = true,
+            Changes = new Dictionary<string, bool> { { "Chronostratigraphy", true } },
         };
 
         var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
@@ -296,8 +339,7 @@ public class WorkflowControllerTest
         {
             BoreholeId = 9999999, // Non-existent borehole
             Tab = WorkflowTabType.Reviewed,
-            Field = "Chronostratigraphy",
-            NewStatus = true,
+            Changes = new Dictionary<string, bool> { { "Chronostratigraphy", true } },
         };
 
         var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
@@ -316,8 +358,7 @@ public class WorkflowControllerTest
         {
             BoreholeId = boreholeTestId,
             Tab = WorkflowTabType.Reviewed,
-            Field = "Chronostratigraphy",
-            NewStatus = true,
+            Changes = new Dictionary<string, bool> { { "Chronostratigraphy", true } },
         };
 
         var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);

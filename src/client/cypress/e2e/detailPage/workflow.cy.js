@@ -54,6 +54,8 @@ describe("Tests the publication workflow.", () => {
     assertEmptyRequestReviewModal();
     cy.get(".select-option").contains("validator user").click();
     cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
+    cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+    assertWorkflowSteps("Review");
   }
 
   it("Can request review from users with controller privilege", () => {
@@ -175,16 +177,16 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  it.only("Can update tab status on publish tab", () => {
+  it("Can update tab status on publish tab and publish a borehole", () => {
     createBorehole({
       "extended.original_name": "Waterpark",
       "custom.alternate_name": "Waterpark",
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
+      assertWorkflowSteps("Draft");
       requestReviewFromValidator();
       cy.get("sgc-tab").contains("Review").click();
-      cy.wait(["@workflow_by_id", "@borehole_by_id"]);
 
       // Check all checkboxes on review tab
       //cy.get(`#review`).find('sgc-checklist[data-level="1"]').find("sgc-checkbox").click();
@@ -195,6 +197,36 @@ describe("Tests the publication workflow.", () => {
       // Finish review
       clickSgcButtonWithContent("Review abschliessen");
       cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review abschliessen").click();
+      cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+
+      assertWorkflowSteps("Reviewed");
+
+      cy.get("sgc-tab").contains("Freigabe").click();
+
+      // Check one child checkbox (General) and one parent checkbox (Completion)
+      clickTabStatusCheckbox("approval", "General");
+      clickTabStatusCheckbox("approval", "Completion");
+
+      isIntermediateTabStatusBox("approval", "Borehole");
+      isCheckedTabStatusBox("approval", "General");
+      isUncheckedTabStatusBox("approval", "Section");
+      isUncheckedTabStatusBox("approval", "Geometry");
+
+      isCheckedTabStatusBox("approval", "Completion");
+      isCheckedTabStatusBox("approval", "Instrumentation");
+      isCheckedTabStatusBox("approval", "Casing");
+      isCheckedTabStatusBox("approval", "Sealing/Backfilling");
+
+      clickSgcButtonWithContent("Publish");
+      // Add a comment
+      cy.get("sgc-text-area").find("textarea").type("I published a borehole!");
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Publish").click();
+      assertWorkflowSteps("Reviewed");
+      getElementByDataCy("workflow-status-chip").should("contain", "Published");
+      cy.get("sgc-workflow-step").contains("Published").should("exist");
+
+      cy.get("sgc-tab").contains("Verlauf").click();
+      checkWorkflowChangeContent("Admin User", "Status von Reviewed zu Published geändert", "I published a borehole!");
     });
   });
 });

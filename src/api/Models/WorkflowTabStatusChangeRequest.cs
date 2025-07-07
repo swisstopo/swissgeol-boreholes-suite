@@ -21,14 +21,8 @@ public class WorkflowTabStatusChangeRequest
     public required WorkflowTabType Tab { get; set; }
 
     /// <summary>
-    /// Gets or sets the field for which the status changes.
+    /// Gets or sets the map of field names to their new status values.
     /// </summary>
     [Required]
-    public required string Field { get; set; }
-
-    /// <summary>
-    /// Gets or sets the new status of the field.
-    /// </summary>
-    [Required]
-    public required bool NewStatus { get; set; }
+    public required Dictionary<string, bool> Changes { get; set; }
 }
