@@ -38,6 +38,12 @@ export const clickOnNextPage = () => {
   waitForTableData();
 };
 
+export const clickOnLastPage = () => {
+  cy.get('[aria-label="last page"]').scrollIntoView();
+  cy.get('[aria-label="last page"]').click();
+  waitForTableData();
+};
+
 export const verifyTableLength = length => {
   if (length === 0) {
     cy.get(".MuiDataGrid-row").should("not.exist");
