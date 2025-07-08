@@ -6,6 +6,9 @@
 - Lithology, lithostratigraphy and chronostratigraphy are combined into one menu item.
 - Removed description quality of lithological descriptions and facies descriptions.
 
+### Fixed
+- Fixed bug where public checkbox state was reset when adding a new attachment (e.g. photo, profile, document) to a borehole.
+
 ## v2.1.1230 - 2025-06-13
 
 ### Added
