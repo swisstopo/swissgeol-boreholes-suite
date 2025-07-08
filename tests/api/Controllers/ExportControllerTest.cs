@@ -197,12 +197,26 @@ public class ExportControllerTest
         var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(new MemoryStream(fileBytes), fileName, "application/pdf", newBorehole.Id).ConfigureAwait(false);
         context.BoreholeFiles.Add(boreholeFile);
 
+        var photoName = $"{Guid.NewGuid()}.tif";
+
+        var photo = new Photo
+        {
+            BoreholeId = newBorehole.Id,
+            Name = photoName,
+            NameUuid = Guid.NewGuid().ToString() + ".tif",
+            FileType = "image/tiff",
+        };
+
+        context.Photos.Add(photo);
+        Assert.IsNotNull(newBorehole.Photos);
+
         var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id]).ConfigureAwait(false);
 
         var fileResult = result as FileContentResult;
         Assert.IsNotNull(fileResult);
         Assert.AreEqual("application/zip", fileResult.ContentType);
         Assert.AreEqual("Borehole 257", fileResult.FileDownloadName[0..12]);
+        Assert.IsNotNull(fileResult);
 
         // Extract the files from the returned ZIP stream
         using var zipStream = new MemoryStream(fileResult.FileContents);
@@ -222,6 +236,9 @@ public class ExportControllerTest
         Assert.AreEqual("Test borehole for project", borehole.Remarks);
         Assert.AreEqual("Borehole 257", borehole.Name);
         Assert.AreEqual("Project Alpha", borehole.ProjectName);
+
+        // Assert that photos are not included in the JSON export
+        Assert.IsNull(borehole.Photos);
     }
 
     [TestMethod]
