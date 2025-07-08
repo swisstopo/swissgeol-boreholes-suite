@@ -247,7 +247,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     stopBoreholeEditing();
   });
 
-  it.only("creates, edits and deletes documents.", () => {
+  it("creates, edits and deletes documents.", () => {
     createBorehole({ originalName: "HAPPYBOOK" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
