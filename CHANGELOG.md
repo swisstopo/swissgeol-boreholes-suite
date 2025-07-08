@@ -6,6 +6,9 @@
 - Lithology, lithostratigraphy and chronostratigraphy are combined into one menu item.
 - Removed description quality of lithological descriptions and facies descriptions.
 
+### Fixed
+- Borehole exports no longer contain Photos.
+
 ## v2.1.1230 - 2025-06-13
 
 ### Added
