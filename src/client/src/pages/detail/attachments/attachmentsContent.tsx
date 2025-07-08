@@ -81,19 +81,17 @@ export const AttachmentContent = <T extends GridValidRowModel>({
               <TableSearchField apiRef={apiRef} />
             </Box>
           </Stack>
-          <Box>
-            <Table
-              apiRef={apiRef}
-              isLoading={isLoading}
-              rows={rows ?? []}
-              columns={columns}
-              showQuickFilter={false}
-              checkboxSelection
-              rowSelectionModel={selectionModel}
-              onRowSelectionModelChange={setSelectionModel}
-              rowAutoHeight={true}
-            />
-          </Box>
+          <Table
+            apiRef={apiRef}
+            isLoading={isLoading}
+            rows={rows ?? []}
+            columns={columns}
+            showQuickFilter={false}
+            checkboxSelection
+            rowSelectionModel={selectionModel}
+            onRowSelectionModelChange={setSelectionModel}
+            rowAutoHeight={true}
+          />
         </Box>
       ) : (
         <Typography>{t(noAttachmentsText)}</Typography>

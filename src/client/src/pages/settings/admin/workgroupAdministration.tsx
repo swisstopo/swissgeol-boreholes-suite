@@ -74,7 +74,6 @@ export const WorkgroupAdministration: FC = () => {
       onSortModelChange={setworkgroupTableSortModel}
       dataCy={"workgroups-table"}
       rowAutoHeight={true}
-      sx={{ border: "none" }}
     />
   );
 };

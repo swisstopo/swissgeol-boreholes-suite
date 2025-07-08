@@ -605,7 +605,7 @@ export const theme = createTheme({
         root: {
           fontSize: "16px",
           cursor: "pointer",
-          borderColor: themePalette.border.darker,
+          border: "none",
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: themePalette.border.light,
           },
@@ -629,6 +629,18 @@ export const theme = createTheme({
               fontSize: "16px",
               fontWeight: 400,
             },
+          },
+          "& .MuiDataGrid-topContainer": {
+            borderBottom: `1px solid ${themePalette.border.darker}`,
+          },
+          "& .MuiDataGrid-row": {
+            borderLeft: `1px solid ${themePalette.border.darker}`,
+            borderRight: `1px solid ${themePalette.border.darker}`,
+            borderTop: "none",
+          },
+
+          "& .MuiDataGrid-filler": {
+            borderTop: `1px solid ${themePalette.border.darker}`,
           },
           "& .MuiDataGrid-row--dynamicHeight": {
             "& .MuiDataGrid-cell": {
@@ -659,6 +671,7 @@ export const theme = createTheme({
             paddingBottom: "20px !important",
             width: "1000px",
             flexDirection: "row-reverse",
+            borderRadius: "4px",
             p: 1,
           },
           "& .MuiTablePagination-toolbar p": {

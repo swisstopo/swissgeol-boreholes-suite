@@ -144,7 +144,6 @@ export const UserAdministration: FC = () => {
       sortModel={userTableSortModel}
       onSortModelChange={setUserTableSortModel}
       dataCy={"users-table"}
-      sx={{ border: "none" }}
     />
   );
 };
