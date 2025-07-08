@@ -163,15 +163,15 @@ public class WorkflowController : ControllerBase
                 return BadRequest($"Invalid tab type {request.Tab} for tab status change.");
             }
 
-            foreach (var kvp in request.Changes)
+            foreach (var change in request.Changes)
             {
-                if (!Enum.TryParse<WorkflowStatusField>(kvp.Key, true, out var fieldEnum) ||
+                if (!Enum.TryParse<WorkflowStatusField>(change.Key, true, out var fieldEnum) ||
                     !Enum.IsDefined(typeof(WorkflowStatusField), fieldEnum))
                 {
-                    return BadRequest($"Invalid field name {kvp.Key} for tab status change.");
+                    return BadRequest($"Invalid field name {change.Key} for tab status change.");
                 }
 
-                SetTabStatusField(tabStatus, fieldEnum, kvp.Value);
+                SetTabStatusField(tabStatus, fieldEnum, change.Value);
             }
 
             await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);

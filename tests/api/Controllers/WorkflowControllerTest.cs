@@ -259,25 +259,25 @@ public class WorkflowControllerTest
     [TestMethod]
     public async Task SuccessfullyUpdatesMultipleTabStatus()
     {
-        async Task TestTabStatusAsync(Dictionary<string, bool> fieldDict)
+        async Task TestTabStatusAsync(Dictionary<string, bool> changesDict)
         {
             var request = new WorkflowTabStatusChangeRequest
             {
                 BoreholeId = boreholeTestId,
                 Tab = WorkflowTabType.Reviewed,
-                Changes = fieldDict,
+                Changes = changesDict,
             };
 
             var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
             var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
             var reviewedTabs = result.ReviewedTabs;
 
-            foreach (var kvp in fieldDict)
+            foreach (var change in changesDict)
             {
-                var property = typeof(TabStatus).GetProperty(kvp.Key);
-                Assert.IsNotNull(property, $"Property '{kvp.Key}' not found on TabStatus.");
+                var property = typeof(TabStatus).GetProperty(change.Key);
+                Assert.IsNotNull(property, $"Property '{change.Key}' not found on TabStatus.");
                 var actual = (bool)property.GetValue(reviewedTabs)!;
-                Assert.AreEqual(kvp.Value, actual, $"Field '{kvp.Key}' should be '{kvp.Value}'");
+                Assert.AreEqual(change.Value, actual, $"Field '{change.Key}' should be '{change.Value}'");
             }
         }
 
