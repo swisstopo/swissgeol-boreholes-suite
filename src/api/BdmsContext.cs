@@ -433,7 +433,7 @@ public class BdmsContext : DbContext
             .WithMany(w => w.Changes)
             .HasForeignKey(c => c.WorkflowId);
 
-        modelBuilder.Entity<TabStatus>().Property(ts => ts.General).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Location).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Section).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Geometry).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Lithology).HasDefaultValue(false);
@@ -443,12 +443,12 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Instrumentation).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Backfill).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.WaterIngress).HasDefaultValue(false);
-        modelBuilder.Entity<TabStatus>().Property(ts => ts.Groundwater).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.GroundwaterLevelMeasurement).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.FieldMeasurement).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Hydrotest).HasDefaultValue(false);
-        modelBuilder.Entity<TabStatus>().Property(ts => ts.Profile).HasDefaultValue(false);
-        modelBuilder.Entity<TabStatus>().Property(ts => ts.Photo).HasDefaultValue(false);
-        modelBuilder.Entity<TabStatus>().Property(ts => ts.Document).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Profiles).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Photos).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Documents).HasDefaultValue(false);
 
         // Configure delete behavior for all non-nullable foreign keys for Codelists.
         modelBuilder.Entity<CasingElement>()
