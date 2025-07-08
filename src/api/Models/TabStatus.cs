@@ -18,7 +18,7 @@ public class TabStatus : IIdentifyable
     /// Gets or sets the status of the general info and location of the borehole.
     /// </summary>
     [Column("general")]
-    public bool General { get; set; }
+    public bool Location { get; set; }
 
     /// <summary>
     /// Gets or sets the status of the sections tab of the borehole.
@@ -78,7 +78,7 @@ public class TabStatus : IIdentifyable
     /// Gets or sets the status of the groundwater tab of the hydrogeology.
     /// </summary>
     [Column("groundwater")]
-    public bool Groundwater { get; set; }
+    public bool GroundwaterLevelMeasurement { get; set; }
 
     /// <summary>
     /// Gets or sets the status of the field measurement tab of the hydrogeology.
@@ -96,17 +96,17 @@ public class TabStatus : IIdentifyable
     /// Gets or sets the status of the profile tab of the borehole attachments.
     /// </summary>
     [Column("profile")]
-    public bool Profile { get; set; }
+    public bool Profiles { get; set; }
 
     /// <summary>
     /// Gets or sets the status of the photo tab of the borehole attachments.
     /// </summary>
     [Column("photo")]
-    public bool Photo { get; set; }
+    public bool Photos { get; set; }
 
     /// <summary>
     /// Gets or sets the status of the document tab of the borehole attachments.
     /// </summary>
     [Column("document")]
-    public bool Document { get; set; }
+    public bool Documents { get; set; }
 }
