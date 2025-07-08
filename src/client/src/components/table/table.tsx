@@ -127,6 +127,8 @@ export const Table = <T extends GridValidRowModel>({
     };
   });
 
+  const actualRowCount = paginationMode === "server" ? (rowCount ?? rows?.length) : 0;
+
   return (
     <DataGrid
       sx={{
@@ -139,7 +141,7 @@ export const Table = <T extends GridValidRowModel>({
       columnHeaderHeight={44}
       sortingOrder={["asc", "desc"]}
       loading={isLoading ?? !rows?.length}
-      rowCount={paginationMode === "server" ? (rowCount ?? rows?.length) : undefined}
+      rowCount={actualRowCount}
       rows={rows}
       columns={adjustedWidthColumns}
       getRowHeight={() => (rowAutoHeight ? "auto" : 44)}
@@ -159,7 +161,7 @@ export const Table = <T extends GridValidRowModel>({
       localeText={muiLocales[i18n.language]}
       disableColumnSelector
       disableRowSelectionOnClick
-      hideFooter={rowCount != undefined && rowCount < maxRowsPerPage}
+      hideFooter={actualRowCount < maxRowsPerPage}
       hideFooterSelectedRowCount
       disableColumnFilter
       disableColumnMenu={true}
