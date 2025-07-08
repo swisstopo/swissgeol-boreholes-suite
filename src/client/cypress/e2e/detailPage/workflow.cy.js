@@ -136,7 +136,6 @@ describe("Tests the publication workflow.", () => {
       requestReviewFromValidator();
 
       cy.get("sgc-tab").contains("Review").click();
-      cy.wait(["@workflow_by_id", "@borehole_by_id"]);
 
       isUncheckedTabStatusBox("review", "Instrumentation");
       isUncheckedTabStatusBox("review", "Completion");
