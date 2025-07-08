@@ -1,9 +1,14 @@
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   assertEmptyRequestReviewModal,
   assertWorkflowSteps,
   checkWorkflowChangeContent,
   clickSgcButtonWithContent,
+  clickTabStatusCheckbox,
   evaluateComment,
+  isCheckedTabStatusBox,
+  isIntermediateTabStatusBox,
+  isUncheckedTabStatusBox,
 } from "../helpers/swissgeolCoreHelpers.js";
 import {
   createBorehole,
@@ -34,23 +39,21 @@ describe("Tests the publication workflow.", () => {
     ); // Translation not yet available in core UI
   });
 
+  function navigateToWorkflowAndStartEditing(id) {
+    goToDetailRouteAndAcceptTerms(`/${id}/status?dev=true`);
+    cy.wait("@borehole_by_id");
+    startBoreholeEditing();
+    getElementByDataCy("workflow-status-chip").should("contain", "Draft");
+    assertWorkflowSteps("Draft");
+  }
+
   it("Can request review from users with controller privilege", () => {
     createBorehole({
       "extended.original_name": "Flinchy clown fish",
       "custom.alternate_name": "Flinchy clown fish",
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id}/status?dev=true`);
-      startBoreholeEditing();
-
-      // temporary workaround to update boreholeV1 to borehole V2 and get WorkflowV2 until borehole is created with api v2
-      stopBoreholeEditing();
-      goToDetailRouteAndAcceptTerms(`/${id}/status?dev=true`);
-      startBoreholeEditing();
-
-      getElementByDataCy("workflow-status-chip").should("contain", "Draft");
-      // assert that the draft step is active
-      assertWorkflowSteps("Draft");
+      navigateToWorkflowAndStartEditing(id);
 
       clickSgcButtonWithContent("Review anfordern");
       assertEmptyRequestReviewModal();
@@ -84,7 +87,6 @@ describe("Tests the publication workflow.", () => {
       assertEmptyRequestReviewModal();
 
       cy.get(".select-trigger").click();
-      // 5 users with controller privileges should be selectable
       cy.get(".select-option").contains("validator user").click();
       cy.get("sgc-text-area").find("textarea").type("I requested a review!");
 
@@ -110,6 +112,60 @@ describe("Tests the publication workflow.", () => {
       // assert status update in header
       getElementByDataCy("workflow-status-chip").should("contain", "Review");
       stopBoreholeEditing();
+    });
+  });
+
+  it("Can update tab status on review tab", () => {
+    createBorehole({
+      "extended.original_name": "Zoo director",
+      "custom.alternate_name": "Zoo director",
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      clickSgcButtonWithContent("Review anfordern");
+      cy.get(".select-trigger").click();
+      assertEmptyRequestReviewModal();
+      cy.get(".select-option").contains("validator user").click();
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
+      cy.get("sgc-tab").contains("Review").click();
+      cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+
+      isUncheckedTabStatusBox("review", "Instrumentation");
+      isUncheckedTabStatusBox("review", "Completion");
+
+      // Click one completion child
+      clickTabStatusCheckbox("review", "Instrumentation");
+
+      isCheckedTabStatusBox("review", "Instrumentation");
+      isIntermediateTabStatusBox("review", "Completion");
+
+      // Click all remaining completion children
+      clickTabStatusCheckbox("review", "Casing");
+      clickTabStatusCheckbox("review", "Sealing/Backfilling");
+
+      isCheckedTabStatusBox("review", "Casing");
+      isCheckedTabStatusBox("review", "Sealing/Backfilling");
+      isCheckedTabStatusBox("review", "Instrumentation");
+      isCheckedTabStatusBox("review", "Completion");
+
+      //navigate away and return to assert state has been saved
+      navigateInSidebar(SidebarMenuItem.borehole);
+      //Todo : update navigateInSidebar for new workflow tab
+      getElementByDataCy(`status-menu-item`).click();
+      cy.get("sgc-tab").contains("Review").click();
+
+      isCheckedTabStatusBox("review", "Casing");
+      isCheckedTabStatusBox("review", "Sealing/Backfilling");
+      isCheckedTabStatusBox("review", "Instrumentation");
+      isCheckedTabStatusBox("review", "Completion");
+
+      //uncheck one checkbox
+      clickTabStatusCheckbox("review", "Sealing/Backfilling");
+
+      isCheckedTabStatusBox("review", "Casing");
+      isUncheckedTabStatusBox("review", "Sealing/Backfilling");
+      isCheckedTabStatusBox("review", "Instrumentation");
+      isIntermediateTabStatusBox("review", "Completion");
     });
   });
 });

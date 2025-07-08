@@ -213,7 +213,7 @@ public class WorkflowControllerTest
     [TestMethod]
     public async Task SuccessfullyUpdatesTabStatus()
     {
-        async Task TestTabStatus(WorkflowTabType tabType, Func<WorkflowV2, TabStatus> getTabStatus, WorkflowStatusField field, bool newStatus)
+        async Task TestTabStatus(WorkflowTabType tabType, Func<WorkflowV2, TabStatus> getTabStatus, string field, bool newStatus)
         {
             var request = new WorkflowTabStatusChangeRequest
             {
@@ -232,7 +232,7 @@ public class WorkflowControllerTest
                 Assert.IsFalse(actual);
         }
 
-        var fieldToUpdate = WorkflowStatusField.Lithology;
+        var fieldToUpdate = "Lithology";
 
         // Test ReviewedTabs: set to true, then false
         await TestTabStatus(WorkflowTabType.Reviewed, w => w.ReviewedTabs, fieldToUpdate, true);
@@ -250,7 +250,7 @@ public class WorkflowControllerTest
         {
             BoreholeId = boreholeTestId,
             Tab = WorkflowTabType.Reviewed,
-            Field = (WorkflowStatusField)999, // Invalid field type
+            Field = "UndefinedField", // Invalid field type
             NewStatus = true,
         };
 
@@ -266,7 +266,7 @@ public class WorkflowControllerTest
         {
             BoreholeId = boreholeTestId,
             Tab = (WorkflowTabType)999, // Invalid tab type
-            Field = WorkflowStatusField.Chronostratigraphy,
+            Field = "Chronostratigraphy",
             NewStatus = true,
         };
 
@@ -282,7 +282,7 @@ public class WorkflowControllerTest
         {
             BoreholeId = 9999999, // Non-existent borehole
             Tab = WorkflowTabType.Reviewed,
-            Field = WorkflowStatusField.Chronostratigraphy,
+            Field = "Chronostratigraphy",
             NewStatus = true,
         };
 
@@ -302,7 +302,7 @@ public class WorkflowControllerTest
         {
             BoreholeId = boreholeTestId,
             Tab = WorkflowTabType.Reviewed,
-            Field = WorkflowStatusField.Chronostratigraphy,
+            Field = "Chronostratigraphy",
             NewStatus = true,
         };
 
