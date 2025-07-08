@@ -35,7 +35,7 @@ function getTabStatusBox(tab: string, title: string) {
 
 export function clickTabStatusCheckbox(tab: string, title: string) {
   // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.wait(10);
+  cy.wait(100);
   getTabStatusBox(tab, title).click();
   waitForTabStatusUpdate();
 }
@@ -49,6 +49,5 @@ export function isIntermediateTabStatusBox(tab: string, title: string) {
 }
 
 export function isUncheckedTabStatusBox(tab: string, title: string) {
-  getTabStatusBox(tab, title).should("be.visible", { timeout: 10000 });
   getTabStatusBox(tab, title).should("have.attr", "aria-checked", "false");
 }

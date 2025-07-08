@@ -475,7 +475,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s photos.
     /// </summary>
-    [IncludeInExport]
     public ICollection<Photo>? Photos { get; set; }
 
     /// <summary>

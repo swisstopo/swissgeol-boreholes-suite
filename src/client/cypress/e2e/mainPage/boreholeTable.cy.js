@@ -1,5 +1,6 @@
 import {
   checkRowWithText,
+  clickOnLastPage,
   clickOnNextPage,
   clickOnRowWithText,
   showTableAndWaitForData,
@@ -59,7 +60,7 @@ describe("Borehole editor table tests", () => {
     verifyRowContains("geotechnics", 2);
   });
 
-  it("preserves column sorting and active page when navigating", () => {
+  it("Preserves column sorting and active page when navigating", () => {
     goToRouteAndAcceptTerms("/");
     showTableAndWaitForData();
 
@@ -87,9 +88,13 @@ describe("Borehole editor table tests", () => {
     waitForTableData();
     verifyPaginationText("401–500 of 1626");
     verifyRowContains("Nichole VonRueden", 0);
+
+    //navigate to last page
+    clickOnLastPage();
+    verifyPaginationText("1601–1626 of 1626");
   });
 
-  it("verifies all rows are selected on header checkbox click", () => {
+  it("Verifies all rows are selected on header checkbox click", () => {
     goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
     showTableAndWaitForData();

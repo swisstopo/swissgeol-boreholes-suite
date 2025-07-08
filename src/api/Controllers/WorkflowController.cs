@@ -78,12 +78,16 @@ public class WorkflowController : ControllerBase
             return NotFound(workflowNotFoundMessage);
         }
 
-        var newAssignee = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Id == workflowChangeRequest.NewAssigneeId).ConfigureAwait(false);
-        if (newAssignee == null)
+        User? newAssignee = null;
+        if (workflowChangeRequest.NewAssigneeId != null)
         {
-            var userNotFoundMessage = $"New assignee with id {workflowChangeRequest.NewAssigneeId} not found.";
-            logger?.LogWarning(userNotFoundMessage);
-            return NotFound(userNotFoundMessage);
+            newAssignee = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Id == workflowChangeRequest.NewAssigneeId).ConfigureAwait(false);
+            if (newAssignee == null)
+            {
+                var userNotFoundMessage = $"New assignee with id {workflowChangeRequest.NewAssigneeId} not found.";
+                logger?.LogWarning(userNotFoundMessage);
+                return NotFound(userNotFoundMessage);
+            }
         }
 
         var user = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.SubjectId == subjectId).ConfigureAwait(false);
@@ -97,7 +101,7 @@ public class WorkflowController : ControllerBase
             Comment = workflowChangeRequest.Comment ?? "",
             Created = DateTime.UtcNow,
             CreatedById = user.Id,
-            AssigneeId = newAssignee.Id,
+            AssigneeId = newAssignee?.Id,
         };
 
         // Update the workflow state
@@ -145,12 +149,6 @@ public class WorkflowController : ControllerBase
 
         try
         {
-            if (!Enum.TryParse<WorkflowStatusField>(request.Field, true, out var fieldEnum) ||
-                !Enum.IsDefined(typeof(WorkflowStatusField), fieldEnum))
-            {
-                return BadRequest($"Invalid field name {request.Field} for tab status change.");
-            }
-
             TabStatus tabStatus;
             if (request.Tab == WorkflowTabType.Reviewed)
             {
@@ -165,7 +163,17 @@ public class WorkflowController : ControllerBase
                 return BadRequest($"Invalid tab type {request.Tab} for tab status change.");
             }
 
-            SetTabStatusField(tabStatus, fieldEnum, request.NewStatus);
+            foreach (var change in request.Changes)
+            {
+                if (!Enum.TryParse<WorkflowStatusField>(change.Key, true, out var fieldEnum) ||
+                    !Enum.IsDefined(typeof(WorkflowStatusField), fieldEnum))
+                {
+                    return BadRequest($"Invalid field name {change.Key} for tab status change.");
+                }
+
+                SetTabStatusField(tabStatus, fieldEnum, change.Value);
+            }
+
             await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
             return Ok(workflow);
         }
