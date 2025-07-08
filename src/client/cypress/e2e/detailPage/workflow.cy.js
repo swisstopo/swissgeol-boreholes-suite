@@ -201,12 +201,12 @@ describe("Tests the publication workflow.", () => {
 
       cy.get("sgc-tab").contains("Freigabe").click();
 
-      // Check one child checkbox (General) and one parent checkbox (Completion)
-      clickTabStatusCheckbox("approval", "General");
+      // Check one child checkbox (Location) and one parent checkbox (Completion)
+      clickTabStatusCheckbox("approval", "Location");
       clickTabStatusCheckbox("approval", "Completion");
 
       isIntermediateTabStatusBox("approval", "Borehole");
-      isCheckedTabStatusBox("approval", "General");
+      isCheckedTabStatusBox("approval", "Location");
       isUncheckedTabStatusBox("approval", "Section");
       isUncheckedTabStatusBox("approval", "Geometry");
 
