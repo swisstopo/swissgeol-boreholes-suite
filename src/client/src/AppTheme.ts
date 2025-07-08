@@ -222,6 +222,7 @@ export const theme = createTheme({
               style: {
                 color: themePalette.primary.main,
                 backgroundColor: themePalette.background.default,
+                borderColor: themePalette.primary.main,
                 "&:hover": {
                   color: themePalette.buttonStates.outlined.hoverOrFocus.color,
                   backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,

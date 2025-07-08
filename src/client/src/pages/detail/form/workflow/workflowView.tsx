@@ -15,7 +15,6 @@ import { useCurrentUser, useUsers } from "../../../../api/user.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { useUserRoleForBorehole } from "../../../../hooks/useUserRoleForBorehole.ts";
-import { capitalizeFirstLetter } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import {
   TabStatusChangeRequest,
@@ -48,7 +47,7 @@ export const WorkflowView = () => {
     return [
       {
         name: () => t("borehole"),
-        fields: [field("location"), field("section")],
+        fields: [field("location"), field("section"), field("geometry")],
       },
       {
         name: () => t("stratigraphy"),
@@ -109,12 +108,10 @@ export const WorkflowView = () => {
     changeEvent: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>,
     tab: TabType,
   ) => {
-    const [[field, status]] = Object.entries(changeEvent.detail.changes);
     const tabStatusChangeRequest: TabStatusChangeRequest = {
       boreholeId: boreholeId,
       tab: tab,
-      field: capitalizeFirstLetter(field),
-      newStatus: status!,
+      changes: changeEvent.detail.changes,
     };
     updateTabStatus(tabStatusChangeRequest);
   };

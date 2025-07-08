@@ -1,5 +1,6 @@
 import {
   GenericWorkflow,
+  GenericWorkflowSelection,
   LocalDate,
   WorkflowChange as SwissgeolWorkflowChange,
   WorkflowStatus,
@@ -51,8 +52,7 @@ export interface WorkflowChangeRequest {
 export interface TabStatusChangeRequest {
   boreholeId: string;
   tab: TabType;
-  field: string;
-  newStatus: boolean;
+  changes: Partial<GenericWorkflowSelection>;
 }
 
 export enum TabType {

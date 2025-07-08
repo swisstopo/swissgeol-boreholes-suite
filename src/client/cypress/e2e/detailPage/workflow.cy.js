@@ -9,6 +9,7 @@ import {
   isCheckedTabStatusBox,
   isIntermediateTabStatusBox,
   isUncheckedTabStatusBox,
+  waitForTabStatusUpdate,
 } from "../helpers/swissgeolCoreHelpers.js";
 import {
   createBorehole,
@@ -45,6 +46,16 @@ describe("Tests the publication workflow.", () => {
     startBoreholeEditing();
     getElementByDataCy("workflow-status-chip").should("contain", "Draft");
     assertWorkflowSteps("Draft");
+  }
+
+  function requestReviewFromValidator() {
+    clickSgcButtonWithContent("Review anfordern");
+    cy.get(".select-trigger").click();
+    assertEmptyRequestReviewModal();
+    cy.get(".select-option").contains("validator user").click();
+    cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
+    cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+    assertWorkflowSteps("Review");
   }
 
   it("Can request review from users with controller privilege", () => {
@@ -122,13 +133,9 @@ describe("Tests the publication workflow.", () => {
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
-      clickSgcButtonWithContent("Review anfordern");
-      cy.get(".select-trigger").click();
-      assertEmptyRequestReviewModal();
-      cy.get(".select-option").contains("validator user").click();
-      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
+      requestReviewFromValidator();
+
       cy.get("sgc-tab").contains("Review").click();
-      cy.wait(["@workflow_by_id", "@borehole_by_id"]);
 
       isUncheckedTabStatusBox("review", "Instrumentation");
       isUncheckedTabStatusBox("review", "Completion");
@@ -166,6 +173,58 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("review", "Sealing/Backfilling");
       isCheckedTabStatusBox("review", "Instrumentation");
       isIntermediateTabStatusBox("review", "Completion");
+    });
+  });
+
+  it("Can update tab status on publish tab and publish a borehole", () => {
+    createBorehole({
+      "extended.original_name": "Waterpark",
+      "custom.alternate_name": "Waterpark",
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      assertWorkflowSteps("Draft");
+      requestReviewFromValidator();
+      cy.get("sgc-tab").contains("Review").click();
+
+      // Check all checkboxes on review tab
+      cy.get("#review").find("sgc-checkbox").first().click();
+      waitForTabStatusUpdate();
+      cy.get(`#review`).find("sgc-checkbox").should("have.class", "is-checked");
+
+      // Finish review
+      clickSgcButtonWithContent("Review abschliessen");
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review abschliessen").click();
+      cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+
+      assertWorkflowSteps("Reviewed");
+
+      cy.get("sgc-tab").contains("Freigabe").click();
+
+      // Check one child checkbox (Location) and one parent checkbox (Completion)
+      clickTabStatusCheckbox("approval", "Location");
+      clickTabStatusCheckbox("approval", "Completion");
+
+      isIntermediateTabStatusBox("approval", "Borehole");
+      isCheckedTabStatusBox("approval", "Location");
+      isUncheckedTabStatusBox("approval", "Section");
+      isUncheckedTabStatusBox("approval", "Geometry");
+
+      isCheckedTabStatusBox("approval", "Completion");
+      isCheckedTabStatusBox("approval", "Instrumentation");
+      isCheckedTabStatusBox("approval", "Casing");
+      isCheckedTabStatusBox("approval", "Sealing/Backfilling");
+
+      clickSgcButtonWithContent("Publish");
+      // Add a comment
+      cy.get("sgc-text-area").find("textarea").type("I published a borehole!");
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Publish").click();
+      assertWorkflowSteps("Reviewed");
+      getElementByDataCy("workflow-status-chip").should("contain", "Published");
+      cy.get("sgc-workflow-step").contains("Published").should("exist");
+
+      cy.get("sgc-tab").contains("Verlauf").click();
+      checkWorkflowChangeContent("Admin User", "Status von Reviewed zu Published geändert", "I published a borehole!");
     });
   });
 });
