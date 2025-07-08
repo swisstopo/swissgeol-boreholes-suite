@@ -159,7 +159,7 @@ export const Table = <T extends GridValidRowModel>({
       localeText={muiLocales[i18n.language]}
       disableColumnSelector
       disableRowSelectionOnClick
-      hideFooter={rows?.length < maxRowsPerPage}
+      hideFooter={rowCount != undefined && rowCount < maxRowsPerPage}
       hideFooterSelectedRowCount
       disableColumnFilter
       disableColumnMenu={true}
