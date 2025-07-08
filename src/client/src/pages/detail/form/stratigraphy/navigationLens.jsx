@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { NumericFormat } from "react-number-format";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { Box, Button, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import useResizeObserver from "@react-hook/resize-observer";
 import { theme } from "../../../../AppTheme.ts";
 import { clamp } from "./clamp.js";
@@ -62,10 +62,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
       : Math.max(12, navState.lensSize * backgroundNavState.pixelPerMeter);
 
   return (
-    <Stack
-      gap={1}
-      flex={1}
-      sx={{ width: 45, ...sx }}>
+    <Stack gap={1} flex={1} sx={{ width: 45, ...sx }}>
       <Button onClick={() => handleMove(-0.3)} variant="outlined">
         <ChevronUp />
       </Button>
