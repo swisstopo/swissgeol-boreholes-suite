@@ -1,7 +1,7 @@
-import { ReactElement } from "react";
+import { FC, PropsWithChildren } from "react";
 import { Box } from "@mui/material";
 
-export const AdministationTableWrapper = ({ children }): ReactElement => {
+export const AdministationTableWrapper: FC<PropsWithChildren> = ({ children }) => {
   return (
     <Box>
       <Box mb={0.5}></Box>
