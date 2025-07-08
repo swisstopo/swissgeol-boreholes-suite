@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { NumericFormat } from "react-number-format";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { Box, Button, ButtonGroup } from "@mui/material";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { Box, Button, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import useResizeObserver from "@react-hook/resize-observer";
 import { theme } from "../../../../AppTheme.ts";
@@ -62,13 +62,12 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
       : Math.max(12, navState.lensSize * backgroundNavState.pixelPerMeter);
 
   return (
-    <ButtonGroup
-      variant="contained"
-      orientation="vertical"
-      color="neutral"
-      sx={{ flex: 1, ...sx, display: "flex", flexDirection: "column" }}>
-      <Button onClick={() => handleMove(-0.3)}>
-        <KeyboardArrowUp />
+    <Stack
+      gap={1}
+      flex={1}
+      sx={{ width: 45, ...sx }}>
+      <Button onClick={() => handleMove(-0.3)} variant="outlined">
+        <ChevronUp />
       </Button>
       <Box
         ref={contentRef}
@@ -114,7 +113,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
               top: 0,
               bottom: 0,
               borderStyle: "solid",
-              borderWidth: "4px",
+              borderWidth: "2px",
               borderColor: "red",
               display: "flex",
               flexDirection: "column",
@@ -133,10 +132,10 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
           </Box>
         </Draggable>
       </Box>
-      <Button onClick={() => handleMove(0.3)}>
-        <KeyboardArrowDown />
+      <Button onClick={() => handleMove(0.3)} variant="outlined">
+        <ChevronDown />
       </Button>
-    </ButtonGroup>
+    </Stack>
   );
 };
 
