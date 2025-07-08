@@ -7,7 +7,9 @@
 - Removed description quality of lithological descriptions and facies descriptions.
 
 ### Fixed
-- Borehole exports no longer contain Photos.
+- Borehole exports no longer contain photos.
+- Fixed bug where public checkbox state was reset when adding a new attachment (e.g. photo, profile, document) to a borehole.
+- The axis labels on top view geometry chart were switched and the ticks did not include any decimals.
 
 ## v2.1.1230 - 2025-06-13
 

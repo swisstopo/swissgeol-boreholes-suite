@@ -6,7 +6,7 @@
 public enum WorkflowStatusField
 {
     Unknown = 0,
-    General,
+    Location,
     Section,
     Geometry,
     Lithology,
@@ -16,10 +16,10 @@ public enum WorkflowStatusField
     Instrumentation,
     Backfill,
     WaterIngress,
-    Groundwater,
+    GroundwaterLevelMeasurement,
     FieldMeasurement,
     Hydrotest,
-    Profile,
-    Photo,
-    Document,
+    Profiles,
+    Photos,
+    Documents,
 }
