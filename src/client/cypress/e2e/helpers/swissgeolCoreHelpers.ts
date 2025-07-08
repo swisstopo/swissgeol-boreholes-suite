@@ -35,7 +35,7 @@ function getTabStatusBox(tab: string, title: string) {
 
 export function clickTabStatusCheckbox(tab: string, title: string) {
   // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.wait(20);
+  cy.wait(100);
   getTabStatusBox(tab, title).click();
   waitForTabStatusUpdate();
 }
