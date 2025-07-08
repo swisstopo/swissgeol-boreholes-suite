@@ -48,11 +48,11 @@ export const WorkflowView = () => {
     return [
       {
         name: () => t("borehole"),
-        fields: [field("general"), field("section")],
+        fields: [field("location"), field("section")],
       },
       {
         name: () => t("stratigraphy"),
-        fields: [field("chronostratigraphy"), field("lithology"), field("lithostratigraphy")],
+        fields: [field("lithology"), field("lithostratigraphy"), field("chronostratigraphy")],
       },
       {
         name: () => t("completion"),
@@ -60,7 +60,12 @@ export const WorkflowView = () => {
       },
       {
         name: () => t("hydrogeology"),
-        fields: [field("waterIngress"), field("groundwater"), field("fieldMeasurement"), field("hydrotest")],
+        fields: [
+          field("waterIngress"),
+          field("groundwaterLevelMeasurement"),
+          field("fieldMeasurement"),
+          field("hydrotest"),
+        ],
       },
       {
         name: () => t("attachments"),

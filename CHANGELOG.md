@@ -8,6 +8,7 @@
 
 ### Fixed
 - Fixed bug where the pagination was not displayed on the last page of the borehole table.
+- Fixed bug where public checkbox state was reset when adding a new attachment (e.g. photo, profile, document) to a borehole.
 
 ## v2.1.1230 - 2025-06-13
 

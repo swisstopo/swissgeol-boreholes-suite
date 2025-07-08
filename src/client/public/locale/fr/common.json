@@ -92,7 +92,7 @@
   "conditions": "Conditions de la nappe phréatique",
   "confirm": "Confirmer",
   "confirmRemoveRoles": "Voulez-vous supprimer tous les rôles de l'utilisateur \"{{name}}\" dans le groupe de travail \"{{workgroupName}}\" ?",
-  "consistance": "Cohérence",
+  "consistance": "Consistance",
   "coordinates": "Coordonnées",
   "coordinatesNotFound": "Aucune coordonnée n'a été trouvée",
   "copiedToClipboard": "Copié dans le presse-papiers",

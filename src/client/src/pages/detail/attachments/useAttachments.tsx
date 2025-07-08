@@ -154,7 +154,7 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
       const editableContent = (
         <Stack direction="row" alignItems="center" justifyContent="flex-start" width="100%" pl={1.25}>
           <Checkbox
-            checked={params.row.public}
+            checked={updatedRows.get(params.id)?.public ?? params.value ?? false}
             onChange={event => togglePublicValueForRow(params.id, event.target.checked)}
           />
         </Stack>
@@ -162,7 +162,7 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
 
       return editingEnabled ? editableContent : readonlyContent;
     },
-    [editingEnabled, togglePublicValueForRow],
+    [editingEnabled, togglePublicValueForRow, updatedRows],
   );
 
   useEffect(() => {
