@@ -7,7 +7,7 @@
 - Removed description quality of lithological descriptions and facies descriptions.
 
 ### Fixed
-- Fixed bug where the pagination was not displayed on the last page of the borehole table.
+- The pagination was not displayed on the last page of the borehole table.
 - Fixed bug where public checkbox state was reset when adding a new attachment (e.g. photo, profile, document) to a borehole.
 - The axis labels on top view geometry chart were switched and the ticks did not include any decimals.
 
