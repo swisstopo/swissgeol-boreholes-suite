@@ -8,7 +8,7 @@ import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { usersQueryKey, useUserMutations, useUsers } from "../../../api/user.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { useDeleteUserPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
-import { AdministationTableWrapper } from "./administationTableWrapper.tsx";
+import { AdministrationTableWrapper } from "./administrationTableWrapper.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
@@ -136,7 +136,7 @@ export const UserAdministration: FC = () => {
 
   if (!users) return;
   return (
-    <AdministationTableWrapper>
+    <AdministrationTableWrapper>
       <Table<User>
         rows={users}
         columns={columns}
@@ -147,6 +147,6 @@ export const UserAdministration: FC = () => {
         onSortModelChange={setUserTableSortModel}
         dataCy={"users-table"}
       />
-    </AdministationTableWrapper>
+    </AdministrationTableWrapper>
   );
 };

@@ -8,7 +8,7 @@ import { useUsers } from "../../../api/user.ts";
 import { useWorkgroups } from "../../../api/workgroup.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { useDeleteWorkgroupPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
-import { AdministationTableWrapper } from "./administationTableWrapper.tsx";
+import { AdministrationTableWrapper } from "./administrationTableWrapper.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
@@ -65,7 +65,7 @@ export const WorkgroupAdministration: FC = () => {
   if (!workgroups) return;
 
   return (
-    <AdministationTableWrapper>
+    <AdministrationTableWrapper>
       <Table<Workgroup>
         rows={workgroups}
         columns={columns}
@@ -77,6 +77,6 @@ export const WorkgroupAdministration: FC = () => {
         dataCy={"workgroups-table"}
         rowAutoHeight={true}
       />
-    </AdministationTableWrapper>
+    </AdministrationTableWrapper>
   );
 };
