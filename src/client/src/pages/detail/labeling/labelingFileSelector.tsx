@@ -112,7 +112,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
             e.dataTransfer.dropEffect = "none";
           }}
           data-cy="labeling-file-selector">
-          <Typography variant="h6" sx={{ fontWeight: "700", color: "text.primary" }}>
+          <Typography variant="h6" color={"text.primary"} fontWeight={"700"}>
             {activeTab === PanelTab.profile ? t("profiles") : t("photos")}
           </Typography>
           <Stack gap={1}>
