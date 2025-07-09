@@ -78,7 +78,6 @@ export const CancelButton: FC<ButtonProps> = props => {
       label="cancel"
       variant={props.variant ?? "outlined"}
       color={props.color ?? "secondary"}
-      icon={<CloseIcon />}
     />
   );
 };

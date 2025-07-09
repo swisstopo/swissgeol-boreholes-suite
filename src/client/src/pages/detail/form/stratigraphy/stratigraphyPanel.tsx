@@ -12,6 +12,7 @@ import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { AddStratigraphyButton } from "./addStratigraphyButton.tsx";
 import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel.jsx";
+import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
 import { Lithology } from "./lithology/lithology.tsx";
 import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel.jsx";
 import { StratigraphyForm } from "./stratigraphyForm.tsx";
@@ -69,20 +70,22 @@ export const StratigraphyPanel: FC = () => {
     );
   } else if (stratigraphies.length === 0) {
     return (
-      <Card sx={{ p: 4 }}>
-        <Typography>{t("noStratigraphy")}</Typography>
-        {editingEnabled && (
-          <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-            <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />
-            <AddButton
-              label="extractStratigraphyFromProfile"
-              variant="contained"
-              disabled
-              onClick={extractStratigraphyFromProfile}
-            />
-          </Stack>
-        )}
-      </Card>
+      <>
+        <Card sx={{ p: 4 }}>
+          <Typography>{t("noStratigraphy")}</Typography>
+          {editingEnabled && (
+            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+              <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />
+              <AddButton
+                label="extractStratigraphyFromProfile"
+                variant="contained"
+                onClick={extractStratigraphyFromProfile}
+              />
+            </Stack>
+          )}
+        </Card>
+        <StratigraphyExtraction boreholeId={boreholeId} />
+      </>
     );
   }
 
@@ -137,6 +140,7 @@ export const StratigraphyPanel: FC = () => {
           )}
         </BoreholeTabContentBox>
       </Box>
+      <StratigraphyExtraction boreholeId={boreholeId} />
     </Box>
   );
 };

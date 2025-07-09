@@ -230,6 +230,8 @@
   "extendlower": "Extend lower layer to top",
   "extendupper": "Extend upper layer to bottom",
   "extractCoordinates": "Extract coordinates",
+  "extractStratigraphy_one": "Extract stratigraphy",
+  "extractStratigraphy_other": "Extracts stratigraphies",
   "extractStratigraphyFromProfile": "Extract stratigraphy from profile",
   "extractText": "Extract text",
   "facies_description": "Facies description",

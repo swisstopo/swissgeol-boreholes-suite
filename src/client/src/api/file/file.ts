@@ -4,7 +4,7 @@ import {
   ExtractionResponse,
 } from "../../pages/detail/labeling/labelingInterfaces.tsx";
 import { ApiError } from "../apiInterfaces.ts";
-import { fetchCreatePngs, fetchExtractData, fetchPageBoundingBoxes } from "../dataextraction";
+import { fetchCreatePngs, fetchExtractData, fetchExtractStratigraphy, fetchPageBoundingBoxes } from "../dataextraction";
 import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
 import { BoreholeFile, DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
@@ -132,4 +132,17 @@ export async function extractCoordinates(
 
 export async function extractText(request: ExtractionRequest, abortSignal: AbortSignal): Promise<ExtractionResponse> {
   return fetchAndHandleExtractionResponse(request, abortSignal, "noTextFound");
+}
+
+export async function extractStratigraphies(fileName: string, abortSignal: AbortSignal): Promise<any> {
+  const response = await fetchExtractStratigraphy(fileName, abortSignal);
+  if (response.ok) {
+    const responseObject = await response.json();
+    if (responseObject.detail) {
+      throw new ApiError(responseObject.detail, 500);
+    }
+    return responseObject;
+  } else {
+    throw new ApiError("errorDataExtraction", response.status);
+  }
 }

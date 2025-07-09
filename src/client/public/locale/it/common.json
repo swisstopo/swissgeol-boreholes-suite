@@ -230,6 +230,8 @@
   "extendlower": "Estendi lo strato inferiore fino alla superficie topografica",
   "extendupper": "Estendere lo strato superiore verso il basso",
   "extractCoordinates": "Estrarre le coordinate",
+  "extractStratigraphy_one": "Estrarre la stratigrafia",
+  "extractStratigraphy_other": "Estrarre le stratigrafie",
   "extractStratigraphyFromProfile": "Estrarre la stratigrafia dal profilo",
   "extractText": "Estrai testo",
   "facies_description": "Descrizione del facies geologico",
