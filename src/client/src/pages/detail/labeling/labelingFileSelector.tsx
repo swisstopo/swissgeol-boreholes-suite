@@ -3,7 +3,7 @@ import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AlertColor, Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/material";
-import { ChevronRight, File as FileIcon } from "lucide-react";
+import { ChevronRight, FileImageIcon, FileTextIcon } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import { maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { AddButton, BoreholesBaseButton } from "../../../components/buttons/buttons.tsx";
@@ -112,7 +112,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
             e.dataTransfer.dropEffect = "none";
           }}
           data-cy="labeling-file-selector">
-          <Typography variant="h6" sx={{ fontWeight: "700" }}>
+          <Typography variant="h6" sx={{ fontWeight: "700", color: "text.primary" }}>
             {activeTab === PanelTab.profile ? t("profiles") : t("photos")}
           </Typography>
           <Stack gap={1}>
@@ -124,7 +124,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
               files.map(file => (
                 <Button
                   key={file.name}
-                  startIcon={<FileIcon />}
+                  startIcon={activeTab === PanelTab.profile ? <FileTextIcon /> : <FileImageIcon />}
                   variant="outlined"
                   data-cy="labeling-file-selector-button"
                   sx={{ justifyContent: "start" }}
