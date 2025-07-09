@@ -3,7 +3,9 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 import { Workgroup } from "../../api-lib/ReduxStateInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
+import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsContext.tsx";
 import MainSideNav from "./layout/mainSideNav.tsx";
 import { MapView } from "./layout/mapView.tsx";
 import { SideDrawer } from "./layout/sideDrawer.tsx";
@@ -22,6 +24,7 @@ export const OverviewPage = () => {
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
+  const { analyticsId } = useContext<AnalyticsContextProps>(AnalyticsContext);
 
   const { showAlert } = useContext(AlertContext);
   const formMethods = useForm({ mode: "all", shouldUnregister: false });
@@ -63,28 +66,31 @@ export const OverviewPage = () => {
   }, [location.pathname]);
 
   return (
-    <LayoutBox>
-      <SidebarBox>
-        <MainSideNav
-          setWorkgroupId={setWorkgroupId}
-          setEnabledWorkgroups={setEnabledWorkgroups}
-          toggleDrawer={toggleSideDrawer}
-          drawerOpen={sideDrawerOpen}
-          setSideDrawerContent={setSideDrawerContent}
-          sideDrawerContent={sideDrawerContent}
-          errorsResponse={errorsResponse}
-          errorDialogOpen={errorDialogOpen}
-          setErrorDialogOpen={setErrorDialogOpen}
-        />
-      </SidebarBox>
-      <SideDrawer drawerOpen={sideDrawerOpen} drawerContent={sideDrawerComponentMap[sideDrawerContent]} />
-      <MainContentBox>
-        <MapView
-          displayErrorMessage={message => {
-            showAlert(message, "error");
-          }}
-        />
-      </MainContentBox>
-    </LayoutBox>
+    <>
+      <LayoutBox>
+        <SidebarBox>
+          <MainSideNav
+            setWorkgroupId={setWorkgroupId}
+            setEnabledWorkgroups={setEnabledWorkgroups}
+            toggleDrawer={toggleSideDrawer}
+            drawerOpen={sideDrawerOpen}
+            setSideDrawerContent={setSideDrawerContent}
+            sideDrawerContent={sideDrawerContent}
+            errorsResponse={errorsResponse}
+            errorDialogOpen={errorDialogOpen}
+            setErrorDialogOpen={setErrorDialogOpen}
+          />
+        </SidebarBox>
+        <SideDrawer drawerOpen={sideDrawerOpen} drawerContent={sideDrawerComponentMap[sideDrawerContent]} />
+        <MainContentBox>
+          <MapView
+            displayErrorMessage={message => {
+              showAlert(message, "error");
+            }}
+          />
+        </MainContentBox>
+      </LayoutBox>
+      {analyticsId && <GoogleAnalytics id={analyticsId} />}
+    </>
   );
 };
