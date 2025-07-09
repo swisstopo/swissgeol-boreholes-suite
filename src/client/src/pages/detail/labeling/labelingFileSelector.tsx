@@ -2,11 +2,11 @@ import { FC, useCallback, useContext, useRef } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AlertColor, Box, Button, CircularProgress, Divider, Stack, Typography } from "@mui/material";
-import { ChevronRight, File as FileIcon } from "lucide-react";
+import { AlertColor, Box, CircularProgress, Divider, Stack, Typography } from "@mui/material";
+import { ChevronRight, FileImageIcon, FileTextIcon } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import { maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
-import { AddButton, BoreholesBaseButton } from "../../../components/buttons/buttons.tsx";
+import { AddButton, BoreholesBaseButton, FileButton } from "../../../components/buttons/buttons.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../editStateContext.tsx";
 import { labelingFileFormat, PanelTab } from "./labelingInterfaces.tsx";
@@ -112,7 +112,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
             e.dataTransfer.dropEffect = "none";
           }}
           data-cy="labeling-file-selector">
-          <Typography variant="h6" sx={{ fontWeight: "700" }}>
+          <Typography variant="h6" color={"text.primary"} fontWeight={"700"}>
             {activeTab === PanelTab.profile ? t("profiles") : t("photos")}
           </Typography>
           <Stack gap={1}>
@@ -122,18 +122,12 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
               </Stack>
             ) : files && files.length > 0 ? (
               files.map(file => (
-                <Button
+                <FileButton
                   key={file.name}
-                  startIcon={<FileIcon />}
-                  variant="outlined"
-                  data-cy="labeling-file-selector-button"
-                  sx={{ justifyContent: "start" }}
-                  onClick={event => {
-                    event.stopPropagation();
-                    setSelectedFile(file);
-                  }}>
-                  <Box sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.name}</Box>
-                </Button>
+                  label={file.name}
+                  icon={activeTab === PanelTab.profile ? <FileTextIcon /> : <FileImageIcon />}
+                  onClick={() => setSelectedFile(file)}
+                />
               ))
             ) : (
               <Typography variant="body1">{getNoAttachmentText()}</Typography>
