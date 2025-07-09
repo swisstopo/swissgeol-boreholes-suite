@@ -5,7 +5,7 @@ import * as d3 from "d3";
 
 const GeometryChartNE = ({ data }) => {
   const size = 500;
-  const padding = { top: 35, right: 20, bottom: 40, left: 50 };
+  const padding = { top: 35, right: 20, bottom: 40, left: 60 };
   const margin = 2;
   const contentSize = size - 2 * margin - Math.max(padding.right + padding.left, padding.top + padding.bottom);
 
