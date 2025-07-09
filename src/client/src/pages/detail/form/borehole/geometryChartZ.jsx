@@ -60,7 +60,7 @@ export const GeometryChartZE = ({ data }) => {
 const GeometryChartZ = ({ data, paddingTop = 35 }) => {
   const width = 500;
   const height = 500;
-  const padding = { top: paddingTop, right: 20, bottom: 40, left: 50 };
+  const padding = { top: paddingTop, right: 20, bottom: 40, left: 60 };
   const margin = 2;
   const contentWidth = width - padding.left - padding.right - margin * 2;
   const contentHeight = height - padding.top - padding.bottom - margin * 2;
