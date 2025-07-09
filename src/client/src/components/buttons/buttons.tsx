@@ -1,7 +1,7 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import CloseIcon from "@mui/icons-material/Close";
-import { Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import { ArrowDownToLine, Check, ChevronLeft, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
 import { capitalizeFirstLetter } from "../../utils.ts";
@@ -136,5 +136,27 @@ export const ReturnButton: FC<{ onClick: () => void }> = ({ onClick }) => {
       }}>
       <ChevronLeft />
     </IconButton>
+  );
+};
+
+interface FileButtonProps {
+  label: string;
+  icon: ReactNode;
+  onClick: () => void;
+}
+
+export const FileButton: FC<FileButtonProps> = ({ label, icon, onClick }) => {
+  return (
+    <Button
+      startIcon={icon}
+      variant="outlined"
+      data-cy="file-button"
+      sx={{ justifyContent: "start", height: "36px" }}
+      onClick={event => {
+        event.stopPropagation();
+        onClick();
+      }}>
+      <Box sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{label}</Box>
+    </Button>
   );
 };
