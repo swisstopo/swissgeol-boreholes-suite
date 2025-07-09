@@ -129,6 +129,15 @@ export const Table = <T extends GridValidRowModel>({
 
   const actualRowCount = paginationMode === "server" ? (rowCount ?? rows?.length) : 0;
 
+  const loadingStyles = isLoading
+    ? {
+        "& .MuiDataGrid-overlay": {
+          padding: "12px",
+          alignItems: "flex-start",
+        },
+      }
+    : {};
+
   return (
     <DataGrid
       sx={{
@@ -136,6 +145,7 @@ export const Table = <T extends GridValidRowModel>({
         ...quickFilterStyles,
         ...disabledStyles,
         ...sx,
+        ...loadingStyles,
       }}
       data-cy={dataCy ?? "data-table"}
       columnHeaderHeight={44}
