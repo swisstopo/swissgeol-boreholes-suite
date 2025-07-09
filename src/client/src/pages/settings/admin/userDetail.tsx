@@ -170,7 +170,6 @@ export const UserDetail: FC = () => {
               onSortModelChange={setUserDetailTableSortModel}
               dataCy={"user-workgroups-table"}
               rowAutoHeight={true}
-              sx={{ border: "none" }}
             />
           )}
         </CardContent>

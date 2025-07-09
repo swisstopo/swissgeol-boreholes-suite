@@ -7,6 +7,7 @@ import { GridApiCommunity } from "@mui/x-data-grid/internals";
 import { RefObject } from "@mui/x-internals/types";
 import { Plus } from "lucide-react";
 import { DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
+import { FullPageAlignLeft } from "../../../components/styledComponents.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { TableSearchField } from "../../../components/table/tableSearchField.tsx";
 import { EditStateContext } from "../editStateContext.tsx";
@@ -81,22 +82,22 @@ export const AttachmentContent = <T extends GridValidRowModel>({
               <TableSearchField apiRef={apiRef} />
             </Box>
           </Stack>
-          <Box>
-            <Table
-              apiRef={apiRef}
-              isLoading={isLoading}
-              rows={rows ?? []}
-              columns={columns}
-              showQuickFilter={false}
-              checkboxSelection
-              rowSelectionModel={selectionModel}
-              onRowSelectionModelChange={setSelectionModel}
-              rowAutoHeight={true}
-            />
-          </Box>
+          <Table
+            apiRef={apiRef}
+            isLoading={isLoading}
+            rows={rows ?? []}
+            columns={columns}
+            showQuickFilter={false}
+            checkboxSelection
+            rowSelectionModel={selectionModel}
+            onRowSelectionModelChange={setSelectionModel}
+            rowAutoHeight={true}
+          />
         </Box>
       ) : (
-        <Typography>{t(noAttachmentsText)}</Typography>
+        <FullPageAlignLeft>
+          <Typography>{t(noAttachmentsText)}</Typography>
+        </FullPageAlignLeft>
       )}
     </>
   );
