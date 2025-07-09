@@ -1,9 +1,6 @@
 import { theme } from "../../../AppTheme.ts";
 
 export const quickFilterStyles = {
-  "& .MuiDataGrid-main": {
-    borderRadius: "4px",
-  },
   "& .MuiDataGrid-toolbarContainer .MuiDataGrid-toolbarQuickFilter .MuiInput-root": {
     outline: `1px solid ${theme.palette.secondary.main} !important`,
     padding: "8px 4px  4px 4px",
