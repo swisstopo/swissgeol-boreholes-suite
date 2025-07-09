@@ -284,10 +284,10 @@ describe("Test labeling tool", () => {
     reloadPanel();
     getElementByDataCy("labeling-file-selector").contains("Profiles").should("exist");
     getElementByDataCy("addfile-button").should("not.exist");
-    getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_1.pdf");
-    getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_3.pdf");
-    getElementByDataCy("labeling-file-selector-button").contains("WOLFHEART.pdf");
-    getElementByDataCy("labeling-file-selector-button").contains("borehole_attachment_3.pdf").click();
+    getElementByDataCy("file-button").contains("borehole_attachment_1.pdf");
+    getElementByDataCy("file-button").contains("borehole_attachment_3.pdf");
+    getElementByDataCy("file-button").contains("WOLFHEART.pdf");
+    getElementByDataCy("file-button").contains("borehole_attachment_3.pdf").click();
     waitForLabelingImageLoaded();
   });
 
