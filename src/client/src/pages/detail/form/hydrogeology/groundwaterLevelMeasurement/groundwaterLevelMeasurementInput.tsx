@@ -37,7 +37,7 @@ const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; 
       item={item}
       addData={addGroundwaterLevelMeasurement}
       updateData={updateGroundwaterLevelMeasurement}
-      promptLabel="groundwaterLevelMeasurement"
+      entityName="groundwaterLevelMeasurement"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <ObservationInput observation={item} showDepthInputs={false} />
       <FormContainer direction="row" sx={{ paddingTop: "10px" }}>
