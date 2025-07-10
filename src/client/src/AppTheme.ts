@@ -21,10 +21,13 @@ const themePalette: AppThemePalette = {
     main: "#596978",
   },
   success: {
-    main: "#059669",
+    main: "#047857",
   },
   warning: {
-    main: "#EA580C",
+    main: "#B45309",
+  },
+  info: {
+    main: "#46596B",
   },
   error: {
     main: "#99191E",
