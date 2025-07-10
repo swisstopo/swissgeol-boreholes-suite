@@ -47,7 +47,7 @@ export const WorkflowView = () => {
     return [
       {
         name: () => t("borehole"),
-        fields: [field("location"), field("section"), field("geometry")],
+        fields: [field("location"), field("general"), field("sections"), field("geometry")],
       },
       {
         name: () => t("stratigraphy"),

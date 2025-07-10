@@ -434,7 +434,7 @@ public class BdmsContext : DbContext
             .HasForeignKey(c => c.WorkflowId);
 
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Location).HasDefaultValue(false);
-        modelBuilder.Entity<TabStatus>().Property(ts => ts.Section).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Sections).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Geometry).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Lithology).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Chronostratigraphy).HasDefaultValue(false);

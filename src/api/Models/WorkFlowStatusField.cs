@@ -7,6 +7,7 @@ public enum WorkflowStatusField
 {
     Unknown = 0,
     Location,
+    General,
     Section,
     Geometry,
     Lithology,
