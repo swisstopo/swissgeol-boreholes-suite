@@ -23,10 +23,12 @@ export interface WorkflowChange extends Omit<SwissgeolWorkflowChange, "createdAt
   createdAt: LocalDate | string;
 }
 
+export type TabName = Exclude<keyof TabStatus, "id">;
+
 export interface TabStatus {
   id: number;
   general: boolean;
-  section: boolean;
+  sections: boolean;
   geometry: boolean;
   lithology: boolean;
   chronostratigraphy: boolean;

@@ -14,6 +14,7 @@ import { parseFloatWithThousandsSeparator } from "../../../../../components/form
 import { useFormDirtyChanges } from "../../../../../components/form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { useBlockNavigation } from "../../../../../hooks/useBlockNavigation.tsx";
+import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation";
@@ -25,6 +26,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const { t } = useTranslation();
   const { triggerReload } = useContext(DataCardContext);
   useBlockNavigation();
+  const resetTabStatus = useResetTabStatus(["hydrotest"]);
   const codelists = useCodelists();
   const reloadBoreholes = useReloadBoreholes();
 
@@ -45,6 +47,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const filteredTestKindDomains = useHydrotestDomains(hydrotestKindIds);
 
   const submitForm = (data: Hydrotest) => {
+    resetTabStatus();
     const hydrotest: Hydrotest = prepareFormDataForSubmit(data);
 
     if (item.id === 0) {

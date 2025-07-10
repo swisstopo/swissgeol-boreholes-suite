@@ -125,7 +125,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
   }, [fetchDepthTVD, topBedrockWeatheredMd]);
 
   return (
-    <BaseForm formMethods={formMethods} prepareDataForSubmit={prepareBoreholeDataForSubmit}>
+    <BaseForm formMethods={formMethods} prepareDataForSubmit={prepareBoreholeDataForSubmit} tabStatusToReset="general">
       <Stack>
         <FormSegmentBox>
           <FormContainer>

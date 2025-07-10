@@ -15,6 +15,7 @@ import { parseFloatWithThousandsSeparator } from "../../../../../components/form
 import { useFormDirtyChanges } from "../../../../../components/form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { useBlockNavigation } from "../../../../../hooks/useBlockNavigation.tsx";
+import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
@@ -33,6 +34,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   useBlockNavigation();
   const codelists = useCodelists();
   const reloadBoreholes = useReloadBoreholes();
+  const resetTabStatus = useResetTabStatus(["fieldMeasurement"]);
 
   const formMethods = useForm<FieldMeasurement>({
     mode: "all",
@@ -50,6 +52,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   const [units, setUnits] = useState<Record<number, string>>({});
 
   const submitForm = (data: FieldMeasurement) => {
+    resetTabStatus();
     data = prepareFormDataForSubmit(data);
     if (item.id === 0) {
       addFieldMeasurement({

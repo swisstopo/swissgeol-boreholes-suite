@@ -24,6 +24,7 @@ import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FormSelect } from "../../../../components/form/form";
 import { StackHalfWidth } from "../../../../components/styledComponents.ts";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.js";
 import { FileDropzone } from "../../attachments/fileDropzone.jsx";
 
 const GeometryImport = ({ boreholeId }) => {
@@ -33,6 +34,8 @@ const GeometryImport = ({ boreholeId }) => {
   const {
     set: { mutate: setBoreholeGeometry, isLoading: isUpdatingBoreholeGeometry },
   } = useBoreholeGeometryMutations();
+  const resetTabStatus = useResetTabStatus(["geometry"]);
+
   const { data } = useBoreholeGeometry(boreholeId);
   const [geometryFormats, setGeometryFormats] = useState([]);
 
@@ -130,7 +133,10 @@ const GeometryImport = ({ boreholeId }) => {
           <AddButton
             sx={{ marginLeft: "auto" }}
             label={data?.length > 0 ? "boreholeGeometryReplace" : "boreholeGeometryImport"}
-            onClick={formMethods.handleSubmit(uploadGeometryCSV)}
+            onClick={() => {
+              resetTabStatus();
+              formMethods.handleSubmit(uploadGeometryCSV);
+            }}
             disabled={watch?.geometryFile?.length === 0 || isUpdatingBoreholeGeometry}
             endIcon={isUpdatingBoreholeGeometry && <CircularProgress size="1em" sx={{ color: "currentColor" }} />}
           />
