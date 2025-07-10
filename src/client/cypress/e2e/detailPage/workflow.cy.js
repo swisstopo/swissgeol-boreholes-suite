@@ -227,4 +227,8 @@ describe("Tests the publication workflow.", () => {
       checkWorkflowChangeContent("Admin User", "Status von Reviewed zu Published geändert", "I published a borehole!");
     });
   });
+
+  it("Resets reviewed and published checkboxes when borehole tabs change", () => {
+    /// Todo add test
+  });
 });
