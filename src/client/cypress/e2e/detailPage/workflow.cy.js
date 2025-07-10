@@ -382,4 +382,8 @@ describe("Tests the publication workflow.", () => {
       getElementByDataCy("attachments-menu-item").should("have.attr", "reviewed", "partial");
     });
   });
+
+  it("Resets reviewed and published checkboxes when borehole tabs change", () => {
+    /// Todo add test
+  });
 });
