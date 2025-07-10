@@ -14,6 +14,7 @@ export { WorkflowStatus };
 
 export interface WorkflowV2 extends GenericWorkflow {
   id: number;
+  boreholeId: number;
   reviewedTabs: TabStatus;
   publishedTabs: TabStatus;
 }
@@ -43,14 +44,15 @@ export interface TabStatus {
 }
 
 export interface WorkflowChangeRequest {
-  boreholeId: string;
-  comment: string | null;
-  newAssigneeId: number | undefined;
+  boreholeId: number;
   newStatus: WorkflowStatus;
+  comment?: string | null;
+  newAssigneeId?: number;
+  hasRequestedChanges?: boolean;
 }
 
 export interface TabStatusChangeRequest {
-  boreholeId: string;
+  boreholeId: number;
   tab: TabType;
   changes: Partial<GenericWorkflowSelection>;
 }
@@ -90,7 +92,7 @@ export const useWorkflow = (boreholeId: number): UseQueryResult<WorkflowV2> => {
 export const useWorkflowMutation = () => {
   const queryClient = useQueryClient();
 
-  function invalidateBoreholeAndWorkflowQueries(boreholeId: string) {
+  function invalidateBoreholeAndWorkflowQueries(boreholeId: number) {
     queryClient.invalidateQueries({ queryKey: [workflowQueryKey, Number(boreholeId)] });
     queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
   }

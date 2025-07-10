@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Chip, ChipOwnProps, Stack } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
+import { useCurrentUser } from "../../api/user.ts";
 import { theme } from "../../AppTheme.ts";
 import { EditButton } from "../../components/buttons/buttons.tsx";
-import { WorkflowV2 } from "./form/workflow/workflow.ts";
+import { useWorkflowMutation, WorkflowChangeRequest, WorkflowV2 } from "./form/workflow/workflow.ts";
 
 interface StatusBadgesProps {
   workflow?: WorkflowV2 | null;
@@ -11,9 +12,21 @@ interface StatusBadgesProps {
 
 export const StatusBadges = ({ workflow }: StatusBadgesProps) => {
   const { t } = useTranslation();
+  const { data: currentUser } = useCurrentUser();
+  const {
+    updateWorkflow: { mutate: updateWorkflow },
+  } = useWorkflowMutation();
 
-  console.log(workflow);
   if (!workflow?.status) return null;
+
+  const startReview = () => {
+    const workflowChangeRequest: WorkflowChangeRequest = {
+      boreholeId: workflow.boreholeId,
+      newAssigneeId: currentUser?.id,
+      newStatus: WorkflowStatus.InReview,
+    };
+    updateWorkflow(workflowChangeRequest);
+  };
 
   const colorStatusMap: Record<WorkflowStatus, ChipOwnProps["color"]> = {
     [WorkflowStatus.Draft]: "info",
@@ -41,7 +54,7 @@ export const StatusBadges = ({ workflow }: StatusBadgesProps) => {
   );
 
   const ChangesRequestedChip = (
-    <Chip data-cy="workflow-changes-requested-chip" label={"changesRequested"} color={"error"} />
+    <Chip data-cy="workflow-changes-requested-chip" label={t("changesRequested")} color={"error"} />
   );
 
   // Chip additionally displays reviewed status if workflow is published
@@ -51,26 +64,20 @@ export const StatusBadges = ({ workflow }: StatusBadgesProps) => {
 
   const isDraft = workflow.status === WorkflowStatus.Draft;
   const isPublished = workflow.status === WorkflowStatus.Published;
+  const isCurrentUserAssignee = workflow.assignee?.id === currentUser?.id;
+  const showReviewButton = isDraft && isCurrentUserAssignee;
 
   return (
     <Stack
       direction="row"
       gap={1}
       alignItems="center"
-      sx={{ p: 1, borderRadius: 1, border: isDraft ? `1px solid ${theme.palette.border.light}` : "none" }}>
+      sx={{ p: 1, borderRadius: 1, border: showReviewButton ? `1px solid ${theme.palette.border.light}` : "none" }}>
       {isPublished && ReviewdChip}
       {StatusChip}
       {!isPublished && AssigneeChip}
       {workflow.hasRequestedChanges && ChangesRequestedChip}
-      {isDraft && (
-        <EditButton
-          label={"review"}
-          variant={"outlined"}
-          onClick={() => {
-            console.log("review");
-          }}
-        />
-      )}
+      {showReviewButton && <EditButton label={"review"} variant={"outlined"} onClick={startReview} />}
     </Stack>
   );
 };

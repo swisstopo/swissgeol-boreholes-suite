@@ -72,6 +72,7 @@
   "casingInnerDiameter": "Innendurchmesser [mm]",
   "casingName": "Name Verrohrung",
   "casingOuterDiameter": "Aussendurchmesser [mm]",
+  "changesRequested": "Änderungen angefordert",
   "changingCoordinateSystemResetsCoordinates": "Das Ändern des räumlichen Bezugssystems setzt die Koordinaten zurück. Wollen Sie fortfahren?",
   "changingVerticalReferenceSystemResetsValues": "Das Ändern des vertikalen Bezugssystems setzt die Tiefenwerte zurück. Möchten Sie fortfahren?",
   "chronostratigraphy": "Chronostratigraphie",

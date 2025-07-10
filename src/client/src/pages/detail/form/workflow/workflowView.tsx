@@ -96,9 +96,10 @@ export const WorkflowView = () => {
     const changes: WorkflowChange = changeEvent.detail.changes;
     const assigneeId = changes.toAssignee?.id ?? changes.toAssignee?.id;
     const workflowChangeRequest: WorkflowChangeRequest = {
-      boreholeId: boreholeId,
+      boreholeId: parseInt(boreholeId, 10),
       comment: changes.comment,
       newAssigneeId: assigneeId != undefined ? Number(assigneeId) : undefined,
+      hasRequestedChanges: changes.hasRequestedChanges,
       newStatus: changes.toStatus,
     };
     updateWorkflow(workflowChangeRequest);
@@ -109,7 +110,7 @@ export const WorkflowView = () => {
     tab: TabType,
   ) => {
     const tabStatusChangeRequest: TabStatusChangeRequest = {
-      boreholeId: boreholeId,
+      boreholeId: parseInt(boreholeId, 10),
       tab: tab,
       changes: changeEvent.detail.changes,
     };

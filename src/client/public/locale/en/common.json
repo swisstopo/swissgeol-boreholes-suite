@@ -72,6 +72,7 @@
   "casingInnerDiameter": "Inner diameter [mm]",
   "casingName": "Casing name",
   "casingOuterDiameter": "Outer diameter [mm]",
+  "changesRequested": "Changes requested",
   "changingCoordinateSystemResetsCoordinates": "Changing the coordinate system will reset the coordinates. Do you want to continue?",
   "changingVerticalReferenceSystemResetsValues": "Changing the vertical reference system will reset the depth values. Do you want to continue?",
   "chronostratigraphy": "Chronostratigraphy",
