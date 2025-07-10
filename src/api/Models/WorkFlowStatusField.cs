@@ -8,7 +8,7 @@ public enum WorkflowStatusField
     Unknown = 0,
     Location,
     General,
-    Section,
+    Sections,
     Geometry,
     Lithology,
     Chronostratigraphy,
