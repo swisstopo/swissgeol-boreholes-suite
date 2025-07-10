@@ -24,7 +24,7 @@ const WaterIngressInput: FC<{ item: WaterIngress; parentId: number }> = ({ item,
       item={item}
       addData={addWaterIngress}
       updateData={updateWaterIngress}
-      promptLabel="waterIngress"
+      entityName="waterIngress"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <ObservationInput observation={item} />
       <FormContainer direction="row" sx={{ paddingTop: "10px" }}>
