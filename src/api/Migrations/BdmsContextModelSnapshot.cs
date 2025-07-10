@@ -1934,7 +1934,7 @@ namespace BDMS.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("chronostratigraphy");
 
-                    b.Property<bool>("Document")
+                    b.Property<bool>("Documents")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
@@ -1946,19 +1946,13 @@ namespace BDMS.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("field_measurement");
 
-                    b.Property<bool>("General")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("general");
-
                     b.Property<bool>("Geometry")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("geometry");
 
-                    b.Property<bool>("Groundwater")
+                    b.Property<bool>("GroundwaterLevelMeasurement")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
@@ -1988,13 +1982,19 @@ namespace BDMS.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("lithostratigraphy");
 
-                    b.Property<bool>("Photo")
+                    b.Property<bool>("Location")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("general");
+
+                    b.Property<bool>("Photos")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("photo");
 
-                    b.Property<bool>("Profile")
+                    b.Property<bool>("Profiles")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
@@ -2138,6 +2138,8 @@ namespace BDMS.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("users", "bdms");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "creator");
                 });
 
             modelBuilder.Entity("BDMS.Models.UserWorkgroupRole", b =>
@@ -2223,7 +2225,8 @@ namespace BDMS.Migrations
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasAnnotation("Relational:JsonPropertyName", "createdAt");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("integer")
