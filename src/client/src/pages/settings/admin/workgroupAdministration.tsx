@@ -8,6 +8,7 @@ import { useUsers } from "../../../api/user.ts";
 import { useWorkgroups } from "../../../api/workgroup.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { useDeleteWorkgroupPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
+import { AdministrationTableWrapper } from "./administrationTableWrapper.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
@@ -64,17 +65,18 @@ export const WorkgroupAdministration: FC = () => {
   if (!workgroups) return;
 
   return (
-    <Table<Workgroup>
-      rows={workgroups}
-      columns={columns}
-      onRowClick={handleRowClick}
-      filterModel={filterModel}
-      onFilterModelChange={handleFilterModelChange}
-      sortModel={workgroupTableSortModel}
-      onSortModelChange={setworkgroupTableSortModel}
-      dataCy={"workgroups-table"}
-      rowAutoHeight={true}
-      sx={{ border: "none" }}
-    />
+    <AdministrationTableWrapper>
+      <Table<Workgroup>
+        rows={workgroups}
+        columns={columns}
+        onRowClick={handleRowClick}
+        filterModel={filterModel}
+        onFilterModelChange={handleFilterModelChange}
+        sortModel={workgroupTableSortModel}
+        onSortModelChange={setworkgroupTableSortModel}
+        dataCy={"workgroups-table"}
+        rowAutoHeight={true}
+      />
+    </AdministrationTableWrapper>
   );
 };

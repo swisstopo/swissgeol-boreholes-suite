@@ -606,7 +606,7 @@ export const theme = createTheme({
         root: {
           fontSize: "16px",
           cursor: "pointer",
-          borderColor: themePalette.border.darker,
+          border: "none",
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: themePalette.border.light,
           },
@@ -620,16 +620,34 @@ export const theme = createTheme({
           "& .MuiDataGrid-columnHeaderCheckbox .MuiDataGrid-columnHeaderTitleContainer": {
             justifyContent: "center",
           },
+          "& .MuiDataGrid-main": {
+            borderTopLeftRadius: "4px",
+            borderTopRightRadius: "4px",
+          },
           "& .MuiDataGrid-cell": {
             minHeight: "44px",
             display: "flex",
+            borderTop: "none",
+            borderBottom: `1px solid ${themePalette.border.darker}`,
             alignItems: "center",
-            borderColor: themePalette.border.darker,
-
             "& .MuiInputBase-input, .MuiTypography-root": {
               fontSize: "16px",
               fontWeight: 400,
             },
+          },
+          "& .MuiDataGrid-topContainer": {
+            borderBottom: `2px solid ${themePalette.border.darker}`,
+          },
+          "& .MuiDataGrid-row": {
+            borderLeft: `1px solid ${themePalette.border.darker}`,
+            borderRight: `1px solid ${themePalette.border.darker}`,
+            borderTop: "none",
+          },
+          "& .MuiDataGrid-scrollbarFiller": {
+            backgroundColor: themePalette.border.light,
+          },
+          "& .MuiDataGrid-scrollbar--vertical": {
+            borderTop: `2px solid ${themePalette.border.darker}`,
           },
           "& .MuiDataGrid-row--dynamicHeight": {
             "& .MuiDataGrid-cell": {
@@ -660,6 +678,7 @@ export const theme = createTheme({
             paddingBottom: "20px !important",
             width: "1000px",
             flexDirection: "row-reverse",
+            borderRadius: "4px",
             p: 1,
           },
           "& .MuiTablePagination-toolbar p": {

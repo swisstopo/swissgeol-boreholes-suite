@@ -6,6 +6,7 @@ import { Role } from "../../api/apiInterfaces.ts";
 import { useBorehole } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
+import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";
 import { FullPageCentered, LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsContext.tsx";
@@ -24,7 +25,7 @@ export const DetailPage: FC = () => {
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
   const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);
   const { showSaveBar } = useContext<SaveContextProps>(SaveContext);
-  const { sendAnalyticsEvent } = useContext<AnalyticsContextProps>(AnalyticsContext);
+  const { analyticsId } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const { id } = useRequiredParams<{ id: string }>();
   const { data: borehole, isLoading } = useBorehole(parseInt(id));
   const { data: currentUser } = useCurrentUser();
@@ -32,10 +33,6 @@ export const DetailPage: FC = () => {
   useEffect(() => {
     setEditingEnabled(borehole?.locked !== null && borehole?.lockedById === currentUser?.id);
   }, [borehole?.locked, borehole?.lockedById, setEditingEnabled, currentUser?.id]);
-
-  useEffect(() => {
-    sendAnalyticsEvent();
-  }, [sendAnalyticsEvent]);
 
   useEffect(() => {
     if (borehole?.locked && borehole?.lockedById !== currentUser?.id) {
@@ -109,6 +106,7 @@ export const DetailPage: FC = () => {
           </Stack>
         </Suspense>
       </LayoutBox>
+      {analyticsId && <GoogleAnalytics id={analyticsId} />}
     </>
   );
 };

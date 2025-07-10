@@ -8,6 +8,7 @@ import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
 import { usersQueryKey, useUserMutations, useUsers } from "../../../api/user.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { useDeleteUserPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
+import { AdministrationTableWrapper } from "./administrationTableWrapper.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
@@ -135,16 +136,17 @@ export const UserAdministration: FC = () => {
 
   if (!users) return;
   return (
-    <Table<User>
-      rows={users}
-      columns={columns}
-      onRowClick={handleRowClick}
-      filterModel={filterModel}
-      onFilterModelChange={handleFilterModelChange}
-      sortModel={userTableSortModel}
-      onSortModelChange={setUserTableSortModel}
-      dataCy={"users-table"}
-      sx={{ border: "none" }}
-    />
+    <AdministrationTableWrapper>
+      <Table<User>
+        rows={users}
+        columns={columns}
+        onRowClick={handleRowClick}
+        filterModel={filterModel}
+        onFilterModelChange={handleFilterModelChange}
+        sortModel={userTableSortModel}
+        onSortModelChange={setUserTableSortModel}
+        dataCy={"users-table"}
+      />
+    </AdministrationTableWrapper>
   );
 };
