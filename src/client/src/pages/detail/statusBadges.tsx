@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { Chip, ChipOwnProps, Stack } from "@mui/material";
+import { Chip, Stack } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import { useCurrentUser } from "../../api/user.ts";
 import { theme } from "../../AppTheme.ts";
 import { EditButton } from "../../components/buttons/buttons.tsx";
+import { colorStatusMap } from "./form/workflow/statusColorMap.ts";
 import { useWorkflowMutation, WorkflowChangeRequest, WorkflowV2 } from "./form/workflow/workflow.ts";
 
 interface StatusBadgesProps {
@@ -26,13 +27,6 @@ export const StatusBadges = ({ workflow }: StatusBadgesProps) => {
       newStatus: WorkflowStatus.InReview,
     };
     updateWorkflow(workflowChangeRequest);
-  };
-
-  const colorStatusMap: Record<WorkflowStatus, ChipOwnProps["color"]> = {
-    [WorkflowStatus.Draft]: "info",
-    [WorkflowStatus.InReview]: "warning",
-    [WorkflowStatus.Reviewed]: "success",
-    [WorkflowStatus.Published]: "success",
   };
 
   const StatusChip = (

@@ -1,3 +1,6 @@
+import { WorkflowStatus } from "@swissgeol/ui-core";
+import { colorStatusMap } from "../../../src/pages/detail/form/workflow/statusColorMap.ts";
+import { capitalizeFirstLetter } from "../../../src/utils.js";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   assertEmptyRequestReviewModal,
@@ -58,10 +61,9 @@ describe("Tests the publication workflow.", () => {
     assertWorkflowSteps("Review");
   }
 
-  it("Can request review from users with controller privilege", () => {
+  it("Can request review  from users with controller privilege", () => {
     createBorehole({
-      "extended.original_name": "Flinchy clown fish",
-      "custom.alternate_name": "Flinchy clown fish",
+      originalName: "Flinchy clown fish",
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
@@ -128,8 +130,7 @@ describe("Tests the publication workflow.", () => {
 
   it("Can update tab status on review tab", () => {
     createBorehole({
-      "extended.original_name": "Zoo director",
-      "custom.alternate_name": "Zoo director",
+      originalName: "Zoo director",
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
@@ -178,8 +179,7 @@ describe("Tests the publication workflow.", () => {
 
   it("Can update tab status on publish tab and publish a borehole", () => {
     createBorehole({
-      "extended.original_name": "Waterpark",
-      "custom.alternate_name": "Waterpark",
+      originalName: "Waterpark",
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
@@ -225,6 +225,85 @@ describe("Tests the publication workflow.", () => {
 
       cy.get("sgc-tab").contains("Verlauf").click();
       checkWorkflowChangeContent("Admin User", "Status von Reviewed zu Published geändert", "I published a borehole!");
+    });
+  });
+
+  function AssertHeaderChips(status, assignee, hasRequestedChanges = false) {
+    // Special case where enum value does not match translation
+    if (status === WorkflowStatus.InReview) {
+      getElementByDataCy("workflow-status-chip").should("contain", "Review");
+    } else {
+      getElementByDataCy("workflow-status-chip").should("contain", status);
+    }
+    getElementByDataCy("workflow-status-chip").should(
+      "have.class",
+      `MuiChip-color${capitalizeFirstLetter(colorStatusMap[status])}`,
+    );
+    if (assignee != null) {
+      getElementByDataCy("workflow-assignee-chip").should("contain", assignee);
+    }
+    if (hasRequestedChanges) {
+      getElementByDataCy("workflow-changes-requested-chip").should("be.visible");
+    }
+  }
+
+  function ClickInteractionAndAssignNewUser(buttonLabel, newAssignee) {
+    clickSgcButtonWithContent(buttonLabel);
+    cy.get(".select-trigger").click();
+    cy.get(".select-option").contains(newAssignee).click();
+    cy.get("sgc-modal-wrapper").find("sgc-button").contains(buttonLabel).click();
+    cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+  }
+
+  function AssignNewUser(newAssignee) {
+    ClickInteractionAndAssignNewUser("Neue Person zuweisen", newAssignee);
+  }
+
+  it("Displays correct badges in detail header", () => {
+    createBorehole({
+      originalName: "Waterslide",
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      assertWorkflowSteps(WorkflowStatus.Draft);
+      AssertHeaderChips(WorkflowStatus.Draft, "free");
+      AssignNewUser("editor user");
+      AssertHeaderChips(WorkflowStatus.Draft, "editor user");
+      getElementByDataCy("review-button").should("not.exist");
+      AssignNewUser("Admin User");
+      AssertHeaderChips(WorkflowStatus.Draft, "Admin User");
+      // Button to start review is only visible if current user is the assignee
+      getElementByDataCy("review-button").should("exist");
+      getElementByDataCy("review-button").click();
+      AssertHeaderChips(WorkflowStatus.InReview, "Admin User");
+      assertWorkflowSteps("Review");
+
+      ClickInteractionAndAssignNewUser("Änderungen anfordern", "controller user");
+      AssertHeaderChips(WorkflowStatus.Draft, "controller user", true);
+
+      ClickInteractionAndAssignNewUser("Review anfordern", "publisher user");
+      AssertHeaderChips(WorkflowStatus.InReview, "publisher user");
+
+      clickSgcButtonWithContent("Review abschliessen");
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review abschliessen").click();
+      AssertHeaderChips(WorkflowStatus.Reviewed, "free");
+      assertWorkflowSteps("Reviewed");
+
+      clickSgcButtonWithContent("Publish");
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Publish").click();
+      AssertHeaderChips(WorkflowStatus.Published);
+      getElementByDataCy("workflow-additional-reviewed-chip").should("be.visible");
+
+      clickSgcButtonWithContent("Status manuell ändern");
+      cy.get(".select-trigger").eq(0).click();
+      cy.get(".select-option").contains(WorkflowStatus.Draft).click();
+      cy.get(".select-trigger").eq(1).click();
+      cy.get(".select-option").contains("Admin User").click();
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Status manuell ändern").click();
+      cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+
+      AssertHeaderChips(WorkflowStatus.Draft, "Admin User");
+      getElementByDataCy("review-button").should("exist");
     });
   });
 });
