@@ -115,7 +115,7 @@ export const WorkflowView = () => {
     };
     updateTabStatus(tabStatusChangeRequest);
   };
-  console.log(workflow);
+
   return (
     <Box sx={{ minHeight: "100dvh" }}>
       <SgcWorkflow
