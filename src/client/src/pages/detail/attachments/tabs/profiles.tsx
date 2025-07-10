@@ -77,6 +77,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     deleteAttachments,
     exportAttachments,
     updateAttachments,
+    tabStatusToReset: "profiles",
   });
 
   const updateDescription = useCallback(

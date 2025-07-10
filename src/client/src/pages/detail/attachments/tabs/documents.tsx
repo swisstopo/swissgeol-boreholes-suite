@@ -66,6 +66,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
       deleteAttachments,
       exportAttachments,
       updateAttachments,
+      tabStatusToReset: "documents",
     });
 
   const updateRow = useCallback(

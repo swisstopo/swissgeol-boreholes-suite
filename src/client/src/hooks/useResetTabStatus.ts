@@ -1,10 +1,6 @@
+import { GenericWorkflowSelection } from "@swissgeol/ui-core";
 import { useBorehole } from "../api/borehole.ts";
-import {
-  TabName,
-  TabStatusChangeRequest,
-  TabType,
-  useWorkflowMutation,
-} from "../pages/detail/form/workflow/workflow.ts";
+import { TabName, TabType, useWorkflowMutation } from "../pages/detail/form/workflow/workflow.ts";
 import { useRequiredParams } from "./useRequiredParams.ts";
 
 export const useResetTabStatus = (tabsToReset: TabName[]) => {
@@ -16,19 +12,29 @@ export const useResetTabStatus = (tabsToReset: TabName[]) => {
 
   return () => {
     const anyTabIsReviewd = tabsToReset.some(tab => borehole.workflow?.reviewedTabs[tab] === true);
+    const anyTabIsPublished = tabsToReset.some(tab => borehole.workflow?.publishedTabs[tab] === true);
 
-    if (!anyTabIsReviewd) return;
+    if (!anyTabIsReviewd && !anyTabIsPublished) return;
 
-    const changes: Record<TabName, boolean> = {};
+    const changes: Partial<GenericWorkflowSelection> = {};
     tabsToReset.forEach(tab => {
       changes[tab] = false;
     });
 
-    const tabStatusChangeRequest: TabStatusChangeRequest = {
-      boreholeId: borehole.id,
-      tab: TabType.Reviewed,
-      changes,
-    };
-    updateTabStatus(tabStatusChangeRequest);
+    if (anyTabIsReviewd) {
+      updateTabStatus({
+        boreholeId: borehole.id,
+        tab: TabType.Reviewed,
+        changes,
+      });
+    }
+
+    if (anyTabIsPublished) {
+      updateTabStatus({
+        boreholeId: borehole.id,
+        tab: TabType.Published,
+        changes,
+      });
+    }
   };
 };
