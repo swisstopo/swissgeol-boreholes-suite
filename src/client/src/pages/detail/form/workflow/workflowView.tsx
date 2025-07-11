@@ -94,7 +94,7 @@ export const WorkflowView = () => {
 
   const handleWorkflowChange = (changeEvent: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => {
     const changes: WorkflowChange = changeEvent.detail.changes;
-    const assigneeId = changes.toAssignee?.id ?? changes.toAssignee?.id;
+    const assigneeId = changes.toAssignee?.id;
     const workflowChangeRequest: WorkflowChangeRequest = {
       boreholeId: parseInt(boreholeId, 10),
       comment: changes.comment,
