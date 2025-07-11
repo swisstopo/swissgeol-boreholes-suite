@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
-import { WorkflowStatus } from "@swissgeol/ui-core";
 import { BoreholeV2, useBoreholeMutations } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
@@ -20,6 +19,7 @@ import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { formatDate } from "../../utils.ts";
 import { EditStateContext } from "./editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
+import { StatusBadges } from "./statusBadges.tsx";
 
 interface DetailHeaderProps {
   editableByCurrentUser: boolean;
@@ -117,28 +117,14 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
   const workflows = borehole?.workflows.sort((a, b) => new Date(b.finished).getTime() - new Date(a.finished).getTime());
   const currentWorkflow = workflows?.find(workflow => workflow.finished == null) || workflows[0];
   const hasDevFlag = searchParams.get("dev") === "true";
-  const statusLabel = hasDevFlag
-    ? t(`statuses.${borehole.workflow?.status}`)
-    : t(`status${currentWorkflow?.role.toLowerCase()}`);
+  const statusLabel = t(`status${currentWorkflow?.role.toLowerCase()}`);
+  const statusColor = currentWorkflow?.finished != null ? "success" : "warning";
+  const statusIcon = currentWorkflow?.finished != null ? <Check /> : <div />;
 
-  const statusColor = hasDevFlag
-    ? borehole.workflow?.status === WorkflowStatus.Published
-      ? "success"
-      : "warning"
-    : currentWorkflow?.finished != null
-      ? "success"
-      : "warning";
-
-  const statusIcon = hasDevFlag ? (
-    borehole.workflow?.status === WorkflowStatus.Published ? (
-      <Check />
-    ) : (
-      <div />
-    )
-  ) : currentWorkflow?.finished != null ? (
-    <Check />
+  const statusChips = hasDevFlag ? (
+    <StatusBadges workflow={borehole.workflow} />
   ) : (
-    <div />
+    <Chip data-cy="workflow-status-chip" label={statusLabel} color={statusColor} icon={statusIcon} />
   );
 
   return (
@@ -153,7 +139,7 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
             </Typography>
           )}
         </Stack>
-        {workflows && <Chip data-cy="workflow-status-chip" label={statusLabel} color={statusColor} icon={statusIcon} />}
+        {statusChips}
       </Stack>
       <Stack direction="row" data-cy="detail-header" gap={2}>
         <ExportButton

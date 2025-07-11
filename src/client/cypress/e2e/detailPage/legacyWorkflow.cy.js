@@ -37,9 +37,9 @@ describe("Tests the legacy publication workflow.", () => {
       goToDetailRouteAndAcceptTerms(`/${id}/status`);
     });
 
-    const orange = "rgb(234, 88, 12)";
+    const orange = "rgb(180, 83, 9)";
     const red = "rgb(153, 25, 30)";
-    const green = "rgb(5, 150, 105)";
+    const green = "rgb(4, 120, 87)";
 
     startBoreholeEditing();
     verifyStatusTextsInHeader(["edit"]);

@@ -107,6 +107,7 @@ public class WorkflowController : ControllerBase
         // Update the workflow state
         workflow.Status = change.ToStatus;
         workflow.AssigneeId = change.AssigneeId;
+        workflow.HasRequestedChanges = workflowChangeRequest.HasRequestedChanges ?? workflow.HasRequestedChanges;
 
         context.WorkflowChanges.Add(change);
 

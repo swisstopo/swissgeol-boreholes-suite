@@ -43,6 +43,7 @@ public class BdmsContext : DbContext
         .Include(b => b.Workflow).ThenInclude(w => w.Changes)
         .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
+        .Include(b => b.Workflow).ThenInclude(w => w.Assignee)
         .Include(b => b.Workflows)
         .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
         .Include(b => b.Photos)
