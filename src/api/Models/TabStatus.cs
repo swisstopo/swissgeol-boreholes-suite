@@ -15,16 +15,22 @@ public class TabStatus : IIdentifyable
     public int Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the status of the general info and location of the borehole.
+    /// Gets or sets the status of the location tab of the borehole.
+    /// </summary>
+    [Column("location")]
+    public bool Location { get; set; }
+
+    /// <summary>
+    /// Gets or sets the status of the general tab of the borehole.
     /// </summary>
     [Column("general")]
-    public bool Location { get; set; }
+    public bool General { get; set; }
 
     /// <summary>
     /// Gets or sets the status of the sections tab of the borehole.
     /// </summary>
     [Column("section")]
-    public bool Section { get; set; }
+    public bool Sections { get; set; }
 
     /// <summary>
     /// Gets or sets the status of the geometry tab of the borehole.
