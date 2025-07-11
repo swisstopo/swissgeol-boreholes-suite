@@ -29,4 +29,9 @@ public class WorkflowChangeRequest
     /// Gets or sets the identifier of the new user assigned to the workflow.
     /// </summary>
     public int? NewAssigneeId { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the workflow has requested changes.
+    /// </summary>
+    public bool? HasRequestedChanges { get; set; }
 }

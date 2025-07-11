@@ -40,7 +40,14 @@ export const AddButton: FC<ButtonProps> = props => {
 };
 
 export const EditButton: FC<ButtonProps> = props => {
-  return <BoreholesBaseButton {...props} label="edit" variant={props.variant ?? "contained"} icon={<Pencil />} />;
+  return (
+    <BoreholesBaseButton
+      {...props}
+      label={props.label ?? "edit"}
+      variant={props.variant ?? "contained"}
+      icon={<Pencil />}
+    />
+  );
 };
 
 export const BulkEditButton: FC<ButtonProps> = props => {
