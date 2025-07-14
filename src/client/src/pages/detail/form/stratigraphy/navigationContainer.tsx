@@ -142,7 +142,7 @@ const NavigationContainer: FC<NavigationContainerProps> = ({ renderItems, sx }) 
 
   const containerRef = useRef<HTMLDivElement>(null);
   useResizeObserver(containerRef as RefObject<HTMLElement>, entry =>
-    setNavState(prevState => prevState.setHeight(entry.contentRect.height))
+    setNavState(prevState => prevState.setHeight(entry.contentRect.height)),
   );
 
   const handleOnWheel = (event: React.WheelEvent<HTMLElement>) => {

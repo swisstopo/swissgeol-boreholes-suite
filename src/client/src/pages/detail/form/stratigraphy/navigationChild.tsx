@@ -27,7 +27,9 @@ const NavigationChild: FC<NavigationChildProps> = ({
   const [id] = useState<string>(Math.random().toString(36).substring(2, 10));
 
   const headerRef = useRef<HTMLDivElement>(null);
-  useResizeObserver(headerRef as RefObject<HTMLElement>, entry => setNavState(prev => prev.setHeaderHeight(id, entry.contentRect.height)));
+  useResizeObserver(headerRef as RefObject<HTMLElement>, entry =>
+    setNavState(prev => prev.setHeaderHeight(id, entry.contentRect.height)),
+  );
 
   return (
     <Box sx={{ flex: 1, ...sx, display: "flex", flexDirection: "column" }}>
