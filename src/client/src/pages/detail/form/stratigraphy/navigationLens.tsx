@@ -1,13 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import type { DraggableData, DraggableEvent } from "react-draggable";
 import Draggable from "react-draggable";
 import { NumericFormat } from "react-number-format";
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Button, Stack, SxProps, Theme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import useResizeObserver from "@react-hook/resize-observer";
 import { theme } from "../../../../AppTheme.ts";
 import { clamp } from "./clamp.js";
-import { NavState } from "./navigationContainer.jsx";
+import { NavState } from "./navigationContainer";
 
 const BackgroundShade = styled(Box)(() => ({
   position: "absolute",
@@ -25,13 +26,22 @@ const LensDepthLabel = styled(NumericFormat)(() => ({
   color: "black",
 }));
 
-const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
-  const [backgroundNavState, setBackgroundNavState] = useState(navState);
-  const [cursor, setCursor] = useState("grab");
+interface NavigationLensProps {
+  navState: NavState;
+  setNavState: Dispatch<SetStateAction<NavState>>;
+  sx?: SxProps<Theme>;
+  renderBackground: (navState: NavState, setNavState: Dispatch<SetStateAction<NavState>>) => ReactNode;
+}
 
-  const contentRef = useRef(null);
-  const lensRef = useRef(null);
-  useResizeObserver(contentRef, entry => setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)));
+const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState, sx, renderBackground }) => {
+  const [backgroundNavState, setBackgroundNavState] = useState<NavState>(navState);
+  const [cursor, setCursor] = useState<string>("grab");
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const lensRef = useRef<HTMLElement>(null!);
+  useResizeObserver(contentRef as RefObject<HTMLElement>, entry =>
+    setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)),
+  );
 
   useEffect(() => {
     setBackgroundNavState(
@@ -43,14 +53,14 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
     );
   }, [navState.contentHeights]);
 
-  const handleDrag = (e, data) => {
+  const handleDrag = (_e: DraggableEvent, data: DraggableData) => {
     const newValue = data.y / backgroundNavState.pixelPerMeter;
     if (!isNaN(newValue) && newValue !== navState?.lensStart) {
       setNavState(prevState => prevState.setLensStart(newValue));
     }
   };
 
-  const handleMove = pageFraction =>
+  const handleMove = (pageFraction: number) =>
     setNavState(prev =>
       prev.setLensStart(clamp(prev.lensStart + prev.lensSize * pageFraction, 0, prev.maxContent - prev.lensSize)),
     );
@@ -77,10 +87,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
         {renderBackground(backgroundNavState, setBackgroundNavState)}
         <BackgroundShade
           sx={{
-            bottom:
-              (navState.maxContent - navState.lensStart) * backgroundNavState.pixelPerMeter -
-              2 + // a bit less to prevent visual glitches
-              "px",
+            bottom: (navState.maxContent - navState.lensStart) * backgroundNavState.pixelPerMeter - 2 + "px",
           }}
         />
         <BackgroundShade

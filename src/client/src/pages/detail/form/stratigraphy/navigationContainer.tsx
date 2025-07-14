@@ -1,20 +1,37 @@
-import { useEffect, useRef, useState } from "react";
-import { Stack } from "@mui/material";
+import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import { Stack, SxProps } from "@mui/material";
 import useResizeObserver from "@react-hook/resize-observer";
 import { clamp } from "./clamp.js";
 
-const getMax = obj => {
+const getMax = (obj: Record<string, number>): number => {
   const childValues = Object.values(obj);
   return childValues.length === 0 ? 0 : Math.max(...childValues);
 };
 
-export class NavState {
-  #maxContent;
-  #maxHeader;
-  #pxpm;
-  #lensEnd;
+type ContentHeights = Record<string, number>;
+type HeaderHeights = Record<string, number>;
 
-  constructor(navState) {
+interface NavStateProps {
+  lensStart?: number;
+  rawLensSize?: number;
+  height?: number;
+  contentHeights?: ContentHeights;
+  headerHeights?: HeaderHeights;
+}
+
+export class NavState {
+  #maxContent: number;
+  #maxHeader: number;
+  #pxpm: number;
+  #lensEnd: number;
+
+  lensStart: number;
+  rawLensSize: number;
+  height: number;
+  contentHeights: ContentHeights;
+  headerHeights: HeaderHeights;
+
+  constructor(navState?: NavStateProps) {
     // At which depth in meter does the visible part begin
     this.lensStart = navState?.lensStart ?? 0;
 
@@ -40,24 +57,24 @@ export class NavState {
     Object.freeze(this);
   }
 
-  setLensStart(newLensStart) {
+  setLensStart(newLensStart: number): NavState {
     return new NavState({ ...this, lensStart: newLensStart });
   }
 
-  setLensSize(newLensSize) {
+  setLensSize(newLensSize: number): NavState {
     return new NavState({ ...this, rawLensSize: newLensSize });
   }
 
-  setHeight(newHeight) {
+  setHeight(newHeight: number): NavState {
     return new NavState({ ...this, height: newHeight });
   }
 
-  setContentHeightFromLayers(name, layers) {
+  setContentHeightFromLayers(name: string, layers: { toDepth: number }[]): NavState {
     const height = !layers ? 0 : layers.reduce((a, x) => (x.toDepth > a ? x.toDepth : a), 0);
     return this.setContentHeight(name, height);
   }
 
-  setContentHeight(name, height) {
+  setContentHeight(name: string, height: number): NavState {
     const temp = new NavState({
       ...this,
       contentHeights: { ...this.contentHeights, [name]: height },
@@ -78,50 +95,57 @@ export class NavState {
     }
   }
 
-  setHeaderHeight(name, height) {
+  setHeaderHeight(name: string, height: number): NavState {
     return new NavState({
       ...this,
       headerHeights: { ...this.headerHeights, [name]: height },
     });
   }
 
-  get maxContent() {
+  get maxContent(): number {
     return this.#maxContent;
   }
 
-  get maxHeader() {
+  get maxHeader(): number {
     return this.#maxHeader;
   }
 
-  get pixelPerMeter() {
+  get pixelPerMeter(): number {
     return this.#pxpm;
   }
 
-  get lensSize() {
+  get lensSize(): number {
     return this.rawLensSize === 0 ? this.maxContent : this.rawLensSize;
   }
 
-  get lensEnd() {
+  get lensEnd(): number {
     return this.#lensEnd;
   }
 }
 
-const preventVerticalScroll = event => {
+const preventVerticalScroll = (event: WheelEvent) => {
   if (event.deltaY !== 0) {
     event.preventDefault();
   }
 };
 
+interface NavigationContainerProps {
+  renderItems: (navState: NavState, setNavState: Dispatch<SetStateAction<NavState>>) => ReactNode;
+  sx?: SxProps;
+}
+
 /**
  * This component holds the NavState and distributes it to its children through the renderItems callback.
  */
-const NavigationContainer = ({ renderItems, sx }) => {
-  const [navState, setNavState] = useState(new NavState());
+const NavigationContainer: FC<NavigationContainerProps> = ({ renderItems, sx }) => {
+  const [navState, setNavState] = useState<NavState>(new NavState());
 
-  const containerRef = useRef(null);
-  useResizeObserver(containerRef, entry => setNavState(prevState => prevState.setHeight(entry.contentRect.height)));
+  const containerRef = useRef<HTMLDivElement>(null);
+  useResizeObserver(containerRef as RefObject<HTMLElement>, entry =>
+    setNavState(prevState => prevState.setHeight(entry.contentRect.height))
+  );
 
-  const handleOnWheel = event => {
+  const handleOnWheel = (event: React.WheelEvent<HTMLElement>) => {
     event.stopPropagation();
 
     // calculate new lensSize
