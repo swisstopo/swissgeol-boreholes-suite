@@ -9,7 +9,7 @@ import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { useCodelists } from "../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.tsx";
-import { FormCheckbox, FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
