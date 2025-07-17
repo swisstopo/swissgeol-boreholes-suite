@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Divider, IconButton } from "@mui/material";
+import { Checkbox, Divider, FormControlLabel, IconButton } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { addSection, updateSection } from "../../../../api/fetchApiV2.ts";
@@ -20,7 +20,7 @@ import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
   const { data: codelists } = useCodelists();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   useBlockNavigation();
 
   const sectionElementDefaults = {
@@ -210,11 +210,15 @@ const SectionInput = ({ item, parentId }) => {
                       />
                     </FormContainer>
                     <FormContainer direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-                      <FormCheckbox
-                        fieldName="overcoring"
-                        label="overcoring"
-                        checked={index < fields.length - 1}
-                        disabled={true}
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            data-cy={"overcoring-formCheckbox"}
+                            checked={index < fields.length - 1}
+                            disabled={true}
+                          />
+                        }
+                        label={t("overcoring")}
                       />
                       {index === fields.length - 1 && (
                         <AddButton

@@ -1,12 +1,21 @@
-import { FC, useCallback, useContext, useEffect } from "react";
+import { FC, useCallback, useContext, useEffect, useMemo } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Box, Card, Chip, CircularProgress, Stack, Typography } from "@mui/material";
+import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
-import { useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
+import { Stratigraphy, useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AddButton, BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons.tsx";
+import { FormValueType } from "../../../../components/form/form.ts";
+import { FormCheckbox } from "../../../../components/form/formCheckbox.tsx";
+import { FormContainer } from "../../../../components/form/formContainer.tsx";
+import { FormInput } from "../../../../components/form/formInput.tsx";
+import { ensureDatetime } from "../../../../components/form/formUtils.ts";
+import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.tsx";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
@@ -29,13 +38,29 @@ export const StratigraphyPanel: FC = () => {
   const {
     add: { mutateAsync: addStratigraphyAsync },
     copy: { mutate: copyStratigraphy },
+    update: { mutate: updateStratigraphy },
     delete: { mutate: deleteStratigraphy },
   } = useStratigraphyMutations();
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
-  const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } =
-    useContext<SaveContextProps>(SaveContext);
+  const { registerSaveHandler, registerResetHandler, unMount } = useContext<SaveContextProps>(SaveContext);
   useBlockNavigation();
+  const formMethods = useForm<Stratigraphy>({ mode: "all" });
+  const { formState, getValues } = formMethods;
+  useFormDirtyChanges({ formState });
+  const { showPrompt } = useContext(PromptContext);
+
+  const selectedTabIndex = useMemo(
+    () => stratigraphies?.findIndex(x => x.id === Number(stratigraphyId)) ?? -1,
+    [stratigraphies, stratigraphyId],
+  );
+
+  const hasSelectedTab = selectedTabIndex !== -1;
+
+  const selectedStratigraphy = useMemo(
+    () => (hasSelectedTab ? stratigraphies?.[selectedTabIndex] : undefined),
+    [hasSelectedTab, stratigraphies, selectedTabIndex],
+  );
 
   const navigateToStratigraphy = useCallback(
     (stratigraphyId: number, replace = false) => {
@@ -55,18 +80,41 @@ export const StratigraphyPanel: FC = () => {
 
   const extractStratigraphyFromProfile = useCallback(() => {}, []);
 
-  const resetWithoutSave = useCallback(async () => {
-    // TODO: Implement a way to reset the form without saving changes
-  }, []);
+  const resetWithoutSave = useCallback(() => {
+    if (selectedStratigraphy) {
+      formMethods.reset({
+        ...selectedStratigraphy,
+        date: selectedStratigraphy.date?.toString().slice(0, 10) ?? "",
+      });
+    }
+  }, [formMethods, selectedStratigraphy]);
 
   const onSave = useCallback(async () => {
-    // TODO: Implement the save logic for the stratigraphy form
-  }, []);
+    if (selectedStratigraphy) {
+      const values = getValues();
+      values.date = values.date ? ensureDatetime(values.date.toString()) : "";
+      await updateStratigraphy({
+        ...selectedStratigraphy,
+        ...values,
+      });
+    }
+  }, [getValues, selectedStratigraphy, updateStratigraphy]);
 
-  useEffect(() => {
-    //TODO: Implement a way to mark the form as changed when any field is modified
-    markAsChanged(false);
-  }, [markAsChanged]);
+  const showDeletePrompt = useCallback(() => {
+    if (!selectedStratigraphy) return;
+
+    showPrompt("deleteMessage", [
+      {
+        label: "cancel",
+      },
+      {
+        label: "delete",
+        icon: <Trash2 />,
+        variant: "contained",
+        action: () => deleteStratigraphy(selectedStratigraphy),
+      },
+    ]);
+  }, [deleteStratigraphy, selectedStratigraphy, showPrompt]);
 
   useEffect(() => {
     registerSaveHandler(onSave);
@@ -77,10 +125,6 @@ export const StratigraphyPanel: FC = () => {
     };
   }, [registerResetHandler, registerSaveHandler, resetWithoutSave, onSave, unMount]);
 
-  const selectedTabIndex = stratigraphies?.findIndex(x => x.id === Number(stratigraphyId)) ?? -1;
-  const hasSelectedTab = selectedTabIndex !== -1;
-  const selectedStratigraphy = hasSelectedTab ? stratigraphies?.[selectedTabIndex] : undefined;
-
   useEffect(() => {
     // select stratigraphy if none is selected
     if (stratigraphies && !hasSelectedTab) {
@@ -90,6 +134,10 @@ export const StratigraphyPanel: FC = () => {
       }
     }
   }, [navigateToStratigraphy, stratigraphies, hasSelectedTab]);
+
+  useEffect(() => {
+    resetWithoutSave();
+  }, [resetWithoutSave]);
 
   if (!stratigraphies) {
     return (
@@ -139,7 +187,7 @@ export const StratigraphyPanel: FC = () => {
               <Stack direction="row" gap={0.75}>
                 {editingEnabled ? (
                   <>
-                    <DeleteButton onClick={() => deleteStratigraphy(selectedStratigraphy)} />
+                    <DeleteButton onClick={showDeletePrompt} />
                     <BoreholesButton
                       variant="outlined"
                       color={"secondary"}
@@ -192,7 +240,7 @@ export const StratigraphyPanel: FC = () => {
               <Stack direction="row" gap={0.75} justifyContent="flex-end">
                 {editingEnabled ? (
                   <>
-                    <DeleteButton onClick={() => deleteStratigraphy(selectedStratigraphy)} />
+                    <DeleteButton onClick={showDeletePrompt} />
                     <BoreholesButton
                       variant="outlined"
                       color={"secondary"}
@@ -208,6 +256,31 @@ export const StratigraphyPanel: FC = () => {
                   </>
                 )}
               </Stack>
+            )}
+            {editingEnabled && (
+              <FormProvider {...formMethods}>
+                <FormContainer direction={"row"}>
+                  <FormInput
+                    fieldName={"name"}
+                    label={"stratigraphy_name"}
+                    value={selectedStratigraphy.name}
+                    type={FormValueType.Text}
+                  />
+                  <FormInput
+                    fieldName={"date"}
+                    label="date"
+                    value={selectedStratigraphy.date?.toString().slice(0, 10) ?? ""}
+                    type={FormValueType.Date}
+                  />
+                  {stratigraphies.length > 1 && (
+                    <FormCheckbox
+                      fieldName={"isPrimary"}
+                      label={"mainStratigraphy"}
+                      disabled={selectedStratigraphy.isPrimary}
+                    />
+                  )}
+                </FormContainer>
+              </FormProvider>
             )}
             <Box sx={{ position: "relative" }}>
               <TabPanel
