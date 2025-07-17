@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useSelectedUser, useUserMutations } from "../../api/user.ts";
 import { useSelectedWorkgroup, useWorkgroupMutations } from "../../api/workgroup.ts";
+import { theme } from "../../AppTheme.ts";
 import { DeleteButton, ReturnButton } from "../../components/buttons/buttons.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { useDeleteUserPrompts, useDeleteWorkgroupPrompts } from "../../hooks/useDeleteEntityPrompts.tsx";
@@ -92,7 +93,7 @@ export const SettingsHeader: FC = () => {
         onChange={(event: MouseEvent<HTMLElement>, isDisabled: boolean) => {
           handleInactiveToggleChange(isDisabled);
         }}
-        sx={{ boxShadow: "none", backgroundColor: "#F1F3F5" }}>
+        sx={{ boxShadow: "none", backgroundColor: theme.palette.background.header }}>
         <ToggleButton sx={{ m: "6px" }} value={true} data-cy="inactivate-button">
           {t("inactive")}
         </ToggleButton>
