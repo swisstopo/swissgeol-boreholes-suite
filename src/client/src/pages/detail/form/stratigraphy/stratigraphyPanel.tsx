@@ -155,6 +155,7 @@ export const StratigraphyPanel: FC = () => {
             <BoreholesButton
               label="extractStratigraphyFromProfile"
               variant="contained"
+              disabled
               icon={<ExtractAiIcon />}
               onClick={extractStratigraphyFromProfile}
             />
