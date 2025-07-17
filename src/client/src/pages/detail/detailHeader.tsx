@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
 import { BoreholeV2, useBoreholeMutations } from "../../api/borehole.ts";
@@ -16,6 +16,7 @@ import {
 import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
+import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { formatDate } from "../../utils.ts";
 import { EditStateContext } from "./editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
@@ -28,7 +29,7 @@ interface DetailHeaderProps {
 
 const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const { data: currentUser } = useCurrentUser();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -98,7 +99,7 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
 
   const handleDelete = () => {
     deleteBorehole(borehole.id);
-    navigate("/");
+    navigateTo({ path: "/" });
   };
 
   const handleReturnClick = () => {
@@ -109,7 +110,7 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
         stopEditing();
       }
     }
-    navigate("/");
+    navigateTo({ path: "/" });
   };
 
   if (!borehole) return;

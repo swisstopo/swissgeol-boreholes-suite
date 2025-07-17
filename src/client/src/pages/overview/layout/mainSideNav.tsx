@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { Badge, Stack } from "@mui/material";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
@@ -9,6 +8,7 @@ import UploadIcon from "../../../assets/icons/upload.svg?react";
 import { ReduxRootState, User, Workgroup } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
+import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
@@ -37,7 +37,7 @@ const MainSideNav = ({
   errorDialogOpen,
   setErrorDialogOpen,
 }: MainSideNavProps) => {
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const menuRef = useRef(null);
   const { t } = useTranslation();
   const auth = useAuth();
@@ -147,7 +147,7 @@ const MainSideNav = ({
           data-cy="settings-button"
           icon={<Settings />}
           label={t("header_settings")}
-          onClick={() => navigate(`/setting`)}
+          onClick={() => navigateTo({ path: `/setting` })}
         />
         {!auth.anonymousModeEnabled && (
           <NavButton

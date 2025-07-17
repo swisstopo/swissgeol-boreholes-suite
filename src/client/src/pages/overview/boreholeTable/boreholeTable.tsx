@@ -12,7 +12,6 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { Box } from "@mui/system";
 import {
@@ -38,6 +37,7 @@ import { useCodelists } from "../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../components/form/formUtils.ts";
 import { FullPageCentered } from "../../../components/styledComponents.ts";
 import { Table } from "../../../components/table/table.tsx";
+import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 
 export interface BoreholeTableProps {
@@ -66,7 +66,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   isBusy,
 }: BoreholeTableProps) => {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const codelists = useCodelists();
   const apiRef = useGridApiRef();
   const auth = useAuth();
@@ -241,7 +241,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   }
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
-    navigate(`/${params.row.id}/location`);
+    navigateTo({ path: `/${params.row.id}/location` });
   };
 
   const getRowClassName = (params: GridRowParams) => {

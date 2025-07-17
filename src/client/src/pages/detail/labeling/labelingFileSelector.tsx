@@ -1,12 +1,13 @@
 import { FC, useCallback, useContext, useRef } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { AlertColor, Box, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { ChevronRight, FileImageIcon, FileTextIcon } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import { maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { AddButton, BoreholesBaseButton, FileButton } from "../../../components/buttons/buttons.tsx";
+import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../editStateContext.tsx";
 import { labelingFileFormat, PanelTab } from "./labelingInterfaces.tsx";
@@ -34,7 +35,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { editingEnabled } = useContext(EditStateContext);
   const { id } = useRequiredParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
 
   const isOnAttachmentsPage = location.pathname === `/${id}/attachments`;
@@ -148,7 +149,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
                   variant="contained"
                   color="primary"
                   label="managePhotos"
-                  onClick={() => navigate(`/${id}/attachments#photos`)}
+                  onClick={() => navigateTo({ path: `/${id}/attachments`, hash: `#${PanelTab.photo}` })}
                   icon={<ChevronRight />}
                   dataCy="labeling-file-selector-manage-photos"
                 />
