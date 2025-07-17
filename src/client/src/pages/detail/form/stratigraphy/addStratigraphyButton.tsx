@@ -2,6 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { SxProps } from "@mui/material";
 import { Plus } from "lucide-react";
+//import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
 import { ButtonSelect } from "../../../../components/buttons/buttonSelect";
 
 interface AddStratigraphyButtonProps {
@@ -28,8 +29,7 @@ export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
       variant="contained"
       items={[
         { key: Actions.addEmpty, value: t("addEmptyStratigraphy"), startIcon: <Plus /> },
-        // extract from profile is not implemented yet
-        // { key: Actions.extract, value: t("extractStratigraphyFromProfile"), startIcon: <Sparkles /> },
+        // { key: Actions.extract, value: t("extractStratigraphyFromProfile"), startIcon: <ExtractAiIcon /> },
       ]}
       selectedItem={{ key: "new", value: t("newStratigraphy") }}
       onItemSelected={item => {

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Box, Card, Chip, CircularProgress, Stack, Typography } from "@mui/material";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
+import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
 import { useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AddButton, BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons.tsx";
@@ -103,10 +104,10 @@ export const StratigraphyPanel: FC = () => {
         {editingEnabled && (
           <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
             <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />
-            <AddButton
+            <BoreholesButton
               label="extractStratigraphyFromProfile"
               variant="contained"
-              disabled
+              icon={<ExtractAiIcon />}
               onClick={extractStratigraphyFromProfile}
             />
           </Stack>
