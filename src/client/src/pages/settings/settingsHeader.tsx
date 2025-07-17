@@ -77,12 +77,6 @@ export const SettingsHeader: FC = () => {
     else return null;
   };
 
-  const getReturnRoute = () => {
-    if (userId) return "/setting#users";
-    else if (workgroupId) return "/setting#workgroups";
-    else return "/";
-  };
-
   const getInactiveToggle = () => {
     const selectedEntity = selectedUser ?? selectedWorkgroup;
     if (!selectedEntity) return null;
@@ -114,7 +108,9 @@ export const SettingsHeader: FC = () => {
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={3}>
         <ReturnButton
           onClick={() => {
-            navigateTo({ path: getReturnRoute() });
+            if (userId) navigateTo({ path: "/setting", hash: "users" });
+            else if (workgroupId) navigateTo({ path: "/setting", hash: "workgroups" });
+            else navigateTo({ path: "/" });
           }}
         />
         <Typography variant="h2">{getTitle()}</Typography>
