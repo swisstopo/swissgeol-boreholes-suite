@@ -19,8 +19,7 @@ export const useBoreholesNavigate = () => {
       replace?: boolean;
     }) => {
       const pathname = path || window.location.pathname;
-      let hashValue = hash || window.location.hash;
-      hashValue = hashValue.split("?")[0];
+      const hashValue = hash?.split("?")[0];
       let searchParams = search;
       if (!searchParams) {
         const locationSearch = window.location.search;

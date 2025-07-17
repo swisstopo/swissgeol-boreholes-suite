@@ -149,7 +149,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
                   variant="contained"
                   color="primary"
                   label="managePhotos"
-                  onClick={() => navigateTo({ path: `/${id}/attachments`, hash: `#${PanelTab.photo}` })}
+                  onClick={() => navigateTo({ path: `/${id}/attachments`, hash: `photos` })}
                   icon={<ChevronRight />}
                   dataCy="labeling-file-selector-manage-photos"
                 />
