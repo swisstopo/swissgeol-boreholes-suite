@@ -92,7 +92,7 @@ export const StratigraphyPanel: FC = () => {
   const onSave = useCallback(async () => {
     if (selectedStratigraphy) {
       const values = getValues();
-      values.date = values.date ? ensureDatetime(values.date.toString()) : "";
+      values.date = values.date ? ensureDatetime(values.date.toString()) : null;
       await updateStratigraphy({
         ...selectedStratigraphy,
         ...values,
