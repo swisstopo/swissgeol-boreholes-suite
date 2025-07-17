@@ -81,8 +81,7 @@ const Completion = () => {
     const last = locationSnippets[locationSnippets.length - 1];
     const secondLast = locationSnippets[locationSnippets.length - 2];
     const isCompletion = last === "completion";
-    const isCompletionId =
-      secondLast === "completion" && /^\d+$/.test(last) && location.hash === "";
+    const isCompletionId = secondLast === "completion" && /^\d+$/.test(last) && location.hash === "";
     navigateTo({
       path: newLocation,
       hash: hash,
