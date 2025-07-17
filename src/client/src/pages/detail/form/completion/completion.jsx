@@ -60,15 +60,6 @@ const Completion = () => {
   const updateHistory = selectedId => {
     let newLocation = "/" + boreholeId + "/completion/" + selectedId;
     let hash;
-    console.log(
-      "updateHistory",
-      newLocation,
-      selectedId,
-      completionId,
-      location.hash,
-      location.hash !== "",
-      selectedId.toString() === completionId,
-    );
     if (selectedId !== "new") {
       if (location.hash !== "" && selectedId.toString() === completionId) {
         hash = location.hash;
