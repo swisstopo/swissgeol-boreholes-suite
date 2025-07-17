@@ -1,17 +1,18 @@
 import { FC, MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useSelectedUser, useUserMutations } from "../../api/user.ts";
 import { useSelectedWorkgroup, useWorkgroupMutations } from "../../api/workgroup.ts";
 import { theme } from "../../AppTheme.ts";
 import { DeleteButton, ReturnButton } from "../../components/buttons/buttons.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
+import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useDeleteUserPrompts, useDeleteWorkgroupPrompts } from "../../hooks/useDeleteEntityPrompts.tsx";
 import { capitalizeFirstLetter } from "../../utils.ts";
 
 export const SettingsHeader: FC = () => {
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const { showDeleteUserWarning } = useDeleteUserPrompts();
@@ -114,7 +115,7 @@ export const SettingsHeader: FC = () => {
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={3}>
         <ReturnButton
           onClick={() => {
-            navigate(getReturnRoute());
+            navigateTo({ path: getReturnRoute() });
           }}
         />
         <Typography variant="h2">{getTitle()}</Typography>

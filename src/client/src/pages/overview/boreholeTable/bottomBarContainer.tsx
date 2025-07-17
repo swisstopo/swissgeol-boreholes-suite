@@ -1,10 +1,10 @@
 import React, { useCallback, useContext, useLayoutEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import { deleteBoreholes } from "../../../api-lib";
 import { Boreholes, Filters, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { copyBorehole } from "../../../api/borehole.ts";
+import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { BoreholeTable } from "./boreholeTable.tsx";
@@ -42,7 +42,7 @@ const BottomBarContainer = ({
   setIsExporting,
 }: BottomBarContainerProps) => {
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const { featureIds } = useContext(FilterContext);
   const { bottomDrawerOpen } = useContext(OverViewContext);
   const [workgroupId, setWorkgroupId] = useState<number | null>(
@@ -80,8 +80,8 @@ const BottomBarContainer = ({
     setIsBusy(true);
     const newBoreholeId = await copyBorehole(selectionModel, workgroupId);
     setIsBusy(false);
-    navigate(`/${newBoreholeId}`);
-  }, [navigate, selectionModel, workgroupId]);
+    navigateTo({ path: `/${newBoreholeId}` });
+  }, [navigateTo, selectionModel, workgroupId]);
 
   const onDeleteMultiple = useCallback(async () => {
     setIsBusy(true);

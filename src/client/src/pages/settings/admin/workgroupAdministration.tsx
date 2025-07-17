@@ -1,12 +1,12 @@
 import { FC, MouseEvent, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { Chip, Stack } from "@mui/material";
 import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Role, Workgroup } from "../../../api/apiInterfaces.ts";
 import { useUsers } from "../../../api/user.ts";
 import { useWorkgroups } from "../../../api/workgroup.ts";
 import { Table } from "../../../components/table/table.tsx";
+import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { useDeleteWorkgroupPrompts } from "../../../hooks/useDeleteEntityPrompts.tsx";
 import { AdministrationTableWrapper } from "./administrationTableWrapper.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
@@ -14,7 +14,7 @@ import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext
 
 export const WorkgroupAdministration: FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const { data: workgroups } = useWorkgroups();
   const { data: users } = useUsers();
   const { workgroupTableSortModel, setworkgroupTableSortModel } = useContext(WorkgroupAdministrationContext);
@@ -59,7 +59,7 @@ export const WorkgroupAdministration: FC = () => {
   ];
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
-    navigate(`/setting/workgroup/${params.row.id}`);
+    navigateTo({ path: `/setting/workgroup/${params.row.id}` });
   };
 
   if (!workgroups) return;

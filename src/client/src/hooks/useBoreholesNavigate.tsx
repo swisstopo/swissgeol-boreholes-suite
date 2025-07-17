@@ -36,41 +36,19 @@ export const useBoreholesNavigate = () => {
       const preserveSearchValue = preserveSearch ?? true;
       const replaceValue = replace ?? false;
 
-      console.log(
-        "Navigating to:",
-        path,
-        pathname,
-        hash,
-        hashValue,
-        search,
-        searchParams,
-        preserveSearchValue,
-        replaceValue,
-      );
-
       if (
         path !== window.location.pathname ||
         hash !== window.location.hash.split("?")[0] ||
         (search !== searchParams && !preserveSearchValue)
       ) {
-        if (searchParams) {
-          navigate(
-            {
-              pathname,
-              search: searchParams.toString(),
-              hash: hash,
-            },
-            { replace: replaceValue },
-          );
-        } else {
-          navigate(
-            {
-              pathname,
-              hash: hash,
-            },
-            { replace: replaceValue },
-          );
-        }
+        navigate(
+          {
+            pathname,
+            search: searchParams,
+            hash: hashValue,
+          },
+          { replace: replaceValue },
+        );
       }
     },
     [navigate],
