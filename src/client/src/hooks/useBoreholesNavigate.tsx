@@ -20,8 +20,10 @@ export const useBoreholesNavigate = () => {
     }) => {
       const pathname = path || window.location.pathname;
       const hashValue = hash?.split("?")[0];
+      const preserveSearchValue = preserveSearch ?? true;
+      const replaceValue = replace ?? false;
       let searchParams = search;
-      if (!searchParams) {
+      if (!searchParams && preserveSearchValue) {
         const locationSearch = window.location.search;
         const searchFromHash = window.location.hash.split("?")[1];
 
@@ -32,13 +34,10 @@ export const useBoreholesNavigate = () => {
         }
       }
 
-      const preserveSearchValue = preserveSearch ?? true;
-      const replaceValue = replace ?? false;
-
       if (
         path !== window.location.pathname ||
         hash !== window.location.hash.split("?")[0] ||
-        (search !== searchParams && !preserveSearchValue)
+        searchParams !== window.location.search
       ) {
         navigate(
           {
