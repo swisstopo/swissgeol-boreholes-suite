@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { useReloadBoreholes } from "../../../../api/borehole.ts";
@@ -16,6 +16,7 @@ import { DataCardExternalContext } from "../../../../components/dataCard/dataCar
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
+import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.js";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import CompletionContent from "./completionContent.jsx";
@@ -28,7 +29,7 @@ const Completion = () => {
   const { editingEnabled } = useContext(EditStateContext);
   const { id: boreholeId } = useRequiredParams();
   const { completionId } = useParams();
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const mounted = useRef(false);
@@ -58,21 +59,22 @@ const Completion = () => {
 
   const updateHistory = selectedId => {
     let newLocation = "/" + boreholeId + "/completion/" + selectedId;
+    let hash = undefined;
     if (selectedId !== "new") {
       if (location.hash !== "" && selectedId.toString() === completionId) {
-        newLocation += location.hash;
+        hash = location.hash;
       } else {
-        newLocation += "#casing";
+        hash = "#casing";
       }
     }
 
     if (location.pathname + location.hash !== newLocation) {
       const locationSnippets = location.pathname.split("/");
-      if (locationSnippets[locationSnippets.length - 1] === "completion") {
-        navigate(newLocation, { replace: true });
-      } else {
-        navigate(newLocation);
-      }
+      navigateTo({
+        path: newLocation,
+        hash: hash,
+        replace: locationSnippets[locationSnippets.length - 1] === "completion",
+      });
     }
   };
 
@@ -136,7 +138,7 @@ const Completion = () => {
         } else if (state.selected.id === 0) {
           const newCompletionList = state.displayed.slice(0, -1);
           if (newCompletionList.length === 0) {
-            navigate("/" + boreholeId + "/completion");
+            navigateTo({ path: "/" + boreholeId + "/completion" });
             resetState();
           } else {
             updateHistory(newCompletionList[state.switchTabTo].id);
@@ -220,7 +222,7 @@ const Completion = () => {
       const newCompletionList = state.displayed.slice(0, -1);
       const index = newCompletionList.length - 1;
       if (newCompletionList.length === 0) {
-        navigate("/" + boreholeId + "/completion");
+        navigateTo({ path: "/" + boreholeId + "/completion" });
       } else {
         updateHistory(newCompletionList[index].id);
       }
@@ -312,7 +314,7 @@ const Completion = () => {
       }
     } else {
       resetState();
-      navigate("/" + boreholeId + "/completion");
+      navigateTo({ path: "/" + boreholeId + "/completion" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completions, completionId]);
