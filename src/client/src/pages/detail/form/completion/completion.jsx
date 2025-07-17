@@ -60,6 +60,15 @@ const Completion = () => {
   const updateHistory = selectedId => {
     let newLocation = "/" + boreholeId + "/completion/" + selectedId;
     let hash;
+    console.log(
+      "updateHistory",
+      newLocation,
+      selectedId,
+      completionId,
+      location.hash,
+      location.hash !== "",
+      selectedId.toString() === completionId,
+    );
     if (selectedId !== "new") {
       if (location.hash !== "" && selectedId.toString() === completionId) {
         hash = location.hash;
@@ -68,14 +77,17 @@ const Completion = () => {
       }
     }
 
-    if (location.pathname + location.hash !== newLocation) {
-      const locationSnippets = location.pathname.split("/");
-      navigateTo({
-        path: newLocation,
-        hash: hash,
-        replace: locationSnippets[locationSnippets.length - 1] === "completion",
-      });
-    }
+    const locationSnippets = location.pathname.split("/");
+    const last = locationSnippets[locationSnippets.length - 1];
+    const secondLast = locationSnippets[locationSnippets.length - 2];
+    const isCompletion = last === "completion";
+    const isCompletionId =
+      secondLast === "completion" && /^\d+$/.test(last) && location.hash === "";
+    navigateTo({
+      path: newLocation,
+      hash: hash,
+      replace: isCompletion || isCompletionId,
+    });
   };
 
   const loadData = () => {
