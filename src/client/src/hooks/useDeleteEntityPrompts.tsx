@@ -55,10 +55,10 @@ export const useDeleteEntityPrompts = (
     });
 
     if (isUser(entity)) {
-      navigateTo({ path: `/setting#users` });
+      navigateTo({ path: "/setting", hash: "users" });
     } else if (isWorkgroup(entity)) {
-      navigateTo({ path: `/setting#workgroups` });
-    } else return `/setting`;
+      navigateTo({ path: "/setting", hash: "workgroups" });
+    } else return "/setting";
 
     deleteEntity(entity.id);
   };
