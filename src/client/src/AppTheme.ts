@@ -69,6 +69,7 @@ const themePalette: AppThemePalette = {
     grey: "#F0F4F7",
     darkgrey: "#787878",
     dark: "rgba(0, 0, 0, 0.5)",
+    header: "#F1F3F5",
     menuItemActive: "#A65462",
     filterItemActive: "#1C2834",
     listItemActive: "#DFE4E9",
@@ -492,7 +493,7 @@ export const theme = createTheme({
     MuiCardHeader: {
       styleOverrides: {
         root: {
-          backgroundColor: "#F1F3F5",
+          backgroundColor: themePalette.background.header,
         },
       },
     },
@@ -503,6 +504,13 @@ export const theme = createTheme({
           boxShadow: "none !important",
           borderRadius: `${themeSpacing(1)} !important`,
           flexShrink: 0,
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          height: "27px",
         },
       },
     },

@@ -35,8 +35,8 @@ export const useBoreholesNavigate = () => {
       }
 
       if (
-        path !== window.location.pathname ||
-        hash !== window.location.hash.split("?")[0] ||
+        pathname !== window.location.pathname ||
+        hashValue !== window.location.hash.split("?")[0] ||
         searchParams !== window.location.search
       ) {
         navigate(
