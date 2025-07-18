@@ -74,7 +74,7 @@ public class CodeListController : ControllerBase
     /// </summary>
     /// <param name="codelist"> The <see cref="Codelist"/> to update.</param>
     [HttpPut]
-    [Authorize(Policy = PolicyNames.Viewer)]
+    [Authorize(Policy = PolicyNames.Admin)]
     public async Task<IActionResult> EditAsync(Codelist codelist)
     {
         if (codelist == null)
@@ -83,7 +83,6 @@ public class CodeListController : ControllerBase
         }
 
         var codeListToUpdate = await context.Codelists.SingleOrDefaultAsync(c => c.Id == codelist.Id).ConfigureAwait(false);
-
         if (codeListToUpdate == null)
         {
             return NotFound();
