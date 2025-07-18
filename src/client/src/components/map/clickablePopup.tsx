@@ -1,15 +1,15 @@
 import { FC } from "react";
-import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import Feature from "ol/Feature";
 import { theme } from "../../AppTheme";
+import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 
 interface ClickablePopupProps {
   features?: Feature[];
 }
 
 export const ClickablePopup: FC<ClickablePopupProps> = ({ features = [] }) => {
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   return (
     <Box display="none">
       <Box className="ol-popup" id="popup-overlay">
@@ -21,7 +21,7 @@ export const ClickablePopup: FC<ClickablePopupProps> = ({ features = [] }) => {
               <Typography
                 noWrap
                 key={featureId}
-                onClick={() => navigate("/" + featureId)}
+                onClick={() => navigateTo({ path: "/" + featureId })}
                 sx={{
                   cursor: "pointer",
                   "&:hover": {

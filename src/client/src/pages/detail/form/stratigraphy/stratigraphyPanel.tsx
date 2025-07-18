@@ -1,6 +1,6 @@
 import { FC, useCallback, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Box, Card, CircularProgress, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
@@ -8,6 +8,7 @@ import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
+import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { AddStratigraphyButton } from "./addStratigraphyButton.tsx";
@@ -18,7 +19,7 @@ import { StratigraphyForm } from "./stratigraphyForm.tsx";
 
 export const StratigraphyPanel: FC = () => {
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
   const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
   const {
@@ -29,15 +30,13 @@ export const StratigraphyPanel: FC = () => {
 
   const navigateToStratigraphy = useCallback(
     (stratigraphyId: number, replace = false) => {
-      navigate(
-        {
-          pathname: `/${boreholeId}/stratigraphy/${stratigraphyId}`,
-          hash: location.hash,
-        },
-        { replace },
-      );
+      navigateTo({
+        path: `/${boreholeId}/stratigraphy/${stratigraphyId}`,
+        hash: location.hash,
+        replace: replace,
+      });
     },
-    [location.hash, navigate, boreholeId],
+    [location.hash, navigateTo, boreholeId],
   );
 
   const addEmptyStratigraphy = useCallback(async () => {

@@ -1,11 +1,12 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Stack } from "@mui/material";
 import PropTypes from "prop-types";
 import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
+import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.js";
 import Backfill from "./backfill.jsx";
 import Casing from "./casing.jsx";
 import Instrumentation from "./instrumentation.jsx";
@@ -18,8 +19,8 @@ export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBo
 
 const CompletionContent = ({ completion, editingEnabled }) => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
-  const navigate = useNavigate();
-  const { hash, pathname } = useLocation();
+  const { navigateTo } = useBoreholesNavigate();
+  const { hash } = useLocation();
   const { t } = useTranslation();
   const [casings, setCasings] = useState([]);
   const [instrumentation, setInstrumentation] = useState([]);
@@ -73,7 +74,7 @@ const CompletionContent = ({ completion, editingEnabled }) => {
         setActiveIndex(newIndex);
         setNewIndex(null);
         if (hash !== tabs[newIndex].hash) {
-          navigate({ pathname, hash: tabs[newIndex].hash });
+          navigateTo({ hash: tabs[newIndex].hash });
         }
       } else if (canSwitch === -1) {
         setNewIndex(null);

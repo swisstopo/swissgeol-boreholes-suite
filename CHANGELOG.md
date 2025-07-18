@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1257 - 2025-07-17
+
 ### Changed
 - Lithology, lithostratigraphy and chronostratigraphy are combined into one menu item.
 - Removed description quality of lithological descriptions and facies descriptions.
