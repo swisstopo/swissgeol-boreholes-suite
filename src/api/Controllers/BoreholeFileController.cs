@@ -41,6 +41,9 @@ public class BoreholeFileController : ControllerBase
         if (file == null || file.Length == 0) return BadRequest("No file provided.");
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
+        // Check if associated borehole is locked or user has permissions
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         if (file.Length > MaxFileSize) return BadRequest($"File size exceeds maximum file size of {MaxFileSize} bytes.");
 
         try
