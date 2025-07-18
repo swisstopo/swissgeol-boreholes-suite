@@ -275,6 +275,7 @@ export const StratigraphyPanel: FC = () => {
                     label={"stratigraphy_name"}
                     value={selectedStratigraphy.name}
                     type={FormValueType.Text}
+                    required={true}
                   />
                   <FormInput
                     fieldName={"date"}
