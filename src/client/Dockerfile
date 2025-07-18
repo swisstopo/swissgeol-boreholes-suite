@@ -1,4 +1,4 @@
-FROM node:20-buster-slim AS development
+FROM node:22-bookworm-slim AS development
 ARG VERSION
 ARG REVISION
 ENV VITE_APP_VERSION=${VERSION}+${REVISION}
@@ -19,7 +19,7 @@ RUN mkdocs build -d ./public/help
 
 ENTRYPOINT ["npm", "run", "start", "--", "--host"]
 
-FROM node:20-buster-slim AS deploy
+FROM node:22-bookworm-slim AS deploy
 ARG VERSION
 ARG REVISION
 ENV VITE_APP_VERSION=${VERSION}+${REVISION}
