@@ -50,16 +50,25 @@ export const StratigraphyPanel: FC = () => {
   useFormDirtyChanges({ formState });
   const { showPrompt } = useContext(PromptContext);
 
+  const sortedStratigraphies = useMemo(() => {
+    if (!stratigraphies) return stratigraphies;
+    return [...stratigraphies].sort((a, b) => {
+      if (a.isPrimary) return -1;
+      if (b.isPrimary) return 1;
+      return (a.name || "").localeCompare(b.name || "");
+    });
+  }, [stratigraphies]);
+
   const selectedTabIndex = useMemo(
-    () => stratigraphies?.findIndex(x => x.id === Number(stratigraphyId)) ?? -1,
-    [stratigraphies, stratigraphyId],
+    () => sortedStratigraphies?.findIndex(x => x.id === Number(stratigraphyId)) ?? -1,
+    [sortedStratigraphies, stratigraphyId],
   );
 
   const hasSelectedTab = selectedTabIndex !== -1;
 
   const selectedStratigraphy = useMemo(
-    () => (hasSelectedTab ? stratigraphies?.[selectedTabIndex] : undefined),
-    [hasSelectedTab, stratigraphies, selectedTabIndex],
+    () => (hasSelectedTab ? sortedStratigraphies?.[selectedTabIndex] : undefined),
+    [hasSelectedTab, sortedStratigraphies, selectedTabIndex],
   );
 
   const navigateToStratigraphy = useCallback(
@@ -127,25 +136,25 @@ export const StratigraphyPanel: FC = () => {
 
   useEffect(() => {
     // select stratigraphy if none is selected
-    if (stratigraphies && !hasSelectedTab) {
-      const autoSelectedId = stratigraphies.find(x => x.isPrimary)?.id ?? stratigraphies[0]?.id;
+    if (sortedStratigraphies && !hasSelectedTab) {
+      const autoSelectedId = sortedStratigraphies.find(x => x.isPrimary)?.id ?? sortedStratigraphies[0]?.id;
       if (autoSelectedId !== undefined) {
         navigateToStratigraphy(autoSelectedId, true);
       }
     }
-  }, [navigateToStratigraphy, stratigraphies, hasSelectedTab]);
+  }, [navigateToStratigraphy, sortedStratigraphies, hasSelectedTab]);
 
   useEffect(() => {
     resetWithoutSave();
   }, [resetWithoutSave]);
 
-  if (!stratigraphies) {
+  if (!sortedStratigraphies) {
     return (
       <FullPageCentered>
         <CircularProgress />
       </FullPageCentered>
     );
-  } else if (stratigraphies.length === 0) {
+  } else if (sortedStratigraphies.length === 0) {
     return (
       <Card sx={{ p: 4 }}>
         <Typography>{t("noStratigraphy")}</Typography>
@@ -169,7 +178,7 @@ export const StratigraphyPanel: FC = () => {
     return (
       <Box>
         <Box sx={{ position: "relative" }}>
-          {stratigraphies.length === 1 ? (
+          {sortedStratigraphies.length === 1 ? (
             <Stack
               direction="row"
               sx={{
@@ -212,8 +221,8 @@ export const StratigraphyPanel: FC = () => {
             <>
               <BoreholeTabs
                 value={selectedTabIndex === -1 ? 0 : selectedTabIndex}
-                onChange={(_, newValue) => navigateToStratigraphy(stratigraphies[newValue].id)}>
-                {stratigraphies.map(stratigraphy => (
+                onChange={(_, newValue) => navigateToStratigraphy(sortedStratigraphies[newValue].id)}>
+                {sortedStratigraphies.map(stratigraphy => (
                   <BoreholeTab
                     data-cy={`stratigraphy-tab-${stratigraphy.id}`}
                     key={String(stratigraphy.id)}
@@ -237,7 +246,7 @@ export const StratigraphyPanel: FC = () => {
               borderBottomLeftRadius: "4px",
               borderBottomRightRadius: "4px",
             }}>
-            {stratigraphies.length > 1 && (
+            {sortedStratigraphies.length > 1 && (
               <Stack direction="row" gap={0.75} justifyContent="flex-end">
                 {editingEnabled ? (
                   <>
@@ -273,7 +282,7 @@ export const StratigraphyPanel: FC = () => {
                     value={selectedStratigraphy.date?.toString().slice(0, 10) ?? ""}
                     type={FormValueType.Date}
                   />
-                  {stratigraphies.length > 1 && (
+                  {sortedStratigraphies.length > 1 && (
                     <FormCheckbox
                       fieldName={"isPrimary"}
                       label={"mainStratigraphy"}
