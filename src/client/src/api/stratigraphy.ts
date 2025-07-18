@@ -11,17 +11,17 @@ export interface Stratigraphy {
   isPrimary: boolean;
   date: string | null;
   created: Date | string | null;
-  createdById: number;
+  createdById: number | null;
   createdBy?: User;
   updated: Date | string | null;
-  updatedById: number;
+  updatedById: number | null;
   updatedBy?: User;
   name: string;
-  qualityId: number;
-  notes: string;
-  layers: Layer[];
-  chronostratigraphyLayers: Chronostratigraphy[];
-  lithostratigraphyLayers: Lithostratigraphy[];
+  qualityId?: number;
+  notes?: string;
+  layers: Layer[] | null;
+  chronostratigraphyLayers: Chronostratigraphy[] | null;
+  lithostratigraphyLayers: Lithostratigraphy[] | null;
 }
 
 export interface Layer {
@@ -113,8 +113,12 @@ const fetchStratigraphiesByBoreholeId = async (boreholeId: number): Promise<Stra
   return await fetchApiV2(`stratigraphy?boreholeId=${boreholeId}`, "GET");
 };
 
-const createStratigraphy = async (boreholeId: number): Promise<Stratigraphy> => {
+const createStratigraphyLegacy = async (boreholeId: number): Promise<Stratigraphy> => {
   return await fetchApiV2("stratigraphy", "POST", { boreholeId });
+};
+
+const createStratigraphy = async (stratigraphy: Stratigraphy): Promise<Stratigraphy> => {
+  return await fetchApiV2("stratigraphy", "POST", stratigraphy);
 };
 
 const copyStratigraphy = async (stratigraphy: Stratigraphy): Promise<number> => {
@@ -165,9 +169,18 @@ export const useStratigraphyMutations = () => {
     }
   };
 
-  const useAddStratigraphy = useMutation({
+  const useAddStratigraphyLegacy = useMutation({
     mutationFn: async (boreholeId: number) => {
-      return await createStratigraphy(boreholeId);
+      return await createStratigraphyLegacy(boreholeId);
+    },
+    onSuccess: addedStratigraphy => {
+      invalidateQueries(addedStratigraphy, true);
+    },
+  });
+
+  const useAddStratigraphy = useMutation({
+    mutationFn: async (stratigraphy: Stratigraphy) => {
+      return await createStratigraphy(stratigraphy);
     },
     onSuccess: addedStratigraphy => {
       invalidateQueries(addedStratigraphy, true);
@@ -201,12 +214,13 @@ export const useStratigraphyMutations = () => {
     },
   });
 
-  useShowAlertOnError(useAddStratigraphy.isError, useAddStratigraphy.error);
+  useShowAlertOnError(useAddStratigraphyLegacy.isError, useAddStratigraphyLegacy.error);
   useShowAlertOnError(useCopyStratigraphy.isError, useCopyStratigraphy.error);
   useShowAlertOnError(useUpdateStratigraphy.isError, useUpdateStratigraphy.error);
   useShowAlertOnError(useDeleteStratigraphy.isError, useDeleteStratigraphy.error);
 
   return {
+    addLegacy: useAddStratigraphyLegacy,
     add: useAddStratigraphy,
     copy: useCopyStratigraphy,
     update: useUpdateStratigraphy,

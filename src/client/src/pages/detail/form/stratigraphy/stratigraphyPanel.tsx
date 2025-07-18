@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useMemo } from "react";
+import { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -6,29 +6,29 @@ import { Box, Card, Chip, CircularProgress, Stack, Typography } from "@mui/mater
 import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
-import { Stratigraphy, useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
-import { theme } from "../../../../AppTheme.ts";
-import { AddButton, BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons.tsx";
-import { FormValueType } from "../../../../components/form/form.ts";
-import { FormCheckbox } from "../../../../components/form/formCheckbox.tsx";
-import { FormContainer } from "../../../../components/form/formContainer.tsx";
-import { FormInput } from "../../../../components/form/formInput.tsx";
-import { ensureDatetime } from "../../../../components/form/formUtils.ts";
-import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.tsx";
-import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import { FullPageCentered } from "../../../../components/styledComponents.ts";
-import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
-import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
-import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
-import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { formatDate } from "../../../../utils.ts";
-import { EditStateContext } from "../../editStateContext.tsx";
-import { SaveContext, SaveContextProps } from "../../saveContext.tsx";
-import { AddStratigraphyButton } from "./addStratigraphyButton.tsx";
-import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel.jsx";
-import { Lithology } from "./lithology/lithology.tsx";
-import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel.jsx";
+import { Stratigraphy, useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy";
+import { theme } from "../../../../AppTheme";
+import { AddButton, BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons";
+import { FormValueType } from "../../../../components/form/form";
+import { FormCheckbox } from "../../../../components/form/formCheckbox";
+import { FormContainer } from "../../../../components/form/formContainer";
+import { FormInput } from "../../../../components/form/formInput";
+import { ensureDatetime } from "../../../../components/form/formUtils";
+import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges";
+import { PromptContext } from "../../../../components/prompt/promptContext";
+import { FullPageCentered } from "../../../../components/styledComponents";
+import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents";
+import { TabPanel } from "../../../../components/tabs/tabPanel";
+import { useBlockNavigation } from "../../../../hooks/useBlockNavigation";
+import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams";
+import { formatDate } from "../../../../utils";
+import { EditStateContext } from "../../editStateContext";
+import { SaveContext, SaveContextProps } from "../../saveContext";
+import { AddStratigraphyButton } from "./addStratigraphyButton";
+import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
+import { Lithology } from "./lithology/lithology";
+import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel";
 
 export const StratigraphyPanel: FC = () => {
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
@@ -49,24 +49,70 @@ export const StratigraphyPanel: FC = () => {
   const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
   const { showPrompt } = useContext(PromptContext);
+  const [selectedStratigraphyId, setSelectedStratigraphyId] = useState<number>();
 
-  const sortedStratigraphies = useMemo(() => {
+  useEffect(() => {
+    if (selectedStratigraphyId === undefined) {
+      if (stratigraphyId) {
+        if (stratigraphyId === "new") {
+          setSelectedStratigraphyId(0);
+        } else {
+          const id = Number(stratigraphyId);
+          if (!isNaN(id)) {
+            setSelectedStratigraphyId(Number(stratigraphyId));
+          } else {
+            setSelectedStratigraphyId(-1);
+          }
+        }
+      } else {
+        const primaryId = stratigraphies?.find(x => x.isPrimary)?.id ?? -1;
+        setSelectedStratigraphyId(primaryId);
+        navigateTo({
+          path: `/${boreholeId}/stratigraphy/${primaryId}`,
+          replace: true,
+        });
+      }
+    }
+  }, [boreholeId, navigateTo, stratigraphyId, stratigraphies, selectedStratigraphyId]);
+
+  const sortedStratigraphies: Stratigraphy[] | undefined = useMemo(() => {
     if (!stratigraphies) return stratigraphies;
-    return [...stratigraphies].sort((a, b) => {
+    const existingStratigraphies = [...stratigraphies].sort((a, b) => {
       if (a.isPrimary) return -1;
       if (b.isPrimary) return 1;
       return (a.name || "").localeCompare(b.name || "");
     });
-  }, [stratigraphies]);
+    if (selectedStratigraphyId === 0) {
+      return [
+        ...existingStratigraphies,
+        {
+          id: 0,
+          boreholeId: Number(boreholeId),
+          borehole: null,
+          isPrimary: !stratigraphies?.length,
+          date: null,
+          created: null,
+          createdById: null,
+          updated: null,
+          updatedById: null,
+          name: "",
+          layers: null,
+          chronostratigraphyLayers: null,
+          lithostratigraphyLayers: null,
+        },
+      ];
+    }
+    return existingStratigraphies;
+  }, [boreholeId, selectedStratigraphyId, stratigraphies]);
 
-  const selectedTabIndex = useMemo(
-    () => sortedStratigraphies?.findIndex(x => x.id === Number(stratigraphyId)) ?? -1,
-    [sortedStratigraphies, stratigraphyId],
+  const selectedTabIndex: number = useMemo(
+    () => sortedStratigraphies?.findIndex(x => x.id === Number(selectedStratigraphyId)) ?? -1,
+    [sortedStratigraphies, selectedStratigraphyId],
   );
 
   const hasSelectedTab = selectedTabIndex !== -1;
 
-  const selectedStratigraphy = useMemo(
+  const selectedStratigraphy: Stratigraphy | undefined = useMemo(
     () => (hasSelectedTab ? sortedStratigraphies?.[selectedTabIndex] : undefined),
     [hasSelectedTab, sortedStratigraphies, selectedTabIndex],
   );
@@ -74,18 +120,29 @@ export const StratigraphyPanel: FC = () => {
   const navigateToStratigraphy = useCallback(
     (stratigraphyId: number, replace = false) => {
       navigateTo({
-        path: `/${boreholeId}/stratigraphy/${stratigraphyId}`,
+        path: `/${boreholeId}/stratigraphy/${stratigraphyId === 0 ? "new" : stratigraphyId}`,
         hash: location.hash,
-        replace: replace,
+        replace,
       });
     },
     [location.hash, navigateTo, boreholeId],
   );
 
+  const switchTab = useCallback(
+    (newIndex: number) => {
+      if (sortedStratigraphies && newIndex >= 0 && newIndex < sortedStratigraphies.length) {
+        const newStratigraphy = sortedStratigraphies[newIndex];
+        setSelectedStratigraphyId(newStratigraphy.id);
+        navigateToStratigraphy(newStratigraphy.id, false);
+      }
+    },
+    [sortedStratigraphies, navigateToStratigraphy],
+  );
+
   const addEmptyStratigraphy = useCallback(async () => {
-    const stratigraphy = await addStratigraphyAsync(Number(boreholeId));
-    navigateToStratigraphy(stratigraphy.id);
-  }, [addStratigraphyAsync, boreholeId, navigateToStratigraphy]);
+    setSelectedStratigraphyId(0);
+    navigateToStratigraphy(0);
+  }, [navigateToStratigraphy]);
 
   const extractStratigraphyFromProfile = useCallback(() => {}, []);
 
@@ -102,12 +159,26 @@ export const StratigraphyPanel: FC = () => {
     if (selectedStratigraphy) {
       const values = getValues();
       values.date = values.date ? ensureDatetime(values.date.toString()) : null;
-      await updateStratigraphy({
-        ...selectedStratigraphy,
-        ...values,
-      });
+
+      if (selectedStratigraphyId === 0) {
+        const newStratigraphy = await addStratigraphyAsync(values);
+        setSelectedStratigraphyId(newStratigraphy.id);
+        navigateToStratigraphy(newStratigraphy.id, true);
+      } else {
+        updateStratigraphy({
+          ...selectedStratigraphy,
+          ...values,
+        });
+      }
     }
-  }, [getValues, selectedStratigraphy, updateStratigraphy]);
+  }, [
+    addStratigraphyAsync,
+    getValues,
+    navigateToStratigraphy,
+    selectedStratigraphy,
+    selectedStratigraphyId,
+    updateStratigraphy,
+  ]);
 
   const showDeletePrompt = useCallback(() => {
     if (!selectedStratigraphy) return;
@@ -133,16 +204,6 @@ export const StratigraphyPanel: FC = () => {
       unMount();
     };
   }, [registerResetHandler, registerSaveHandler, resetWithoutSave, onSave, unMount]);
-
-  useEffect(() => {
-    // select stratigraphy if none is selected
-    if (sortedStratigraphies && !hasSelectedTab) {
-      const autoSelectedId = sortedStratigraphies.find(x => x.isPrimary)?.id ?? sortedStratigraphies[0]?.id;
-      if (autoSelectedId !== undefined) {
-        navigateToStratigraphy(autoSelectedId, true);
-      }
-    }
-  }, [navigateToStratigraphy, sortedStratigraphies, hasSelectedTab]);
 
   useEffect(() => {
     resetWithoutSave();
@@ -197,14 +258,18 @@ export const StratigraphyPanel: FC = () => {
               <Stack direction="row" gap={0.75}>
                 {editingEnabled ? (
                   <>
-                    <DeleteButton onClick={showDeletePrompt} />
-                    <BoreholesButton
-                      variant="outlined"
-                      color={"secondary"}
-                      label={"duplicate"}
-                      onClick={() => copyStratigraphy(selectedStratigraphy)}
-                      icon={<CopyIcon />}
-                    />
+                    {selectedStratigraphyId !== 0 && (
+                      <>
+                        <DeleteButton onClick={showDeletePrompt} />
+                        <BoreholesButton
+                          variant="outlined"
+                          color={"secondary"}
+                          label={"duplicate"}
+                          onClick={() => copyStratigraphy(selectedStratigraphy)}
+                          icon={<CopyIcon />}
+                        />
+                      </>
+                    )}
                     <AddStratigraphyButton
                       addEmptyStratigraphy={addEmptyStratigraphy}
                       extractStratigraphyFromProfile={extractStratigraphyFromProfile}
@@ -221,7 +286,7 @@ export const StratigraphyPanel: FC = () => {
             <>
               <BoreholeTabs
                 value={selectedTabIndex === -1 ? 0 : selectedTabIndex}
-                onChange={(_, newValue) => navigateToStratigraphy(sortedStratigraphies[newValue].id)}>
+                onChange={(_, newValue) => switchTab(newValue)}>
                 {sortedStratigraphies.map(stratigraphy => (
                   <BoreholeTab
                     data-cy={`stratigraphy-tab-${stratigraphy.id}`}
@@ -249,16 +314,18 @@ export const StratigraphyPanel: FC = () => {
             {sortedStratigraphies.length > 1 && (
               <Stack direction="row" gap={0.75} justifyContent="flex-end">
                 {editingEnabled ? (
-                  <>
-                    <DeleteButton onClick={showDeletePrompt} />
-                    <BoreholesButton
-                      variant="outlined"
-                      color={"secondary"}
-                      label={"duplicate"}
-                      onClick={() => copyStratigraphy(selectedStratigraphy)}
-                      icon={<CopyIcon />}
-                    />
-                  </>
+                  selectedStratigraphyId !== 0 && (
+                    <>
+                      <DeleteButton onClick={showDeletePrompt} />
+                      <BoreholesButton
+                        variant="outlined"
+                        color={"secondary"}
+                        label={"duplicate"}
+                        onClick={() => copyStratigraphy(selectedStratigraphy)}
+                        icon={<CopyIcon />}
+                      />
+                    </>
+                  )
                 ) : (
                   <>
                     {selectedStratigraphy.isPrimary && <Chip color="info" label={t("mainStratigraphy")} />}
@@ -293,33 +360,35 @@ export const StratigraphyPanel: FC = () => {
                 </FormContainer>
               </FormProvider>
             )}
-            <Box sx={{ position: "relative" }}>
-              <TabPanel
-                variant="list"
-                tabs={[
-                  {
-                    label: t("lithology"),
-                    hash: "#lithology",
-                    component: <Lithology stratigraphy={selectedStratigraphy} />,
-                  },
-                  {
-                    label: t("chronostratigraphy"),
-                    hash: "#chronostratigraphy",
-                    component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
-                  },
-                  {
-                    label: t("lithostratigraphy"),
-                    hash: "#lithostratigraphy",
-                    component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
-                  },
-                ]}
-              />
-            </Box>
+            {selectedStratigraphyId !== 0 && (
+              <Box sx={{ position: "relative" }}>
+                <TabPanel
+                  variant="list"
+                  tabs={[
+                    {
+                      label: t("lithology"),
+                      hash: "#lithology",
+                      component: <Lithology stratigraphy={selectedStratigraphy} />,
+                    },
+                    {
+                      label: t("chronostratigraphy"),
+                      hash: "#chronostratigraphy",
+                      component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                    },
+                    {
+                      label: t("lithostratigraphy"),
+                      hash: "#lithostratigraphy",
+                      component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                    },
+                  ]}
+                />
+              </Box>
+            )}
           </BoreholeTabContentBox>
         </Box>
       </Box>
     );
   }
 
-  return null;
+  return <Box />;
 };

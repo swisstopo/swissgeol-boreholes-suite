@@ -23,7 +23,7 @@ export const LegacyStratigraphyPanel: FC = () => {
   const location = useLocation();
   const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
   const {
-    add: { mutateAsync: addStratigraphyAsync },
+    addLegacy: { mutateAsync: addStratigraphyAsync },
   } = useStratigraphyMutations();
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
