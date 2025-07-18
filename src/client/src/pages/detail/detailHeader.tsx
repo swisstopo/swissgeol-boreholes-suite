@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
 import { BoreholeV2, useBoreholeMutations } from "../../api/borehole.ts";
@@ -16,6 +15,8 @@ import {
 import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
+import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
+import { useDevMode } from "../../hooks/useDevMode.tsx";
 import { formatDate } from "../../utils.ts";
 import { EditStateContext } from "./editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
@@ -28,10 +29,10 @@ interface DetailHeaderProps {
 
 const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
+  const { runsDevMode } = useDevMode();
   const { data: currentUser } = useCurrentUser();
   const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);
   const { hasChanges, triggerReset } = useContext<SaveContextProps>(SaveContext);
@@ -98,7 +99,7 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
 
   const handleDelete = () => {
     deleteBorehole(borehole.id);
-    navigate("/");
+    navigateTo({ path: "/" });
   };
 
   const handleReturnClick = () => {
@@ -109,19 +110,18 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
         stopEditing();
       }
     }
-    navigate("/");
+    navigateTo({ path: "/" });
   };
 
   if (!borehole) return;
   // get unfinished or latest workflow
   const workflows = borehole?.workflows.sort((a, b) => new Date(b.finished).getTime() - new Date(a.finished).getTime());
   const currentWorkflow = workflows?.find(workflow => workflow.finished == null) || workflows[0];
-  const hasDevFlag = searchParams.get("dev") === "true";
   const statusLabel = t(`status${currentWorkflow?.role.toLowerCase()}`);
   const statusColor = currentWorkflow?.finished != null ? "success" : "warning";
   const statusIcon = currentWorkflow?.finished != null ? <Check /> : <div />;
 
-  const statusChips = hasDevFlag ? (
+  const statusChips = runsDevMode ? (
     <StatusBadges workflow={borehole.workflow} />
   ) : (
     <Chip data-cy="workflow-status-chip" label={statusLabel} color={statusColor} icon={statusIcon} />

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
+import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../utils";
 import { ObservationType } from "./form/hydrogeology/Observation.ts";
@@ -19,8 +20,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const location = useLocation();
   const { t } = useTranslation();
   const auth = useAuth();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const { navigateTo } = useBoreholesNavigate();
 
   const {
     hasStratigraphy,
@@ -64,12 +64,6 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
     setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
   }, [location, id]);
 
-  const navigateTo = (path: string) => {
-    if (path !== location.pathname) {
-      navigate({ pathname: path, search: searchParams.toString() });
-    }
-  };
-
   return (
     <Box
       style={{
@@ -92,7 +86,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             active={location.pathname === `/${id}/location`}
             data-cy="location-menu-item"
             onClick={() => {
-              navigateTo(`/${id}/location`);
+              navigateTo({ path: `/${id}/location` });
             }}>
             {capitalizeFirstLetter(t("location"))}{" "}
           </SgcMenuItem>
@@ -101,7 +95,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             active={location.pathname === `/${id}/borehole`}
             data-cy="borehole-menu-item"
             onClick={() => {
-              navigateTo(`/${id}/borehole`);
+              navigateTo({ path: `/${id}/borehole` });
             }}>
             {capitalizeFirstLetter(t("borehole"))}{" "}
           </SgcMenuItem>
@@ -111,7 +105,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             empty={!hasStratigraphy}
             data-cy="stratigraphy-menu-item"
             onClick={() => {
-              navigateTo(`/${id}/stratigraphy`);
+              navigateTo({ path: `/${id}/stratigraphy` });
             }}>
             {capitalizeFirstLetter(t("stratigraphy"))}{" "}
           </SgcMenuItem>
@@ -121,7 +115,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             empty={!hasCompletion}
             data-cy="completion-menu-item"
             onClick={() => {
-              navigateTo(`/${id}/completion`);
+              navigateTo({ path: `/${id}/completion` });
             }}>
             {capitalizeFirstLetter(t("completion"))}{" "}
           </SgcMenuItem>
@@ -142,7 +136,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 empty={!hasWaterIngress}
                 data-cy="wateringress-menu-item"
                 onClick={() => {
-                  navigateTo(`/${id}/hydrogeology/wateringress`);
+                  navigateTo({ path: `/${id}/hydrogeology/wateringress` });
                 }}>
                 {capitalizeFirstLetter(t("waterIngress"))}
               </SgcMenuItem>
@@ -152,7 +146,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 empty={!hasGroundwaterLevelMeasurement}
                 data-cy="groundwaterlevelmeasurement-menu-item"
                 onClick={() => {
-                  navigateTo(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
+                  navigateTo({ path: `/${id}/hydrogeology/groundwaterlevelmeasurement` });
                 }}>
                 {capitalizeFirstLetter(t("groundwaterLevelMeasurement"))}
               </SgcMenuItem>
@@ -162,7 +156,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 empty={!hasFieldMeasurement}
                 data-cy="fieldmeasurement-menu-item"
                 onClick={() => {
-                  navigateTo(`/${id}/hydrogeology/fieldmeasurement`);
+                  navigateTo({ path: `/${id}/hydrogeology/fieldmeasurement` });
                 }}>
                 {capitalizeFirstLetter(t("fieldMeasurement"))}
               </SgcMenuItem>
@@ -172,7 +166,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 empty={!hasHydroTest}
                 data-cy="hydrotest-menu-item"
                 onClick={() => {
-                  navigateTo(`/${id}/hydrogeology/hydrotest`);
+                  navigateTo({ path: `/${id}/hydrogeology/hydrotest` });
                 }}>
                 {capitalizeFirstLetter(t("hydrotest"))}
               </SgcMenuItem>
@@ -185,7 +179,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 empty={!hasAttachments}
                 data-cy="attachments-menu-item"
                 onClick={() => {
-                  navigateTo(`/${id}/attachments`);
+                  navigateTo({ path: `/${id}/attachments` });
                 }}>
                 {capitalizeFirstLetter(t("attachments"))}
               </SgcMenuItem>
@@ -193,7 +187,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/status`}
                 data-cy="status-menu-item"
                 onClick={() => {
-                  navigateTo(`/${id}/status`);
+                  navigateTo({ path: `/${id}/status` });
                 }}>
                 {capitalizeFirstLetter(t("status"))}
               </SgcMenuItem>

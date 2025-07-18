@@ -1,18 +1,18 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { UseMutateFunction, useQueryClient } from "@tanstack/react-query";
 import { User, Workgroup } from "../api/apiInterfaces.ts";
 import { usersQueryKey, useUserMutations } from "../api/user.ts";
 import { useWorkgroupMutations, workgroupQueryKey } from "../api/workgroup.ts";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
+import { useBoreholesNavigate } from "./useBoreholesNavigate.tsx";
 
 export const useDeleteEntityPrompts = (
   deleteEntity: UseMutateFunction<unknown, unknown, number>,
   entityQueryKey: string,
 ) => {
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const queryClient = useQueryClient();
@@ -55,10 +55,10 @@ export const useDeleteEntityPrompts = (
     });
 
     if (isUser(entity)) {
-      navigate(`/setting#users`);
+      navigateTo({ path: "/setting", hash: "users" });
     } else if (isWorkgroup(entity)) {
-      navigate(`/setting#workgroups`);
-    } else return `/setting`;
+      navigateTo({ path: "/setting", hash: "workgroups" });
+    } else return "/setting";
 
     deleteEntity(entity.id);
   };

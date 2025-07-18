@@ -1,6 +1,5 @@
 import { useCallback, useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { Stack } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { loadEditingBoreholes } from "../../../api-lib";
@@ -8,6 +7,7 @@ import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";
 import MapComponent from "../../../components/map/mapComponent.jsx";
+import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
@@ -21,7 +21,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [rowsToHighlight, setRowsToHighlight] = useState<number[]>([]);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [isExporting, setIsExporting] = useState(false);
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const {
     filterPolygon,
     setFilterPolygon,
@@ -43,7 +43,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       type: "CLEAR",
       path: "/borehole",
     });
-    navigate("/" + id);
+    navigateTo({ path: "/" + id });
   };
 
   const multipleSelected = (selection: GridRowSelectionModel, filter: Record<string, unknown> | null = null) => {
