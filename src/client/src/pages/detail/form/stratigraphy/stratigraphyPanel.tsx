@@ -6,7 +6,13 @@ import { Box, Card, Chip, CircularProgress, Stack, Typography } from "@mui/mater
 import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
-import { Stratigraphy, useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  invalidateStratigraphyQueries,
+  Stratigraphy,
+  useStratigraphiesByBoreholeId,
+  useStratigraphyMutations,
+} from "../../../../api/stratigraphy";
 import { theme } from "../../../../AppTheme";
 import { AddButton, BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons";
 import { FormValueType } from "../../../../components/form/form";
@@ -39,8 +45,9 @@ export const StratigraphyPanel: FC = () => {
     add: { mutateAsync: addStratigraphyAsync },
     copy: { mutate: copyStratigraphy },
     update: { mutate: updateStratigraphy },
-    delete: { mutate: deleteStratigraphy },
+    delete: { mutateAsync: deleteStratigraphy },
   } = useStratigraphyMutations();
+  const queryClient = useQueryClient();
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
   const { registerSaveHandler, registerResetHandler, unMount } = useContext<SaveContextProps>(SaveContext);
@@ -49,6 +56,10 @@ export const StratigraphyPanel: FC = () => {
   const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
   const { showPrompt } = useContext(PromptContext);
+
+  useEffect(() => {
+    invalidateStratigraphyQueries(queryClient, Number(boreholeId), true);
+  }, [stratigraphyId, queryClient, boreholeId]);
 
   const sortedStratigraphies: Stratigraphy[] | undefined = useMemo(() => {
     if (!stratigraphies) return stratigraphies;
@@ -127,6 +138,12 @@ export const StratigraphyPanel: FC = () => {
     navigateToStratigraphy(0);
   }, [navigateToStratigraphy]);
 
+  const deleteSelectedStratigraphy = useCallback(async () => {
+    if (!selectedStratigraphy) return;
+    await deleteStratigraphy(selectedStratigraphy);
+    navigateTo({ path: `/${boreholeId}/stratigraphy` });
+  }, [boreholeId, deleteStratigraphy, navigateTo, selectedStratigraphy]);
+
   const extractStratigraphyFromProfile = useCallback(() => {}, []);
 
   const resetWithoutSave = useCallback(() => {
@@ -147,7 +164,7 @@ export const StratigraphyPanel: FC = () => {
         const newStratigraphy = await addStratigraphyAsync(values);
         // This timeout is necessary to ensure that navigating isn't done before the new stratigraphy is added
         setTimeout(() => {
-          navigateToStratigraphy(newStratigraphy.id);
+          navigateToStratigraphy(newStratigraphy.id, true);
         }, 0);
       } else {
         updateStratigraphy({
@@ -169,10 +186,10 @@ export const StratigraphyPanel: FC = () => {
         label: "delete",
         icon: <Trash2 />,
         variant: "contained",
-        action: () => deleteStratigraphy(selectedStratigraphy),
+        action: deleteSelectedStratigraphy,
       },
     ]);
-  }, [deleteStratigraphy, selectedStratigraphy, showPrompt]);
+  }, [deleteSelectedStratigraphy, selectedStratigraphy, showPrompt]);
 
   useEffect(() => {
     registerSaveHandler(onSave);
