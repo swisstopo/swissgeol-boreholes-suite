@@ -14,7 +14,7 @@ export const GoogleAnalytics: FC<GoogleAnalyticsProps> = ({ id }) => {
     const inlineScript = document.createElement("script");
     inlineScript.innerHTML = `
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag(){window.dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', '${id}');
     `;
