@@ -11,7 +11,7 @@ Folgende Komponenten müssen auf dem Entwicklungsrechner installiert sein:
 ✔️ Git  
 ✔️ Docker  
 ✔️ Visual Studio 2022  
-✔️ Node.js 20 LTS  
+✔️ Node.js 22 LTS  
 ✔️ Optional, um die Onlinehilfe zu erstellen: [MkDocs](https://www.mkdocs.org/)
 
 ### Entwicklung mit Visual Studio 2022
