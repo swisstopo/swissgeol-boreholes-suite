@@ -353,8 +353,8 @@ export const StratigraphyPanel: FC = () => {
                 </FormContainer>
               </FormProvider>
             )}
-            {// TODO: Remove selectedStratigraphy.id !== 0 check once new views are implemented}
-            {selectedStratigraphy.id !== 0 && (
+            {/* TODO: Remove selectedStratigraphy.id !== 0 check once new views are implemented */}
+            {selectedStratigraphy?.id !== 0 && (
               <Box sx={{ position: "relative" }}>
                 <TabPanel
                   variant="list"
