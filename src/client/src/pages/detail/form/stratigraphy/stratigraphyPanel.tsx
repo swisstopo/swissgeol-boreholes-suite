@@ -134,6 +134,8 @@ export const StratigraphyPanel: FC = () => {
     [sortedStratigraphies, navigateToStratigraphy],
   );
 
+  const extractStratigraphyFromProfile = useCallback(() => {}, []);
+
   const addEmptyStratigraphy = useCallback(async () => {
     navigateToStratigraphy(0);
   }, [navigateToStratigraphy]);
@@ -143,8 +145,6 @@ export const StratigraphyPanel: FC = () => {
     await deleteStratigraphy(selectedStratigraphy);
     navigateTo({ path: `/${boreholeId}/stratigraphy` });
   }, [boreholeId, deleteStratigraphy, navigateTo, selectedStratigraphy]);
-
-  const extractStratigraphyFromProfile = useCallback(() => {}, []);
 
   const resetWithoutSave = useCallback(() => {
     if (selectedStratigraphy) {
@@ -355,6 +355,7 @@ export const StratigraphyPanel: FC = () => {
                 </FormContainer>
               </FormProvider>
             )}
+            {// TODO: Remove selectedStratigraphy.id !== 0 check once new views are implemented}
             {selectedStratigraphy.id !== 0 && (
               <Box sx={{ position: "relative" }}>
                 <TabPanel
