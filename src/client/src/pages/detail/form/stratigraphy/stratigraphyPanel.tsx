@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -49,31 +49,6 @@ export const StratigraphyPanel: FC = () => {
   const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
   const { showPrompt } = useContext(PromptContext);
-  const [selectedStratigraphyId, setSelectedStratigraphyId] = useState<number>();
-
-  useEffect(() => {
-    if (selectedStratigraphyId === undefined) {
-      if (stratigraphyId) {
-        if (stratigraphyId === "new") {
-          setSelectedStratigraphyId(0);
-        } else {
-          const id = Number(stratigraphyId);
-          if (!isNaN(id)) {
-            setSelectedStratigraphyId(Number(stratigraphyId));
-          } else {
-            setSelectedStratigraphyId(-1);
-          }
-        }
-      } else {
-        const primaryId = stratigraphies?.find(x => x.isPrimary)?.id ?? -1;
-        setSelectedStratigraphyId(primaryId);
-        navigateTo({
-          path: `/${boreholeId}/stratigraphy/${primaryId}`,
-          replace: true,
-        });
-      }
-    }
-  }, [boreholeId, navigateTo, stratigraphyId, stratigraphies, selectedStratigraphyId]);
 
   const sortedStratigraphies: Stratigraphy[] | undefined = useMemo(() => {
     if (!stratigraphies) return stratigraphies;
@@ -82,7 +57,7 @@ export const StratigraphyPanel: FC = () => {
       if (b.isPrimary) return 1;
       return (a.name || "").localeCompare(b.name || "");
     });
-    if (selectedStratigraphyId === 0) {
+    if (stratigraphyId === "new") {
       return [
         ...existingStratigraphies,
         {
@@ -103,11 +78,21 @@ export const StratigraphyPanel: FC = () => {
       ];
     }
     return existingStratigraphies;
-  }, [boreholeId, selectedStratigraphyId, stratigraphies]);
+  }, [boreholeId, stratigraphies, stratigraphyId]);
+
+  useEffect(() => {
+    if (stratigraphyId === undefined && sortedStratigraphies !== undefined && sortedStratigraphies.length > 0) {
+      const primaryId = sortedStratigraphies.find(x => x.isPrimary)?.id ?? sortedStratigraphies[0]?.id ?? -1;
+      navigateTo({
+        path: `/${boreholeId}/stratigraphy/${primaryId}`,
+        replace: true,
+      });
+    }
+  }, [boreholeId, navigateTo, stratigraphyId, sortedStratigraphies]);
 
   const selectedTabIndex: number = useMemo(
-    () => sortedStratigraphies?.findIndex(x => x.id === Number(selectedStratigraphyId)) ?? -1,
-    [sortedStratigraphies, selectedStratigraphyId],
+    () => sortedStratigraphies?.findIndex(x => x.id === (stratigraphyId === "new" ? 0 : Number(stratigraphyId))) ?? -1,
+    [sortedStratigraphies, stratigraphyId],
   );
 
   const hasSelectedTab = selectedTabIndex !== -1;
@@ -132,15 +117,13 @@ export const StratigraphyPanel: FC = () => {
     (newIndex: number) => {
       if (sortedStratigraphies && newIndex >= 0 && newIndex < sortedStratigraphies.length) {
         const newStratigraphy = sortedStratigraphies[newIndex];
-        setSelectedStratigraphyId(newStratigraphy.id);
-        navigateToStratigraphy(newStratigraphy.id, false);
+        navigateToStratigraphy(newStratigraphy.id);
       }
     },
     [sortedStratigraphies, navigateToStratigraphy],
   );
 
   const addEmptyStratigraphy = useCallback(async () => {
-    setSelectedStratigraphyId(0);
     navigateToStratigraphy(0);
   }, [navigateToStratigraphy]);
 
@@ -160,10 +143,12 @@ export const StratigraphyPanel: FC = () => {
       const values = getValues();
       values.date = values.date ? ensureDatetime(values.date.toString()) : null;
 
-      if (selectedStratigraphyId === 0) {
+      if (values.id === 0) {
         const newStratigraphy = await addStratigraphyAsync(values);
-        setSelectedStratigraphyId(newStratigraphy.id);
-        navigateToStratigraphy(newStratigraphy.id, true);
+        // This timeout is necessary to ensure that navigating isn't done before the new stratigraphy is added
+        setTimeout(() => {
+          navigateToStratigraphy(newStratigraphy.id);
+        }, 0);
       } else {
         updateStratigraphy({
           ...selectedStratigraphy,
@@ -171,14 +156,7 @@ export const StratigraphyPanel: FC = () => {
         });
       }
     }
-  }, [
-    addStratigraphyAsync,
-    getValues,
-    navigateToStratigraphy,
-    selectedStratigraphy,
-    selectedStratigraphyId,
-    updateStratigraphy,
-  ]);
+  }, [addStratigraphyAsync, getValues, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy]);
 
   const showDeletePrompt = useCallback(() => {
     if (!selectedStratigraphy) return;
@@ -258,7 +236,7 @@ export const StratigraphyPanel: FC = () => {
               <Stack direction="row" gap={0.75}>
                 {editingEnabled ? (
                   <>
-                    {selectedStratigraphyId !== 0 && (
+                    {selectedStratigraphy.id !== 0 && (
                       <>
                         <DeleteButton onClick={showDeletePrompt} />
                         <BoreholesButton
@@ -314,7 +292,7 @@ export const StratigraphyPanel: FC = () => {
             {sortedStratigraphies.length > 1 && (
               <Stack direction="row" gap={0.75} justifyContent="flex-end">
                 {editingEnabled ? (
-                  selectedStratigraphyId !== 0 && (
+                  selectedStratigraphy.id !== 0 && (
                     <>
                       <DeleteButton onClick={showDeletePrompt} />
                       <BoreholesButton
@@ -360,7 +338,7 @@ export const StratigraphyPanel: FC = () => {
                 </FormContainer>
               </FormProvider>
             )}
-            {selectedStratigraphyId !== 0 && (
+            {selectedStratigraphy.id !== 0 && (
               <Box sx={{ position: "relative" }}>
                 <TabPanel
                   variant="list"
