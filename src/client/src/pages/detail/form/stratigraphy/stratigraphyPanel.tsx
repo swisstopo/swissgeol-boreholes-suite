@@ -304,27 +304,16 @@ export const StratigraphyPanel: FC = () => {
               borderBottomLeftRadius: "4px",
               borderBottomRightRadius: "4px",
             }}>
-            {sortedStratigraphies.length > 1 && (
+            {sortedStratigraphies.length > 1 && editingEnabled && selectedStratigraphy.id !== 0 && (
               <Stack direction="row" gap={0.75} justifyContent="flex-end">
-                {editingEnabled ? (
-                  selectedStratigraphy.id !== 0 && (
-                    <>
-                      <DeleteButton onClick={showDeletePrompt} />
-                      <BoreholesButton
-                        variant="outlined"
-                        color={"secondary"}
-                        label={"duplicate"}
-                        onClick={() => copyStratigraphy(selectedStratigraphy)}
-                        icon={<CopyIcon />}
-                      />
-                    </>
-                  )
-                ) : (
-                  <>
-                    {selectedStratigraphy.isPrimary && <Chip color="info" label={t("mainStratigraphy")} />}
-                    <Chip color="info" label={formatDate(selectedStratigraphy.created)} />
-                  </>
-                )}
+                <DeleteButton onClick={showDeletePrompt} />
+                <BoreholesButton
+                  variant="outlined"
+                  color={"secondary"}
+                  label={"duplicate"}
+                  onClick={() => copyStratigraphy(selectedStratigraphy)}
+                  icon={<CopyIcon />}
+                />
               </Stack>
             )}
             {editingEnabled && (
@@ -376,6 +365,16 @@ export const StratigraphyPanel: FC = () => {
                     },
                   ]}
                 />
+                {sortedStratigraphies.length > 1 && !editingEnabled && (
+                  <Stack
+                    direction="row"
+                    gap={0.75}
+                    justifyContent="flex-end"
+                    sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}>
+                    {selectedStratigraphy.isPrimary && <Chip color="info" label={t("mainStratigraphy")} />}
+                    <Chip color="info" label={formatDate(selectedStratigraphy.created)} />
+                  </Stack>
+                )}
               </Box>
             )}
           </BoreholeTabContentBox>
