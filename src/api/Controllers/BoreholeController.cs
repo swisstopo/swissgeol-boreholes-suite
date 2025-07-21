@@ -3,7 +3,6 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
 
@@ -90,6 +89,9 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         {
             return NotFound();
         }
+
+        // Check if associated borehole is locked or user has permissions
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), existingBorehole.Id).ConfigureAwait(false)) return Unauthorized();
 
         var workflow = existingBorehole.Workflow;
         Context.Entry(existingBorehole).CurrentValues.SetValues(entity);
