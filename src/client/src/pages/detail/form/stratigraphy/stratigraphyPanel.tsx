@@ -271,9 +271,7 @@ export const StratigraphyPanel: FC = () => {
                     />
                   </>
                 ) : (
-                  <>
-                    <Chip color="info" label={formatDate(selectedStratigraphy.created)} />
-                  </>
+                  <Chip color="info" label={formatDate(selectedStratigraphy.created)} />
                 )}
               </Stack>
             </Stack>
