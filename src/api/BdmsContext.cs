@@ -43,6 +43,7 @@ public class BdmsContext : DbContext
         .Include(b => b.Workflow).ThenInclude(w => w.Changes)
         .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
+        .Include(b => b.Workflow).ThenInclude(w => w.Assignee)
         .Include(b => b.Workflows)
         .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
         .Include(b => b.Photos)
@@ -434,7 +435,7 @@ public class BdmsContext : DbContext
             .HasForeignKey(c => c.WorkflowId);
 
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Location).HasDefaultValue(false);
-        modelBuilder.Entity<TabStatus>().Property(ts => ts.Section).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Sections).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Geometry).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Lithology).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Chronostratigraphy).HasDefaultValue(false);

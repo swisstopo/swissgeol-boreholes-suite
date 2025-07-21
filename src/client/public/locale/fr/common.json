@@ -72,6 +72,7 @@
   "casingInnerDiameter": "Diamètre intérieur [mm]",
   "casingName": "Nom tubage",
   "casingOuterDiameter": "Diamètre extérieur [mm]",
+  "changesRequested": "Modifications demandées",
   "changingCoordinateSystemResetsCoordinates": "Changer le système de coordonnées réinitialise les coordonnées. Voulez-vous continuer?",
   "changingVerticalReferenceSystemResetsValues": "Changer le système de référence vertical réinitialisera les valeurs de profondeur. Voulez-vous continuer?",
   "chronostratigraphy": "Chronostratigraphie",

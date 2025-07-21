@@ -36,6 +36,9 @@ declare module "@mui/material/styles" {
     success: {
       main: string;
     };
+    info: {
+      main: string;
+    };
     warning: {
       main: string;
     };

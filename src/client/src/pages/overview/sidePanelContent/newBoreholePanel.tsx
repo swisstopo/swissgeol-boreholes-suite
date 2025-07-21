@@ -1,13 +1,13 @@
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { Box, Button, Stack } from "@mui/material";
 import { useBoreholeMutations } from "../../../api/borehole.ts";
+import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { SideDrawerHeader } from "../layout/sideDrawerHeader.tsx";
 import { NewBoreholeProps } from "./commons/actionsInterfaces.ts";
 import WorkgroupSelect from "./commons/workgroupSelect.tsx";
 
 const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, toggleDrawer }: NewBoreholeProps) => {
-  const navigate = useNavigate();
+  const { navigateTo } = useBoreholesNavigate();
   const {
     add: { mutateAsync: addBoreholeAsync },
   } = useBoreholeMutations();
@@ -16,7 +16,7 @@ const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, togg
   const handleBoreholeCreate = async () => {
     if (workgroupId) {
       const borehole = await addBoreholeAsync(workgroupId);
-      navigate("/" + borehole.id);
+      navigateTo({ path: "/" + borehole.id });
     }
   };
 

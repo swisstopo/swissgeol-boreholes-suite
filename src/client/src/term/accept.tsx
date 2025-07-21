@@ -15,7 +15,7 @@ interface Terms {
 
 export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
   const [hasAccepted, setHasAccepted] = useState(false);
-  const { setAnalyticsEnabled, sendAnalyticsEvent } = useContext<AnalyticsContextProps>(AnalyticsContext);
+  const { setAnalyticsEnabled } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const [terms, setTerms] = useState<Terms>({ en: en, de: de, fr: fr, it: it });
   const [isFetching, setIsFetching] = useState(true);
   const { i18n } = useTranslation();
@@ -35,12 +35,6 @@ export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
       }
     });
   }, []);
-
-  useEffect(() => {
-    if (hasAccepted) {
-      sendAnalyticsEvent();
-    }
-  }, [hasAccepted, sendAnalyticsEvent]);
 
   const handleDialogClose = (analyticsEnabled: boolean) => {
     setAnalyticsEnabled(analyticsEnabled);

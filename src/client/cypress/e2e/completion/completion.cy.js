@@ -175,6 +175,7 @@ describe("completion crud tests", () => {
         "@backfill_by_completion_GET",
         "@instrumentation_by_completion_GET",
         "@instrumentation_by_completion_GET",
+        "@casing_by_completion_GET",
       ]);
 
       // edit completion

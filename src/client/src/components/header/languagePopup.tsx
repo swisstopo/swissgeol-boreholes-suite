@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Language } from "../../appInterfaces";
+import { Language, SwissgeolCoreI18n } from "@swissgeol/ui-core";
 import i18n from "../../i18n";
 import { ButtonSelect } from "../buttons/buttonSelect.tsx";
 
-const defaultLanguage = Language.DE;
+const defaultLanguage = Language.German;
 
 export function LanguagePopup() {
   const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage);
@@ -14,8 +14,10 @@ export function LanguagePopup() {
       const languageIndex = languages.indexOf(i18n.language);
       if (languageIndex !== -1) {
         setSelectedLanguage(languages[languageIndex] as Language);
+        SwissgeolCoreI18n.setLanguage(languages[languageIndex] as Language);
       } else {
         setSelectedLanguage(defaultLanguage);
+        SwissgeolCoreI18n.setLanguage(defaultLanguage as Language);
       }
     };
     handleLanguageChange();

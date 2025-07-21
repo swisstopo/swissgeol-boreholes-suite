@@ -1,15 +1,14 @@
 import { createContext, FC, PropsWithChildren, useCallback, useState } from "react";
-import ReactGA from "react-ga4";
 import { useSettings } from "../api/useSettings.ts";
 
 export interface AnalyticsContextProps {
   setAnalyticsEnabled: (analyticsEnabled: boolean) => void;
-  sendAnalyticsEvent: () => void;
+  analyticsId?: string;
 }
 
 export const AnalyticsContext = createContext<AnalyticsContextProps>({
   setAnalyticsEnabled: () => false,
-  sendAnalyticsEvent: () => {},
+  analyticsId: undefined,
 });
 
 export const AnalyticsProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -18,29 +17,16 @@ export const AnalyticsProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const handleSetAnalyticsEnabled = useCallback(
     (enabled: boolean) => {
-      if (enabled && settings?.googleAnalyticsTrackingId) {
-        setAnalyticsEnabled(true);
-        if (!ReactGA.isInitialized) {
-          ReactGA.initialize(settings?.googleAnalyticsTrackingId);
-        }
-      } else {
-        setAnalyticsEnabled(false);
-      }
+      setAnalyticsEnabled(Boolean(enabled && settings?.googleAnalyticsTrackingId));
     },
     [settings?.googleAnalyticsTrackingId],
   );
-
-  const sendAnalyticsEvent = useCallback(() => {
-    if (analyticsEnabled) {
-      ReactGA.send("pageview");
-    }
-  }, [analyticsEnabled]);
 
   return (
     <AnalyticsContext.Provider
       value={{
         setAnalyticsEnabled: handleSetAnalyticsEnabled,
-        sendAnalyticsEvent,
+        analyticsId: analyticsEnabled ? settings?.googleAnalyticsTrackingId : undefined,
       }}>
       {children}
     </AnalyticsContext.Provider>
