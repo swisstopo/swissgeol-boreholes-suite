@@ -76,6 +76,10 @@ public class LayerController : BoreholeControllerBase<Layer>
             return NotFound();
         }
 
+        // Check if associated borehole is locked or user has permissions
+        var boreholeId = await GetBoreholeId(existingLayer).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         Context.Entry(existingLayer).CurrentValues.SetValues(entity);
 
         // Update each join table
