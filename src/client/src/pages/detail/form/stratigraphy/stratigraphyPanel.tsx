@@ -289,11 +289,13 @@ export const StratigraphyPanel: FC = () => {
                   />
                 ))}
               </BoreholeTabs>
-              <AddStratigraphyButton
-                addEmptyStratigraphy={addEmptyStratigraphy}
-                extractStratigraphyFromProfile={extractStratigraphyFromProfile}
-                sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}
-              />
+              {editingEnabled && (
+                <AddStratigraphyButton
+                  addEmptyStratigraphy={addEmptyStratigraphy}
+                  extractStratigraphyFromProfile={extractStratigraphyFromProfile}
+                  sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}
+                />
+              )}
             </>
           )}
           <BoreholeTabContentBox
