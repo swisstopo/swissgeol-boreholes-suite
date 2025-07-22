@@ -171,6 +171,8 @@ internal static class TestSyncContextExtensions
         borehole.BoreholeGeometry = borehole.BoreholeGeometry?.OrderBy(g => g.MD).ToList();
         borehole.Observations = borehole.Observations?.OrderBy(o => o.FromDepthM).ToList();
 
+        borehole.Workflow?.Changes.OrderBy(c => c.Created).ToList();
+
         return borehole;
     }
 
