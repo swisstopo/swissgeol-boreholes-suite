@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Box, FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
-import { Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
+import { Stratigraphy, useLegacyStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { CancelButton, CopyButton, DeleteButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.tsx";
 import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../../../../components/form/form.ts";
@@ -25,7 +25,7 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ stratigraphy }) =>
     copy: { mutate: copyStratigraphy },
     update: { mutate: updateStratigraphy },
     delete: { mutate: deleteStratigraphy },
-  } = useStratigraphyMutations();
+  } = useLegacyStratigraphyMutations();
 
   useEffect(() => {
     formMethods.reset({

@@ -160,15 +160,6 @@ export const invalidateStratigraphyQueries = (
 export const useStratigraphyMutations = () => {
   const queryClient = useQueryClient();
 
-  const useAddStratigraphyLegacy = useMutation({
-    mutationFn: async (boreholeId: number) => {
-      return await createStratigraphyLegacy(boreholeId);
-    },
-    onSuccess: addedStratigraphy => {
-      invalidateStratigraphyQueries(queryClient, addedStratigraphy.boreholeId, true);
-    },
-  });
-
   const useAddStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
       return await createStratigraphy(stratigraphy);
@@ -199,13 +190,64 @@ export const useStratigraphyMutations = () => {
     },
   });
 
-  useShowAlertOnError(useAddStratigraphyLegacy.isError, useAddStratigraphyLegacy.error);
+  useShowAlertOnError(useAddStratigraphy.isError, useAddStratigraphy.error);
   useShowAlertOnError(useCopyStratigraphy.isError, useCopyStratigraphy.error);
   useShowAlertOnError(useUpdateStratigraphy.isError, useUpdateStratigraphy.error);
   useShowAlertOnError(useDeleteStratigraphy.isError, useDeleteStratigraphy.error);
 
   return {
-    addLegacy: useAddStratigraphyLegacy,
+    add: useAddStratigraphy,
+    copy: useCopyStratigraphy,
+    update: useUpdateStratigraphy,
+    delete: useDeleteStratigraphy,
+  };
+};
+
+export const useLegacyStratigraphyMutations = () => {
+  const queryClient = useQueryClient();
+
+  const useAddStratigraphy = useMutation({
+    mutationFn: async (boreholeId: number) => {
+      return await createStratigraphyLegacy(boreholeId);
+    },
+    onSuccess: addedStratigraphy => {
+      invalidateStratigraphyQueries(queryClient, addedStratigraphy.boreholeId, true);
+    },
+  });
+
+  const useCopyStratigraphy = useMutation({
+    mutationFn: async (stratigraphy: Stratigraphy) => {
+      return await copyStratigraphy(stratigraphy);
+    },
+    onSuccess: (_data, originalStratigraphy) => {
+      invalidateStratigraphyQueries(queryClient, originalStratigraphy.boreholeId, true);
+    },
+  });
+
+  const useUpdateStratigraphy = useMutation({
+    mutationFn: async (stratigraphy: Stratigraphy) => {
+      return await updateStratigraphy(stratigraphy);
+    },
+    onSuccess: updatedStratigraphy => {
+      invalidateStratigraphyQueries(queryClient, updatedStratigraphy.boreholeId, false);
+    },
+  });
+
+  const useDeleteStratigraphy = useMutation({
+    mutationFn: async (stratigraphy: Stratigraphy) => {
+      return await deleteStratigraphy(stratigraphy.id);
+    },
+    onSuccess: (_data, stratigraphy) => {
+      invalidateStratigraphyQueries(queryClient, stratigraphy.boreholeId, true);
+    },
+  });
+
+  useShowAlertOnError(useAddStratigraphy.isError, useAddStratigraphy.error);
+  useShowAlertOnError(useCopyStratigraphy.isError, useCopyStratigraphy.error);
+  useShowAlertOnError(useUpdateStratigraphy.isError, useUpdateStratigraphy.error);
+  useShowAlertOnError(useDeleteStratigraphy.isError, useDeleteStratigraphy.error);
+
+  return {
     add: useAddStratigraphy,
     copy: useCopyStratigraphy,
     update: useUpdateStratigraphy,
