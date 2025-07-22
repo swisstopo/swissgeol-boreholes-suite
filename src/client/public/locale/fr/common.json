@@ -127,6 +127,7 @@
   "deleteBoreholesMessage_other": "Voulez-vous vraiment supprimer ces {{count}} forages? Cela ne peut pas être annulé.",
   "deleteCompletionMessage": "Voulez-vous vraiment supprimer cet aménagement? Cet aménagement, y compris les tubage, les instruments et les remplissages/remblayages, sera définitivement supprimé de la base de données.",
   "deleteForever": "Supprimer définitivement",
+  "deleteMainStratigraphy": "La stratigraphie principale ne peut pas être supprimée. Veuillez d'abord définir une autre stratigraphie comme stratigraphie principale.",
   "deleteMessage": "Voulez-vous vraiment supprimer cette entrée? L'entrée sera définitivement supprimée de la base de données.",
   "deleteUser": "Supprimer utilisateur",
   "deleteWorkgroup": "Supprimer groupe de travail",

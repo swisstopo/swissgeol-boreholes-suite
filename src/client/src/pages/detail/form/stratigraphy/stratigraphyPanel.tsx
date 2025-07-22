@@ -2,7 +2,7 @@ import { FC, useCallback, useContext, useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { Box, Card, Chip, CircularProgress, Stack, Typography } from "@mui/material";
+import { Box, Card, Chip, CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
@@ -306,7 +306,15 @@ export const StratigraphyPanel: FC = () => {
             }}>
             {sortedStratigraphies.length > 1 && editingEnabled && selectedStratigraphy.id !== 0 && (
               <Stack direction="row" gap={0.75} justifyContent="flex-end">
-                <DeleteButton onClick={showDeletePrompt} />
+                {selectedStratigraphy.isPrimary ? (
+                  <Tooltip title={t("deleteMainStratigraphy")}>
+                    <span>
+                    <DeleteButton onClick={showDeletePrompt} disabled={selectedStratigraphy.isPrimary} />
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <DeleteButton onClick={showDeletePrompt} />
+                )}
                 <BoreholesButton
                   variant="outlined"
                   color={"secondary"}

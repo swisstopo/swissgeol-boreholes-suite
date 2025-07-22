@@ -127,6 +127,7 @@
   "deleteBoreholesMessage_other": "Wollen Sie diese {{count}} Bohrungen wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
   "deleteCompletionMessage": "Wollen Sie diesen Ausbau wirklich löschen? Der Ausbau wird zusammen mit seinen Verrohrungen, Instrumentierungen und Verfüllung/Hinterfüllungen dauerhaft gelöscht.",
   "deleteForever": "Dauerhaft löschen",
+  "deleteMainStratigraphy": "Die Hauptstratigraphie kann nicht gelöscht werden. Bitte setzen Sie zuerst eine andere Stratigraphie als Hauptstratigraphie.",
   "deleteMessage": "Wollen Sie diesen Eintrag wirklich löschen? Der Eintrag wird dauerhaft aus der Datenbank gelöscht.",
   "deleteUser": "Benutzer löschen",
   "deleteWorkgroup": "Arbeitsgruppe löschen",

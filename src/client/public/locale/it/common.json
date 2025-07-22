@@ -127,6 +127,7 @@
   "deleteBoreholesMessage_other": "Volete davvero cancellare questi {{count}} fori? Non è possibile annullare questa operazione.",
   "deleteCompletionMessage": "Volete davvero cancellare questo installazione? Questo installazione, compresi gli tubazione, gli strumenti e i riempimenti/rinterri, sarà cancellato definitivamente dal database.",
   "deleteForever": "Elimina definitivamente",
+  "deleteMainStratigraphy": "La stratigrafia principale non può essere cancellata. Si prega di impostare prima un'altra stratigrafia come stratigrafia principale.",
   "deleteMessage": "Volete davvero eliminare questa voce? La voce verrà eliminata definitivamente dal database.",
   "deleteUser": "Elimina utente",
   "deleteWorkgroup": "Elimina gruppo di lavoro",
