@@ -13,7 +13,7 @@ services:
       - 9000:9000
       - 9002:9002
   db:
-    image: postgis/postgis:15-3.4-alpine
+    image: postgis/postgis:17-3.5-alpine
     restart: unless-stopped
     volumes:
       - ./db:/docker-entrypoint-initdb.d
