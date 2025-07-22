@@ -24,7 +24,6 @@ import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyCha
 import { PromptContext } from "../../../../components/prompt/promptContext";
 import { FullPageCentered } from "../../../../components/styledComponents";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents";
-import { TabPanel } from "../../../../components/tabs/tabPanel";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams";
@@ -32,9 +31,6 @@ import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { SaveContext, SaveContextProps } from "../../saveContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
-import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
-import { Lithology } from "./lithology/lithology";
-import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel";
 
 export const StratigraphyPanel: FC = () => {
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
@@ -311,7 +307,7 @@ export const StratigraphyPanel: FC = () => {
                 {selectedStratigraphy.isPrimary ? (
                   <Tooltip title={t("deleteMainStratigraphy")}>
                     <span>
-                    <DeleteButton onClick={showDeletePrompt} disabled={selectedStratigraphy.isPrimary} />
+                      <DeleteButton onClick={showDeletePrompt} disabled={selectedStratigraphy.isPrimary} />
                     </span>
                   </Tooltip>
                 ) : (
