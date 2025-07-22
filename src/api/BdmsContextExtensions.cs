@@ -131,6 +131,7 @@ public static class BdmsContextExtensions
            .StrictMode(true)
            .RuleFor(o => o.Id, f => borehole_ids++)
            .RuleFor(o => o.Stratigraphies, _ => new Collection<Stratigraphy>())
+           .RuleFor(o => o.StratigraphiesV2, _ => new Collection<StratigraphyV2>())
            .RuleFor(o => o.Completions, _ => new Collection<Completion>())
            .RuleFor(o => o.Sections, _ => new Collection<Section>())
            .RuleFor(o => o.Observations, _ => new Collection<Observation>())
@@ -401,6 +402,27 @@ public static class BdmsContextExtensions
 
         Stratigraphy Seededstratigraphys(int seed) => fakeStratigraphies.UseSeed(seed).Generate();
         context.BulkInsert(stratigraphyRange.Select(Seededstratigraphys).ToList(), bulkConfig);
+
+        // Seed stratigraphyV2
+        var stratigraphyV2_ids = 6_500_000;
+        var stratigraphyV2Range = Enumerable.Range(stratigraphyV2_ids, boreholeRange.Count).ToList();
+        var fakeStratigraphiesV2 = new Faker<StratigraphyV2>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => stratigraphy_ids++)
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(o => o.Borehole, _ => default!)
+            .RuleFor(o => o.Name, f => f.Name.FullName())
+            .RuleFor(o => o.Date, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
+            .RuleFor(o => o.IsPrimary, f => f.Random.Bool())
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange).OrNull(f, .05f))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!);
+
+        StratigraphyV2 SeededStratigraphysV2(int seed) => fakeStratigraphiesV2.UseSeed(seed).Generate();
+        context.BulkInsert(stratigraphyV2Range.Select(SeededStratigraphysV2).ToList(), bulkConfig);
 
         // Seed layers
         var layer_ids = 7_000_000;

@@ -13,7 +13,7 @@ import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2.ts";
 import { BoreholeFile } from "./file/fileInterfaces.ts";
 import { Section } from "./section.ts";
-import { Stratigraphy } from "./stratigraphy.ts";
+import { Stratigraphy, StratigraphyLegacy } from "./stratigraphy.ts";
 
 export interface BasicIdentifier {
   boreholeId: number;
@@ -75,7 +75,8 @@ export interface BoreholeV2 {
   updated: Date | string | null;
   updatedById: number;
   updatedBy: User;
-  stratigraphies: Stratigraphy[] | null;
+  stratigraphies: StratigraphyLegacy[] | null;
+  stratigraphiesV2: Stratigraphy[] | null;
   locked: Date | string | null;
   lockedById: number | null;
   completions: Completion[] | null;

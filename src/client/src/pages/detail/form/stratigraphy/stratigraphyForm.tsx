@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Box, FormControlLabel, Stack, Switch } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
-import { Stratigraphy, useLegacyStratigraphyMutations } from "../../../../api/stratigraphy.ts";
+import { StratigraphyLegacy, useLegacyStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { CancelButton, CopyButton, DeleteButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.tsx";
 import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../../../../components/form/form.ts";
@@ -13,12 +13,12 @@ import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 
 interface StratigraphyFormProps {
-  stratigraphy: Stratigraphy;
+  stratigraphy: StratigraphyLegacy;
 }
 
 export const StratigraphyForm: FC<StratigraphyFormProps> = ({ stratigraphy }) => {
   const { t } = useTranslation();
-  const formMethods = useForm<Stratigraphy>({ mode: "all" });
+  const formMethods = useForm<StratigraphyLegacy>({ mode: "all" });
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(EditStateContext);
   const {
@@ -34,7 +34,7 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ stratigraphy }) =>
     });
   }, [formMethods, stratigraphy]);
 
-  const submitForm = (data: Stratigraphy) => {
+  const submitForm = (data: StratigraphyLegacy) => {
     data.date = data.date ? ensureDatetime(data.date.toString()) : "";
     updateStratigraphy(data);
   };

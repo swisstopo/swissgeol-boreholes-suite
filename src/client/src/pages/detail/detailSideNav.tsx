@@ -6,6 +6,7 @@ import { SgcMenuItem } from "@swissgeol/ui-core-react";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
+import { useDevMode } from "../../hooks/useDevMode.tsx";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../utils";
 import { ObservationType } from "./form/hydrogeology/Observation.ts";
@@ -21,6 +22,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const { t } = useTranslation();
   const auth = useAuth();
   const { navigateTo } = useBoreholesNavigate();
+  const { runsDevMode } = useDevMode();
 
   const {
     hasStratigraphy,
@@ -32,7 +34,8 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
     hasFieldMeasurement,
     hasAttachments,
   } = useMemo(() => {
-    const hasStratigraphy = (borehole.stratigraphies?.length ?? 0) > 0;
+    const hasStratigraphy =
+      (runsDevMode ? (borehole.stratigraphiesV2?.length ?? 0) : (borehole.stratigraphies?.length ?? 0)) > 0;
     const hasCompletion = (borehole.completions?.length ?? 0) > 0;
     const hasObservation = (borehole.observations?.length ?? 0) > 0;
     const hasWaterIngress =
@@ -58,7 +61,15 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
       hasFieldMeasurement,
       hasAttachments,
     };
-  }, [borehole]);
+  }, [
+    borehole.boreholeFiles?.length,
+    borehole.completions?.length,
+    borehole.observations,
+    borehole.photos?.length,
+    borehole.stratigraphies?.length,
+    borehole.stratigraphiesV2?.length,
+    runsDevMode,
+  ]);
 
   useEffect(() => {
     setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));

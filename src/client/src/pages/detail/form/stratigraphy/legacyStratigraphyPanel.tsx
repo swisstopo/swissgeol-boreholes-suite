@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Box, Card, CircularProgress, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { useLegacyStratigraphyMutations, useStratigraphiesByBoreholeId } from "../../../../api/stratigraphy.ts";
+import { useLegacyStratigraphiesByBoreholeId, useLegacyStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
@@ -21,7 +21,7 @@ export const LegacyStratigraphyPanel: FC = () => {
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
-  const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
+  const { data: stratigraphies } = useLegacyStratigraphiesByBoreholeId(Number(boreholeId));
   const {
     add: { mutateAsync: addStratigraphyAsync },
   } = useLegacyStratigraphyMutations();
