@@ -40,7 +40,6 @@ export const useBoreholesNavigate = () => {
         hashValue !== location.hash.split("?")[0] ||
         searchParams !== location.search
       ) {
-        console.log("Navigating to:", pathname, searchParams, hashValue, replaceValue);
         navigate(
           {
             pathname,
