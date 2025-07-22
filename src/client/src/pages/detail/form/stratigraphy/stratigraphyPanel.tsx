@@ -162,7 +162,7 @@ export const StratigraphyPanel: FC = () => {
 
       if (values.id === 0) {
         const newStratigraphy = await addStratigraphyAsync(values);
-        // This timeout is necessary to ensure that navigating isn't done before the new stratigraphy is added
+        // This timeout is necessary to ensure that the url is correctly updated before the component re-renders
         setTimeout(() => {
           navigateToStratigraphy(newStratigraphy.id, true);
         }, 0);
@@ -352,41 +352,39 @@ export const StratigraphyPanel: FC = () => {
                 </FormContainer>
               </FormProvider>
             )}
-            {/* TODO: Remove selectedStratigraphy.id !== 0 check once new views are implemented */}
-            {selectedStratigraphy?.id !== 0 && (
-              <Box sx={{ position: "relative" }}>
-                <TabPanel
-                  variant="list"
-                  tabs={[
-                    {
-                      label: t("lithology"),
-                      hash: "#lithology",
-                      component: <Lithology stratigraphy={selectedStratigraphy} />,
-                    },
-                    {
-                      label: t("chronostratigraphy"),
-                      hash: "#chronostratigraphy",
-                      component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
-                    },
-                    {
-                      label: t("lithostratigraphy"),
-                      hash: "#lithostratigraphy",
-                      component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
-                    },
-                  ]}
-                />
-                {sortedStratigraphies.length > 1 && !editingEnabled && (
-                  <Stack
-                    direction="row"
-                    gap={0.75}
-                    justifyContent="flex-end"
-                    sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}>
-                    {selectedStratigraphy.isPrimary && <Chip color="info" label={t("mainStratigraphy")} />}
-                    <Chip color="info" label={formatDate(selectedStratigraphy.created)} />
-                  </Stack>
-                )}
-              </Box>
-            )}
+            <Box sx={{ position: "relative" }}>
+              {/* TODO: Update once new views are implemented */}
+              {/*  <TabPanel*/}
+              {/*    variant="list"*/}
+              {/*    tabs={[*/}
+              {/*      {*/}
+              {/*        label: t("lithology"),*/}
+              {/*        hash: "#lithology",*/}
+              {/*        component: <Lithology stratigraphy={selectedStratigraphy} />,*/}
+              {/*      },*/}
+              {/*      {*/}
+              {/*        label: t("chronostratigraphy"),*/}
+              {/*        hash: "#chronostratigraphy",*/}
+              {/*        component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,*/}
+              {/*      },*/}
+              {/*      {*/}
+              {/*        label: t("lithostratigraphy"),*/}
+              {/*        hash: "#lithostratigraphy",*/}
+              {/*        component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,*/}
+              {/*      },*/}
+              {/*    ]}*/}
+              {/*  />*/}
+              {sortedStratigraphies.length > 1 && !editingEnabled && (
+                <Stack
+                  direction="row"
+                  gap={0.75}
+                  justifyContent="flex-end"
+                  sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}>
+                  {selectedStratigraphy.isPrimary && <Chip color="info" label={t("mainStratigraphy")} />}
+                  <Chip color="info" label={formatDate(selectedStratigraphy.created)} />
+                </Stack>
+              )}
+            </Box>
           </BoreholeTabContentBox>
         </Box>
       </Box>
