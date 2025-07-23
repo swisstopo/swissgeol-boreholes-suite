@@ -88,10 +88,14 @@ export const StratigraphyPanel: FC = () => {
   }, [boreholeId, stratigraphies, stratigraphyId]);
 
   useEffect(() => {
-    if (stratigraphyId === undefined && sortedStratigraphies !== undefined && sortedStratigraphies.length > 0) {
-      const primaryId = sortedStratigraphies.find(x => x.isPrimary)?.id ?? sortedStratigraphies[0]?.id ?? -1;
+    if (
+      sortedStratigraphies?.length &&
+      (stratigraphyId === undefined ||
+        (stratigraphyId !== "new" && !sortedStratigraphies.some(x => x.id === Number(stratigraphyId))))
+    ) {
+      const primaryId = sortedStratigraphies.find(x => x.isPrimary)?.id ?? sortedStratigraphies[0].id ?? -1;
       navigateTo({
-        path: `/${boreholeId}/stratigraphy/${primaryId}`,
+        path: primaryId === -1 ? `/${boreholeId}/stratigraphy` : `/${boreholeId}/stratigraphy/${primaryId}`,
         replace: true,
       });
     }
