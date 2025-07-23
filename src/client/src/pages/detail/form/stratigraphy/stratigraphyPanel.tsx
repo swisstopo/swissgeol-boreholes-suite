@@ -280,6 +280,7 @@ export const StratigraphyPanel: FC = () => {
         <Box sx={{ position: "relative" }}>
           {sortedStratigraphies.length === 1 ? (
             <Stack
+              data-cy="stratigraphy-header"
               direction="row"
               sx={{
                 backgroundColor: "background.header",
@@ -398,27 +399,6 @@ export const StratigraphyPanel: FC = () => {
               </FormProvider>
             )}
             <Box sx={{ position: "relative" }}>
-              {/* TODO: Update once new views are implemented */}
-              {/*  <TabPanel*/}
-              {/*    variant="list"*/}
-              {/*    tabs={[*/}
-              {/*      {*/}
-              {/*        label: t("lithology"),*/}
-              {/*        hash: "#lithology",*/}
-              {/*        component: <Lithology stratigraphy={selectedStratigraphy} />,*/}
-              {/*      },*/}
-              {/*      {*/}
-              {/*        label: t("chronostratigraphy"),*/}
-              {/*        hash: "#chronostratigraphy",*/}
-              {/*        component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,*/}
-              {/*      },*/}
-              {/*      {*/}
-              {/*        label: t("lithostratigraphy"),*/}
-              {/*        hash: "#lithostratigraphy",*/}
-              {/*        component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,*/}
-              {/*      },*/}
-              {/*    ]}*/}
-              {/*  />*/}
               {sortedStratigraphies.length > 1 && !editingEnabled && (
                 <Stack
                   direction="row"
