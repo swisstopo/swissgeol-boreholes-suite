@@ -64,10 +64,13 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
   const { editingEnabled } = useContext(EditStateContext);
   const isReadOnly = readonly ?? !editingEnabled;
 
+  const errorMessage = getFormFieldError(fieldName, formState.errors);
+
   return (
     <TextField
       required={required || false}
-      error={!className?.includes("ai") && !disabled && getFormFieldError(fieldName, formState.errors)}
+      error={!className?.includes("ai") && !disabled && !!errorMessage}
+      helperText={errorMessage ? t(errorMessage) : ""}
       sx={{
         ...sx,
         ...getFieldBorderColor(isReadOnly),

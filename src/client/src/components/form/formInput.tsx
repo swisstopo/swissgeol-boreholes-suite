@@ -64,10 +64,13 @@ export const FormInput: FC<FormInputProps> = ({
     }
   };
 
+  const errorMessage = getFormFieldError(fieldName, formState.errors);
+
   return (
     <TextField
       required={required || false}
-      error={getFormFieldError(fieldName, formState.errors)}
+      error={!!errorMessage}
+      helperText={errorMessage ? t(errorMessage) : ""}
       sx={{
         ...sx,
         ...getFieldBorderColor(isReadOnly),
