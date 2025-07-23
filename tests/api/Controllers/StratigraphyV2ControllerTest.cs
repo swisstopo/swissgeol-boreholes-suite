@@ -206,7 +206,7 @@ public class StratigraphyV2ControllerTest
         var stratigraphy1 = new StratigraphyV2
         {
             BoreholeId = boreholeWithoutStratigraphy.Id,
-            Name = "KODACLUSTER",
+            Name = "WINDFOOT",
         };
 
         var createResult1 = await controller.CreateAsync(stratigraphy1);
@@ -218,7 +218,7 @@ public class StratigraphyV2ControllerTest
         var stratigraphy2 = new StratigraphyV2
         {
             BoreholeId = boreholeWithoutStratigraphy.Id,
-            Name = "KODACLUSTER",
+            Name = "ECHOGOAT",
             IsPrimary = true,
         };
 
@@ -230,6 +230,21 @@ public class StratigraphyV2ControllerTest
 
         firstStratigraphy = GetStratigraphy(firstStratigraphy.Id);
         Assert.AreEqual(false, firstStratigraphy.IsPrimary);
+    }
+
+    [TestMethod]
+    public async Task CreateWithExistingName()
+    {
+        var baseStratigraphy = await context.StratigraphiesV2.FirstAsync();
+
+        var stratigraphyToCreate = new StratigraphyV2
+        {
+            BoreholeId = baseStratigraphy.BoreholeId,
+            Name = baseStratigraphy.Name,
+        };
+
+        var createResult = await controller.CreateAsync(stratigraphyToCreate);
+        ActionResultAssert.IsInternalServerError(createResult.Result, "Name must be unique");
     }
 
     [TestMethod]
@@ -317,6 +332,37 @@ public class StratigraphyV2ControllerTest
         firstStratigraphy = GetStratigraphy(firstStratigraphy.Id);
         Assert.AreEqual(false, firstStratigraphy.IsPrimary);
         Assert.AreEqual("FALLOUT-VII", firstStratigraphy.Name);
+    }
+
+    [TestMethod]
+    public async Task EditWithExistingName()
+    {
+        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.StratigraphiesV2.Any());
+
+        var stratigraphy1 = new StratigraphyV2
+        {
+            BoreholeId = boreholeWithoutStratigraphy.Id,
+            Name = "DECKDIXIE",
+        };
+
+        var createResult1 = await controller.CreateAsync(stratigraphy1);
+        ActionResultAssert.IsOk(createResult1.Result);
+
+        var stratigraphy2 = new StratigraphyV2
+        {
+            BoreholeId = boreholeWithoutStratigraphy.Id,
+            Name = "FOREMANDESPERADO",
+        };
+
+        var createResult2 = await controller.CreateAsync(stratigraphy2);
+        ActionResultAssert.IsOk(createResult2.Result);
+        var secondStratigraphy = (StratigraphyV2?)((OkObjectResult)createResult2.Result!).Value;
+        secondStratigraphy.Name = "DECKDIXIE";
+        var updateResult = await controller.EditAsync(secondStratigraphy);
+        ActionResultAssert.IsInternalServerError(updateResult.Result, "Name must be unique");
+
+        secondStratigraphy = GetStratigraphy(secondStratigraphy.Id);
+        Assert.AreEqual(stratigraphy2.Name, secondStratigraphy.Name);
     }
 
     [TestMethod]
