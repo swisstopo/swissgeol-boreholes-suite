@@ -122,7 +122,7 @@ Die JSON-Datei muss den folgenden Anforderungen entsprechen, damit sie erfolgrei
 - Die Datei muss im UTF-8-Format gespeichert sein.
 - Die JSON-Datei muss ein Array von Objekten enthalten. Jedes Objekt entspricht einem Bohrloch. Auch ein einzelnes Bohrloch muss als Array von einem Objekt definiert werden.
 - Die JSON-Datei eines Bohrlochexports kann als valide Vorlage für den Import betrachtet werden.
-- Codelistenschlüssel: https://boreholes.swissgeol.ch/api/v2/codelist/csv
+- Codelistenschlüssel: [https://boreholes.swissgeol.ch/api/v2/codelist/csv](https://boreholes.swissgeol.ch/api/v2/codelist/csv)
 
 ## Anleitung JSON + PDF-Import
 
