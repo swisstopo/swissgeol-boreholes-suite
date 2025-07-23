@@ -394,6 +394,7 @@
   "msgWateringressEmpty": "Nessun ingresso d'acqua disponibile",
   "msgWorkgroupCanBeDeleted": "Visto che al momento non ci sono tracce di attività nel database, il gruppo di lavoro selezionato può essere eliminato definitivamente",
   "municipality": "Comune",
+  "mustBeUnique": "Il valore deve essere unico",
   "name": "Nome",
   "national_interest": "Interesse nazionale",
   "needHelpSeeDocumentation": "Hai bisogno di aiuto? Consultare la documentazione",

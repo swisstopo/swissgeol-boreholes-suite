@@ -8,7 +8,7 @@ import {
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
-import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
+import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.tsx";
 
 export { WorkflowStatus };
 

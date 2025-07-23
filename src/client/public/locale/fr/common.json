@@ -394,6 +394,7 @@
   "msgWateringressEmpty": "Aucune entrée d'eau disable",
   "msgWorkgroupCanBeDeleted": "Le groupe de travail sélectionné peut être supprimé définitivement car il n'y a actuellement aucune activité dans la base de données",
   "municipality": "Commune",
+  "mustBeUnique": "La valeur doit être unique",
   "name": "Nom",
   "national_interest": "Intérêt national",
   "needHelpSeeDocumentation": "Besoin d'aide? Voir la documentation pour plus d'informations.",

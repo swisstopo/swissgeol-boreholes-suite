@@ -132,6 +132,11 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
+            if (!await IsNameUnique(entity).ConfigureAwait(false))
+            {
+                return Problem("Name must be unique");
+            }
+
             // If the stratigraphy to create is the first stratigraphy of a borehole,
             // then we need to set it as the primary stratigraphy.
             var hasBoreholeExistingStratigraphy = await Context.StratigraphiesV2
@@ -144,20 +149,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
             }
             else if (entity.IsPrimary)
             {
-                // If the stratigraphy to edit is the primary stratigraphy,
-                // then reset any other primary stratigraphies of the borehole.
-                var otherPrimaryStratigraphies = await Context.StratigraphiesV2
-                    .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary == true && s.Id != entity.Id)
-                    .ToListAsync()
-                    .ConfigureAwait(false);
-
-                foreach (var other in otherPrimaryStratigraphies)
-                {
-                    other.IsPrimary = false;
-                    Context.Update(other);
-                }
-
-                await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+                await ResetOtherPrimaryStratigraphiesAsync(entity).ConfigureAwait(false);
             }
 
             return await base.CreateAsync(entity).ConfigureAwait(false);
@@ -182,26 +174,18 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
+            if (!await IsNameUnique(entity).ConfigureAwait(false))
+            {
+                return Problem("Name must be unique");
+            }
+
             entity.Date = entity.Date != null ? DateTime.SpecifyKind(entity.Date.Value, DateTimeKind.Utc) : null;
             var editResult = await base.EditAsync(entity).ConfigureAwait(false);
             if (editResult.Result is not OkObjectResult) return editResult;
 
-            // If the stratigraphy to edit is the primary stratigraphy,
-            // then reset any other primary stratigraphies of the borehole.
             if (entity.IsPrimary)
             {
-                var otherPrimaryStratigraphies = await Context.StratigraphiesV2
-                    .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary == true && s.Id != entity.Id)
-                    .ToListAsync()
-                    .ConfigureAwait(false);
-
-                foreach (var other in otherPrimaryStratigraphies)
-                {
-                    other.IsPrimary = false;
-                    Context.Update(other);
-                }
-
-                await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+                await ResetOtherPrimaryStratigraphiesAsync(entity).ConfigureAwait(false);
             }
 
             return editResult;
@@ -220,5 +204,30 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
         if (entity == null) return Task.FromResult<int?>(default);
 
         return Task.FromResult<int?>(entity.BoreholeId);
+    }
+
+    private async Task ResetOtherPrimaryStratigraphiesAsync(StratigraphyV2 entity)
+    {
+        var otherPrimaryStratigraphies = await Context.StratigraphiesV2
+            .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary == true && s.Id != entity.Id)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        foreach (var other in otherPrimaryStratigraphies)
+        {
+            other.IsPrimary = false;
+            Context.Update(other);
+        }
+
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+    }
+
+    private async Task<bool> IsNameUnique(StratigraphyV2 entity)
+    {
+        var hasBoreholeStratigraphiesWithSameName = await Context.StratigraphiesV2
+                .AnyAsync(s => s.BoreholeId == entity.BoreholeId && s.Id != entity.Id && s.Name == entity.Name)
+                .ConfigureAwait(false);
+
+        return !hasBoreholeStratigraphiesWithSameName;
     }
 }

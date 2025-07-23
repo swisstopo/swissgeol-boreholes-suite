@@ -394,6 +394,7 @@
   "msgWateringressEmpty": "No water ingresses available",
   "msgWorkgroupCanBeDeleted": "The selected workgroup can be permanently deleted because currently there are no traces of activity in the database",
   "municipality": "Municipality",
+  "mustBeUnique": "Value must be unique",
   "name": "Name",
   "national_interest": "National interest",
   "needHelpSeeDocumentation": "Need help? See documentation for more details",

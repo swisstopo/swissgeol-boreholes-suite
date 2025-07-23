@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
+import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { User } from "./apiInterfaces.ts";
 import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
-import { fetchApiV2 } from "./fetchApiV2.ts";
+import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
 export interface StratigraphyLegacy {
   id: number;
@@ -180,20 +180,15 @@ export const useStratigraphiesByBoreholeId = (boreholeId?: number) =>
   });
 
 export const useStratigraphyMutations = () => {
-  const queryClient = useQueryClient();
-
   const useAddStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
-      return await fetchApiV2(stratigraphyController, "POST", stratigraphy);
+      return await fetchApiV2WithApiError(stratigraphyController, "POST", stratigraphy);
     },
   });
 
   const useCopyStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
-      return await fetchApiV2(`${stratigraphyController}/copy?id=${stratigraphy.id}`, "POST");
-    },
-    onSuccess: (_data, originalStratigraphy) => {
-      invalidateStratigraphyQueries(queryClient, originalStratigraphy.boreholeId, true);
+      return await fetchApiV2WithApiError(`${stratigraphyController}/copy?id=${stratigraphy.id}`, "POST");
     },
   });
 
@@ -203,22 +198,17 @@ export const useStratigraphyMutations = () => {
       delete stratigraphy.createdBy;
       delete stratigraphy.updatedBy;
 
-      return await fetchApiV2(stratigraphyController, "PUT", stratigraphy);
-    },
-    onSuccess: updatedStratigraphy => {
-      invalidateStratigraphyQueries(queryClient, updatedStratigraphy.boreholeId, false);
+      return await fetchApiV2WithApiError(stratigraphyController, "PUT", stratigraphy);
     },
   });
 
   const useDeleteStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
-      return await fetchApiV2(`${stratigraphyController}?id=${stratigraphy.id}`, "DELETE");
+      return await fetchApiV2WithApiError(`${stratigraphyController}?id=${stratigraphy.id}`, "DELETE");
     },
   });
 
-  useShowAlertOnError(useAddStratigraphy.isError, useAddStratigraphy.error);
   useShowAlertOnError(useCopyStratigraphy.isError, useCopyStratigraphy.error);
-  useShowAlertOnError(useUpdateStratigraphy.isError, useUpdateStratigraphy.error);
   useShowAlertOnError(useDeleteStratigraphy.isError, useDeleteStratigraphy.error);
 
   return {
@@ -226,6 +216,13 @@ export const useStratigraphyMutations = () => {
     copy: useCopyStratigraphy,
     update: useUpdateStratigraphy,
     delete: useDeleteStratigraphy,
+  };
+};
+
+export const useReloadStratigraphies = () => {
+  const queryClient = useQueryClient();
+  return (boreholeId: number) => {
+    queryClient.invalidateQueries({ queryKey: [stratigraphiesByBoreholeIdQueryKey, boreholeId] });
   };
 };
 

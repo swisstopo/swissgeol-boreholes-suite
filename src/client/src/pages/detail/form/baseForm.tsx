@@ -6,6 +6,7 @@ import { useBorehole, useBoreholeMutations } from "../../../api/borehole.ts";
 import { useFormDirtyChanges } from "../../../components/form/useFormDirtyChanges.tsx";
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { useApiErrorAlert } from "../../../hooks/useShowAlertOnError.tsx";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
 import { SaveContext } from "../saveContext.tsx";
 
@@ -33,22 +34,36 @@ export const BaseForm = <T extends FieldValues>({
   const { getValues, reset, formState } = formMethods;
   useBlockNavigation();
   useFormDirtyChanges({ formState });
+  const showApiErrorAlert = useApiErrorAlert();
 
   const onSubmit = useCallback(
-    (formInputs: T) => {
-      updateBorehole({
-        ...borehole,
-        ...prepareDataForSubmit(formInputs),
+    (formInputs: T): Promise<boolean> => {
+      return new Promise(resolve => {
+        updateBorehole(
+          {
+            ...borehole,
+            ...prepareDataForSubmit(formInputs),
+          },
+          {
+            onSuccess: () => {
+              resolve(true);
+            },
+            onError: error => {
+              showApiErrorAlert(error);
+              resolve(false);
+            },
+          },
+        );
       });
     },
-    [borehole, prepareDataForSubmit, updateBorehole],
+    [borehole, prepareDataForSubmit, updateBorehole, showApiErrorAlert],
   );
 
   const resetAndSubmitForm = useCallback(async () => {
     const currentValues = getValues();
     reset(currentValues);
     setExtractionObject(undefined);
-    onSubmit(currentValues);
+    return await onSubmit(currentValues);
   }, [getValues, onSubmit, reset, setExtractionObject]);
 
   const resetWithoutSave = useCallback(() => {

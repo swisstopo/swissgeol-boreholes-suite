@@ -394,6 +394,7 @@
   "msgWateringressEmpty": "Keine Wasserzutritte vorhanden",
   "msgWorkgroupCanBeDeleted": "Die ausgewählte Arbeitsgruppe kann für immer gelöscht werden, da derzeit keine Aktivitäten in der Datenbank vorhanden sind",
   "municipality": "Gemeinde",
+  "mustBeUnique": "Wert muss eindeutig sein",
   "name": "Name",
   "national_interest": "Nationales Interesse",
   "needHelpSeeDocumentation": "Brauchen Sie Hilfe? Mehr Details finden Sie in der Dokumentation",

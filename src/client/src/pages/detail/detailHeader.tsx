@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
-import { BoreholeV2, useBoreholeMutations } from "../../api/borehole.ts";
+import { BoreholeV2, useBoreholeMutations, useReloadBoreholes } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import {
@@ -17,6 +17,7 @@ import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useDevMode } from "../../hooks/useDevMode.tsx";
+import { useApiErrorAlert } from "../../hooks/useShowAlertOnError.tsx";
 import { formatDate } from "../../utils.ts";
 import { EditStateContext } from "./editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
@@ -41,13 +42,35 @@ const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) =>
     update: { mutate: updateBorehole },
     delete: { mutate: deleteBorehole },
   } = useBoreholeMutations();
+  const reloadBoreholes = useReloadBoreholes();
+  const showApiErrorAlert = useApiErrorAlert();
 
   const toggleEditing = (editing: boolean) => {
     if (!currentUser) return;
     if (!editing) {
-      updateBorehole({ ...borehole, locked: null, lockedById: null });
+      updateBorehole(
+        { ...borehole, locked: null, lockedById: null },
+        {
+          onSuccess: () => {
+            reloadBoreholes();
+          },
+          onError: error => {
+            showApiErrorAlert(error);
+          },
+        },
+      );
     } else {
-      updateBorehole({ ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id });
+      updateBorehole(
+        { ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id },
+        {
+          onSuccess: () => {
+            reloadBoreholes();
+          },
+          onError: error => {
+            showApiErrorAlert(error);
+          },
+        },
+      );
     }
     setEditingEnabled(editing);
   };

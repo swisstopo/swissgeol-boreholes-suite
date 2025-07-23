@@ -6,10 +6,10 @@ import { Box, Card, Chip, CircularProgress, Stack, Tooltip, Typography } from "@
 import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useReloadBoreholes } from "../../../../api/borehole.ts";
 import {
-  invalidateStratigraphyQueries,
   Stratigraphy,
+  useReloadStratigraphies,
   useStratigraphiesByBoreholeId,
   useStratigraphyMutations,
 } from "../../../../api/stratigraphy";
@@ -27,6 +27,7 @@ import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../co
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams";
+import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { SaveContext, SaveContextProps } from "../../saveContext";
@@ -38,12 +39,13 @@ export const StratigraphyPanel: FC = () => {
   const location = useLocation();
   const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
   const {
-    add: { mutateAsync: addStratigraphyAsync },
+    add: { mutate: addStratigraphy },
     copy: { mutate: copyStratigraphy },
     update: { mutate: updateStratigraphy },
-    delete: { mutateAsync: deleteStratigraphy },
+    delete: { mutate: deleteStratigraphy },
   } = useStratigraphyMutations();
-  const queryClient = useQueryClient();
+  const reloadStratigraphies = useReloadStratigraphies();
+  const reloadBoreholes = useReloadBoreholes();
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
   const { registerSaveHandler, registerResetHandler, unMount } = useContext<SaveContextProps>(SaveContext);
@@ -52,10 +54,7 @@ export const StratigraphyPanel: FC = () => {
   const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
   const { showPrompt } = useContext(PromptContext);
-
-  useEffect(() => {
-    invalidateStratigraphyQueries(queryClient, Number(boreholeId), true);
-  }, [stratigraphyId, queryClient, boreholeId]);
+  const showApiErrorAlert = useApiErrorAlert();
 
   const sortedStratigraphies: Stratigraphy[] | undefined = useMemo(() => {
     if (!stratigraphies) return stratigraphies;
@@ -138,9 +137,25 @@ export const StratigraphyPanel: FC = () => {
 
   const deleteSelectedStratigraphy = useCallback(async () => {
     if (!selectedStratigraphy) return;
-    await deleteStratigraphy(selectedStratigraphy);
-    navigateTo({ path: `/${boreholeId}/stratigraphy` });
-  }, [boreholeId, deleteStratigraphy, navigateTo, selectedStratigraphy]);
+    deleteStratigraphy(selectedStratigraphy, {
+      onSuccess: () => {
+        navigateTo({ path: `/${boreholeId}/stratigraphy` });
+        reloadStratigraphies(Number(boreholeId));
+        reloadBoreholes();
+      },
+    });
+  }, [boreholeId, deleteStratigraphy, navigateTo, reloadBoreholes, reloadStratigraphies, selectedStratigraphy]);
+
+  const onCopy = useCallback(() => {
+    if (selectedStratigraphy) {
+      copyStratigraphy(selectedStratigraphy, {
+        onSuccess: newStratigraphyId => {
+          navigateToStratigraphy(newStratigraphyId, true);
+          reloadStratigraphies(Number(boreholeId));
+        },
+      });
+    }
+  }, [boreholeId, copyStratigraphy, navigateToStratigraphy, reloadStratigraphies, selectedStratigraphy]);
 
   const resetWithoutSave = useCallback(() => {
     if (selectedStratigraphy) {
@@ -151,25 +166,58 @@ export const StratigraphyPanel: FC = () => {
     }
   }, [formMethods, selectedStratigraphy]);
 
+  const handleSaveError = useCallback(
+    (error: Error) => {
+      if (error.message.includes("Name must be unique")) {
+        formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
+      } else {
+        showApiErrorAlert(error);
+      }
+
+      return false;
+    },
+    [formMethods, showApiErrorAlert, t],
+  );
+
   const onSave = useCallback(async () => {
     if (selectedStratigraphy) {
       const values = getValues();
       values.date = values.date ? ensureDatetime(values.date.toString()) : null;
 
       if (values.id === 0) {
-        const newStratigraphy = await addStratigraphyAsync(values);
-        // This timeout is necessary to ensure that the url is correctly updated before the component re-renders
-        setTimeout(() => {
-          navigateToStratigraphy(newStratigraphy.id, true);
-        }, 0);
-      } else {
-        updateStratigraphy({
-          ...selectedStratigraphy,
-          ...values,
+        addStratigraphy(values, {
+          onSuccess: newStratigraphy => {
+            navigateToStratigraphy(newStratigraphy.id, true);
+            reloadStratigraphies(Number(boreholeId));
+            return true;
+          },
+          onError: handleSaveError,
         });
+      } else {
+        updateStratigraphy(
+          { ...selectedStratigraphy, ...values },
+          {
+            onSuccess: () => {
+              reloadStratigraphies(Number(boreholeId));
+              return true;
+            },
+            onError: handleSaveError,
+          },
+        );
       }
     }
-  }, [addStratigraphyAsync, getValues, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy]);
+
+    return false;
+  }, [
+    addStratigraphy,
+    boreholeId,
+    getValues,
+    handleSaveError,
+    navigateToStratigraphy,
+    reloadStratigraphies,
+    selectedStratigraphy,
+    updateStratigraphy,
+  ]);
 
   const showDeletePrompt = useCallback(() => {
     if (!selectedStratigraphy) return;
@@ -256,7 +304,7 @@ export const StratigraphyPanel: FC = () => {
                           variant="outlined"
                           color={"secondary"}
                           label={"duplicate"}
-                          onClick={() => copyStratigraphy(selectedStratigraphy)}
+                          onClick={onCopy}
                           icon={<CopyIcon />}
                         />
                       </>
@@ -317,7 +365,7 @@ export const StratigraphyPanel: FC = () => {
                   variant="outlined"
                   color={"secondary"}
                   label={"duplicate"}
-                  onClick={() => copyStratigraphy(selectedStratigraphy)}
+                  onClick={onCopy}
                   icon={<CopyIcon />}
                 />
               </Stack>
@@ -331,6 +379,7 @@ export const StratigraphyPanel: FC = () => {
                     value={selectedStratigraphy.name}
                     type={FormValueType.Text}
                     required={true}
+                    onUpdate={() => formMethods.clearErrors("name")}
                   />
                   <FormInput
                     fieldName={"date"}
