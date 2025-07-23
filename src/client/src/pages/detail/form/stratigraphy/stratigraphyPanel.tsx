@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useMemo } from "react";
+import { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -48,13 +48,14 @@ export const StratigraphyPanel: FC = () => {
   const reloadBoreholes = useReloadBoreholes();
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
-  const { registerSaveHandler, registerResetHandler, unMount } = useContext<SaveContextProps>(SaveContext);
+  const { hasChanges, registerSaveHandler, registerResetHandler, unMount } = useContext<SaveContextProps>(SaveContext);
   useBlockNavigation();
   const formMethods = useForm<Stratigraphy>({ mode: "all" });
   const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
   const { showPrompt } = useContext(PromptContext);
   const showApiErrorAlert = useApiErrorAlert();
+  const [newlyAddedStratigraphyId, setNewlyAddedStratigraphyId] = useState<number>();
 
   const sortedStratigraphies: Stratigraphy[] | undefined = useMemo(() => {
     if (!stratigraphies) return stratigraphies;
@@ -150,7 +151,7 @@ export const StratigraphyPanel: FC = () => {
     if (selectedStratigraphy) {
       copyStratigraphy(selectedStratigraphy, {
         onSuccess: newStratigraphyId => {
-          navigateToStratigraphy(newStratigraphyId, true);
+          navigateToStratigraphy(newStratigraphyId);
           reloadStratigraphies(Number(boreholeId));
         },
       });
@@ -184,36 +185,48 @@ export const StratigraphyPanel: FC = () => {
       const values = getValues();
       values.date = values.date ? ensureDatetime(values.date.toString()) : null;
 
-      if (values.id === 0) {
-        addStratigraphy(values, {
-          onSuccess: newStratigraphy => {
-            navigateToStratigraphy(newStratigraphy.id, true);
-            reloadStratigraphies(Number(boreholeId));
-            return true;
-          },
-          onError: handleSaveError,
-        });
-      } else {
-        updateStratigraphy(
-          { ...selectedStratigraphy, ...values },
-          {
-            onSuccess: () => {
-              reloadStratigraphies(Number(boreholeId));
-              return true;
-            },
-            onError: handleSaveError,
-          },
-        );
+      try {
+        if (values.id === 0) {
+          await new Promise<void>((resolve, reject) => {
+            addStratigraphy(values, {
+              onSuccess: newStratigraphy => {
+                setNewlyAddedStratigraphyId(newStratigraphy.id);
+                resolve();
+              },
+              onError: error => {
+                handleSaveError(error);
+                reject(error);
+              },
+            });
+          });
+        } else {
+          await new Promise<void>((resolve, reject) => {
+            updateStratigraphy(
+              { ...selectedStratigraphy, ...values },
+              {
+                onSuccess: () => {
+                  reloadStratigraphies(Number(boreholeId));
+                  resolve();
+                },
+                onError: error => {
+                  handleSaveError(error);
+                  reject(error);
+                },
+              },
+            );
+          });
+        }
+        return true;
+      } catch {
+        return false;
       }
     }
-
     return false;
   }, [
     addStratigraphy,
     boreholeId,
     getValues,
     handleSaveError,
-    navigateToStratigraphy,
     reloadStratigraphies,
     selectedStratigraphy,
     updateStratigraphy,
@@ -234,6 +247,14 @@ export const StratigraphyPanel: FC = () => {
       },
     ]);
   }, [deleteSelectedStratigraphy, selectedStratigraphy, showPrompt]);
+
+  useEffect(() => {
+    if (!hasChanges && newlyAddedStratigraphyId) {
+      navigateToStratigraphy(newlyAddedStratigraphyId, true);
+      reloadStratigraphies(Number(boreholeId));
+      setNewlyAddedStratigraphyId(undefined);
+    }
+  }, [boreholeId, hasChanges, navigateToStratigraphy, newlyAddedStratigraphyId, reloadStratigraphies]);
 
   useEffect(() => {
     registerSaveHandler(onSave);
