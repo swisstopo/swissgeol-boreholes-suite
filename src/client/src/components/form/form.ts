@@ -4,7 +4,7 @@ import { FieldError, FieldErrorsImpl } from "react-hook-form/dist/types/errors";
 export const getFormFieldError = (
   fieldName: string | undefined,
   errors: FieldError | Merge<FieldError, FieldErrorsImpl> | undefined,
-): string | undefined => {
+): FieldError | undefined => {
   if (!fieldName || !errors) {
     return undefined;
   }
@@ -19,7 +19,8 @@ export const getFormFieldError = (
       break;
     }
   }
-  return currentElement ? currentElement.message?.toString() : undefined;
+
+  return currentElement as FieldError;
 };
 
 export enum FormValueType {

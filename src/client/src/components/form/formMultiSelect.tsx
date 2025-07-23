@@ -48,7 +48,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
     setOpen(true);
   };
 
-  const errorMessage = getFormFieldError(fieldName, formState.errors);
+  const formFieldError = getFormFieldError(fieldName, formState.errors);
 
   const ChipBox = (selection: number[]) => {
     return (
@@ -123,8 +123,8 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                 },
               })}
               value={field.value || []}
-              error={!!errorMessage}
-              helperText={errorMessage ? t(errorMessage) : ""}
+              error={!!formFieldError}
+              helperText={formFieldError?.message ? t(formFieldError.message) : ""}
               disabled={disabled || false}
               data-cy={fieldName + "-formMultiSelect"}>
               <MenuItem key="reset" value="reset">
@@ -140,8 +140,8 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
             <TextField
               {...field}
               required={required || false}
-              error={!!errorMessage}
-              helperText={errorMessage ? t(errorMessage) : ""}
+              error={!!formFieldError}
+              helperText={formFieldError?.message ? t(formFieldError.message) : ""}
               sx={{ ...sx }}
               className={`${readonly ? "readonly" : ""} ${className ?? ""}`}
               label={t(label)}

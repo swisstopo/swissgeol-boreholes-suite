@@ -118,14 +118,14 @@ export const FormSelect: FC<FormSelectProps> = ({
               }
             }}
             renderInput={params => {
-              const errorMessage = getFormFieldError(fieldName, formState.errors);
+              const formFieldError = getFormFieldError(fieldName, formState.errors);
               return (
                 <TextField
                   {...params}
                   label={t(label)}
                   required={required}
-                  error={!!errorMessage}
-                  helperText={errorMessage ? t(errorMessage) : ""}
+                  error={!!formFieldError}
+                  helperText={formFieldError?.message ? t(formFieldError.message) : ""}
                   sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
                   className={className}
                   data-cy={fieldName + "-formSelect"}
