@@ -12,7 +12,7 @@ public class StratigraphyV2 : IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
     [JsonRequired]
-    [Column("stratigraphy_id")]
+    [Column("id")]
     public int Id { get; set; }
 
     /// <summary>
