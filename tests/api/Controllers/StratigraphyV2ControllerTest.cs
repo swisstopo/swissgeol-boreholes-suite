@@ -104,6 +104,16 @@ public class StratigraphyV2ControllerTest
     }
 
     [TestMethod]
+    public async Task CopyForLockedBorehole()
+    {
+        SetupControllerWithAlwaysLockedBorehole();
+
+        var existingStratigraphy = await context.StratigraphiesV2.FirstAsync();
+        var copyResult = await controller.CopyAsync(existingStratigraphy.Id);
+        ActionResultAssert.IsUnauthorized(copyResult.Result);
+    }
+
+    [TestMethod]
     public async Task Delete()
     {
         // Prepare stratigraphy to delete
@@ -150,6 +160,16 @@ public class StratigraphyV2ControllerTest
 
         var deleteResult = await controller.DeleteAsync(primaryStratigraphy.Id);
         ActionResultAssert.IsInternalServerError(deleteResult);
+    }
+
+    [TestMethod]
+    public async Task DeleteForLockedBorehole()
+    {
+        SetupControllerWithAlwaysLockedBorehole();
+
+        var existingStratigraphy = await context.StratigraphiesV2.FirstAsync();
+        var deleteResult = await controller.DeleteAsync(existingStratigraphy.Id);
+        ActionResultAssert.IsUnauthorized(deleteResult);
     }
 
     [TestMethod]
@@ -277,7 +297,7 @@ public class StratigraphyV2ControllerTest
         SetupControllerWithAlwaysLockedBorehole();
 
         var createResult = await controller.CreateAsync(new());
-        ActionResultAssert.IsInternalServerError(createResult.Result);
+        ActionResultAssert.IsUnauthorized(createResult.Result);
     }
 
     [TestMethod]
@@ -372,7 +392,7 @@ public class StratigraphyV2ControllerTest
 
         var existingStratigraphy = await context.StratigraphiesV2.FirstAsync();
         var editResult = await controller.EditAsync(existingStratigraphy);
-        ActionResultAssert.IsInternalServerError(editResult.Result, "locked");
+        ActionResultAssert.IsUnauthorized(editResult.Result);
     }
 
     private StratigraphyV2? GetStratigraphy(int id)
