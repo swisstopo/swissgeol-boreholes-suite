@@ -9,6 +9,7 @@ import {
   updatePhotos,
   uploadPhoto,
 } from "../../../../api/fetchApiV2.ts";
+import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { AttachmentContent } from "../attachmentsContent.tsx";
@@ -22,6 +23,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
+  const showApiErrorAlert = useApiErrorAlert();
 
   const loadAttachments = useCallback(() => {
     return getPhotosByBoreholeId(boreholeId);
@@ -41,13 +43,23 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     await exportPhotos(ids);
   };
 
-  const updateAttachments = useCallback(async (updatedRows: Map<GridRowId, Photo>) => {
-    const updatedRowsArray = Array.from(updatedRows.entries()).map(([key, value]) => ({
-      id: key as number,
-      public: value.public ?? false,
-    }));
-    await updatePhotos(updatedRowsArray);
-  }, []);
+  const updateAttachments = useCallback(
+    async (updatedRows: Map<GridRowId, Photo>) => {
+      const updatedRowsArray = Array.from(updatedRows.entries()).map(([key, value]) => ({
+        id: key as number,
+        public: value.public ?? false,
+      }));
+      await updatePhotos(updatedRowsArray);
+      try {
+        await updatePhotos(updatedRowsArray);
+        return true;
+      } catch (error) {
+        showApiErrorAlert(error);
+        return false;
+      }
+    },
+    [showApiErrorAlert],
+  );
 
   const { isLoading, rows, onAdd, onDelete, onExport, getPublicColumnHeader, getPublicColumnCell } = useAttachments({
     apiRef,

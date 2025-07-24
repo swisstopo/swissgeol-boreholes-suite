@@ -1,10 +1,9 @@
-FROM node:20-buster-slim AS development
+FROM node:22-bookworm-slim AS development
 ARG VERSION
 ARG REVISION
 ENV VITE_APP_VERSION=${VERSION}+${REVISION}
-RUN apt-get -y update
-RUN apt-get -y install git vim curl htop python3 python3-pip
-RUN python3 -m pip install mkdocs
+RUN apt-get -y update && \
+    apt-get -y install curl git htop mkdocs vim
 RUN mkdir -p /app/src/client
 WORKDIR /app/src/client
 
@@ -19,7 +18,7 @@ RUN mkdocs build -d ./public/help
 
 ENTRYPOINT ["npm", "run", "start", "--", "--host"]
 
-FROM node:20-buster-slim AS deploy
+FROM node:22-bookworm-slim AS deploy
 ARG VERSION
 ARG REVISION
 ENV VITE_APP_VERSION=${VERSION}+${REVISION}

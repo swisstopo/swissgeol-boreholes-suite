@@ -4,6 +4,7 @@ import { TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { detachFile, downloadFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces";
+import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext";
 import { AttachmentContent } from "../attachmentsContent";
@@ -17,6 +18,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
+  const showApiErrorAlert = useApiErrorAlert();
 
   const loadAttachments = useCallback(async () => {
     const files = await getFiles<BoreholeFile>(boreholeId);
@@ -54,10 +56,17 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
             row.public ?? data.public,
           );
         }
+        return Promise.resolve();
       });
-      await Promise.all(updatePromises);
+      const results = await Promise.allSettled(updatePromises);
+      const errors = results.filter(r => r.status === "rejected").map(r => r.reason);
+      if (errors.length > 0) {
+        showApiErrorAlert(errors.map(e => e.message).join(", "));
+        return false;
+      }
+      return true;
     },
-    [apiRef, boreholeId],
+    [apiRef, boreholeId, showApiErrorAlert],
   );
 
   const {

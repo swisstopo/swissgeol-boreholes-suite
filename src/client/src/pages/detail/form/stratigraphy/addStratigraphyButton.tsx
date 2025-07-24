@@ -1,11 +1,14 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Sparkles } from "lucide-react";
+import { SxProps } from "@mui/material";
+import { Plus } from "lucide-react";
+import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
 import { ButtonSelect } from "../../../../components/buttons/buttonSelect";
 
 interface AddStratigraphyButtonProps {
   addEmptyStratigraphy: () => void;
   extractStratigraphyFromProfile: () => void;
+  sx?: SxProps;
 }
 
 enum Actions {
@@ -16,6 +19,7 @@ enum Actions {
 export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
   addEmptyStratigraphy,
   extractStratigraphyFromProfile,
+  sx,
 }) => {
   const { t } = useTranslation();
 
@@ -24,8 +28,8 @@ export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
       fieldName="addStratigraphy"
       variant="contained"
       items={[
-        { key: Actions.addEmpty, value: t("addEmptyStratigraphy") },
-        { key: Actions.extract, value: t("extractStratigraphyFromProfile"), startIcon: <Sparkles /> },
+        { key: Actions.addEmpty, value: t("addEmptyStratigraphy"), startIcon: <Plus /> },
+        { key: Actions.extract, value: t("extractStratigraphyFromProfile"), startIcon: <ExtractAiIcon /> },
       ]}
       selectedItem={{ key: "new", value: t("newStratigraphy") }}
       onItemSelected={item => {
@@ -40,7 +44,7 @@ export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
       }}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       transformOrigin={{ vertical: "top", horizontal: "right" }}
-      sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}
+      sx={{ height: "36px", ...sx }}
     />
   );
 };

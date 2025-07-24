@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## v2.1.1266 - 2025-07-22
+
+### Changed
+- Upgraded to Node 22.
+
 ## v2.1.1257 - 2025-07-17
 
 ### Changed

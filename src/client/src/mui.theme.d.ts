@@ -82,6 +82,7 @@ declare module "@mui/material/styles" {
       darkgrey: string;
       grey: string;
       dark: string;
+      header: string;
       menuItemActive: string;
       filterItemActive: string;
       listItemActive: string;
@@ -159,6 +160,7 @@ declare module "@mui/material/styles" {
     MuiTableCell: object;
     MuiTooltip: object;
     MuiDataGrid: object;
+    MuiChip: object;
   }
 
   interface AppThemeComponentsOptions extends ComponentsOptions {
@@ -186,6 +188,7 @@ declare module "@mui/material/styles" {
     MuiTableCell: object;
     MuiTooltip: object;
     MuiDataGrid: object;
+    MuiChip: object;
   }
 
   interface AppTheme extends Theme {

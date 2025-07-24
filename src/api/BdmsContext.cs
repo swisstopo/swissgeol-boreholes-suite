@@ -20,6 +20,7 @@ public class BdmsContext : DbContext
     /// </summary>
     public IQueryable<Borehole> BoreholesWithIncludes
         => Boreholes
+        .Include(b => b.StratigraphiesV2)
         .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
         .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
         .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
@@ -95,6 +96,8 @@ public class BdmsContext : DbContext
         .Include(l => l.OrganicComponentCodelists);
 
     public DbSet<Stratigraphy> Stratigraphies { get; set; }
+
+    public DbSet<StratigraphyV2> StratigraphiesV2 { get; set; }
 
     public DbSet<Term> Terms { get; set; }
 

@@ -9,6 +9,7 @@ import {
   getDocumentsByBoreholeId,
   updateDocuments,
 } from "../../../../api/fetchApiV2.ts";
+import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { AttachmentContent } from "../attachmentsContent.tsx";
@@ -22,6 +23,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
+  const showApiErrorAlert = useApiErrorAlert();
 
   const loadAttachments = useCallback(async () => {
     return await getDocumentsByBoreholeId(boreholeId);
@@ -53,9 +55,15 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
           return undefined;
         })
         .filter((row): row is DocumentUpdate => row !== undefined);
-      await updateDocuments(updatedRowsArray);
+      try {
+        await updateDocuments(updatedRowsArray);
+        return true;
+      } catch (error) {
+        showApiErrorAlert(error);
+        return false;
+      }
     },
-    [apiRef],
+    [apiRef, showApiErrorAlert],
   );
 
   const { isLoading, rows, onAdd, onDelete, getPublicColumnHeader, getPublicColumnCell, updatedRows, setUpdatedRows } =

@@ -1,8 +1,9 @@
 import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const useBoreholesNavigate = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const navigateTo = useCallback(
     ({
@@ -18,14 +19,14 @@ export const useBoreholesNavigate = () => {
       preserveSearch?: boolean;
       replace?: boolean;
     }) => {
-      const pathname = path || window.location.pathname;
+      const pathname = path || location.pathname;
       const hashValue = hash?.split("?")[0];
       const preserveSearchValue = preserveSearch ?? true;
       const replaceValue = replace ?? false;
       let searchParams = search;
       if (!searchParams && preserveSearchValue) {
-        const locationSearch = window.location.search;
-        const searchFromHash = window.location.hash.split("?")[1];
+        const locationSearch = location.search;
+        const searchFromHash = location.hash.split("?")[1];
 
         if (locationSearch) {
           searchParams = locationSearch;
@@ -35,9 +36,9 @@ export const useBoreholesNavigate = () => {
       }
 
       if (
-        path !== window.location.pathname ||
-        hash !== window.location.hash.split("?")[0] ||
-        searchParams !== window.location.search
+        pathname !== location.pathname ||
+        hashValue !== location.hash.split("?")[0] ||
+        searchParams !== location.search
       ) {
         navigate(
           {
@@ -49,7 +50,7 @@ export const useBoreholesNavigate = () => {
         );
       }
     },
-    [navigate],
+    [location.hash, location.pathname, location.search, navigate],
   );
 
   return { navigateTo };

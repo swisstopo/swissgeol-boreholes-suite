@@ -5,7 +5,7 @@ import {
 } from "../../pages/detail/labeling/labelingInterfaces.tsx";
 import { ApiError } from "../apiInterfaces.ts";
 import { fetchCreatePngs, fetchExtractData, fetchExtractStratigraphy, fetchPageBoundingBoxes } from "../dataextraction";
-import { download, fetchApiV2, fetchApiV2Base, upload } from "../fetchApiV2.ts";
+import { download, fetchApiV2, fetchApiV2Base, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
 import { BoreholeFile, DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
@@ -53,10 +53,14 @@ export const updateFile = async (
   description: string,
   isPublic: boolean,
 ) => {
-  return await fetchApiV2(`boreholefile/update?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`, "PUT", {
-    description: description,
-    public: isPublic,
-  });
+  return await fetchApiV2WithApiError(
+    `boreholefile/update?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`,
+    "PUT",
+    {
+      description: description,
+      public: isPublic,
+    },
+  );
 };
 
 export async function getDataExtractionFileInfo(
