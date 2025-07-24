@@ -136,27 +136,22 @@ public class StratigraphyV2ControllerTest
         var stratigraphies = await controller.GetAsync();
         var stratigraphyTestCandidates = stratigraphies
             .GroupBy(x => x.BoreholeId)
-            .Where(g => g.Count(s => s.IsPrimary == true) == 0)
+            .Where(g => !g.Any(s => s.IsPrimary))
             .ToList();
 
         var primaryStratigraphy = new StratigraphyV2
         {
             Id = stratigraphies.Max(x => x.Id) + 1,
-            BoreholeId = stratigraphyTestCandidates.First().Key,
+            BoreholeId = stratigraphyTestCandidates[0].Key,
             IsPrimary = true,
             Name = "KODACLUSTER",
         };
 
-        context.Add(primaryStratigraphy);
+        await context.AddAsync(primaryStratigraphy);
 
         await context.SaveChangesAsync();
 
         Assert.AreEqual(true, stratigraphyTestCandidates.Any(), "Precondition: There is at least one group of stratigraphies with one main stratigraphy");
-
-        // Delete primary stratigraphy and assert that
-        // the latest stratigraphy is now the main stratigraphy
-        var stratigraphiesUnderTest = stratigraphyTestCandidates.First();
-        var latestNonPrimaryStratigraphy = stratigraphiesUnderTest.Where(x => !x.IsPrimary).OrderByDescending(x => x.Created).First();
 
         var deleteResult = await controller.DeleteAsync(primaryStratigraphy.Id);
         ActionResultAssert.IsInternalServerError(deleteResult);
