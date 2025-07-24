@@ -1,5 +1,6 @@
 ﻿using BDMS.Json;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -10,12 +11,14 @@ namespace BDMS.Models;
 public class StratigraphyV2 : IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
+    [JsonRequired]
     [Column("stratigraphy_id")]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the foreign key for the <see cref="Borehole"/> associated  with the <see cref="StratigraphyV2"/>.
     /// </summary>
+    [JsonRequired]
     [Column("borehole_id")]
     public int BoreholeId { get; set; }
 
@@ -27,6 +30,7 @@ public class StratigraphyV2 : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="StratigraphyV2"/>'s name.
     /// </summary>
+    [JsonRequired]
     [IncludeInExport]
     [Column("name")]
     public string Name { get; set; }
@@ -42,6 +46,7 @@ public class StratigraphyV2 : IChangeTracking, IIdentifyable
     /// Gets or sets whether the <see cref="StratigraphyV2"/> is primary.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("is_primary")]
     public bool IsPrimary { get; set; }
 
