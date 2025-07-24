@@ -266,7 +266,15 @@ export const toggleCheckbox = (fieldName, parent = "") => {
  */
 export const evaluateCheckbox = (fieldName, expectedChecked, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formCheckbox"]`;
-  cy.get(selector).invoke("attr", "aria-disabled").should("eq", expectedChecked);
+  cy.get(selector)
+    .invoke("attr", "aria-disabled")
+    .should(val => {
+      if (expectedChecked) {
+        expect(val).to.eq("true");
+      } else {
+        expect([undefined, "false"]).to.include(val);
+      }
+    });
 };
 
 /**
