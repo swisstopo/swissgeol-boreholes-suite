@@ -88,7 +88,6 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphyToDelete.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-
             var existingStratigraphyCount = await Context.StratigraphiesV2
                 .CountAsync(s => s.BoreholeId == stratigraphyToDelete.BoreholeId)
                 .ConfigureAwait(false);
@@ -120,7 +119,6 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
             if (entity == null) return BadRequest(ModelState);
 
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), entity.BoreholeId).ConfigureAwait(false)) return Unauthorized();
-
 
             if (!await IsNameUnique(entity).ConfigureAwait(false))
             {
@@ -159,7 +157,6 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
         try
         {
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), entity.BoreholeId).ConfigureAwait(false)) return Unauthorized();
-
 
             if (!await IsNameUnique(entity).ConfigureAwait(false))
             {
