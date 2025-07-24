@@ -28,28 +28,26 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md">
-      <Stack sx={{ width: "100%", borderRadius: 1 }}>
-        <DialogHeaderContainer>
-          <Stack direction="row">
-            <Typography variant="h4" sx={{ flexGrow: 1 }}>
-              {t("terms")}
-            </Typography>
-            <LanguagePopup />
-          </Stack>
-        </DialogHeaderContainer>
-        <DialogMainContent>
-          {markdownContent && <MarkdownWrapper markdownContent={markdownContent} />}
-          <FormControlLabel
-            control={<Checkbox checked={analyticsEnabled} onChange={e => setAnalyticsEnabled(e.target.checked)} />}
-            label={t("dataCollectionConsent")}
-          />
-        </DialogMainContent>
-        <DialogFooterContainer>
-          <Stack direction="row" justifyContent="flex-end" alignItems="center">
-            <AcceptButton onClick={closeDialog} />
-          </Stack>
-        </DialogFooterContainer>
-      </Stack>
+      <DialogHeaderContainer>
+        <Stack direction="row">
+          <Typography variant="h4" sx={{ flexGrow: 1 }}>
+            {t("terms")}
+          </Typography>
+          <LanguagePopup />
+        </Stack>
+      </DialogHeaderContainer>
+      <DialogMainContent>
+        {markdownContent && <MarkdownWrapper markdownContent={markdownContent} />}
+        <FormControlLabel
+          control={<Checkbox checked={analyticsEnabled} onChange={e => setAnalyticsEnabled(e.target.checked)} />}
+          label={t("dataCollectionConsent")}
+        />
+      </DialogMainContent>
+      <DialogFooterContainer>
+        <Stack direction="row" justifyContent="flex-end" alignItems="center">
+          <AcceptButton onClick={closeDialog} />
+        </Stack>
+      </DialogFooterContainer>
     </Dialog>
   );
 };
