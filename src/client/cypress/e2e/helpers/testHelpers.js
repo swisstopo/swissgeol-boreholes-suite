@@ -483,13 +483,14 @@ export const getImportFileFromFixtures = (fileName, encoding, dataSet) => {
   return cy.fixture(filePath, { encoding: encoding });
 };
 
-export const createStratigraphyV2 = (boreholeId, name, isPrimary, date) => {
+export const createStratigraphyV2 = (boreholeId, name, isPrimary = true, date = null) => {
   return cy.get("@id_token").then(token => {
     return cy
       .request({
         method: "POST",
         url: "/api/v2/stratigraphyv",
         body: {
+          id: 0,
           boreholeId: boreholeId,
           name: name,
           isPrimary: isPrimary,
