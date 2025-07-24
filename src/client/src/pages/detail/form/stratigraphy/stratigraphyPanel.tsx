@@ -320,9 +320,9 @@ export const StratigraphyPanel: FC = () => {
               direction="row"
               sx={{
                 backgroundColor: "background.header",
-                borderTopLeftRadius: "4px",
-                borderTopRightRadius: "4px",
-                border: `1px solid ${theme.palette.border.light}`,
+                borderTopLeftRadius: theme.spacing(1),
+                borderTopRightRadius: theme.spacing(1),
+                border: `1px solid ${theme.palette.border.darker}`,
                 borderBottom: "none",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -385,8 +385,8 @@ export const StratigraphyPanel: FC = () => {
             pt={2.25}
             gap={3}
             sx={{
-              borderBottomLeftRadius: "4px",
-              borderBottomRightRadius: "4px",
+              borderBottomLeftRadius: theme.spacing(1),
+              borderBottomRightRadius: theme.spacing(1),
             }}>
             {sortedStratigraphies.length > 1 && editingEnabled && selectedStratigraphy.id !== 0 && (
               <Stack direction="row" gap={0.75} justifyContent="flex-end">

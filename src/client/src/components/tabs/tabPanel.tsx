@@ -79,7 +79,7 @@ export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card" }) => {
         <Box sx={{ flexGrow: 1 }}></Box>
         {hash === "#workgroups" && <AddButton label={"addWorkgroup"} variant={"contained"} onClick={addWorkgroup} />}
       </Tabs>
-      <TabContent>{tabs[activeIndex].component}</TabContent>
+      <TabContent firstTabSelected={activeIndex === 0}>{tabs[activeIndex].component}</TabContent>
       <AddWorkgroupDialog open={workgroupDialogOpen} setOpen={setWorkgroupDialogOpen} />
     </>
   );
