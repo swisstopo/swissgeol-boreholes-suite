@@ -112,11 +112,11 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<ActionResult<StratigraphyV2>> CreateAsync(StratigraphyV2 entity)
+    public override async Task<ActionResult<StratigraphyV2>> CreateAsync([FromBody] StratigraphyV2 entity)
     {
         try
         {
-            if (entity == null) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), entity.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
@@ -152,10 +152,12 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<ActionResult<StratigraphyV2>> EditAsync(StratigraphyV2 entity)
+    public override async Task<ActionResult<StratigraphyV2>> EditAsync([FromBody] StratigraphyV2 entity)
     {
         try
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), entity.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
             if (!await IsNameUnique(entity).ConfigureAwait(false))
