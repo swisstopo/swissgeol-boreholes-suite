@@ -198,8 +198,6 @@ export const StratigraphyPanel: FC = () => {
       } else {
         showApiErrorAlert(error);
       }
-
-      return false;
     },
     [formMethods, showApiErrorAlert, t],
   );
