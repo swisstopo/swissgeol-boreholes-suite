@@ -32,6 +32,7 @@ import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { SaveContext, SaveContextProps } from "../../saveContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
+import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
 
 export const StratigraphyPanel: FC = () => {
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
@@ -292,23 +293,23 @@ export const StratigraphyPanel: FC = () => {
     );
   } else if (sortedStratigraphies.length === 0) {
     return (
-        <>
-      <Card sx={{ p: 4 }}>
-        <Typography>{t("noStratigraphy")}</Typography>
-        {editingEnabled && (
-          <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-            <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />
-            <BoreholesButton
-              label="extractStratigraphyFromProfile"
-              variant="contained"
-              icon={<ExtractAiIcon />}
-              onClick={extractStratigraphyFromProfile}
-            />
-          </Stack>
-        )}
-      </Card>
-      <StratigraphyExtraction boreholeId={boreholeId} />
-        </>
+      <>
+        <Card sx={{ p: 4 }}>
+          <Typography>{t("noStratigraphy")}</Typography>
+          {editingEnabled && (
+            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+              <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />
+              <BoreholesButton
+                label="extractStratigraphyFromProfile"
+                variant="contained"
+                icon={<ExtractAiIcon />}
+                onClick={extractStratigraphyFromProfile}
+              />
+            </Stack>
+          )}
+        </Card>
+        <StratigraphyExtraction boreholeId={boreholeId} />
+      </>
     );
   }
 
@@ -451,7 +452,7 @@ export const StratigraphyPanel: FC = () => {
             </Box>
           </BoreholeTabContentBox>
         </Box>
-          <StratigraphyExtraction boreholeId={boreholeId} />
+        <StratigraphyExtraction boreholeId={boreholeId} />
       </Box>
     );
   }
