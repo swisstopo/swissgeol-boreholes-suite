@@ -14,7 +14,7 @@ export interface SaveContextProps {
   unMount: () => void;
 }
 
-type SaveHandler = () => Promise<void>;
+type SaveHandler = () => Promise<boolean>;
 type ResetHandler = () => void;
 
 export const SaveContext = createContext<SaveContextProps>({
@@ -54,11 +54,13 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const triggerSave = useCallback(async () => {
     if (saveHandlerRef.current) {
-      setShowSaveFeedback(true);
-      await saveHandlerRef.current();
-      reloadBoreholes();
-      setTimeout(() => setShowSaveFeedback(false), 4000);
-      setHasChanges(false);
+      const success = await saveHandlerRef.current();
+      if (success) {
+        setShowSaveFeedback(true);
+        reloadBoreholes();
+        setTimeout(() => setShowSaveFeedback(false), 4000);
+        setHasChanges(false);
+      }
     }
   }, [reloadBoreholes]);
 

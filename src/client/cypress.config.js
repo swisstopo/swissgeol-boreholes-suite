@@ -11,6 +11,7 @@ export default defineConfig({
     viewportHeight: 1080,
     supportFile: "cypress/support/e2e.js",
     experimentalMemoryManagement: true,
+    experimentalFetchPolyfill: true,
 
     setupNodeEvents(on, config) {
       on("file:preprocessor", vitePreprocessor());

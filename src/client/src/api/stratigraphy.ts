@@ -1,27 +1,42 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
+import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { User } from "./apiInterfaces.ts";
 import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
-import { fetchApiV2 } from "./fetchApiV2.ts";
+import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
+
+export interface StratigraphyLegacy {
+  id: number;
+  boreholeId: number;
+  borehole: BoreholeV2 | null;
+  isPrimary: boolean;
+  date: string | null;
+  created: Date | string | null;
+  createdById: number | null;
+  createdBy?: User;
+  updated: Date | string | null;
+  updatedById: number | null;
+  updatedBy?: User;
+  name: string;
+  qualityId?: number;
+  notes?: string;
+  layers: Layer[] | null;
+  chronostratigraphyLayers: Chronostratigraphy[] | null;
+  lithostratigraphyLayers: Lithostratigraphy[] | null;
+}
 
 export interface Stratigraphy {
   id: number;
   boreholeId: number;
   borehole: BoreholeV2 | null;
+  name: string;
+  date: string | null;
   isPrimary: boolean;
-  date: string;
   created: Date | string | null;
-  createdById: number;
+  createdById: number | null;
   createdBy?: User;
   updated: Date | string | null;
-  updatedById: number;
+  updatedById: number | null;
   updatedBy?: User;
-  name: string;
-  qualityId: number;
-  notes: string;
-  layers: Layer[];
-  chronostratigraphyLayers: Chronostratigraphy[];
-  lithostratigraphyLayers: Lithostratigraphy[];
 }
 
 export interface Layer {
@@ -105,23 +120,19 @@ export const deleteFaciesDescription = async (id: number): Promise<void> => {
 };
 
 // stratigraphy
-const fetchStratigraphy = async (id: number): Promise<Stratigraphy> => {
-  return await fetchApiV2(`stratigraphy/${id}`, "GET");
-};
-
-const fetchStratigraphiesByBoreholeId = async (boreholeId: number): Promise<Stratigraphy[]> => {
+const fetchStratigraphiesByBoreholeId = async (boreholeId: number): Promise<StratigraphyLegacy[]> => {
   return await fetchApiV2(`stratigraphy?boreholeId=${boreholeId}`, "GET");
 };
 
-const createStratigraphy = async (boreholeId: number): Promise<Stratigraphy> => {
+const createStratigraphy = async (boreholeId: number): Promise<StratigraphyLegacy> => {
   return await fetchApiV2("stratigraphy", "POST", { boreholeId });
 };
 
-const copyStratigraphy = async (stratigraphy: Stratigraphy): Promise<number> => {
+const copyStratigraphy = async (stratigraphy: StratigraphyLegacy): Promise<number> => {
   return await fetchApiV2(`stratigraphy/copy?id=${stratigraphy.id}`, "POST");
 };
 
-const updateStratigraphy = async (stratigraphy: Stratigraphy): Promise<Stratigraphy> => {
+const updateStratigraphy = async (stratigraphy: StratigraphyLegacy): Promise<StratigraphyLegacy> => {
   // remove derived objects
   delete stratigraphy.createdBy;
   delete stratigraphy.updatedBy;
@@ -137,67 +148,120 @@ export const addBedrock = async (id: number): Promise<void> => {
   return await fetchApiV2(`stratigraphy/addbedrock?id=${id}`, "POST");
 };
 
-export const stratigraphyQueryKey = "stratigraphy";
 export const stratigraphiesByBoreholeIdQueryKey = "stratigraphiesByBoreholeId";
 
-export const useStratigraphy = (id?: number) =>
-  useQuery({
-    queryKey: [stratigraphyQueryKey, id],
-    queryFn: () => fetchStratigraphy(id!),
-    enabled: !!id,
-  });
-
-export const useStratigraphiesByBoreholeId = (boreholeId?: number) =>
+export const useLegacyStratigraphiesByBoreholeId = (boreholeId?: number) =>
   useQuery({
     queryKey: [stratigraphiesByBoreholeIdQueryKey, boreholeId],
     queryFn: () => fetchStratigraphiesByBoreholeId(boreholeId!),
     enabled: !!boreholeId,
   });
 
-export const useStratigraphyMutations = () => {
-  const queryClient = useQueryClient();
+export const invalidateStratigraphyQueries = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  boreholeId: number,
+  invalidateBorehole: boolean,
+) => {
+  queryClient.invalidateQueries({ queryKey: [stratigraphiesByBoreholeIdQueryKey, boreholeId] });
+  if (invalidateBorehole) {
+    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
+  }
+};
 
-  const invalidateQueries = (stratigraphy: Stratigraphy, invalidateBorehole: boolean) => {
-    queryClient.invalidateQueries({ queryKey: [stratigraphyQueryKey, stratigraphy.id] });
-    queryClient.invalidateQueries({ queryKey: [stratigraphiesByBoreholeIdQueryKey, stratigraphy.boreholeId] });
-    if (invalidateBorehole) {
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, stratigraphy.boreholeId] });
-    }
+const stratigraphyController = "stratigraphyv";
+
+export const useStratigraphiesByBoreholeId = (boreholeId?: number) =>
+  useQuery({
+    queryKey: [stratigraphiesByBoreholeIdQueryKey, boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(`${stratigraphyController}?boreholeId=${boreholeId!}`, "GET");
+    },
+    enabled: !!boreholeId,
+  });
+
+export const useStratigraphyMutations = () => {
+  const useAddStratigraphy = useMutation({
+    mutationFn: async (stratigraphy: Stratigraphy) => {
+      return await fetchApiV2WithApiError(stratigraphyController, "POST", stratigraphy);
+    },
+  });
+
+  const useCopyStratigraphy = useMutation({
+    mutationFn: async (stratigraphy: Stratigraphy) => {
+      return await fetchApiV2WithApiError(`${stratigraphyController}/copy?id=${stratigraphy.id}`, "POST");
+    },
+  });
+
+  const useUpdateStratigraphy = useMutation({
+    mutationFn: async (stratigraphy: Stratigraphy) => {
+      // remove derived objects
+      delete stratigraphy.createdBy;
+      delete stratigraphy.updatedBy;
+
+      return await fetchApiV2WithApiError(stratigraphyController, "PUT", stratigraphy);
+    },
+  });
+
+  const useDeleteStratigraphy = useMutation({
+    mutationFn: async (stratigraphy: Stratigraphy) => {
+      return await fetchApiV2WithApiError(`${stratigraphyController}?id=${stratigraphy.id}`, "DELETE");
+    },
+  });
+
+  useShowAlertOnError(useCopyStratigraphy.isError, useCopyStratigraphy.error);
+  useShowAlertOnError(useDeleteStratigraphy.isError, useDeleteStratigraphy.error);
+
+  return {
+    add: useAddStratigraphy,
+    copy: useCopyStratigraphy,
+    update: useUpdateStratigraphy,
+    delete: useDeleteStratigraphy,
   };
+};
+
+export const useReloadStratigraphies = () => {
+  const queryClient = useQueryClient();
+  return (boreholeId: number) => {
+    queryClient.invalidateQueries({ queryKey: [stratigraphiesByBoreholeIdQueryKey, boreholeId] });
+  };
+};
+
+export const useLegacyStratigraphyMutations = () => {
+  const queryClient = useQueryClient();
 
   const useAddStratigraphy = useMutation({
     mutationFn: async (boreholeId: number) => {
       return await createStratigraphy(boreholeId);
     },
     onSuccess: addedStratigraphy => {
-      invalidateQueries(addedStratigraphy, true);
+      invalidateStratigraphyQueries(queryClient, addedStratigraphy.boreholeId, true);
     },
   });
 
   const useCopyStratigraphy = useMutation({
-    mutationFn: async (stratigraphy: Stratigraphy) => {
+    mutationFn: async (stratigraphy: StratigraphyLegacy) => {
       return await copyStratigraphy(stratigraphy);
     },
     onSuccess: (_data, originalStratigraphy) => {
-      invalidateQueries(originalStratigraphy, true);
+      invalidateStratigraphyQueries(queryClient, originalStratigraphy.boreholeId, true);
     },
   });
 
   const useUpdateStratigraphy = useMutation({
-    mutationFn: async (stratigraphy: Stratigraphy) => {
+    mutationFn: async (stratigraphy: StratigraphyLegacy) => {
       return await updateStratigraphy(stratigraphy);
     },
     onSuccess: updatedStratigraphy => {
-      invalidateQueries(updatedStratigraphy, false);
+      invalidateStratigraphyQueries(queryClient, updatedStratigraphy.boreholeId, false);
     },
   });
 
   const useDeleteStratigraphy = useMutation({
-    mutationFn: async (stratigraphy: Stratigraphy) => {
+    mutationFn: async (stratigraphy: StratigraphyLegacy) => {
       return await deleteStratigraphy(stratigraphy.id);
     },
     onSuccess: (_data, stratigraphy) => {
-      invalidateQueries(stratigraphy, true);
+      invalidateStratigraphyQueries(queryClient, stratigraphy.boreholeId, true);
     },
   });
 

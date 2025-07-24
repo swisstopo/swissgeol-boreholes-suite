@@ -1,14 +1,14 @@
 import { FC, useContext, useState } from "react";
 import { Stack } from "@mui/material";
 import { Box } from "@mui/system";
-import { Stratigraphy } from "../../../../../api/stratigraphy.ts";
+import { StratigraphyLegacy } from "../../../../../api/stratigraphy.ts";
 import { EditStateContext } from "../../../editStateContext.tsx";
 import { stratigraphyData } from "./data/stratigraphydata.js";
 import LithologyAttributes from "./lithologyAttributes";
 import ProfileLayers from "./lithologyLayers";
 
 interface LithologyProps {
-  stratigraphy: Stratigraphy;
+  stratigraphy: StratigraphyLegacy;
 }
 
 export const Lithology: FC<LithologyProps> = ({ stratigraphy }) => {
