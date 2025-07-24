@@ -341,7 +341,7 @@ export const StratigraphyPanel: FC = () => {
                     />
                   </>
                 ) : (
-                  <Chip color="info" label={formatDate(selectedStratigraphy.created)} />
+                  selectedStratigraphy.date && <Chip color="info" label={formatDate(selectedStratigraphy.date)} />
                 )}
               </Stack>
             </Stack>
@@ -431,7 +431,7 @@ export const StratigraphyPanel: FC = () => {
                   justifyContent="flex-end"
                   sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}>
                   {selectedStratigraphy.isPrimary && <Chip color="info" label={t("mainStratigraphy")} />}
-                  <Chip color="info" label={formatDate(selectedStratigraphy.created)} />
+                  {selectedStratigraphy.date && <Chip color="info" label={formatDate(selectedStratigraphy.date)} />}
                 </Stack>
               )}
             </Box>
