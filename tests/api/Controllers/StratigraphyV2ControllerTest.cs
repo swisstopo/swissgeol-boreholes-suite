@@ -390,6 +390,13 @@ public class StratigraphyV2ControllerTest
         ActionResultAssert.IsUnauthorized(editResult.Result);
     }
 
+    [TestMethod]
+    public async Task EditWithNullStratigraphy()
+    {
+        var editResult = await controller.EditAsync(null);
+        ActionResultAssert.IsBadRequest(editResult.Result);
+    }
+
     private StratigraphyV2? GetStratigraphy(int id)
     {
         return context.StratigraphiesV2

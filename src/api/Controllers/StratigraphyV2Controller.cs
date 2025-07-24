@@ -116,7 +116,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
     {
         try
         {
-            if (entity == null) return BadRequest(ModelState);
+            if (entity == null) return BadRequest();
 
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), entity.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
@@ -156,6 +156,8 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
     {
         try
         {
+            if (entity == null) return BadRequest();
+
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), entity.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
             if (!await IsNameUnique(entity).ConfigureAwait(false))
