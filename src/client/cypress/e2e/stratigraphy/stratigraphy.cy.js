@@ -192,7 +192,7 @@ describe("Tests for stratigraphy", () => {
     cy.get("@borehole_id").then(boreholeId => {
       createStratigraphyV2(boreholeId, "BATONTRUCK").as("stratigraphy_id_1");
       cy.get("@stratigraphy_id_1").then(stratigraphyId1 => {
-        createStratigraphyV2(boreholeId, "GATETRUCK", false).as("stratigraphy_id_2");
+        createStratigraphyV2(boreholeId, "GATETRUCK").as("stratigraphy_id_2");
         cy.get("@stratigraphy_id_2").then(stratigraphyId2 => {
           goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
           cy.wait("@stratigraphyV2_by_borehole_GET");
