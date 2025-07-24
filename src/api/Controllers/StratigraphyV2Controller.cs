@@ -193,7 +193,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
     private async Task ResetOtherPrimaryStratigraphiesAsync(StratigraphyV2 entity)
     {
         var otherPrimaryStratigraphies = await Context.StratigraphiesV2
-            .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary == true && s.Id != entity.Id)
+            .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary && s.Id != entity.Id)
             .ToListAsync()
             .ConfigureAwait(false);
 
