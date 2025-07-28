@@ -62,7 +62,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
       : Math.max(12, navState.lensSize * backgroundNavState.pixelPerMeter);
 
   return (
-    <Stack gap={1} flex={1} sx={{ width: "45px", ...sx }}>
+    <Stack gap={0.75} flex={1} sx={{ width: "45px", ...sx }}>
       <Button onClick={() => handleMove(-0.3)} variant="outlined">
         <ChevronUp />
       </Button>
