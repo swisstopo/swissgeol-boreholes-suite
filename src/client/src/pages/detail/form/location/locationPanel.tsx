@@ -88,7 +88,11 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
 
   if (borehole)
     return (
-      <BaseForm formMethods={formMethods} prepareDataForSubmit={prepareLocationDataForSubmit} onReset={onReset}>
+      <BaseForm
+        formMethods={formMethods}
+        prepareDataForSubmit={prepareLocationDataForSubmit}
+        onReset={onReset}
+        tabStatusToReset="location">
         <Stack gap={3} mr={2}>
           <IdentifierSegment borehole={borehole} formMethods={formMethods}></IdentifierSegment>
           <NameSegment borehole={borehole} formMethods={formMethods}></NameSegment>

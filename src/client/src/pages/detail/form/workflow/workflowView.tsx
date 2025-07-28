@@ -101,10 +101,11 @@ export const WorkflowView = () => {
     };
     updateTabStatus(tabStatusChangeRequest);
   };
-
+  console.log(workflow);
   return (
     <Box sx={{ minHeight: "100dvh" }}>
       <SgcWorkflow
+        key={JSON.stringify(workflow)}
         workflow={{
           ...workflow,
           changes: workflow.changes?.map(change => ({

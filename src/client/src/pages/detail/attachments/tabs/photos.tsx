@@ -56,6 +56,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     deleteAttachments,
     exportAttachments,
     updateAttachments,
+    tabStatusToReset: "photos",
   });
 
   const columns = useMemo<GridColDef<Photo>[]>(

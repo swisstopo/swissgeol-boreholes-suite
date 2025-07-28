@@ -15,6 +15,7 @@ import { parseFloatWithThousandsSeparator } from "../../../../components/form/fo
 import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.js";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
 
 const SectionInput = ({ item, parentId }) => {
@@ -22,6 +23,7 @@ const SectionInput = ({ item, parentId }) => {
   const { data: codelists } = useCodelists();
   const { i18n } = useTranslation();
   useBlockNavigation();
+  const resetTabStatus = useResetTabStatus(["sections"]);
 
   const sectionElementDefaults = {
     fromDepth: null,
@@ -83,6 +85,7 @@ const SectionInput = ({ item, parentId }) => {
   };
 
   const submitForm = data => {
+    resetTabStatus();
     data = prepareFormDataForSubmit(data);
     if (item.id === 0) {
       addSection(data).then(() => {

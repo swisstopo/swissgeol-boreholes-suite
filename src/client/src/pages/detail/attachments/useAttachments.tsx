@@ -7,7 +7,9 @@ import { RefObject } from "@mui/x-internals/types";
 import { CheckIcon } from "lucide-react";
 import { useReloadBoreholes } from "../../../api/borehole.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
+import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
 import { EditStateContext } from "../editStateContext.tsx";
+import { TabName } from "../form/workflow/workflow.ts";
 import { SaveContext, SaveContextProps } from "../saveContext.tsx";
 
 export interface AttachmentWithPublicState {
@@ -21,6 +23,7 @@ interface UseAttachmentsProps<T extends AttachmentWithPublicState> {
   updateAttachments: (updatedRows: Map<GridRowId, T>) => Promise<void>;
   deleteAttachments: (ids: number[]) => Promise<void>;
   exportAttachments: (ids: number[]) => Promise<void>;
+  tabStatusToReset: TabName;
 }
 
 export const useAttachments = <T extends AttachmentWithPublicState>({
@@ -30,6 +33,7 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
   updateAttachments,
   deleteAttachments,
   exportAttachments,
+  tabStatusToReset,
 }: UseAttachmentsProps<T>) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
@@ -37,6 +41,7 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
     useContext<SaveContextProps>(SaveContext);
   const { showAlert } = useContext(AlertContext);
   const reloadBoreholes = useReloadBoreholes();
+  const resetTabStatus = useResetTabStatus([tabStatusToReset]);
 
   const [rows, setRows] = useState<T[]>();
   const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, T>>(new Map());
@@ -58,12 +63,13 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
         await addAttachment(file);
         await onLoad();
         reloadBoreholes();
+        resetTabStatus();
       } catch (error) {
         showAlert(t((error as Error).message), "error");
         setIsLoading(false);
       }
     },
-    [addAttachment, onLoad, reloadBoreholes, showAlert, t],
+    [addAttachment, onLoad, reloadBoreholes, resetTabStatus, showAlert, t],
   );
 
   const removeCellFocus = useCallback(() => {
@@ -80,9 +86,10 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
     setIsLoading(true);
     removeCellFocus();
     await updateAttachments(updatedRows);
+    resetTabStatus();
     setUpdatedRows(new Map());
     await onLoad();
-  }, [updateAttachments, updatedRows, onLoad, removeCellFocus]);
+  }, [removeCellFocus, updateAttachments, updatedRows, resetTabStatus, onLoad]);
 
   const onDelete = useCallback(async () => {
     setIsLoading(true);
@@ -90,7 +97,8 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
     await deleteAttachments(ids);
     await onLoad();
     reloadBoreholes();
-  }, [apiRef, deleteAttachments, onLoad, reloadBoreholes]);
+    resetTabStatus();
+  }, [apiRef, deleteAttachments, onLoad, reloadBoreholes, resetTabStatus]);
 
   const onExport = useCallback(async () => {
     setIsLoading(true);
