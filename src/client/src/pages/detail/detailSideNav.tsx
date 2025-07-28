@@ -65,6 +65,8 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
     setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
   }, [location, id]);
 
+  if (!borehole.workflow) return null;
+
   const isReviewed = (tabKeys: Array<keyof TabStatus>) => {
     if (tabKeys.every(key => borehole.workflow?.reviewedTabs[key])) return "true";
     if (tabKeys.some(key => borehole.workflow?.reviewedTabs[key])) return "partial";
