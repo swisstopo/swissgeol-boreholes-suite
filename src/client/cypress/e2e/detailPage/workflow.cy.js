@@ -384,6 +384,12 @@ describe("Tests the publication workflow.", () => {
   });
 
   it("Resets reviewed and published checkboxes when borehole tabs change", () => {
-    /// Todo add test
+    createBorehole({
+      originalName: "Creamy window squash",
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      requestReviewFromValidator();
+    });
   });
 });
