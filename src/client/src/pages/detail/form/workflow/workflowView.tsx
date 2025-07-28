@@ -115,6 +115,7 @@ export const WorkflowView = () => {
         review={workflow.reviewedTabs}
         item={"Borehole"}
         approval={workflow.publishedTabs}
+        isReadOnly={false}
         availableAssignees={getUsersWithEditorPrivilege()}
         selection={makeSelectionEntries()}
         canChangeStatus={canUserEditBorehole(currentUser, borehole)}
