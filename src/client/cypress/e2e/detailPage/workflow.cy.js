@@ -326,4 +326,60 @@ describe("Tests the publication workflow.", () => {
       getElementByDataCy("review-button").should("exist");
     });
   });
+
+  it("Displays checkmarks on side menu", () => {
+    createBorehole({
+      originalName: "Mouse mermaid",
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      requestReviewFromValidator();
+      cy.get("sgc-tab").contains("Review").click();
+      getElementByDataCy("hydrogeology-menu-item").click();
+
+      // assert that no menu item has a checkmark
+      getElementByDataCy("location-menu-item").should("have.attr", "reviewed", "false");
+      getElementByDataCy("borehole-menu-item").should("have.attr", "reviewed", "false");
+      getElementByDataCy("stratigraphy-menu-item").should("have.attr", "reviewed", "false");
+      getElementByDataCy("completion-menu-item").should("have.attr", "reviewed", "false");
+      getElementByDataCy("hydrogeology-menu-item").should("have.attr", "reviewed", "false");
+      getElementByDataCy("wateringress-menu-item").should("have.attr", "reviewed", "false");
+      getElementByDataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", "false");
+      getElementByDataCy("hydrotest-menu-item").should("have.attr", "reviewed", "false");
+      getElementByDataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", "false");
+      getElementByDataCy("attachments-menu-item").should("have.attr", "reviewed", "false");
+
+      clickCheckAllCheckbox("review");
+
+      // assert that all menu items have a checkmark
+      getElementByDataCy("location-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("borehole-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("stratigraphy-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("completion-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("hydrogeology-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("wateringress-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("hydrotest-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("attachments-menu-item").should("have.attr", "reviewed", "true");
+
+      // assert that all menu items have partial checkmarks (where applicable)
+      clickTabStatusCheckbox("review", "General");
+      clickTabStatusCheckbox("review", "Lithology");
+      clickTabStatusCheckbox("review", "Casing");
+      clickTabStatusCheckbox("review", "Water ingress");
+      clickTabStatusCheckbox("review", "Profiles");
+
+      getElementByDataCy("location-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("borehole-menu-item").should("have.attr", "reviewed", "partial");
+      getElementByDataCy("stratigraphy-menu-item").should("have.attr", "reviewed", "partial");
+      getElementByDataCy("completion-menu-item").should("have.attr", "reviewed", "partial");
+      getElementByDataCy("hydrogeology-menu-item").should("have.attr", "reviewed", "partial");
+      getElementByDataCy("wateringress-menu-item").should("have.attr", "reviewed", "false");
+      getElementByDataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("hydrotest-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", "true");
+      getElementByDataCy("attachments-menu-item").should("have.attr", "reviewed", "partial");
+    });
+  });
 });
