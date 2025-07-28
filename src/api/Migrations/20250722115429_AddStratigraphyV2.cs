@@ -16,7 +16,7 @@ public partial class AddStratigraphyV2 : Migration
             schema: "bdms",
             columns: table => new
             {
-                stratigraphy_id = table.Column<int>(type: "integer", nullable: false)
+                id = table.Column<int>(type: "integer", nullable: false)
                     .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                 borehole_id = table.Column<int>(type: "integer", nullable: false),
                 name = table.Column<string>(type: "text", nullable: false),
@@ -29,7 +29,7 @@ public partial class AddStratigraphyV2 : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_stratigraphy_v2", x => x.stratigraphy_id);
+                table.PrimaryKey("PK_stratigraphy_v2", x => x.id);
                 table.ForeignKey(
                     name: "FK_stratigraphy_v2_borehole_borehole_id",
                     column: x => x.borehole_id,
