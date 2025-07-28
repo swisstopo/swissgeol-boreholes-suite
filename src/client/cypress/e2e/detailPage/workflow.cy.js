@@ -314,6 +314,10 @@ describe("Tests the publication workflow.", () => {
       cy.get(".select-trigger").eq(0).click();
       cy.get(".select-option").contains(WorkflowStatus.Draft).click();
       cy.get(".select-trigger").eq(1).click();
+      // all users with editor privileges should be selectable
+      cy.get(".select-option").should("have.length", 7);
+      cy.get(".select-option").contains("viewer user").should("not.exist");
+      cy.get(".select-option").contains("editor user").should("exist");
       cy.get(".select-option").contains("Admin User").click();
       cy.get("sgc-modal-wrapper").find("sgc-button").contains("Status manuell ändern").click();
       cy.wait(["@workflow_by_id", "@borehole_by_id"]);
