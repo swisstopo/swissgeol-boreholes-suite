@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
 import {
@@ -7,15 +6,13 @@ import {
   SgcWorkflowCustomEvent,
   SgcWorkflowSelectionChangeEventDetails,
   SgcWorkflowSelectionEntry,
-  SimpleUser,
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
 import { useBorehole } from "../../../../api/borehole.ts";
-import { useCurrentUser, useUsers } from "../../../../api/user.ts";
+import { useCurrentUser } from "../../../../api/user.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { useUserRoleForBorehole } from "../../../../hooks/useUserRoleForBorehole.ts";
-import { EditStateContext } from "../../editStateContext.tsx";
 import {
   TabStatusChangeRequest,
   TabType,
@@ -29,11 +26,9 @@ export const WorkflowView = () => {
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: workflow, isLoading } = useWorkflow(parseInt(boreholeId));
   const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
-  const { editingEnabled } = useContext(EditStateContext);
-  const { data: users } = useUsers();
   const { data: borehole } = useBorehole(parseInt(boreholeId));
   const { t } = useTranslation();
-  const { canUserEditBorehole, mapMaxRole } = useUserRoleForBorehole();
+  const { canUserEditBorehole, getUsersWithEditorPrivilege } = useUserRoleForBorehole();
   const {
     updateWorkflow: { mutate: updateWorkflow },
     updateTabStatus: { mutate: updateTabStatus },
@@ -82,16 +77,6 @@ export const WorkflowView = () => {
 
   if (!workflow || !currentUser) return null;
 
-  const getUsersWithEditPrivilege = (): SimpleUser[] => {
-    if (!users) return [];
-    return users
-      .filter(user => canUserEditBorehole(user, borehole))
-      ?.map(user => ({
-        ...user,
-        role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role)),
-      }));
-  };
-
   const handleWorkflowChange = (changeEvent: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => {
     const changes: WorkflowChange = changeEvent.detail.changes;
     const assigneeId = changes.toAssignee?.id;
@@ -130,8 +115,7 @@ export const WorkflowView = () => {
         review={workflow.reviewedTabs}
         item={"Borehole"}
         approval={workflow.publishedTabs}
-        availableAssignees={getUsersWithEditPrivilege()}
-        isReadOnly={!editingEnabled}
+        availableAssignees={getUsersWithEditorPrivilege()}
         selection={makeSelectionEntries()}
         canChangeStatus={canUserEditBorehole(currentUser, borehole)}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>

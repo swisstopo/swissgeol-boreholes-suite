@@ -1,7 +1,8 @@
 import { useCallback } from "react";
-import { Role, WorkflowStatus } from "@swissgeol/ui-core";
+import { Role, SimpleUser, WorkflowStatus } from "@swissgeol/ui-core";
 import { Role as LegacyRole, User } from "../api/apiInterfaces.ts";
 import { BoreholeV2, useBorehole } from "../api/borehole.ts";
+import { useUsers } from "../api/user.ts";
 import { useRequiredParams } from "./useRequiredParams.ts";
 
 const CoreRolePriority: Record<Role, number> = {
@@ -19,11 +20,12 @@ const WorkflowStatusRoleMap: Record<WorkflowStatus, Role | null> = {
 };
 
 export const useUserRoleForBorehole = (): {
-  mapMaxRole: (roles?: LegacyRole[]) => Role;
+  getUsersWithEditorPrivilege: () => SimpleUser[];
   canUserEditBorehole: (user: User, borehole: BoreholeV2) => boolean;
 } => {
   const { id } = useRequiredParams<{ id: string }>();
   const { data: borehole } = useBorehole(parseInt(id));
+  const { data: users } = useUsers();
 
   const mapMaxRole = (roles?: LegacyRole[]): Role => {
     if (!roles || roles.length === 0) return Role.Reader;
@@ -58,5 +60,15 @@ export const useUserRoleForBorehole = (): {
     return hasUserPrivilege(requiredRole, user);
   };
 
-  return { mapMaxRole, canUserEditBorehole };
+  const getUsersWithEditorPrivilege = (): SimpleUser[] => {
+    if (!users) return [];
+    return users
+      .filter(user => hasUserPrivilege(Role.Editor, user))
+      ?.map(user => ({
+        ...user,
+        role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role)),
+      }));
+  };
+
+  return { canUserEditBorehole, getUsersWithEditorPrivilege };
 };
