@@ -1,5 +1,10 @@
 import { setSelect } from "../helpers/formHelpers";
-import { createBorehole, goToDetailRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  dropGeometryCSVFile,
+  goToDetailRouteAndAcceptTerms,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
 
 describe("Geometry crud tests", () => {
   beforeEach(() => {
