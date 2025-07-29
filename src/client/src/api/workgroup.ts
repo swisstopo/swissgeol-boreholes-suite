@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
+import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
 import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { usersQueryKey } from "./user.ts";

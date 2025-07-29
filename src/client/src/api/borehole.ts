@@ -2,7 +2,7 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/codelist.ts";
-import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
+import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
@@ -13,7 +13,7 @@ import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2.ts";
 import { BoreholeFile } from "./file/fileInterfaces.ts";
 import { Section } from "./section.ts";
-import { Stratigraphy } from "./stratigraphy.ts";
+import { Stratigraphy, StratigraphyLegacy } from "./stratigraphy.ts";
 
 export interface BasicIdentifier {
   boreholeId: number;
@@ -75,7 +75,8 @@ export interface BoreholeV2 {
   updated: Date | string | null;
   updatedById: number;
   updatedBy: User;
-  stratigraphies: Stratigraphy[] | null;
+  stratigraphies: StratigraphyLegacy[] | null;
+  stratigraphiesV2: Stratigraphy[] | null;
   locked: Date | string | null;
   lockedById: number | null;
   completions: Completion[] | null;
@@ -164,9 +165,6 @@ export const useBoreholeMutations = () => {
     mutationFn: async (borehole: BoreholeV2) => {
       return await updateBorehole(borehole);
     },
-    onSettled: (_data, _error, updatedBorehole) => {
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, updatedBorehole.id] });
-    },
   });
 
   const useDeleteBorehole = useMutation({
@@ -181,7 +179,6 @@ export const useBoreholeMutations = () => {
   });
 
   useShowAlertOnError(useAddBorehole.isError, useAddBorehole.error);
-  useShowAlertOnError(useUpdateBorehole.isError, useUpdateBorehole.error);
   useShowAlertOnError(useDeleteBorehole.isError, useDeleteBorehole.error);
   return {
     add: useAddBorehole,
