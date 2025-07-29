@@ -118,9 +118,7 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ stratigraphy }) =>
                 <SaveButton
                   dataCy={"stratigraphy-save-button"}
                   disabled={!formMethods.formState.isValid}
-                  onClick={() => {
-                    formMethods.handleSubmit(submitForm)();
-                  }}
+                  onClick={() => formMethods.handleSubmit(submitForm)()}
                 />
               </DataCardButtonContainer>
             </>
