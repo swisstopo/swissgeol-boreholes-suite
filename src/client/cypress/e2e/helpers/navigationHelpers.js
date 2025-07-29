@@ -174,7 +174,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       });
       break;
     case SidebarMenuItem.completion:
-      cy.wait("@completion_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/completion$/);
       });
@@ -202,7 +201,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.fieldMeasurement:
-      cy.wait("@fieldmeasurement_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/hydrogeology\/fieldmeasurement/);
       });

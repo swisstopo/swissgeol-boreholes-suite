@@ -23,7 +23,7 @@ const CompletionHeaderInput = props => {
   const formMethods = useForm({ mode: "all" });
   const { t } = useTranslation();
   const { data: schemaData, isLoading } = useCodelistSchema(completionSchemaConstants.completionKind);
-  const resetTabStatus = useResetTabStatus(["completion"]);
+  const resetTabStatus = useResetTabStatus(["casing", "instrumentation", "backfill"]);
 
   const [selectedCompletion, setSelectedCompletion] = useState({
     ...completion,
