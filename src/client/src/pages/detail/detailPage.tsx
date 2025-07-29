@@ -34,7 +34,6 @@ export const DetailPage: FC = () => {
     setEditingEnabled(borehole?.locked !== null && borehole?.lockedById === currentUser?.id);
   }, [borehole?.locked, borehole?.lockedById, setEditingEnabled, currentUser?.id]);
 
-  console.log(borehole?.workflow);
   useEffect(() => {
     if (borehole?.locked && borehole?.lockedById !== currentUser?.id) {
       setEditableByCurrentUser(false);
