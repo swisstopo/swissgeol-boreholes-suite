@@ -316,7 +316,6 @@ export const useLithostratigraphies = (stratigraphyID?: number) =>
 export const useLithostratigraphyMutations = () => {
   const queryClient = useQueryClient();
   const resetTabStatus = useResetTabStatus(["lithostratigraphy"]);
-
   const useAddLithostratigraphy = useMutation({
     mutationFn: async (lithostratigraphy: Lithostratigraphy) => {
       return await fetchApiV2("lithostratigraphy", "POST", lithostratigraphy);

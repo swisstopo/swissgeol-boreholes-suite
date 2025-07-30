@@ -15,7 +15,7 @@ import { parseFloatWithThousandsSeparator } from "../../../../components/form/fo
 import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
-import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.js";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
 
 const SectionInput = ({ item, parentId }) => {

@@ -24,7 +24,7 @@ import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FormSelect } from "../../../../components/form/form";
 import { StackHalfWidth } from "../../../../components/styledComponents.ts";
-import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.js";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { FileDropzone } from "../../attachments/fileDropzone.jsx";
 
 const GeometryImport = ({ boreholeId }) => {

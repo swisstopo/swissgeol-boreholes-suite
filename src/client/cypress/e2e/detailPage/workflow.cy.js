@@ -395,7 +395,7 @@ describe("Tests the publication workflow.", () => {
       getElementByDataCy("hydrogeology-menu-item").click(); // open hydrogeology menu items
       assertAllMenuItemsHaveReviewStatus("true");
 
-      //edit borehole on location and borehole tab
+      // edit borehole on location and borehole tab
       navigateInSidebar(SidebarMenuItem.location);
       setSelect("locationPrecisionId", 2);
       saveWithSaveBar();

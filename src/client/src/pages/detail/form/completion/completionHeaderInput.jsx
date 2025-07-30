@@ -13,8 +13,8 @@ import {
 } from "../../../../components/form/form";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import { FullPageCentered } from "../../../../components/styledComponents.js";
-import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.js";
+import { FullPageCentered } from "../../../../components/styledComponents.ts";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { completionSchemaConstants } from "./completionSchemaConstants.js";
 
 const CompletionHeaderInput = props => {

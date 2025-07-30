@@ -5,7 +5,7 @@ import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../a
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.js";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import GeometryChartNE from "./geometryChartNE.jsx";
 import { GeometryChartZE, GeometryChartZInteractive, GeometryChartZN } from "./geometryChartZ.jsx";

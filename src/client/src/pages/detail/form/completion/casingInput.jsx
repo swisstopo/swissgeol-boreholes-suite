@@ -15,7 +15,7 @@ import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../
 import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
-import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.js";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { extractCasingDepth } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { prepareEntityDataForSubmit } from "./completionUtils.js";
