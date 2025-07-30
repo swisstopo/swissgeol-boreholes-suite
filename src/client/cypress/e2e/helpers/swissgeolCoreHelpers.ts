@@ -6,6 +6,8 @@ export function assertWorkflowSteps(activeStep: string) {
 }
 
 export function clickSgcButtonWithContent(content: string) {
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(100);
   cy.get("sgc-button").contains(content).click();
 }
 
