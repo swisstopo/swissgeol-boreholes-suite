@@ -52,6 +52,7 @@ const GeometryImport = ({ boreholeId }) => {
   }, [geometryFormats, formMethods]);
 
   const uploadGeometryCSV = data => {
+    resetTabStatus();
     let formData = new FormData();
     formData.append("geometryFile", data.geometryFile[0]);
     formData.append("geometryFormat", data.geometryFormat);
@@ -133,10 +134,7 @@ const GeometryImport = ({ boreholeId }) => {
           <AddButton
             sx={{ marginLeft: "auto" }}
             label={data?.length > 0 ? "boreholeGeometryReplace" : "boreholeGeometryImport"}
-            onClick={() => {
-              resetTabStatus();
-              formMethods.handleSubmit(uploadGeometryCSV);
-            }}
+            onClick={formMethods.handleSubmit(uploadGeometryCSV)}
             disabled={watch?.geometryFile?.length === 0 || isUpdatingBoreholeGeometry}
             endIcon={isUpdatingBoreholeGeometry && <CircularProgress size="1em" sx={{ color: "currentColor" }} />}
           />
