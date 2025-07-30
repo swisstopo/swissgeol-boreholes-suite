@@ -24,7 +24,7 @@ public class PermissionsControllerTest
             .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(true);
 
-        controller = new PermissionsController(context,  boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() }; ;
+        controller = new PermissionsController(context,  boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
