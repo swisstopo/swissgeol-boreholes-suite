@@ -12,7 +12,6 @@ public class PermissionsControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
