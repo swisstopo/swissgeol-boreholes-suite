@@ -9,17 +9,14 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class PermissionsController : ControllerBase
 {
-    private readonly BdmsContext context;
     private readonly IBoreholePermissionService permissionService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PermissionsController"/> class.
     /// </summary>
-    /// <param name="context">The EF database context containing data for the BDMS application.</param>
     /// <param name="permissionService"><see cref="BoreholePermissionService"/>.</param>
-    public PermissionsController(BdmsContext context, IBoreholePermissionService permissionService)
+    public PermissionsController(IBoreholePermissionService permissionService)
     {
-        this.context = context;
         this.permissionService = permissionService;
     }
 
