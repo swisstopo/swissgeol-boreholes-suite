@@ -3,7 +3,9 @@ import { FieldValues, FormProvider, SubmitHandler, useForm } from "react-hook-fo
 import { DevTool } from "../../../hookformDevtools";
 import { useReloadBoreholes } from "../../api/borehole.ts";
 import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
+import { useResetTabStatus } from "../../hooks/useResetTabStatus.ts";
 import { useSaveOnCtrlS } from "../../hooks/useSaveOnCtrlS";
+import { TabName } from "../../pages/detail/form/workflow/workflow.ts";
 import { FormContainer } from "../form/form";
 import { useFormDirtyChanges } from "../form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../form/useValidateFormOnMount.tsx";
@@ -15,7 +17,7 @@ interface DataInputCardProps<T extends FieldValues> {
   item: T;
   addData: (data: T) => Promise<void>;
   updateData: (data: T) => Promise<void>;
-  promptLabel: string;
+  entityName: TabName;
   prepareFormDataForSubmit: (data: T) => T;
   children?: ReactNode;
 }
@@ -24,7 +26,7 @@ export const DataInputCard = <T extends FieldValues>({
   item,
   addData,
   updateData,
-  promptLabel,
+  entityName,
   prepareFormDataForSubmit,
   children,
 }: DataInputCardProps<T>) => {
@@ -33,8 +35,10 @@ export const DataInputCard = <T extends FieldValues>({
   const formMethods = useForm<T>({ mode: "all" });
   const { formState, handleSubmit, control } = formMethods;
   const reloadBoreholes = useReloadBoreholes();
+  const resetTabStatus = useResetTabStatus([entityName]);
 
   const submitForm: SubmitHandler<T> = data => {
+    resetTabStatus();
     data = prepareFormDataForSubmit(data);
     if (item.id === 0) {
       addData({
@@ -56,7 +60,7 @@ export const DataInputCard = <T extends FieldValues>({
   useUnsavedChangesPrompt({
     formMethods,
     submitForm,
-    translationKey: promptLabel,
+    translationKey: entityName,
   });
 
   useValidateFormOnMount({ formMethods });

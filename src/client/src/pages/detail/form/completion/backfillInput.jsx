@@ -30,7 +30,7 @@ const BackfillInput = ({ item, parentId }) => {
       item={item}
       addData={addBackfill}
       updateData={updateBackfill}
-      promptLabel="backfill"
+      entityName="backfill"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <FormContainer direction="row">
         <FormInput

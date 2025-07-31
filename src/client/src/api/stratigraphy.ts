@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { User } from "./apiInterfaces.ts";
 import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
@@ -156,6 +157,7 @@ export const useStratigraphiesByBoreholeId = (boreholeId?: number) =>
 
 export const useStratigraphyMutations = () => {
   const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["lithology", "lithostratigraphy", "chronostratigraphy"]);
 
   const invalidateQueries = (stratigraphy: Stratigraphy, invalidateBorehole: boolean) => {
     queryClient.invalidateQueries({ queryKey: [stratigraphyQueryKey, stratigraphy.id] });
@@ -170,6 +172,7 @@ export const useStratigraphyMutations = () => {
       return await createStratigraphy(boreholeId);
     },
     onSuccess: addedStratigraphy => {
+      resetTabStatus();
       invalidateQueries(addedStratigraphy, true);
     },
   });
@@ -179,6 +182,7 @@ export const useStratigraphyMutations = () => {
       return await copyStratigraphy(stratigraphy);
     },
     onSuccess: (_data, originalStratigraphy) => {
+      resetTabStatus();
       invalidateQueries(originalStratigraphy, true);
     },
   });
@@ -188,6 +192,7 @@ export const useStratigraphyMutations = () => {
       return await updateStratigraphy(stratigraphy);
     },
     onSuccess: updatedStratigraphy => {
+      resetTabStatus();
       invalidateQueries(updatedStratigraphy, false);
     },
   });
@@ -197,6 +202,7 @@ export const useStratigraphyMutations = () => {
       return await deleteStratigraphy(stratigraphy.id);
     },
     onSuccess: (_data, stratigraphy) => {
+      resetTabStatus();
       invalidateQueries(stratigraphy, true);
     },
   });
@@ -254,11 +260,13 @@ export const useChronostratigraphies = (stratigraphyID?: number) =>
 
 export const useChronostratigraphyMutations = () => {
   const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["chronostratigraphy"]);
   const useAddChronostratigraphy = useMutation({
     mutationFn: async (chronostratigraphy: Chronostratigraphy) => {
       return await fetchApiV2("chronostratigraphy", "POST", chronostratigraphy);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [chronostratigraphiesQueryKey],
       });
@@ -269,6 +277,7 @@ export const useChronostratigraphyMutations = () => {
       return await fetchApiV2("chronostratigraphy", "PUT", chronostratigraphy);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [chronostratigraphiesQueryKey],
       });
@@ -279,6 +288,7 @@ export const useChronostratigraphyMutations = () => {
       return await fetchApiV2(`chronostratigraphy?id=${chronostratigraphyId}`, "DELETE");
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [chronostratigraphiesQueryKey],
       });
@@ -305,11 +315,13 @@ export const useLithostratigraphies = (stratigraphyID?: number) =>
 
 export const useLithostratigraphyMutations = () => {
   const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["lithostratigraphy"]);
   const useAddLithostratigraphy = useMutation({
     mutationFn: async (lithostratigraphy: Lithostratigraphy) => {
       return await fetchApiV2("lithostratigraphy", "POST", lithostratigraphy);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [lithostratigraphiesQueryKey],
       });
@@ -320,6 +332,7 @@ export const useLithostratigraphyMutations = () => {
       return await fetchApiV2("lithostratigraphy", "PUT", lithostratigraphy);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [lithostratigraphiesQueryKey],
       });
@@ -330,6 +343,7 @@ export const useLithostratigraphyMutations = () => {
       return await fetchApiV2(`lithostratigraphy?id=${lithostratigraphyId}`, "DELETE");
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [lithostratigraphiesQueryKey],
       });

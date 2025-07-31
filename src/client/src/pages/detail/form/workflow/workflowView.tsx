@@ -105,6 +105,7 @@ export const WorkflowView = () => {
   return (
     <Box sx={{ minHeight: "100dvh" }}>
       <SgcWorkflow
+        key={JSON.stringify(workflow)}
         workflow={{
           ...workflow,
           changes: workflow.changes?.map(change => ({
