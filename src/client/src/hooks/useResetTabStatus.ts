@@ -11,17 +11,17 @@ export const useResetTabStatus = (tabsToReset: TabName[]) => {
   } = useWorkflowMutation();
 
   return () => {
-    const anyTabIsReviewd = tabsToReset.some(tab => borehole.workflow?.reviewedTabs[tab] === true);
+    const anyTabIsReviewed = tabsToReset.some(tab => borehole.workflow?.reviewedTabs[tab] === true);
     const anyTabIsPublished = tabsToReset.some(tab => borehole.workflow?.publishedTabs[tab] === true);
 
-    if (!anyTabIsReviewd && !anyTabIsPublished) return;
+    if (!anyTabIsReviewed && !anyTabIsPublished) return;
 
     const changes: Partial<GenericWorkflowSelection> = {};
     tabsToReset.forEach(tab => {
       changes[tab] = false;
     });
 
-    if (anyTabIsReviewd) {
+    if (anyTabIsReviewed) {
       updateTabStatus({
         boreholeId: borehole.id,
         tab: TabType.Reviewed,
