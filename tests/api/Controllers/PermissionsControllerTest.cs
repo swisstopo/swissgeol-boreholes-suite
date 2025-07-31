@@ -34,7 +34,7 @@ public class PermissionsControllerTest
     }
 
     [TestMethod]
-    public async Task CheckPermissionsForInexistantBorehole()
+    public async Task CheckPermissionsForInexistentBorehole()
     {
         var response = await controller.CanEditAsync(0).ConfigureAwait(false);
         Assert.AreEqual(response, false);
