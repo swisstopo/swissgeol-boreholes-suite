@@ -50,11 +50,8 @@ DELETE FROM bdms.document WHERE true;
 DELETE FROM bdms.borehole WHERE id_bho NOT IN (
     SELECT id_bho FROM bdms.borehole
     JOIN bdms.codelist ON codelist.id_cli = borehole.restriction_id_cli
-    JOIN bdms.workflow ON workflow.id_bho_fk = borehole.id_bho
-    JOIN bdms.roles ON roles.id_rol = workflow.id_rol_fk
-    WHERE workflow.id_wkf IN (SELECT MAX(id_wkf) FROM bdms.workflow GROUP BY id_bho_fk)
-      AND finished_wkf IS NOT NULL -- get latest publication status
-      AND roles.name_rol = 'PUBLIC' -- publication status: published
+    JOIN bdms.workflow_v2 ON workflow_v2.borehole_id = borehole.id_bho
+    WHERE workflow_v2.status = 3 -- workflow status: published
       AND codelist.schema_cli = 'restriction'
       AND codelist.code_cli = 'f' -- restriction: free
 );
@@ -65,9 +62,207 @@ WHERE id_rol_fk NOT IN (
     SELECT id_rol FROM bdms.roles WHERE name_rol = 'PUBLIC'
 );
 
+-- Purge workflow_v2 data
+DELETE FROM bdms.workflow_v2
+WHERE workflow_v2.status <> 3;
+
+-- Purge workflow_change data
+DELETE FROM bdms.workflow_change;
+
 -- Purge specific borehole fields
 UPDATE bdms.borehole
 SET original_name_bho = NULL
 WHERE original_name_bho IS NOT NULL;
+
+----------------------------------------------------------------
+-- Purge boreholes data according to published tabs
+----------------------------------------------------------------
+
+-- Hydrogeology: Hydrotest
+DELETE FROM bdms.hydrotest WHERE id IN (
+	SELECT h.id FROM bdms.hydrotest h
+	INNER JOIN bdms.observation o ON o.id = h.id
+	INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.hydrotest = false
+);
+
+-- Hydrogeology: Water Ingress
+DELETE FROM bdms.water_ingress WHERE id IN (
+	SELECT wi.id FROM bdms.water_ingress wi
+	INNER JOIN bdms.observation o ON o.id = wi.id
+	INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.water_ingress = false
+);
+
+-- Hydrogeology: Field Measurement
+DELETE FROM bdms.field_measurement WHERE id IN (
+	SELECT f.id FROM bdms.field_measurement f
+	INNER JOIN bdms.observation o ON o.id = f.id
+	INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.field_measurement = false
+);
+
+-- Hydrogeology: Groundwater Level Measurement
+DELETE FROM bdms.groundwater_level_measurement WHERE id IN (
+	SELECT g.id FROM bdms.groundwater_level_measurement g
+	INNER JOIN bdms.observation o ON o.id = g.id
+	INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.groundwater = false
+);
+
+-- Completion: Sealing/Backfilling
+DELETE FROM bdms.backfill WHERE id IN (
+	SELECT bf.id FROM bdms.backfill bf
+	INNER JOIN bdms.completion c ON c.id = bf.completion_id 
+	INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.backfill = false
+);
+
+-- Completion: Instrumentation
+DELETE FROM bdms.instrumentation WHERE id IN (
+	SELECT i.id FROM bdms.instrumentation i
+	INNER JOIN bdms.completion c ON c.id = i.completion_id 
+	INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.instrumentation = false
+);
+
+-- Completion: Casing
+UPDATE bdms.observation AS o
+SET
+    casing_id = NULL
+FROM bdms.casing ci
+INNER JOIN bdms.completion c ON c.id = ci.completion_id 
+INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
+INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+WHERE o.casing_id = ci.id AND t.casing  = false;
+
+DELETE FROM bdms.casing WHERE id IN (
+	SELECT ci.id FROM bdms.casing ci
+	INNER JOIN bdms.completion c ON c.id = ci.completion_id 
+	INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.casing  = false
+);
+
+-- Stratigraphy: Chronostratigraphy
+DELETE FROM bdms.chronostratigraphy WHERE id_chr IN (
+	SELECT cs.id_chr FROM bdms.chronostratigraphy cs
+	INNER JOIN bdms.stratigraphy s ON s.id_sty = cs.id_sty_fk 
+	INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.chronostratigraphy = false
+);
+
+-- Stratigraphy: Lithostratigraphy
+DELETE FROM bdms.lithostratigraphy WHERE id IN (
+	SELECT l.id FROM bdms.lithostratigraphy l
+	INNER JOIN bdms.stratigraphy s ON s.id_sty = l.stratigraphy_id
+	INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.lithostratigraphy = false
+);
+
+-- Stratigraphy: Lithology
+DELETE FROM bdms.layer WHERE id_lay IN (
+	SELECT l.id_lay FROM bdms.layer l
+	INNER JOIN bdms.stratigraphy s ON s.id_sty = l.id_sty_fk
+	INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.lithology = false
+);
+
+-- Borehole: Geometry
+DELETE FROM bdms.borehole_geometry WHERE id IN (
+	SELECT bg.id FROM bdms.borehole_geometry bg
+	INNER JOIN bdms.borehole b ON b.id_bho  = bg.borehole_id
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t.geometry = false
+);
+
+-- Borehole: Geometry
+DELETE FROM bdms."section" WHERE id IN (
+	SELECT s.id FROM bdms."section" s
+	INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t."section"  = false
+);
+
+-- Borehole: General
+UPDATE bdms.borehole AS b
+SET
+    borehole_type_id = NULL,
+    purpose_id_cli = NULL,
+    status_id_cli = NULL,
+    total_depth_bho = NULL,
+    qt_depth_id_cli = NULL,
+    top_bedrock_weathered_md = NULL,
+    top_bedrock_fresh_md = NULL,
+    top_bedrock_intersected = NULL,
+    lithology_top_bedrock_id_cli = NULL,
+    lithostrat_id_cli = NULL,
+    chronostrat_id_cli = NULL,
+    groundwater_bho = NULL,
+    remarks_bho = NULL
+FROM bdms.workflow_v2 w
+INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+WHERE w.borehole_id = b.id_bho AND t."general" = false;
+
+-- Borehole: Location
+UPDATE bdms.borehole AS b
+SET
+    original_name_bho = NULL,
+    alternate_name_bho = NULL,
+    project_name_bho = NULL,
+    restriction_until_bho = NULL,
+    national_interest = NULL,
+    srs_id_cli = NULL,
+    location_x_bho = NULL,
+    location_x_lv03_bho = NULL,
+    location_y_bho = NULL,
+    location_y_lv03_bho = NULL,
+    qt_location_id_cli = NULL,
+    precision_location_x = NULL,
+    precision_location_x_lv03 = NULL,
+    precision_location_y = NULL,
+    precision_location_y_lv03 = NULL,
+    elevation_z_bho = NULL,
+    qt_elevation_id_cli = NULL,
+    hrs_id_cli = NULL,
+    reference_elevation_bho = NULL,
+    reference_elevation_type_id_cli = NULL,
+    qt_reference_elevation_id_cli = NULL,
+    country_bho = NULL,
+    canton_bho = NULL,
+    municipality_bho = NULL
+FROM bdms.workflow_v2 w
+INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+WHERE w.borehole_id = b.id_bho AND t."location"  = false;
+
+DELETE FROM bdms.borehole_identifiers_codelist WHERE borehole_id IN (
+	SELECT bi.borehole_id FROM bdms.borehole_identifiers_codelist bi
+	INNER JOIN bdms.borehole b ON b.id_bho  = bi.borehole_id
+	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+	WHERE t."location"  = false
+);
 
 SELECT COUNT(*) AS "Free/Published Boreholes" FROM bdms.borehole;
