@@ -6,6 +6,7 @@ import {
   assertEmptyRequestReviewModal,
   assertWorkflowSteps,
   checkWorkflowChangeContent,
+  clickCheckAllCheckbox,
   clickSgcButtonWithContent,
   clickTabStatusCheckbox,
   evaluateComment,
@@ -61,7 +62,7 @@ describe("Tests the publication workflow.", () => {
     assertWorkflowSteps("Review");
   }
 
-  it("Can request review  from users with controller privilege", () => {
+  it("Can request review from users with controller privilege", () => {
     createBorehole({
       originalName: "Flinchy clown fish",
     }).as("borehole_id");
@@ -141,13 +142,28 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("review", "Instrumentation");
       isUncheckedTabStatusBox("review", "Completion");
 
-      // Click one completion child
+      // check then uncheck all checkboxes
+      clickCheckAllCheckbox("review");
+      isCheckedTabStatusBox("review", "Borehole");
+      isCheckedTabStatusBox("review", "Stratigraphy");
+      isCheckedTabStatusBox("review", "Completion");
+      isCheckedTabStatusBox("review", "Hydrogeology");
+      isCheckedTabStatusBox("review", "Attachments");
+
+      clickCheckAllCheckbox("review");
+      isUncheckedTabStatusBox("review", "Borehole");
+      isUncheckedTabStatusBox("review", "Stratigraphy");
+      isUncheckedTabStatusBox("review", "Completion");
+      isUncheckedTabStatusBox("review", "Hydrogeology");
+      isUncheckedTabStatusBox("review", "Attachments");
+
+      // click one completion child
       clickTabStatusCheckbox("review", "Instrumentation");
 
       isCheckedTabStatusBox("review", "Instrumentation");
       isIntermediateTabStatusBox("review", "Completion");
 
-      // Click all remaining completion children
+      // click all remaining completion children
       clickTabStatusCheckbox("review", "Casing");
       clickTabStatusCheckbox("review", "Sealing/Backfilling");
 
@@ -156,9 +172,9 @@ describe("Tests the publication workflow.", () => {
       isCheckedTabStatusBox("review", "Instrumentation");
       isCheckedTabStatusBox("review", "Completion");
 
-      //navigate away and return to assert state has been saved
+      // navigate away and return to assert state has been saved
       navigateInSidebar(SidebarMenuItem.borehole);
-      //Todo : update navigateInSidebar for new workflow tab
+      //Todo: update navigateInSidebar for new workflow tab
       getElementByDataCy(`status-menu-item`).click();
       cy.get("sgc-tab").contains("Review").click();
 
@@ -298,6 +314,10 @@ describe("Tests the publication workflow.", () => {
       cy.get(".select-trigger").eq(0).click();
       cy.get(".select-option").contains(WorkflowStatus.Draft).click();
       cy.get(".select-trigger").eq(1).click();
+      // all users with editor privileges should be selectable
+      cy.get(".select-option").should("have.length", 7);
+      cy.get(".select-option").contains("viewer user").should("not.exist");
+      cy.get(".select-option").contains("editor user").should("exist");
       cy.get(".select-option").contains("Admin User").click();
       cy.get("sgc-modal-wrapper").find("sgc-button").contains("Status manuell ändern").click();
       cy.wait(["@workflow_by_id", "@borehole_by_id"]);
