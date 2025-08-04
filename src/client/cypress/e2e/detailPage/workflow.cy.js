@@ -380,7 +380,7 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  it.only("Resets reviewed and published checkboxes when borehole tabs change", () => {
+  it("Resets reviewed and published checkboxes when borehole tabs change", () => {
     createBorehole({
       originalName: "Creamy window squash",
     }).as("borehole_id");

@@ -2,7 +2,7 @@ import { evaluateDropdownOptionsLength, evaluateSelect, setSelect } from "../hel
 import { getElementByDataCy, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("Hierachical data filter tests", () => {
-  it.skip("check visible filters", () => {
+  it("check visible filters", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
