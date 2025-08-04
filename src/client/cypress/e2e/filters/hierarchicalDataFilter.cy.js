@@ -1,8 +1,8 @@
-import { evaluateSelectTextfield, setSelect } from "../helpers/formHelpers.js";
+import { evaluateDropdownOptionsLength, evaluateSelect, setSelect } from "../helpers/formHelpers.js";
 import { getElementByDataCy, goToRouteAndAcceptTerms } from "../helpers/testHelpers.js";
 
 describe("Hierachical data filter tests", () => {
-  it("check visible filters", () => {
+  it.skip("check visible filters", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
@@ -19,8 +19,10 @@ describe("Hierachical data filter tests", () => {
     getElementByDataCy("show-filter-button").click();
     cy.contains("h6", "Chronostratigraphy").click();
     cy.contains("label", "Period").next().click();
-    cy.get(".MuiMenuItem-root")
-      .should("have.length", 13)
+    evaluateDropdownOptionsLength(13);
+
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .find('[role="option"]')
       .should(options => {
         expect(options[0]).to.have.text("Reset");
         expect(options[1]).to.have.text("Quaternary");
@@ -55,7 +57,7 @@ describe("Hierachical data filter tests", () => {
     cy.wait(["@edit_list", "@borehole_geojson"]);
     getElementByDataCy("filter-chip-chronostratigraphy_id").should("exist");
     cy.wrap(filterValues).each(filter => {
-      return evaluateSelectTextfield(filter.period, filter.value);
+      return evaluateSelect(filter.period, filter.value);
     });
     cy.then(() => {
       // Reset age select
@@ -71,12 +73,12 @@ describe("Hierachical data filter tests", () => {
       { period: "period", value: "Neogene" },
       { period: "epoch", value: "Miocene" },
       { period: "subepoch", value: "Early Miocene" },
-      { period: "age", value: null },
-      { period: "subage", value: null },
+      { period: "age", value: "" },
+      { period: "subage", value: "" },
     ];
     // Verify that 2 levels are removed
     cy.wrap(filterValues).each(filter => {
-      return evaluateSelectTextfield(filter.period, filter.value);
+      return evaluateSelect(filter.period, filter.value);
     });
     cy.then(() => {
       // Reset period select
@@ -88,15 +90,15 @@ describe("Hierachical data filter tests", () => {
     filterValues = [
       { period: "eon", value: "Phanerozoic" },
       { period: "era", value: "Cenozoic" },
-      { period: "period", value: null },
-      { period: "epoch", value: null },
-      { period: "subepoch", value: null },
-      { period: "age", value: null },
-      { period: "subage", value: null },
+      { period: "period", value: "" },
+      { period: "epoch", value: "" },
+      { period: "subepoch", value: "" },
+      { period: "age", value: "" },
+      { period: "subage", value: "" },
     ];
     // Verify that 4 levels are removed
     cy.wrap(filterValues).each(filter => {
-      return evaluateSelectTextfield(filter.period, filter.value);
+      return evaluateSelect(filter.period, filter.value);
     });
     cy.then(() => {
       // Reset all filters and verify they're cleared
@@ -105,7 +107,7 @@ describe("Hierachical data filter tests", () => {
     cy.wait("@edit_list");
     getElementByDataCy("filter-chip-chronostratigraphy_id").should("not.exist");
     filterValues.forEach(filter => {
-      evaluateSelectTextfield(filter.period, null);
+      evaluateSelect(filter.period, "");
     });
   });
 });

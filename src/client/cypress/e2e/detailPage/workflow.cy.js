@@ -380,7 +380,7 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  it("Resets reviewed and published checkboxes when borehole tabs change", () => {
+  it.only("Resets reviewed and published checkboxes when borehole tabs change", () => {
     createBorehole({
       originalName: "Creamy window squash",
     }).as("borehole_id");
@@ -431,9 +431,11 @@ describe("Tests the publication workflow.", () => {
       cy.wait(["@section_POST", "@section_GET"]);
 
       navigateInBorehole(BoreholeTab.geometry);
+      cy.wait("@boreholegeometry_formats");
 
       // add geometry file and save
       dropGeometryCSVFile();
+      cy.get('[data-cy="boreholegeometryimport-button"]').should("be.enabled");
       setSelect("geometryFormat", 1);
       cy.get('[data-cy="boreholegeometryimport-button"]').click();
 

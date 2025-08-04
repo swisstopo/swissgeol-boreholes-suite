@@ -133,12 +133,7 @@ const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema,
                   handleChange(Number(newValue.value));
                 }}
                 renderInput={params => (
-                  <TextField
-                    {...params}
-                    label={t(level.label)}
-                    data-cy={`${level.label}-formSelect`}
-                    aria-label={t(level.label)}
-                  />
+                  <TextField {...params} label={t(level.label)} data-cy={`${level.label}-formSelect`} />
                 )}
                 renderOption={(props, option) => (
                   <li {...props}>{option.italic ? <em>{option.label}</em> : option.label}</li>
