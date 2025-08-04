@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Box, MenuItem, TextField } from "@mui/material";
+import { Autocomplete, Box, TextField } from "@mui/material";
 import { Codelist, useCodelistSchema } from "../../../../components/codelist.ts";
 import { FormContainer } from "../../../../components/form/form.ts";
 import { FormSelectMenuItem } from "../../../../components/form/formSelect.tsx";
@@ -9,9 +10,7 @@ import { HierarchicalDataSearchProps, Level } from "./hierachicalDataInterfaces.
 const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema, labels, selected, onSelected }) => {
   const { i18n, t } = useTranslation();
   const { data: schemaData } = useCodelistSchema(schema);
-
-  const [levels, setLevels] = useState<Level[]>([]);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const { control } = useFormContext();
 
   const getSelectedOption = useCallback(
     (id: number | null): Codelist | null => {
@@ -28,8 +27,54 @@ const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema,
     [schemaData],
   );
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(event.target.value);
+  const generateLevelOptions = (
+    schemaData: Codelist[] | undefined,
+    labels: string[] | undefined,
+    i18nLang: string,
+    t: (key: string) => string,
+  ): Level[] => {
+    if (!schemaData || !labels) return [];
+    return labels.map((label, index) => {
+      const options: FormSelectMenuItem[] = [
+        {
+          key: "reset",
+          value: -(index + 1),
+          italic: true,
+          label: t("reset"),
+        },
+      ];
+      schemaData
+        .slice()
+        .sort((a, b) => a.order - b.order)
+        .forEach(entry => {
+          const path = entry.path.split(".").map(Number);
+          if (path.length === index + 1) {
+            options.push({
+              key: entry.id,
+              value: entry.id,
+              label: entry[i18nLang] as string,
+            });
+          }
+        });
+      return {
+        level: index + 1,
+        label,
+        options,
+      };
+    });
+  };
+
+  const levels = useMemo(
+    () => generateLevelOptions(schemaData, labels, i18n.language, t),
+    [schemaData, labels, i18n.language, t],
+  );
+
+  const selectedIds: number[] = useMemo(() => {
+    const selectedOption = getSelectedOption(selected);
+    return selectedOption ? selectedOption.path.split(".").map(Number) : [];
+  }, [getSelectedOption, selected]);
+
+  const handleChange = (value: number) => {
     if (value < 0) {
       reset(value * -1);
     } else {
@@ -57,83 +102,55 @@ const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema,
 
   const reset = useCallback(
     (level: number) => {
-      if (selectedIds.length >= level) {
-        updateSelection(selectedIds[level - 2]);
-      }
+      updateSelection(selectedIds[level - 2]);
     },
     [selectedIds, updateSelection],
   );
 
-  useEffect(() => {
-    const selectedOption = getSelectedOption(selected);
-    setSelectedIds(selectedOption ? selectedOption.path.split(".").map(id => +id) : []);
-  }, [getSelectedOption, selected]);
-
-  useEffect(() => {
-    if (schemaData) {
-      const levels: Level[] = [];
-      labels?.forEach((label, index) => {
-        const options: FormSelectMenuItem[] = [];
-        let selected: number | null = null;
-
-        options.push({
-          key: "dom-opt-z",
-          value: -(index + 1),
-          italic: true,
-          label: t("reset"),
-        });
-
-        schemaData
-          .slice()
-          .sort((a: Codelist, b: Codelist) => a.order - b.order)
-          .forEach((entry: Codelist) => {
-            const path = entry.path.split(".").map((id: string) => +id);
-            const level = path.length;
-            if (level === index + 1) {
-              const option: FormSelectMenuItem = {
-                key: "dom-opt-" + entry.id,
-                value: entry.id,
-                label: entry[i18n.language] as string,
-              };
-              if (selectedIds.includes(entry.id)) {
-                selected = entry.id;
-              }
-              options.push(option);
-            }
-          });
-        levels.push({
-          level: index + 1,
-          label: label,
-          options: options,
-          selected: selected,
-        });
-      });
-      setLevels(levels);
-    }
-  }, [i18n.language, labels, reset, schemaData, selectedIds, t]);
-
-  return (
-    <>
-      {levels.map(level => (
-        <Box sx={{ mt: 1 }} key={schema + "_" + level.level} data-cy="hierarchical-data-search">
-          <FormContainer>
-            <TextField
-              select={true}
-              label={t(level.label)}
-              onChange={handleChange}
-              value={level.selected ?? ""}
-              data-cy={`${level.label}-formSelect`}>
-              {level.options.map(item => (
-                <MenuItem key={item.key} value={item.value as number}>
-                  {item.italic ? <em>{item.label}</em> : item.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </FormContainer>
-        </Box>
-      ))}
-    </>
-  );
+  return levels.map(level => {
+    const selectedOption = level.options.find(opt => selectedIds.includes(Number(opt.value)));
+    return (
+      <Box sx={{ mt: 1 }} key={schema + "_" + level.level} data-cy="hierarchical-data-search">
+        <FormContainer>
+          <Controller
+            name={level.label}
+            control={control}
+            defaultValue={selectedOption ?? ""}
+            render={({ field }) => (
+              <Autocomplete
+                key={level.label}
+                sx={{ flex: "1" }}
+                options={level.options}
+                getOptionLabel={option => option.label}
+                isOptionEqualToValue={(option, value) => option.value === value.value}
+                value={selectedOption}
+                onChange={(_, newValue) => {
+                  if (newValue?.label.toLowerCase() === t("reset").toLowerCase()) {
+                    field.onChange(null);
+                  } else {
+                    field.onChange(newValue.value);
+                  }
+                  handleChange(Number(newValue.value));
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label={t(level.label)}
+                    data-cy={`${level.label}-formSelect`}
+                    aria-label={t(level.label)}
+                  />
+                )}
+                renderOption={(props, option) => (
+                  <li {...props}>{option.italic ? <em>{option.label}</em> : option.label}</li>
+                )}
+                disableClearable
+              />
+            )}
+          />
+        </FormContainer>
+      </Box>
+    );
+  });
 };
 
 export default HierarchicalDataSearch;

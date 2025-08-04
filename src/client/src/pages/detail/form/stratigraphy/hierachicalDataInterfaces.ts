@@ -4,7 +4,6 @@ export interface Level {
   level: number;
   label: string;
   options: FormSelectMenuItem[];
-  selected: number | null;
 }
 
 export interface HierarchicalDataSearchProps {
