@@ -85,17 +85,12 @@ const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema,
   const updateSelection = useCallback(
     (id: number | null) => {
       const selection = getSelectedOption(id);
-      if (selection === null) {
-        if (onSelected !== undefined) {
-          onSelected({
-            id: null,
-          });
+      if (onSelected != undefined)
+        if (selection) {
+          onSelected({ id: selection.id });
+        } else {
+          onSelected({ id: null });
         }
-      } else {
-        if (onSelected !== undefined) {
-          onSelected({ ...selection });
-        }
-      }
     },
     [getSelectedOption, onSelected],
   );
