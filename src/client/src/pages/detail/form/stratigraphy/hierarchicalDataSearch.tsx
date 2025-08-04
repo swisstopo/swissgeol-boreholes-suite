@@ -5,7 +5,7 @@ import { Autocomplete, Box, TextField } from "@mui/material";
 import { Codelist, useCodelistSchema } from "../../../../components/codelist.ts";
 import { FormContainer } from "../../../../components/form/form.ts";
 import { FormSelectMenuItem } from "../../../../components/form/formSelect.tsx";
-import { HierarchicalDataSearchProps, Level } from "./hierachicalDataInterfaces.ts";
+import { HierarchicalDataSearchProps, Level } from "./hierarchicalDataInterfaces.ts";
 
 const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema, labels, selected, onSelected }) => {
   const { i18n, t } = useTranslation();
