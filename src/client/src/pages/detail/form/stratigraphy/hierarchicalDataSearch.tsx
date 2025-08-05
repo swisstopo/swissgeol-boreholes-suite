@@ -15,12 +15,7 @@ const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema,
   const getSelectedOption = useCallback(
     (id: number | null): Codelist | null => {
       if (id !== null && schemaData) {
-        for (let i = 0; i < (schemaData?.length ?? 0); i++) {
-          const h = schemaData[i];
-          if (h.id === id) {
-            return h;
-          }
-        }
+        return schemaData.find(h => h.id === id) || null;
       }
       return null;
     },
@@ -120,12 +115,14 @@ const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema,
                 isOptionEqualToValue={(option, value) => option.value === value.value}
                 value={selectedOption}
                 onChange={(_, newValue) => {
-                  if (newValue?.label.toLowerCase() === t("reset").toLowerCase()) {
-                    field.onChange(null);
-                  } else {
-                    field.onChange(newValue.value);
+                  if (newValue?.value) {
+                    if (newValue?.value < 0) {
+                      field.onChange(null);
+                    } else {
+                      field.onChange(newValue.value);
+                    }
+                    handleChange(Number(newValue?.value));
                   }
-                  handleChange(Number(newValue?.value));
                 }}
                 renderInput={params => (
                   <TextField {...params} label={t(level.label)} data-cy={`${level.label}-formSelect`} />
