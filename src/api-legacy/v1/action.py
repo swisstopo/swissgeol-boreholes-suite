@@ -359,6 +359,7 @@ class Action():
                 """ % self.getIdx())
             where.append("(%s)" % " OR ".join(_or))
 
+        else:
             if (
                 'workgroup' in keys and
                 filter['workgroup'] not in ['', None]
@@ -672,6 +673,26 @@ class Action():
                 where.append("""
                     creator.username ILIKE %s
                 """ % self.getIdx())
+
+            if 'workflow' in keys and filter['workflow'] not in ['', None]:
+                # Map the workflow status string to integer (0-3)
+                workflow_status_map = {
+                    'Draft': 0,
+                    'InReview': 1,
+                    'Reviewed': 2,
+                    'Published': 3
+                }
+
+                status_value = workflow_status_map.get(filter['workflow'])
+                if status_value is not None:
+                    params.append(status_value)
+                    where.append("""
+                        borehole.id_bho IN (
+                            SELECT borehole_id
+                            FROM bdms.workflow_v2
+                            WHERE status = %s
+                        )
+                    """ % self.getIdx())
 
         return where, params
 

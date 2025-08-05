@@ -1,3 +1,4 @@
+import { WorkflowStatus } from "@swissgeol/ui-core";
 import { hasPagination, showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
 import { evaluateSelect, setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
 import {
@@ -5,10 +6,8 @@ import {
   createLithologyLayer,
   createStratigraphy,
   getElementByDataCy,
-  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   returnToOverview,
-  startBoreholeEditing,
 } from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
@@ -194,21 +193,14 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by status", () => {
-    createBorehole({ originalName: "Filter by status" }).as("borehole_id");
-    cy.get("@borehole_id").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id}/status`);
-      startBoreholeEditing();
-      getElementByDataCy("workflow_submit").click();
-      getElementByDataCy("workflow_dialog_submit").click();
-      returnToOverview();
-      getElementByDataCy("show-filter-button").click();
-      cy.contains("Status").click();
-      getElementByDataCy("boreholes-number-preview").should("have.text", "1'627");
-      getElementByDataCy("statuseditor").click();
-      getElementByDataCy("boreholes-number-preview").should("have.text", "1'626");
-      getElementByDataCy("statuscontroller").click();
-      getElementByDataCy("boreholes-number-preview").should("have.text", "1");
-    });
+    goToRouteAndAcceptTerms("");
+    getElementByDataCy("show-filter-button").click();
+    cy.contains("Status").click();
+    getElementByDataCy("boreholes-number-preview").should("have.text", "1'627");
+    getElementByDataCy(WorkflowStatus.Draft).click();
+    getElementByDataCy("boreholes-number-preview").should("have.text", "1'627");
+    getElementByDataCy(WorkflowStatus.Reviewed).click();
+    getElementByDataCy("boreholes-number-preview").should("have.text", "0");
   });
 
   it("filters boreholes by boreholestatus", () => {
