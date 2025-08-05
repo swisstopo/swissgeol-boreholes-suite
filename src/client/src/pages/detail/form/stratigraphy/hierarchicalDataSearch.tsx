@@ -85,7 +85,7 @@ const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema,
   const updateSelection = useCallback(
     (id: number | null) => {
       const selection = getSelectedOption(id);
-      if (onSelected != undefined)
+      if (onSelected)
         if (selection) {
           onSelected({ id: selection.id });
         } else {
@@ -125,7 +125,7 @@ const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema,
                   } else {
                     field.onChange(newValue.value);
                   }
-                  handleChange(Number(newValue.value));
+                  handleChange(Number(newValue?.value));
                 }}
                 renderInput={params => (
                   <TextField {...params} label={t(level.label)} data-cy={`${level.label}-formSelect`} />
