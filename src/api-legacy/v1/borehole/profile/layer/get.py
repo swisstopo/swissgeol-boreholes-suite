@@ -189,38 +189,6 @@ class GetGeologyLayer(Action):
         INNER JOIN bdms.borehole
         ON stratigraphy.id_bho_fk = id_bho
 
-        INNER JOIN (
-            SELECT
-                id_bho_fk,
-                array_agg(
-                    json_build_object(
-                        'role', name_rol,
-                        'username', username
-
-                    )
-                ) as status
-            FROM (
-                SELECT
-                    id_bho_fk,
-                    name_rol,
-                    username
-
-                FROM
-                    bdms.roles,
-                    bdms.users
-                WHERE
-                    id_rol = id_rol_fk
-                AND
-                    id_usr = id_usr_fk
-                ORDER BY
-                    id_bho_fk  asc
-            ) t
-            GROUP BY
-                id_bho_fk
-        ) as v
-        ON
-            v.id_bho_fk = id_bho
-
         INNER JOIN bdms.users as creator
         ON creator_lay = creator.id_usr
 

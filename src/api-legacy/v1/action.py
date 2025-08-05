@@ -359,19 +359,6 @@ class Action():
                 """ % self.getIdx())
             where.append("(%s)" % " OR ".join(_or))
 
-        else:
-            if (
-                'role' in keys and
-                filter['role'] not in ['', None] and
-                filter['role'] != 'all'
-            ):
-                params.append(filter['role'])
-                where.append("""
-                    status[
-                        array_length(status, 1)
-                    ]  ->> 'role' = %s
-                """ % self.getIdx())
-
             if (
                 'workgroup' in keys and
                 filter['workgroup'] not in ['', None]
