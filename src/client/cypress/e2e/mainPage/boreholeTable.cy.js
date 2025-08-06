@@ -75,7 +75,7 @@ describe("Borehole editor table tests", () => {
     clickOnNextPage();
 
     // verify current page is 4
-    verifyPaginationText("401–500 of 1626");
+    verifyPaginationText("401–500 of 3000");
     verifyRowContains("Nichole VonRueden", 0);
 
     // navigate to detail
@@ -86,23 +86,23 @@ describe("Borehole editor table tests", () => {
 
     // verify current page is still 4
     waitForTableData();
-    verifyPaginationText("401–500 of 1626");
+    verifyPaginationText("401–500 of 3000");
     verifyRowContains("Nichole VonRueden", 0);
 
     //navigate to last page
     clickOnLastPage();
-    verifyPaginationText("1601–1626 of 1626");
+    verifyPaginationText("2901–3000 of 3000");
   });
 
   it("Verifies all rows are selected on header checkbox click", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", " 3'000");
     showTableAndWaitForData();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", " 3'000");
 
     // check all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.contains("1'626").should("not.exist");
+    cy.contains(" 3'000").should("not.exist");
     cy.contains("1477 selected").should("be.visible"); // does not select locked rows
 
     // uncheck one row
@@ -119,7 +119,7 @@ describe("Borehole editor table tests", () => {
 
     // uncheck all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", " 3'000");
 
     // check one row
     checkRowWithText("Andres Renner");
@@ -134,7 +134,7 @@ describe("Borehole editor table tests", () => {
     // check all, then uncheck all from page where single selection is not visible
     cy.get('[data-cy="table-header-checkbox"]').click();
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", " 3'000");
 
     // filter data
     cy.get('[data-cy="show-filter-button"]').click();
@@ -146,7 +146,7 @@ describe("Borehole editor table tests", () => {
 
     // check all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.contains("1'626").should("not.exist");
+    cy.contains(" 3'000").should("not.exist");
     cy.contains("298 selected").should("be.visible"); // does not select locked rows
 
     // navigate to next page

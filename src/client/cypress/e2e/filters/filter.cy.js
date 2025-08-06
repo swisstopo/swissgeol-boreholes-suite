@@ -196,9 +196,9 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Status").click();
-    getElementByDataCy("boreholes-number-preview").should("have.text", "1'627");
+    getElementByDataCy("boreholes-number-preview").should("have.text", "3'000");
     getElementByDataCy(WorkflowStatus.Draft).click();
-    getElementByDataCy("boreholes-number-preview").should("have.text", "1'627");
+    getElementByDataCy("boreholes-number-preview").should("have.text", "3'000");
     getElementByDataCy(WorkflowStatus.Reviewed).click();
     getElementByDataCy("boreholes-number-preview").should("have.text", "0");
   });

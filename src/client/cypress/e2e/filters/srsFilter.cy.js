@@ -59,7 +59,7 @@ describe("Tests for filtering data by reference system.", () => {
 
     cy.contains("h6", "Location").click();
     getElementByDataCy("show-all-fields-switch").click();
-    verifyPaginationText("1–100 of 1627");
+    verifyPaginationText("1–100 of 3001");
 
     cy.get('[data-cy="originalReferenceSystem-formSelect"]').should("exist");
 
@@ -72,6 +72,6 @@ describe("Tests for filtering data by reference system.", () => {
 
     // click reset label
     cy.get('[data-cy="reset-filter-button"]').click();
-    verifyPaginationText("1–100 of 1627");
+    verifyPaginationText("1–100 of 3001");
   });
 });
