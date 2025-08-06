@@ -105,7 +105,7 @@ const HierarchicalDataSearch: React.FC<HierarchicalDataSearchProps> = ({ schema,
           <Controller
             name={level.label}
             control={control}
-            defaultValue={selectedOption ?? ""}
+            defaultValue={selectedOption ?? null}
             render={({ field }) => (
               <Autocomplete
                 key={level.label}
