@@ -44,6 +44,7 @@ const addCompletion = () => {
 const startEditHeader = () => {
   toggleHeaderOpen();
   startEditing("completion-header");
+  cy.wait("@borehole_by_id");
 };
 
 const saveChanges = () => {
