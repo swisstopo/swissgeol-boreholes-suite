@@ -155,15 +155,15 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
                     }))}
                   />
                 )}
-                {item.type === "HierarchicalData" && (
+                {item?.schema && item.type === "HierarchicalData" && (
                   <Box mt={3}>
                     <HierarchicalDataSearch
-                      onSelected={(e: { id: number }) => {
+                      onSelected={(e: { id: number | null }) => {
                         updateChange(item.value, e.id);
                       }}
                       schema={item.schema}
                       labels={item.labels}
-                      selected={_.isNil(filters.filter?.[item.value]) ? null : filters.filter[item.value]}
+                      selected={_.isNil(filters.filter?.[item.value]) ? null : Number(filters.filter[item.value])}
                     />
                   </Box>
                 )}
