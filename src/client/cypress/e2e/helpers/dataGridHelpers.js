@@ -104,7 +104,7 @@ export const checkRowWithIndex = index => {
 };
 
 export const clickOnRowWithText = text => {
-  cy.contains(".MuiDataGrid-row", text).scrollIntoView().click();
+  cy.contains(".MuiDataGrid-row", text).click();
 };
 
 export const setTextInRow = (row, field, text) => {
