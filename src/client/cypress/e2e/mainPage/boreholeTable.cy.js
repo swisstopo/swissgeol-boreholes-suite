@@ -20,32 +20,31 @@ describe("Borehole editor table tests", () => {
     // default soring by name ascending
     verifyRowContains("Aaliyah Casper", 0);
     verifyRowContains("Aaliyah Lynch", 1);
-    verifyRowContains("Aaron Bartell", 2);
+    verifyRowContains("Aaron Bartell", 3);
 
     // verify a thousand separator is applied
-    verifyRowContains("1'913.61", 4);
-    verifyRowContains("1'017.29", 4);
-    verifyRowContains("2'604'222.17", 4);
-    verifyRowContains("1'137'876.85", 4);
+    verifyRowContains("1'434.15", 3);
+    verifyRowContains("2'478'298.00", 3);
+    verifyRowContains("1'283'998.00", 3);
 
     // sort by Name descending
     sortBy("Name");
-    verifyRowContains("Zena Rath", 0);
-    verifyRowContains("Zena Mraz", 1);
-    verifyRowContains("Zena Halvorson", 2);
+    verifyRowContains("Zena Tillmann", 0);
+    verifyRowContains("Zena Rolfson", 1);
+    verifyRowContains("Zena Rath", 2);
 
     // sort by borehole length descending
     sortBy("Borehole length");
     sortBy("Borehole length");
-    verifyRowContains("1'998.07", 0);
-    verifyRowContains("1'997.79", 1);
-    verifyRowContains("1'995.5", 2);
+    verifyRowContains("1'999.36", 0);
+    verifyRowContains("1'999.07", 1);
+    verifyRowContains("1'998.07", 2);
 
     // sort by reference elevation
     sortBy("Reference elevation");
-    verifyRowContains("1.8", 0);
+    verifyRowContains("1.80", 0);
     verifyRowContains("3.47", 1);
-    verifyRowContains("13.13", 2);
+    verifyRowContains("5.14", 2);
 
     // sort by borehole type
     sortBy("Borehole type");
@@ -96,13 +95,13 @@ describe("Borehole editor table tests", () => {
 
   it("Verifies all rows are selected on header checkbox click", () => {
     goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", " 3'000");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
     showTableAndWaitForData();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", " 3'000");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
 
     // check all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.contains(" 3'000").should("not.exist");
+    cy.contains("3'000").should("not.exist");
     cy.contains("1477 selected").should("be.visible"); // does not select locked rows
 
     // uncheck one row
@@ -119,7 +118,7 @@ describe("Borehole editor table tests", () => {
 
     // uncheck all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", " 3'000");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
 
     // check one row
     checkRowWithText("Andres Renner");
@@ -134,7 +133,7 @@ describe("Borehole editor table tests", () => {
     // check all, then uncheck all from page where single selection is not visible
     cy.get('[data-cy="table-header-checkbox"]').click();
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", " 3'000");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
 
     // filter data
     cy.get('[data-cy="show-filter-button"]').click();
@@ -146,7 +145,7 @@ describe("Borehole editor table tests", () => {
 
     // check all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.contains(" 3'000").should("not.exist");
+    cy.contains("3'000").should("not.exist");
     cy.contains("298 selected").should("be.visible"); // does not select locked rows
 
     // navigate to next page

@@ -140,20 +140,20 @@ describe("Search filter tests", () => {
 
     setYesNoSelect("national_interest", "No");
     cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 1469");
+    verifyPaginationText("1–100 of 2703");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
     cy.contains("Lithology").click();
     getElementByDataCy("show-all-fields-switch").click();
     setYesNoSelect("striae", "Yes");
     cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 1401");
+    verifyPaginationText("1–100 of 2567");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
     setYesNoSelect("striae", "No");
     cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 1402");
+    verifyPaginationText("1–100 of 2568");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
@@ -176,7 +176,7 @@ describe("Search filter tests", () => {
 
     setYesNoSelect("striae", "No");
     cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 1555");
+    verifyPaginationText("1–100 of 2853");
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
@@ -189,7 +189,7 @@ describe("Search filter tests", () => {
 
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
     cy.get('[data-cy="filter-chip-striae"]').should("not.exist");
-    verifyPaginationText("1–100 of 1630");
+    verifyPaginationText("1–100 of 2703");
   });
 
   it("filters boreholes by status", () => {
@@ -228,7 +228,7 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    verifyPaginationText("1–100 of 108");
+    verifyPaginationText("1–100 of 181");
     cy.get(".MuiDataGrid-row").contains("Bruce Rempel").should("exist");
   });
 

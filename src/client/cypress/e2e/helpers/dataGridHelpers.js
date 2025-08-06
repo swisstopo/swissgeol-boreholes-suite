@@ -16,6 +16,7 @@ export const sortBy = headerTextContent => {
 };
 
 export const verifyRowContains = (rowContent, rowIndex) => {
+  cy.get(".MuiDataGrid-row").eq(rowIndex).scrollIntoView();
   cy.get(".MuiDataGrid-row")
     .eq(rowIndex)
     .within(() => {
@@ -103,7 +104,7 @@ export const checkRowWithIndex = index => {
 };
 
 export const clickOnRowWithText = text => {
-  cy.contains(".MuiDataGrid-row", text).click();
+  cy.contains(".MuiDataGrid-row", text).scrollIntoView().click();
 };
 
 export const setTextInRow = (row, field, text) => {

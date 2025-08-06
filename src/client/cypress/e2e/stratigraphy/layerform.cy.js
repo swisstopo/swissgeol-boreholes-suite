@@ -418,6 +418,8 @@ describe("Tests for the layer form.", () => {
     showTableAndWaitForData();
     clickOnNextPage();
     waitForTableData();
+    clickOnNextPage();
+    waitForTableData();
     clickOnRowWithText("Anibal Conroy");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
 
