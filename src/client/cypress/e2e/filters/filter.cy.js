@@ -60,7 +60,7 @@ describe("Search filter tests", () => {
 
     // check content of table
     showTableAndWaitForData();
-    verifyPaginationText("1–100 of 329");
+    verifyPaginationText("1–100 of 602");
   });
 
   it("filters boreholes national_interest and striae", () => {
@@ -130,7 +130,7 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     showTableAndWaitForData();
-    verifyPaginationText("1–100 of 160");
+    verifyPaginationText("1–100 of 300");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
     setYesNoSelect("national_interest", "Not specified");
@@ -211,7 +211,7 @@ describe("Search filter tests", () => {
     setSelect("status", 2);
     cy.wait("@edit_list");
 
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "169");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "314");
     cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
   });
 
@@ -223,7 +223,7 @@ describe("Search filter tests", () => {
     setSelect("color", 0);
     cy.wait("@edit_list");
     showTableAndWaitForData();
-    verifyPaginationText("1–100 of 770");
+    verifyPaginationText("1–100 of 1403");
     setSelect("uscs_3", 4);
     cy.wait("@edit_list");
 
