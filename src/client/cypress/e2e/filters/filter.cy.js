@@ -176,7 +176,7 @@ describe("Search filter tests", () => {
 
     setYesNoSelect("striae", "No");
     cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 2853");
+    verifyPaginationText("1–100 of 2854");
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
