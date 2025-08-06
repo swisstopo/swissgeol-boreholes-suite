@@ -28,28 +28,8 @@ import {
 } from "../helpers/testHelpers.js";
 
 describe("Tests the publication workflow.", () => {
-  it("Displays DEV workflow when feature flag is set", () => {
-    goToDetailRouteAndAcceptTerms(`/1000036/status`);
-    // displays legacy workflow form by default
-    cy.contains("h4", "Publication workflow").should("exist");
-    goToDetailRouteAndAcceptTerms(`/1000036/status?dev=true`);
-    cy.contains("h4", "Publication workflow").should("not.exist");
-
-    cy.get("sgc-translate").contains("Status").should("exist");
-    cy.get("sgc-translate").contains("Draft").should("exist");
-    cy.get("sgc-translate").contains("Zugewiesene Person").should("exist");
-    cy.get(".assignee").contains("validator user").should("exist");
-
-    checkWorkflowChangeContent("editor user", "Status von Published zu Reviewed geändert", "Omnis ut in.");
-    checkWorkflowChangeContent(
-      "controller user",
-      "Borehole editor user zugewiesen",
-      "Rerum repudiandae nihil accusamus sed omnis tempore laboriosam eaque est.",
-    ); // Translation not yet available in core UI
-  });
-
   function navigateToWorkflowAndStartEditing(id) {
-    goToDetailRouteAndAcceptTerms(`/${id}/status?dev=true`);
+    goToDetailRouteAndAcceptTerms(`/${id}/status`);
     cy.wait("@borehole_by_id");
     startBoreholeEditing();
     getElementByDataCy("workflow-status-chip").should("contain", "Draft");
