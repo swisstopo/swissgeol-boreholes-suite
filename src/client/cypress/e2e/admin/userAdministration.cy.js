@@ -16,9 +16,8 @@ describe("User administration settings tests", () => {
   it("displays, sorts and filters user table and shows user detail.", () => {
     goToRouteAndAcceptTerms("/setting#users");
     waitForTableData();
-    verifyRowContains("Admin", 7);
-    verifyRowContains("admin.user@local.dev", 7);
-    verifyRowContains("Active", 7);
+    verifyRowWithContentAlsoContains("Admin", "Active");
+    verifyRowWithContentAlsoContains("Admin", "admin.user@local.dev");
     hasPagination(false);
     verifyTableLength(8);
 
