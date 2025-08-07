@@ -64,7 +64,7 @@ internal static class TestSyncContextExtensions
     internal static Borehole SetBoreholeWorkflowStatus(this Borehole borehole, WorkflowStatus status)
     {
         ArgumentNullException.ThrowIfNull(borehole);
-        ArgumentNullException.ThrowIfNull(borehole?.Workflow);
+        ArgumentNullException.ThrowIfNull(borehole.Workflow);
 
         borehole.Workflow.Status = status;
         return borehole;
