@@ -141,15 +141,15 @@ describe("Borehole editor table tests", () => {
     getElementByDataCy("show-all-fields-switch").click();
     cy.contains("Created by").next().find("input").type("v_ U%r");
     cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 329");
+    verifyPaginationText("1–100 of 602");
 
     // check all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
     cy.contains("3'000").should("not.exist");
-    cy.contains("298 selected").should("be.visible"); // does not select locked rows
+    cy.contains("550 selected").should("be.visible"); // does not select locked rows
 
     // navigate to next page
     clickOnNextPage();
-    cy.contains("298 selected").should("be.visible");
+    cy.contains("550 selected").should("be.visible");
   });
 });
