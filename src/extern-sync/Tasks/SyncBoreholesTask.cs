@@ -84,8 +84,6 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
             publishedBorehole.Workflow.Assignee = null;
             publishedBorehole.Workflow.AssigneeId = null;
 
-            publishedBorehole.Workflows.UpdateAttachedUser(targetDefaultUser);
-
             // Ensure unlocked borehole
             publishedBorehole.LockedBy = null;
             publishedBorehole.LockedById = null;

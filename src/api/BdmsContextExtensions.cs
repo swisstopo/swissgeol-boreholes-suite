@@ -494,24 +494,6 @@ public static class BdmsContextExtensions
 
         context.BulkInsert(layersToInsert, bulkConfig);
 
-        // Seed workflows for admin user
-        var workflow_ids = 8_000_000;
-        var workflowRange = Enumerable.Range(workflow_ids, boreholeRange.Count);
-        var fakeWorkflows = new Faker<Workflow>()
-               .StrictMode(true)
-               .RuleFor(o => o.Id, f => workflow_ids++)
-               .RuleFor(o => o.UserId, userRange.First())
-               .RuleFor(o => o.User, _ => default!)
-               .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
-               .RuleFor(o => o.Borehole, _ => default!)
-               .RuleFor(o => o.Notes, f => f.Random.Words(4))
-               .RuleFor(o => o.Role, _ => Role.Editor)
-               .RuleFor(o => o.Started, f => f.Date.Between(new DateTime(1990, 1, 1).ToUniversalTime(), new DateTime(2005, 1, 1).ToUniversalTime()))
-               .RuleFor(o => o.Finished, _ => null);
-
-        Workflow SeededWorkflows(int seed) => fakeWorkflows.UseSeed(seed).Generate();
-        context.BulkInsert(workflowRange.Select(SeededWorkflows).ToList(), bulkConfig);
-
         // Seed lithologicalDescriptions
         var lithologicalDescription_ids = 9_000_000;
         var fakelithologicalDescriptions = new Faker<LithologicalDescription>()
@@ -1107,7 +1089,6 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.files', 'id_fil'), {file_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.stratigraphy', 'id_sty'), {stratigraphy_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.layer', 'id_lay'), {layer_ids - 1})");
-        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow', 'id_wkf'), {workflow_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.observation', 'id'), {observation_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.hydrotest_result', 'id'), {hydrotestResult_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.fieldmeasurement_result', 'id'), {fieldMeasurementResult_ids - 1})");

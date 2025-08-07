@@ -97,7 +97,6 @@ public class BoreholeControllerTest
 
         var boreholeToEdit = GetBorehole(id);
         Assert.AreEqual(1, boreholeToEdit.Stratigraphies.Count);
-        Assert.AreEqual(0, boreholeToEdit.Workflows.Count);
         Assert.AreEqual(0, boreholeToEdit.BoreholeFiles.Count);
         Assert.AreEqual(0, boreholeToEdit.BoreholeGeometry.Count);
         Assert.AreEqual(0, boreholeToEdit.Completions.Count);
@@ -157,9 +156,8 @@ public class BoreholeControllerTest
         Assert.AreEqual(newBorehole.ReferenceElevationPrecisionId, updatedBorehole.ReferenceElevationPrecisionId);
         Assert.AreEqual(newBorehole.ReferenceElevationTypeId, updatedBorehole.ReferenceElevationTypeId);
 
-        // Stratigraphies and workflows remain unchanged
+        // Stratigraphies remain unchanged
         Assert.AreEqual(1, updatedBorehole.Stratigraphies.Count);
-        Assert.AreEqual(0, updatedBorehole.Workflows.Count);
         Assert.AreEqual(0, updatedBorehole.BoreholeFiles.Count);
         Assert.AreEqual(0, updatedBorehole.BoreholeGeometry.Count);
         Assert.AreEqual(0, updatedBorehole.Completions.Count);
@@ -534,8 +532,6 @@ public class BoreholeControllerTest
         Assert.AreEqual(originalBorehole.CreatedBy?.SubjectId, copiedBorehole.CreatedBy?.SubjectId);
         Assert.AreEqual(originalBorehole.UpdatedBy?.SubjectId, copiedBorehole.UpdatedBy?.SubjectId);
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
-        Assert.AreEqual(1, copiedBorehole.Workflows.Count);
-        Assert.AreEqual(Role.Editor, copiedBorehole.Workflows.First().Role);
         Assert.AreSame(originalBorehole.Type, copiedBorehole.Type);
         Assert.AreEqual(originalBorehole.Country, copiedBorehole.Country);
         Assert.AreEqual(originalBorehole.Canton, copiedBorehole.Canton);

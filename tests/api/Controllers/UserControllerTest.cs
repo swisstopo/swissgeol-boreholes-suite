@@ -127,6 +127,6 @@ public class UserControllerTest
         Assert.IsNotNull(user);
 
         var result = await userController.Delete(user.Id);
-        ActionResultAssert.IsInternalServerError(result, "The user is associated with boreholes, layers, stratigraphies, workflows, files or borehole files and cannot be deleted.");
+        ActionResultAssert.IsInternalServerError(result, "The user is associated with boreholes, layers, stratigraphies, files or borehole files and cannot be deleted.");
     }
 }

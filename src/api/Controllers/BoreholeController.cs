@@ -47,15 +47,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return Problem(errorMessage);
         }
 
-        // TODO: Temporarily add legacy workflow. Remove this as soon as WorkflowV2 is fully implemented.
-        var user = await Context.Users
-            .Include(u => u.WorkgroupRoles)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-            .ConfigureAwait(false);
-
-        entity.Workflows.Add(new Workflow { UserId = user.Id, Role = Role.Editor });
-
         await Context.AddAsync(entity).ConfigureAwait(false);
         try
         {

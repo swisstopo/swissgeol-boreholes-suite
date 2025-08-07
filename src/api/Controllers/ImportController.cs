@@ -135,16 +135,6 @@ public class ImportController : ControllerBase
             {
                 // Compute borehole location.
                 await UpdateBoreholeLocationAndCoordinates(borehole).ConfigureAwait(false);
-
-                // Add a workflow per borehole.
-                borehole.Workflows.Add(
-                    new Workflow
-                    {
-                        UserId = user.Id,
-                        Role = Role.Editor,
-                        Started = DateTime.Now.ToUniversalTime(),
-                        Finished = null,
-                    });
             }
 
             // Save the changes to the db, upload attachments to cloud storage and commit changes to db on success.

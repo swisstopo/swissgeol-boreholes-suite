@@ -44,7 +44,6 @@ public class BdmsContext : DbContext
         .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.Assignee)
-        .Include(b => b.Workflows)
         .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
         .Include(b => b.Photos)
         .Include(b => b.Documents)
@@ -106,8 +105,6 @@ public class BdmsContext : DbContext
         .Include(u => u.TermsAccepted).ThenInclude(ta => ta.Term);
 
     public DbSet<UserWorkgroupRole> UserWorkgroupRoles { get; set; }
-
-    public DbSet<Workflow> Workflows { get; set; }
 
     public DbSet<WorkflowV2> WorkflowsV2 { get; set; }
 
