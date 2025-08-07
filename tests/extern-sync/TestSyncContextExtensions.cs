@@ -63,6 +63,7 @@ internal static class TestSyncContextExtensions
     /// <param name="status">The <see cref="WorkflowStatus"/> to be set.</param>
     internal static Borehole SetBoreholeWorkflowStatus(this Borehole borehole, WorkflowStatus status)
     {
+        ArgumentNullException.ThrowIfNull(borehole);
         ArgumentNullException.ThrowIfNull(borehole?.Workflow);
 
         borehole.Workflow.Status = status;

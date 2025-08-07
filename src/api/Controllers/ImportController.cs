@@ -87,8 +87,6 @@ public class ImportController : ControllerBase
             // If any validation error occured, return a bad request.
             if (!ModelState.IsValid) return ValidationProblem();
 
-            var subjectId = HttpContext.GetUserSubjectId();
-
             // Map to Borehole type
             List<Borehole> boreholes = new();
             foreach (var boreholeImport in boreholeImports)
