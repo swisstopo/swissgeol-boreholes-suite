@@ -60,9 +60,9 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     private static bool HasUserSpecificRoleOnWorkgroup(User user, int? workgroupId, Role expectedRole)
     {
         var workgroupRoles = user.WorkgroupRoles ?? Enumerable.Empty<UserWorkgroupRole>();
-        var hasExpectedWorkgroupRole = workgroupRoles.Any(x => x.WorkgroupId == workgroupId && x.Role == expectedRole);
+        var hasAtLeastExpectedRole = workgroupRoles.Any(x => x.WorkgroupId == workgroupId && (int)x.Role >= (int)expectedRole);
 
-        return hasExpectedWorkgroupRole;
+        return hasAtLeastExpectedRole;
     }
 
     private static bool HasUserAnyRoleOnWorkgroup(User user, int? workgroupId)
