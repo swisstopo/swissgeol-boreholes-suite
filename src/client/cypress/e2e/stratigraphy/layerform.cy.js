@@ -1,10 +1,5 @@
 import { addItem, cancelEditing, saveForm } from "../helpers/buttonHelpers";
-import {
-  clickOnNextPage,
-  clickOnRowWithText,
-  showTableAndWaitForData,
-  waitForTableData,
-} from "../helpers/dataGridHelpers.js";
+import { clickOnRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers.js";
 import {
   evaluateInput,
   evaluateMultiSelect,
@@ -247,9 +242,10 @@ describe("Tests for the layer form.", () => {
     }
 
     goToRouteAndAcceptTerms(`/`);
+    getElementByDataCy("show-filter-button").click();
+    cy.contains("Location").click();
+    setInput("original_name", "Andres Miller");
     showTableAndWaitForData();
-    clickOnNextPage();
-    waitForTableData();
     clickOnRowWithText("Andres Miller");
     cy.wait(["@borehole_by_id", "@borehole_by_id"]);
     startBoreholeEditing();
@@ -415,11 +411,9 @@ describe("Tests for the layer form.", () => {
 
   it("updates layer form values when changing layer", () => {
     goToRouteAndAcceptTerms(`/`);
-    showTableAndWaitForData();
-    clickOnNextPage();
-    waitForTableData();
-    clickOnNextPage();
-    waitForTableData();
+    getElementByDataCy("show-filter-button").click();
+    cy.contains("Location").click();
+    setInput("original_name", "Anibal Conroy");
     clickOnRowWithText("Anibal Conroy");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
 
