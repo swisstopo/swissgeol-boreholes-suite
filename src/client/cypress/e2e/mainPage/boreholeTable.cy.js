@@ -29,7 +29,7 @@ describe("Borehole editor table tests", () => {
 
     // sort by Name descending
     sortBy("Name");
-    verifyRowContains("Zena Tillmann", 0);
+    verifyRowContains("Zena Tillman", 0);
     verifyRowContains("Zena Rolfson", 1);
     verifyRowContains("Zena Rath", 2);
 
