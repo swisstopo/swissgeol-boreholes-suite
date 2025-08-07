@@ -56,12 +56,12 @@ DELETE FROM bdms.borehole WHERE id_bho NOT IN (
       AND codelist.code_cli = 'f' -- restriction: free
 );
 
--- Purge workflow_v2 data
-DELETE FROM bdms.workflow_v2
-WHERE workflow_v2.status <> 3;
+-- Purge workflow data
+DELETE FROM bdms.workflow
+WHERE workflow.status <> 3;
 
 -- Purge workflow_change data
-DELETE FROM bdms.workflow_change;
+DELETE FROM bdms.workflow_change WHERE true;
 
 -- Purge specific borehole fields
 UPDATE bdms.borehole

@@ -89,11 +89,6 @@ public class ImportController : ControllerBase
 
             var subjectId = HttpContext.GetUserSubjectId();
 
-            var user = await context.Users
-                .AsNoTracking()
-                .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-                .ConfigureAwait(false);
-
             // Map to Borehole type
             List<Borehole> boreholes = new();
             foreach (var boreholeImport in boreholeImports)
