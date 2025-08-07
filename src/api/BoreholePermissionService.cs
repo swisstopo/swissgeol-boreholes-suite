@@ -54,7 +54,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
 
         return !IsBoreholeLocked(user, borehole)
             && HasViewPermission(user, borehole)
-            && HasEditPermissionV2(user, borehole);
+            && HasEditPermission(user, borehole);
     }
 
     private static bool HasUserSpecificRoleOnWorkgroup(User user, int? workgroupId, Role expectedRole)
@@ -90,7 +90,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     /// "Permission to edit" refers to the user having the <see cref="Role"/> on the <see cref="Workgroup"/> of the <see cref="Borehole"/>, which has permission to
     /// change the borehole with the current <see cref="WorkflowV2.Status"/>.
     /// </summary>
-    private bool HasEditPermissionV2(User user, Borehole borehole)
+    private bool HasEditPermission(User user, Borehole borehole)
     {
         if (borehole.Workflow == null)
         {
@@ -129,6 +129,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     private async Task<Borehole> GetBoreholeAsync(int? boreholeId)
     {
         return await context.Boreholes
+            .Include(b => b.Workflow)
             .AsNoTracking()
             .SingleOrDefaultAsync(b => b.Id == boreholeId)
             .ConfigureAwait(false) ?? throw new InvalidOperationException($"Associated borehole with id <{boreholeId}> does not exist.");
