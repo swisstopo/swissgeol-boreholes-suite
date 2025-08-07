@@ -50,8 +50,8 @@ DELETE FROM bdms.document WHERE true;
 DELETE FROM bdms.borehole WHERE id_bho NOT IN (
     SELECT id_bho FROM bdms.borehole
     JOIN bdms.codelist ON codelist.id_cli = borehole.restriction_id_cli
-    JOIN bdms.workflow_v2 ON workflow_v2.borehole_id = borehole.id_bho
-    WHERE workflow_v2.status = 3 -- workflow status: published
+    JOIN bdms.workflow ON workflow.borehole_id = borehole.id_bho
+    WHERE workflow.status = 3 -- workflow status: published
       AND codelist.schema_cli = 'restriction'
       AND codelist.code_cli = 'f' -- restriction: free
 );
@@ -77,7 +77,7 @@ DELETE FROM bdms.hydrotest WHERE id IN (
 	SELECT h.id FROM bdms.hydrotest h
 	INNER JOIN bdms.observation o ON o.id = h.id
 	INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.hydrotest = false
 );
@@ -87,7 +87,7 @@ DELETE FROM bdms.water_ingress WHERE id IN (
 	SELECT wi.id FROM bdms.water_ingress wi
 	INNER JOIN bdms.observation o ON o.id = wi.id
 	INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.water_ingress = false
 );
@@ -97,7 +97,7 @@ DELETE FROM bdms.field_measurement WHERE id IN (
 	SELECT f.id FROM bdms.field_measurement f
 	INNER JOIN bdms.observation o ON o.id = f.id
 	INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.field_measurement = false
 );
@@ -107,7 +107,7 @@ DELETE FROM bdms.groundwater_level_measurement WHERE id IN (
 	SELECT g.id FROM bdms.groundwater_level_measurement g
 	INNER JOIN bdms.observation o ON o.id = g.id
 	INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.groundwater = false
 );
@@ -117,7 +117,7 @@ DELETE FROM bdms.backfill WHERE id IN (
 	SELECT bf.id FROM bdms.backfill bf
 	INNER JOIN bdms.completion c ON c.id = bf.completion_id
 	INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.backfill = false
 );
@@ -127,7 +127,7 @@ DELETE FROM bdms.instrumentation WHERE id IN (
 	SELECT i.id FROM bdms.instrumentation i
 	INNER JOIN bdms.completion c ON c.id = i.completion_id
 	INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.instrumentation = false
 );
@@ -139,7 +139,7 @@ SET
 FROM bdms.casing ci
 INNER JOIN bdms.completion c ON c.id = ci.completion_id
 INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
-INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 WHERE o.casing_id = ci.id AND t.casing  = false;
 
@@ -147,7 +147,7 @@ DELETE FROM bdms.casing WHERE id IN (
 	SELECT ci.id FROM bdms.casing ci
 	INNER JOIN bdms.completion c ON c.id = ci.completion_id
 	INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.casing  = false
 );
@@ -157,7 +157,7 @@ DELETE FROM bdms.chronostratigraphy WHERE id_chr IN (
 	SELECT cs.id_chr FROM bdms.chronostratigraphy cs
 	INNER JOIN bdms.stratigraphy s ON s.id_sty = cs.id_sty_fk
 	INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.chronostratigraphy = false
 );
@@ -167,7 +167,7 @@ DELETE FROM bdms.lithostratigraphy WHERE id IN (
 	SELECT l.id FROM bdms.lithostratigraphy l
 	INNER JOIN bdms.stratigraphy s ON s.id_sty = l.stratigraphy_id
 	INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.lithostratigraphy = false
 );
@@ -177,7 +177,7 @@ DELETE FROM bdms.layer WHERE id_lay IN (
 	SELECT l.id_lay FROM bdms.layer l
 	INNER JOIN bdms.stratigraphy s ON s.id_sty = l.id_sty_fk
 	INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.lithology = false
 );
@@ -186,7 +186,7 @@ DELETE FROM bdms.layer WHERE id_lay IN (
 DELETE FROM bdms.borehole_geometry WHERE id IN (
 	SELECT bg.id FROM bdms.borehole_geometry bg
 	INNER JOIN bdms.borehole b ON b.id_bho  = bg.borehole_id
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t.geometry = false
 );
@@ -195,7 +195,7 @@ DELETE FROM bdms.borehole_geometry WHERE id IN (
 DELETE FROM bdms."section" WHERE id IN (
 	SELECT s.id FROM bdms."section" s
 	INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t."section"  = false
 );
@@ -216,7 +216,7 @@ SET
     chronostrat_id_cli = NULL,
     groundwater_bho = NULL,
     remarks_bho = NULL
-FROM bdms.workflow_v2 w
+FROM bdms.workflow w
 INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 WHERE w.borehole_id = b.id_bho AND t."general" = false;
 
@@ -247,14 +247,14 @@ SET
     country_bho = NULL,
     canton_bho = NULL,
     municipality_bho = NULL
-FROM bdms.workflow_v2 w
+FROM bdms.workflow w
 INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 WHERE w.borehole_id = b.id_bho AND t."location"  = false;
 
 DELETE FROM bdms.borehole_identifiers_codelist WHERE borehole_id IN (
 	SELECT bi.borehole_id FROM bdms.borehole_identifiers_codelist bi
 	INNER JOIN bdms.borehole b ON b.id_bho  = bi.borehole_id
-	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
+	INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 	WHERE t."location"  = false
 );

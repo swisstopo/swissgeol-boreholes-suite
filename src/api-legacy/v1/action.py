@@ -689,7 +689,7 @@ class Action():
                     where.append("""
                         borehole.id_bho IN (
                             SELECT borehole_id
-                            FROM bdms.workflow_v2
+                            FROM bdms.workflow
                             WHERE status = %s
                         )
                     """ % self.getIdx())
