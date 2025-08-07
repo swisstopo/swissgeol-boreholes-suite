@@ -56,12 +56,6 @@ DELETE FROM bdms.borehole WHERE id_bho NOT IN (
       AND codelist.code_cli = 'f' -- restriction: free
 );
 
--- Purge workflow data
-DELETE FROM bdms.workflow
-WHERE id_rol_fk NOT IN (
-    SELECT id_rol FROM bdms.roles WHERE name_rol = 'PUBLIC'
-);
-
 -- Purge workflow_v2 data
 DELETE FROM bdms.workflow_v2
 WHERE workflow_v2.status <> 3;
@@ -121,7 +115,7 @@ DELETE FROM bdms.groundwater_level_measurement WHERE id IN (
 -- Completion: Sealing/Backfilling
 DELETE FROM bdms.backfill WHERE id IN (
 	SELECT bf.id FROM bdms.backfill bf
-	INNER JOIN bdms.completion c ON c.id = bf.completion_id 
+	INNER JOIN bdms.completion c ON c.id = bf.completion_id
 	INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
 	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
@@ -131,7 +125,7 @@ DELETE FROM bdms.backfill WHERE id IN (
 -- Completion: Instrumentation
 DELETE FROM bdms.instrumentation WHERE id IN (
 	SELECT i.id FROM bdms.instrumentation i
-	INNER JOIN bdms.completion c ON c.id = i.completion_id 
+	INNER JOIN bdms.completion c ON c.id = i.completion_id
 	INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
 	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
@@ -143,7 +137,7 @@ UPDATE bdms.observation AS o
 SET
     casing_id = NULL
 FROM bdms.casing ci
-INNER JOIN bdms.completion c ON c.id = ci.completion_id 
+INNER JOIN bdms.completion c ON c.id = ci.completion_id
 INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
 INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
 INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
@@ -151,7 +145,7 @@ WHERE o.casing_id = ci.id AND t.casing  = false;
 
 DELETE FROM bdms.casing WHERE id IN (
 	SELECT ci.id FROM bdms.casing ci
-	INNER JOIN bdms.completion c ON c.id = ci.completion_id 
+	INNER JOIN bdms.completion c ON c.id = ci.completion_id
 	INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
 	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
@@ -161,7 +155,7 @@ DELETE FROM bdms.casing WHERE id IN (
 -- Stratigraphy: Chronostratigraphy
 DELETE FROM bdms.chronostratigraphy WHERE id_chr IN (
 	SELECT cs.id_chr FROM bdms.chronostratigraphy cs
-	INNER JOIN bdms.stratigraphy s ON s.id_sty = cs.id_sty_fk 
+	INNER JOIN bdms.stratigraphy s ON s.id_sty = cs.id_sty_fk
 	INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
 	INNER JOIN bdms.workflow_v2 w ON w.borehole_id = b.id_bho
 	INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
