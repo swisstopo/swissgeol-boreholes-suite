@@ -19,13 +19,13 @@ public class SyncBoreholesTaskTest
         // Set the publication status for some boreholes. By default all seeded boreholes have the publication
         // status 'change in progress'.
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
-        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_001, 1, Role.Editor, cancellationToken);
-        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_202, 1, Role.Controller, cancellationToken);
-        await syncContext.Source.SetBoreholePublicationStatusAsync(1_001_404, 1, Role.Validator, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_001, WorkflowStatus.Draft, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_202, WorkflowStatus.InReview, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_001_404, WorkflowStatus.Reviewed, cancellationToken);
 
-        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_022, 1, Role.Publisher, cancellationToken);
-        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_099, 1, Role.Publisher, cancellationToken);
-        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_101, 1, Role.Publisher, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_022, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_099, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_101, WorkflowStatus.Published, cancellationToken);
 
         await syncContext.Source.FixCasingReferencesAsync(cancellationToken);
 
@@ -76,8 +76,8 @@ public class SyncBoreholesTaskTest
         using var syncTask = new SyncBoreholesTask(syncContext, new Mock<ILogger<SyncBoreholesTask>>().Object, GetDefaultConfiguration());
 
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
-        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_022, 1, Role.Publisher, cancellationToken);
-        await syncContext.Source.SetBoreholePublicationStatusAsync(1_000_099, 1, Role.Publisher, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_022, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_099, WorkflowStatus.Published, cancellationToken);
 
         await syncContext.Source.FixCasingReferencesAsync(cancellationToken);
 
@@ -116,7 +116,7 @@ public class SyncBoreholesTaskTest
         using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), noTargetWorkgroupConfiguration);
 
         // Add a fake published borehole to the source context
-        var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
+        var publishedBorehole = new Borehole { Workflow = new Workflow { Status = WorkflowStatus.Published } };
         await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
@@ -133,7 +133,7 @@ public class SyncBoreholesTaskTest
         using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), GetDefaultConfiguration());
 
         // Add a fake published borehole to the source context
-        var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
+        var publishedBorehole = new Borehole { Workflow = new Workflow { Status = WorkflowStatus.Published } };
         await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
@@ -152,7 +152,7 @@ public class SyncBoreholesTaskTest
         using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), noTargetUserConfiguration);
 
         // Add a fake published borehole to the source context
-        var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
+        var publishedBorehole = new Borehole { Workflow = new Workflow { Status = WorkflowStatus.Published } };
         await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
@@ -174,7 +174,7 @@ public class SyncBoreholesTaskTest
         using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), GetDefaultConfiguration());
 
         // Add a fake published borehole to the source context
-        var publishedBorehole = new Borehole().SetBoreholePublicationStatus(Role.Publisher);
+        var publishedBorehole = new Borehole { Workflow = new Workflow { Status = WorkflowStatus.Published } };
         await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
@@ -194,7 +194,7 @@ public class SyncBoreholesTaskTest
         BdmsContext sourceContext, BdmsContext targetContext)
     {
         return (
-            sourceContext.BoreholesWithIncludes.AsNoTracking().WithPublicationStatusPublished(),
-            targetContext.BoreholesWithIncludes.AsNoTracking().WithPublicationStatusPublished());
+            sourceContext.BoreholesWithIncludes.AsNoTracking().WithStatusPublished(),
+            targetContext.BoreholesWithIncludes.AsNoTracking().WithStatusPublished());
     }
 }

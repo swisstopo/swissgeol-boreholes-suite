@@ -55,9 +55,6 @@ class LayerProducerHandler(Producer):
 
                     bid = await conn.fetchval(sql, request['id'])
 
-                    await self.check_lock(
-                        bid, self.user, conn
-                    )
 
                     if action == 'CREATE':
                         exe = CreateLayer(conn)

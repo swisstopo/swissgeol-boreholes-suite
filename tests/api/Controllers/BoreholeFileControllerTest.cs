@@ -61,11 +61,11 @@ public class BoreholeFileControllerTest
             .ReturnsAsync(false);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
@@ -364,7 +364,7 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(boreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         // Detach borehole file from first borehole
@@ -389,7 +389,7 @@ public class BoreholeFileControllerTest
     public async Task UpdateFailsWithoutPermission()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var borehole = new Borehole();

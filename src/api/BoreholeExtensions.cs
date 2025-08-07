@@ -142,11 +142,7 @@ public static class BoreholeExtensions
         borehole.BoreholeGeometry?.MarkAsNew();
         borehole.Documents?.MarkAsNew();
 
-        // Do not import any workflows but add a new unfinished workflow for the current user.
-        borehole.Workflows.Clear();
-        borehole.Workflows.Add(new Workflow { Role = Role.Editor, UserId = user.Id, Started = DateTime.Now.ToUniversalTime() });
-
-        borehole.Workflow = new WorkflowV2
+        borehole.Workflow = new Workflow
         {
             ReviewedTabs = new(),
             PublishedTabs = new(),

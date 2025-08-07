@@ -5,10 +5,10 @@ import { useCurrentUser } from "../../api/user.ts";
 import { theme } from "../../AppTheme.ts";
 import { EditButton } from "../../components/buttons/buttons.tsx";
 import { colorStatusMap } from "./form/workflow/statusColorMap.ts";
-import { useWorkflowMutation, WorkflowChangeRequest, WorkflowV2 } from "./form/workflow/workflow.ts";
+import { useWorkflowMutation, Workflow, WorkflowChangeRequest } from "./form/workflow/workflow.ts";
 
 interface StatusBadgesProps {
-  workflow?: WorkflowV2 | null;
+  workflow?: Workflow | null;
 }
 
 export const StatusBadges = ({ workflow }: StatusBadgesProps) => {

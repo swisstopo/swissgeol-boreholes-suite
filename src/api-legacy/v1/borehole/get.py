@@ -113,9 +113,6 @@ class GetBorehole(Action):
                             name_wgp as name
                     ) t
                 ) as workgroup,
-                pubblications,
-                status[array_length(status, 1)] as workflow,
-                status[array_length(status, 1)]  ->> 'role' as "role",
                 COALESCE(atc.attachments, 0) as attachments
             FROM
                 bdms.borehole
@@ -161,78 +158,6 @@ class GetBorehole(Action):
             ) AS atc
             ON
                 atc.id_bho_fk = id_bho
-
-            INNER JOIN (
-                SELECT
-                    id_bho_fk,
-                    array_agg(
-                        json_build_object(
-                            'workflow', id_wkf,
-                            'role', name_rol,
-                            'username', username,
-                            'started', started,
-                            'finished', finished
-                        )
-                    ) as status
-                FROM (
-                    SELECT
-                        id_bho_fk,
-                        name_rol,
-                        id_wkf,
-                        username,
-                        started_wkf as started,
-                        finished_wkf as finished
-                    FROM
-                        bdms.workflow,
-                        bdms.roles,
-                        bdms.users
-                    WHERE
-                        id_rol = id_rol_fk
-                    AND
-                        id_usr = id_usr_fk
-                    ORDER BY
-                        id_bho_fk asc, id_wkf asc
-                ) t
-                GROUP BY
-                    id_bho_fk
-            ) as v
-            ON
-                v.id_bho_fk = id_bho
-
-            LEFT JOIN (
-                SELECT
-                    id_bho_fk,
-                    array_agg(
-                        json_build_object(
-                            'workflow', id_wkf,
-                            'username', username,
-                            'finished', finished
-                        )
-                    ) as pubblications
-                FROM (
-                    SELECT
-                        id_bho_fk,
-                        id_wkf,
-                        username,
-                        finished_wkf as finished
-                    FROM
-                        bdms.workflow,
-                        bdms.roles,
-                        bdms.users
-                    WHERE
-                        id_rol = 4
-                    AND
-                        id_rol = id_rol_fk
-                    AND
-                        id_usr = id_usr_fk
-                    ORDER BY
-                        finished_wkf desc
-                ) t
-                GROUP BY
-                    id_bho_fk
-            ) as p
-            ON
-                p.id_bho_fk = id_bho
 
             INNER JOIN bdms.users as updater
                 ON updated_by_bho = updater.id_usr

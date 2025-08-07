@@ -1061,30 +1061,6 @@
         "updated": "2021-12-22T13:26:28.067476Z"
       }
     ],
-    "workflows": [
-      {
-        "id": 8000815,
-        "userId": 1,
-        "boreholeId": 1000049,
-        "started": "1998-10-22T02:25:53.618346Z",
-        "finished": null,
-        "notes": "Regional Security Profound Massachusetts",
-        "user": null,
-        "borehole": null,
-        "role": "Editor"
-      },
-      {
-        "id": 8002019,
-        "userId": 1,
-        "boreholeId": 1000049,
-        "started": "1994-05-15T13:50:42.522916Z",
-        "finished": null,
-        "notes": "Tasty Frozen Chicken infrastructures Maine Wisconsin",
-        "user": null,
-        "borehole": null,
-        "role": "Editor"
-      }
-    ],
     "files": null,
     "boreholeFiles": [
     ],
@@ -2151,30 +2127,6 @@
         "updatedById": 2,
         "updatedBy": null,
         "updated": "2021-12-22T13:26:28.067476Z"
-      }
-    ],
-    "workflows": [
-      {
-        "id": 8000815,
-        "userId": 1,
-        "boreholeId": 1000049,
-        "started": "1998-10-22T02:25:53.618346Z",
-        "finished": null,
-        "notes": "Regional Security Profound Massachusetts",
-        "user": null,
-        "borehole": null,
-        "role": "Editor"
-      },
-      {
-        "id": 8002019,
-        "userId": 1,
-        "boreholeId": 1000049,
-        "started": "1994-05-15T13:50:42.522916Z",
-        "finished": null,
-        "notes": "Tasty Frozen Chicken infrastructures Maine Wisconsin",
-        "user": null,
-        "borehole": null,
-        "role": "Editor"
       }
     ],
     "files": null,

@@ -50,32 +50,10 @@ public static class SyncContextExtensions
         new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(connectionString, BdmsContextExtensions.SetDbContextOptions).Options;
 
     /// <summary>
-    /// Filters the given <paramref name="boreholes"/> and returns only those with publication status published.
+    /// Filters the given <paramref name="boreholes"/> and returns only those with status published.
     /// </summary>
-    internal static IEnumerable<Borehole> WithPublicationStatusPublished(this IEnumerable<Borehole> boreholes)
-    {
-        foreach (var borehole in boreholes.Where(b => b.IsPublicationStatusPublished()))
-        {
-            yield return borehole;
-        }
-    }
-
-    /// <summary>
-    /// Checks whether the given <paramref name="borehole"/> is in publication status published.
-    /// </summary>
-    /// <remarks>
-    /// A <see cref="Borehole"/> is in publication status published if the most recent <see cref="Workflow"/> (the one
-    /// with the highest <see cref="Workflow.Id"/>) is in <see cref="Role.Publisher"/> and both <see cref="Workflow.Started"/>
-    /// and <see cref="Workflow.Finished"/> are not <c>Null</c>.
-    /// </remarks>
-    internal static bool IsPublicationStatusPublished(this Borehole borehole)
-    {
-        var latestWorkflowEntry = borehole.Workflows.OrderByDescending(b => b.Id).FirstOrDefault();
-
-        return latestWorkflowEntry?.Role == Role.Publisher &&
-            latestWorkflowEntry.Started.HasValue &&
-            latestWorkflowEntry.Finished.HasValue;
-    }
+    internal static IEnumerable<Borehole> WithStatusPublished(this IEnumerable<Borehole> boreholes)
+        => boreholes.Where(b => b.Workflow?.Status == WorkflowStatus.Published);
 
     /// <summary>
     /// Recursively marks the given <paramref name="items"/> and all their dependencies as new.
@@ -130,34 +108,6 @@ public static class SyncContextExtensions
         }
 
         return item;
-    }
-
-    /// <summary>
-    /// Sets the publication status for this <paramref name="borehole"/> to 'published'.
-    /// </summary>
-    /// <remarks>
-    /// Please note that all previous <see cref="Workflow"/> entries/ the entire history gets cleared!
-    /// This may not be the desired behavior for every use case but fits the requirements when syncing
-    /// <see cref="Borehole"/>s from a context to another in this project.
-    /// </remarks>
-    /// <param name="borehole">The <see cref="Borehole"/> to set the publication status 'published' on.</param>
-    /// <returns>The updated <see cref="Borehole"/>.</returns>
-    internal static Borehole SetBoreholePublicationStatusPublished(this Borehole borehole)
-    {
-        // Remove all previous workflow entries/history.
-        borehole.Workflows.Clear();
-
-        for (int i = 1; i <= (int)Role.Publisher; i++)
-        {
-            borehole.Workflows.Add(new Workflow
-            {
-                Role = (Role)i,
-                Started = DateTime.Now.ToUniversalTime(),
-                Finished = DateTime.Now.ToUniversalTime(),
-            });
-        }
-
-        return borehole;
     }
 
     /// <summary>
@@ -279,25 +229,6 @@ public static class SyncContextExtensions
         foreach (var item in items)
         {
             item.ProcessRecursive(UpdateUserAttachedItem, []);
-        }
-    }
-
-    /// <summary>
-    /// Clears the users assigned to the workflow and its changes.
-    /// </summary>
-    internal static void ClearAssignedUser(this WorkflowV2 workflow)
-    {
-        ArgumentNullException.ThrowIfNull(workflow);
-
-        workflow.Assignee = null;
-        workflow.AssigneeId = null;
-
-        foreach (var change in workflow.Changes)
-        {
-            change.Assignee = null;
-            change.AssigneeId = null;
-            change.CreatedBy = null;
-            change.CreatedById = null;
         }
     }
 }

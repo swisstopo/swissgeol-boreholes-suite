@@ -1,3 +1,4 @@
+import { WorkflowStatus } from "@swissgeol/ui-core";
 import { hasPagination, showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
 import { evaluateSelect, setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
 import {
@@ -5,10 +6,8 @@ import {
   createLithologyLayer,
   createStratigraphy,
   getElementByDataCy,
-  goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   returnToOverview,
-  startBoreholeEditing,
 } from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
@@ -61,7 +60,7 @@ describe("Search filter tests", () => {
 
     // check content of table
     showTableAndWaitForData();
-    verifyPaginationText("1–100 of 329");
+    verifyPaginationText("1–100 of 602");
   });
 
   it("filters boreholes national_interest and striae", () => {
@@ -131,7 +130,7 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     showTableAndWaitForData();
-    verifyPaginationText("1–100 of 160");
+    verifyPaginationText("1–100 of 300");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
     setYesNoSelect("national_interest", "Not specified");
@@ -141,20 +140,20 @@ describe("Search filter tests", () => {
 
     setYesNoSelect("national_interest", "No");
     cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 1469");
+    verifyPaginationText("1–100 of 2703");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
     cy.contains("Lithology").click();
     getElementByDataCy("show-all-fields-switch").click();
     setYesNoSelect("striae", "Yes");
     cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 1401");
+    verifyPaginationText("1–100 of 2567");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
     setYesNoSelect("striae", "No");
     cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 1402");
+    verifyPaginationText("1–100 of 2568");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
@@ -177,7 +176,7 @@ describe("Search filter tests", () => {
 
     setYesNoSelect("striae", "No");
     cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 1555");
+    verifyPaginationText("1–100 of 2854");
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
     cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
@@ -190,25 +189,18 @@ describe("Search filter tests", () => {
 
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
     cy.get('[data-cy="filter-chip-striae"]').should("not.exist");
-    verifyPaginationText("1–100 of 1630");
+    verifyPaginationText("1–100 of 3004");
   });
 
   it("filters boreholes by status", () => {
-    createBorehole({ originalName: "Filter by status" }).as("borehole_id");
-    cy.get("@borehole_id").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id}/status`);
-      startBoreholeEditing();
-      getElementByDataCy("workflow_submit").click();
-      getElementByDataCy("workflow_dialog_submit").click();
-      returnToOverview();
-      getElementByDataCy("show-filter-button").click();
-      cy.contains("Status").click();
-      getElementByDataCy("boreholes-number-preview").should("have.text", "1'627");
-      getElementByDataCy("statuseditor").click();
-      getElementByDataCy("boreholes-number-preview").should("have.text", "1'626");
-      getElementByDataCy("statuscontroller").click();
-      getElementByDataCy("boreholes-number-preview").should("have.text", "1");
-    });
+    goToRouteAndAcceptTerms("");
+    getElementByDataCy("show-filter-button").click();
+    cy.contains("Status").click();
+    getElementByDataCy("boreholes-number-preview").should("have.text", "3'000");
+    getElementByDataCy(WorkflowStatus.Draft).click();
+    getElementByDataCy("boreholes-number-preview").should("have.text", "3'000");
+    getElementByDataCy(WorkflowStatus.Reviewed).click();
+    getElementByDataCy("boreholes-number-preview").should("have.text", "0");
   });
 
   it("filters boreholes by boreholestatus", () => {
@@ -219,7 +211,7 @@ describe("Search filter tests", () => {
     setSelect("status", 2);
     cy.wait("@edit_list");
 
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "169");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "314");
     cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
   });
 
@@ -231,13 +223,13 @@ describe("Search filter tests", () => {
     setSelect("color", 0);
     cy.wait("@edit_list");
     showTableAndWaitForData();
-    verifyPaginationText("1–100 of 770");
+    verifyPaginationText("1–100 of 1403");
     setSelect("uscs_3", 4);
     cy.wait("@edit_list");
 
     // check content of table
-    verifyPaginationText("1–100 of 108");
-    cy.get(".MuiDataGrid-row").contains("Bruce Rempel").should("exist");
+    verifyPaginationText("1–100 of 181");
+    cy.get(".MuiDataGrid-row").contains("Alta Sauer").should("exist");
   });
 
   it("filters boreholes by original lithology in editor mode", () => {

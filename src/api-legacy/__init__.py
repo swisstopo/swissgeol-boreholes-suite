@@ -31,8 +31,7 @@ from bms.v1.borehole.stratigraphy.layer.viewer import LayerViewerHandler
 
 from bms.v1.setting.handler import SettingHandler
 
-# Workflows handlers
-from bms.v1.workflow.producer import WorkflowProducerHandler
+
 
 # Terms handlers
 from bms.v1.terms.handler import TermsHandler

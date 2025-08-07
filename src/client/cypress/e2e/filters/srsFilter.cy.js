@@ -59,19 +59,19 @@ describe("Tests for filtering data by reference system.", () => {
 
     cy.contains("h6", "Location").click();
     getElementByDataCy("show-all-fields-switch").click();
-    verifyPaginationText("1–100 of 1627");
+    verifyPaginationText("1–100 of 3001");
 
     cy.get('[data-cy="originalReferenceSystem-formSelect"]').should("exist");
 
     setSelect("originalReferenceSystem", 0); // LV95
 
-    verifyPaginationText("1–100 of 813");
+    verifyPaginationText("1–100 of 1501");
 
     setSelect("originalReferenceSystem", 1); // LV03
-    verifyPaginationText("1–100 of 814");
+    verifyPaginationText("1–100 of 1500");
 
     // click reset label
     cy.get('[data-cy="reset-filter-button"]').click();
-    verifyPaginationText("1–100 of 1627");
+    verifyPaginationText("1–100 of 3001");
   });
 });

@@ -57,50 +57,17 @@ internal static class TestSyncContextExtensions
     }
 
     /// <summary>
-    /// Sets the publication <paramref name="status"/> for this <paramref name="borehole"/>.
+    /// Sets the workflow <paramref name="status"/> for this <paramref name="borehole"/>.
     /// </summary>
     /// <param name="borehole">The <see cref="Borehole"/> to set the publication status on.</param>
-    /// <param name="status">The <see cref="Role"/> to be set. <see cref="Role.View"/>
-    /// is not a valid publication status.</param>
-    internal static Borehole SetBoreholePublicationStatus(this Borehole borehole, Role status)
+    /// <param name="status">The <see cref="WorkflowStatus"/> to be set.</param>
+    internal static Borehole SetBoreholeWorkflowStatus(this Borehole borehole, WorkflowStatus status)
     {
         ArgumentNullException.ThrowIfNull(borehole);
+        ArgumentNullException.ThrowIfNull(borehole.Workflow);
 
-        if (status == Role.View)
-        {
-            throw new NotSupportedException($"The given status <{status}> is not supported.");
-        }
-
-        if (status == Role.Publisher)
-        {
-            return borehole.SetBoreholePublicationStatusPublished();
-        }
-        else
-        {
-            // Remove all previous workflow entries/history.
-            borehole.Workflows.Clear();
-
-            for (int i = 1; i <= (int)status; i++)
-            {
-                borehole.Workflows.Add(new Workflow
-                {
-                    Role = (Role)i,
-                    Started = DateTime.Now.ToUniversalTime(),
-                    Finished = DateTime.Now.ToUniversalTime(),
-                });
-            }
-
-            // For all states except 'published', the next state is already
-            // created (but without started and finished dates).
-            borehole.Workflows.Add(new Workflow
-            {
-                Role = (Role)(int)status + 1,
-                Started = null,
-                Finished = null,
-            });
-
-            return borehole;
-        }
+        borehole.Workflow.Status = status;
+        return borehole;
     }
 
     /// <summary>
@@ -108,20 +75,16 @@ internal static class TestSyncContextExtensions
     /// </summary>
     /// <param name="context">The database context to be used.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to set the publication state on.</param>
-    /// <param name="userId">The <see cref="User.Id"/> to be assigned to each <see cref="Workflow"/> entry.</param>
-    /// <param name="status">The <see cref="Role"/> to be set.</param>
+    /// <param name="status">The <see cref="WorkflowStatus"/> to be set.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The updated <see cref="Borehole"/> entity.</returns>
-    internal static async Task<Borehole> SetBoreholePublicationStatusAsync(this BdmsContext context, int boreholeId, int userId, Role status, CancellationToken cancellationToken)
+    internal static async Task<Borehole> SetBoreholeStatusAsync(this BdmsContext context, int boreholeId, WorkflowStatus status, CancellationToken cancellationToken)
     {
         var borehole = await context.Boreholes
-            .Include(b => b.Workflows).ThenInclude(w => w.User)
+            .Include(x => x.Workflow)
             .SingleAsync(borehole => borehole.Id == boreholeId, cancellationToken);
 
-        var user = await context.Users.SingleAsync(u => u.Id == userId, cancellationToken);
-
-        borehole.SetBoreholePublicationStatus(status);
-        borehole.Workflows.UpdateAttachedUser(user);
+        borehole.SetBoreholeWorkflowStatus(status);
         await context.SaveChangesAsync(cancellationToken);
         return borehole;
     }
@@ -183,7 +146,7 @@ internal static class TestSyncContextExtensions
     {
         // Collections, objects and attributes to be removed.
         var listsToRemove = new[] { "Workflows" };
-        var objectsToRemove = new[] { "Workgroup", "UpdatedBy", "Assignee", "Settings" };
+        var objectsToRemove = new[] { "Workgroup", "UpdatedBy", "Assignee", "Settings", "Workflow" };
         var attributesToRemove = new[] { "Id", "BoreholeId", "StratigraphyId", "CompletionId", "Created", "CreatedById", "Updated", "UpdatedById", "CreatedAt", "SectionId", "LayerId", "FileId", "WorkgroupId", "UserId", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
 
         // Build dynamic regular expressions.
@@ -214,7 +177,7 @@ internal static class TestSyncContextExtensions
     /// </summary>
     internal static async Task FixCasingReferencesAsync(this BdmsContext context, CancellationToken cancellationToken)
     {
-        var boreholes = context.BoreholesWithIncludes.WithPublicationStatusPublished();
+        var boreholes = context.BoreholesWithIncludes.WithStatusPublished();
 
         foreach (var borehole in boreholes)
         {

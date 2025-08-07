@@ -86,7 +86,6 @@ describe("Viewer tests", () => {
     cy.contains("No hydrotests available").should("exist");
     navigateInSidebar(SidebarMenuItem.attachments);
     cy.contains("No profiles available...").should("exist");
-    navigateInSidebar(SidebarMenuItem.status);
-    cy.contains("Publication workflow").should("exist");
+    getElementByDataCy("status-menu-item").should("not.exist"); // viewer cannot see status menu item
   });
 });

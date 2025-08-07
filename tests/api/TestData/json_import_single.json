@@ -1338,30 +1338,6 @@
   "completions": [],
   "sections": [],
   "observations": [],
-  "workflows": [
-    {
-      "id": 8000631,
-      "userId": 1,
-      "boreholeId": 1002670,
-      "started": "2001-01-19T20:16:25.74119Z",
-      "finished": null,
-      "notes": "Legacy Afghani Ferry Profit-focused",
-      "user": null,
-      "borehole": null,
-      "role": "Editor"
-    },
-    {
-      "id": 8001835,
-      "userId": 1,
-      "boreholeId": 1002670,
-      "started": "2000-09-12T02:39:13.806924Z",
-      "finished": null,
-      "notes": "pink payment Credit Card Account methodical",
-      "user": null,
-      "borehole": null,
-      "role": "Editor"
-    }
-  ],
   "files": null,
   "boreholeFiles": [],
   "codelists": null,

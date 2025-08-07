@@ -95,10 +95,6 @@ class BoreholeProducerHandler(Producer):
                     'DELETE',
                     'PATCH',
                 ]:
-                    # Lock check
-                    res = await self.check_lock(
-                        request['id'], self.user, conn
-                    )
 
                     if (
                         action in [

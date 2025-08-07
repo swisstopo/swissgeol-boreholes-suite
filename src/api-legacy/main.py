@@ -102,8 +102,7 @@ if __name__ == "__main__":
         # Layer handlers
         ProfileLayerViewerHandler,
 
-        # Workflow handlers
-        WorkflowProducerHandler,
+
 
         # Terms handlers
         TermsHandler,
@@ -131,8 +130,7 @@ if __name__ == "__main__":
         (r'/api/v1/borehole', BoreholeViewerHandler),
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),
 
-        # Workflow handlers
-        (r'/api/v1/workflow/edit', WorkflowProducerHandler),
+
 
         # Terms handlers
         (r'/api/v1/terms', TermsHandler),

@@ -31,14 +31,14 @@ describe("Tests for filtering data by identifier.", () => {
     cy.contains("h6", "Location").click();
     // show all options
     getElementByDataCy("show-all-fields-switch").click();
-    verifyPaginationText("1–100 of 1627");
+    verifyPaginationText("1–100 of 3001");
 
     setSelect("borehole_identifier", 1);
 
     hasPagination(false);
     // click reset label
     cy.get('[data-cy="reset-filter-button"]').click();
-    verifyPaginationText("1–100 of 1627");
+    verifyPaginationText("1–100 of 3001");
   });
 
   it("can bulk edit boreholes while filter by identifier is set", () => {

@@ -72,11 +72,9 @@ public class ImportControllerTest
     {
         // Remove boreholes that were uploaded.
         var addedBoreholes = context.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
-        var addedWorkflows = context.Workflows.Where(w => addedBoreholes.Select(b => b.Id).Contains(w.BoreholeId));
         var addedStratigraphies = context.Stratigraphies.Where(s => s.Id > MaxStratigraphySeedId);
         var addedLayers = context.Layers.Where(l => l.Id > MaxLayerSeedId);
         context.Boreholes.RemoveRange(addedBoreholes);
-        context.Workflows.RemoveRange(addedWorkflows);
         context.Stratigraphies.RemoveRange(addedStratigraphies);
         context.Layers.RemoveRange(addedLayers);
         context.Codelists.RemoveRange(context.Codelists.Where(c => c.Id == TestCodelistId));
@@ -474,18 +472,6 @@ public class ImportControllerTest
         var fieldMeasurement = (FieldMeasurement)borehole.Observations.First(x => x.Type == ObservationType.FieldMeasurement);
         Assert.IsNotNull(fieldMeasurement.FieldMeasurementResults, nameof(fieldMeasurement.FieldMeasurementResults).ShouldNotBeNullMessage());
         Assert.AreNotEqual(0, fieldMeasurement.FieldMeasurementResults.Count, nameof(fieldMeasurement.FieldMeasurementResults));
-
-        // Assert borehole's workflows
-        Assert.AreEqual(1, borehole.Workflows.Count, nameof(borehole.Workflows.Count));
-        var workflow = borehole.Workflows.First();
-        Assert.IsNotNull(workflow.Started, nameof(workflow.Started).ShouldNotBeNullMessage());
-        Assert.IsNull(workflow.Finished, nameof(workflow.Finished).ShouldBeNullMessage());
-        Assert.IsNull(workflow.Notes, nameof(workflow.Notes).ShouldBeNullMessage());
-        Assert.AreEqual(Role.Editor, workflow.Role, nameof(workflow.Role));
-        Assert.IsNotNull(workflow.User, nameof(workflow.User).ShouldNotBeNullMessage());
-        Assert.IsNotNull(workflow.Borehole, nameof(workflow.Borehole).ShouldNotBeNullMessage());
-        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
-        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
     }
 
     [TestMethod]
@@ -682,14 +668,6 @@ public class ImportControllerTest
         Assert.AreEqual(759.7574008, borehole.TopBedrockWeatheredMd);
 
         Assert.AreEqual("POINT (2613116 1179127)", borehole.Geometry.ToString());
-
-        // Assert workflow was created for borehole.
-        var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);
-        Assert.IsNotNull(workflow);
-        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
-        Assert.AreEqual(Role.Editor, workflow.Role);
-        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
-        Assert.AreEqual(null, workflow.Finished);
     }
 
     [TestMethod]
@@ -721,14 +699,6 @@ public class ImportControllerTest
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
         Assert.AreEqual("POINT (2000010 1000010)", borehole.Geometry.ToString());
-
-        // Assert workflow was created for borehole.
-        var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);
-        Assert.IsNotNull(workflow);
-        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
-        Assert.AreEqual(Role.Editor, workflow.Role);
-        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
-        Assert.AreEqual(null, workflow.Finished);
     }
 
     [TestMethod]

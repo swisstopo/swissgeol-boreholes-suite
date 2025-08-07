@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Added new workflow UI and backend to manage the borehole's publication status. Removed legacy workflow UI and backend.
+
 ### Fixed
 - Boreholes that were locked by any user could not be edited by others, including administrators, even after lock timeout expiration.
 

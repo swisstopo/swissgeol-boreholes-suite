@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Chip, Stack, Typography } from "@mui/material";
-import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
+import { Stack, Typography } from "@mui/material";
+import { ArrowDownToLine, Trash2, X } from "lucide-react";
 import { BoreholeV2, useBoreholeEditable, useBoreholeMutations } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
@@ -16,7 +16,6 @@ import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
-import { useDevMode } from "../../hooks/useDevMode.tsx";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { formatDate } from "../../utils.ts";
 import { EditStateContext } from "./editStateContext.tsx";
@@ -31,7 +30,6 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const { id } = useRequiredParams<{ id: string }>();
   const { navigateTo } = useBoreholesNavigate();
-  const { runsDevMode } = useDevMode();
   const { data: currentUser } = useCurrentUser();
   const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(id));
   const { t } = useTranslation();
@@ -116,19 +114,6 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
   };
 
   if (!borehole) return;
-  // get unfinished or latest workflow
-  const workflows = borehole?.workflows.sort((a, b) => new Date(b.finished).getTime() - new Date(a.finished).getTime());
-  const currentWorkflow = workflows?.find(workflow => workflow.finished == null) || workflows[0];
-  const statusLabel = t(`status${currentWorkflow?.role.toLowerCase()}`);
-  const statusColor = currentWorkflow?.finished != null ? "success" : "warning";
-  const statusIcon = currentWorkflow?.finished != null ? <Check /> : <div />;
-
-  const statusChips = runsDevMode ? (
-    <StatusBadges workflow={borehole.workflow} />
-  ) : (
-    <Chip data-cy="workflow-status-chip" label={statusLabel} color={statusColor} icon={statusIcon} />
-  );
-
   return (
     <DetailHeaderStack direction="row" alignItems="center">
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={3}>
@@ -141,7 +126,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
             </Typography>
           )}
         </Stack>
-        {statusChips}
+        <StatusBadges workflow={borehole.workflow} />
       </Stack>
       <Stack direction="row" data-cy="detail-header" gap={2}>
         <ExportButton

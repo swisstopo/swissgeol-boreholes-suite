@@ -1,8 +1,8 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
+import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
 
 export interface ReduxRootState {
-  core_workflow: Workflow;
   filters: Filters;
   editor: EditorStore;
   setting: Setting;
@@ -50,15 +50,6 @@ export interface Workgroup {
   id: number;
   workgroup: string;
   roles: Role[];
-}
-
-export interface Workflow {
-  id: number;
-  started: string;
-  finished: string;
-  role: Role;
-  username: string;
-  workflow: number;
 }
 
 export interface Identifier {

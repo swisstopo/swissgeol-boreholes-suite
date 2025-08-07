@@ -28,7 +28,7 @@ public class DocumentControllerTest
 
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
@@ -75,7 +75,7 @@ public class DocumentControllerTest
     public async Task CreateFailsForUserWithInsufficientPermissions()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
@@ -144,7 +144,7 @@ public class DocumentControllerTest
     public async Task DeleteFailsWithoutPermissions()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var document = await CreateDocumentAsync();
@@ -218,7 +218,7 @@ public class DocumentControllerTest
     public async Task UpdateFailsWithoutPermissions()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var document = await CreateDocumentAsync();

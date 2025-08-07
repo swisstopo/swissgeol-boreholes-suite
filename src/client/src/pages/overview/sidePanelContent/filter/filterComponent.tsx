@@ -52,7 +52,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       name: "status",
       translationId: "status",
       isSelected: false,
-      searchData: [{ value: "role", hideShowAllFields: true }],
+      searchData: [{ value: "workflow", hideShowAllFields: true }],
     },
     {
       id: 2,
@@ -231,7 +231,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
               )}
               {filter?.name === "status" && filter?.isSelected && (
                 <StyledAccordionDetails>
-                  <StatusFilter selectedRole={filters.filter.role as string} setFilter={setFilter} />
+                  <StatusFilter selectedRole={filters.filter.workflow as string} setFilter={setFilter} />
                 </StyledAccordionDetails>
               )}
               <StyledAccordionDetails>

@@ -56,7 +56,7 @@ public class PhotoControllerTest
 
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
@@ -126,7 +126,7 @@ public class PhotoControllerTest
     public async Task UploadFailsForUserWithInsufficientPermissions()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var fileName = $"{Guid.NewGuid()}_123.00-456.50_all.tif";
@@ -294,7 +294,7 @@ public class PhotoControllerTest
     public async Task DeleteFailsWithoutPermissions()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var photo = await CreatePhotoAsync();
@@ -365,7 +365,7 @@ public class PhotoControllerTest
     public async Task UpdateFailsWithoutPermissions()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var photo = await CreatePhotoAsync();

@@ -159,7 +159,7 @@ public class UserController : ControllerBase
 
             if (!IsDeletable(user))
             {
-                return Problem("The user is associated with boreholes, layers, stratigraphies, workflows, files or borehole files and cannot be deleted.");
+                return Problem("The user is associated with boreholes, layers, stratigraphies, files or borehole files and cannot be deleted.");
             }
 
             context.Users.Remove(user);
@@ -176,8 +176,7 @@ public class UserController : ControllerBase
 
     private bool IsDeletable(User user)
     {
-        return !(context.Workflows.Any(x => x.UserId == user.Id)
-                || context.Layers.Any(x => x.CreatedById == user.Id)
+        return !(context.Layers.Any(x => x.CreatedById == user.Id)
                 || context.Layers.Any(x => x.UpdatedById == user.Id)
                 || context.Boreholes.Any(x => x.UpdatedById == user.Id)
                 || context.Boreholes.Any(x => x.CreatedById == user.Id)

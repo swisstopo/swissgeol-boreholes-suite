@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import { Role, SimpleUser, WorkflowStatus } from "@swissgeol/ui-core";
+import { Role, SimpleUser } from "@swissgeol/ui-core";
 import { Role as LegacyRole, User } from "../api/apiInterfaces.ts";
-import { BoreholeV2, useBorehole } from "../api/borehole.ts";
+import { useBorehole } from "../api/borehole.ts";
 import { useUsers } from "../api/user.ts";
 import { useRequiredParams } from "./useRequiredParams.ts";
 
@@ -12,16 +12,8 @@ const CoreRolePriority: Record<Role, number> = {
   Publisher: 3,
 };
 
-const WorkflowStatusRoleMap: Record<WorkflowStatus, Role | null> = {
-  [WorkflowStatus.Draft]: Role.Editor,
-  [WorkflowStatus.InReview]: Role.Reviewer,
-  [WorkflowStatus.Reviewed]: Role.Reviewer,
-  [WorkflowStatus.Published]: Role.Publisher,
-};
-
 export const useUserRoleForBorehole = (): {
   getUsersWithEditorPrivilege: () => SimpleUser[];
-  canUserEditBorehole: (user: User, borehole: BoreholeV2) => boolean;
 } => {
   const { id } = useRequiredParams<{ id: string }>();
   const { data: borehole } = useBorehole(parseInt(id));
@@ -53,14 +45,6 @@ export const useUserRoleForBorehole = (): {
     return userPrivilegeLevel(user) >= CoreRolePriority[role];
   };
 
-  const canUserEditBorehole = (user: User, borehole: BoreholeV2): boolean => {
-    // Todo move check to backend once legacy workflow is removed
-    if (!borehole.workflow) return false;
-    const requiredRole = WorkflowStatusRoleMap[borehole.workflow.status];
-    if (requiredRole === null) return false;
-    return hasUserPrivilege(requiredRole, user);
-  };
-
   const getUsersWithEditorPrivilege = (): SimpleUser[] => {
     if (!users) return [];
     return users
@@ -71,5 +55,5 @@ export const useUserRoleForBorehole = (): {
       }));
   };
 
-  return { canUserEditBorehole, getUsersWithEditorPrivilege };
+  return { getUsersWithEditorPrivilege };
 };

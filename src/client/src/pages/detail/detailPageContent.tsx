@@ -11,7 +11,7 @@ import Hydrotest from "./form/hydrogeology/hydrotest/hydrotest.tsx";
 import WaterIngress from "./form/hydrogeology/waterIngress/waterIngress.tsx";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
 import { StratigraphyPanel } from "./form/stratigraphy/stratigraphyPanel.tsx";
-import { WorkflowPanel } from "./form/workflow/workflowPanel.tsx";
+import { WorkflowView } from "./form/workflow/workflowView.tsx";
 
 interface DetailPageContentProps {
   borehole: BoreholeV2;
@@ -51,7 +51,7 @@ export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProp
             <Route path="hydrogeology" element={<Navigate to="hydrogeology/wateringress" replace />} />
             <Route path="completion/:completionId" element={<Completion />} />
             <Route path="completion" element={<Completion />} />
-            <Route path="status" element={<WorkflowPanel />} />
+            <Route path="status" element={<WorkflowView />} />
             <Route path="" element={<Navigate to="location" replace />} />
           </Routes>
         </Box>

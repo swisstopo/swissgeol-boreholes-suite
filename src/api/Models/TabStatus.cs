@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BDMS.Models;
 
 /// <summary>
-/// Represents the reviewed or published tab status of a <see cref="WorkflowV2"/>.
+/// Represents the reviewed or published tab status of a <see cref="Workflow"/>.
 /// </summary>
 [Table("tab_status")]
 public class TabStatus : IIdentifyable
