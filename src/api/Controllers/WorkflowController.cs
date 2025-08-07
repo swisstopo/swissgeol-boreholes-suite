@@ -54,7 +54,7 @@ public class WorkflowController : ControllerBase
         var subjectId = HttpContext.GetUserSubjectId();
 
         // Check permission for editing the borehole
-        if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, workflowChangeRequest.BoreholeId, true).ConfigureAwait(false)) return Unauthorized();
+        if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, workflowChangeRequest.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
         // Check permissions specifically for publishing the borehole
         BoreholePermissionService.EditPermissionsStatusRoleMap.TryGetValue(WorkflowStatus.Published, out var requiredRole);
@@ -138,7 +138,7 @@ public class WorkflowController : ControllerBase
     {
         var subjectId = HttpContext.GetUserSubjectId();
 
-        if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, request.BoreholeId, true).ConfigureAwait(false)) return Unauthorized();
+        if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, request.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
         var workflow = await context.WorkflowsV2WithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == request.BoreholeId).ConfigureAwait(false);
         if (workflow == null)
