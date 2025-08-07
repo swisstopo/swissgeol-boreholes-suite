@@ -38,7 +38,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     }
 
     /// <inheritdoc />
-    public async Task<bool> CanEditBoreholeAsync(string? subjectId, int? boreholeId, bool? useWorkflowV2 = false)
+    public async Task<bool> CanEditBoreholeAsync(string? subjectId, int? boreholeId)
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
