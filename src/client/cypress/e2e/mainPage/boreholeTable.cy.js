@@ -65,7 +65,7 @@ describe("Borehole editor table tests", () => {
 
     // sort by name descending
     sortBy("Name");
-    verifyRowContains("Zena Rath", 0);
+    verifyRowContains("Zena Rath", 2);
 
     // navigate to page 4
     clickOnNextPage();
@@ -75,10 +75,10 @@ describe("Borehole editor table tests", () => {
 
     // verify current page is 4
     verifyPaginationText("401–500 of 3000");
-    verifyRowContains("Nichole VonRueden", 0);
+    verifyRowContains("Samson Hayes", 0);
 
     // navigate to detail
-    clickOnRowWithText("Nichole VonRueden");
+    clickOnRowWithText("Samson Hayes");
 
     // return to list
     returnToOverview();
@@ -86,7 +86,7 @@ describe("Borehole editor table tests", () => {
     // verify current page is still 4
     waitForTableData();
     verifyPaginationText("401–500 of 3000");
-    verifyRowContains("Nichole VonRueden", 0);
+    verifyRowContains("Samson Hayes", 0);
 
     //navigate to last page
     clickOnLastPage();
