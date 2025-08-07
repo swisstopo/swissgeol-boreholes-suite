@@ -5,7 +5,7 @@ import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { WorkflowV2 } from "../pages/detail/form/workflow/workflow.ts";
+import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
 import { Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -41,7 +41,7 @@ export interface BoreholeV2 {
   typeId: number;
   remarks: string;
   statusId: number;
-  workflow: WorkflowV2 | null;
+  workflow: Workflow | null;
   boreholeCodelists: BasicIdentifier[];
   workgroupId: number;
   workgroup: Workgroup;

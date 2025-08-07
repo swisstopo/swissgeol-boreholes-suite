@@ -46,7 +46,7 @@ public class WorkflowControllerTest
     public async Task GetById()
     {
         var response = await controller.GetByIdAsync(1000029).ConfigureAwait(false);
-        var workflow = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response.Result);
+        var workflow = ActionResultAssert.IsOkObjectResult<Workflow>(response.Result);
         Assert.IsNotNull(workflow);
         Assert.AreEqual(WorkflowStatus.Draft, workflow.Status);
         Assert.AreEqual(boreholeTestId, workflow.BoreholeId);
@@ -94,12 +94,12 @@ public class WorkflowControllerTest
 
         var response = await controller.ApplyWorkflowChangeAsync(request).ConfigureAwait(false);
 
-        var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
+        var result = ActionResultAssert.IsOkObjectResult<Workflow>(response);
         Assert.AreEqual(newStatus, result.Status);
         Assert.AreEqual(newAssigneeId, result.AssigneeId);
 
         // Assert workflow change created
-        var updatedWorkflow = await context.WorkflowsV2
+        var updatedWorkflow = await context.Workflows
             .Include(w => w.Changes)
             .FirstAsync(w => w.BoreholeId == boreholeTestId);
 
@@ -155,7 +155,7 @@ public class WorkflowControllerTest
         };
 
         var response = await controller.ApplyWorkflowChangeAsync(request).ConfigureAwait(false);
-        var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
+        var result = ActionResultAssert.IsOkObjectResult<Workflow>(response);
         Assert.AreEqual(null, result.AssigneeId);
     }
 
@@ -207,7 +207,7 @@ public class WorkflowControllerTest
     [TestMethod]
     public async Task WorkflowChangeRequestWithoutStatsChange()
     {
-        var existingWorkflow = await context.WorkflowsV2.FirstAsync(w => w.BoreholeId == boreholeTestId);
+        var existingWorkflow = await context.Workflows.FirstAsync(w => w.BoreholeId == boreholeTestId);
         var originalStatus = existingWorkflow.Status;
 
         var request = new WorkflowChangeRequest
@@ -219,7 +219,7 @@ public class WorkflowControllerTest
 
         var response = await controller.ApplyWorkflowChangeAsync(request).ConfigureAwait(false);
 
-        var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
+        var result = ActionResultAssert.IsOkObjectResult<Workflow>(response);
         Assert.AreEqual(originalStatus, result.Status);
         Assert.AreEqual(2, result.AssigneeId);
     }
@@ -227,7 +227,7 @@ public class WorkflowControllerTest
     [TestMethod]
     public async Task SuccessfullyUpdatesTabStatus()
     {
-        async Task TestTabStatus(WorkflowTabType tabType, Func<WorkflowV2, TabStatus> getTabStatus, string field, bool newStatus)
+        async Task TestTabStatus(WorkflowTabType tabType, Func<Workflow, TabStatus> getTabStatus, string field, bool newStatus)
         {
             var request = new WorkflowTabStatusChangeRequest
             {
@@ -237,7 +237,7 @@ public class WorkflowControllerTest
             };
 
             var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
-            var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
+            var result = ActionResultAssert.IsOkObjectResult<Workflow>(response);
             var actual = (bool?)typeof(TabStatus).GetProperty(field.ToString())?.GetValue(getTabStatus(result)) ?? !newStatus;
             if (newStatus)
                 Assert.IsTrue(actual);
@@ -269,7 +269,7 @@ public class WorkflowControllerTest
             };
 
             var response = await controller.ApplyTabStatusChangeAsync(request).ConfigureAwait(false);
-            var result = ActionResultAssert.IsOkObjectResult<WorkflowV2>(response);
+            var result = ActionResultAssert.IsOkObjectResult<Workflow>(response);
             var reviewedTabs = result.ReviewedTabs;
 
             foreach (var change in changesDict)

@@ -116,7 +116,7 @@ public class SyncBoreholesTaskTest
         using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), noTargetWorkgroupConfiguration);
 
         // Add a fake published borehole to the source context
-        var publishedBorehole = new Borehole { Workflow = new WorkflowV2 { Status = WorkflowStatus.Published } };
+        var publishedBorehole = new Borehole { Workflow = new Workflow { Status = WorkflowStatus.Published } };
         await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
@@ -133,7 +133,7 @@ public class SyncBoreholesTaskTest
         using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), GetDefaultConfiguration());
 
         // Add a fake published borehole to the source context
-        var publishedBorehole = new Borehole { Workflow = new WorkflowV2 { Status = WorkflowStatus.Published } };
+        var publishedBorehole = new Borehole { Workflow = new Workflow { Status = WorkflowStatus.Published } };
         await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
@@ -152,7 +152,7 @@ public class SyncBoreholesTaskTest
         using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), noTargetUserConfiguration);
 
         // Add a fake published borehole to the source context
-        var publishedBorehole = new Borehole { Workflow = new WorkflowV2 { Status = WorkflowStatus.Published } };
+        var publishedBorehole = new Borehole { Workflow = new Workflow { Status = WorkflowStatus.Published } };
         await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
@@ -174,7 +174,7 @@ public class SyncBoreholesTaskTest
         using var syncTask = new SyncBoreholesTask(syncContext, Mock.Of<ILogger<SyncBoreholesTask>>(), GetDefaultConfiguration());
 
         // Add a fake published borehole to the source context
-        var publishedBorehole = new Borehole { Workflow = new WorkflowV2 { Status = WorkflowStatus.Published } };
+        var publishedBorehole = new Borehole { Workflow = new Workflow { Status = WorkflowStatus.Published } };
         await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 

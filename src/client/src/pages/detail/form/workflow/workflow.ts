@@ -12,7 +12,7 @@ import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
 
 export { WorkflowStatus };
 
-export interface WorkflowV2 extends GenericWorkflow {
+export interface Workflow extends GenericWorkflow {
   id: number;
   boreholeId: number;
   reviewedTabs: TabStatus;
@@ -67,7 +67,7 @@ export enum TabType {
   Published,
 }
 
-export const fetchWorkflowByBoreholeId = async (boreholeId: number): Promise<WorkflowV2> =>
+export const fetchWorkflowByBoreholeId = async (boreholeId: number): Promise<Workflow> =>
   await fetchApiV2(`workflow/${boreholeId}`, "GET");
 
 export const sendWorkflowChangeRequest = async (workflowChangeRequest: WorkflowChangeRequest) => {
@@ -80,7 +80,7 @@ export const sendTabStatusChangeRequest = async (tabStatusChangeRequest: TabStat
 
 export const workflowQueryKey = "workflows";
 
-export const useWorkflow = (boreholeId: number): UseQueryResult<WorkflowV2> => {
+export const useWorkflow = (boreholeId: number): UseQueryResult<Workflow> => {
   const query = useQuery({
     queryKey: [workflowQueryKey, boreholeId],
     queryFn: () => {

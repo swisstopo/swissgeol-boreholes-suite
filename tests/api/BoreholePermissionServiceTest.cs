@@ -83,7 +83,7 @@ public class BoreholePermissionServiceTest
         {
             Name = "Borehole in editing",
             WorkgroupId = DefaultWorkgroupId,
-            Workflow = new WorkflowV2 { Id = 1, Status = WorkflowStatus.Draft },
+            Workflow = new Workflow { Id = 1, Status = WorkflowStatus.Draft },
         };
 
         Assert.IsFalse(boreholePermissionService.CanViewBorehole(new User(), borehole));
@@ -106,7 +106,7 @@ public class BoreholePermissionServiceTest
         {
             Name = "Borehole in publication",
             WorkgroupId = DefaultWorkgroupId,
-            Workflow = new WorkflowV2
+            Workflow = new Workflow
             {
                 Id = 4,
                 Status = WorkflowStatus.Published,
@@ -138,7 +138,7 @@ public class BoreholePermissionServiceTest
         {
             Name = "Borehole locked by Editor",
             WorkgroupId = DefaultWorkgroupId,
-            Workflow = new WorkflowV2 { Id = 93298, Status = WorkflowStatus.Draft },
+            Workflow = new Workflow { Id = 93298, Status = WorkflowStatus.Draft },
             Locked = mockNow.AddMinutes(-1),
             LockedById = editor.Id,
         };
@@ -165,7 +165,7 @@ public class BoreholePermissionServiceTest
         {
             Name = "Borehole locked by Admin a day ago",
             WorkgroupId = DefaultWorkgroupId,
-            Workflow = new WorkflowV2 { Id = 74028, Status = WorkflowStatus.Draft },
+            Workflow = new Workflow { Id = 74028, Status = WorkflowStatus.Draft },
             Locked = mockNow.AddMinutes(-(BoreholePermissionService.LockTimeoutInMinutes + 1)),
             LockedById = AdminUserId,
         };

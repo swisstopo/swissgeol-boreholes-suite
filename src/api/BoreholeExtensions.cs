@@ -142,7 +142,7 @@ public static class BoreholeExtensions
         borehole.BoreholeGeometry?.MarkAsNew();
         borehole.Documents?.MarkAsNew();
 
-        borehole.Workflow = new WorkflowV2
+        borehole.Workflow = new Workflow
         {
             ReviewedTabs = new(),
             PublishedTabs = new(),

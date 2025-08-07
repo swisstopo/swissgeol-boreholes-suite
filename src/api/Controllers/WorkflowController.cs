@@ -25,23 +25,23 @@ public class WorkflowController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="WorkflowV2"/> associated with <paramref name="boreholeId"/>.
+    /// Asynchronously gets the <see cref="Workflow"/> associated with <paramref name="boreholeId"/>.
     /// </summary>
     [HttpGet("{boreholeId}")]
     [SwaggerResponse(StatusCodes.Status200OK, "Returns a workflow.")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<WorkflowV2>> GetByIdAsync(int boreholeId)
+    public async Task<ActionResult<Workflow>> GetByIdAsync(int boreholeId)
     {
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var workflow = await context.WorkflowsV2WithIncludes.SingleOrDefaultAsync(i => i.BoreholeId == boreholeId).ConfigureAwait(false);
+        var workflow = await context.WorkflowsWithIncludes.SingleOrDefaultAsync(i => i.BoreholeId == boreholeId).ConfigureAwait(false);
         if (workflow == null) return NotFound();
 
         return Ok(workflow);
     }
 
     /// <summary>
-    /// Updates the <see cref="WorkflowV2"/> defined in the <paramref name="workflowChangeRequest"/> and creates a corresponding <see cref="WorkflowChange"/>.
+    /// Updates the <see cref="Workflow"/> defined in the <paramref name="workflowChangeRequest"/> and creates a corresponding <see cref="WorkflowChange"/>.
     /// </summary>
     [HttpPost("change")]
     [Authorize(Policy = PolicyNames.Viewer)]
@@ -70,7 +70,7 @@ public class WorkflowController : ControllerBase
             return Unauthorized();
         }
 
-        var workflow = await context.WorkflowsV2WithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == workflowChangeRequest.BoreholeId).ConfigureAwait(false);
+        var workflow = await context.WorkflowsWithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == workflowChangeRequest.BoreholeId).ConfigureAwait(false);
         if (workflow == null)
         {
             var workflowNotFoundMessage = $"Workflow for borehole with {workflowChangeRequest.BoreholeId} not found.";
@@ -140,7 +140,7 @@ public class WorkflowController : ControllerBase
 
         if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, request.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var workflow = await context.WorkflowsV2WithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == request.BoreholeId).ConfigureAwait(false);
+        var workflow = await context.WorkflowsWithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == request.BoreholeId).ConfigureAwait(false);
         if (workflow == null)
         {
             var workflowNotFoundMessage = $"Workflow for borehole with {request.BoreholeId} not found.";

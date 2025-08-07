@@ -27,7 +27,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async override Task<ActionResult<Borehole>> CreateAsync(Borehole entity)
     {
-        entity.Workflow = new WorkflowV2
+        entity.Workflow = new Workflow
         {
             ReviewedTabs = new(),
             PublishedTabs = new(),
@@ -88,7 +88,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         Context.Entry(existingBorehole).CurrentValues.SetValues(entity);
 
         // Ensure that the borehole has a workflow
-        existingBorehole.Workflow = workflow ?? new WorkflowV2
+        existingBorehole.Workflow = workflow ?? new Workflow
         {
             ReviewedTabs = new(),
             PublishedTabs = new(),

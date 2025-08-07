@@ -6,8 +6,8 @@ namespace BDMS.Models;
 /// <summary>
 /// Represents a workflow entity in the database.
 /// </summary>
-[Table("workflow_v2")]
-public class WorkflowV2 : IIdentifyable
+[Table("workflow")]
+public class Workflow : IIdentifyable
 {
     /// <inheritdoc />
     [Key]
@@ -33,7 +33,7 @@ public class WorkflowV2 : IIdentifyable
     public int BoreholeId { get; set; }
 
     /// <summary>
-    /// Gets or sets the borehole of this <see cref="WorkflowV2"/>.
+    /// Gets or sets the borehole of this <see cref="Workflow"/>.
     /// </summary>
     public Borehole? Borehole { get; set; }
 
@@ -66,12 +66,12 @@ public class WorkflowV2 : IIdentifyable
     public int? AssigneeId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="User"/> that is currently assigned to this <see cref="WorkflowV2"/>.
+    /// Gets or sets the <see cref="User"/> that is currently assigned to this <see cref="Workflow"/>.
     /// </summary>
     public User? Assignee { get; set; }
 
     /// <summary>
-    /// Get the <see cref="WorkflowChange"/>s associated with this <see cref="WorkflowV2"/>.
+    /// Get the <see cref="WorkflowChange"/>s associated with this <see cref="Workflow"/>.
     /// </summary>
     public ICollection<WorkflowChange> Changes { get; } = new List<WorkflowChange>();
 }
