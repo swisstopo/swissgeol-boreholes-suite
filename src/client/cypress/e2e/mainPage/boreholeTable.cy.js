@@ -113,7 +113,7 @@ describe("Borehole editor table tests", () => {
     cy.contains("2726 selected").should("be.visible");
 
     // uncheck another row
-    unCheckRowWithText("Angus Spencer");
+    unCheckRowWithText("Alfonzo Borer");
     cy.contains("2725 selected").should("be.visible");
 
     // uncheck all rows
@@ -121,7 +121,7 @@ describe("Borehole editor table tests", () => {
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
 
     // check one row
-    checkRowWithText("Andres Renner");
+    checkRowWithText("Alfonzo Borer");
     cy.contains("1 selected").should("be.visible");
 
     // navigate to previous page
