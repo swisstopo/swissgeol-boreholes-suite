@@ -23,9 +23,11 @@ public class UserControllerTest
         context = ContextFactory.GetTestContext();
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
-        .Setup(s => s.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), workgroupId, Models.Role.Editor))
-        .ReturnsAsync(true);
-
+            .Setup(s => s.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), workgroupId, Models.Role.Editor))
+            .ReturnsAsync(true);
+        boreholePermissionServiceMock
+            .Setup(s => s.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.Is<int>(x => x != workgroupId), Models.Role.Editor))
+            .ReturnsAsync(false);
         boreholePermissionServiceMock
             .Setup(s => s.HasUserRoleOnWorkgroupAsync(editorSubjectId, workgroupId, Models.Role.Editor))
             .ReturnsAsync(true);
