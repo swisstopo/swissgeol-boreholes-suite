@@ -42,10 +42,10 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
-        return CanEditBorehole(user, borehole, useWorkflowV2 ?? false);
+        return CanEditBorehole(user, borehole);
     }
 
-    internal bool CanEditBorehole(User user, Borehole borehole, bool useWorkflowV2)
+    internal bool CanEditBorehole(User user, Borehole borehole)
     {
         if (user.IsAdmin)
         {
