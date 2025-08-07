@@ -19,13 +19,13 @@ public class SyncBoreholesTaskTest
         // Set the publication status for some boreholes. By default all seeded boreholes have the publication
         // status 'change in progress'.
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_001, 1, WorkflowStatus.Draft, cancellationToken);
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_202, 1, WorkflowStatus.InReview, cancellationToken);
-        await syncContext.Source.SetBoreholeStatusAsync(1_001_404, 1, WorkflowStatus.Reviewed, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_001, WorkflowStatus.Draft, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_202, WorkflowStatus.InReview, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_001_404, WorkflowStatus.Reviewed, cancellationToken);
 
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_022, 1, WorkflowStatus.Published, cancellationToken);
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_099, 1, WorkflowStatus.Published, cancellationToken);
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_101, 1, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_022, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_099, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_101, WorkflowStatus.Published, cancellationToken);
 
         await syncContext.Source.FixCasingReferencesAsync(cancellationToken);
 
@@ -76,8 +76,8 @@ public class SyncBoreholesTaskTest
         using var syncTask = new SyncBoreholesTask(syncContext, new Mock<ILogger<SyncBoreholesTask>>().Object, GetDefaultConfiguration());
 
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_022, 1, WorkflowStatus.Published, cancellationToken);
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_099, 1, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_022, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_099, WorkflowStatus.Published, cancellationToken);
 
         await syncContext.Source.FixCasingReferencesAsync(cancellationToken);
 

@@ -32,13 +32,13 @@ public class SyncContextExtensionsTest
     {
         // Set the publication status for some boreholes. By default all seeded boreholes have the publication status 'change in progress'.
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
-        await context.SetBoreholeStatusAsync(1_000_001, 1, WorkflowStatus.Draft, cancellationToken);
-        await context.SetBoreholeStatusAsync(1_000_020, 1, WorkflowStatus.InReview, cancellationToken);
-        await context.SetBoreholeStatusAsync(1_000_444, 1, WorkflowStatus.Reviewed, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_001, WorkflowStatus.Draft, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_020, WorkflowStatus.InReview, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_444, WorkflowStatus.Reviewed, cancellationToken);
 
-        await context.SetBoreholeStatusAsync(1_000_300, 1, WorkflowStatus.Published, cancellationToken);
-        await context.SetBoreholeStatusAsync(1_001_555, 1, WorkflowStatus.Published, cancellationToken);
-        await context.SetBoreholeStatusAsync(1_000_666, 1, WorkflowStatus.Published, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_300, WorkflowStatus.Published, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_001_555, WorkflowStatus.Published, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_666, WorkflowStatus.Published, cancellationToken);
 
         var boreholes = context.Boreholes.WithStatusPublished().ToList();
 
