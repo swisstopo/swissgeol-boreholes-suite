@@ -414,6 +414,7 @@ describe("Tests for the layer form.", () => {
     getElementByDataCy("show-filter-button").click();
     cy.contains("Location").click();
     setInput("original_name", "Anibal Conroy");
+    showTableAndWaitForData();
     clickOnRowWithText("Anibal Conroy");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
 
