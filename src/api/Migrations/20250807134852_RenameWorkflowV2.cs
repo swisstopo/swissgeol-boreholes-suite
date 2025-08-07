@@ -32,7 +32,7 @@ public partial class RenameWorkflowV2 : Migration
                 borehole_id = table.Column<int>(type: "integer", nullable: false),
                 reviewed_tabs_id = table.Column<int>(type: "integer", nullable: false),
                 published_tabs_id = table.Column<int>(type: "integer", nullable: false),
-                assignee_id = table.Column<int>(type: "integer", nullable: true)
+                assignee_id = table.Column<int>(type: "integer", nullable: true),
             },
             constraints: table =>
             {
@@ -128,7 +128,7 @@ public partial class RenameWorkflowV2 : Migration
                 published_tabs_id = table.Column<int>(type: "integer", nullable: false),
                 reviewed_tabs_id = table.Column<int>(type: "integer", nullable: false),
                 has_requested_changes = table.Column<bool>(type: "boolean", nullable: false),
-                status = table.Column<int>(type: "integer", nullable: false)
+                status = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
