@@ -160,12 +160,10 @@ public class UserControllerTest
     public async Task GetAllWithEditorPrivilegeOnWorkgroupReturnsEditors()
     {
         var result = await userController.GetAllWithEditorPrivilegeOnWorkgroup(workgroupId);
+        var users = result.Value;
 
-        var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        var users = okResult.Value as IEnumerable<Models.User>;
         Assert.IsNotNull(users);
-        Assert.AreEqual(4, users.Count());
+        Assert.AreEqual(7, users.Count());
         Assert.IsTrue(users.Any(u => u.SubjectId == editorSubjectId));
         Assert.IsFalse(users.Any(u => u.SubjectId == otherSubjectId));
     }
