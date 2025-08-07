@@ -12,12 +12,27 @@ public class UserControllerTest
 {
     private BdmsContext context;
     private UserController userController;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
+    private int workgroupId = 1;
+    private string editorSubjectId = "sub_editor";
+    private string otherSubjectId = "sub_viewer";
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        userController = new UserController(context, new Mock<ILogger<UserController>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+        .Setup(s => s.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), workgroupId, Models.Role.Editor))
+        .ReturnsAsync(true);
+
+        boreholePermissionServiceMock
+            .Setup(s => s.HasUserRoleOnWorkgroupAsync(editorSubjectId, workgroupId, Models.Role.Editor))
+            .ReturnsAsync(true);
+        boreholePermissionServiceMock
+            .Setup(s => s.HasUserRoleOnWorkgroupAsync(otherSubjectId, workgroupId, Models.Role.Editor))
+            .ReturnsAsync(false);
+        userController = new UserController(context, new Mock<ILogger<UserController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -128,5 +143,28 @@ public class UserControllerTest
 
         var result = await userController.Delete(user.Id);
         ActionResultAssert.IsInternalServerError(result, "The user is associated with boreholes, layers, stratigraphies, files or borehole files and cannot be deleted.");
+    }
+
+    [TestMethod]
+    public async Task GetAllWithEditorPrivilegeOnWorkgroupUnauthorized()
+    {
+        var workgroupIdNotBelongingToUser = 64598765;
+        var result = await userController.GetAllWithEditorPrivilegeOnWorkgroup(workgroupIdNotBelongingToUser);
+
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public async Task GetAllWithEditorPrivilegeOnWorkgroupReturnsEditors()
+    {
+        var result = await userController.GetAllWithEditorPrivilegeOnWorkgroup(workgroupId);
+
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        var users = okResult.Value as IEnumerable<Models.User>;
+        Assert.IsNotNull(users);
+        Assert.AreEqual(4, users.Count());
+        Assert.IsTrue(users.Any(u => u.SubjectId == editorSubjectId));
+        Assert.IsFalse(users.Any(u => u.SubjectId == otherSubjectId));
     }
 }
