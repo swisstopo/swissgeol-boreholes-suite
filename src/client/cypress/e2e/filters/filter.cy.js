@@ -189,7 +189,7 @@ describe("Search filter tests", () => {
 
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
     cy.get('[data-cy="filter-chip-striae"]').should("not.exist");
-    verifyPaginationText("1–100 of 2703");
+    verifyPaginationText("1–100 of 3004");
   });
 
   it("filters boreholes by status", () => {
@@ -229,7 +229,7 @@ describe("Search filter tests", () => {
 
     // check content of table
     verifyPaginationText("1–100 of 181");
-    cy.get(".MuiDataGrid-row").contains("Bruce Rempel").should("exist");
+    cy.get(".MuiDataGrid-row").contains("Alta Sauer").should("exist");
   });
 
   it("filters boreholes by original lithology in editor mode", () => {

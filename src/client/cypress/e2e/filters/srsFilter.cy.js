@@ -68,7 +68,7 @@ describe("Tests for filtering data by reference system.", () => {
     verifyPaginationText("1–100 of 1501");
 
     setSelect("originalReferenceSystem", 1); // LV03
-    verifyPaginationText("1–100 of 1502");
+    verifyPaginationText("1–100 of 1500");
 
     // click reset label
     cy.get('[data-cy="reset-filter-button"]').click();
