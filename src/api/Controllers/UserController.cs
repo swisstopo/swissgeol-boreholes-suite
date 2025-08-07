@@ -83,7 +83,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Gets a list of users.
+    /// Gets editor users for the provided workgroupId.
     /// </summary>
     [HttpGet("editorsOnWorkgroup/{workgroupId}")]
     [Authorize(Policy = PolicyNames.Viewer)]
