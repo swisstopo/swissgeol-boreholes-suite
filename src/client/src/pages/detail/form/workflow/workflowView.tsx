@@ -8,11 +8,10 @@ import {
   SgcWorkflowSelectionEntry,
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
-import { useBoreholeEditable } from "../../../../api/borehole.ts";
-import { useCurrentUser } from "../../../../api/user.ts";
+import { useBorehole, useBoreholeEditable } from "../../../../api/borehole.ts";
+import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { useUserRoleForBorehole } from "../../../../hooks/useUserRoleForBorehole.ts";
 import {
   TabStatusChangeRequest,
   TabType,
@@ -24,11 +23,13 @@ import {
 
 export const WorkflowView = () => {
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const { data: borehole } = useBorehole(parseInt(boreholeId));
   const { data: workflow, isLoading } = useWorkflow(parseInt(boreholeId));
   const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
   const { t } = useTranslation();
   const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(boreholeId));
-  const { getUsersWithEditorPrivilege } = useUserRoleForBorehole();
+  const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole.workgroup?.id ?? 0);
+
   const {
     updateWorkflow: { mutate: updateWorkflow },
     updateTabStatus: { mutate: updateTabStatus },
@@ -117,7 +118,7 @@ export const WorkflowView = () => {
         item={"Borehole"}
         approval={workflow.publishedTabs}
         isReadOnly={false}
-        availableAssignees={getUsersWithEditorPrivilege()}
+        availableAssignees={editorUsersForWorkgroup}
         selection={makeSelectionEntries()}
         canChangeStatus={editableByCurrentUser}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
