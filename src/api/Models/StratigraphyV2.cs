@@ -51,22 +51,22 @@ public class StratigraphyV2 : IChangeTracking, IIdentifyable
     public bool IsPrimary { get; set; }
 
     /// <inheritdoc />
-    [Column("updated_at")]
+    [Column("update")]
     public DateTime? Updated { get; set; }
 
     /// <inheritdoc />
-    [Column("updated_by_id")]
+    [Column("updater")]
     public int? UpdatedById { get; set; }
 
     /// <inheritdoc />
     public User? UpdatedBy { get; set; }
 
     /// <inheritdoc />
-    [Column("created_at")]
+    [Column("creation")]
     public DateTime? Created { get; set; }
 
     /// <inheritdoc />
-    [Column("created_by_id")]
+    [Column("creator")]
     public int? CreatedById { get; set; }
 
     /// <inheritdoc />

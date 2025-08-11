@@ -22,10 +22,10 @@ public partial class AddStratigraphyV2 : Migration
                 name = table.Column<string>(type: "text", nullable: false),
                 date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 is_primary = table.Column<bool>(type: "boolean", nullable: false),
-                updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                updated_by_id = table.Column<int>(type: "integer", nullable: true),
-                created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                created_by_id = table.Column<int>(type: "integer", nullable: true),
+                update = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updater = table.Column<int>(type: "integer", nullable: true),
+                creation = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                creator = table.Column<int>(type: "integer", nullable: true),
             },
             constraints: table =>
             {
@@ -38,14 +38,14 @@ public partial class AddStratigraphyV2 : Migration
                     principalColumn: "id_bho",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "FK_stratigraphy_v2_users_created_by_id",
-                    column: x => x.created_by_id,
+                    name: "FK_stratigraphy_v2_users_creator",
+                    column: x => x.creator,
                     principalSchema: "bdms",
                     principalTable: "users",
                     principalColumn: "id_usr");
                 table.ForeignKey(
-                    name: "FK_stratigraphy_v2_users_updated_by_id",
-                    column: x => x.updated_by_id,
+                    name: "FK_stratigraphy_v2_users_updater",
+                    column: x => x.updater,
                     principalSchema: "bdms",
                     principalTable: "users",
                     principalColumn: "id_usr");
@@ -58,16 +58,16 @@ public partial class AddStratigraphyV2 : Migration
             column: "borehole_id");
 
         migrationBuilder.CreateIndex(
-            name: "IX_stratigraphy_v2_created_by_id",
+            name: "IX_stratigraphy_v2_creator",
             schema: "bdms",
             table: "stratigraphy_v2",
-            column: "created_by_id");
+            column: "creator");
 
         migrationBuilder.CreateIndex(
-            name: "IX_stratigraphy_v2_updated_by_id",
+            name: "IX_stratigraphy_v2_updater",
             schema: "bdms",
             table: "stratigraphy_v2",
-            column: "updated_by_id");
+            column: "updater");
     }
 
     /// <inheritdoc />
