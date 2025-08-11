@@ -47,7 +47,7 @@ internal static class TestSyncContextExtensions
     {
         var initDbDirectoryPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "initdb.d"));
         var postgreSqlContainer = new PostgreSqlBuilder()
-            .WithImage("postgis/postgis:15-3.4-alpine")
+            .WithImage("postgis/postgis:17-3.5-alpine")
             .WithDatabase(BoreholesDatabaseName)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))
             .WithResourceMapping(initDbDirectoryPath, "/docker-entrypoint-initdb.d")
@@ -170,6 +170,8 @@ internal static class TestSyncContextExtensions
 
         borehole.BoreholeGeometry = borehole.BoreholeGeometry?.OrderBy(g => g.MD).ToList();
         borehole.Observations = borehole.Observations?.OrderBy(o => o.FromDepthM).ToList();
+
+        borehole.Workflow?.Changes.OrderBy(c => c.Created).ToList();
 
         return borehole;
     }
