@@ -500,7 +500,7 @@ export const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          border: "1px solid #DFE4E9",
+          border: `1px solid ${themePalette.border.darker}`,
           boxShadow: "none !important",
           borderRadius: `${themeSpacing(1)} !important`,
           flexShrink: 0,
