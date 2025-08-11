@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -55,8 +55,6 @@ export const StratigraphyPanel: FC = () => {
   useFormDirtyChanges({ formState });
   const { showPrompt } = useContext(PromptContext);
   const showApiErrorAlert = useApiErrorAlert();
-  const [newlyAddedStratigraphyId, setNewlyAddedStratigraphyId] = useState<number>();
-  const [deletedStratigraphyId, setDeletedStratigraphyId] = useState<number>();
 
   const sortedStratigraphies: Stratigraphy[] | undefined = useMemo(() => {
     if (!stratigraphies) return stratigraphies;
@@ -65,7 +63,7 @@ export const StratigraphyPanel: FC = () => {
       if (b.isPrimary) return 1;
       return (a.name || "").localeCompare(b.name || "");
     });
-    if (stratigraphyId === "new" && !newlyAddedStratigraphyId) {
+    if (stratigraphyId === "new") {
       return [
         ...existingStratigraphies,
         {
@@ -86,29 +84,10 @@ export const StratigraphyPanel: FC = () => {
       ];
     }
     return existingStratigraphies;
-  }, [boreholeId, newlyAddedStratigraphyId, stratigraphies, stratigraphyId]);
+  }, [boreholeId, stratigraphies, stratigraphyId]);
 
   useEffect(() => {
-    if (newlyAddedStratigraphyId) {
-      if (sortedStratigraphies?.some(x => x.id === Number(newlyAddedStratigraphyId))) {
-        navigateTo({
-          path: `/${boreholeId}/stratigraphy/${newlyAddedStratigraphyId}`,
-          replace: stratigraphyId === "new",
-        });
-        setNewlyAddedStratigraphyId(undefined);
-      }
-    } else if (deletedStratigraphyId) {
-      if (
-        sortedStratigraphies !== undefined &&
-        !sortedStratigraphies.some(x => x.id === Number(deletedStratigraphyId))
-      ) {
-        navigateTo({
-          path: `/${boreholeId}/stratigraphy`,
-          replace: true,
-        });
-        setDeletedStratigraphyId(undefined);
-      }
-    } else if (
+    if (
       sortedStratigraphies?.length &&
       (stratigraphyId === undefined ||
         (stratigraphyId !== "new" && !sortedStratigraphies.some(x => x.id === Number(stratigraphyId))))
@@ -119,7 +98,7 @@ export const StratigraphyPanel: FC = () => {
         replace: true,
       });
     }
-  }, [boreholeId, navigateTo, stratigraphyId, sortedStratigraphies, newlyAddedStratigraphyId, deletedStratigraphyId]);
+  }, [boreholeId, navigateTo, stratigraphyId, sortedStratigraphies]);
 
   const selectedTabIndex: number = useMemo(
     () => sortedStratigraphies?.findIndex(x => x.id === (stratigraphyId === "new" ? 0 : Number(stratigraphyId))) ?? -1,
@@ -134,12 +113,19 @@ export const StratigraphyPanel: FC = () => {
   );
 
   const navigateToStratigraphy = useCallback(
-    (stratigraphyId: number, replace = false) => {
-      navigateTo({
-        path: `/${boreholeId}/stratigraphy/${stratigraphyId === 0 ? "new" : stratigraphyId}`,
-        hash: location.hash,
-        replace,
-      });
+    (stratigraphyId: number | undefined, replace = false) => {
+      if (stratigraphyId !== undefined) {
+        navigateTo({
+          path: `/${boreholeId}/stratigraphy/${stratigraphyId === 0 ? "new" : stratigraphyId}`,
+          hash: location.hash,
+          replace,
+        });
+      } else {
+        navigateTo({
+          path: `/${boreholeId}/stratigraphy`,
+          replace,
+        });
+      }
     },
     [location.hash, navigateTo, boreholeId],
   );
@@ -164,25 +150,32 @@ export const StratigraphyPanel: FC = () => {
     if (!selectedStratigraphy) return;
     deleteStratigraphy(selectedStratigraphy, {
       onSuccess: () => {
-        setDeletedStratigraphyId(selectedStratigraphy.id);
+        navigateToStratigraphy(undefined, true);
         reloadStratigraphies(Number(boreholeId));
         reloadBoreholes();
       },
     });
-  }, [boreholeId, deleteStratigraphy, reloadBoreholes, reloadStratigraphies, selectedStratigraphy]);
+  }, [
+    boreholeId,
+    deleteStratigraphy,
+    navigateToStratigraphy,
+    reloadBoreholes,
+    reloadStratigraphies,
+    selectedStratigraphy,
+  ]);
 
   const onCopy = useCallback(() => {
     if (selectedStratigraphy) {
       copyStratigraphy(selectedStratigraphy, {
         onSuccess: newStratigraphyId => {
-          setNewlyAddedStratigraphyId(newStratigraphyId);
+          navigateToStratigraphy(newStratigraphyId, true);
           reloadStratigraphies(Number(boreholeId));
         },
       });
     }
-  }, [boreholeId, copyStratigraphy, reloadStratigraphies, selectedStratigraphy]);
+  }, [boreholeId, copyStratigraphy, navigateToStratigraphy, reloadStratigraphies, selectedStratigraphy]);
 
-  const resetWithoutSave = useCallback(() => {
+  const resetForm = useCallback(() => {
     if (selectedStratigraphy) {
       formMethods.reset({
         ...selectedStratigraphy,
@@ -190,6 +183,16 @@ export const StratigraphyPanel: FC = () => {
       });
     }
   }, [formMethods, selectedStratigraphy]);
+
+  const resetWithoutSave = useCallback(() => {
+    if (selectedStratigraphy) {
+      if (selectedStratigraphy.id === 0) {
+        navigateToStratigraphy(undefined, true);
+      } else {
+        resetForm();
+      }
+    }
+  }, [navigateToStratigraphy, resetForm, selectedStratigraphy]);
 
   const handleSaveError = useCallback(
     (error: Error) => {
@@ -212,7 +215,7 @@ export const StratigraphyPanel: FC = () => {
           await new Promise<void>((resolve, reject) => {
             addStratigraphy(values, {
               onSuccess: newStratigraphy => {
-                setNewlyAddedStratigraphyId(newStratigraphy.id);
+                navigateToStratigraphy(newStratigraphy.id, true);
                 reloadStratigraphies(Number(boreholeId));
                 resolve();
               },
@@ -250,6 +253,7 @@ export const StratigraphyPanel: FC = () => {
     boreholeId,
     getValues,
     handleSaveError,
+    navigateToStratigraphy,
     reloadStratigraphies,
     selectedStratigraphy,
     updateStratigraphy,
@@ -281,8 +285,8 @@ export const StratigraphyPanel: FC = () => {
   }, [registerResetHandler, registerSaveHandler, resetWithoutSave, onSave, unMount]);
 
   useEffect(() => {
-    resetWithoutSave();
-  }, [resetWithoutSave]);
+    resetForm();
+  }, [resetForm]);
 
   if (!sortedStratigraphies) {
     return (

@@ -86,6 +86,9 @@ describe("Tests for stratigraphy", () => {
         saveWithSaveBar();
 
         cy.wait(["@stratigraphyV2_POST", "@stratigraphyV2_by_borehole_GET"]);
+        cy.location().should(location => {
+          expect(location.pathname).not.to.contain(`stratigraphy/new`);
+        });
         checkTabsByTitles([{ title: "First Stratigraphy" }, { title: "Another Stratigraphy", active: true }]);
         evaluateInput("name", "Another Stratigraphy");
         evaluateCheckbox("isPrimary", false);
