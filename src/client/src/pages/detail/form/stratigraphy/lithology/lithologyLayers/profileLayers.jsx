@@ -29,6 +29,7 @@ import {
   useLithoDescription,
 } from "../../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
+import { useResetTabStatus } from "../../../../../../hooks/useResetTabStatus.ts";
 import { createLayerApi, getData } from "./api";
 import DescriptionLayers from "./descriptionLayers/descriptionLayers.jsx";
 import ProfileLayersValidation from "./lithologyLayersValidation";
@@ -50,12 +51,14 @@ const ProfileLayers = props => {
   const queryClient = useQueryClient();
   const lithoDescQuery = useLithoDescription(selectedStratigraphyID);
   const faciesDescQuery = useFaciesDescription(selectedStratigraphyID);
+  const resetTabStatus = useResetTabStatus(["lithology"]);
 
   const addLithologicalDescriptionMutation = useMutation({
     mutationFn: async params => {
       return await addLithologicalDescription(params);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [lithologicalDescriptionQueryKey],
       });
@@ -67,6 +70,7 @@ const ProfileLayers = props => {
       return await deleteLithologicalDescription(id);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [lithologicalDescriptionQueryKey],
       });
@@ -78,6 +82,7 @@ const ProfileLayers = props => {
       return await updateLithologicalDescription(params);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [lithologicalDescriptionQueryKey],
       });
@@ -89,6 +94,7 @@ const ProfileLayers = props => {
       return await addFaciesDescription(params);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [faciesDescriptionQueryKey],
       });
@@ -100,6 +106,7 @@ const ProfileLayers = props => {
       return await deleteFaciesDescription(id);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [faciesDescriptionQueryKey],
       });
@@ -111,6 +118,7 @@ const ProfileLayers = props => {
       return await updateFaciesDescription(params);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [faciesDescriptionQueryKey],
       });
