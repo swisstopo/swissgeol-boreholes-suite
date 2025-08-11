@@ -16,7 +16,7 @@ export interface FormSelectProps {
   values?: FormSelectValue[];
   sx?: SxProps;
   className?: string;
-  onUpdate?: (value: number | boolean | null) => void;
+  onUpdate?: (value: number | string | boolean | null) => void;
   canReset?: boolean;
 }
 
@@ -26,7 +26,7 @@ export interface FormSelectValue {
 }
 
 export interface FormSelectMenuItem {
-  key: number;
+  key: number | string;
   value?: number | null;
   label: string;
   italic?: boolean;
