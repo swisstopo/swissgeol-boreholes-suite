@@ -6,7 +6,7 @@ import {
   WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { boreholeQueryKey } from "../../../../api/borehole.ts";
+import { boreholeQueryKey, canEditQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
 import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.ts";
 
@@ -99,6 +99,7 @@ export const useWorkflowMutation = () => {
   function invalidateBoreholeAndWorkflowQueries(boreholeId: number) {
     queryClient.invalidateQueries({ queryKey: [workflowQueryKey, Number(boreholeId)] });
     queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
+    queryClient.invalidateQueries({ queryKey: [canEditQueryKey], refetchType: "all" });
   }
 
   const updateWorkflow = useMutation({

@@ -13,6 +13,7 @@
   "addFieldMeasurementResult": "Ajouter un résultat",
   "addGroundwaterLevelMeasurement": "Ajouter une mesure des eaux souterraines",
   "addHydrotest": "Ajouter un hydro-test",
+  "boreholeStatusChangedNoMorePermissions": "Le statut du forage a été modifié. Vous n’avez plus l’autorisation de modifier le forage."
   "addHydrotestResult": "Ajouter un résultat",
   "addIdentifier": "Ajouter ID",
   "addInstrument": "Ajouter un instrument",

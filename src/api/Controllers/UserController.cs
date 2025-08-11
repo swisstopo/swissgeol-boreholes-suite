@@ -98,7 +98,7 @@ public class UserController : ControllerBase
         }
 
         var allUsers = await context
-            .Users
+            .UsersWithIncludes
             .AsNoTracking()
             .OrderBy(x => x.Name)
             .ToListAsync()
@@ -110,6 +110,14 @@ public class UserController : ControllerBase
         {
             if (await boreholePermissionService.HasUserRoleOnWorkgroupAsync(user.SubjectId, workgroupId, Role.Editor).ConfigureAwait(false))
             {
+                // Remove all non-essential properties
+                user.Email = "";
+                user.SubjectId = "";
+                user.CreatedAt = null;
+                user.Deletable = null;
+                user.Settings = null;
+                user.DisabledAt = null;
+                user.TermsAccepted.Clear();
                 editorUsers.Add(user);
             }
         }

@@ -1,16 +1,21 @@
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
 import {
   LocalDate,
+  Role,
   SgcWorkflowChangeEventDetail,
   SgcWorkflowCustomEvent,
   SgcWorkflowSelectionChangeEventDetails,
   SgcWorkflowSelectionEntry,
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
+import { Role as LegacyRole } from "../../../../api/apiInterfaces.ts";
 import { useBorehole, useBoreholeEditable } from "../../../../api/borehole.ts";
 import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
+import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
+import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import {
   TabStatusChangeRequest,
@@ -29,6 +34,8 @@ export const WorkflowView = () => {
   const { t } = useTranslation();
   const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(boreholeId));
   const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole.workgroup?.id ?? 0);
+  const { navigateTo } = useBoreholesNavigate();
+  const { showAlert } = useContext(AlertContext);
 
   const {
     updateWorkflow: { mutate: updateWorkflow },
@@ -69,6 +76,15 @@ export const WorkflowView = () => {
     ];
   };
 
+  const mapMaxRole = (roles?: LegacyRole[]): Role => {
+    if (!roles || roles.length === 0) return Role.Reader;
+    if (roles.includes(LegacyRole.Publisher)) return Role.Publisher;
+    if (roles.includes(LegacyRole.Validator)) return Role.Reviewer;
+    if (roles.includes(LegacyRole.Controller)) return Role.Reviewer;
+    if (roles.includes(LegacyRole.Editor)) return Role.Editor;
+    return Role.Reader;
+  };
+
   if (isLoading || isCurrentUserLoading)
     return (
       <FullPageCentered>
@@ -76,7 +92,17 @@ export const WorkflowView = () => {
       </FullPageCentered>
     );
 
-  if (!workflow || !currentUser) return null;
+  const availableAssignees = editorUsersForWorkgroup?.map(user => ({
+    ...user,
+    role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role)),
+  }));
+
+  if (!editableByCurrentUser) {
+    showAlert(t("boreholeStatusChangedNoMorePermissions"), "success");
+    navigateTo({ path: "/" + boreholeId });
+  }
+
+  if (!workflow || !currentUser || !availableAssignees) return null;
 
   const handleWorkflowChange = (changeEvent: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => {
     const changes: WorkflowChange = changeEvent.detail.changes;
@@ -118,7 +144,7 @@ export const WorkflowView = () => {
         item={"Borehole"}
         approval={workflow.publishedTabs}
         isReadOnly={false}
-        availableAssignees={editorUsersForWorkgroup}
+        availableAssignees={availableAssignees}
         selection={makeSelectionEntries()}
         canChangeStatus={editableByCurrentUser}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
