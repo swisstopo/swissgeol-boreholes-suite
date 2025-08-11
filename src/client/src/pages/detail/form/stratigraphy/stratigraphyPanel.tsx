@@ -6,13 +6,7 @@ import { Box, Card, Chip, CircularProgress, Stack, Tooltip, Typography } from "@
 import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
-import { useReloadBoreholes } from "../../../../api/borehole.ts";
-import {
-  Stratigraphy,
-  useReloadStratigraphies,
-  useStratigraphiesByBoreholeId,
-  useStratigraphyMutations,
-} from "../../../../api/stratigraphy";
+import { Stratigraphy, useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy";
 import { theme } from "../../../../AppTheme";
 import { AddButton, BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons";
 import { FormValueType } from "../../../../components/form/form";
@@ -44,8 +38,6 @@ export const StratigraphyPanel: FC = () => {
     update: { mutate: updateStratigraphy },
     delete: { mutate: deleteStratigraphy },
   } = useStratigraphyMutations();
-  const reloadStratigraphies = useReloadStratigraphies();
-  const reloadBoreholes = useReloadBoreholes();
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
   const { registerSaveHandler, registerResetHandler, unMount } = useContext<SaveContextProps>(SaveContext);
@@ -151,29 +143,19 @@ export const StratigraphyPanel: FC = () => {
     deleteStratigraphy(selectedStratigraphy, {
       onSuccess: () => {
         navigateToStratigraphy(undefined, true);
-        reloadStratigraphies(Number(boreholeId));
-        reloadBoreholes();
       },
     });
-  }, [
-    boreholeId,
-    deleteStratigraphy,
-    navigateToStratigraphy,
-    reloadBoreholes,
-    reloadStratigraphies,
-    selectedStratigraphy,
-  ]);
+  }, [deleteStratigraphy, navigateToStratigraphy, selectedStratigraphy]);
 
   const onCopy = useCallback(() => {
     if (selectedStratigraphy) {
       copyStratigraphy(selectedStratigraphy, {
         onSuccess: newStratigraphyId => {
           navigateToStratigraphy(newStratigraphyId, true);
-          reloadStratigraphies(Number(boreholeId));
         },
       });
     }
-  }, [boreholeId, copyStratigraphy, navigateToStratigraphy, reloadStratigraphies, selectedStratigraphy]);
+  }, [copyStratigraphy, navigateToStratigraphy, selectedStratigraphy]);
 
   const resetForm = useCallback(() => {
     if (selectedStratigraphy) {
@@ -216,7 +198,6 @@ export const StratigraphyPanel: FC = () => {
             addStratigraphy(values, {
               onSuccess: newStratigraphy => {
                 navigateToStratigraphy(newStratigraphy.id, true);
-                reloadStratigraphies(Number(boreholeId));
                 resolve();
               },
               onError: error => {
@@ -231,7 +212,6 @@ export const StratigraphyPanel: FC = () => {
               { ...selectedStratigraphy, ...values },
               {
                 onSuccess: () => {
-                  reloadStratigraphies(Number(boreholeId));
                   resolve();
                 },
                 onError: error => {
@@ -248,16 +228,7 @@ export const StratigraphyPanel: FC = () => {
       }
     }
     return false;
-  }, [
-    addStratigraphy,
-    boreholeId,
-    getValues,
-    handleSaveError,
-    navigateToStratigraphy,
-    reloadStratigraphies,
-    selectedStratigraphy,
-    updateStratigraphy,
-  ]);
+  }, [addStratigraphy, getValues, handleSaveError, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy]);
 
   const showDeletePrompt = useCallback(() => {
     if (!selectedStratigraphy) return;

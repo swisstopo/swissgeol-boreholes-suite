@@ -46,10 +46,10 @@ export const checkTabsByTitles = (tabs, parent) => {
       $tabs.each((i, tab) => {
         expect(tab).to.have.text(tabs[i].title);
         if (tabs[i].active) {
-          expect(tab.classList.contains("Mui-selected")).to.be.true;
+          expect(tab.classList.contains("Mui-selected")).to.equal(true);
           expect(getComputedStyle(tab).color).to.eq(activeColor);
         } else {
-          expect(tab.classList.contains("Mui-selected")).to.be.false;
+          expect(tab.classList.contains("Mui-selected")).to.equal(false);
           expect(getComputedStyle(tab).color).to.eq(contentColor);
         }
       });

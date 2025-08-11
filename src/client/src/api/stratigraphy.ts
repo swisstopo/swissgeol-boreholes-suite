@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { User } from "./apiInterfaces.ts";
-import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
+import { boreholeQueryKey, BoreholeV2, useReloadBoreholes } from "./borehole.ts";
 import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
 export interface StratigraphyLegacy {
@@ -181,15 +181,24 @@ export const useStratigraphiesByBoreholeId = (boreholeId?: number) =>
   });
 
 export const useStratigraphyMutations = () => {
+  const reloadStratigraphies = useReloadStratigraphies();
+  const reloadBoreholes = useReloadBoreholes();
+
   const useAddStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
       return await fetchApiV2WithApiError(stratigraphyController, "POST", stratigraphy);
+    },
+    onSuccess: (_data, stratigraphy) => {
+      reloadStratigraphies(Number(stratigraphy.boreholeId));
     },
   });
 
   const useCopyStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
       return await fetchApiV2WithApiError(`${stratigraphyController}/copy?id=${stratigraphy.id}`, "POST");
+    },
+    onSuccess: (_data, stratigraphy) => {
+      reloadStratigraphies(Number(stratigraphy.boreholeId));
     },
   });
 
@@ -201,11 +210,18 @@ export const useStratigraphyMutations = () => {
 
       return await fetchApiV2WithApiError(stratigraphyController, "PUT", stratigraphy);
     },
+    onSuccess: (_data, stratigraphy) => {
+      reloadStratigraphies(Number(stratigraphy.boreholeId));
+    },
   });
 
   const useDeleteStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
       return await fetchApiV2WithApiError(`${stratigraphyController}?id=${stratigraphy.id}`, "DELETE");
+    },
+    onSuccess: (_data, stratigraphy) => {
+      reloadStratigraphies(Number(stratigraphy.boreholeId));
+      reloadBoreholes();
     },
   });
 
