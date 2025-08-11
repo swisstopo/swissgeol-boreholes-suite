@@ -454,20 +454,22 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("approval", "Geometry");
       isUncheckedTabStatusBox("approval", "Borehole");
 
-      navigateInSidebar(SidebarMenuItem.stratigraphy);
-
-      // add new empty stratigraphy
-      addItem("addEmptyStratigraphy");
-      cy.wait([
-        "@stratigraphy_POST",
-        "@stratigraphy_by_borehole_GET",
-        "@stratigraphy_by_borehole_GET",
-        "@stratigraphy_GET",
-        "@get-layers-by-profileId",
-        "@lithological_description",
-        "@facies_description",
-        "@layer",
-      ]);
+      // TODO: Uncomment this when dev-flag is removed.
+      // navigateInSidebar(SidebarMenuItem.stratigraphy);
+      //
+      // // add new empty stratigraphy
+      // addItem("addEmptyStratigraphy");
+      // cy.wait([
+      //   "@stratigraphy_POST",
+      //   "@stratigraphy_by_borehole_GET",
+      //   "@stratigraphy_by_borehole_GET",
+      //   "@stratigraphy_GET",
+      //   "@get-layers-by-profileId",
+      //   "@lithological_description",
+      //   "@facies_description",
+      //   "@layer",
+      // ]);
+      // getElementByDataCy("stratigraphy-menu-item").should("have.attr", "reviewed", "false");
 
       // add new empty completion
       navigateInSidebar(SidebarMenuItem.completion);
@@ -476,27 +478,28 @@ describe("Tests the publication workflow.", () => {
       setSelect("kindId", 1);
       saveForm("completion-header");
 
-      getElementByDataCy("stratigraphy-menu-item").should("have.attr", "reviewed", "false");
       getElementByDataCy("completion-menu-item").should("have.attr", "reviewed", "false");
 
       // navigateInSidebar(SidebarMenuItem.status); TODO: use this method when workflow V1 is removed and navigatgeInSidebar is updated
       getElementByDataCy("status-menu-item").click();
 
       cy.get("sgc-tab").contains("Review").click();
-      isUncheckedTabStatusBox("review", "Stratigraphy");
-      isUncheckedTabStatusBox("review", "Lithology");
-      isUncheckedTabStatusBox("review", "Chronostratigraphy");
-      isUncheckedTabStatusBox("review", "Lithostratigraphy");
+      // TODO: Uncomment this when dev-flag is removed.
+      // isUnheckedTabStatusBox("review", "Stratigraphy");
+      // isUncheckedTabStatusBox("review", "Lithology");
+      // isUncheckedTabStatusBox("review", "Chronostratigraphy");
+      // isUncheckedTabStatusBox("review", "Lithostratigraphy");
       isUncheckedTabStatusBox("review", "Completion");
       isUncheckedTabStatusBox("review", "Casing");
       isUncheckedTabStatusBox("review", "Instrumentation");
       isUncheckedTabStatusBox("review", "Sealing/Backfilling");
 
       cy.get("sgc-tab").contains("Freigabe").click();
-      isUncheckedTabStatusBox("approval", "Stratigraphy");
-      isUncheckedTabStatusBox("approval", "Lithology");
-      isUncheckedTabStatusBox("approval", "Chronostratigraphy");
-      isUncheckedTabStatusBox("approval", "Lithostratigraphy");
+      // TODO: Uncomment this when dev-flag is removed.
+      // isCheckedTabStatusBox("approval", "Stratigraphy");
+      // isUncheckedTabStatusBox("approval", "Lithology");
+      // isUncheckedTabStatusBox("approval", "Chronostratigraphy");
+      // isUncheckedTabStatusBox("approval", "Lithostratigraphy");
       isUncheckedTabStatusBox("approval", "Completion");
       isUncheckedTabStatusBox("approval", "Casing");
       isUncheckedTabStatusBox("approval", "Instrumentation");
