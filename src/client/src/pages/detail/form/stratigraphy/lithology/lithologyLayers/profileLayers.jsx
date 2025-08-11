@@ -29,7 +29,7 @@ import {
   useLithoDescription,
 } from "../../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
-import { useResetTabStatus } from "../../../../../../hooks/useResetTabStatus.js";
+import { useResetTabStatus } from "../../../../../../hooks/useResetTabStatus.ts";
 import { createLayerApi, getData } from "./api";
 import DescriptionLayers from "./descriptionLayers/descriptionLayers.jsx";
 import ProfileLayersValidation from "./lithologyLayersValidation";
