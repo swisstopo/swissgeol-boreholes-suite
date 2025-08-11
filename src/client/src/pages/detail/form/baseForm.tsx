@@ -6,7 +6,7 @@ import { useBorehole, useBoreholeMutations } from "../../../api/borehole.ts";
 import { useFormDirtyChanges } from "../../../components/form/useFormDirtyChanges.tsx";
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
-import { useApiErrorAlert } from "../../../hooks/useShowAlertOnError.tsx";
+import { useResetTabStatus } from "../../../hooks/useResetTabStatus.tsx";
 import { useApiErrorAlert } from "../../../hooks/useShowAlertOnError.tsx";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
 import { SaveContext } from "../saveContext.tsx";
