@@ -7,14 +7,17 @@ import { useFormDirtyChanges } from "../../../components/form/useFormDirtyChange
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { useApiErrorAlert } from "../../../hooks/useShowAlertOnError.tsx";
+import { useApiErrorAlert } from "../../../hooks/useShowAlertOnError.tsx";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
 import { SaveContext } from "../saveContext.tsx";
+import { TabName } from "./workflow/workflow.ts";
 
 interface BaseFormProps<T extends FieldValues> {
   formMethods: UseFormReturn<T>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prepareDataForSubmit: (data: T) => Record<string, any>;
   onReset?: () => void;
+  tabStatusToReset: TabName;
   children: ReactNode;
 }
 
@@ -22,6 +25,7 @@ export const BaseForm = <T extends FieldValues>({
   formMethods,
   prepareDataForSubmit,
   onReset,
+  tabStatusToReset,
   children,
 }: BaseFormProps<T>) => {
   const { registerSaveHandler, registerResetHandler, unMount } = useContext(SaveContext);
@@ -31,6 +35,7 @@ export const BaseForm = <T extends FieldValues>({
   const {
     update: { mutate: updateBorehole },
   } = useBoreholeMutations();
+  const resetTabStatus = useResetTabStatus([tabStatusToReset]);
   const { getValues, reset, formState } = formMethods;
   useBlockNavigation();
   useFormDirtyChanges({ formState });
@@ -63,8 +68,9 @@ export const BaseForm = <T extends FieldValues>({
     const currentValues = getValues();
     reset(currentValues);
     setExtractionObject(undefined);
+    resetTabStatus();
     return await onSubmit(currentValues);
-  }, [getValues, onSubmit, reset, setExtractionObject]);
+  }, [getValues, onSubmit, reset, resetTabStatus, setExtractionObject]);
 
   const resetWithoutSave = useCallback(() => {
     reset();

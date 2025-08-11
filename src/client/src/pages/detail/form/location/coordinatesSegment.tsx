@@ -214,7 +214,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   };
 
   // Resets the form and updates the reference system.
-  const resetCoordinatesOnReferenceSystemChange = (e: number | boolean | null) => {
+  const resetCoordinatesOnReferenceSystemChange = (e: number | string | boolean | null) => {
     if (typeof e !== "number") return;
     const areCoordinatesSet = Object.keys(FieldNameDirectionKeys).some(field =>
       formMethods.getValues(field as keyof LocationFormInputs),

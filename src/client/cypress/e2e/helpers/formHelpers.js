@@ -197,19 +197,6 @@ export const evaluateSelect = (fieldName, expectedText, parent = null, editable 
 };
 
 /**
- * Evaluates the state of a MUI Textfield of type select.
- * @param {string} fieldName The name of the select field.
- * @param {string / null} expectedText The text that should be displayed in the select.
- */
-export const evaluateSelectTextfield = (fieldName, expectedText) => {
-  if (expectedText === null) {
-    cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiSelect-nativeInput").should("be.empty");
-  } else {
-    cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiSelect-select").should("have.text", expectedText);
-  }
-};
-
-/**
  * Sets the value for a multi-select form element.
  * @param {string} fieldName The name of the select field.
  * @param {number[]} indices The indices of the options to select.

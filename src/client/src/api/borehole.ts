@@ -14,6 +14,7 @@ import { download, fetchApiV2, upload } from "./fetchApiV2.ts";
 import { BoreholeFile } from "./file/fileInterfaces.ts";
 import { Section } from "./section.ts";
 import { Stratigraphy, StratigraphyLegacy } from "./stratigraphy.ts";
+import { useCurrentUser } from "./user.ts";
 
 export interface BasicIdentifier {
   boreholeId: number;
@@ -137,6 +138,9 @@ export const updateBorehole = async (borehole: BoreholeV2) => {
 };
 export const deleteBorehole = async (id: number) => await fetchApiV2(`borehole?id=${id}`, "DELETE");
 
+export const canUserEditBorehole = async (id: number) =>
+  await fetchApiV2(`permissions/canedit?boreholeId=${id}`, "GET");
+
 export const boreholeQueryKey = "boreholes";
 
 export const useBorehole = (id: number) => {
@@ -144,6 +148,20 @@ export const useBorehole = (id: number) => {
     queryKey: [boreholeQueryKey, id],
     queryFn: async () => {
       return await fetchBoreholeById(id);
+    },
+    enabled: !!id,
+  });
+
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
+
+export const useBoreholeEditable = (id: number) => {
+  const { data: currentUser } = useCurrentUser();
+  const query = useQuery({
+    queryKey: ["caneditBorehole", currentUser?.id, id],
+    queryFn: async () => {
+      return await canUserEditBorehole(id);
     },
     enabled: !!id,
   });

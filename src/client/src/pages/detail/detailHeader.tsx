@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Check, Trash2, X } from "lucide-react";
-import { BoreholeV2, useBoreholeMutations, useReloadBoreholes } from "../../api/borehole.ts";
+import { BoreholeV2, useBoreholeEditable, useBoreholeMutations, useReloadBoreholes } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import {
@@ -18,21 +18,23 @@ import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useDevMode } from "../../hooks/useDevMode.tsx";
 import { useApiErrorAlert } from "../../hooks/useShowAlertOnError.tsx";
+import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { formatDate } from "../../utils.ts";
 import { EditStateContext } from "./editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 import { StatusBadges } from "./statusBadges.tsx";
 
 interface DetailHeaderProps {
-  editableByCurrentUser: boolean;
   borehole: BoreholeV2;
 }
 
-const DetailHeader = ({ editableByCurrentUser, borehole }: DetailHeaderProps) => {
+const DetailHeader = ({ borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
+  const { id } = useRequiredParams<{ id: string }>();
   const { navigateTo } = useBoreholesNavigate();
   const { runsDevMode } = useDevMode();
   const { data: currentUser } = useCurrentUser();
+  const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(id));
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);

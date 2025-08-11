@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Boreholes that were locked by any user could not be edited by others, including administrators, even after lock timeout expiration.
+
 ## v2.1.1266 - 2025-07-22
 
 ### Changed

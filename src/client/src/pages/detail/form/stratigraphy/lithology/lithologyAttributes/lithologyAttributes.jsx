@@ -8,9 +8,10 @@ import { DevTool } from "../../../../../../../hookformDevtools.js";
 import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../../api/stratigraphy.ts";
 import { CancelButton, SaveButton } from "../../../../../../components/buttons/buttons.js";
 import { useCodelists } from "../../../../../../components/codelist.ts";
-import { DataCardButtonContainer } from "../../../../../../components/dataCard/dataCard.js";
-import { parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.js";
+import { DataCardButtonContainer } from "../../../../../../components/dataCard/dataCard.tsx";
+import { parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.js";
+import { useResetTabStatus } from "../../../../../../hooks/useResetTabStatus.ts";
 import LithologyLayerForm from "./lithologyAttributeList/lithologyLayerForm.jsx";
 
 const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => {
@@ -21,6 +22,7 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
   const queryClient = useQueryClient();
   const { showPrompt } = useContext(PromptContext);
   const { data: codelists } = useCodelists();
+  const resetTabStatus = useResetTabStatus(["lithology"]);
 
   const getDefaultValues = useCallback(
     layer => {
@@ -69,6 +71,7 @@ const LithologyAttributes = ({ data, id, setSelectedLayer, setReloadLayer }) => 
   const isFormDirty = formMethods.formState.isDirty;
 
   const onSave = () => {
+    resetTabStatus();
     formMethods.handleSubmit(updateChange)();
     setSelectedLayer(null);
   };

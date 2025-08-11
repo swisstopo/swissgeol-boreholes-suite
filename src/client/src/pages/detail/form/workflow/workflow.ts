@@ -24,10 +24,13 @@ export interface WorkflowChange extends Omit<SwissgeolWorkflowChange, "createdAt
   createdAt: LocalDate | string;
 }
 
+export type TabName = Exclude<keyof TabStatus, "id">;
+
 export interface TabStatus {
   id: number;
   general: boolean;
-  section: boolean;
+  location: boolean;
+  sections: boolean;
   geometry: boolean;
   lithology: boolean;
   chronostratigraphy: boolean;
@@ -36,11 +39,12 @@ export interface TabStatus {
   instrumentation: boolean;
   backfill: boolean;
   waterIngress: boolean;
-  groundwater: boolean;
+  groundwaterLevelMeasurement: boolean;
   fieldMeasurement: boolean;
   hydrotest: boolean;
-  profile: boolean;
-  photo: boolean;
+  profiles: boolean;
+  photos: boolean;
+  documents: boolean;
 }
 
 export interface WorkflowChangeRequest {

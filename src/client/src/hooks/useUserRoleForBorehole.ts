@@ -54,6 +54,7 @@ export const useUserRoleForBorehole = (): {
   };
 
   const canUserEditBorehole = (user: User, borehole: BoreholeV2): boolean => {
+    // Todo move check to backend once legacy workflow is removed
     if (!borehole.workflow) return false;
     const requiredRole = WorkflowStatusRoleMap[borehole.workflow.status];
     if (requiredRole === null) return false;

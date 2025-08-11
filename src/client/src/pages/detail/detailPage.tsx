@@ -1,8 +1,5 @@
-import { FC, Suspense, useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { FC, Suspense, useContext, useEffect } from "react";
 import { Box, CircularProgress, Stack } from "@mui/material";
-import { Workflow } from "../../api-lib/ReduxStateInterfaces.ts";
-import { Role } from "../../api/apiInterfaces.ts";
 import { useBorehole } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
@@ -20,8 +17,6 @@ import { SaveBar } from "./saveBar";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 export const DetailPage: FC = () => {
-  const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
-  const location = useLocation();
   const { panelPosition, panelOpen, togglePanel } = useLabelingContext();
   const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);
   const { showSaveBar } = useContext<SaveContextProps>(SaveContext);
@@ -34,31 +29,6 @@ export const DetailPage: FC = () => {
     setEditingEnabled(borehole?.locked !== null && borehole?.lockedById === currentUser?.id);
   }, [borehole?.locked, borehole?.lockedById, setEditingEnabled, currentUser?.id]);
 
-  useEffect(() => {
-    if (borehole?.locked && borehole?.lockedById !== currentUser?.id) {
-      setEditableByCurrentUser(false);
-      return;
-    }
-    const userRolesOnBorehole =
-      currentUser?.workgroupRoles?.filter(w => w.workgroupId === borehole?.workgroupId).map(r => r.role) ?? [];
-    const currentBoreholeStatus = borehole?.workflows.sort((a: Workflow, b: Workflow) => a.id - b.id)[
-      borehole?.workflows.length - 1
-    ].role;
-    const userRoleMatches = userRolesOnBorehole?.includes(currentBoreholeStatus);
-    const isStatusPage = location.pathname.endsWith("/status");
-    const isBoreholeInEditWorkflow = currentBoreholeStatus === Role.Editor;
-
-    // Todo : Adapt to new workflowV2 once implemented
-    setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
-  }, [
-    borehole?.locked,
-    borehole?.lockedById,
-    borehole?.workflows,
-    borehole?.workgroupId,
-    currentUser,
-    location.pathname,
-  ]);
-
   if (isLoading || !borehole)
     return (
       <Stack height="100%" alignItems="center" justifyContent="center">
@@ -68,7 +38,7 @@ export const DetailPage: FC = () => {
 
   return (
     <>
-      <DetailHeader borehole={borehole} editableByCurrentUser={editableByCurrentUser} />
+      <DetailHeader borehole={borehole} />
       <LayoutBox>
         <SidebarBox>
           <DetailSideNav borehole={borehole} />

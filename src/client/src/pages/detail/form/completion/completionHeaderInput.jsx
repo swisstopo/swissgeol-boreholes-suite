@@ -13,7 +13,8 @@ import {
 } from "../../../../components/form/form";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import { FullPageCentered } from "../../../../components/styledComponents.js";
+import { FullPageCentered } from "../../../../components/styledComponents.ts";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { completionSchemaConstants } from "./completionSchemaConstants.js";
 
 const CompletionHeaderInput = props => {
@@ -22,6 +23,7 @@ const CompletionHeaderInput = props => {
   const formMethods = useForm({ mode: "all" });
   const { t } = useTranslation();
   const { data: schemaData, isLoading } = useCodelistSchema(completionSchemaConstants.completionKind);
+  const resetTabStatus = useResetTabStatus(["casing", "instrumentation", "backfill"]);
 
   const [selectedCompletion, setSelectedCompletion] = useState({
     ...completion,
@@ -145,6 +147,7 @@ const CompletionHeaderInput = props => {
                 cancelChanges();
               }}
               onSave={() => {
+                resetTabStatus();
                 formMethods.handleSubmit(submitForm)();
               }}
               saveDisabled={!formMethods.formState.isValid}
