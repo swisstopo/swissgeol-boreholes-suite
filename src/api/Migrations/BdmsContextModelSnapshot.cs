@@ -1920,11 +1920,11 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("borehole_id");
 
-                    b.Property<DateTime?>("Creation")
+                    b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation");
 
-                    b.Property<int?>("Creator")
+                    b.Property<int?>("CreatedById")
                         .HasColumnType("integer")
                         .HasColumnName("creator");
 
@@ -1941,11 +1941,11 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<DateTime?>("Update")
+                    b.Property<DateTime?>("Updated")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("update");
 
-                    b.Property<int?>("Updater")
+                    b.Property<int?>("UpdatedById")
                         .HasColumnType("integer")
                         .HasColumnName("updater");
 
