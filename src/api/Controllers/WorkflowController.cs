@@ -34,7 +34,7 @@ public class WorkflowController : ControllerBase
     {
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var workflow = await context.WorkflowsWithIncludes.SingleOrDefaultAsync(i => i.BoreholeId == boreholeId).ConfigureAwait(false);
+        var workflow = await context.WorkflowWithIncludes.SingleOrDefaultAsync(i => i.BoreholeId == boreholeId).ConfigureAwait(false);
         if (workflow == null) return NotFound();
 
         return Ok(workflow);
@@ -70,7 +70,7 @@ public class WorkflowController : ControllerBase
             return Unauthorized();
         }
 
-        var workflow = await context.WorkflowsWithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == workflowChangeRequest.BoreholeId).ConfigureAwait(false);
+        var workflow = await context.WorkflowWithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == workflowChangeRequest.BoreholeId).ConfigureAwait(false);
         if (workflow == null)
         {
             var workflowNotFoundMessage = $"Workflow for borehole with {workflowChangeRequest.BoreholeId} not found.";
@@ -140,7 +140,7 @@ public class WorkflowController : ControllerBase
 
         if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, request.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var workflow = await context.WorkflowsWithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == request.BoreholeId).ConfigureAwait(false);
+        var workflow = await context.WorkflowWithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == request.BoreholeId).ConfigureAwait(false);
         if (workflow == null)
         {
             var workflowNotFoundMessage = $"Workflow for borehole with {request.BoreholeId} not found.";

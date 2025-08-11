@@ -11,7 +11,7 @@ public class Workflow : IIdentifyable
 {
     /// <inheritdoc />
     [Key]
-    [Column("workflow_id")]
+    [Column("id")]
     public int Id { get; set; }
 
     /// <summary>

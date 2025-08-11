@@ -108,7 +108,7 @@ public class BdmsContext : DbContext
 
     public DbSet<Workflow> Workflows { get; set; }
 
-    public IQueryable<Workflow> WorkflowsWithIncludes
+    public IQueryable<Workflow> WorkflowWithIncludes
         => Workflows
         .Include(w => w.Changes).ThenInclude(wc => wc.CreatedBy)
         .Include(w => w.Changes).ThenInclude(wc => wc.Assignee)
