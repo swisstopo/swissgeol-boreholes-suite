@@ -40,16 +40,16 @@ const activeColor = "rgb(166, 84, 98)";
 export const checkTabsByTitles = (tabs, parent) => {
   const selector = createBaseSelector(parent) + `.MuiTabs-list`;
   cy.get(selector)
-    .find('.MuiTab-root')
+    .find(".MuiTab-root")
     .should($tabs => {
       expect($tabs).to.have.length(tabs.length);
       $tabs.each((i, tab) => {
         expect(tab).to.have.text(tabs[i].title);
         if (tabs[i].active) {
-          expect(tab.classList.contains('Mui-selected')).to.be.true;
+          expect(tab.classList.contains("Mui-selected")).to.be.true;
           expect(getComputedStyle(tab).color).to.eq(activeColor);
         } else {
-          expect(tab.classList.contains('Mui-selected')).to.be.false;
+          expect(tab.classList.contains("Mui-selected")).to.be.false;
           expect(getComputedStyle(tab).color).to.eq(contentColor);
         }
       });
