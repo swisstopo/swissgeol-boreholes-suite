@@ -1,4 +1,11 @@
-import { addStratigraphy, saveForm, saveWithSaveBar, verifyUnsavedChanges } from "../helpers/buttonHelpers";
+import {
+  addStratigraphy,
+  discardChanges,
+  saveForm,
+  saveWithSaveBar,
+  verifyNoUnsavedChanges,
+  verifyUnsavedChanges,
+} from "../helpers/buttonHelpers";
 import {
   evaluateCheckbox,
   evaluateInput,
@@ -245,6 +252,43 @@ describe("Tests for stratigraphy", () => {
           cy.contains("button", "Extract stratigraphy from profile").should("be.visible").and("be.disabled");
         });
       });
+    });
+  });
+
+  it("can reset changes in stratigraphy form", () => {
+    createBorehole("SILVERBIRD").as("borehole_id");
+    cy.get("@borehole_id").then(boreholeId => {
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
+      cy.wait("@stratigraphyV2_by_borehole_GET");
+      startBoreholeEditing();
+
+      // Can reset new stratigraphy with changes
+      getElementByDataCy("addemptystratigraphy-button").click();
+      cy.location().should(location => {
+        expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
+      });
+      verifyNoUnsavedChanges();
+      setInput("name", "Reset Stratigraphy");
+      discardChanges();
+      cy.location().should(location => {
+        expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy`);
+      });
+
+      // Can reset existing stratigraphy with changes
+      getElementByDataCy("addemptystratigraphy-button").click();
+      cy.location().should(location => {
+        expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
+      });
+      setInput("name", "CHESSCLUSTER");
+      saveForm();
+      cy.wait(["@stratigraphyV2_POST", "@stratigraphyV2_by_borehole_GET"]);
+      getElementByDataCy("stratigraphy-header").contains("CHESSCLUSTER").should("exist");
+      verifyNoUnsavedChanges();
+      setInput("name", "DISHMUTANT");
+      verifyUnsavedChanges();
+      discardChanges();
+      evaluateInput("name", "CHESSCLUSTER");
+      getElementByDataCy("stratigraphy-header").contains("CHESSCLUSTER").should("exist");
     });
   });
 
