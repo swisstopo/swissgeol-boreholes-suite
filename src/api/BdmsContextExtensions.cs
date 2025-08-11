@@ -1098,7 +1098,7 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.lithological_description', 'id_ldp'), {lithologicalDescription_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.facies_description', 'id_fac'), {faciesDescription_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.tab_status', 'tab_status_id'), {tabStatus_ids - 1})");
-        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow', 'workflow_id'), {workflow_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow', 'id'), {workflow_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_change', 'workflow_change_id'), {workflowChange_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.document', 'id'), {document_ids - 1})");
     }
