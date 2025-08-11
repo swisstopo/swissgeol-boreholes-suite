@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Codelist } from "../components/codelist.ts";
+import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import store from "../reducers";
 import {
   ApiError,
@@ -172,11 +173,14 @@ export const getBoreholeGeometryFormats = async (): Promise<GeometryFormat[]> =>
 
 export const useBoreholeGeometryMutations = () => {
   const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["geometry"]);
+
   const useSetBoreholeGeometry = useMutation({
     mutationFn: async ({ boreholeId, formData }: { boreholeId: number; formData: FormData }) => {
       return await upload(`boreholegeometry?boreholeId=${boreholeId}`, "POST", formData);
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [geometryQueryKey],
       });
@@ -187,6 +191,7 @@ export const useBoreholeGeometryMutations = () => {
       return await fetchApiV2(`boreholegeometry?boreholeId=${boreholeId}`, "DELETE");
     },
     onSuccess: () => {
+      resetTabStatus();
       queryClient.invalidateQueries({
         queryKey: [geometryQueryKey],
       });
