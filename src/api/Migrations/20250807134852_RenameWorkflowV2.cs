@@ -98,7 +98,7 @@ public partial class RenameWorkflowV2 : Migration
             name: "FK_workflow_change_workflow_id",
             schema: "bdms",
             table: "workflow_change",
-            column: "id",
+            column: "workflow_id",
             principalSchema: "bdms",
             principalTable: "workflow",
             principalColumn: "id",
