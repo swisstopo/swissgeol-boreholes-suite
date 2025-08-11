@@ -48,7 +48,8 @@ export const StratigraphyPanel: FC = () => {
   const reloadBoreholes = useReloadBoreholes();
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
-  const { registerSaveHandler, registerResetHandler, unMount } = useContext<SaveContextProps>(SaveContext);
+  const { markAsChanged, registerSaveHandler, registerResetHandler, unMount } =
+    useContext<SaveContextProps>(SaveContext);
   useBlockNavigation();
   const formMethods = useForm<Stratigraphy>({ mode: "all" });
   const { formState, getValues } = formMethods;
@@ -182,7 +183,7 @@ export const StratigraphyPanel: FC = () => {
     }
   }, [boreholeId, copyStratigraphy, reloadStratigraphies, selectedStratigraphy]);
 
-  const resetWithoutSave = useCallback(() => {
+  const resetForm = useCallback(() => {
     if (selectedStratigraphy) {
       formMethods.reset({
         ...selectedStratigraphy,
@@ -190,6 +191,20 @@ export const StratigraphyPanel: FC = () => {
       });
     }
   }, [formMethods, selectedStratigraphy]);
+
+  const resetWithoutSave = useCallback(() => {
+    if (selectedStratigraphy) {
+      if (selectedStratigraphy.id === 0) {
+        //markAsChanged(false);
+        navigateTo({
+          path: `/${boreholeId}/stratigraphy`,
+          replace: true,
+        });
+      } else {
+        resetForm();
+      }
+    }
+  }, [boreholeId, markAsChanged, navigateTo, resetForm, selectedStratigraphy]);
 
   const handleSaveError = useCallback(
     (error: Error) => {
@@ -281,8 +296,8 @@ export const StratigraphyPanel: FC = () => {
   }, [registerResetHandler, registerSaveHandler, resetWithoutSave, onSave, unMount]);
 
   useEffect(() => {
-    resetWithoutSave();
-  }, [resetWithoutSave]);
+    resetForm();
+  }, [resetForm]);
 
   if (!sortedStratigraphies) {
     return (
