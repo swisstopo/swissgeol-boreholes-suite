@@ -11,6 +11,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class UserController : ControllerBase
 {
+    private readonly IBoreholePermissionService boreholePermissionService;
     private readonly BdmsContext context;
     private ILogger<UserController> logger;
 
@@ -19,10 +20,12 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="context">The EF database context containing data for the BDMS application.</param>
     /// <param name="logger">The logger used by the controller.</param>
-    public UserController(BdmsContext context, ILogger<UserController> logger)
+    /// <param name="boreholePermissionService">The service for checking borehole permissions.</param>
+    public UserController(BdmsContext context, ILogger<UserController> logger, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
         this.logger = logger;
+        this.boreholePermissionService = boreholePermissionService;
     }
 
     /// <summary>
@@ -77,6 +80,42 @@ public class UserController : ControllerBase
         }
 
         return users;
+    }
+
+    /// <summary>
+    /// Gets editor users for the provided workgroupId.
+    /// </summary>
+    [HttpGet("editorsOnWorkgroup/{workgroupId}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns a list editor users for the provided workgroupId.")]
+    public async Task<ActionResult<IEnumerable<WorkgroupEditor>>> GetWorkgroupEditors(int workgroupId)
+    {
+        var subjectId = HttpContext.GetUserSubjectId();
+
+        if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, workgroupId, Role.Editor).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        var allUsersWithRoleOnWorkgroup = await context
+            .UsersWithIncludes
+            .AsNoTracking()
+            .Where(u => u.WorkgroupRoles.Any(r => r.WorkgroupId == workgroupId))
+            .OrderBy(x => x.Name)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var editorUsers = new List<WorkgroupEditor>();
+
+        foreach (var user in allUsersWithRoleOnWorkgroup)
+        {
+            if (await boreholePermissionService.HasUserRoleOnWorkgroupAsync(user.SubjectId, workgroupId, Role.Editor).ConfigureAwait(false))
+            {
+                editorUsers.Add(new WorkgroupEditor(user));
+            }
+        }
+
+        return editorUsers;
     }
 
     /// <summary>

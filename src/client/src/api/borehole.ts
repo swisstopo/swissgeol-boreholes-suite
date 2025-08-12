@@ -153,10 +153,11 @@ export const useBorehole = (id: number) => {
   return query;
 };
 
+export const canEditQueryKey = "canEditBorehole";
 export const useBoreholeEditable = (id: number) => {
   const { data: currentUser } = useCurrentUser();
   const query = useQuery({
-    queryKey: ["caneditBorehole", currentUser?.id, id],
+    queryKey: [canEditQueryKey, currentUser?.id, id],
     queryFn: async () => {
       return await canUserEditBorehole(id);
     },
