@@ -164,7 +164,7 @@ public class UserControllerTest
 
         foreach (var user in users)
         {
-            // Assert unnecessary data is not retured
+            // Assert unnecessary data is not returned
             Assert.AreEqual("", user.SubjectId);
             Assert.AreEqual("", user.Email);
             Assert.IsNull(user.CreatedAt);
