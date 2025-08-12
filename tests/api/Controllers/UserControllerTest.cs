@@ -175,7 +175,6 @@ public class UserControllerTest
             Assert.IsNull(user.Settings);
             Assert.IsFalse(user.TermsAccepted.Any());
             Assert.IsTrue(user.WorkgroupRoles.Any(r => r.WorkgroupId == workgroupId));
-
         }
     }
 }
