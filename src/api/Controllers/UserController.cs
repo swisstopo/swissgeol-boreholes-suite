@@ -88,7 +88,7 @@ public class UserController : ControllerBase
     [HttpGet("editorsOnWorkgroup/{workgroupId}")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [SwaggerResponse(StatusCodes.Status200OK, "Returns a list editor users for the provided workgroupId.")]
-    public async Task<ActionResult<IEnumerable<User>>> GetAllWithEditorPrivilegeOnWorkgroup(int workgroupId)
+    public async Task<ActionResult<IEnumerable<User>>> GetWorkgroupEditors(int workgroupId)
     {
         var subjectId = HttpContext.GetUserSubjectId();
 

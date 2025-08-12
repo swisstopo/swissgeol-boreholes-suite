@@ -13,8 +13,8 @@ public class UserControllerTest
     private BdmsContext context;
     private UserController userController;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
-    private int workgroupId = 1;
-    private string viewerSubjectId = "sub_viewer";
+    private readonly int workgroupId = 1;
+    private readonly string viewerSubjectId = "sub_viewer";
 
     [TestInitialize]
     public void TestInitialize()
@@ -147,7 +147,7 @@ public class UserControllerTest
     public async Task GetAllWithEditorPrivilegeOnWorkgroupUnauthorized()
     {
         var workgroupIdNotBelongingToUser = 64598765;
-        var result = await userController.GetAllWithEditorPrivilegeOnWorkgroup(workgroupIdNotBelongingToUser);
+        var result = await userController.GetWorkgroupEditors(workgroupIdNotBelongingToUser);
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
@@ -155,7 +155,7 @@ public class UserControllerTest
     [TestMethod]
     public async Task GetAllWithEditorPrivilegeOnWorkgroupReturnsEditors()
     {
-        var result = await userController.GetAllWithEditorPrivilegeOnWorkgroup(workgroupId);
+        var result = await userController.GetWorkgroupEditors(workgroupId);
         var users = result.Value;
 
         Assert.IsNotNull(users);
