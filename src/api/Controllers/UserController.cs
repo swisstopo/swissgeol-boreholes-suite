@@ -11,9 +11,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class UserController : ControllerBase
 {
+    private readonly IBoreholePermissionService boreholePermissionService;
     private readonly BdmsContext context;
     private ILogger<UserController> logger;
-    private IBoreholePermissionService boreholePermissionService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UserController"/> class.

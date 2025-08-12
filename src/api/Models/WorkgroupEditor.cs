@@ -26,7 +26,7 @@ public class WorkgroupEditor : IIdentifyable
     /// <summary>
     /// Gets the WorkgroupRoles.
     /// </summary>
-    public ICollection<UserWorkgroupRole> WorkgroupRoles { get; } = new List<UserWorkgroupRole>();
+    public ICollection<UserWorkgroupRole> WorkgroupRoles { get; }
 
     public WorkgroupEditor(User user)
     {
