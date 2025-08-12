@@ -7,7 +7,7 @@ import { GroundwaterLevelMeasurement } from "../../pages/detail/form/hydrogeolog
 import { Hydrotest } from "../../pages/detail/form/hydrogeology/hydrotest/Hydrotest.ts";
 import { WaterIngress } from "../../pages/detail/form/hydrogeology/waterIngress/WaterIngress.ts";
 import { AddButton } from "../buttons/buttons.tsx";
-import { FullPage, FullPageCentered } from "../styledComponents.ts";
+import { FullPage, FullPageAlignLeft, FullPageCentered } from "../styledComponents.ts";
 import { DataCard, DataCardButtonContainer, DataCardContainer, DataCardItem } from "./dataCard.js";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext.js";
 
@@ -154,9 +154,9 @@ export const DataCards = <T extends DataCardEntity>({
         // eslint-disable-next-line react/no-children-prop
         <MemoizedDataCardsContainer children={renderCards} />
       ) : (
-        <FullPageCentered>
-          <Typography variant="fullPageMessage">{t(emptyLabel)}</Typography>
-        </FullPageCentered>
+        <FullPageAlignLeft>
+          <Typography>{`${t(emptyLabel)}...`}</Typography>
+        </FullPageAlignLeft>
       )}
     </FullPage>
   );

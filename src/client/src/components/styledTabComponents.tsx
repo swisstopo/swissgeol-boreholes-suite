@@ -8,7 +8,6 @@ export const BoreholeTabContentBox = styled(Box)(() => ({
   padding: `${theme.spacing(3)}`,
   display: "flex",
   flexDirection: "column",
-  minHeight: "92px",
 }));
 
 export const BoreholeTabs = styled(Tabs)({
