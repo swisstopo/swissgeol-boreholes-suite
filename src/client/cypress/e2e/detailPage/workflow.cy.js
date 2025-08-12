@@ -22,6 +22,7 @@ import {
   dropGeometryCSVFile,
   getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
+  loginAsEditor,
   selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
@@ -528,6 +529,23 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("approval", "Profiles");
       isCheckedTabStatusBox("approval", "Photos");
       isCheckedTabStatusBox("approval", "Documents");
+    });
+  });
+
+  it("Editor can request review and is redirected", () => {
+    createBorehole({
+      originalName: "Cormoran Cellar",
+    }).as("borehole_id");
+    loginAsEditor();
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      requestReviewFromValidator();
+      cy.get(".MuiAlert-message").contains(
+        "The status of the borehole was changed. You no longer have permission to edit the borehole.",
+      );
+      cy.location().should(location => {
+        expect(location.pathname).to.eq("/location");
+      });
     });
   });
 });

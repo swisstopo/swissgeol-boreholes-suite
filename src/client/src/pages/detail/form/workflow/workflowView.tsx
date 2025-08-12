@@ -99,7 +99,7 @@ export const WorkflowView = () => {
 
   if (!editableByCurrentUser) {
     showAlert(t("boreholeStatusChangedNoMorePermissions"), "success");
-    navigateTo({ path: "/" + boreholeId });
+    navigateTo({ path: "/" + boreholeId + "/location" });
   }
 
   if (!workflow || !currentUser || !availableAssignees) return null;
