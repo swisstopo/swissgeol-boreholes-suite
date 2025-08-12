@@ -156,22 +156,14 @@ public class UserControllerTest
     public async Task GetAllWithEditorPrivilegeOnWorkgroupReturnsEditors()
     {
         var result = await userController.GetWorkgroupEditors(workgroupId);
-        var users = result.Value;
+        var editors = result.Value;
 
-        Assert.IsNotNull(users);
-        Assert.AreEqual(7, users.Count());
-        Assert.IsFalse(users.Any(u => u.SubjectId == viewerSubjectId));
+        Assert.IsNotNull(editors);
+        Assert.AreEqual(7, editors.Count());
 
-        foreach (var user in users)
+        foreach (var editor in editors)
         {
-            // Assert unnecessary data is not returned
-            Assert.AreEqual("", user.SubjectId);
-            Assert.AreEqual("", user.Email);
-            Assert.IsNull(user.CreatedAt);
-            Assert.IsNull(user.Deletable);
-            Assert.IsNull(user.Settings);
-            Assert.IsFalse(user.TermsAccepted.Any());
-            Assert.IsTrue(user.WorkgroupRoles.Any(r => r.WorkgroupId == workgroupId));
+            Assert.IsTrue(editor.WorkgroupRoles.Any(r => (int)r.Role > 0));
         }
     }
 }

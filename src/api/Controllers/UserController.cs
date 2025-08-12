@@ -88,7 +88,7 @@ public class UserController : ControllerBase
     [HttpGet("editorsOnWorkgroup/{workgroupId}")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [SwaggerResponse(StatusCodes.Status200OK, "Returns a list editor users for the provided workgroupId.")]
-    public async Task<ActionResult<IEnumerable<User>>> GetWorkgroupEditors(int workgroupId)
+    public async Task<ActionResult<IEnumerable<WorkgroupEditor>>> GetWorkgroupEditors(int workgroupId)
     {
         var subjectId = HttpContext.GetUserSubjectId();
 
@@ -105,21 +105,13 @@ public class UserController : ControllerBase
             .ToListAsync()
             .ConfigureAwait(false);
 
-        var editorUsers = new List<User>();
+        var editorUsers = new List<WorkgroupEditor>();
 
         foreach (var user in allUsersWithRoleOnWorkgroup)
         {
             if (await boreholePermissionService.HasUserRoleOnWorkgroupAsync(user.SubjectId, workgroupId, Role.Editor).ConfigureAwait(false))
             {
-                // Remove all non-essential properties
-                user.Email = "";
-                user.SubjectId = "";
-                user.CreatedAt = null;
-                user.Deletable = null;
-                user.Settings = null;
-                user.DisabledAt = null;
-                user.TermsAccepted.Clear();
-                editorUsers.Add(user);
+                editorUsers.Add(new WorkgroupEditor(user));
             }
         }
 
