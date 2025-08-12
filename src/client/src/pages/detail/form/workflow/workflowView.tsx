@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
 import {
@@ -41,6 +41,13 @@ export const WorkflowView = () => {
     updateWorkflow: { mutate: updateWorkflow },
     updateTabStatus: { mutate: updateTabStatus },
   } = useWorkflowMutation();
+
+  useEffect(() => {
+    if (!editableByCurrentUser) {
+      showAlert(t("boreholeStatusChangedNoMorePermissions"), "success");
+      navigateTo({ path: "/" + boreholeId + "/location" });
+    }
+  }, [editableByCurrentUser, showAlert, navigateTo, t, boreholeId]);
 
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
     const field = (name: string) => ({
@@ -96,11 +103,6 @@ export const WorkflowView = () => {
     ...user,
     role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role)),
   }));
-
-  if (!editableByCurrentUser) {
-    showAlert(t("boreholeStatusChangedNoMorePermissions"), "success");
-    navigateTo({ path: "/" + boreholeId + "/location" });
-  }
 
   if (!workflow || !currentUser || !availableAssignees) return null;
 
