@@ -3,8 +3,11 @@
 /// <summary>
 /// Represents a <see cref="User"/> with only minimal information, to be returned from a <see cref="BDMS.Controllers.UserController.GetWorkgroupEditors"/> request.
 /// </summary>
-public class WorkgroupEditor
+public class WorkgroupEditor : IIdentifyable
 {
+    /// <inheritdoc />
+    public int Id { get; set; }
+
     /// <summary>
     /// Gets or sets the <see cref="WorkgroupEditor"/>s name.
     /// </summary>
@@ -27,6 +30,7 @@ public class WorkgroupEditor
 
     public WorkgroupEditor(User user)
     {
+        Id = user.Id;
         Name = user.Name;
         FirstName = user.FirstName;
         LastName = user.LastName;
