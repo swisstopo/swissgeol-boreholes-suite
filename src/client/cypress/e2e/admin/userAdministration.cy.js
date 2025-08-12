@@ -10,18 +10,10 @@ import {
   waitForTableData,
 } from "../helpers/dataGridHelpers.js";
 import { setSelect } from "../helpers/formHelpers.js";
-import {
-  getElementByDataCy,
-  goToRouteAndAcceptTerms,
-  handlePrompt,
-  loginAsAdmin,
-  loginAsEditor,
-} from "../helpers/testHelpers.js";
+import { getElementByDataCy, goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers.js";
 
 describe("User administration settings tests", () => {
   it("displays, sorts and filters user table and shows user detail.", () => {
-    loginAsEditor();
-    loginAsAdmin();
     goToRouteAndAcceptTerms("/setting#users");
     waitForTableData();
     cy.wait("@get-user");

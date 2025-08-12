@@ -39,6 +39,7 @@ describe("User administration settings tests", () => {
 
     // navigate away and check if sorting is still applied
     getElementByDataCy("users-tab").click();
+    cy.contains("user_that_can");
     getElementByDataCy("workgroups-tab").click();
     verifyRowContains("World", 0);
     verifyRowContains("Stage And Screen", 1);
@@ -150,7 +151,7 @@ describe("User administration settings tests", () => {
 
     // Add  two users to workgroup
     getElementByDataCy("adduser-button").click();
-    setSelect("user", 2); // "editor user";
+    setSelect("user", 1); // "editor user";
     setSelect("role", 0); // "Viewer";
     getElementByDataCy("add-button").click();
 
