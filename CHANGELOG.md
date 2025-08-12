@@ -7,6 +7,7 @@
 
 ### Fixed
 - Boreholes that were locked by any user could not be edited by others, including administrators, even after lock timeout expiration.
+- There was an overflow issue in UI of the borehole detail view in the tabs _borehole_ and _completion_.
 
 ## v2.1.1266 - 2025-07-22
 
