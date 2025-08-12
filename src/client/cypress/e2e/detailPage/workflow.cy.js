@@ -539,7 +539,11 @@ describe("Tests the publication workflow.", () => {
     loginAsEditor();
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
-      requestReviewFromValidator();
+      clickSgcButtonWithContent("Review anfordern");
+      cy.get(".select-trigger").click();
+      assertEmptyRequestReviewModal();
+      cy.get(".select-option").contains("validator user").click();
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
       cy.get(".MuiAlert-message").contains(
         "The status of the borehole was changed. You no longer have permission to edit the borehole.",
       );
