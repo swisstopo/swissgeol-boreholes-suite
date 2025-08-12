@@ -99,7 +99,7 @@ export const useWorkflowMutation = () => {
   function invalidateBoreholeAndWorkflowQueries(boreholeId: number) {
     queryClient.invalidateQueries({ queryKey: [workflowQueryKey, Number(boreholeId)] });
     queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
-    queryClient.invalidateQueries({ queryKey: [canEditQueryKey], refetchType: "all" });
+    queryClient.invalidateQueries({ queryKey: [canEditQueryKey] });
   }
 
   const updateWorkflow = useMutation({

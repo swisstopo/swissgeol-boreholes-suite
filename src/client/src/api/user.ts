@@ -42,7 +42,6 @@ export const useEditorUsersOnWorkgroup = (workgroupId: number) => {
     enabled: !!workgroupId,
   });
 
-  // integrate error alert into query
   useShowAlertOnError(query.isError, query.error);
   return query;
 };
