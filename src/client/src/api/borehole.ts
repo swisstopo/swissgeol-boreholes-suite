@@ -183,13 +183,18 @@ export const useBoreholeMutations = () => {
     mutationFn: async (borehole: BoreholeV2) => {
       return await updateBorehole(borehole);
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey],
+      });
+    },
   });
 
   const useDeleteBorehole = useMutation({
     mutationFn: async (boreholeId: number) => {
       return await deleteBorehole(boreholeId);
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [boreholeQueryKey],
       });
@@ -197,6 +202,7 @@ export const useBoreholeMutations = () => {
   });
 
   useShowAlertOnError(useAddBorehole.isError, useAddBorehole.error);
+  useShowAlertOnError(useUpdateBorehole.isError, useUpdateBorehole.error);
   useShowAlertOnError(useDeleteBorehole.isError, useDeleteBorehole.error);
   return {
     add: useAddBorehole,

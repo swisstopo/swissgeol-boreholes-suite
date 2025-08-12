@@ -181,15 +181,16 @@ export const useStratigraphiesByBoreholeId = (boreholeId?: number) =>
   });
 
 export const useStratigraphyMutations = () => {
-  const reloadStratigraphies = useReloadStratigraphies();
-  const reloadBoreholes = useReloadBoreholes();
+  const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["lithology", "lithostratigraphy", "chronostratigraphy"]);
 
   const useAddStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
       return await fetchApiV2WithApiError(stratigraphyController, "POST", stratigraphy);
     },
     onSuccess: (_data, stratigraphy) => {
-      reloadStratigraphies(Number(stratigraphy.boreholeId));
+      resetTabStatus();
+      invalidateStratigraphyQueries(queryClient, Number(stratigraphy.boreholeId), true);
     },
   });
 
@@ -198,7 +199,8 @@ export const useStratigraphyMutations = () => {
       return await fetchApiV2WithApiError(`${stratigraphyController}/copy?id=${stratigraphy.id}`, "POST");
     },
     onSuccess: (_data, stratigraphy) => {
-      reloadStratigraphies(Number(stratigraphy.boreholeId));
+      resetTabStatus();
+      invalidateStratigraphyQueries(queryClient, Number(stratigraphy.boreholeId), false);
     },
   });
 
@@ -211,7 +213,8 @@ export const useStratigraphyMutations = () => {
       return await fetchApiV2WithApiError(stratigraphyController, "PUT", stratigraphy);
     },
     onSuccess: (_data, stratigraphy) => {
-      reloadStratigraphies(Number(stratigraphy.boreholeId));
+      resetTabStatus();
+      invalidateStratigraphyQueries(queryClient, Number(stratigraphy.boreholeId), false);
     },
   });
 
@@ -220,8 +223,8 @@ export const useStratigraphyMutations = () => {
       return await fetchApiV2WithApiError(`${stratigraphyController}?id=${stratigraphy.id}`, "DELETE");
     },
     onSuccess: (_data, stratigraphy) => {
-      reloadStratigraphies(Number(stratigraphy.boreholeId));
-      reloadBoreholes();
+      resetTabStatus();
+      invalidateStratigraphyQueries(queryClient, Number(stratigraphy.boreholeId), true);
     },
   });
 

@@ -2,7 +2,7 @@ import { ReactNode, useCallback, useContext, useEffect } from "react";
 import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
 import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
-import { useBorehole, useBoreholeMutations } from "../../../api/borehole.ts";
+import { useBorehole, useBoreholeMutations, useReloadBoreholes } from "../../../api/borehole.ts";
 import { useFormDirtyChanges } from "../../../components/form/useFormDirtyChanges.tsx";
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
@@ -35,6 +35,7 @@ export const BaseForm = <T extends FieldValues>({
   const {
     update: { mutate: updateBorehole },
   } = useBoreholeMutations();
+  const reloadBoreholes = useReloadBoreholes();
   const resetTabStatus = useResetTabStatus([tabStatusToReset]);
   const { getValues, reset, formState } = formMethods;
   useBlockNavigation();
@@ -51,6 +52,7 @@ export const BaseForm = <T extends FieldValues>({
           },
           {
             onSuccess: () => {
+              reloadBoreholes();
               resolve(true);
             },
             onError: error => {
@@ -61,7 +63,7 @@ export const BaseForm = <T extends FieldValues>({
         );
       });
     },
-    [borehole, prepareDataForSubmit, updateBorehole, showApiErrorAlert],
+    [updateBorehole, borehole, prepareDataForSubmit, reloadBoreholes, showApiErrorAlert],
   );
 
   const resetAndSubmitForm = useCallback(async () => {

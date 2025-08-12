@@ -44,35 +44,13 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
     update: { mutate: updateBorehole },
     delete: { mutate: deleteBorehole },
   } = useBoreholeMutations();
-  const reloadBoreholes = useReloadBoreholes();
-  const showApiErrorAlert = useApiErrorAlert();
 
   const toggleEditing = (editing: boolean) => {
     if (!currentUser) return;
     if (!editing) {
-      updateBorehole(
-        { ...borehole, locked: null, lockedById: null },
-        {
-          onSuccess: () => {
-            reloadBoreholes();
-          },
-          onError: error => {
-            showApiErrorAlert(error);
-          },
-        },
-      );
+      updateBorehole({ ...borehole, locked: null, lockedById: null });
     } else {
-      updateBorehole(
-        { ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id },
-        {
-          onSuccess: () => {
-            reloadBoreholes();
-          },
-          onError: error => {
-            showApiErrorAlert(error);
-          },
-        },
-      );
+      updateBorehole({ ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id });
     }
     setEditingEnabled(editing);
   };
