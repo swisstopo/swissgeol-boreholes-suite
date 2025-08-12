@@ -548,7 +548,7 @@ describe("Tests the publication workflow.", () => {
         "The status of the borehole was changed. You no longer have permission to edit the borehole.",
       );
       cy.location().should(location => {
-        expect(location.pathname).to.eq("/location");
+        expect(location.pathname).to.eq(`/${id}/location`);
       });
     });
   });
