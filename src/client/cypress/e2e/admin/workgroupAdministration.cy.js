@@ -188,12 +188,12 @@ describe("User administration settings tests", () => {
 
     // cancel delete all roles for editor
     getElementByDataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "e. user" in the workgroup "Blues"?', "cancel");
+    handlePrompt('Do you want to remove all roles of the user "E. User" in the workgroup "Blues"?', "cancel");
     verifyTableLength(1);
     verifyRowContains("editor", 0);
 
     getElementByDataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "e. user" in the workgroup "Blues"?', "delete");
+    handlePrompt('Do you want to remove all roles of the user "E. User" in the workgroup "Blues"?', "delete");
     verifyTableLength(0);
   });
 
