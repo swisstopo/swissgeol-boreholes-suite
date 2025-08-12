@@ -97,16 +97,17 @@ public class UserController : ControllerBase
             return Unauthorized();
         }
 
-        var allUsers = await context
+        var allUsersWithRoleOnWorkgroup = await context
             .UsersWithIncludes
             .AsNoTracking()
+            .Where(u => u.WorkgroupRoles.Any(r => r.WorkgroupId == workgroupId))
             .OrderBy(x => x.Name)
             .ToListAsync()
             .ConfigureAwait(false);
 
         var editorUsers = new List<User>();
 
-        foreach (var user in allUsers)
+        foreach (var user in allUsersWithRoleOnWorkgroup)
         {
             if (await boreholePermissionService.HasUserRoleOnWorkgroupAsync(user.SubjectId, workgroupId, Role.Editor).ConfigureAwait(false))
             {
