@@ -19,28 +19,37 @@ psql \
   --username=$SOURCE_DB_USERNAME \
   --no-password \
   --command="
-    DO \$\$
-    DECLARE
-      bho_ids INTEGER[] := ARRAY[1000299, 1000300, 1000301, 1000302, 1000999, 1002008, 1002999];
-      tabs_id1 INTEGER;
-      tabs_id2 INTEGER;
-      bho_id INTEGER;
-    BEGIN
-      -- For each borehole
-      FOREACH bho_id IN ARRAY bho_ids LOOP
-        -- Insert first tab_status entry
-        INSERT INTO $SOURCE_DB_SCHEMA.tab_status (\"general\", \"location\", \"section\", geometry, lithology, chronostratigraphy,lithostratigraphy, casing, instrumentation, backfill, water_ingress, groundwater, field_measurement, hydrotest, profile, photo, \"document\")
-        VALUES (true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true)
-        RETURNING tab_status_id INTO tabs_id1;
+      DO \$\$
+      DECLARE
+        bho_ids INTEGER[] := ARRAY[1000299, 1000300, 1000301, 1000302, 1000999, 1002008, 1002999];
+        tabs_id INTEGER;
+      BEGIN
+          -- Update workflow status
+          UPDATE $SOURCE_DB_SCHEMA.workflow
+          SET status = 3
+          WHERE borehole_id = ANY(bho_ids);
 
-        -- Insert second tab_status
-        INSERT INTO $SOURCE_DB_SCHEMA.tab_status (\"general\", \"location\", \"section\", geometry, lithology, chronostratigraphy,lithostratigraphy, casing, instrumentation, backfill, water_ingress, groundwater, field_measurement, hydrotest, profile, photo, \"document\")
-        VALUES (true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true)
-        RETURNING tab_status_id INTO tabs_id2;
-
-        -- Insert workflow entry with the new tab_status ids
-        INSERT INTO $SOURCE_DB_SCHEMA.workflow (has_requested_changes, status, borehole_id, reviewed_tabs_id, published_tabs_id, assignee_id)
-        VALUES (false, 3, bho_id, tabs_id1, tabs_id2, null);
-      END LOOP;
-    END \$\$
-  "
+          -- Update tab_status for all workflow entries related to these boreholes
+          UPDATE $SOURCE_DB_SCHEMA.tab_status ts
+          SET \"general\" = true,
+              \"location\" = true,
+              \"section\" = true,
+              geometry = true,
+              lithology = true,
+              chronostratigraphy = true,
+              lithostratigraphy = true,
+              casing = true,
+              instrumentation = true,
+              backfill = true,
+              water_ingress = true,
+              groundwater = true,
+              field_measurement = true,
+              hydrotest = true,
+              profile = true,
+              photo = true,
+              \"document\" = true
+          FROM $SOURCE_DB_SCHEMA.workflow w
+          WHERE (w.reviewed_tabs_id = ts.tab_status_id OR w.published_tabs_id = ts.tab_status_id)
+          AND w.borehole_id = ANY(bho_ids);
+      END \$\$;
+    "
