@@ -10,11 +10,11 @@ namespace BDMS.Controllers;
 [TestClass]
 public class UserControllerTest
 {
+    private readonly int workgroupId = 1;
+    private readonly string viewerSubjectId = "sub_viewer";
     private BdmsContext context;
     private UserController userController;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
-    private readonly int workgroupId = 1;
-    private readonly string viewerSubjectId = "sub_viewer";
 
     [TestInitialize]
     public void TestInitialize()
@@ -44,7 +44,7 @@ public class UserControllerTest
 
         foreach (var user in users)
         {
-            Assert.AreEqual(user.SubjectId == "sub_deletableUser" || user.SubjectId == "sub_viewer", user.Deletable);
+            Assert.AreEqual(user.SubjectId == "sub_deletableUser" || user.SubjectId == viewerSubjectId, user.Deletable);
         }
     }
 

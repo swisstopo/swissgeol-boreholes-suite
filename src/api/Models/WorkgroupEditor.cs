@@ -5,7 +5,6 @@
 /// </summary>
 public class WorkgroupEditor
 {
-
     /// <summary>
     /// Gets or sets the <see cref="WorkgroupEditor"/>s name.
     /// </summary>
