@@ -163,7 +163,19 @@ public class UserControllerTest
 
         Assert.IsNotNull(users);
         Assert.AreEqual(7, users.Count());
-        Assert.IsTrue(users.Any(u => u.SubjectId != viewerSubjectId));
         Assert.IsFalse(users.Any(u => u.SubjectId == viewerSubjectId));
+
+        foreach (var user in users)
+        {
+            // Assert unnecessary data is not retured
+            Assert.AreEqual("", user.SubjectId);
+            Assert.AreEqual("", user.Email);
+            Assert.IsNull(user.CreatedAt);
+            Assert.IsNull(user.Deletable);
+            Assert.IsNull(user.Settings);
+            Assert.IsFalse(user.TermsAccepted.Any());
+            Assert.IsTrue(user.WorkgroupRoles.Any(r => r.WorkgroupId == workgroupId));
+
+        }
     }
 }
