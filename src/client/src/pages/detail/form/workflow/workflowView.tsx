@@ -43,7 +43,7 @@ export const WorkflowView = () => {
   } = useWorkflowMutation();
 
   useEffect(() => {
-    if (!editableByCurrentUser) {
+    if (editableByCurrentUser === false) {
       showAlert(t("boreholeStatusChangedNoMorePermissions"), "success");
       navigateTo({ path: "/" + boreholeId + "/location" });
     }
