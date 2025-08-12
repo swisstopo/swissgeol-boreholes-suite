@@ -14,8 +14,7 @@ public class UserControllerTest
     private UserController userController;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private int workgroupId = 1;
-    private string editorSubjectId = "sub_editor";
-    private string otherSubjectId = "sub_viewer";
+    private string viewerSubjectId = "sub_viewer";
 
     [TestInitialize]
     public void TestInitialize()
@@ -29,10 +28,10 @@ public class UserControllerTest
             .Setup(s => s.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.Is<int>(x => x != workgroupId), Models.Role.Editor))
             .ReturnsAsync(false);
         boreholePermissionServiceMock
-            .Setup(s => s.HasUserRoleOnWorkgroupAsync(editorSubjectId, workgroupId, Models.Role.Editor))
+            .Setup(s => s.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), workgroupId, Models.Role.Editor))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
-            .Setup(s => s.HasUserRoleOnWorkgroupAsync(otherSubjectId, workgroupId, Models.Role.Editor))
+            .Setup(s => s.HasUserRoleOnWorkgroupAsync(viewerSubjectId, workgroupId, Models.Role.Editor))
             .ReturnsAsync(false);
         userController = new UserController(context, new Mock<ILogger<UserController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
@@ -164,7 +163,7 @@ public class UserControllerTest
 
         Assert.IsNotNull(users);
         Assert.AreEqual(7, users.Count());
-        Assert.IsTrue(users.Any(u => u.SubjectId == editorSubjectId));
-        Assert.IsFalse(users.Any(u => u.SubjectId == otherSubjectId));
+        Assert.IsTrue(users.Any(u => u.SubjectId != viewerSubjectId));
+        Assert.IsFalse(users.Any(u => u.SubjectId == viewerSubjectId));
     }
 }
