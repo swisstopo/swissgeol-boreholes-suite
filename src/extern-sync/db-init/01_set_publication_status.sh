@@ -24,6 +24,7 @@ psql \
       bho_ids INTEGER[] := ARRAY[1000299, 1000300, 1000301, 1000302, 1000999, 1002008, 1002999];
       tabs_id1 INTEGER;
       tabs_id2 INTEGER;
+      bho_id INTEGER;
     BEGIN
       -- For each borehole
       FOREACH bho_id IN ARRAY bho_ids LOOP
