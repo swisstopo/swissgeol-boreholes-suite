@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Util;
-using BDMS.Authentication;
+﻿using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

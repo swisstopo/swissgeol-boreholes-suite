@@ -3,7 +3,6 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OSGeo.OGR;
 
 namespace BDMS.Controllers;
 
