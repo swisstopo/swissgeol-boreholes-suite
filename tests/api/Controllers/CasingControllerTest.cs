@@ -47,7 +47,7 @@ public class CasingControllerTest
     }
 
     [TestMethod]
-    public async Task GetAsyncWithoutPermissionsReturnsNoCasings()
+    public async Task GetAsyncFiltersCasingsBasedOnWorkgroupPermissions()
     {
         // Add a new borehole with casing and workgroup that is not default
         var newBorehole = new Borehole()
@@ -55,19 +55,25 @@ public class CasingControllerTest
             Name = "Test Borehole",
             WorkgroupId = 4,
         };
-        context.Boreholes.Add(newBorehole);
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
         var newCompletion = new Completion()
         {
             BoreholeId = newBorehole.Id,
             Name = "Test Completion",
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
         };
-        context.Completions.Add(newCompletion);
+        await context.Completions.AddAsync(newCompletion);
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
-        context.Casings.Add(new Casing()
+        await context.Casings.AddAsync(new Casing()
         {
             CompletionId = newCompletion.Id,
             Name = "Test Casing",
         });
+
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         IEnumerable<Casing>? casingsForAdmin = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(casingsForAdmin);
