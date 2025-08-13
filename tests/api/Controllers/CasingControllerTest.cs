@@ -15,12 +15,13 @@ public class CasingControllerTest
 
     private BdmsContext context;
     private CasingController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -67,6 +68,19 @@ public class CasingControllerTest
         var response = await controller.GetByIdAsync(casingId).ConfigureAwait(false);
         var casing = ActionResultAssert.IsOkObjectResult<Casing>(response.Result);
         Assert.AreEqual(casingId, casing.Id);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var casingId = context.Casings.First().Id;
+
+        var response = await controller.GetByIdAsync(casingId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

@@ -12,12 +12,13 @@ public class ChronostratigraphyControllerTest
 {
     private BdmsContext context;
     private ChronostratigraphyController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -75,6 +76,20 @@ public class ChronostratigraphyControllerTest
         Assert.AreEqual(50, chronostratigraphy.ToDepth);
         Assert.AreEqual(15_001_080, chronostratigraphy.ChronostratigraphyId);
         Assert.AreEqual(6_000_001, chronostratigraphy.StratigraphyId);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var chronostratigraphyId = context.ChronostratigraphyLayers.First().Id;
+
+        var response = await controller.GetByIdAsync(chronostratigraphyId).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

@@ -13,12 +13,13 @@ public class LayerControllerTest
 {
     private BdmsContext context;
     private LayerController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -89,6 +90,19 @@ public class LayerControllerTest
         Assert.AreEqual(7_000_005, layer.Id);
         Assert.AreEqual("transform mesh Brand Fantastic", layer.Notes);
         Assert.AreEqual(15104811, layer.LithologyId);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var layerId = context.Layers.First().Id;
+
+        var response = await controller.GetByIdAsync(layerId).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

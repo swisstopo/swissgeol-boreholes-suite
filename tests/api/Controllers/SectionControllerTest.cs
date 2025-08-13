@@ -14,12 +14,13 @@ public class SectionControllerTest
 
     private BdmsContext context;
     private SectionController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -66,6 +67,19 @@ public class SectionControllerTest
         var response = await controller.GetByIdAsync(sectionId).ConfigureAwait(false);
         var section = ActionResultAssert.IsOkObjectResult<Section>(response.Result);
         Assert.AreEqual(sectionId, section.Id);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var sectionId = context.Sections.First().Id;
+
+        var response = await controller.GetByIdAsync(sectionId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

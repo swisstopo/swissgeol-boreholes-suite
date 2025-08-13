@@ -12,6 +12,7 @@ public class LithostratigraphyControllerTest
 {
     private BdmsContext context;
     private LithostratigraphyController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     private LithostratigraphyLayer GetLithostratigraphy() => new LithostratigraphyLayer
     {
@@ -29,7 +30,7 @@ public class LithostratigraphyControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -78,6 +79,28 @@ public class LithostratigraphyControllerTest
         Assert.AreEqual(50, lithostratigraphy.ToDepth);
         Assert.AreEqual(15_302_431, lithostratigraphy.LithostratigraphyId);
         Assert.AreEqual(6_000_001, lithostratigraphy.StratigraphyId);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var unauthorizedController = new LithostratigraphyController(
+            context,
+            new Mock<ILogger<LithostratigraphyController>>().Object,
+            boreholePermissionServiceMock.Object)
+        {
+            ControllerContext = GetControllerContextAdmin(),
+        };
+
+        // Act
+        var response = await controller.GetByIdAsync(14_000_014).ConfigureAwait(false);
+
+        // Assert
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

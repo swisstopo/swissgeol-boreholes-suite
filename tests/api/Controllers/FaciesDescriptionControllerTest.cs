@@ -12,12 +12,13 @@ public class FaciesDescriptionControllerTest
 {
     private BdmsContext context;
     private FaciesDescriptionController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -75,6 +76,19 @@ public class FaciesDescriptionControllerTest
         Assert.AreEqual(50, faciesDescription.ToDepth);
         Assert.AreEqual("Hawaii radical Technician", faciesDescription.Description);
         Assert.AreEqual(6_000_001, faciesDescription.StratigraphyId);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var faciesDescriptionId = context.FaciesDescriptions.First().Id;
+        var response = await controller.GetByIdAsync(faciesDescriptionId).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

@@ -13,12 +13,13 @@ public class BackfillControllerTest
 {
     private BdmsContext context;
     private BackfillController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -65,6 +66,19 @@ public class BackfillControllerTest
         var response = await controller.GetByIdAsync(backfillId).ConfigureAwait(false);
         var backfill = ActionResultAssert.IsOkObjectResult<Backfill>(response.Result);
         Assert.AreEqual(backfillId, backfill.Id);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var backfillId = context.Backfills.First().Id;
+
+        var response = await controller.GetByIdAsync(backfillId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

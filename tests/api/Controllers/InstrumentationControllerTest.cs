@@ -13,12 +13,13 @@ public class InstrumentationControllerTest
 {
     private BdmsContext context;
     private InstrumentationController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -65,6 +66,19 @@ public class InstrumentationControllerTest
         var response = await controller.GetByIdAsync(instrumentationId).ConfigureAwait(false);
         var instrumentation = ActionResultAssert.IsOkObjectResult<Instrumentation>(response.Result);
         Assert.AreEqual(instrumentationId, instrumentation.Id);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var instrumentationId = context.Instrumentations.First().Id;
+
+        var response = await controller.GetByIdAsync(instrumentationId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

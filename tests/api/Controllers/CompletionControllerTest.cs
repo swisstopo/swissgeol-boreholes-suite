@@ -16,12 +16,13 @@ public class CompletionControllerTest
 
     private BdmsContext context;
     private CompletionController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -81,6 +82,19 @@ public class CompletionControllerTest
         var completions = await controller.GetAsync(81294572).ConfigureAwait(false);
         Assert.IsNotNull(completions);
         Assert.AreEqual(0, completions.Count());
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var completionId = context.Completions.First().Id;
+
+        var response = await controller.GetByIdAsync(completionId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

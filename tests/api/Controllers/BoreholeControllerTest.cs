@@ -19,6 +19,7 @@ public class BoreholeControllerTest
     private BoreholeController controller;
     private static int testBoreholeId = 1000068;
     private static int noPermissionWorkgroupId = 91350978;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
@@ -29,7 +30,7 @@ public class BoreholeControllerTest
 
     private BoreholeController GetTestController(BdmsContext testContext)
     {
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -229,6 +230,19 @@ public class BoreholeControllerTest
 
         var boreholeWithDeletedIdentifiers = ActionResultAssert.IsOkObjectResult<Borehole>(deletedIdentifiersResponse.Result);
         Assert.AreEqual(0, boreholeWithDeletedIdentifiers.BoreholeCodelists.Count);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var boreholeId = context.Boreholes.First().Id;
+
+        var response = await controller.GetByIdAsync(boreholeId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

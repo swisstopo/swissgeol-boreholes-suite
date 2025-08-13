@@ -12,12 +12,13 @@ public class LithologicalDescriptionControllerTest
 {
     private BdmsContext context;
     private LithologicalDescriptionController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -75,6 +76,20 @@ public class LithologicalDescriptionControllerTest
         Assert.AreEqual(60, lithologicalDescription.ToDepth);
         Assert.AreEqual("Sleek Metrics Mountains", lithologicalDescription.Description);
         Assert.AreEqual(6_000_001, lithologicalDescription.StratigraphyId);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var lithologicalDescriptionId = context.LithologicalDescriptions.First().Id;
+        var response = await controller.GetByIdAsync(lithologicalDescriptionId).ConfigureAwait(false);
+
+        // Assert
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]
