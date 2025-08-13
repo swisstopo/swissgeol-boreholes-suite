@@ -474,7 +474,7 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("review", "Sealing/Backfilling");
 
       cy.get("sgc-tab").contains("Freigabe").click();
-      isCheckedTabStatusBox("approval", "Stratigraphy");
+      isUncheckedTabStatusBox("approval", "Stratigraphy");
       isUncheckedTabStatusBox("approval", "Lithology");
       isUncheckedTabStatusBox("approval", "Chronostratigraphy");
       isUncheckedTabStatusBox("approval", "Lithostratigraphy");
