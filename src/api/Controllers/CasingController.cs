@@ -25,10 +25,26 @@ public class CasingController : BoreholeControllerBase<Casing>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Casing>> GetAsync([FromQuery] int? completionId = null, [FromQuery] int? boreholeId = null)
     {
+        var user = await Context.Users
+            .Include(u => u.WorkgroupRoles)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
         var casings = Context.Casings
             .Include(c => c.CasingElements)
             .Include(c => c.Completion)
             .AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            casings = casings
+                .Where(c => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == c.Completion.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
 
         if (completionId != null)
         {

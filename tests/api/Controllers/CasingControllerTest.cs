@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -43,6 +44,40 @@ public class CasingControllerTest
         IEnumerable<Casing>? casings = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(casings);
         Assert.AreEqual(500, casings.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncWithoutPermissionsReturnsNoCasings()
+    {
+        // Add a new borehole with casing and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        context.Boreholes.Add(newBorehole);
+        var newCompletion = new Completion()
+        {
+            BoreholeId = newBorehole.Id,
+            Name = "Test Completion",
+        };
+        context.Completions.Add(newCompletion);
+
+        context.Casings.Add(new Casing()
+        {
+            CompletionId = newCompletion.Id,
+            Name = "Test Casing",
+        });
+
+        IEnumerable<Casing>? casingsForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(casingsForAdmin);
+        Assert.AreEqual(501, casingsForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<Casing>? casingsForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(casingsForEditor);
+        Assert.AreEqual(500, casingsForEditor.Count());
     }
 
     [TestMethod]
