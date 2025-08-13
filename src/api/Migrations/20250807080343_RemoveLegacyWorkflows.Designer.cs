@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20250807080343_RemoveLegacyWorkflows")]
+    partial class RemoveLegacyWorkflows
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2167,55 +2170,6 @@ namespace BDMS.Migrations
                     b.ToTable("users_roles", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.Workflow", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AssigneeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("assignee_id");
-
-                    b.Property<int>("BoreholeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("borehole_id");
-
-                    b.Property<bool>("HasRequestedChanges")
-                        .HasColumnType("boolean")
-                        .HasColumnName("has_requested_changes");
-
-                    b.Property<int>("PublishedTabsId")
-                        .HasColumnType("integer")
-                        .HasColumnName("published_tabs_id");
-
-                    b.Property<int>("ReviewedTabsId")
-                        .HasColumnType("integer")
-                        .HasColumnName("reviewed_tabs_id");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssigneeId");
-
-                    b.HasIndex("BoreholeId")
-                        .IsUnique();
-
-                    b.HasIndex("PublishedTabsId")
-                        .IsUnique();
-
-                    b.HasIndex("ReviewedTabsId")
-                        .IsUnique();
-
-                    b.ToTable("workflow", "bdms");
-                });
-
             modelBuilder.Entity("BDMS.Models.WorkflowChange", b =>
                 {
                     b.Property<int>("Id")
@@ -2264,6 +2218,55 @@ namespace BDMS.Migrations
                     b.HasIndex("WorkflowId");
 
                     b.ToTable("workflow_change", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.WorkflowV2", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("workflow_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AssigneeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("assignee_id");
+
+                    b.Property<int>("BoreholeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("borehole_id");
+
+                    b.Property<bool>("HasRequestedChanges")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_requested_changes");
+
+                    b.Property<int>("PublishedTabsId")
+                        .HasColumnType("integer")
+                        .HasColumnName("published_tabs_id");
+
+                    b.Property<int>("ReviewedTabsId")
+                        .HasColumnType("integer")
+                        .HasColumnName("reviewed_tabs_id");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssigneeId");
+
+                    b.HasIndex("BoreholeId")
+                        .IsUnique();
+
+                    b.HasIndex("PublishedTabsId")
+                        .IsUnique();
+
+                    b.HasIndex("ReviewedTabsId")
+                        .IsUnique();
+
+                    b.ToTable("workflow_v2", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Workgroup", b =>
@@ -3392,39 +3395,6 @@ namespace BDMS.Migrations
                     b.Navigation("Workgroup");
                 });
 
-            modelBuilder.Entity("BDMS.Models.Workflow", b =>
-                {
-                    b.HasOne("BDMS.Models.User", "Assignee")
-                        .WithMany()
-                        .HasForeignKey("AssigneeId");
-
-                    b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithOne("Workflow")
-                        .HasForeignKey("BDMS.Models.Workflow", "BoreholeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.TabStatus", "PublishedTabs")
-                        .WithOne()
-                        .HasForeignKey("BDMS.Models.Workflow", "PublishedTabsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.TabStatus", "ReviewedTabs")
-                        .WithOne()
-                        .HasForeignKey("BDMS.Models.Workflow", "ReviewedTabsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Assignee");
-
-                    b.Navigation("Borehole");
-
-                    b.Navigation("PublishedTabs");
-
-                    b.Navigation("ReviewedTabs");
-                });
-
             modelBuilder.Entity("BDMS.Models.WorkflowChange", b =>
                 {
                     b.HasOne("BDMS.Models.User", "Assignee")
@@ -3435,7 +3405,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Workflow", "Workflow")
+                    b.HasOne("BDMS.Models.WorkflowV2", "Workflow")
                         .WithMany("Changes")
                         .HasForeignKey("WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3446,6 +3416,39 @@ namespace BDMS.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Workflow");
+                });
+
+            modelBuilder.Entity("BDMS.Models.WorkflowV2", b =>
+                {
+                    b.HasOne("BDMS.Models.User", "Assignee")
+                        .WithMany()
+                        .HasForeignKey("AssigneeId");
+
+                    b.HasOne("BDMS.Models.Borehole", "Borehole")
+                        .WithOne("Workflow")
+                        .HasForeignKey("BDMS.Models.WorkflowV2", "BoreholeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.TabStatus", "PublishedTabs")
+                        .WithOne()
+                        .HasForeignKey("BDMS.Models.WorkflowV2", "PublishedTabsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.TabStatus", "ReviewedTabs")
+                        .WithOne()
+                        .HasForeignKey("BDMS.Models.WorkflowV2", "ReviewedTabsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assignee");
+
+                    b.Navigation("Borehole");
+
+                    b.Navigation("PublishedTabs");
+
+                    b.Navigation("ReviewedTabs");
                 });
 
             modelBuilder.Entity("BDMS.Models.FieldMeasurement", b =>
@@ -3617,7 +3620,7 @@ namespace BDMS.Migrations
                     b.Navigation("WorkgroupRoles");
                 });
 
-            modelBuilder.Entity("BDMS.Models.Workflow", b =>
+            modelBuilder.Entity("BDMS.Models.WorkflowV2", b =>
                 {
                     b.Navigation("Changes");
                 });

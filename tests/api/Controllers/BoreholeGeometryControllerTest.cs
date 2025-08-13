@@ -24,7 +24,7 @@ public class BoreholeGeometryControllerTest
         context = ContextFactory.GetTestContext();
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
@@ -199,7 +199,7 @@ public class BoreholeGeometryControllerTest
     public async Task UploadGeometryToLockedBorehole()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var xyzData = GetFormFileByExistingFile("geometry_xyz.csv");
@@ -215,7 +215,7 @@ public class BoreholeGeometryControllerTest
     public async Task DeleteGeometryOnLockedBorehole()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         IActionResult response = await controller.DeleteAsync(boreholeIdWithGeometry).ConfigureAwait(false);

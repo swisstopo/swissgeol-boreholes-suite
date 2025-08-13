@@ -19,31 +19,8 @@ class Lock(Action):
             WHERE id_bho = $2;
         """, user['id'], id)
 
-        # also start workflow if not yet started
-        row = await self.conn.fetchrow("""
-            SELECT
-                id_wkf,
-                started_wkf
 
-            FROM
-                bdms.workflow
 
-            WHERE
-                id_bho_fk = $1
-
-            ORDER BY
-                id_wkf DESC
-
-            LIMIT 1
-        """, id)
-
-        if row[1] is None:
-            await self.conn.execute("""
-                UPDATE bdms.workflow SET
-                    started_wkf = current_timestamp,
-                    id_usr_fk = $1
-                WHERE id_wkf = $2;
-            """, user['id'], row[0])
 
         res = await self.conn.fetchval("""
             SELECT row_to_json(t2)

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace BDMS.Models;
 
 /// <summary>
-/// Represents a status change of a <see cref="WorkflowV2"/>.
+/// Represents a status change of a <see cref="Models.Workflow"/>.
 /// </summary>
 [Table("workflow_change")]
 public class WorkflowChange : IIdentifyable, IChangeTracking
@@ -22,13 +22,13 @@ public class WorkflowChange : IIdentifyable, IChangeTracking
     public string Comment { get; set; }
 
     /// <summary>
-    /// Gets or sets the status of the <see cref="WorkflowV2"/> before the change.
+    /// Gets or sets the status of the <see cref="Models.Workflow"/> before the change.
     /// </summary>
     [Column("from_status")]
     public WorkflowStatus FromStatus { get; set; }
 
     /// <summary>
-    /// Gets or sets the status of the <see cref="WorkflowV2"/> after the change.
+    /// Gets or sets the status of the <see cref="Models.Workflow"/> after the change.
     /// </summary>
     [Column("to_status")]
     public WorkflowStatus ToStatus { get; set; }
@@ -40,9 +40,9 @@ public class WorkflowChange : IIdentifyable, IChangeTracking
     public int WorkflowId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="WorkflowV2"/> of this <see cref="WorkflowChange"/>.
+    /// Gets or sets the <see cref="Models.Workflow"/> of this <see cref="WorkflowChange"/>.
     /// </summary>
-    public WorkflowV2 Workflow { get; set; }
+    public Workflow Workflow { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="User"/> who created the entity.

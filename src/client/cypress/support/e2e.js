@@ -1,4 +1,4 @@
-import { interceptApiCalls, loginAndResetState } from "../e2e/helpers/testHelpers";
+import { interceptApiCalls, loginAndResetState, loginAsEditor } from "../e2e/helpers/testHelpers";
 import "cypress-file-upload";
 import { stopEditing } from "../e2e/helpers/buttonHelpers.js";
 
@@ -16,6 +16,11 @@ for (const command of ["click", "type", "select", "check", "uncheck"]) {
     });
   });
 }
+
+before(() => {
+  // Makes sure that the Editor user is consistently overwritten with oidc-mock user Editor
+  loginAsEditor();
+});
 
 beforeEach(() => {
   interceptApiCalls();

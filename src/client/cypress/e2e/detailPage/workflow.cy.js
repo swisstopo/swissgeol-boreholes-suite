@@ -22,34 +22,15 @@ import {
   dropGeometryCSVFile,
   getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
+  loginAsEditor,
   selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers.js";
 
 describe("Tests the publication workflow.", () => {
-  it("Displays DEV workflow when feature flag is set", () => {
-    goToDetailRouteAndAcceptTerms(`/1000036/status`);
-    // displays legacy workflow form by default
-    cy.contains("h4", "Publication workflow").should("exist");
-    goToDetailRouteAndAcceptTerms(`/1000036/status?dev=true`);
-    cy.contains("h4", "Publication workflow").should("not.exist");
-
-    cy.get("sgc-translate").contains("Status").should("exist");
-    cy.get("sgc-translate").contains("Draft").should("exist");
-    cy.get("sgc-translate").contains("Zugewiesene Person").should("exist");
-    cy.get(".assignee").contains("validator user").should("exist");
-
-    checkWorkflowChangeContent("editor user", "Status von Published zu Reviewed geändert", "Omnis ut in.");
-    checkWorkflowChangeContent(
-      "controller user",
-      "Borehole editor user zugewiesen",
-      "Rerum repudiandae nihil accusamus sed omnis tempore laboriosam eaque est.",
-    ); // Translation not yet available in core UI
-  });
-
   function navigateToWorkflowAndStartEditing(id) {
-    goToDetailRouteAndAcceptTerms(`/${id}/status?dev=true`);
+    goToDetailRouteAndAcceptTerms(`/${id}/status`);
     cy.wait("@borehole_by_id");
     startBoreholeEditing();
     getElementByDataCy("workflow-status-chip").should("contain", "Draft");
@@ -92,7 +73,7 @@ describe("Tests the publication workflow.", () => {
       cy.get(".select-option").should("have.length", 6);
       // 2 users without controller privileges should not exist
       cy.get(".select-option").contains("viewer user").should("not.exist");
-      cy.get(".select-option").contains("editor user").should("not.exist");
+      cy.get(".select-option").contains("Editor User").should("not.exist");
 
       // 6 users with controller privileges should be selectable
       cy.get(".select-option").contains("controller user").should("exist");
@@ -290,8 +271,8 @@ describe("Tests the publication workflow.", () => {
       navigateToWorkflowAndStartEditing(id);
       assertWorkflowSteps(WorkflowStatus.Draft);
       AssertHeaderChips(WorkflowStatus.Draft, "free");
-      AssignNewUser("editor user");
-      AssertHeaderChips(WorkflowStatus.Draft, "editor user");
+      AssignNewUser("Editor User");
+      AssertHeaderChips(WorkflowStatus.Draft, "Editor User");
       getElementByDataCy("review-button").should("not.exist");
       AssignNewUser("Admin User");
       AssertHeaderChips(WorkflowStatus.Draft, "Admin User");
@@ -321,7 +302,7 @@ describe("Tests the publication workflow.", () => {
       // all users with editor privileges should be selectable
       cy.get(".select-option").should("have.length", 7);
       cy.get(".select-option").contains("viewer user").should("not.exist");
-      cy.get(".select-option").contains("editor user").should("exist");
+      cy.get(".select-option").contains("Editor User").should("exist");
       cy.get(".select-option").contains("Admin User").click();
       cy.get("sgc-modal-wrapper").find("sgc-button").contains("Status manuell ändern").click();
       cy.wait(["@workflow_by_id", "@borehole_by_id"]);
@@ -548,6 +529,27 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("approval", "Profiles");
       isCheckedTabStatusBox("approval", "Photos");
       isCheckedTabStatusBox("approval", "Documents");
+    });
+  });
+
+  it("Editor can request review and is redirected", () => {
+    createBorehole({
+      originalName: "Cormoran Cellar",
+    }).as("borehole_id");
+    loginAsEditor();
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      clickSgcButtonWithContent("Review anfordern");
+      cy.get(".select-trigger").click();
+      assertEmptyRequestReviewModal();
+      cy.get(".select-option").contains("validator user").click();
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
+      cy.get(".MuiAlert-message").contains(
+        "The status of the borehole was changed. You no longer have permission to edit the borehole.",
+      );
+      cy.location().should(location => {
+        expect(location.pathname).to.eq(`/${id}/location`);
+      });
     });
   });
 });

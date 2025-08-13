@@ -72,7 +72,6 @@ class ListBorehole(Action):
                 ids.identifiers,
 				ids.identifiers_value,
 				remarks_bho as remarks,
-
                 lithology_top_bedrock_id_cli as lithology_top_bedrock,
                 lithostrat_id_cli as lithostratigraphy_top_bedrock,
                 chronostrat_id_cli AS chronostratigraphy_top_bedrock
@@ -198,8 +197,6 @@ class ListBorehole(Action):
                             top_bedrock_fresh_md as top_bedrock_fresh_md
                     ) t
                 ) as extended,
-                status[array_length(status, 1)] as workflow,
-                status[array_length(status, 1)]  ->> 'role' as "role",
                 (
                     select row_to_json(t)
                     FROM (
@@ -248,43 +245,6 @@ class ListBorehole(Action):
             ) as idf
             ON
                 idf.borehole_id = id_bho
-
-            INNER JOIN (
-                SELECT
-                    id_bho_fk,
-                    array_agg(
-                        json_build_object(
-                            'workflow', id_wkf,
-                            'role', name_rol,
-                            'username', username,
-                            'started', started,
-                            'finished', finished
-                        )
-                    ) as status
-                FROM (
-                    SELECT
-                        id_bho_fk,
-                        name_rol,
-                        id_wkf,
-                        username,
-                        started_wkf as started,
-                        finished_wkf as finished
-                    FROM
-                        bdms.workflow,
-                        bdms.roles,
-                        bdms.users
-                    WHERE
-                        id_rol = id_rol_fk
-                    AND
-                        id_usr = id_usr_fk
-                    ORDER BY
-                        id_bho_fk asc, id_wkf asc
-                ) t
-                GROUP BY
-                    id_bho_fk
-            ) as v
-            ON
-                v.id_bho_fk = id_bho
         """
 
     async def execute(
@@ -319,59 +279,22 @@ class ListBorehole(Action):
         )
 
         cntSql = """
-            SELECT
-                count(*) AS cnt
-            FROM
-                bdms.borehole
+         SELECT
+             count(*) AS cnt
+         FROM
+             bdms.borehole
 
-            INNER JOIN (
-                SELECT
-                    id_bho_fk,
-                    array_agg(
-                        json_build_object(
-                            'workflow', id_wkf,
-                            'role', name_rol,
-                            'username', username,
-                            'started', started,
-                            'finished', finished
-                        )
-                    ) as status
-                FROM (
-                    SELECT
-                        id_bho_fk,
-                        name_rol,
-                        id_wkf,
-                        username,
-                        started_wkf as started,
-                        finished_wkf as finished
-                    FROM
-                        bdms.workflow,
-                        bdms.roles,
-                        bdms.users
-                    WHERE
-                        id_rol = id_rol_fk
-                    AND
-                        id_usr = id_usr_fk
-                    ORDER BY
-                        id_bho_fk asc, id_wkf asc
-                ) t
-                GROUP BY
-                    id_bho_fk
-            ) as v
-            ON
-                v.id_bho_fk = id_bho
-
-            LEFT JOIN (
-                SELECT
-                    borehole_id,
-                    array_agg(identifier_id) as borehole_identifier,
-                    array_agg(identifier_value) as identifier_value
-                FROM
-                    bdms.borehole_identifiers_codelist
-                GROUP BY borehole_id
-            ) as ids
-            ON
-                ids.borehole_id = id_bho
+         LEFT JOIN (
+             SELECT
+                 borehole_id,
+                 array_agg(identifier_id) as borehole_identifier,
+                 array_agg(identifier_value) as identifier_value
+             FROM
+                 bdms.borehole_identifiers_codelist
+             GROUP BY borehole_id
+         ) as ids
+         ON
+             ids.borehole_id = id_bho
         """
 
         if len(layer_params) > 0:

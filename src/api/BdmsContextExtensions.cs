@@ -229,16 +229,16 @@ public static class BdmsContextExtensions
         TabStatus SeededTabStatus(int seed) => fakeTabStatus.UseSeed(seed).Generate();
         context.BulkInsert(tabStatusRange.Select(SeededTabStatus).ToList(), bulkConfig);
 
-        var workflowV2_ids = 2_000_000;
-        var workflowV2Range = Enumerable.Range(workflowV2_ids, boreholeRange.Count);
-        var fakeWorkflowsV2 = new Faker<WorkflowV2>()
+        var workflow_ids = 2_000_000;
+        var workflowRange = Enumerable.Range(workflow_ids, boreholeRange.Count);
+        var fakeWorkflows = new Faker<Workflow>()
             .StrictMode(true)
-            .RuleFor(o => o.Id, f => workflowV2_ids++)
+            .RuleFor(o => o.Id, f => workflow_ids++)
             .RuleFor(o => o.HasRequestedChanges, f => f.Random.Bool(.05f))
             .RuleFor(o => o.Status, f => WorkflowStatus.Draft)
-            .RuleFor(o => o.BoreholeId, (f, o) => boreholeRange[o.Id - workflowV2Range.First()])
+            .RuleFor(o => o.BoreholeId, (f, o) => boreholeRange[o.Id - workflowRange.First()])
             .RuleFor(o => o.Borehole, f => default!)
-            .RuleFor(o => o.ReviewedTabsId, (f, o) => tabStatusRange[(o.Id - workflowV2Range.First()) * 2])
+            .RuleFor(o => o.ReviewedTabsId, (f, o) => tabStatusRange[(o.Id - workflowRange.First()) * 2])
             .RuleFor(o => o.ReviewedTabs, f => default!)
             .RuleFor(o => o.PublishedTabsId, (f, o) => o.ReviewedTabsId + 1)
             .RuleFor(o => o.PublishedTabs, f => default!)
@@ -246,8 +246,8 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Assignee, f => default!)
             .RuleFor(o => o.Changes, f => new Collection<WorkflowChange>());
 
-        WorkflowV2 SeededWorkflowsV2(int seed) => fakeWorkflowsV2.UseSeed(seed).Generate();
-        context.BulkInsert(workflowV2Range.Select(SeededWorkflowsV2).ToList(), bulkConfig);
+        Workflow SeededWorkflows(int seed) => fakeWorkflows.UseSeed(seed).Generate();
+        context.BulkInsert(workflowRange.Select(SeededWorkflows).ToList(), bulkConfig);
 
         // Seed some workflow changes for richBoreholeRange
         var workflowChange_ids = 15_000_000;
@@ -493,24 +493,6 @@ public static class BdmsContextExtensions
         }
 
         context.BulkInsert(layersToInsert, bulkConfig);
-
-        // Seed workflows for admin user
-        var workflow_ids = 8_000_000;
-        var workflowRange = Enumerable.Range(workflow_ids, boreholeRange.Count);
-        var fakeWorkflows = new Faker<Workflow>()
-               .StrictMode(true)
-               .RuleFor(o => o.Id, f => workflow_ids++)
-               .RuleFor(o => o.UserId, userRange.First())
-               .RuleFor(o => o.User, _ => default!)
-               .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
-               .RuleFor(o => o.Borehole, _ => default!)
-               .RuleFor(o => o.Notes, f => f.Random.Words(4))
-               .RuleFor(o => o.Role, _ => Role.Editor)
-               .RuleFor(o => o.Started, f => f.Date.Between(new DateTime(1990, 1, 1).ToUniversalTime(), new DateTime(2005, 1, 1).ToUniversalTime()))
-               .RuleFor(o => o.Finished, _ => null);
-
-        Workflow SeededWorkflows(int seed) => fakeWorkflows.UseSeed(seed).Generate();
-        context.BulkInsert(workflowRange.Select(SeededWorkflows).ToList(), bulkConfig);
 
         // Seed lithologicalDescriptions
         var lithologicalDescription_ids = 9_000_000;
@@ -1107,7 +1089,6 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.files', 'id_fil'), {file_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.stratigraphy', 'id_sty'), {stratigraphy_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.layer', 'id_lay'), {layer_ids - 1})");
-        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow', 'id_wkf'), {workflow_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.observation', 'id'), {observation_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.hydrotest_result', 'id'), {hydrotestResult_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.fieldmeasurement_result', 'id'), {fieldMeasurementResult_ids - 1})");
@@ -1117,7 +1098,7 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.lithological_description', 'id_ldp'), {lithologicalDescription_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.facies_description', 'id_fac'), {faciesDescription_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.tab_status', 'tab_status_id'), {tabStatus_ids - 1})");
-        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_v2', 'workflow_id'), {workflowV2_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow', 'id'), {workflow_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_change', 'workflow_change_id'), {workflowChange_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.document', 'id'), {document_ids - 1})");
     }

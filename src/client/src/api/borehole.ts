@@ -1,12 +1,11 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/codelist.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { WorkflowV2 } from "../pages/detail/form/workflow/workflow.ts";
+import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
 import { Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -42,9 +41,8 @@ export interface BoreholeV2 {
   typeId: number;
   remarks: string;
   statusId: number;
-  workflow: WorkflowV2 | null;
+  workflow: Workflow | null;
   boreholeCodelists: BasicIdentifier[];
-  workflows: Workflow[];
   workgroupId: number;
   workgroup: Workgroup;
   originalReferenceSystem: ReferenceSystemCode;
@@ -155,10 +153,11 @@ export const useBorehole = (id: number) => {
   return query;
 };
 
+export const canEditQueryKey = "canEditBorehole";
 export const useBoreholeEditable = (id: number) => {
   const { data: currentUser } = useCurrentUser();
   const query = useQuery({
-    queryKey: ["caneditBorehole", currentUser?.id, id],
+    queryKey: [canEditQueryKey, currentUser?.id, id],
     queryFn: async () => {
       return await canUserEditBorehole(id);
     },
