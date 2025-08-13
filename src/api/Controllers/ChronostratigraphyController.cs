@@ -50,7 +50,6 @@ public class ChronostratigraphyController : BoreholeControllerBase<Chronostratig
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);
 
-
         if (chronostratigraphyLayer == null)
         {
             return NotFound();
