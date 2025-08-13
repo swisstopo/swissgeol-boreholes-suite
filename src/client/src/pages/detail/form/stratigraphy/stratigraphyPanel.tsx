@@ -173,47 +173,56 @@ export const StratigraphyPanel: FC = () => {
     [formMethods, showApiErrorAlert, t],
   );
 
+  const onAdd = useCallback(
+    async (values: Stratigraphy) => {
+      return new Promise<void>((resolve, reject) => {
+        addStratigraphy(values, {
+          onSuccess: (newStratigraphy: Stratigraphy) => {
+            navigateToStratigraphy(newStratigraphy.id, true);
+            resolve();
+          },
+          onError: (error: Error) => {
+            handleSaveError(error);
+            reject(error);
+          },
+        });
+      });
+    },
+    [addStratigraphy, navigateToStratigraphy, handleSaveError],
+  );
+
+  const onUpdate = useCallback(
+    async (values: Stratigraphy) => {
+      return new Promise<void>((resolve, reject) => {
+        updateStratigraphy(values, {
+          onSuccess: resolve,
+          onError: (error: Error) => {
+            handleSaveError(error);
+            reject(error);
+          },
+        });
+      });
+    },
+    [updateStratigraphy, handleSaveError],
+  );
+
   const onSave = useCallback(async () => {
     if (!selectedStratigraphy) return false;
 
     const values = getValues();
     values.date = values.date ? ensureDatetime(values.date.toString()) : null;
 
-    const saveStratigraphy = (action: (resolve: () => void, reject: (error: Error) => void) => void) =>
-      new Promise<void>((resolve, reject) =>
-        action(resolve, error => {
-          handleSaveError(error);
-          reject(error);
-        }),
-      );
-
     try {
       if (values.id === 0) {
-        await saveStratigraphy((resolve, reject) =>
-          addStratigraphy(values, {
-            onSuccess: newStratigraphy => {
-              navigateToStratigraphy(newStratigraphy.id, true);
-              resolve();
-            },
-            onError: reject,
-          }),
-        );
+        await onAdd(values);
       } else {
-        await saveStratigraphy((resolve, reject) =>
-          updateStratigraphy(
-            { ...selectedStratigraphy, ...values },
-            {
-              onSuccess: resolve,
-              onError: reject,
-            },
-          ),
-        );
+        await onUpdate({ ...selectedStratigraphy, ...values });
       }
       return true;
     } catch {
       return false;
     }
-  }, [addStratigraphy, getValues, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy, handleSaveError]);
+  }, [getValues, onAdd, onUpdate, selectedStratigraphy]);
 
   const showDeletePrompt = useCallback(() => {
     if (!selectedStratigraphy) return;
