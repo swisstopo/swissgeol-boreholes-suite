@@ -49,6 +49,9 @@ public class SectionController : BoreholeControllerBase<Section>
             return NotFound();
         }
 
+        var boreholeId = await GetBoreholeId(section).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         return Ok(section);
     }
 

@@ -81,6 +81,8 @@ public class BoreholeFileController : ControllerBase
                 .FirstOrDefaultAsync(f => f.FileId == boreholeFileId)
                 .ConfigureAwait(false);
 
+            if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeFile.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
             if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
 
             var fileBytes = await boreholeFileCloudService.GetObject(boreholeFile.File.NameUuid).ConfigureAwait(false);
@@ -179,6 +181,8 @@ public class BoreholeFileController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<BoreholeFile>>> GetAllOfBorehole([Required, Range(1, int.MaxValue)] int boreholeId)
     {
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
         // Get all borehole files that are linked to the borehole.

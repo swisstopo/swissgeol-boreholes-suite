@@ -48,6 +48,8 @@ public class InstrumentationController : BoreholeControllerBase<Instrumentation>
         {
             return NotFound();
         }
+        var boreholeId = await GetBoreholeId(instrumentation).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(instrumentation);
     }

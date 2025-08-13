@@ -53,6 +53,9 @@ public class CompletionController : BoreholeControllerBase<Completion>
             return NotFound();
         }
 
+        var boreholeId = await GetBoreholeId(completion).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         return Ok(completion);
     }
 

@@ -50,6 +50,9 @@ public class LayerController : BoreholeControllerBase<Layer>
             return NotFound();
         }
 
+        var boreholeId = await GetBoreholeId(layer).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         return Ok(layer);
     }
 

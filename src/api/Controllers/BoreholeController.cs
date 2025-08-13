@@ -154,6 +154,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Borehole>> GetByIdAsync(int id)
     {
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), id).ConfigureAwait(false)) return Unauthorized();
+
         var borehole = await Context.BoreholesWithIncludes
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)

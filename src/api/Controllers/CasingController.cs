@@ -55,6 +55,8 @@ public class CasingController : BoreholeControllerBase<Casing>
             .SingleOrDefaultAsync(i => i.Id == id)
             .ConfigureAwait(false);
 
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), casing.Completion.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
         if (casing == null)
         {
             return NotFound();

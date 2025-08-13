@@ -6,6 +6,7 @@ using CsvHelper;
 using MaxRev.Gdal.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO.Converters;
 using OSGeo.OGR;
@@ -83,6 +84,7 @@ public class ExportController : ControllerBase
         if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
         var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);

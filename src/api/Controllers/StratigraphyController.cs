@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using static System.Collections.Specialized.BitVector32;
 
 namespace BDMS.Controllers;
 
@@ -32,6 +33,9 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(stratigraphy).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(stratigraphy);
     }

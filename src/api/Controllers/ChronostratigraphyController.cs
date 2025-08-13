@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Amazon.Runtime.Internal.Util;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -49,10 +50,14 @@ public class ChronostratigraphyController : BoreholeControllerBase<Chronostratig
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);
 
+
         if (chronostratigraphyLayer == null)
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(chronostratigraphyLayer).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(chronostratigraphyLayer);
     }

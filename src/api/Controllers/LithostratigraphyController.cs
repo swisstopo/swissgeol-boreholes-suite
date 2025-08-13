@@ -51,6 +51,9 @@ public class LithostratigraphyController : BoreholeControllerBase<Lithostratigra
             return NotFound();
         }
 
+        var boreholeId = await GetBoreholeId(lithostratigraphyLayer).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         return Ok(lithostratigraphyLayer);
     }
 

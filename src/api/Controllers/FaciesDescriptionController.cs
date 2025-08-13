@@ -2,6 +2,7 @@
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 
 namespace BDMS.Controllers;
@@ -51,6 +52,9 @@ public class FaciesDescriptionController : BoreholeControllerBase<FaciesDescript
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(faciesDescription).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(faciesDescription);
     }

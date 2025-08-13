@@ -3,6 +3,7 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OSGeo.OGR;
 
 namespace BDMS.Controllers;
 
@@ -51,6 +52,9 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(lithologicalDescription).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(lithologicalDescription);
     }

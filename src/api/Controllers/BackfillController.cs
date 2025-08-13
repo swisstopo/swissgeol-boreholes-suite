@@ -40,6 +40,9 @@ public class BackfillController : BoreholeControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Backfill>> GetByIdAsync(int id)
     {
+        var boreholeId = await GetBoreholeId(new Backfill { Id = id }).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         var backfill = await GetBackfillsWithIncludes().SingleOrDefaultAsync(i => i.Id == id).ConfigureAwait(false);
 
         if (backfill == null)
