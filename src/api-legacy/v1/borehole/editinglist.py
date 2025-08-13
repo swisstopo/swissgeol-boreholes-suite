@@ -100,13 +100,10 @@ class ListEditingBorehole(Action):
                     select row_to_json(t)
                     FROM (
                         SELECT
-                            status_id_cli as status,
                             purpose_id_cli as purpose
                     ) t
                 ) as extended,
-                stratigraphy as stratigraphy,
-                array_to_json(status) as workflows,
-                status[array_length(status, 1)]  ->> 'role' as "role"
+                stratigraphy as stratigraphy
 
             FROM
                 bdms.borehole
@@ -125,43 +122,6 @@ class ListEditingBorehole(Action):
 
             INNER JOIN bdms.workgroups
             ON id_wgp = id_wgp_fk
-
-            INNER JOIN (
-                SELECT
-                    id_bho_fk,
-                    array_agg(
-                        json_build_object(
-                            'workflow', id_wkf,
-                            'role', name_rol,
-                            'username', username,
-                            'started', started,
-                            'finished', finished
-                        )
-                    ) as status
-                FROM (
-                    SELECT
-                        id_bho_fk,
-                        name_rol,
-                        id_wkf,
-                        username,
-                        started_wkf as started,
-                        finished_wkf as finished
-                    FROM
-                        bdms.workflow,
-                        bdms.roles,
-                        bdms.users
-                    WHERE
-                        id_rol = id_rol_fk
-                    AND
-                        id_usr = id_usr_fk
-                    ORDER BY
-                        id_bho_fk asc, id_wkf asc
-                ) t
-                GROUP BY
-                    id_bho_fk
-            ) as v
-            ON
-                v.id_bho_fk = borehole.id_bho
 
             LEFT JOIN
                 bdms.users as locker
@@ -211,43 +171,6 @@ class ListEditingBorehole(Action):
                 count(*) AS cnt
             FROM
                 bdms.borehole
-
-            INNER JOIN (
-                SELECT
-                    id_bho_fk,
-                    array_agg(
-                        json_build_object(
-                            'workflow', id_wkf,
-                            'role', name_rol,
-                            'username', username,
-                            'started', started,
-                            'finished', finished
-                        )
-                    ) as status
-                FROM (
-                    SELECT
-                        id_bho_fk,
-                        name_rol,
-                        id_wkf,
-                        username,
-                        started_wkf as started,
-                        finished_wkf as finished
-                    FROM
-                        bdms.workflow,
-                        bdms.roles,
-                        bdms.users
-                    WHERE
-                        id_rol = id_rol_fk
-                    AND
-                        id_usr = id_usr_fk
-                    ORDER BY
-                        id_bho_fk asc, id_wkf asc
-                ) t
-                GROUP BY
-                    id_bho_fk
-            ) as v
-            ON
-                v.id_bho_fk = id_bho
 
             LEFT JOIN (
                 SELECT

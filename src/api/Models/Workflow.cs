@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 
@@ -6,55 +7,71 @@ namespace BDMS.Models;
 /// Represents a workflow entity in the database.
 /// </summary>
 [Table("workflow")]
-public class Workflow : IIdentifyable, IUserAttached<User, int>
+public class Workflow : IIdentifyable
 {
     /// <inheritdoc />
-    [Column("id_wkf")]
+    [Key]
+    [Column("id")]
     public int Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="User"/> id for the workflow.
+    /// Gets or sets if a reviewer has requested changes for the borehole.
     /// </summary>
-    [Column("id_usr_fk")]
-    public int UserId { get; set; }
+    [Column("has_requested_changes")]
+    public bool HasRequestedChanges { get; set; }
 
     /// <summary>
-    /// Gets or sets the  <see cref="Borehole"/> id for the workflow.
+    /// Gets or sets the current workflow status of the borehole.
     /// </summary>
-    [Column("id_bho_fk")]
+    [Column("status")]
+    public WorkflowStatus Status { get; set; } = WorkflowStatus.Draft;
+
+    /// <summary>
+    /// Gets or sets the id of the <see cref="Borehole"/>.
+    /// </summary>
+    [Column("borehole_id")]
     public int BoreholeId { get; set; }
 
     /// <summary>
-    /// Gets or sets the timestamp from the moment the workflow started.
-    /// </summary>
-    [Column("started_wkf")]
-    public DateTime? Started { get; set; }
-
-    /// <summary>
-    /// Gets or sets the timestamp from the moment the workflow finished.
-    /// </summary>
-    [Column("finished_wkf")]
-    public DateTime? Finished { get; set; }
-
-    /// <summary>
-    /// Gets or sets the notes.
-    /// </summary>
-    [Column("notes_wkf")]
-    public string? Notes { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="User"/>.
-    /// </summary>
-    public User User { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>.
+    /// Gets or sets the borehole of this <see cref="Workflow"/>.
     /// </summary>
     public Borehole? Borehole { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Role"/>.
+    /// Gets or sets the id of the <see cref="ReviewedTabs"/>.
     /// </summary>
-    [Column("id_rol_fk", TypeName = "integer")]
-    public Role? Role { get; set; }
+    [Column("reviewed_tabs_id")]
+    public int ReviewedTabsId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the tabs that have been reviewed.
+    /// </summary>
+    public TabStatus ReviewedTabs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the id of the <see cref="PublishedTabs"/>.
+    /// </summary>
+    [Column("published_tabs_id")]
+    public int PublishedTabsId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the tabs that have been published.
+    /// </summary>
+    public TabStatus PublishedTabs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the id of the <see cref="Assignee"/>.
+    /// </summary>
+    [Column("assignee_id")]
+    public int? AssigneeId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="User"/> that is currently assigned to this <see cref="Workflow"/>.
+    /// </summary>
+    public User? Assignee { get; set; }
+
+    /// <summary>
+    /// Get the <see cref="WorkflowChange"/>s associated with this <see cref="Workflow"/>.
+    /// </summary>
+    public ICollection<WorkflowChange> Changes { get; } = new List<WorkflowChange>();
 }

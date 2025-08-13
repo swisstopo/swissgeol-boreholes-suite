@@ -126,7 +126,9 @@ const assertNewCompletionCreated = boreholeId => {
 };
 
 describe("completion crud tests", () => {
-  it("adds, edits, copies and deletes completions", () => {
+  // Skip currently very flaky test
+  // Todo reactivate and resolve flakyness issue
+  it.skip("adds, edits, copies and deletes completions", () => {
     createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);

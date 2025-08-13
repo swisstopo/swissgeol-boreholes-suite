@@ -9,6 +9,9 @@ export const fetchUser = async (id: number): Promise<User> => await fetchApiV2Wi
 
 export const fetchUsers = async (): Promise<User[]> => await fetchApiV2WithApiError("user", "GET");
 
+export const fetchEditorUsersOnWorkgroup = async (workgroupId: number): Promise<User[]> =>
+  await fetchApiV2WithApiError(`user/editorsOnWorkgroup/${workgroupId}`, "GET");
+
 export const updateUser = async (user: User) => {
   if (user.disabledAt) {
     user.disabledAt = new Date(user.disabledAt).toISOString();
@@ -28,6 +31,17 @@ export const useUsers = () => {
   });
 
   // integrate error alert into query
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
+
+export const useEditorUsersOnWorkgroup = (workgroupId: number) => {
+  const query = useQuery({
+    queryKey: [usersQueryKey, "editors", workgroupId],
+    queryFn: () => fetchEditorUsersOnWorkgroup(workgroupId),
+    enabled: !!workgroupId,
+  });
+
   useShowAlertOnError(query.isError, query.error);
   return query;
 };

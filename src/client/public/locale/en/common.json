@@ -53,6 +53,7 @@
   "boreholeGeometryFormat": "Geometry format",
   "boreholeGeometryImport": "Import geometry",
   "boreholeGeometryReplace": "Replace geometry",
+  "boreholeStatusChangedNoMorePermissions": "The status of the borehole was changed. You no longer have permission to edit the borehole.",
   "borehole_identifier": "ID type",
   "borehole_identifier_value": "ID code",
   "borehole_technical_id": "Boreholes.swissgeol.ch ID",

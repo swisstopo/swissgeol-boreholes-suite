@@ -1,6 +1,7 @@
 import { ChangeEvent, FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { WorkflowStatus } from "@swissgeol/ui-core";
 import { capitalizeFirstLetter } from "../../../../utils";
 
 interface StatusFilterProps {
@@ -10,15 +11,15 @@ interface StatusFilterProps {
 export const StatusFilter: FC<StatusFilterProps> = ({ selectedRole, setFilter }) => {
   const { t } = useTranslation();
 
-  const roles = [
-    { name: "EDIT", translationKey: "statuseditor" },
-    { name: "CONTROL", translationKey: "statuscontroller" },
-    { name: "VALID", translationKey: "statusvalidator" },
-    { name: "PUBLIC", translationKey: "statuspublisher" },
+  const workflowStatus = [
+    WorkflowStatus.Draft,
+    WorkflowStatus.InReview,
+    WorkflowStatus.Reviewed,
+    WorkflowStatus.Published,
   ];
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFilter("role", event.target.value);
+    setFilter("workflow", event.target.value);
   };
 
   return (
@@ -26,12 +27,12 @@ export const StatusFilter: FC<StatusFilterProps> = ({ selectedRole, setFilter })
       <RadioGroup onChange={handleChange} value={selectedRole} defaultValue="all">
         <>
           <FormControlLabel key={"all"} value={"all"} control={<Radio />} label={capitalizeFirstLetter(t("all"))} />
-          {roles.map(role => (
+          {workflowStatus.map(status => (
             <FormControlLabel
-              key={role.name}
-              value={role.name}
-              control={<Radio data-cy={role.translationKey} />}
-              label={capitalizeFirstLetter(t(role.translationKey))}
+              key={status}
+              value={status}
+              control={<Radio data-cy={status} />}
+              label={capitalizeFirstLetter(t(`statuses.${status}`))}
             />
           ))}
         </>

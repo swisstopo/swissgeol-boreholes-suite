@@ -249,7 +249,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.status:
-      cy.wait("@workflow_edit_list");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/status$/);
       });

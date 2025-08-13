@@ -45,7 +45,6 @@ public class BdmsContext : DbContext
         .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.Assignee)
-        .Include(b => b.Workflows)
         .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
         .Include(b => b.Photos)
         .Include(b => b.Documents)
@@ -112,10 +111,8 @@ public class BdmsContext : DbContext
 
     public DbSet<Workflow> Workflows { get; set; }
 
-    public DbSet<WorkflowV2> WorkflowsV2 { get; set; }
-
-    public IQueryable<WorkflowV2> WorkflowsV2WithIncludes
-        => WorkflowsV2
+    public IQueryable<Workflow> WorkflowWithIncludes
+        => Workflows
         .Include(w => w.Changes).ThenInclude(wc => wc.CreatedBy)
         .Include(w => w.Changes).ThenInclude(wc => wc.Assignee)
         .Include(w => w.Assignee)
@@ -428,9 +425,9 @@ public class BdmsContext : DbContext
 
         modelBuilder.Entity<FieldMeasurement>().ToTable("field_measurement").HasBaseType<Observation>();
 
-        modelBuilder.Entity<WorkflowV2>().HasOne(w => w.Borehole).WithOne(b => b.Workflow).HasForeignKey<WorkflowV2>(w => w.BoreholeId);
-        modelBuilder.Entity<WorkflowV2>().HasOne(w => w.ReviewedTabs).WithOne().HasForeignKey<WorkflowV2>(w => w.ReviewedTabsId);
-        modelBuilder.Entity<WorkflowV2>().HasOne(w => w.PublishedTabs).WithOne().HasForeignKey<WorkflowV2>(w => w.PublishedTabsId);
+        modelBuilder.Entity<Workflow>().HasOne(w => w.Borehole).WithOne(b => b.Workflow).HasForeignKey<Workflow>(w => w.BoreholeId);
+        modelBuilder.Entity<Workflow>().HasOne(w => w.ReviewedTabs).WithOne().HasForeignKey<Workflow>(w => w.ReviewedTabsId);
+        modelBuilder.Entity<Workflow>().HasOne(w => w.PublishedTabs).WithOne().HasForeignKey<Workflow>(w => w.PublishedTabsId);
 
         modelBuilder.Entity<WorkflowChange>()
             .HasOne(c => c.Workflow)

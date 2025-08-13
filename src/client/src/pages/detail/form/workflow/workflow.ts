@@ -6,13 +6,13 @@ import {
   WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { boreholeQueryKey } from "../../../../api/borehole.ts";
+import { boreholeQueryKey, canEditQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
 import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.tsx";
 
 export { WorkflowStatus };
 
-export interface WorkflowV2 extends GenericWorkflow {
+export interface Workflow extends GenericWorkflow {
   id: number;
   boreholeId: number;
   reviewedTabs: TabStatus;
@@ -67,7 +67,7 @@ export enum TabType {
   Published,
 }
 
-export const fetchWorkflowByBoreholeId = async (boreholeId: number): Promise<WorkflowV2> =>
+export const fetchWorkflowByBoreholeId = async (boreholeId: number): Promise<Workflow> =>
   await fetchApiV2(`workflow/${boreholeId}`, "GET");
 
 export const sendWorkflowChangeRequest = async (workflowChangeRequest: WorkflowChangeRequest) => {
@@ -80,7 +80,7 @@ export const sendTabStatusChangeRequest = async (tabStatusChangeRequest: TabStat
 
 export const workflowQueryKey = "workflows";
 
-export const useWorkflow = (boreholeId: number): UseQueryResult<WorkflowV2> => {
+export const useWorkflow = (boreholeId: number): UseQueryResult<Workflow> => {
   const query = useQuery({
     queryKey: [workflowQueryKey, boreholeId],
     queryFn: () => {
@@ -99,6 +99,7 @@ export const useWorkflowMutation = () => {
   function invalidateBoreholeAndWorkflowQueries(boreholeId: number) {
     queryClient.invalidateQueries({ queryKey: [workflowQueryKey, Number(boreholeId)] });
     queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
+    queryClient.invalidateQueries({ queryKey: [canEditQueryKey] });
   }
 
   const updateWorkflow = useMutation({
