@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { User } from "./apiInterfaces.ts";
-import { boreholeQueryKey, BoreholeV2, useReloadBoreholes } from "./borehole.ts";
+import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
 import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
 export interface StratigraphyLegacy {
