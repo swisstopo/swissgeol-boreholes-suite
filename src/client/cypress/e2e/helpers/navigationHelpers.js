@@ -227,7 +227,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/status$/);
       });
-      cy.contains("Publication workflow");
+      cy.get("sgc-workflow").should("exist");
       isActiveMenuItem(menuItem);
       break;
   }
