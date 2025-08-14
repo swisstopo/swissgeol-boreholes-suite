@@ -1,0 +1,81 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using System;
+
+#nullable disable
+
+namespace BDMS.Migrations;
+
+/// <inheritdoc />
+public partial class AddStratigraphyV2 : Migration
+{
+    /// <inheritdoc />
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.CreateTable(
+            name: "stratigraphy_v2",
+            schema: "bdms",
+            columns: table => new
+            {
+                id = table.Column<int>(type: "integer", nullable: false)
+                    .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                borehole_id = table.Column<int>(type: "integer", nullable: false),
+                name = table.Column<string>(type: "text", nullable: false),
+                date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                is_primary = table.Column<bool>(type: "boolean", nullable: false),
+                update = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updater = table.Column<int>(type: "integer", nullable: true),
+                creation = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                creator = table.Column<int>(type: "integer", nullable: true),
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_stratigraphy_v2", x => x.id);
+                table.ForeignKey(
+                    name: "FK_stratigraphy_v2_borehole_borehole_id",
+                    column: x => x.borehole_id,
+                    principalSchema: "bdms",
+                    principalTable: "borehole",
+                    principalColumn: "id_bho",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_stratigraphy_v2_users_creator",
+                    column: x => x.creator,
+                    principalSchema: "bdms",
+                    principalTable: "users",
+                    principalColumn: "id_usr");
+                table.ForeignKey(
+                    name: "FK_stratigraphy_v2_users_updater",
+                    column: x => x.updater,
+                    principalSchema: "bdms",
+                    principalTable: "users",
+                    principalColumn: "id_usr");
+            });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_stratigraphy_v2_borehole_id",
+            schema: "bdms",
+            table: "stratigraphy_v2",
+            column: "borehole_id");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_stratigraphy_v2_creator",
+            schema: "bdms",
+            table: "stratigraphy_v2",
+            column: "creator");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_stratigraphy_v2_updater",
+            schema: "bdms",
+            table: "stratigraphy_v2",
+            column: "updater");
+    }
+
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(
+            name: "stratigraphy_v2",
+            schema: "bdms");
+    }
+}

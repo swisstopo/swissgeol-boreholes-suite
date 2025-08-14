@@ -20,7 +20,7 @@ interface UseAttachmentsProps<T extends AttachmentWithPublicState> {
   apiRef: RefObject<GridApiCommunity>;
   loadAttachments: () => Promise<T[]>;
   addAttachment: (file?: File) => Promise<void>;
-  updateAttachments: (updatedRows: Map<GridRowId, T>) => Promise<void>;
+  updateAttachments: (updatedRows: Map<GridRowId, T>) => Promise<boolean>;
   deleteAttachments: (ids: number[]) => Promise<void>;
   exportAttachments: (ids: number[]) => Promise<void>;
   tabStatusToReset: TabName;
@@ -85,11 +85,14 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
   const onSave = useCallback(async () => {
     setIsLoading(true);
     removeCellFocus();
-    await updateAttachments(updatedRows);
-    resetTabStatus();
-    setUpdatedRows(new Map());
-    await onLoad();
-  }, [removeCellFocus, updateAttachments, updatedRows, resetTabStatus, onLoad]);
+    const success = await updateAttachments(updatedRows);
+    if (success) {
+      resetTabStatus();
+      setUpdatedRows(new Map());
+      await onLoad();
+    }
+    return success;
+  }, [updateAttachments, updatedRows, onLoad, removeCellFocus, resetTabStatus]);
 
   const onDelete = useCallback(async () => {
     setIsLoading(true);

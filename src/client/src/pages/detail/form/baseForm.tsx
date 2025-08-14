@@ -2,11 +2,12 @@ import { ReactNode, useCallback, useContext, useEffect } from "react";
 import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
 import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
-import { useBorehole, useBoreholeMutations } from "../../../api/borehole.ts";
+import { useBorehole, useBoreholeMutations, useReloadBoreholes } from "../../../api/borehole.ts";
 import { useFormDirtyChanges } from "../../../components/form/useFormDirtyChanges.tsx";
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
+import { useApiErrorAlert } from "../../../hooks/useShowAlertOnError.tsx";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
 import { SaveContext } from "../saveContext.tsx";
 import { TabName } from "./workflow/workflow.ts";
@@ -34,27 +35,43 @@ export const BaseForm = <T extends FieldValues>({
   const {
     update: { mutate: updateBorehole },
   } = useBoreholeMutations();
+  const reloadBoreholes = useReloadBoreholes();
   const resetTabStatus = useResetTabStatus([tabStatusToReset]);
   const { getValues, reset, formState } = formMethods;
   useBlockNavigation();
   useFormDirtyChanges({ formState });
+  const showApiErrorAlert = useApiErrorAlert();
 
   const onSubmit = useCallback(
-    (formInputs: T) => {
-      updateBorehole({
-        ...borehole,
-        ...prepareDataForSubmit(formInputs),
+    (formInputs: T): Promise<boolean> => {
+      return new Promise(resolve => {
+        updateBorehole(
+          {
+            ...borehole,
+            ...prepareDataForSubmit(formInputs),
+          },
+          {
+            onSuccess: () => {
+              reloadBoreholes();
+              resolve(true);
+            },
+            onError: error => {
+              showApiErrorAlert(error);
+              resolve(false);
+            },
+          },
+        );
       });
     },
-    [borehole, prepareDataForSubmit, updateBorehole],
+    [updateBorehole, borehole, prepareDataForSubmit, reloadBoreholes, showApiErrorAlert],
   );
 
   const resetAndSubmitForm = useCallback(async () => {
     const currentValues = getValues();
     reset(currentValues);
     setExtractionObject(undefined);
-    onSubmit(currentValues);
     resetTabStatus();
+    return await onSubmit(currentValues);
   }, [getValues, onSubmit, reset, resetTabStatus, setExtractionObject]);
 
   const resetWithoutSave = useCallback(() => {

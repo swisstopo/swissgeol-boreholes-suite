@@ -334,7 +334,7 @@ export const deletePhotos = async (photoIds: number[]): Promise<Response> => {
 };
 
 export const updatePhotos = async (data: { id: number; public: boolean }[]): Promise<Response> => {
-  return await fetchApiV2("photo", "PUT", data);
+  return await fetchApiV2WithApiError("photo", "PUT", data);
 };
 
 export const getPhotoImageData = async (photoId: number): Promise<Blob> => {
@@ -354,7 +354,7 @@ export const createDocument = async (document: Document): Promise<Document> => {
 };
 
 export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Document> => {
-  return await fetchApiV2("document", "PUT", documents);
+  return await fetchApiV2WithApiError("document", "PUT", documents);
 };
 
 export const deleteDocuments = async (documentIds: number[]): Promise<Response> => {

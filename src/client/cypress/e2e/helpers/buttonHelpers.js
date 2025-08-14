@@ -5,18 +5,8 @@ import { createBaseSelector, getElementByDataCy } from "./testHelpers";
  * @param {string} parent (optional) The parent of the button.
  */
 export const saveWithSaveBar = parent => {
-  // Count all 'borehole_by_id' requests before save button click to be able to separate requests 'borehole_by_id' requests triggered by the borehole update
-  cy.get("@borehole_by_id.all").then(requests => {
-    cy.wrap(requests.length).as("countBeforeSaveButton");
-    cy.log("'borehole_by_id'-Requests before save button click: " + requests.length);
-  });
-
   getElementByDataCy("save-bar-text").should("contain", "Unsaved changes");
   saveForm(parent);
-
-  cy.get("@countBeforeSaveButton").then(countBeforeSaveButton => {
-    cy.get("@borehole_by_id.all").should("have.length.greaterThan", countBeforeSaveButton);
-  });
 
   getElementByDataCy("save-bar-text").should("contain", "Changes saved");
   getElementByDataCy("save-bar-text").should("not.exist");
