@@ -77,6 +77,38 @@ public class CompletionControllerTest
     }
 
     [TestMethod]
+    public async Task GetAsyncFiltersCompletionsBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with completion and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newCompletion = new Completion()
+        {
+            BoreholeId = newBorehole.Id,
+            Name = "Test Completion",
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
+        };
+        await context.Completions.AddAsync(newCompletion);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<Completion>? completionsForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(completionsForAdmin);
+        Assert.AreEqual(501, completionsForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<Completion>? completionsForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(completionsForEditor);
+        Assert.AreEqual(496, completionsForEditor.Count());
+    }
+
+    [TestMethod]
     public async Task GetByInexistentBoreholeId()
     {
         var completions = await controller.GetAsync(81294572).ConfigureAwait(false);

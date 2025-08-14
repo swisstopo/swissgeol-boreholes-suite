@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -56,6 +57,46 @@ public class InstrumentationControllerTest
         IEnumerable<Instrumentation>? instrumentations = await controller.GetAsync(completionId).ConfigureAwait(false);
         Assert.IsNotNull(instrumentations);
         Assert.AreEqual(2, instrumentations.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersInstrumentationsBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with instrumentation and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newCompletion = new Completion()
+        {
+            BoreholeId = newBorehole.Id,
+            Name = "Test Completion",
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
+        };
+        await context.Completions.AddAsync(newCompletion);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        await context.Instrumentations.AddAsync(new Instrumentation()
+        {
+            CompletionId = newCompletion.Id,
+            Name = "Test Instrumentation",
+        });
+
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<Instrumentation>? instrumentationsForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(instrumentationsForAdmin);
+        Assert.AreEqual(501, instrumentationsForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<Instrumentation>? instrumentationsForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(instrumentationsForEditor);
+        Assert.AreEqual(496, instrumentationsForEditor.Count());
     }
 
     [TestMethod]

@@ -25,7 +25,23 @@ public class CompletionController : BoreholeControllerBase<Completion>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Completion>> GetAsync([FromQuery] int? boreholeId = null)
     {
+        var user = await Context.Users
+            .Include(u => u.WorkgroupRoles)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
         var completions = Context.Completions.Include(c => c.Kind).AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            completions = completions
+                .Where(c => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == c.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
 
         if (boreholeId != null)
         {

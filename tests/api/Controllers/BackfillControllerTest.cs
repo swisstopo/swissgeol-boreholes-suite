@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -56,6 +57,45 @@ public class BackfillControllerTest
         IEnumerable<Backfill>? backfills = await controller.GetAsync(completionId).ConfigureAwait(false);
         Assert.IsNotNull(backfills);
         Assert.AreEqual(2, backfills.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersBackfillsBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with backfill and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newCompletion = new Completion()
+        {
+            BoreholeId = newBorehole.Id,
+            Name = "Test Completion",
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
+        };
+        await context.Completions.AddAsync(newCompletion);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        await context.Backfills.AddAsync(new Backfill()
+        {
+            CompletionId = newCompletion.Id,
+        });
+
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<Backfill>? backfillsForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(backfillsForAdmin);
+        Assert.AreEqual(501, backfillsForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<Backfill>? backfillsForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(backfillsForEditor);
+        Assert.AreEqual(496, backfillsForEditor.Count());
     }
 
     [TestMethod]

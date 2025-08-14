@@ -83,7 +83,7 @@ public class CasingControllerTest
 
         IEnumerable<Casing>? casingsForEditor = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(casingsForEditor);
-        Assert.AreEqual(500, casingsForEditor.Count());
+        Assert.AreEqual(496, casingsForEditor.Count());
     }
 
     [TestMethod]
