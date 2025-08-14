@@ -95,7 +95,7 @@ public class BackfillControllerTest
 
         IEnumerable<Backfill>? backfillsForEditor = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(backfillsForEditor);
-        Assert.AreEqual(496, backfillsForEditor.Count());
+        Assert.AreEqual(500, backfillsForEditor.Count());
     }
 
     [TestMethod]

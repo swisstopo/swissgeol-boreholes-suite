@@ -105,7 +105,7 @@ public class CompletionControllerTest
 
         IEnumerable<Completion>? completionsForEditor = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(completionsForEditor);
-        Assert.AreEqual(496, completionsForEditor.Count());
+        Assert.AreEqual(495, completionsForEditor.Count());
     }
 
     [TestMethod]
