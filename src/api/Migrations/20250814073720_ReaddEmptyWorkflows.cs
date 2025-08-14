@@ -3,6 +3,7 @@
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class ReaddEmptyWorkflows : Migration
@@ -55,3 +56,4 @@ public partial class ReaddEmptyWorkflows : Migration
         """);
     }
 }
+#pragma warning restore CA1505
