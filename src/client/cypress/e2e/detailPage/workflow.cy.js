@@ -272,7 +272,7 @@ describe("Tests the publication workflow.", () => {
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       assertWorkflowSteps(WorkflowStatus.Draft);
-      AssertHeaderChips(WorkflowStatus.Draft, "free");
+      AssertHeaderChips(WorkflowStatus.Draft);
       AssignNewUser("Editor User");
       AssertHeaderChips(WorkflowStatus.Draft, "Editor User");
       getElementByDataCy("review-button").should("not.exist");
