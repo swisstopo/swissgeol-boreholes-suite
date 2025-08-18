@@ -23,9 +23,24 @@ public class ChronostratigraphyController : BoreholeControllerBase<Chronostratig
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<ChronostratigraphyLayer>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
         var chronostratigraphyLayers = Context.ChronostratigraphyLayers
             .Include(c => c.Chronostratigraphy)
             .AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            chronostratigraphyLayers = chronostratigraphyLayers
+                .Where(cl => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == cl.Stratigraphy.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
 
         if (stratigraphyId != null)
         {

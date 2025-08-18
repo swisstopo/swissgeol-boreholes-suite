@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -40,6 +41,45 @@ public class LayerControllerTest
         IEnumerable<Layer>? layers = response?.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(30_000, layers.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersLayersBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with layers and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newStratigraphy = new Stratigraphy()
+        {
+            BoreholeId = newBorehole.Id,
+        };
+        await context.Stratigraphies.AddAsync(newStratigraphy);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newLithologyLayer = new Layer()
+        {
+            StratigraphyId = newStratigraphy.Id,
+        };
+        await context.Layers.AddAsync(newLithologyLayer);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var layersResponse = await controller.GetAsync().ConfigureAwait(false);
+        IEnumerable<Layer>? layersForAdmin = layersResponse.Value;
+        Assert.IsNotNull(layersForAdmin);
+        Assert.AreEqual(30001, layersForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        var layersResponse2 = await controller.GetAsync().ConfigureAwait(false);
+        IEnumerable<Layer>? layersForEditor = layersResponse2.Value;
+        Assert.IsNotNull(layersForEditor);
+        Assert.AreEqual(28510, layersForEditor.Count());
     }
 
     [TestMethod]

@@ -47,7 +47,23 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Stratigraphy>> GetAsync([FromQuery] int? boreholeId = null)
     {
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
         var stratigraphies = Context.Stratigraphies.AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            stratigraphies = stratigraphies
+                .Where(s => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == s.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
+
         if (boreholeId != null)
         {
             stratigraphies = stratigraphies.Where(l => l.BoreholeId == boreholeId);

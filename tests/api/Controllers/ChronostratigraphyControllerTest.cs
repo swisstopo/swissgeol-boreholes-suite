@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,6 +39,43 @@ public class ChronostratigraphyControllerTest
         IEnumerable<ChronostratigraphyLayer>? chronostratigraphies = response;
         Assert.IsNotNull(chronostratigraphies);
         Assert.AreEqual(30000, chronostratigraphies.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersChronostratigraphyLayersBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with chronostratigraphy and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newStratigraphy = new Stratigraphy()
+        {
+            BoreholeId = newBorehole.Id,
+        };
+        await context.Stratigraphies.AddAsync(newStratigraphy);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var chronostratigraphyLayer = new ChronostratigraphyLayer()
+        {
+            StratigraphyId = newStratigraphy.Id,
+        };
+        await context.ChronostratigraphyLayers.AddAsync(chronostratigraphyLayer);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<ChronostratigraphyLayer>? layersForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(layersForAdmin);
+        Assert.AreEqual(30001, layersForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<ChronostratigraphyLayer>? layersForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(layersForEditor);
+        Assert.AreEqual(28510, layersForEditor.Count());
     }
 
     [TestMethod]

@@ -23,13 +23,27 @@ public class LithostratigraphyController : BoreholeControllerBase<Lithostratigra
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<LithostratigraphyLayer>> GetAsync([FromQuery] int stratigraphyId)
     {
-        return await Context.LithostratigraphyLayers
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
+        var lithostratigraphyLayers = Context.LithostratigraphyLayers
             .Include(c => c.Lithostratigraphy)
             .AsNoTracking()
-            .Where(l => l.StratigraphyId == stratigraphyId)
-            .OrderBy(l => l.FromDepth)
-            .ToListAsync()
-            .ConfigureAwait(false);
+            .Where(l => l.StratigraphyId == stratigraphyId);
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            lithostratigraphyLayers = lithostratigraphyLayers
+                .Where(l => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == l.Stratigraphy.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
+
+        return await lithostratigraphyLayers.OrderBy(l => l.FromDepth).ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>

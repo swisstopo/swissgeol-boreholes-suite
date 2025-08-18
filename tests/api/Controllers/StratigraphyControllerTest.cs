@@ -46,6 +46,36 @@ public class StratigraphyControllerTest
     }
 
     [TestMethod]
+    public async Task GetAsyncFiltersStratigraphiesBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with stratigraphies and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newStratigraphy = new Stratigraphy()
+        {
+            BoreholeId = newBorehole.Id,
+        };
+        await context.Stratigraphies.AddAsync(newStratigraphy);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<Stratigraphy>? stratigraphiesForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(stratigraphiesForAdmin);
+        Assert.AreEqual(3001, stratigraphiesForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<Stratigraphy>? stratigraphiesForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(stratigraphiesForEditor);
+        Assert.AreEqual(2851, stratigraphiesForEditor.Count());
+    }
+
+    [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
         var stratigraphies = await controller.GetAsync(81294572).ConfigureAwait(false);
