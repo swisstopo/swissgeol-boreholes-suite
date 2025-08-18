@@ -1,7 +1,7 @@
 import { setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
-  getImportFileFromFixtures,
+  dropGeometryCSVFile,
   goToDetailRouteAndAcceptTerms,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
@@ -25,19 +25,7 @@ describe("Geometry crud tests", () => {
     cy.get('[data-cy="boreholegeometryimport-button"]').should("be.disabled");
 
     // Select geometry csv file
-    let geometryFile = new DataTransfer();
-    getImportFileFromFixtures("geometry_azimuth_inclination.csv", null).then(fileContent => {
-      const file = new File([fileContent], "geometry_azimuth_inclination.csv", {
-        type: "text/csv",
-      });
-      geometryFile.items.add(file);
-    });
-    cy.get('[data-cy="import-geometry-input"]').within(() => {
-      cy.get("input[type=file]", { force: true }).then(input => {
-        input[0].files = geometryFile.files;
-        input[0].dispatchEvent(new Event("change", { bubbles: true }));
-      });
-    });
+    dropGeometryCSVFile();
 
     cy.get('[data-cy="boreholegeometryimport-button"]').should("be.enabled");
 

@@ -28,7 +28,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     public async Task<bool> CanViewBoreholeAsync(string? subjectId, int? boreholeId)
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
-        var borehole = await GetBoreholeWithWorkflowsAsync(boreholeId).ConfigureAwait(false);
+        var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
         return CanViewBorehole(user, borehole);
     }
 
@@ -38,14 +38,14 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     }
 
     /// <inheritdoc />
-    public async Task<bool> CanEditBoreholeAsync(string? subjectId, int? boreholeId, bool? useWorkflowV2 = false)
+    public async Task<bool> CanEditBoreholeAsync(string? subjectId, int? boreholeId)
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
-        var borehole = await GetBoreholeWithWorkflowsAsync(boreholeId).ConfigureAwait(false);
-        return CanEditBorehole(user, borehole, useWorkflowV2 ?? false);
+        var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
+        return CanEditBorehole(user, borehole);
     }
 
-    internal bool CanEditBorehole(User user, Borehole borehole, bool useWorkflowV2)
+    internal bool CanEditBorehole(User user, Borehole borehole)
     {
         if (user.IsAdmin)
         {
@@ -54,15 +54,15 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
 
         return !IsBoreholeLocked(user, borehole)
             && HasViewPermission(user, borehole)
-            && (useWorkflowV2 ? HasEditPermissionV2(user, borehole) : HasEditPermission(user, borehole));
+            && HasEditPermission(user, borehole);
     }
 
     private static bool HasUserSpecificRoleOnWorkgroup(User user, int? workgroupId, Role expectedRole)
     {
         var workgroupRoles = user.WorkgroupRoles ?? Enumerable.Empty<UserWorkgroupRole>();
-        var hasExpectedWorkgroupRole = workgroupRoles.Any(x => x.WorkgroupId == workgroupId && x.Role == expectedRole);
+        var hasAtLeastExpectedRole = workgroupRoles.Any(x => x.WorkgroupId == workgroupId && (int)x.Role >= (int)expectedRole);
 
-        return hasExpectedWorkgroupRole;
+        return hasAtLeastExpectedRole;
     }
 
     private static bool HasUserAnyRoleOnWorkgroup(User user, int? workgroupId)
@@ -87,34 +87,10 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
 
     /// <summary>
     /// Checks whether the <paramref name="user"/> has permissions to edit the <paramref name="borehole"/>.
-    /// "Permission to edit" refers to the user having the <see cref="Role"/> on the <see cref="Workgroup"/> of the <see cref="Borehole"/>, which is equal to the
-    /// borehole's current <see cref="Workflow.Role"/>.
+    /// "Permission to edit" refers to the user having the <see cref="Role"/> on the <see cref="Workgroup"/> of the <see cref="Borehole"/>, which has permission to
+    /// change the borehole with the current <see cref="Workflow.Status"/>.
     /// </summary>
     private bool HasEditPermission(User user, Borehole borehole)
-    {
-        if (borehole.Workflows == null || borehole.Workflows.Count == 0)
-        {
-            logger.LogWarning("User with SubjectId <{SubjectId}> attempted to edit BoreholeId <{BoreholeId}>, but it has no workflows.", user.SubjectId, borehole.Id);
-            return false;
-        }
-
-        var currentBoreholeWorkflow = borehole.Workflows.OrderBy(w => w.Id).Last();
-        var hasUserPermission = currentBoreholeWorkflow.Role.HasValue && HasUserSpecificRoleOnWorkgroup(user, borehole.WorkgroupId, currentBoreholeWorkflow.Role.Value);
-        if (!hasUserPermission)
-        {
-            logger.LogWarning("User with SubjectId <{SubjectId}> lacks the required role to edit BoreholeId <{BoreholeId}>.", user.SubjectId, borehole.Id);
-            return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Checks whether the <paramref name="user"/> has permissions to edit the <paramref name="borehole"/>.
-    /// "Permission to edit" refers to the user having the <see cref="Role"/> on the <see cref="Workgroup"/> of the <see cref="Borehole"/>, which has permission to
-    /// change the borehole with the current <see cref="WorkflowV2.Status"/>.
-    /// </summary>
-    private bool HasEditPermissionV2(User user, Borehole borehole)
     {
         if (borehole.Workflow == null)
         {
@@ -150,10 +126,10 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         return false;
     }
 
-    private async Task<Borehole> GetBoreholeWithWorkflowsAsync(int? boreholeId)
+    private async Task<Borehole> GetBoreholeAsync(int? boreholeId)
     {
         return await context.Boreholes
-            .Include(b => b.Workflows)
+            .Include(b => b.Workflow)
             .AsNoTracking()
             .SingleOrDefaultAsync(b => b.Id == boreholeId)
             .ConfigureAwait(false) ?? throw new InvalidOperationException($"Associated borehole with id <{boreholeId}> does not exist.");

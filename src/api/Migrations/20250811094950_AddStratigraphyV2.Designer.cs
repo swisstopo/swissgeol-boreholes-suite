@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20250722115429_AddStratigraphyV2")]
+    [Migration("20250811094950_AddStratigraphyV2")]
     partial class AddStratigraphyV2
     {
         /// <inheritdoc />
@@ -1915,7 +1915,7 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("stratigraphy_id");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -1925,11 +1925,11 @@ namespace BDMS.Migrations
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("creation");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("integer")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("creator");
 
                     b.Property<DateTime?>("Date")
                         .HasColumnType("timestamp with time zone")
@@ -1946,11 +1946,11 @@ namespace BDMS.Migrations
 
                     b.Property<DateTime?>("Updated")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("update");
 
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("integer")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updater");
 
                     b.HasKey("Id");
 

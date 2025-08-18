@@ -1,21 +1,22 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
 import {
   LocalDate,
+  Role,
   SgcWorkflowChangeEventDetail,
   SgcWorkflowCustomEvent,
   SgcWorkflowSelectionChangeEventDetails,
   SgcWorkflowSelectionEntry,
-  SimpleUser,
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
-import { useBorehole } from "../../../../api/borehole.ts";
-import { useCurrentUser, useUsers } from "../../../../api/user.ts";
+import { Role as LegacyRole } from "../../../../api/apiInterfaces.ts";
+import { useBorehole, useBoreholeEditable } from "../../../../api/borehole.ts";
+import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
+import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
+import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { useUserRoleForBorehole } from "../../../../hooks/useUserRoleForBorehole.ts";
-import { EditStateContext } from "../../editStateContext.tsx";
 import {
   TabStatusChangeRequest,
   TabType,
@@ -27,17 +28,26 @@ import {
 
 export const WorkflowView = () => {
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const { data: borehole } = useBorehole(parseInt(boreholeId));
   const { data: workflow, isLoading } = useWorkflow(parseInt(boreholeId));
   const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
-  const { editingEnabled } = useContext(EditStateContext);
-  const { data: users } = useUsers();
-  const { data: borehole } = useBorehole(parseInt(boreholeId));
   const { t } = useTranslation();
-  const { canUserEditBorehole, mapMaxRole } = useUserRoleForBorehole();
+  const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(boreholeId));
+  const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole.workgroup?.id ?? 0);
+  const { navigateTo } = useBoreholesNavigate();
+  const { showAlert } = useContext(AlertContext);
+
   const {
     updateWorkflow: { mutate: updateWorkflow },
     updateTabStatus: { mutate: updateTabStatus },
   } = useWorkflowMutation();
+
+  useEffect(() => {
+    if (editableByCurrentUser === false) {
+      showAlert(t("boreholeStatusChangedNoMorePermissions"), "success");
+      navigateTo({ path: "/" + boreholeId + "/location" });
+    }
+  }, [editableByCurrentUser, showAlert, navigateTo, t, boreholeId]);
 
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
     const field = (name: string) => ({
@@ -73,6 +83,15 @@ export const WorkflowView = () => {
     ];
   };
 
+  const mapMaxRole = (roles?: LegacyRole[]): Role => {
+    if (!roles || roles.length === 0) return Role.Reader;
+    if (roles.includes(LegacyRole.Publisher)) return Role.Publisher;
+    if (roles.includes(LegacyRole.Validator)) return Role.Reviewer;
+    if (roles.includes(LegacyRole.Controller)) return Role.Reviewer;
+    if (roles.includes(LegacyRole.Editor)) return Role.Editor;
+    return Role.Reader;
+  };
+
   if (isLoading || isCurrentUserLoading)
     return (
       <FullPageCentered>
@@ -80,17 +99,12 @@ export const WorkflowView = () => {
       </FullPageCentered>
     );
 
-  if (!workflow || !currentUser) return null;
+  const availableAssignees = editorUsersForWorkgroup?.map(user => ({
+    ...user,
+    role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role)),
+  }));
 
-  const getUsersWithEditPrivilege = (): SimpleUser[] => {
-    if (!users) return [];
-    return users
-      .filter(user => canUserEditBorehole(user, borehole))
-      ?.map(user => ({
-        ...user,
-        role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role)),
-      }));
-  };
+  if (!workflow || !currentUser || !availableAssignees) return null;
 
   const handleWorkflowChange = (changeEvent: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => {
     const changes: WorkflowChange = changeEvent.detail.changes;
@@ -120,6 +134,7 @@ export const WorkflowView = () => {
   return (
     <Box sx={{ minHeight: "100dvh" }}>
       <SgcWorkflow
+        key={JSON.stringify(workflow)}
         workflow={{
           ...workflow,
           changes: workflow.changes?.map(change => ({
@@ -130,10 +145,10 @@ export const WorkflowView = () => {
         review={workflow.reviewedTabs}
         item={"Borehole"}
         approval={workflow.publishedTabs}
-        availableAssignees={getUsersWithEditPrivilege()}
-        isReadOnly={!editingEnabled}
+        isReadOnly={false}
+        availableAssignees={availableAssignees}
         selection={makeSelectionEntries()}
-        canChangeStatus={canUserEditBorehole(currentUser, borehole)}
+        canChangeStatus={editableByCurrentUser}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
           handleTabStatusUpdate(e, TabType.Reviewed)
         }

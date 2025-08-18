@@ -6,6 +6,8 @@ export function assertWorkflowSteps(activeStep: string) {
 }
 
 export function clickSgcButtonWithContent(content: string) {
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(500);
   cy.get("sgc-button").contains(content).click();
 }
 
@@ -39,12 +41,18 @@ export function clickTabStatusCheckbox(tab: string, title: string) {
   getTabStatusBox(tab, title).click();
   waitForTabStatusUpdate();
 }
+export function clickCheckAllCheckbox(tab: string) {
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(100);
+  cy.get(`#${tab}`).find(".checkbox").children().eq(0).click(); // Check all checkbox
+  waitForTabStatusUpdate();
+}
 
 export function isCheckedTabStatusBox(tab: string, title: string) {
   getTabStatusBox(tab, title).should("have.class", "is-checked");
 }
 
-export function isIntermediateTabStatusBox(tab: string, title: string) {
+export function isIndeterminateTabStatusBox(tab: string, title: string) {
   getTabStatusBox(tab, title).should("have.class", "is-indeterminate");
 }
 

@@ -24,7 +24,7 @@ public class StratigraphyV2ControllerTest
 
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
 
         controller = new StratigraphyV2Controller(context, new Mock<ILogger<StratigraphyV2Controller>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
@@ -409,7 +409,7 @@ public class StratigraphyV2ControllerTest
     {
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<bool?>()))
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         controller = new StratigraphyV2Controller(context, new Mock<ILogger<StratigraphyV2Controller>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };

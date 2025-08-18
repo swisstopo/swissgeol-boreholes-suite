@@ -53,6 +53,7 @@
   "boreholeGeometryFormat": "Format de la géométrie",
   "boreholeGeometryImport": "Importer la géométrie",
   "boreholeGeometryReplace": "Remplacer la géométrie",
+  "boreholeStatusChangedNoMorePermissions": "Le statut du forage a été modifié. Vous n’avez plus l’autorisation de modifier le forage.",
   "borehole_identifier": "Type d'ID",
   "borehole_identifier_value": "Code d'ID",
   "borehole_technical_id": "ID boreholes.swissgeol.ch",

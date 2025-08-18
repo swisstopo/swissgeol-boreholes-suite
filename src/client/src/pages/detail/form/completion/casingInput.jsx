@@ -15,6 +15,7 @@ import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../
 import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { extractCasingDepth } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { prepareEntityDataForSubmit } from "./completionUtils.js";
@@ -24,8 +25,9 @@ const CasingInput = props => {
   const { item, parentId } = props;
   const { triggerReload } = useContext(DataCardContext);
   const reloadBoreholes = useReloadBoreholes();
-
   useBlockNavigation();
+  const resetTabStatus = useResetTabStatus(["casing"]);
+
   const formMethods = useForm({
     mode: "all",
     defaultValues: {
@@ -66,6 +68,7 @@ const CasingInput = props => {
   };
 
   const submitForm = data => {
+    resetTabStatus();
     data = prepareFormDataForSubmit(data);
     if (item.id === 0) {
       addCasing({

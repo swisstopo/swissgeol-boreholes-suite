@@ -1,6 +1,6 @@
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
-import { WorkflowV2 } from "../workflow/workflow.ts";
+import { Workflow } from "../workflow/workflow.ts";
 
 export interface BoreholeProps {
   borehole: BoreholeV2;
@@ -21,5 +21,5 @@ export interface BoreholeFormInputs {
   remarks: string;
   topBedrockIntersected: boolean | number | null;
   boreholeFiles: BoreholeFile[] | null;
-  workflow: WorkflowV2 | null;
+  workflow: Workflow | null;
 }

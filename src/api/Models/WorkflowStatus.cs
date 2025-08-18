@@ -3,7 +3,7 @@
 namespace BDMS.Models;
 
 /// <summary>
-/// Represents the status of a <see cref="WorkflowV2"/>.
+/// Represents the status of a <see cref="Workflow"/>.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum WorkflowStatus

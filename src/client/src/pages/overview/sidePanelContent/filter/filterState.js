@@ -6,7 +6,7 @@ const initialState = {
     refresh: 1,
     borehole_identifier: null,
     identifier_value: "",
-    role: "all",
+    workflow: "all",
     workgroup: "all",
     original_name: "",
     alternate_name: "",

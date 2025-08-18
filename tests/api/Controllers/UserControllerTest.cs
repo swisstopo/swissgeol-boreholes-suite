@@ -10,14 +10,27 @@ namespace BDMS.Controllers;
 [TestClass]
 public class UserControllerTest
 {
+    private readonly int workgroupId = 1;
+    private readonly string viewerSubjectId = "sub_viewer";
     private BdmsContext context;
     private UserController userController;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        userController = new UserController(context, new Mock<ILogger<UserController>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(s => s.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), workgroupId, Models.Role.Editor))
+            .ReturnsAsync(true);
+        boreholePermissionServiceMock
+            .Setup(s => s.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.Is<int>(x => x != workgroupId), Models.Role.Editor))
+            .ReturnsAsync(false);
+        boreholePermissionServiceMock
+            .Setup(s => s.HasUserRoleOnWorkgroupAsync(viewerSubjectId, workgroupId, Models.Role.Editor))
+            .ReturnsAsync(false);
+        userController = new UserController(context, new Mock<ILogger<UserController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -31,7 +44,7 @@ public class UserControllerTest
 
         foreach (var user in users)
         {
-            Assert.AreEqual(user.SubjectId == "sub_deletableUser" || user.SubjectId == "sub_viewer", user.Deletable);
+            Assert.AreEqual(user.SubjectId == "sub_deletableUser" || user.SubjectId == viewerSubjectId, user.Deletable);
         }
     }
 
@@ -127,6 +140,30 @@ public class UserControllerTest
         Assert.IsNotNull(user);
 
         var result = await userController.Delete(user.Id);
-        ActionResultAssert.IsInternalServerError(result, "The user is associated with boreholes, layers, stratigraphies, workflows, files or borehole files and cannot be deleted.");
+        ActionResultAssert.IsInternalServerError(result, "The user is associated with boreholes, layers, stratigraphies, files or borehole files and cannot be deleted.");
+    }
+
+    [TestMethod]
+    public async Task GetAllWithEditorPrivilegeOnWorkgroupUnauthorized()
+    {
+        var workgroupIdNotBelongingToUser = 64598765;
+        var result = await userController.GetWorkgroupEditors(workgroupIdNotBelongingToUser);
+
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public async Task GetAllWithEditorPrivilegeOnWorkgroupReturnsEditors()
+    {
+        var result = await userController.GetWorkgroupEditors(workgroupId);
+        var editors = result.Value;
+
+        Assert.IsNotNull(editors);
+        Assert.AreEqual(7, editors.Count());
+
+        foreach (var editor in editors)
+        {
+            Assert.IsTrue(editor.WorkgroupRoles.Any(r => (int)r.Role > 0));
+        }
     }
 }

@@ -3,13 +3,14 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
-import { BoreholeV2 } from "../../api/borehole.ts";
+import { BoreholeV2, useBoreholeEditable } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useDevMode } from "../../hooks/useDevMode.tsx";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../utils";
 import { ObservationType } from "./form/hydrogeology/Observation.ts";
+import { TabStatus } from "./form/workflow/workflow.ts";
 
 interface DetailSideNavProps {
   borehole: BoreholeV2;
@@ -18,6 +19,7 @@ interface DetailSideNavProps {
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const { id } = useRequiredParams<{ id: string }>();
+  const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(id));
   const location = useLocation();
   const { t } = useTranslation();
   const auth = useAuth();
@@ -75,6 +77,14 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
     setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
   }, [location, id]);
 
+  if (!borehole.workflow) return null;
+
+  const isReviewed = (tabKeys: Array<keyof TabStatus>) => {
+    if (tabKeys.every(key => borehole.workflow?.reviewedTabs[key])) return "true";
+    if (tabKeys.some(key => borehole.workflow?.reviewedTabs[key])) return "partial";
+    return "false";
+  };
+
   return (
     <Box
       style={{
@@ -96,34 +106,35 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
           <SgcMenuItem
             active={location.pathname === `/${id}/location`}
             data-cy="location-menu-item"
+            isReviewed={isReviewed(["location"])}
             onClick={() => {
               navigateTo({ path: `/${id}/location` });
             }}>
-            {capitalizeFirstLetter(t("location"))}{" "}
+            {capitalizeFirstLetter(t("location"))}
           </SgcMenuItem>
-
           <SgcMenuItem
             active={location.pathname === `/${id}/borehole`}
             data-cy="borehole-menu-item"
+            isReviewed={isReviewed(["general", "sections", "geometry"])}
             onClick={() => {
               navigateTo({ path: `/${id}/borehole` });
             }}>
             {capitalizeFirstLetter(t("borehole"))}{" "}
           </SgcMenuItem>
-
           <SgcMenuItem
             active={location.pathname.includes(`/${id}/stratigraphy`)}
             empty={!hasStratigraphy}
+            isReviewed={isReviewed(["lithology", "lithostratigraphy", "chronostratigraphy"])}
             data-cy="stratigraphy-menu-item"
             onClick={() => {
               navigateTo({ path: `/${id}/stratigraphy` });
             }}>
             {capitalizeFirstLetter(t("stratigraphy"))}{" "}
           </SgcMenuItem>
-
           <SgcMenuItem
             active={location.pathname.includes(`/${id}/completion`)}
             empty={!hasCompletion}
+            isReviewed={isReviewed(["casing", "instrumentation", "backfill"])}
             data-cy="completion-menu-item"
             onClick={() => {
               navigateTo({ path: `/${id}/completion` });
@@ -133,6 +144,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
           <SgcMenuItem
             active={false}
             empty={!hasObservation}
+            isReviewed={isReviewed(["waterIngress", "groundwaterLevelMeasurement", "hydrotest", "fieldMeasurement"])}
             data-cy="hydrogeology-menu-item"
             onClick={() => {
               setHydrogeologyIsVisible(!hydrogeologyIsVisible);
@@ -145,6 +157,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/wateringress`}
                 child
                 empty={!hasWaterIngress}
+                isReviewed={isReviewed(["waterIngress"])}
                 data-cy="wateringress-menu-item"
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/wateringress` });
@@ -155,6 +168,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
                 child
                 empty={!hasGroundwaterLevelMeasurement}
+                isReviewed={isReviewed(["groundwaterLevelMeasurement"])}
                 data-cy="groundwaterlevelmeasurement-menu-item"
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/groundwaterlevelmeasurement` });
@@ -165,6 +179,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
                 child
                 empty={!hasFieldMeasurement}
+                isReviewed={isReviewed(["fieldMeasurement"])}
                 data-cy="fieldmeasurement-menu-item"
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/fieldmeasurement` });
@@ -175,6 +190,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/hydrotest`}
                 child
                 empty={!hasHydroTest}
+                isReviewed={isReviewed(["hydrotest"])}
                 data-cy="hydrotest-menu-item"
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/hydrotest` });
@@ -189,19 +205,22 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/attachments`}
                 empty={!hasAttachments}
                 data-cy="attachments-menu-item"
+                isReviewed={isReviewed(["profiles", "photos", "documents"])}
                 onClick={() => {
                   navigateTo({ path: `/${id}/attachments` });
                 }}>
                 {capitalizeFirstLetter(t("attachments"))}
               </SgcMenuItem>
-              <SgcMenuItem
-                active={location.pathname === `/${id}/status`}
-                data-cy="status-menu-item"
-                onClick={() => {
-                  navigateTo({ path: `/${id}/status` });
-                }}>
-                {capitalizeFirstLetter(t("status"))}
-              </SgcMenuItem>
+              {editableByCurrentUser && (
+                <SgcMenuItem
+                  active={location.pathname === `/${id}/status`}
+                  data-cy="status-menu-item"
+                  onClick={() => {
+                    navigateTo({ path: `/${id}/status` });
+                  }}>
+                  {capitalizeFirstLetter(t("status"))}
+                </SgcMenuItem>
+              )}
             </>
           )}
         </Box>

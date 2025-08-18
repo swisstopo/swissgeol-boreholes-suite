@@ -37,7 +37,7 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
         // Get published boreholes from the source database.
         var publishedBoreholes = Source.BoreholesWithIncludes
             .AsNoTrackingWithIdentityResolution()
-            .WithPublicationStatusPublished()
+            .WithStatusPublished()
             .ToList();
 
         // Skip this sync task if there are no published boreholes available.
@@ -77,10 +77,12 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
             publishedBorehole.Workgroup = null;
             publishedBorehole.WorkgroupId = targetWorkgroup.Id;
 
-            // Set publication status
-            publishedBorehole.SetBoreholePublicationStatusPublished();
-            publishedBorehole.Workflows.UpdateAttachedUser(targetDefaultUser);
-            publishedBorehole.Workflow?.ClearAssignedUser();
+            // Remove all previous workflow changes (= history).
+            publishedBorehole.Workflow.Changes.Clear();
+
+            // Clear the user assigned to the workflow and its changes.
+            publishedBorehole.Workflow.Assignee = null;
+            publishedBorehole.Workflow.AssigneeId = null;
 
             // Ensure unlocked borehole
             publishedBorehole.LockedBy = null;

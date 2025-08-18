@@ -12,6 +12,7 @@ export interface Codelist {
   fr: string;
   it: string;
   conf: string;
+  path: string;
   [key: string]: string | number;
 }
 

@@ -424,7 +424,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s workflow.
     /// </summary>
-    public WorkflowV2? Workflow { get; set; }
+    public Workflow? Workflow { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s stratigraphies.
@@ -461,11 +461,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// </summary>
     [IncludeInExport]
     public ICollection<Observation>? Observations { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="Borehole"/>'s workflows.
-    /// </summary>
-    public ICollection<Workflow> Workflows { get; } = new List<Workflow>();
 
     /// <summary>
     /// Gets the <see cref="File"/>s attached to the <see cref="Borehole"/>.
