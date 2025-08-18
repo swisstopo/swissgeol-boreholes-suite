@@ -2,12 +2,11 @@ import { ReactNode, useCallback, useContext, useEffect } from "react";
 import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
 import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
-import { useBorehole, useBoreholeMutations, useReloadBoreholes } from "../../../api/borehole.ts";
+import { useBorehole, useBoreholeMutations } from "../../../api/borehole.ts";
 import { useFormDirtyChanges } from "../../../components/form/useFormDirtyChanges.tsx";
 import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
-import { useApiErrorAlert } from "../../../hooks/useShowAlertOnError.tsx";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
 import { SaveContext } from "../saveContext.tsx";
 import { TabName } from "./workflow/workflow.ts";
@@ -33,37 +32,26 @@ export const BaseForm = <T extends FieldValues>({
   const { id } = useRequiredParams<{ id: string }>();
   const { data: borehole } = useBorehole(parseInt(id, 10));
   const {
-    update: { mutate: updateBorehole },
+    update: { mutateAsync: updateBorehole },
   } = useBoreholeMutations();
-  const reloadBoreholes = useReloadBoreholes();
   const resetTabStatus = useResetTabStatus([tabStatusToReset]);
   const { getValues, reset, formState } = formMethods;
   useBlockNavigation();
   useFormDirtyChanges({ formState });
-  const showApiErrorAlert = useApiErrorAlert();
 
   const onSubmit = useCallback(
-    (formInputs: T): Promise<boolean> => {
-      return new Promise(resolve => {
-        updateBorehole(
-          {
-            ...borehole,
-            ...prepareDataForSubmit(formInputs),
-          },
-          {
-            onSuccess: () => {
-              reloadBoreholes();
-              resolve(true);
-            },
-            onError: error => {
-              showApiErrorAlert(error);
-              resolve(false);
-            },
-          },
-        );
-      });
+    async (formInputs: T): Promise<boolean> => {
+      try {
+        await updateBorehole({
+          ...borehole,
+          ...prepareDataForSubmit(formInputs),
+        });
+        return true;
+      } catch {
+        return false;
+      }
     },
-    [updateBorehole, borehole, prepareDataForSubmit, reloadBoreholes, showApiErrorAlert],
+    [updateBorehole, borehole, prepareDataForSubmit],
   );
 
   const resetAndSubmitForm = useCallback(async () => {

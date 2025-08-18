@@ -33,10 +33,10 @@ export const StratigraphyPanel: FC = () => {
   const location = useLocation();
   const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
   const {
-    add: { mutate: addStratigraphy },
-    copy: { mutate: copyStratigraphy },
-    update: { mutate: updateStratigraphy },
-    delete: { mutate: deleteStratigraphy },
+    add: { mutateAsync: addStratigraphy },
+    copy: { mutateAsync: copyStratigraphy },
+    update: { mutateAsync: updateStratigraphy },
+    delete: { mutateAsync: deleteStratigraphy },
   } = useStratigraphyMutations();
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
@@ -126,20 +126,14 @@ export const StratigraphyPanel: FC = () => {
 
   const deleteSelectedStratigraphy = useCallback(async () => {
     if (!selectedStratigraphy) return;
-    deleteStratigraphy(selectedStratigraphy, {
-      onSuccess: () => {
-        navigateToStratigraphy(undefined, true);
-      },
-    });
+    await deleteStratigraphy(selectedStratigraphy);
+    navigateToStratigraphy(undefined, true);
   }, [deleteStratigraphy, navigateToStratigraphy, selectedStratigraphy]);
 
-  const onCopy = useCallback(() => {
+  const onCopy = useCallback(async () => {
     if (selectedStratigraphy) {
-      copyStratigraphy(selectedStratigraphy, {
-        onSuccess: newStratigraphyId => {
-          navigateToStratigraphy(newStratigraphyId, true);
-        },
-      });
+      const newStratigraphyId: number = await copyStratigraphy(selectedStratigraphy);
+      navigateToStratigraphy(newStratigraphyId, true);
     }
   }, [copyStratigraphy, navigateToStratigraphy, selectedStratigraphy]);
 
@@ -173,39 +167,6 @@ export const StratigraphyPanel: FC = () => {
     [formMethods, showApiErrorAlert, t],
   );
 
-  const onAdd = useCallback(
-    async (values: Stratigraphy) => {
-      return new Promise<void>((resolve, reject) => {
-        addStratigraphy(values, {
-          onSuccess: (newStratigraphy: Stratigraphy) => {
-            navigateToStratigraphy(newStratigraphy.id, true);
-            resolve();
-          },
-          onError: (error: Error) => {
-            handleSaveError(error);
-            reject(error);
-          },
-        });
-      });
-    },
-    [addStratigraphy, navigateToStratigraphy, handleSaveError],
-  );
-
-  const onUpdate = useCallback(
-    async (values: Stratigraphy) => {
-      return new Promise<void>((resolve, reject) => {
-        updateStratigraphy(values, {
-          onSuccess: resolve,
-          onError: (error: Error) => {
-            handleSaveError(error);
-            reject(error);
-          },
-        });
-      });
-    },
-    [updateStratigraphy, handleSaveError],
-  );
-
   const onSave = useCallback(async () => {
     if (!selectedStratigraphy) return false;
 
@@ -214,15 +175,17 @@ export const StratigraphyPanel: FC = () => {
 
     try {
       if (values.id === 0) {
-        await onAdd(values);
+        const newStratigraphy: Stratigraphy = await addStratigraphy(values);
+        navigateToStratigraphy(newStratigraphy.id, true);
       } else {
-        await onUpdate({ ...selectedStratigraphy, ...values });
+        await updateStratigraphy({ ...selectedStratigraphy, ...values });
       }
       return true;
-    } catch {
+    } catch (error) {
+      handleSaveError(error as Error);
       return false;
     }
-  }, [getValues, onAdd, onUpdate, selectedStratigraphy]);
+  }, [addStratigraphy, getValues, handleSaveError, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy]);
 
   const showDeletePrompt = useCallback(() => {
     if (!selectedStratigraphy) return;
