@@ -16,6 +16,9 @@ export interface Codelist {
   [key: string]: string | number;
 }
 
+export const restrictionUntilCode = 20111003;
+export const restrictionFreeCode = 20111001;
+
 export const fetchCodelists = async (): Promise<Codelist[]> => await fetchApiV2WithApiError("codelist", "GET");
 
 export const fetchCodelistsBySchema = async (schema: string): Promise<Codelist[]> =>

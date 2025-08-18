@@ -126,7 +126,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
             </Typography>
           )}
         </Stack>
-        <StatusBadges workflow={borehole.workflow} />
+        <StatusBadges borehole={borehole} />
       </Stack>
       <Stack direction="row" data-cy="detail-header" gap={2}>
         <ExportButton
