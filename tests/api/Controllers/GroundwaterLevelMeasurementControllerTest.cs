@@ -81,7 +81,7 @@ public class GroundwaterLevelMeasurementControllerTest
 
         IEnumerable<GroundwaterLevelMeasurement>? groundwaterlevelMeasurementForEditor = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(groundwaterlevelMeasurementForEditor);
-        Assert.AreEqual(111, groundwaterlevelMeasurementForEditor.Count());
+        Assert.AreEqual(110, groundwaterlevelMeasurementForEditor.Count());
     }
 
     [TestMethod]

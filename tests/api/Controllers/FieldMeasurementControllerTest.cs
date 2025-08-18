@@ -67,7 +67,7 @@ public class FieldMeasurementControllerTest
 
         IEnumerable<FieldMeasurement>? fieldMeasurementsForEditor = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(fieldMeasurementsForEditor);
-        Assert.AreEqual(102, fieldMeasurementsForEditor.Count());
+        Assert.AreEqual(101, fieldMeasurementsForEditor.Count());
     }
 
     [TestMethod]

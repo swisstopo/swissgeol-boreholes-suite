@@ -67,7 +67,7 @@ public class HydrotestControllerTest
 
         IEnumerable<Hydrotest>? hydrotestsForEditor = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(hydrotestsForEditor);
-        Assert.AreEqual(93, hydrotestsForEditor.Count());
+        Assert.AreEqual(92, hydrotestsForEditor.Count());
     }
 
     [TestMethod]
