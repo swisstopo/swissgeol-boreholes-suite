@@ -181,8 +181,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     {
         Logger.LogInformation("Copy borehole with id <{BoreholeId}> to workgroup with id <{WorkgroupId}>", id, workgroupId);
 
-        var user = await Context.Users
-            .Include(u => u.WorkgroupRoles)
+        var user = await Context.UsersWithIncludes
             .AsNoTracking()
             .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
             .ConfigureAwait(false);

@@ -23,11 +23,10 @@ public class InstrumentationController : BoreholeControllerBase<Instrumentation>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Instrumentation>> GetAsync([FromQuery] int? completionId = null)
     {
-        var user = await Context.Users
-        .Include(u => u.WorkgroupRoles)
-        .AsNoTracking()
-        .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
-        .ConfigureAwait(false);
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
 
         var instrumentations = GetInstrumentationsWithIncludes();
 

@@ -25,8 +25,7 @@ public class CasingController : BoreholeControllerBase<Casing>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Casing>> GetAsync([FromQuery] int? completionId = null, [FromQuery] int? boreholeId = null)
     {
-        var user = await Context.Users
-            .Include(u => u.WorkgroupRoles)
+        var user = await Context.UsersWithIncludes
             .AsNoTracking()
             .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
             .ConfigureAwait(false);
