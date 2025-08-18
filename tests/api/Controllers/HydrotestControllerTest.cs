@@ -1,10 +1,9 @@
-﻿using BDMS.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Security.Claims;
+using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
@@ -13,25 +12,20 @@ public class HydrotestControllerTest
 {
     private BdmsContext context;
     private HydrotestController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
-        controller = new HydrotestController(context, new Mock<ILogger<HydrotestController>>().Object, boreholePermissionServiceMock.Object)
-        {
-            ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "TestUser") })),
-                },
-            },
-        };
+        controller = new HydrotestController(context, new Mock<ILogger<HydrotestController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -43,6 +37,37 @@ public class HydrotestControllerTest
         var result = await controller.GetAsync();
         Assert.IsNotNull(result);
         Assert.AreEqual(93, result.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersHydrotestsBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with hydrotest and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newHydrotest = new Hydrotest()
+        {
+            BoreholeId = newBorehole.Id,
+            Type = ObservationType.Hydrotest,
+        };
+        await context.Hydrotests.AddAsync(newHydrotest);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<Hydrotest>? hydrotestsForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(hydrotestsForAdmin);
+        Assert.AreEqual(94, hydrotestsForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<Hydrotest>? hydrotestsForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(hydrotestsForEditor);
+        Assert.AreEqual(93, hydrotestsForEditor.Count());
     }
 
     [TestMethod]

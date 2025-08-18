@@ -1,11 +1,10 @@
-﻿using BDMS.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Security.Claims;
+using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
@@ -14,25 +13,20 @@ public class WaterIngressControllerTest
 {
     private BdmsContext context;
     private WaterIngressController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
-        controller = new WaterIngressController(context, new Mock<ILogger<WaterIngressController>>().Object, boreholePermissionServiceMock.Object)
-        {
-            ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "TestUser") })),
-                },
-            },
-        };
+        controller = new WaterIngressController(context, new Mock<ILogger<WaterIngressController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -44,6 +38,38 @@ public class WaterIngressControllerTest
         var result = await controller.GetAsync();
         Assert.IsNotNull(result);
         Assert.AreEqual(95, result.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersWateringressesBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with wateringress and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newWateringress = new WaterIngress()
+        {
+            BoreholeId = newBorehole.Id,
+            Type = ObservationType.WaterIngress,
+            QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 1).Id,
+        };
+        await context.WaterIngresses.AddAsync(newWateringress);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<WaterIngress>? wateringressesForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(wateringressesForAdmin);
+        Assert.AreEqual(96, wateringressesForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<WaterIngress>? wateringressesForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(wateringressesForEditor);
+        Assert.AreEqual(95, wateringressesForEditor.Count());
     }
 
     [TestMethod]

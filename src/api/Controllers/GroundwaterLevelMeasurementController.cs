@@ -24,12 +24,28 @@ public class GroundwaterLevelMeasurementController : BoreholeControllerBase<Grou
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<GroundwaterLevelMeasurement>> GetAsync([FromQuery] int? boreholeId = null)
     {
+        var su = HttpContext.GetUserSubjectId();
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
         var groundwaterLevelMeasurements = Context.GroundwaterLevelMeasurements
             .Include(w => w.Kind)
             .Include(w => w.Reliability)
             .Include(w => w.Casing)
             .ThenInclude(c => c.Completion)
             .AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            groundwaterLevelMeasurements = groundwaterLevelMeasurements
+                .Where(g => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == g.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
 
         if (boreholeId != null)
         {

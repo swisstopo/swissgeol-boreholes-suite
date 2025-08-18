@@ -24,6 +24,11 @@ public class FieldMeasurementController : BoreholeControllerBase<FieldMeasuremen
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<FieldMeasurement>> GetAsync([FromQuery] int? boreholeId = null)
     {
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
         var fieldMeasurements = Context.FieldMeasurements
             .Include(f => f.FieldMeasurementResults).ThenInclude(f => f.SampleType)
             .Include(f => f.FieldMeasurementResults).ThenInclude(f => f.Parameter)
@@ -31,6 +36,16 @@ public class FieldMeasurementController : BoreholeControllerBase<FieldMeasuremen
             .Include(f => f.Casing)
             .ThenInclude(c => c.Completion)
             .AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            fieldMeasurements = fieldMeasurements
+                .Where(f=> Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == f.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
 
         if (boreholeId != null)
         {

@@ -25,6 +25,11 @@ public class WaterIngressController : BoreholeControllerBase<WaterIngress>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<WaterIngress>> GetAsync([FromQuery] int? boreholeId = null)
     {
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
         var waterIngresses = Context.WaterIngresses
             .Include(w => w.Quantity)
             .Include(w => w.Reliability)
@@ -32,6 +37,16 @@ public class WaterIngressController : BoreholeControllerBase<WaterIngress>
             .Include(w => w.Casing)
             .ThenInclude(c => c.Completion)
             .AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            waterIngresses = waterIngresses
+                .Where(w => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == w.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
 
         if (boreholeId != null)
         {

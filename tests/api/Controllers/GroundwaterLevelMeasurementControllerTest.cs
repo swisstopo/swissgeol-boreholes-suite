@@ -1,6 +1,8 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -14,25 +16,20 @@ public class GroundwaterLevelMeasurementControllerTest
 {
     private BdmsContext context;
     private GroundwaterLevelMeasurementController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
-        controller = new GroundwaterLevelMeasurementController(context, new Mock<ILogger<GroundwaterLevelMeasurementController>>().Object, boreholePermissionServiceMock.Object)
-        {
-            ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "TestUser") })),
-                },
-            },
-        };
+        controller = new GroundwaterLevelMeasurementController(context, new Mock<ILogger<GroundwaterLevelMeasurementController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -53,6 +50,38 @@ public class GroundwaterLevelMeasurementControllerTest
         IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response;
         Assert.IsNotNull(groundwaterLevelMeasurements);
         Assert.AreEqual(0, groundwaterLevelMeasurements.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersGroundwaterMeasurementBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with groundwatermeasurement and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newGroundwaterlevelMeasurement = new GroundwaterLevelMeasurement()
+        {
+            BoreholeId = newBorehole.Id,
+            Type = ObservationType.GroundwaterLevelMeasurement,
+            KindId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).FirstAsync().ConfigureAwait(false)).Id,
+        };
+        await context.GroundwaterLevelMeasurements.AddAsync(newGroundwaterlevelMeasurement);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<GroundwaterLevelMeasurement>? groundwaterlevelMeasurementForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(groundwaterlevelMeasurementForAdmin);
+        Assert.AreEqual(112, groundwaterlevelMeasurementForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<GroundwaterLevelMeasurement>? groundwaterlevelMeasurementForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(groundwaterlevelMeasurementForEditor);
+        Assert.AreEqual(111, groundwaterlevelMeasurementForEditor.Count());
     }
 
     [TestMethod]

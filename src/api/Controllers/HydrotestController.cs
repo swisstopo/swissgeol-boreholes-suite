@@ -24,6 +24,11 @@ public class HydrotestController : BoreholeControllerBase<Hydrotest>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Hydrotest>> GetAsync([FromQuery] int? boreholeId = null)
     {
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
         var hydrotests = Context.Hydrotests
             .Include(h => h.KindCodelists)
             .Include(h => h.FlowDirectionCodelists)
@@ -33,6 +38,17 @@ public class HydrotestController : BoreholeControllerBase<Hydrotest>
             .ThenInclude(c => c.Completion)
             .Include(h => h.HydrotestResults).ThenInclude(h => h.Parameter)
             .AsNoTracking();
+
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            hydrotests = hydrotests
+                .Where(h => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == h.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
 
         if (boreholeId != null)
         {
