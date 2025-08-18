@@ -39,7 +39,6 @@ public class HydrotestController : BoreholeControllerBase<Hydrotest>
             .Include(h => h.HydrotestResults).ThenInclude(h => h.Parameter)
             .AsNoTracking();
 
-
         if (!user.IsAdmin)
         {
             var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();

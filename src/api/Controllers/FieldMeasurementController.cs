@@ -41,7 +41,7 @@ public class FieldMeasurementController : BoreholeControllerBase<FieldMeasuremen
         {
             var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
             fieldMeasurements = fieldMeasurements
-                .Where(f=> Context.Boreholes
+                .Where(f => Context.Boreholes
                 .Where(b => b.WorkgroupId.HasValue)
                 .Any(b => b.Id == f.BoreholeId && allowedWorkgroupIds
                 .Contains(b.WorkgroupId!.Value)));

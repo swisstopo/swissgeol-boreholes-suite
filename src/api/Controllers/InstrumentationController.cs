@@ -34,9 +34,9 @@ public class InstrumentationController : BoreholeControllerBase<Instrumentation>
         {
             var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
             instrumentations = instrumentations
-                .Where(c => Context.Boreholes
+                .Where(i => Context.Boreholes
                 .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == c.Completion.BoreholeId && allowedWorkgroupIds
+                .Any(b => b.Id == i.Completion.BoreholeId && allowedWorkgroupIds
                 .Contains(b.WorkgroupId!.Value)));
         }
 

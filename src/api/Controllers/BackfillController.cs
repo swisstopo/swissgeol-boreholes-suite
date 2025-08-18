@@ -34,9 +34,9 @@ public class BackfillController : BoreholeControllerBase<Backfill>
         {
             var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
             backfills = backfills
-                .Where(c => Context.Boreholes
+                .Where(bf => Context.Boreholes
                 .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == c.Completion.BoreholeId && allowedWorkgroupIds
+                .Any(b => b.Id == bf.Completion.BoreholeId && allowedWorkgroupIds
                 .Contains(b.WorkgroupId!.Value)));
         }
 
