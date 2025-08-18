@@ -103,6 +103,12 @@ export const interceptApiCalls = () => {
     return (req.alias = `stratigraphy_${req.method}`);
   });
 
+  cy.intercept("/api/v2/stratigraphyv?boreholeId=**").as("stratigraphyV2_by_borehole_GET");
+  cy.intercept("/api/v2/stratigraphyv*", req => {
+    return (req.alias = `stratigraphyV2_${req.method}`);
+  });
+  cy.intercept("/api/v2/stratigraphyv/copy*").as("stratigraphyV2_COPY");
+
   cy.intercept("/api/v2/section?boreholeId=**").as("section_GET");
   cy.intercept("POST", "/api/v2/section").as("section_POST");
   cy.intercept("PUT", "/api/v2/section").as("section_PUT");
@@ -475,6 +481,32 @@ export const getImportFileFromFixtures = (fileName, encoding, dataSet) => {
   }
 
   return cy.fixture(filePath, { encoding: encoding });
+};
+
+export const createStratigraphyV2 = (boreholeId, name, isPrimary = true, date = null) => {
+  return cy.get("@id_token").then(token => {
+    return cy
+      .request({
+        method: "POST",
+        url: "/api/v2/stratigraphyv",
+        body: {
+          id: 0,
+          boreholeId: boreholeId,
+          name: name,
+          isPrimary: isPrimary,
+          date: date,
+        },
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        auth: bearerAuth(token),
+      })
+      .then(res => {
+        return cy.wrap(res.body.id);
+      });
+  });
 };
 
 export const createStratigraphy = (boreholeId, kindId) => {
