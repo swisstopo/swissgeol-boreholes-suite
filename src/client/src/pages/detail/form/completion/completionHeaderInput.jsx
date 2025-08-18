@@ -36,6 +36,12 @@ const CompletionHeaderInput = props => {
   }, [completion]);
 
   useEffect(() => {
+    formMethods.reset({
+      ...selectedCompletion,
+    });
+  }, [formMethods, selectedCompletion]);
+
+  useEffect(() => {
     if (trySwitchTab) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
         showPrompt(t("unsavedChangesMessage", { where: t("completion") }), [

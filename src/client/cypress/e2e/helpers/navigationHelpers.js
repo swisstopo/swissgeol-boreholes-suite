@@ -1,4 +1,4 @@
-import { checkElementColorByDataCy, getElementByDataCy, handlePrompt } from "./testHelpers.js";
+import { checkElementColorByDataCy, createBaseSelector, getElementByDataCy, handlePrompt } from "./testHelpers.js";
 
 export const SidebarMenuItem = {
   location: "location",
@@ -36,6 +36,31 @@ export const StratigraphyTab = {
 const noContentColor = "rgb(130, 142, 154)";
 const contentColor = "rgb(28, 40, 52)";
 const activeColor = "rgb(166, 84, 98)";
+
+export const checkTabsByTitles = (tabs, parent) => {
+  const selector = createBaseSelector(parent) + `.MuiTabs-list`;
+  cy.get(selector)
+    .find(".MuiTab-root")
+    .should($tabs => {
+      expect($tabs).to.have.length(tabs.length);
+      $tabs.each((i, tab) => {
+        expect(tab).to.have.text(tabs[i].title);
+        if (tabs[i].active) {
+          expect(tab.classList.contains("Mui-selected")).to.equal(true);
+          expect(getComputedStyle(tab).color).to.eq(activeColor);
+        } else {
+          expect(tab.classList.contains("Mui-selected")).to.equal(false);
+          expect(getComputedStyle(tab).color).to.eq(contentColor);
+        }
+      });
+    });
+};
+
+export const navigateToTabWithTitle = (title, parent) => {
+  const selector = createBaseSelector(parent) + `.MuiTabs-list`;
+  cy.get(selector).contains(title).click();
+  cy.get(selector).contains(title).should("have.class", "Mui-selected");
+};
 
 export const isActiveTab = tab => {
   getElementByDataCy(tab).should("have.css", "color", activeColor);

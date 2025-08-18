@@ -1,6 +1,5 @@
 import { createContext, FC, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useReloadBoreholes } from "../../api/borehole.ts";
 
 export interface SaveContextProps {
   showSaveBar: boolean;
@@ -14,7 +13,7 @@ export interface SaveContextProps {
   unMount: () => void;
 }
 
-type SaveHandler = () => Promise<void>;
+type SaveHandler = () => Promise<boolean>;
 type ResetHandler = () => void;
 
 export const SaveContext = createContext<SaveContextProps>({
@@ -37,7 +36,6 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
   const resetHandlerRef = useRef<ResetHandler | null>(null);
   const [hasSaveHandler, setHasSaveHandler] = useState(false);
   const [hasResetHandler, setHasResetHandler] = useState(false);
-  const reloadBoreholes = useReloadBoreholes();
 
   const showSaveBar = useMemo(() => {
     return hasSaveHandler && hasResetHandler;
@@ -54,13 +52,14 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const triggerSave = useCallback(async () => {
     if (saveHandlerRef.current) {
-      setShowSaveFeedback(true);
-      await saveHandlerRef.current();
-      reloadBoreholes();
-      setTimeout(() => setShowSaveFeedback(false), 4000);
-      setHasChanges(false);
+      const success = await saveHandlerRef.current();
+      if (success) {
+        setShowSaveFeedback(true);
+        setTimeout(() => setShowSaveFeedback(false), 4000);
+        setHasChanges(false);
+      }
     }
-  }, [reloadBoreholes]);
+  }, []);
 
   const registerResetHandler = useCallback((handler: ResetHandler) => {
     resetHandlerRef.current = handler;
