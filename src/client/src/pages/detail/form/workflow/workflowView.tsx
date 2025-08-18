@@ -14,7 +14,7 @@ import { Role as LegacyRole } from "../../../../api/apiInterfaces.ts";
 import { useBorehole, useBoreholeEditable } from "../../../../api/borehole.ts";
 import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
-import { restrictionFreeCode } from "../../../../components/codelist.ts";
+import { restrictionCode, restrictionUntilCode } from "../../../../components/codelist.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
@@ -150,7 +150,7 @@ export const WorkflowView = () => {
         availableAssignees={availableAssignees}
         selection={makeSelectionEntries()}
         canChangeStatus={editableByCurrentUser}
-        isRestricted={borehole.restrictionId == restrictionFreeCode || borehole.restrictionId === null}
+        isRestricted={borehole.restrictionId === restrictionCode || borehole.restrictionId === restrictionUntilCode}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
           handleTabStatusUpdate(e, TabType.Reviewed)
         }
