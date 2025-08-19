@@ -1,7 +1,7 @@
 import { BasicIdentifier, BoreholeV2, Identifier } from "../../../../api/borehole.ts";
 import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
 import { Codelist } from "../../../../components/codelist.ts";
-import { WorkflowV2 } from "../workflow/workflow.ts";
+import { Workflow } from "../workflow/workflow.ts";
 import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 
 export interface LocationBaseProps {
@@ -53,5 +53,5 @@ export interface LocationFormSubmission extends LocationFormBaseInputs {
   locationX: string | number | null;
   codelists?: Codelist[];
   boreholeFiles: BoreholeFile[] | null;
-  workflow: WorkflowV2 | null;
+  workflow: Workflow | null;
 }

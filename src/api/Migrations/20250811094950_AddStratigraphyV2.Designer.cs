@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20250722115429_AddStratigraphyV2")]
+    [Migration("20250811094950_AddStratigraphyV2")]
     partial class AddStratigraphyV2
     {
         /// <inheritdoc />
@@ -1915,7 +1915,7 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("stratigraphy_id");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -1923,11 +1923,11 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("borehole_id");
 
-                    b.Property<DateTime?>("Creation")
+                    b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation");
 
-                    b.Property<int?>("Creator")
+                    b.Property<int?>("CreatedById")
                         .HasColumnType("integer")
                         .HasColumnName("creator");
 
@@ -1944,11 +1944,11 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<DateTime?>("Update")
+                    b.Property<DateTime?>("Updated")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("update");
 
-                    b.Property<int?>("Updater")
+                    b.Property<int?>("UpdatedById")
                         .HasColumnType("integer")
                         .HasColumnName("updater");
 
@@ -1956,9 +1956,9 @@ namespace BDMS.Migrations
 
                     b.HasIndex("BoreholeId");
 
-                    b.HasIndex("Creator");
+                    b.HasIndex("CreatedById");
 
-                    b.HasIndex("Updater");
+                    b.HasIndex("UpdatedById");
 
                     b.ToTable("stratigraphy_v2", "bdms");
                 });

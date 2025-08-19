@@ -3,8 +3,7 @@
 namespace BDMS.Models;
 
 /// <summary>
-/// Represents a role entity in the database. Also used in <see cref="Workflow"/>s
-/// to set the <see cref="Borehole"/>s publication status.
+/// Represents a role entity in the database.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Role

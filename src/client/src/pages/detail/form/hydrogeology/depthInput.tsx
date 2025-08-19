@@ -70,7 +70,7 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
     }
   };
 
-  const onDepthUnitChange = (newDepthUnit: number | boolean | null) => {
+  const onDepthUnitChange = (newDepthUnit: number | string | boolean | null) => {
     if (typeof newDepthUnit !== "number") return;
     const areDepthValuesSet = formMethods
       .getValues(depthFields.flatMap(fields => [fields.fieldNameMD, fields.fieldNameMasl]))

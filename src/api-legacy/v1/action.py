@@ -361,18 +361,6 @@ class Action():
 
         else:
             if (
-                'role' in keys and
-                filter['role'] not in ['', None] and
-                filter['role'] != 'all'
-            ):
-                params.append(filter['role'])
-                where.append("""
-                    status[
-                        array_length(status, 1)
-                    ]  ->> 'role' = %s
-                """ % self.getIdx())
-
-            if (
                 'workgroup' in keys and
                 filter['workgroup'] not in ['', None]
                 and filter['workgroup'] != 'all'
@@ -685,6 +673,26 @@ class Action():
                 where.append("""
                     creator.username ILIKE %s
                 """ % self.getIdx())
+
+            if 'workflow' in keys and filter['workflow'] not in ['', None]:
+                # Map the workflow status string to integer (0-3)
+                workflow_status_map = {
+                    'Draft': 0,
+                    'InReview': 1,
+                    'Reviewed': 2,
+                    'Published': 3
+                }
+
+                status_value = workflow_status_map.get(filter['workflow'])
+                if status_value is not None:
+                    params.append(status_value)
+                    where.append("""
+                        borehole.id_bho IN (
+                            SELECT borehole_id
+                            FROM bdms.workflow
+                            WHERE status = %s
+                        )
+                    """ % self.getIdx())
 
         return where, params
 

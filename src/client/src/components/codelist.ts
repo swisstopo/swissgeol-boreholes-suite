@@ -12,8 +12,13 @@ export interface Codelist {
   fr: string;
   it: string;
   conf: string;
+  path: string;
   [key: string]: string | number;
 }
+
+export const restrictionFreeCode = 20111001;
+export const restrictionCode = 20111002;
+export const restrictionUntilCode = 20111003;
 
 export const fetchCodelists = async (): Promise<Codelist[]> => await fetchApiV2WithApiError("codelist", "GET");
 

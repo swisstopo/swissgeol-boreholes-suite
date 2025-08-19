@@ -16,9 +16,9 @@ describe("User administration settings tests", () => {
   it("displays, sorts and filters user table and shows user detail.", () => {
     goToRouteAndAcceptTerms("/setting#users");
     waitForTableData();
-    verifyRowContains("Admin", 7);
-    verifyRowContains("admin.user@local.dev", 7);
-    verifyRowContains("Active", 7);
+    cy.wait("@get-user");
+    verifyRowWithContentAlsoContains("Admin", "Active");
+    verifyRowWithContentAlsoContains("Admin", "admin.user@local.dev");
     hasPagination(false);
     verifyTableLength(8);
 
@@ -31,6 +31,7 @@ describe("User administration settings tests", () => {
 
     // navigate away and check if sorting is still applied
     getElementByDataCy("workgroups-tab").click();
+    cy.contains("Blues");
     getElementByDataCy("users-tab").click();
     verifyRowContains("viewer", 0);
 
@@ -40,15 +41,16 @@ describe("User administration settings tests", () => {
     cy.get(".MuiDataGrid-toolbarQuickFilter input").type("editor", {
       delay: 10,
     });
-    verifyTableLength(8);
+
+    verifyTableLength(1);
     verifyRowContains("editor", 0);
-    verifyRowContains("example@example.com", 0);
+    verifyRowContains("editor.user@local.dev", 0);
     verifyRowContains("Active", 0);
 
     // Click on Editor
     getElementByDataCy("settings-header").should("contain", "Settings");
     clickOnRowWithText("editor");
-    getElementByDataCy("settings-header").should("contain", "E. user");
+    getElementByDataCy("settings-header").should("contain", "E. User");
 
     // Admin checkbox should not be checked
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");

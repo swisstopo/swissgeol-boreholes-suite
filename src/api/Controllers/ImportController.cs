@@ -87,13 +87,6 @@ public class ImportController : ControllerBase
             // If any validation error occured, return a bad request.
             if (!ModelState.IsValid) return ValidationProblem();
 
-            var subjectId = HttpContext.GetUserSubjectId();
-
-            var user = await context.Users
-                .AsNoTracking()
-                .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-                .ConfigureAwait(false);
-
             // Map to Borehole type
             List<Borehole> boreholes = new();
             foreach (var boreholeImport in boreholeImports)
@@ -135,16 +128,6 @@ public class ImportController : ControllerBase
             {
                 // Compute borehole location.
                 await UpdateBoreholeLocationAndCoordinates(borehole).ConfigureAwait(false);
-
-                // Add a workflow per borehole.
-                borehole.Workflows.Add(
-                    new Workflow
-                    {
-                        UserId = user.Id,
-                        Role = Role.Editor,
-                        Started = DateTime.Now.ToUniversalTime(),
-                        Finished = null,
-                    });
             }
 
             // Save the changes to the db, upload attachments to cloud storage and commit changes to db on success.

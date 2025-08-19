@@ -1,24 +1,28 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
+import { BoreholeV2 } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { theme } from "../../AppTheme.ts";
 import { EditButton } from "../../components/buttons/buttons.tsx";
+import { restrictionFreeCode } from "../../components/codelist.ts";
 import { colorStatusMap } from "./form/workflow/statusColorMap.ts";
-import { useWorkflowMutation, WorkflowChangeRequest, WorkflowV2 } from "./form/workflow/workflow.ts";
+import { useWorkflowMutation, WorkflowChangeRequest } from "./form/workflow/workflow.ts";
 
 interface StatusBadgesProps {
-  workflow?: WorkflowV2 | null;
+  borehole?: BoreholeV2 | null;
 }
 
-export const StatusBadges = ({ workflow }: StatusBadgesProps) => {
+export const StatusBadges = ({ borehole }: StatusBadgesProps) => {
   const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
   const {
     updateWorkflow: { mutate: updateWorkflow },
   } = useWorkflowMutation();
+  const workflow = useMemo(() => borehole?.workflow, [borehole]);
 
-  if (!workflow?.status) return null;
+  if (!borehole || !workflow?.status) return null;
 
   const startReview = () => {
     const workflowChangeRequest: WorkflowChangeRequest = {
@@ -37,12 +41,21 @@ export const StatusBadges = ({ workflow }: StatusBadgesProps) => {
     />
   );
 
-  const assigneeLabel = workflow.assignee ? `${workflow.assignee.firstName} ${workflow.assignee.lastName}` : t("free");
   const AssigneeChip = (
     <Chip
       data-cy="workflow-assignee-chip"
       color="secondary"
-      label={assigneeLabel}
+      label={`${workflow?.assignee?.firstName} ${workflow?.assignee?.lastName}`}
+      sx={{ backgroundColor: theme.palette.border.light, color: "black" }}
+    />
+  );
+
+  //Chip only displays if borehole is unrestricted, otherwise no restriction status is shown
+  const FreeChip = (
+    <Chip
+      data-cy="free-chip"
+      color="secondary"
+      label={t("free")}
       sx={{ backgroundColor: theme.palette.border.light, color: "black" }}
     />
   );
@@ -58,8 +71,10 @@ export const StatusBadges = ({ workflow }: StatusBadgesProps) => {
 
   const isDraft = workflow.status === WorkflowStatus.Draft;
   const isPublished = workflow.status === WorkflowStatus.Published;
+  const hasAssignee = !!workflow.assignee?.id;
   const isCurrentUserAssignee = workflow.assignee?.id === currentUser?.id;
   const showReviewButton = isDraft && isCurrentUserAssignee;
+  const isUnrestricted = borehole.restrictionId == restrictionFreeCode || borehole.restrictionId === null;
 
   return (
     <Stack
@@ -69,7 +84,8 @@ export const StatusBadges = ({ workflow }: StatusBadgesProps) => {
       sx={{ p: 1, borderRadius: 1, border: showReviewButton ? `1px solid ${theme.palette.border.light}` : "none" }}>
       {isPublished && ReviewdChip}
       {StatusChip}
-      {!isPublished && AssigneeChip}
+      {!isPublished && hasAssignee && AssigneeChip}
+      {isUnrestricted && FreeChip}
       {workflow.hasRequestedChanges && ChangesRequestedChip}
       {showReviewButton && <EditButton label={"review"} variant={"outlined"} onClick={startReview} />}
     </Stack>

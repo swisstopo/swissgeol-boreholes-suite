@@ -1912,7 +1912,7 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("stratigraphy_id");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -1920,11 +1920,11 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("borehole_id");
 
-                    b.Property<DateTime?>("Creation")
+                    b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation");
 
-                    b.Property<int?>("Creator")
+                    b.Property<int?>("CreatedById")
                         .HasColumnType("integer")
                         .HasColumnName("creator");
 
@@ -1941,11 +1941,11 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<DateTime?>("Update")
+                    b.Property<DateTime?>("Updated")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("update");
 
-                    b.Property<int?>("Updater")
+                    b.Property<int?>("UpdatedById")
                         .HasColumnType("integer")
                         .HasColumnName("updater");
 
@@ -2225,39 +2225,46 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id_wkf");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AssigneeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("assignee_id");
+
                     b.Property<int>("BoreholeId")
                         .HasColumnType("integer")
-                        .HasColumnName("id_bho_fk");
+                        .HasColumnName("borehole_id");
 
-                    b.Property<DateTime?>("Finished")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("finished_wkf");
+                    b.Property<bool>("HasRequestedChanges")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_requested_changes");
 
-                    b.Property<string>("Notes")
-                        .HasColumnType("text")
-                        .HasColumnName("notes_wkf");
-
-                    b.Property<int?>("Role")
+                    b.Property<int>("PublishedTabsId")
                         .HasColumnType("integer")
-                        .HasColumnName("id_rol_fk");
+                        .HasColumnName("published_tabs_id");
 
-                    b.Property<DateTime?>("Started")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("started_wkf");
-
-                    b.Property<int>("UserId")
+                    b.Property<int>("ReviewedTabsId")
                         .HasColumnType("integer")
-                        .HasColumnName("id_usr_fk");
+                        .HasColumnName("reviewed_tabs_id");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BoreholeId");
+                    b.HasIndex("AssigneeId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("BoreholeId")
+                        .IsUnique();
+
+                    b.HasIndex("PublishedTabsId")
+                        .IsUnique();
+
+                    b.HasIndex("ReviewedTabsId")
+                        .IsUnique();
 
                     b.ToTable("workflow", "bdms");
                 });
@@ -2310,55 +2317,6 @@ namespace BDMS.Migrations
                     b.HasIndex("WorkflowId");
 
                     b.ToTable("workflow_change", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.WorkflowV2", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("workflow_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AssigneeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("assignee_id");
-
-                    b.Property<int>("BoreholeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("borehole_id");
-
-                    b.Property<bool>("HasRequestedChanges")
-                        .HasColumnType("boolean")
-                        .HasColumnName("has_requested_changes");
-
-                    b.Property<int>("PublishedTabsId")
-                        .HasColumnType("integer")
-                        .HasColumnName("published_tabs_id");
-
-                    b.Property<int>("ReviewedTabsId")
-                        .HasColumnType("integer")
-                        .HasColumnName("reviewed_tabs_id");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssigneeId");
-
-                    b.HasIndex("BoreholeId")
-                        .IsUnique();
-
-                    b.HasIndex("PublishedTabsId")
-                        .IsUnique();
-
-                    b.HasIndex("ReviewedTabsId")
-                        .IsUnique();
-
-                    b.ToTable("workflow_v2", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Workgroup", b =>
@@ -3512,21 +3470,35 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.Workflow", b =>
                 {
+                    b.HasOne("BDMS.Models.User", "Assignee")
+                        .WithMany()
+                        .HasForeignKey("AssigneeId");
+
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithMany("Workflows")
-                        .HasForeignKey("BoreholeId")
+                        .WithOne("Workflow")
+                        .HasForeignKey("BDMS.Models.Workflow", "BoreholeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BDMS.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("BDMS.Models.TabStatus", "PublishedTabs")
+                        .WithOne()
+                        .HasForeignKey("BDMS.Models.Workflow", "PublishedTabsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BDMS.Models.TabStatus", "ReviewedTabs")
+                        .WithOne()
+                        .HasForeignKey("BDMS.Models.Workflow", "ReviewedTabsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assignee");
 
                     b.Navigation("Borehole");
 
-                    b.Navigation("User");
+                    b.Navigation("PublishedTabs");
+
+                    b.Navigation("ReviewedTabs");
                 });
 
             modelBuilder.Entity("BDMS.Models.WorkflowChange", b =>
@@ -3539,7 +3511,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.WorkflowV2", "Workflow")
+                    b.HasOne("BDMS.Models.Workflow", "Workflow")
                         .WithMany("Changes")
                         .HasForeignKey("WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3550,39 +3522,6 @@ namespace BDMS.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Workflow");
-                });
-
-            modelBuilder.Entity("BDMS.Models.WorkflowV2", b =>
-                {
-                    b.HasOne("BDMS.Models.User", "Assignee")
-                        .WithMany()
-                        .HasForeignKey("AssigneeId");
-
-                    b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithOne("Workflow")
-                        .HasForeignKey("BDMS.Models.WorkflowV2", "BoreholeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.TabStatus", "PublishedTabs")
-                        .WithOne()
-                        .HasForeignKey("BDMS.Models.WorkflowV2", "PublishedTabsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.TabStatus", "ReviewedTabs")
-                        .WithOne()
-                        .HasForeignKey("BDMS.Models.WorkflowV2", "ReviewedTabsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Assignee");
-
-                    b.Navigation("Borehole");
-
-                    b.Navigation("PublishedTabs");
-
-                    b.Navigation("ReviewedTabs");
                 });
 
             modelBuilder.Entity("BDMS.Models.FieldMeasurement", b =>
@@ -3666,8 +3605,6 @@ namespace BDMS.Migrations
                     b.Navigation("StratigraphiesV2");
 
                     b.Navigation("Workflow");
-
-                    b.Navigation("Workflows");
                 });
 
             modelBuilder.Entity("BDMS.Models.Casing", b =>
@@ -3758,7 +3695,7 @@ namespace BDMS.Migrations
                     b.Navigation("WorkgroupRoles");
                 });
 
-            modelBuilder.Entity("BDMS.Models.WorkflowV2", b =>
+            modelBuilder.Entity("BDMS.Models.Workflow", b =>
                 {
                     b.Navigation("Changes");
                 });

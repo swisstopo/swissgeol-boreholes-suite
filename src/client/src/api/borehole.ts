@@ -1,12 +1,11 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Workflow } from "../api-lib/ReduxStateInterfaces.ts";
 import { Codelist } from "../components/codelist.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { WorkflowV2 } from "../pages/detail/form/workflow/workflow.ts";
+import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
 import { Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -14,6 +13,7 @@ import { download, fetchApiV2, upload } from "./fetchApiV2.ts";
 import { BoreholeFile } from "./file/fileInterfaces.ts";
 import { Section } from "./section.ts";
 import { Stratigraphy, StratigraphyLegacy } from "./stratigraphy.ts";
+import { useCurrentUser } from "./user.ts";
 
 export interface BasicIdentifier {
   boreholeId: number;
@@ -41,9 +41,8 @@ export interface BoreholeV2 {
   typeId: number;
   remarks: string;
   statusId: number;
-  workflow: WorkflowV2 | null;
+  workflow: Workflow | null;
   boreholeCodelists: BasicIdentifier[];
-  workflows: Workflow[];
   workgroupId: number;
   workgroup: Workgroup;
   originalReferenceSystem: ReferenceSystemCode;
@@ -137,6 +136,9 @@ export const updateBorehole = async (borehole: BoreholeV2) => {
 };
 export const deleteBorehole = async (id: number) => await fetchApiV2(`borehole?id=${id}`, "DELETE");
 
+export const canUserEditBorehole = async (id: number) =>
+  await fetchApiV2(`permissions/canedit?boreholeId=${id}`, "GET");
+
 export const boreholeQueryKey = "boreholes";
 
 export const useBorehole = (id: number) => {
@@ -144,6 +146,21 @@ export const useBorehole = (id: number) => {
     queryKey: [boreholeQueryKey, id],
     queryFn: async () => {
       return await fetchBoreholeById(id);
+    },
+    enabled: !!id,
+  });
+
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
+
+export const canEditQueryKey = "canEditBorehole";
+export const useBoreholeEditable = (id: number) => {
+  const { data: currentUser } = useCurrentUser();
+  const query = useQuery({
+    queryKey: [canEditQueryKey, currentUser?.id, id],
+    queryFn: async () => {
+      return await canUserEditBorehole(id);
     },
     enabled: !!id,
   });
@@ -165,13 +182,18 @@ export const useBoreholeMutations = () => {
     mutationFn: async (borehole: BoreholeV2) => {
       return await updateBorehole(borehole);
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey],
+      });
+    },
   });
 
   const useDeleteBorehole = useMutation({
     mutationFn: async (boreholeId: number) => {
       return await deleteBorehole(boreholeId);
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [boreholeQueryKey],
       });
@@ -179,6 +201,7 @@ export const useBoreholeMutations = () => {
   });
 
   useShowAlertOnError(useAddBorehole.isError, useAddBorehole.error);
+  useShowAlertOnError(useUpdateBorehole.isError, useUpdateBorehole.error);
   useShowAlertOnError(useDeleteBorehole.isError, useDeleteBorehole.error);
   return {
     add: useAddBorehole,
