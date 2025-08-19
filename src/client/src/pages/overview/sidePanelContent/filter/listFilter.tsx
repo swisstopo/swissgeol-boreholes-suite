@@ -69,7 +69,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
     () =>
       _.debounce((filterValue: string, value: string) => {
         updateChange(filterValue, value);
-      }, 500),
+      }, 2000),
     [updateChange],
   );
 
