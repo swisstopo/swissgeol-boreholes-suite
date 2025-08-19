@@ -134,10 +134,8 @@ public class LithostratigraphyControllerTest
             ControllerContext = GetControllerContextAdmin(),
         };
 
-        // Act
         var response = await controller.GetByIdAsync(14_000_014).ConfigureAwait(false);
 
-        // Assert
         ActionResultAssert.IsUnauthorized(response.Result);
     }
 

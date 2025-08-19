@@ -126,7 +126,6 @@ public class LithologicalDescriptionControllerTest
         var lithologicalDescriptionId = context.LithologicalDescriptions.First().Id;
         var response = await controller.GetByIdAsync(lithologicalDescriptionId).ConfigureAwait(false);
 
-        // Assert
         ActionResultAssert.IsUnauthorized(response.Result);
     }
 
