@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
 import {
+  GenericWorkflowSelection,
   LocalDate,
   Role,
   SgcWorkflowChangeEventDetail,
@@ -120,6 +121,30 @@ export const WorkflowView = () => {
     updateWorkflow(workflowChangeRequest);
   };
 
+  const revokePublicationIfReviewTabChanges = (changes: Partial<GenericWorkflowSelection>) => {
+    if (!changes || Object.entries(changes).length <= 0) return;
+
+    const revokedReviews = Object.entries(changes)
+      .filter(([, value]) => value === false)
+      .reduce(
+        (acc, [field, value]) => {
+          acc[field] = value as boolean;
+          return acc;
+        },
+        {} as Record<string, boolean>,
+      );
+
+    // If any reviews were revoked, also remove those entries from published tabs
+    if (Object.keys(revokedReviews).length > 0) {
+      const resetTabStatusChangeRequest: TabStatusChangeRequest = {
+        boreholeId: parseInt(boreholeId, 10),
+        tab: TabType.Published,
+        changes: revokedReviews,
+      };
+      updateTabStatus(resetTabStatusChangeRequest);
+    }
+  };
+
   const handleTabStatusUpdate = (
     changeEvent: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>,
     tab: TabType,
@@ -130,6 +155,10 @@ export const WorkflowView = () => {
       changes: changeEvent.detail.changes,
     };
     updateTabStatus(tabStatusChangeRequest);
+
+    if (tab === TabType.Reviewed) {
+      revokePublicationIfReviewTabChanges(changeEvent.detail.changes);
+    }
   };
 
   return (
