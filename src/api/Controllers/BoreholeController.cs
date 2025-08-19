@@ -129,19 +129,35 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<PaginatedBoreholeResponse>> GetAllAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>? ids = null, [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1, [FromQuery][Range(1, MaxPageSize)] int pageSize = 100)
     {
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
+        var boreholes = Context.BoreholesWithIncludes.AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            boreholes = boreholes
+                .Where(f => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == f.Id && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
+
         pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
 
         var skip = (pageNumber - 1) * pageSize;
-        var query = Context.BoreholesWithIncludes.AsNoTracking();
 
         if (ids != null && ids.Any())
         {
-            query = query.Where(borehole => ids.Contains(borehole.Id));
+            boreholes = boreholes.Where(borehole => ids.Contains(borehole.Id));
         }
 
-        var totalCount = await query.CountAsync().ConfigureAwait(false);
-        var boreholes = await query.Skip(skip).Take(pageSize).ToListAsync().ConfigureAwait(false);
-        var paginatedResponse = new PaginatedBoreholeResponse(totalCount, pageNumber, pageSize, MaxPageSize, boreholes);
+        var totalCount = await boreholes.CountAsync().ConfigureAwait(false);
+        var paginatedBoreholes = await boreholes.Skip(skip).Take(pageSize).ToListAsync().ConfigureAwait(false);
+        var paginatedResponse = new PaginatedBoreholeResponse(totalCount, pageNumber, pageSize, MaxPageSize, paginatedBoreholes);
 
         return Ok(paginatedResponse);
     }

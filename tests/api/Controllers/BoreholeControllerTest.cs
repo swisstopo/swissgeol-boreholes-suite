@@ -68,6 +68,37 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task GetAsyncFiltersBoreholesBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var response = await controller.GetAllAsync([newBorehole.Id], 1, 100);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        PaginatedBoreholeResponse paginatedResponse = (PaginatedBoreholeResponse)okResult.Value!;
+        Assert.IsNotNull(paginatedResponse.Boreholes);
+        Assert.AreEqual(1, paginatedResponse.Boreholes.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        var responseForEditor = await controller.GetAllAsync([newBorehole.Id], 1, 100);
+
+        ActionResultAssert.IsOk(responseForEditor.Result);
+        OkObjectResult okResultForEditor = (OkObjectResult)responseForEditor.Result!;
+        PaginatedBoreholeResponse paginatedResponseForEditor = (PaginatedBoreholeResponse)okResultForEditor.Value!;
+        Assert.IsNotNull(paginatedResponseForEditor.Boreholes);
+        Assert.AreEqual(0, paginatedResponseForEditor.Boreholes.Count());
+    }
+
+    [TestMethod]
     public async Task GetAllAsyncWithFilterIds()
     {
         var ids = new List<int> { 1_000_100, 1_000_200, 1_000_300, 1_000_400 };
