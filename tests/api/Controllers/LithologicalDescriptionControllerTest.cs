@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,6 +39,43 @@ public class LithologicalDescriptionControllerTest
         IEnumerable<LithologicalDescription>? lithologicalDescriptions = response;
         Assert.IsNotNull(lithologicalDescriptions);
         Assert.AreEqual(30_000, lithologicalDescriptions.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersLithologicalDescriptionsBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with lithologicalDescription and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newStratigraphy = new Stratigraphy()
+        {
+            BoreholeId = newBorehole.Id,
+        };
+        await context.Stratigraphies.AddAsync(newStratigraphy);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var lithologicalDescription = new LithologicalDescription()
+        {
+            StratigraphyId = newStratigraphy.Id,
+        };
+        await context.LithologicalDescriptions.AddAsync(lithologicalDescription);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<LithologicalDescription>? descriptionsForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(descriptionsForAdmin);
+        Assert.AreEqual(30001, descriptionsForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<LithologicalDescription>? descriptionsForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(descriptionsForEditor);
+        Assert.AreEqual(28510, descriptionsForEditor.Count());
     }
 
     [TestMethod]

@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -42,6 +43,37 @@ public class SectionControllerTest
         IEnumerable<Section>? sections = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(sections);
         Assert.AreEqual(500, sections.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersSectionsBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with section and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var section = new Section()
+        {
+            BoreholeId = newBorehole.Id,
+            Name = "Test Section",
+        };
+        await context.Sections.AddAsync(section);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<Section>? sectionsForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(sectionsForAdmin);
+        Assert.AreEqual(501, sectionsForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<Section>? sectionsForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(sectionsForEditor);
+        Assert.AreEqual(500, sectionsForEditor.Count());
     }
 
     [TestMethod]

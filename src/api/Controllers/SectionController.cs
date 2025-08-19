@@ -19,9 +19,24 @@ public class SectionController : BoreholeControllerBase<Section>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Section>> GetAsync([FromQuery] int? boreholeId = null)
     {
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
         var sections = Context.Sections
             .Include(s => s.SectionElements)
             .AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            sections = sections
+                .Where(s => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == s.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
 
         if (boreholeId != null)
         {

@@ -23,8 +23,22 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<LithologicalDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
-        var lithologicalDescriptions = Context.LithologicalDescriptions
-            .AsNoTracking();
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
+        var lithologicalDescriptions = Context.LithologicalDescriptions.AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            lithologicalDescriptions = lithologicalDescriptions
+                .Where(l => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == l.Stratigraphy.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
 
         if (stratigraphyId != null)
         {

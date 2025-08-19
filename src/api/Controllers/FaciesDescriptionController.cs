@@ -23,8 +23,22 @@ public class FaciesDescriptionController : BoreholeControllerBase<FaciesDescript
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<FaciesDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
-        var faciesDescriptions = Context.FaciesDescriptions
-            .AsNoTracking();
+        var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
+        var faciesDescriptions = Context.FaciesDescriptions.AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            faciesDescriptions = faciesDescriptions
+                .Where(f => Context.Boreholes
+                .Where(b => b.WorkgroupId.HasValue)
+                .Any(b => b.Id == f.Stratigraphy.BoreholeId && allowedWorkgroupIds
+                .Contains(b.WorkgroupId!.Value)));
+        }
 
         if (stratigraphyId != null)
         {

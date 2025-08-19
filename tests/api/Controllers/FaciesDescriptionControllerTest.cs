@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,6 +39,43 @@ public class FaciesDescriptionControllerTest
         IEnumerable<FaciesDescription>? faciesDescriptions = response;
         Assert.IsNotNull(faciesDescriptions);
         Assert.AreEqual(30_000, faciesDescriptions.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersFaciesDescriptionsBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with faciesDescription and workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var newStratigraphy = new Stratigraphy()
+        {
+            BoreholeId = newBorehole.Id,
+        };
+        await context.Stratigraphies.AddAsync(newStratigraphy);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var faciesDescription = new FaciesDescription()
+        {
+            StratigraphyId = newStratigraphy.Id,
+        };
+        await context.FaciesDescriptions.AddAsync(faciesDescription);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        IEnumerable<FaciesDescription>? descriptionsForAdmin = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(descriptionsForAdmin);
+        Assert.AreEqual(30001, descriptionsForAdmin.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        IEnumerable<FaciesDescription>? descriptionsForEditor = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(descriptionsForEditor);
+        Assert.AreEqual(28510, descriptionsForEditor.Count());
     }
 
     [TestMethod]
