@@ -194,7 +194,7 @@ describe("Tests the publication workflow.", () => {
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       assertWorkflowSteps("Draft");
-      AssertHeaderChips(WorkflowStatus.Reviewed, null, false, "Free");
+      AssertHeaderChips(WorkflowStatus.Draft, null, false, "Free");
       requestReviewFromValidator();
       cy.get("sgc-tab").contains("Review").click();
 
