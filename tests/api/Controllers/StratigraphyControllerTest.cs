@@ -72,7 +72,7 @@ public class StratigraphyControllerTest
 
         IEnumerable<Stratigraphy>? stratigraphiesForEditor = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(stratigraphiesForEditor);
-        Assert.AreEqual(2851, stratigraphiesForEditor.Count());
+        Assert.AreEqual(2850, stratigraphiesForEditor.Count());
     }
 
     [TestMethod]

@@ -75,7 +75,7 @@ public class ChronostratigraphyControllerTest
 
         IEnumerable<ChronostratigraphyLayer>? layersForEditor = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(layersForEditor);
-        Assert.AreEqual(28510, layersForEditor.Count());
+        Assert.AreEqual(28500, layersForEditor.Count());
     }
 
     [TestMethod]

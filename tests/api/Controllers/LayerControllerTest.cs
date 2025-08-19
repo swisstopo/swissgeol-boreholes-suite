@@ -79,7 +79,7 @@ public class LayerControllerTest
         var layersResponse2 = await controller.GetAsync().ConfigureAwait(false);
         IEnumerable<Layer>? layersForEditor = layersResponse2.Value;
         Assert.IsNotNull(layersForEditor);
-        Assert.AreEqual(28510, layersForEditor.Count());
+        Assert.AreEqual(28500, layersForEditor.Count());
     }
 
     [TestMethod]

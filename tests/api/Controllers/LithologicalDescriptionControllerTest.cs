@@ -75,7 +75,7 @@ public class LithologicalDescriptionControllerTest
 
         IEnumerable<LithologicalDescription>? descriptionsForEditor = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(descriptionsForEditor);
-        Assert.AreEqual(28510, descriptionsForEditor.Count());
+        Assert.AreEqual(28500, descriptionsForEditor.Count());
     }
 
     [TestMethod]

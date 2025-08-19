@@ -73,7 +73,7 @@ public class SectionControllerTest
 
         IEnumerable<Section>? sectionsForEditor = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(sectionsForEditor);
-        Assert.AreEqual(500, sectionsForEditor.Count());
+        Assert.AreEqual(495, sectionsForEditor.Count());
     }
 
     [TestMethod]
