@@ -1,7 +1,7 @@
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import { restrictionFreeCode } from "../../../src/components/codelist.ts";
 import { colorStatusMap } from "../../../src/pages/detail/form/workflow/statusColorMap.ts";
-import { capitalizeFirstLetter } from "../../../src/utils.ts";
+import { capitalizeFirstLetter } from "../../../src/utils.js";
 import { addItem, saveForm, saveWithSaveBar } from "../helpers/buttonHelpers.js";
 import { setInput, setSelect } from "../helpers/formHelpers.js";
 import { BoreholeTab, navigateInBorehole, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
