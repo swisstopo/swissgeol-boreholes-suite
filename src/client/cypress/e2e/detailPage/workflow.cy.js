@@ -50,7 +50,7 @@ describe("Tests the publication workflow.", () => {
   function finishReview() {
     clickSgcButtonWithContent("Review abschliessen");
     cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review abschliessen").click();
-    AssertHeaderChips(WorkflowStatus.Reviewed, "free");
+    AssertHeaderChips(WorkflowStatus.Reviewed);
     cy.wait(["@workflow_by_id", "@borehole_by_id"]);
     assertWorkflowSteps("Reviewed");
   }
@@ -231,7 +231,7 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  function AssertHeaderChips(status, assignee, hasRequestedChanges = false) {
+  function AssertHeaderChips(status, assignee, hasRequestedChanges = false, isUnrestricted = true) {
     // Special case where enum value does not match translation
     if (status === WorkflowStatus.InReview) {
       getElementByDataCy("workflow-status-chip").should("contain", "Review");
@@ -247,6 +247,9 @@ describe("Tests the publication workflow.", () => {
     }
     if (hasRequestedChanges) {
       getElementByDataCy("workflow-changes-requested-chip").should("be.visible");
+    }
+    if (isUnrestricted) {
+      getElementByDataCy("free-chip").should("be.visible");
     }
   }
 
@@ -269,7 +272,7 @@ describe("Tests the publication workflow.", () => {
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       assertWorkflowSteps(WorkflowStatus.Draft);
-      AssertHeaderChips(WorkflowStatus.Draft, "free");
+      AssertHeaderChips(WorkflowStatus.Draft);
       AssignNewUser("Editor User");
       AssertHeaderChips(WorkflowStatus.Draft, "Editor User");
       getElementByDataCy("review-button").should("not.exist");

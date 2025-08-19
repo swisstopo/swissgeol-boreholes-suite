@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
+import { restrictionUntilCode } from "../../../../components/codelist.ts";
 import {
   FormBooleanSelect,
   FormContainer,
@@ -15,7 +16,6 @@ import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces
 interface RestrictionSegmentProps extends LocationBaseProps {
   formMethods: UseFormReturn<LocationFormInputs>;
 }
-const restrictionUntilCode = 20111003;
 
 const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) => {
   const [restrictionUntilEnabled, setRestrictionUntilEnabled] = useState<boolean>(
