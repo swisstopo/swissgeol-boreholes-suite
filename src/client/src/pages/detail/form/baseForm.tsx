@@ -32,7 +32,7 @@ export const BaseForm = <T extends FieldValues>({
   const { id } = useRequiredParams<{ id: string }>();
   const { data: borehole } = useBorehole(parseInt(id, 10));
   const {
-    update: { mutate: updateBorehole },
+    update: { mutateAsync: updateBorehole },
   } = useBoreholeMutations();
   const resetTabStatus = useResetTabStatus([tabStatusToReset]);
   const { getValues, reset, formState } = formMethods;
@@ -40,21 +40,26 @@ export const BaseForm = <T extends FieldValues>({
   useFormDirtyChanges({ formState });
 
   const onSubmit = useCallback(
-    (formInputs: T) => {
-      updateBorehole({
-        ...borehole,
-        ...prepareDataForSubmit(formInputs),
-      });
+    async (formInputs: T): Promise<boolean> => {
+      try {
+        await updateBorehole({
+          ...borehole,
+          ...prepareDataForSubmit(formInputs),
+        });
+        return true;
+      } catch {
+        return false;
+      }
     },
-    [borehole, prepareDataForSubmit, updateBorehole],
+    [updateBorehole, borehole, prepareDataForSubmit],
   );
 
   const resetAndSubmitForm = useCallback(async () => {
     const currentValues = getValues();
     reset(currentValues);
     setExtractionObject(undefined);
-    onSubmit(currentValues);
     resetTabStatus();
+    return await onSubmit(currentValues);
   }, [getValues, onSubmit, reset, resetTabStatus, setExtractionObject]);
 
   const resetWithoutSave = useCallback(() => {

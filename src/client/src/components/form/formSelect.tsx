@@ -117,18 +117,22 @@ export const FormSelect: FC<FormSelectProps> = ({
                 if (onUpdate) onUpdate(newValue?.key ?? null);
               }
             }}
-            renderInput={params => (
-              <TextField
-                {...params}
-                label={t(label)}
-                required={required}
-                error={getFormFieldError(fieldName, formState.errors)}
-                sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
-                className={className}
-                data-cy={fieldName + "-formSelect"}
-                disabled={disabled}
-              />
-            )}
+            renderInput={params => {
+              const formFieldError = getFormFieldError(fieldName, formState.errors);
+              return (
+                <TextField
+                  {...params}
+                  label={t(label)}
+                  required={required}
+                  error={!!formFieldError}
+                  helperText={formFieldError?.message ? t(formFieldError.message) : ""}
+                  sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
+                  className={className}
+                  data-cy={fieldName + "-formSelect"}
+                  disabled={disabled}
+                />
+              );
+            }}
             renderOption={(props, option) => (
               <li {...props}>{option.italic ? <em>{option.label}</em> : option.label}</li>
             )}

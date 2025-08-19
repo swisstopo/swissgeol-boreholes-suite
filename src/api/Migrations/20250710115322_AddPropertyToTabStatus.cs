@@ -18,6 +18,7 @@ public partial class AddPropertyToTabStatus : Migration
             nullable: false,
             oldClrType: typeof(bool),
             oldType: "boolean",
+            defaultValue: false,
             oldDefaultValue: false);
 
         migrationBuilder.AddColumn<bool>(

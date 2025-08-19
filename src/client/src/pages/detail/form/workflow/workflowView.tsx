@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
 import {
+  GenericWorkflowSelection,
   LocalDate,
   Role,
   SgcWorkflowChangeEventDetail,
@@ -14,6 +15,7 @@ import { Role as LegacyRole } from "../../../../api/apiInterfaces.ts";
 import { useBorehole, useBoreholeEditable } from "../../../../api/borehole.ts";
 import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import { restrictionCode, restrictionUntilCode } from "../../../../components/codelist.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
@@ -119,6 +121,30 @@ export const WorkflowView = () => {
     updateWorkflow(workflowChangeRequest);
   };
 
+  const revokePublicationIfReviewTabChanges = (changes: Partial<GenericWorkflowSelection>) => {
+    if (!changes || Object.entries(changes).length <= 0) return;
+
+    const revokedReviews = Object.entries(changes)
+      .filter(([, value]) => value === false)
+      .reduce(
+        (acc, [field, value]) => {
+          acc[field] = value as boolean;
+          return acc;
+        },
+        {} as Record<string, boolean>,
+      );
+
+    // If any reviews were revoked, also remove those entries from published tabs
+    if (Object.keys(revokedReviews).length > 0) {
+      const resetTabStatusChangeRequest: TabStatusChangeRequest = {
+        boreholeId: parseInt(boreholeId, 10),
+        tab: TabType.Published,
+        changes: revokedReviews,
+      };
+      updateTabStatus(resetTabStatusChangeRequest);
+    }
+  };
+
   const handleTabStatusUpdate = (
     changeEvent: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>,
     tab: TabType,
@@ -129,6 +155,10 @@ export const WorkflowView = () => {
       changes: changeEvent.detail.changes,
     };
     updateTabStatus(tabStatusChangeRequest);
+
+    if (tab === TabType.Reviewed) {
+      revokePublicationIfReviewTabChanges(changeEvent.detail.changes);
+    }
   };
 
   return (
@@ -149,6 +179,7 @@ export const WorkflowView = () => {
         availableAssignees={availableAssignees}
         selection={makeSelectionEntries()}
         canChangeStatus={editableByCurrentUser}
+        isRestricted={borehole.restrictionId === restrictionCode || borehole.restrictionId === restrictionUntilCode}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
           handleTabStatusUpdate(e, TabType.Reviewed)
         }

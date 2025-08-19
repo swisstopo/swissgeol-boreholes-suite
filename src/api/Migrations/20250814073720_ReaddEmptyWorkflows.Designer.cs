@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20250814073720_ReaddEmptyWorkflows")]
+    partial class ReaddEmptyWorkflows
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1907,59 +1910,6 @@ namespace BDMS.Migrations
                     b.ToTable("stratigraphy", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.StratigraphyV2", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BoreholeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("borehole_id");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("creator");
-
-                    b.Property<DateTime?>("Date")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date");
-
-                    b.Property<bool>("IsPrimary")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_primary");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("updater");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BoreholeId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("stratigraphy_v2", "bdms");
-                });
-
             modelBuilder.Entity("BDMS.Models.TabStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -3407,29 +3357,6 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
-            modelBuilder.Entity("BDMS.Models.StratigraphyV2", b =>
-                {
-                    b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithMany("StratigraphiesV2")
-                        .HasForeignKey("BoreholeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.User", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("Borehole");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("UpdatedBy");
-                });
-
             modelBuilder.Entity("BDMS.Models.TermsAccepted", b =>
                 {
                     b.HasOne("BDMS.Models.Term", "Term")
@@ -3601,8 +3528,6 @@ namespace BDMS.Migrations
                     b.Navigation("Sections");
 
                     b.Navigation("Stratigraphies");
-
-                    b.Navigation("StratigraphiesV2");
 
                     b.Navigation("Workflow");
                 });

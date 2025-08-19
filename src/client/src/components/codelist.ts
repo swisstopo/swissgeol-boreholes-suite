@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../api/fetchApiV2.ts";
-import { useShowAlertOnError } from "../hooks/useShowAlertOnError.ts";
+import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 
 export interface Codelist {
   order: number;
@@ -15,6 +15,10 @@ export interface Codelist {
   path: string;
   [key: string]: string | number;
 }
+
+export const restrictionFreeCode = 20111001;
+export const restrictionCode = 20111002;
+export const restrictionUntilCode = 20111003;
 
 export const fetchCodelists = async (): Promise<Codelist[]> => await fetchApiV2WithApiError("codelist", "GET");
 

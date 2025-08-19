@@ -50,7 +50,7 @@ describe("Tests the publication workflow.", () => {
   function finishReview() {
     clickSgcButtonWithContent("Review abschliessen");
     cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review abschliessen").click();
-    AssertHeaderChips(WorkflowStatus.Reviewed, "free");
+    AssertHeaderChips(WorkflowStatus.Reviewed);
     cy.wait(["@workflow_by_id", "@borehole_by_id"]);
     assertWorkflowSteps("Reviewed");
   }
@@ -167,8 +167,7 @@ describe("Tests the publication workflow.", () => {
 
       // navigate away and return to assert state has been saved
       navigateInSidebar(SidebarMenuItem.borehole);
-      //Todo: update navigateInSidebar for new workflow tab
-      getElementByDataCy(`status-menu-item`).click();
+      navigateInSidebar(SidebarMenuItem.status);
       cy.get("sgc-tab").contains("Review").click();
 
       isCheckedTabStatusBox("review", "Casing");
@@ -232,7 +231,7 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  function AssertHeaderChips(status, assignee, hasRequestedChanges = false) {
+  function AssertHeaderChips(status, assignee, hasRequestedChanges = false, isUnrestricted = true) {
     // Special case where enum value does not match translation
     if (status === WorkflowStatus.InReview) {
       getElementByDataCy("workflow-status-chip").should("contain", "Review");
@@ -248,6 +247,9 @@ describe("Tests the publication workflow.", () => {
     }
     if (hasRequestedChanges) {
       getElementByDataCy("workflow-changes-requested-chip").should("be.visible");
+    }
+    if (isUnrestricted) {
+      getElementByDataCy("free-chip").should("be.visible");
     }
   }
 
@@ -270,7 +272,7 @@ describe("Tests the publication workflow.", () => {
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       assertWorkflowSteps(WorkflowStatus.Draft);
-      AssertHeaderChips(WorkflowStatus.Draft, "free");
+      AssertHeaderChips(WorkflowStatus.Draft);
       AssignNewUser("Editor User");
       AssertHeaderChips(WorkflowStatus.Draft, "Editor User");
       getElementByDataCy("review-button").should("not.exist");
@@ -385,8 +387,7 @@ describe("Tests the publication workflow.", () => {
       setSelect("purposeId", 1);
       saveWithSaveBar();
 
-      // navigateInSidebar(SidebarMenuItem.status); TODO: use this method when workflow V1 is removed and navigatgeInSidebar is updated
-      getElementByDataCy("status-menu-item").click();
+      navigateInSidebar(SidebarMenuItem.status);
       cy.get("sgc-tab").contains("Review").click();
       isUncheckedTabStatusBox("review", "Location");
       isUncheckedTabStatusBox("review", "General");
@@ -422,8 +423,7 @@ describe("Tests the publication workflow.", () => {
 
       getElementByDataCy("borehole-menu-item").should("have.attr", "reviewed", "false");
 
-      // navigateInSidebar(SidebarMenuItem.status); TODO: use this method when workflow V1 is removed and navigatgeInSidebar is updated
-      getElementByDataCy("status-menu-item").click();
+      navigateInSidebar(SidebarMenuItem.status);
 
       cy.get("sgc-tab").contains("Review").click();
       isUncheckedTabStatusBox("review", "Sections");
@@ -460,8 +460,7 @@ describe("Tests the publication workflow.", () => {
       getElementByDataCy("stratigraphy-menu-item").should("have.attr", "reviewed", "false");
       getElementByDataCy("completion-menu-item").should("have.attr", "reviewed", "false");
 
-      // navigateInSidebar(SidebarMenuItem.status); TODO: use this method when workflow V1 is removed and navigatgeInSidebar is updated
-      getElementByDataCy("status-menu-item").click();
+      navigateInSidebar(SidebarMenuItem.status);
 
       cy.get("sgc-tab").contains("Review").click();
       isUncheckedTabStatusBox("review", "Stratigraphy");
@@ -505,8 +504,7 @@ describe("Tests the publication workflow.", () => {
       getElementByDataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", "true");
       getElementByDataCy("attachments-menu-item").should("have.attr", "reviewed", "partial");
 
-      // navigateInSidebar(SidebarMenuItem.status); TODO: use this method when workflow V1 is removed and navigatgeInSidebar is updated
-      getElementByDataCy("status-menu-item").click();
+      navigateInSidebar(SidebarMenuItem.status);
 
       cy.get("sgc-tab").contains("Review").click();
       isIndeterminateTabStatusBox("review", "Hydrogeology");
