@@ -1,7 +1,7 @@
 import { WorkflowStatus } from "@swissgeol/ui-core";
-import { restrictionFreeCode } from "../../../src/components/codelist.js";
+import { restrictionFreeCode } from "../../../src/components/codelist.ts";
 import { colorStatusMap } from "../../../src/pages/detail/form/workflow/statusColorMap.ts";
-import { capitalizeFirstLetter } from "../../../src/utils.js";
+import { capitalizeFirstLetter } from "../../../src/utils.ts";
 import { addItem, saveForm, saveWithSaveBar } from "../helpers/buttonHelpers.js";
 import { setInput, setSelect } from "../helpers/formHelpers.js";
 import { BoreholeTab, navigateInBorehole, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
@@ -541,8 +541,10 @@ describe("Tests the publication workflow.", () => {
     createBorehole({
       originalName: "Cormoran Cellar",
     }).as("borehole_id");
-    loginAsEditor();
     cy.get("@borehole_id").then(id => {
+      // For some reason, the editor session cannot be reused here, so we clear all sessions ¯\_(ツ)_/¯
+      Cypress.session.clearAllSavedSessions();
+      loginAsEditor();
       navigateToWorkflowAndStartEditing(id);
       clickSgcButtonWithContent("Review anfordern");
       cy.get(".select-trigger").click();
