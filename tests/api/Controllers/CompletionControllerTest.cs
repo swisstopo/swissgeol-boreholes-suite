@@ -502,7 +502,6 @@ public class CompletionControllerTest
 
     private void SetupControllerWithAlwaysLockedBorehole()
     {
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);

@@ -24,7 +24,6 @@ public class GroundwaterLevelMeasurementController : BoreholeControllerBase<Grou
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<GroundwaterLevelMeasurement>> GetAsync([FromQuery] int? boreholeId = null)
     {
-        var su = HttpContext.GetUserSubjectId();
         var user = await Context.UsersWithIncludes
             .AsNoTracking()
             .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())

@@ -270,9 +270,8 @@ public class BoreholeControllerTest
             .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        var boreholeId = context.Boreholes.First().Id;
 
-        var response = await controller.GetByIdAsync(boreholeId);
+        var response = await controller.GetByIdAsync(testBoreholeId);
         ActionResultAssert.IsUnauthorized(response.Result);
     }
 

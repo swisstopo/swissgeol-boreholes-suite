@@ -126,14 +126,6 @@ public class LithostratigraphyControllerTest
             .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        var unauthorizedController = new LithostratigraphyController(
-            context,
-            new Mock<ILogger<LithostratigraphyController>>().Object,
-            boreholePermissionServiceMock.Object)
-        {
-            ControllerContext = GetControllerContextAdmin(),
-        };
-
         var response = await controller.GetByIdAsync(14_000_014).ConfigureAwait(false);
 
         ActionResultAssert.IsUnauthorized(response.Result);
