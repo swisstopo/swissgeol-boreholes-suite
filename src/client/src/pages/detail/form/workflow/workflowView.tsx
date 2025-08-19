@@ -124,7 +124,6 @@ export const WorkflowView = () => {
   const revokePublicationIfReviewTabChanges = (changes: Partial<GenericWorkflowSelection>) => {
     if (!changes || Object.entries(changes).length <= 0) return;
 
-    // Filter out entries that were set to false (reviews that were revoked)
     const revokedReviews = Object.entries(changes)
       .filter(([, value]) => value === false)
       .reduce(
@@ -157,7 +156,6 @@ export const WorkflowView = () => {
     };
     updateTabStatus(tabStatusChangeRequest);
 
-    // Reset publication tab if review is revoked.
     if (tab === TabType.Reviewed) {
       revokePublicationIfReviewTabChanges(changeEvent.detail.changes);
     }
