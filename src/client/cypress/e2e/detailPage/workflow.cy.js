@@ -1,4 +1,5 @@
 import { WorkflowStatus } from "@swissgeol/ui-core";
+import { restrictionFreeCode } from "../../../src/components/codelist.js";
 import { colorStatusMap } from "../../../src/pages/detail/form/workflow/statusColorMap.ts";
 import { capitalizeFirstLetter } from "../../../src/utils.js";
 import { addItem, saveForm, saveWithSaveBar } from "../helpers/buttonHelpers.js";
@@ -188,10 +189,12 @@ describe("Tests the publication workflow.", () => {
   it("Can update tab status on publish tab and publish a borehole", () => {
     createBorehole({
       originalName: "Waterpark",
+      restrictionId: restrictionFreeCode,
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       assertWorkflowSteps("Draft");
+      AssertHeaderChips(WorkflowStatus.Reviewed, null, false, "Free");
       requestReviewFromValidator();
       cy.get("sgc-tab").contains("Review").click();
 
@@ -201,6 +204,7 @@ describe("Tests the publication workflow.", () => {
       cy.get(`#review`).find("sgc-checkbox").should("have.class", "is-checked");
 
       finishReview();
+      AssertHeaderChips(WorkflowStatus.Reviewed, null, false, "Free");
 
       cy.get("sgc-tab").contains("Freigabe").click();
 
@@ -225,13 +229,15 @@ describe("Tests the publication workflow.", () => {
       assertWorkflowSteps("Reviewed");
       getElementByDataCy("workflow-status-chip").should("contain", "Published");
       cy.get("sgc-workflow-step").contains("Published").should("exist");
+      // no restriction chip in published status
+      getElementByDataCy("restricted-chip").should("not.exist");
 
       cy.get("sgc-tab").contains("Verlauf").click();
       checkWorkflowChangeContent("Admin User", "Status von Reviewed zu Published geändert", "I published a borehole!");
     });
   });
 
-  function AssertHeaderChips(status, assignee, hasRequestedChanges = false, isUnrestricted = true) {
+  function AssertHeaderChips(status, assignee, hasRequestedChanges = false, restrictionStatus = null) {
     // Special case where enum value does not match translation
     if (status === WorkflowStatus.InReview) {
       getElementByDataCy("workflow-status-chip").should("contain", "Review");
@@ -248,8 +254,9 @@ describe("Tests the publication workflow.", () => {
     if (hasRequestedChanges) {
       getElementByDataCy("workflow-changes-requested-chip").should("be.visible");
     }
-    if (isUnrestricted) {
-      getElementByDataCy("free-chip").should("be.visible");
+    if (restrictionStatus != null) {
+      getElementByDataCy("restricted-chip").should("be.visible");
+      getElementByDataCy("restricted-chip").should("contain", restrictionStatus);
     }
   }
 
