@@ -55,7 +55,7 @@ export const WorkgroupDetail: FC = () => {
     () =>
       _.debounce((name: string) => {
         changeName(name);
-      }, 500),
+      }, 2000),
     [changeName],
   );
 
