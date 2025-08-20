@@ -166,7 +166,7 @@
   "dropZoneChooseBoreholeFilesFirst": "Innanzitutto, seleziona un file CSV con i perforazioni",
   "dropZoneDefaultErrorMsg": "Si è verificato un errore durante la selezione. Riprova.",
   "dropZoneFileToLarge": "Uno o più file sono troppo grandi. Max. 200 MB.",
-  "dropZoneGeometryText": "Trascina qui il file CSV con la geometria o clicca per caricarlo CSV",
+  "dropZoneGeometryText": "Trascina qui il file CSV con la traiettoria di perforazione o clicca per caricarlo",
   "dropZoneInvalidFileType": "Uno o più file hanno un tipo non supportato",
   "dropZoneLithologyText": "Trascina qui il file CSV con le litologie o clicca per caricarlo CSV",
   "dropZoneMaxFilesToUploadReached": "Raggiunto il numero massimo di file da caricare",

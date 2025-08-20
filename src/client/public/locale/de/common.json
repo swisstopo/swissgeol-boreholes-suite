@@ -166,7 +166,7 @@
   "dropZoneChooseBoreholeFilesFirst": "Wählen Sie zuerst eine CSV Datei mit Bohrungen aus",
   "dropZoneDefaultErrorMsg": "Beim Auswählen ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
   "dropZoneFileToLarge": "Eine oder mehrere Dateien sind zu gross. Max. 200 MB.",
-  "dropZoneGeometryText": "CSV Datei mit Geometriedaten hier ablegen oder klicken, um sie hochzuladen",
+  "dropZoneGeometryText": "CSV Datei mit Bohrlochpfad hier ablegen oder klicken, um sie hochzuladen",
   "dropZoneInvalidFileType": "Eine oder mehrere Dateien haben einen nicht unterstützten Dateityp",
   "dropZoneLithologyText": "CSV Datei mit Lithologien hier ablegen oder klicken, um sie hochzuladen",
   "dropZoneMaxFilesToUploadReached": "Maximale Anzahl von Dateien zum Hochladen erreicht",

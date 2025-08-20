@@ -166,7 +166,7 @@
   "dropZoneChooseBoreholeFilesFirst": "First, select a CSV file with boreholes",
   "dropZoneDefaultErrorMsg": "An error occurred during the selection. Please try again.",
   "dropZoneFileToLarge": "One ore more files are too large. Max. 200 MB.",
-  "dropZoneGeometryText": "Drag and drop a CSV file with the geometry data here or click to upload",
+  "dropZoneGeometryText": "Drag and drop a CSV file with the borehole trajectory data here or click to upload",
   "dropZoneInvalidFileType": "One or more files have unsupported file type",
   "dropZoneLithologyText": "Drag and drop a CSV file with the lithologies here or click to upload",
   "dropZoneMaxFilesToUploadReached": "Maximum number of files to upload reached",
