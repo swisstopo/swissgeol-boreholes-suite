@@ -17,43 +17,25 @@ public class WaterIngressController : BoreholeControllerBase<WaterIngress>
     }
 
     /// <summary>
-    /// Asynchronously gets all water ingress records optionally filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets all water ingress records, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole referenced in the observations to get.</param>
     /// <returns>An IEnumerable of type <see cref="WaterIngress"/>.</returns>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<WaterIngress>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<WaterIngress>>> GetAsync([FromQuery] int boreholeId)
     {
-        var user = await Context.UsersWithIncludes
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
-            .ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var waterIngresses = Context.WaterIngresses
+        return await Context.WaterIngresses
             .Include(w => w.Quantity)
             .Include(w => w.Reliability)
             .Include(w => w.Conditions)
             .Include(w => w.Casing)
             .ThenInclude(c => c.Completion)
-            .AsNoTracking();
-
-        if (!user.IsAdmin)
-        {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            waterIngresses = waterIngresses
-                .Where(w => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == w.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
-        }
-
-        if (boreholeId != null)
-        {
-            waterIngresses = waterIngresses.Where(w => w.BoreholeId == boreholeId);
-        }
-
-        return await waterIngresses.ToListAsync().ConfigureAwait(false);
+            .Where(x => x.BoreholeId == boreholeId)
+            .AsNoTracking()
+            .ToListAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />

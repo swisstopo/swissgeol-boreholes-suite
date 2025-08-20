@@ -30,59 +30,28 @@ public class GroundwaterLevelMeasurementControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAsyncReturnsAllEntities()
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        var result = await controller.GetAsync();
-        Assert.IsNotNull(result);
-        Assert.AreEqual(111, result.Count());
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response;
+        IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response.Value;
         Assert.IsNotNull(groundwaterLevelMeasurements);
         Assert.AreEqual(0, groundwaterLevelMeasurements.Count());
-    }
-
-    [TestMethod]
-    public async Task GetAsyncFiltersGroundwaterMeasurementBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with groundwatermeasurement and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newGroundwaterlevelMeasurement = new GroundwaterLevelMeasurement()
-        {
-            BoreholeId = newBorehole.Id,
-            Type = ObservationType.GroundwaterLevelMeasurement,
-            KindId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).FirstAsync().ConfigureAwait(false)).Id,
-        };
-        await context.GroundwaterLevelMeasurements.AddAsync(newGroundwaterlevelMeasurement);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<GroundwaterLevelMeasurement>? groundwaterlevelMeasurementForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(groundwaterlevelMeasurementForAdmin);
-        Assert.AreEqual(112, groundwaterlevelMeasurementForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<GroundwaterLevelMeasurement>? groundwaterlevelMeasurementForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(groundwaterlevelMeasurementForEditor);
-        Assert.AreEqual(110, groundwaterlevelMeasurementForEditor.Count());
     }
 
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
         var response = await controller.GetAsync(1000098).ConfigureAwait(false);
-        IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response;
+        IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response.Value;
         Assert.IsNotNull(groundwaterLevelMeasurements);
         Assert.AreEqual(2, groundwaterLevelMeasurements.Count());
         var groundwaterLevelMeasurement = groundwaterLevelMeasurements.OrderBy(m => m.Id).First();

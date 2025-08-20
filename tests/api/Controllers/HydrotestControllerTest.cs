@@ -26,48 +26,19 @@ public class HydrotestControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAsyncReturnsAllEntities()
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        var result = await controller.GetAsync();
-        Assert.IsNotNull(result);
-        Assert.AreEqual(93, result.Count());
-    }
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
-    [TestMethod]
-    public async Task GetAsyncFiltersHydrotestsBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with hydrotest and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newHydrotest = new Hydrotest()
-        {
-            BoreholeId = newBorehole.Id,
-            Type = ObservationType.Hydrotest,
-        };
-        await context.Hydrotests.AddAsync(newHydrotest);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<Hydrotest>? hydrotestsForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(hydrotestsForAdmin);
-        Assert.AreEqual(94, hydrotestsForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<Hydrotest>? hydrotestsForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(hydrotestsForEditor);
-        Assert.AreEqual(92, hydrotestsForEditor.Count());
+        var unauthorizedResponse = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
-        IEnumerable<Hydrotest>? hydrotests = await controller.GetAsync(94578122).ConfigureAwait(false);
+        var response = await controller.GetAsync(94578122).ConfigureAwait(false);
+        IEnumerable<Hydrotest>? hydrotests = response.Value;
         Assert.IsNotNull(hydrotests);
         Assert.AreEqual(0, hydrotests.Count());
     }
@@ -75,7 +46,8 @@ public class HydrotestControllerTest
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
-        IEnumerable<Hydrotest>? hydrotests = await controller.GetAsync(1000067).ConfigureAwait(false);
+        var response = await controller.GetAsync(1000067).ConfigureAwait(false);
+        IEnumerable<Hydrotest>? hydrotests = response.Value;
         Assert.IsNotNull(hydrotests);
         Assert.AreEqual(3, hydrotests.Count());
         var hydrotest = hydrotests.First();

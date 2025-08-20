@@ -16,45 +16,28 @@ public class HydrotestController : BoreholeControllerBase<Hydrotest>
     }
 
     /// <summary>
-    /// Asynchronously gets all hydrotest records optionally filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets all hydrotest records, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole referenced in the observations to get.</param>
     /// <returns>An IEnumerable of type <see cref="Hydrotest"/>.</returns>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Hydrotest>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<Hydrotest>>> GetAsync([FromQuery] int boreholeId)
     {
-        var user = await Context.UsersWithIncludes
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
-            .ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var hydrotests = Context.Hydrotests
+        return await Context.Hydrotests
             .Include(h => h.KindCodelists)
             .Include(h => h.FlowDirectionCodelists)
             .Include(h => h.EvaluationMethodCodelists)
             .Include(h => h.Reliability)
             .Include(h => h.Casing)
             .ThenInclude(c => c.Completion)
-            .Include(h => h.HydrotestResults).ThenInclude(h => h.Parameter)
-            .AsNoTracking();
-
-        if (!user.IsAdmin)
-        {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            hydrotests = hydrotests
-                .Where(h => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == h.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
-        }
-
-        if (boreholeId != null)
-        {
-            hydrotests = hydrotests.Where(w => w.BoreholeId == boreholeId);
-        }
-
-        return await hydrotests.ToListAsync().ConfigureAwait(false);
+            .Include(h => h.HydrotestResults)
+            .ThenInclude(h => h.Parameter)
+            .Where(x => x.BoreholeId == boreholeId)
+            .AsNoTracking()
+            .ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>

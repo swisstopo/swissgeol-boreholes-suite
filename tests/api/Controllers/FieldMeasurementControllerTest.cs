@@ -26,27 +26,28 @@ public class FieldMeasurementControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAsyncReturnsAllEntities()
-    {
-        var result = await controller.GetAsync();
-        Assert.IsNotNull(result);
-        Assert.AreEqual(102, result.Count());
-    }
-
-    [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<FieldMeasurement>? fieldMeasurements = response;
+        IEnumerable<FieldMeasurement>? fieldMeasurements = response.Value;
         Assert.IsNotNull(fieldMeasurements);
         Assert.AreEqual(0, fieldMeasurements.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
         var response = await controller.GetAsync(1000007).ConfigureAwait(false);
-        IEnumerable<FieldMeasurement>? fieldMeasurements = response;
+        IEnumerable<FieldMeasurement>? fieldMeasurements = response.Value;
         Assert.IsNotNull(fieldMeasurements);
         Assert.AreEqual(1, fieldMeasurements.Count());
         var fieldMeasurement = fieldMeasurements.Single();

@@ -19,13 +19,7 @@ public class WaterIngressControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new WaterIngressController(context, new Mock<ILogger<WaterIngressController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -33,50 +27,19 @@ public class WaterIngressControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAsyncReturnsAllEntities()
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        var result = await controller.GetAsync();
-        Assert.IsNotNull(result);
-        Assert.AreEqual(95, result.Count());
-    }
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
-    [TestMethod]
-    public async Task GetAsyncFiltersWateringressesBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with wateringress and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newWateringress = new WaterIngress()
-        {
-            BoreholeId = newBorehole.Id,
-            Type = ObservationType.WaterIngress,
-            QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 1).Id,
-        };
-        await context.WaterIngresses.AddAsync(newWateringress);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<WaterIngress>? wateringressesForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(wateringressesForAdmin);
-        Assert.AreEqual(96, wateringressesForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<WaterIngress>? wateringressesForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(wateringressesForEditor);
-        Assert.AreEqual(95, wateringressesForEditor.Count());
+        var unauthorizedResponse = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<WaterIngress>? waterIngresses = response;
+        IEnumerable<WaterIngress>? waterIngresses = response.Value;
         Assert.IsNotNull(waterIngresses);
         Assert.AreEqual(0, waterIngresses.Count());
     }
@@ -85,7 +48,7 @@ public class WaterIngressControllerTest
     public async Task GetEntriesByBoreholeId()
     {
         var response = await controller.GetAsync(1000038).ConfigureAwait(false);
-        IEnumerable<WaterIngress>? waterIngresses = response;
+        IEnumerable<WaterIngress>? waterIngresses = response.Value;
         Assert.IsNotNull(waterIngresses);
         Assert.AreEqual(2, waterIngresses.Count());
         var waterIngress = waterIngresses.First();
