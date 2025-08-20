@@ -60,7 +60,7 @@ const copyCompletion = () => {
 const deleteCompletion = isLastCompletion => {
   toggleHeaderOpen();
   deleteItem("completion-header");
-  handlePrompt("Do you really want to delete this completion?", "delete");
+  handlePrompt("Do you really want to delete this borehole architecture?", "delete");
 
   cy.wait("@completion_DELETE");
   if (!isLastCompletion) {
@@ -134,7 +134,7 @@ describe("completion crud tests", () => {
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);
 
       cy.wait("@completion_GET");
-      cy.contains("No completion available");
+      cy.contains("no borehole architecture available");
 
       startBoreholeEditing();
       // eslint-disable-next-line cypress/no-unnecessary-waiting

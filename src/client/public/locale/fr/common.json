@@ -49,7 +49,6 @@
   "borehole": "Forage",
   "boreholeAssignedTo": "Forage assigné à <strong>{{user}}</strong>",
   "boreholeCount": "Nombre de forages",
-  "boreholeGeometry": "Géométrie",
   "boreholeGeometryFormat": "Format de la géométrie",
   "boreholeGeometryImport": "Importer la géométrie",
   "boreholeGeometryReplace": "Remplacer la géométrie",

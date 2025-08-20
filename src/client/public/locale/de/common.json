@@ -49,7 +49,6 @@
   "borehole": "Bohrung",
   "boreholeAssignedTo": "Bohrung <strong>{{user}}</strong> zugewiesen",
   "boreholeCount": "Anzahl Bohrungen",
-  "boreholeGeometry": "Geometrie",
   "boreholeGeometryFormat": "Geometrieformat",
   "boreholeGeometryImport": "Geometrie importieren",
   "boreholeGeometryReplace": "Geometrie ersetzen",
