@@ -26,7 +26,6 @@ public class FaciesDescriptionControllerTest
     [TestCleanup]
     public async Task TestCleanup() => await context.DisposeAsync();
 
-
     [TestMethod]
     public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {

@@ -43,7 +43,8 @@ public class CasingControllerTest
             .First().Key;
 
         var response = await controller.GetAsync(completionId).ConfigureAwait(false);
-        IEnumerable<Casing>? casings = response.Value; Assert.IsNotNull(casings);
+        IEnumerable<Casing>? casings = response.Value;
+        Assert.IsNotNull(casings);
         Assert.AreEqual(2, casings.Count());
     }
 

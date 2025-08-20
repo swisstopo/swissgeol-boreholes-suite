@@ -35,7 +35,7 @@ internal static class Helpers
     /// <summary>
     /// Creates a mock of IBoreholePermissionService with standard setup for testing.
     /// </summary>
-    /// <returns>A configured Mock of IBoreholePermissionService</returns>
+    /// <returns>A configured Mock of IBoreholePermissionService.</returns>
     internal static Mock<IBoreholePermissionService> CreateBoreholePermissionServiceMock()
     {
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
