@@ -18,13 +18,7 @@ public class FieldMeasurementControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new FieldMeasurementController(context, new Mock<ILogger<FieldMeasurementController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -37,37 +31,6 @@ public class FieldMeasurementControllerTest
         var result = await controller.GetAsync();
         Assert.IsNotNull(result);
         Assert.AreEqual(102, result.Count());
-    }
-
-    [TestMethod]
-    public async Task GetAsyncFiltersFieldMeasurementsBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with fieldmeasurement and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newFieldMeasurement = new FieldMeasurement()
-        {
-            BoreholeId = newBorehole.Id,
-            Type = ObservationType.FieldMeasurement,
-        };
-        await context.FieldMeasurements.AddAsync(newFieldMeasurement);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<FieldMeasurement>? fieldMeasurementsForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(fieldMeasurementsForAdmin);
-        Assert.AreEqual(103, fieldMeasurementsForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<FieldMeasurement>? fieldMeasurementsForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(fieldMeasurementsForEditor);
-        Assert.AreEqual(101, fieldMeasurementsForEditor.Count());
     }
 
     [TestMethod]

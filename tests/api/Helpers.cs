@@ -3,6 +3,7 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using System.Security.Claims;
 using System.Text;
 using File = System.IO.File;
@@ -29,6 +30,29 @@ internal static class Helpers
         httpContext.User = new ClaimsPrincipal(userIdentity);
 
         return httpContext;
+    }
+
+    /// <summary>
+    /// Creates a mock of IBoreholePermissionService with standard setup for testing.
+    /// </summary>
+    /// <returns>A configured Mock of IBoreholePermissionService</returns>
+    internal static Mock<IBoreholePermissionService> CreateBoreholePermissionServiceMock()
+    {
+        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_unauthorized", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_unauthorized", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        return boreholePermissionServiceMock;
     }
 
     /// <summary>

@@ -19,13 +19,7 @@ public class ChronostratigraphyControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new ChronostratigraphyController(context, new Mock<ILogger<ChronostratigraphyController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -33,65 +27,26 @@ public class ChronostratigraphyControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAllEntriesAsync()
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        var response = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<ChronostratigraphyLayer>? chronostratigraphies = response;
-        Assert.IsNotNull(chronostratigraphies);
-        Assert.AreEqual(30000, chronostratigraphies.Count());
-    }
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
-    [TestMethod]
-    public async Task GetAsyncFiltersChronostratigraphyLayersBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with chronostratigraphy and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newStratigraphy = new Stratigraphy()
-        {
-            BoreholeId = newBorehole.Id,
-        };
-        await context.Stratigraphies.AddAsync(newStratigraphy);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var chronostratigraphyLayer = new ChronostratigraphyLayer()
-        {
-            StratigraphyId = newStratigraphy.Id,
-        };
-        await context.ChronostratigraphyLayers.AddAsync(chronostratigraphyLayer);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<ChronostratigraphyLayer>? layersForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(layersForAdmin);
-        Assert.AreEqual(30001, layersForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<ChronostratigraphyLayer>? layersForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(layersForEditor);
-        Assert.AreEqual(28500, layersForEditor.Count());
+        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByStratigraphyIdForInexistentId()
     {
-        var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<ChronostratigraphyLayer>? chronostratigraphies = response;
-        Assert.IsNotNull(chronostratigraphies);
-        Assert.AreEqual(0, chronostratigraphies.Count());
+        var notFoundResponse = await controller.GetAsync(94578122).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByStratigraphyId()
     {
         var response = await controller.GetAsync(6_000_095).ConfigureAwait(false);
-        IEnumerable<ChronostratigraphyLayer>? chronostratigraphies = response;
+        IEnumerable<ChronostratigraphyLayer>? chronostratigraphies = response.Value;
         Assert.IsNotNull(chronostratigraphies);
         Assert.AreEqual(10, chronostratigraphies.Count());
     }
@@ -257,7 +212,8 @@ public class ChronostratigraphyControllerTest
         await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 100, ToDepth = 110 });
         await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 120, ToDepth = 130 });
 
-        var layers = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
+        var response = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
+        var layers = response.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(13, layers.Count());
         for (int i = 1; i < layers.Count(); i++)

@@ -17,44 +17,32 @@ public class CasingController : BoreholeControllerBase<Casing>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Casing"/>s, optionally filtered either by <paramref name="completionId"/> or <paramref name="boreholeId"/>.
+    /// Asynchronously gets the <see cref="Casing"/>s, filtered either by <paramref name="completionId"/> or <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="completionId">The id of the completion containing the <see cref="Casing"/> to get.</param>
     /// <param name="boreholeId">The id of the borehole containing the <see cref="Casing"/>s to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Casing>> GetAsync([FromQuery] int? completionId = null, [FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<Casing>>> GetAsync([FromQuery] int completionId, [FromQuery] int? boreholeId = null)
     {
-        var user = await Context.UsersWithIncludes
+        var completion = await Context.Completions
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(x => x.Id == completionId)
             .ConfigureAwait(false);
 
-        var casings = Context.Casings
+        if (completion == null)
+        {
+            return NotFound();
+        }
+
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), completion.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.Casings
             .Include(c => c.CasingElements)
             .Include(c => c.Completion)
-            .AsNoTracking();
-
-        if (!user.IsAdmin)
-        {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            casings = casings
-                .Where(c => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == c.Completion.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
-        }
-
-        if (completionId != null)
-        {
-            casings = casings.Where(c => c.CompletionId == completionId);
-        }
-        else if (boreholeId != null)
-        {
-            casings = casings.Where(c => c.Completion.BoreholeId == boreholeId);
-        }
-
-        return await casings.ToListAsync().ConfigureAwait(false);
+            .Where(b => b.CompletionId == completionId)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>

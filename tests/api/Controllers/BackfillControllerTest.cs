@@ -19,16 +19,7 @@ public class BackfillControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync("sub_unauthorized", It.IsAny<int?>()))
-            .ReturnsAsync(false);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new BackfillController(context, new Mock<ILogger<BackfillController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -52,6 +43,13 @@ public class BackfillControllerTest
         IEnumerable<Backfill>? backfills = response.Value;
         Assert.IsNotNull(backfills);
         Assert.AreEqual(2, backfills.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsNotFoundForUnknonwCompletion()
+    {
+        var notFoundResponse = await controller.GetAsync(651335213).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
     [TestMethod]

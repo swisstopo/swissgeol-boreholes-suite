@@ -18,36 +18,20 @@ public class CompletionController : BoreholeControllerBase<Completion>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Completion"/>s, optionally filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets the <see cref="Completion"/>s, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole containing the <see cref="Completion"/> to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Completion>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<Completion>>> GetAsync([FromQuery] int boreholeId)
     {
-        var user = await Context.UsersWithIncludes
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
-            .ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var completions = Context.Completions.Include(c => c.Kind).AsNoTracking();
-
-        if (!user.IsAdmin)
-        {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            completions = completions
-                .Where(c => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == c.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
-        }
-
-        if (boreholeId != null)
-        {
-            completions = completions.Where(c => c.BoreholeId == boreholeId).OrderBy(c => c.Created);
-        }
-
-        return await completions.ToListAsync().ConfigureAwait(false);
+        return await Context.Completions
+            .Include(c => c.Kind)
+            .Where(c => c.BoreholeId == boreholeId)
+            .OrderBy(c => c.Created)
+            .ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>

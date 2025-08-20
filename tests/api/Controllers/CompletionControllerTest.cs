@@ -22,13 +22,7 @@ public class CompletionControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new CompletionController(context, new Mock<ILogger<CompletionController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -36,14 +30,6 @@ public class CompletionControllerTest
     public async Task TestCleanup()
     {
         await context.DisposeAsync();
-    }
-
-    [TestMethod]
-    public async Task GetAsync()
-    {
-        var completions = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(completions);
-        Assert.AreEqual(500, completions.Count());
     }
 
     [TestMethod]
@@ -70,48 +56,26 @@ public class CompletionControllerTest
         context.Completions.Add(completion2);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var completions = await controller.GetAsync(borehole.Id).ConfigureAwait(false);
-
+        var response = await controller.GetAsync(borehole.Id).ConfigureAwait(false);
+        var completions = response.Value;
         Assert.IsNotNull(completions);
         Assert.AreEqual(2, completions.Count());
     }
 
     [TestMethod]
-    public async Task GetAsyncFiltersCompletionsBasedOnWorkgroupPermissions()
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        // Add a new borehole with completion and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
-        var newCompletion = new Completion()
-        {
-            BoreholeId = newBorehole.Id,
-            Name = "Test Completion",
-            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
-        };
-        await context.Completions.AddAsync(newCompletion);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<Completion>? completionsForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(completionsForAdmin);
-        Assert.AreEqual(501, completionsForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<Completion>? completionsForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(completionsForEditor);
-        Assert.AreEqual(495, completionsForEditor.Count());
+        var unauthorizedResponse = await controller.GetAsync(context.Completions.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetByInexistentBoreholeId()
     {
-        var completions = await controller.GetAsync(81294572).ConfigureAwait(false);
+        var response = await controller.GetAsync(81294572).ConfigureAwait(false);
+        var completions = response.Value;
         Assert.IsNotNull(completions);
         Assert.AreEqual(0, completions.Count());
     }

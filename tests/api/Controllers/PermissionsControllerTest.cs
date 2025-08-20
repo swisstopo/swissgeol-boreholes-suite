@@ -13,13 +13,7 @@ public class PermissionsControllerTest
     public void TestInitialize()
     {
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
-            .ReturnsAsync(true);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
-            .ReturnsAsync(true);
-
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new PermissionsController(boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 

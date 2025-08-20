@@ -16,38 +16,31 @@ public class ChronostratigraphyController : BoreholeControllerBase<Chronostratig
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="ChronostratigraphyLayer"/>s, optionally filtered by <paramref name="stratigraphyId"/>.
+    /// Asynchronously gets the <see cref="ChronostratigraphyLayer"/>s, filtered by <paramref name="stratigraphyId"/>.
     /// </summary>
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the chronostratigraphy to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<ChronostratigraphyLayer>> GetAsync([FromQuery] int? stratigraphyId = null)
+    public async Task<ActionResult<IEnumerable<ChronostratigraphyLayer>>> GetAsync([FromQuery] int stratigraphyId)
     {
-        var user = await Context.UsersWithIncludes
+        var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
             .ConfigureAwait(false);
 
-        var chronostratigraphyLayers = Context.ChronostratigraphyLayers
+        if (stratigraphy == null)
+        {
+            return NotFound();
+        }
+
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.ChronostratigraphyLayers
             .Include(c => c.Chronostratigraphy)
-            .AsNoTracking();
-
-        if (!user.IsAdmin)
-        {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            chronostratigraphyLayers = chronostratigraphyLayers
-                .Where(cl => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == cl.Stratigraphy.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
-        }
-
-        if (stratigraphyId != null)
-        {
-            chronostratigraphyLayers = chronostratigraphyLayers.Where(l => l.StratigraphyId == stratigraphyId);
-        }
-
-        return await chronostratigraphyLayers.OrderBy(l => l.FromDepth).ToListAsync().ConfigureAwait(false);
+            .Where(l => l.StratigraphyId == stratigraphyId)
+            .OrderBy(l => l.FromDepth)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>

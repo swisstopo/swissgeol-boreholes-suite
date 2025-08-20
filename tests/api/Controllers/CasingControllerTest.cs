@@ -22,13 +22,7 @@ public class CasingControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new CasingController(context, new Mock<ILogger<CasingController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -36,54 +30,6 @@ public class CasingControllerTest
     public async Task TestCleanup()
     {
         await context.DisposeAsync();
-    }
-
-    [TestMethod]
-    public async Task GetAsync()
-    {
-        IEnumerable<Casing>? casings = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(casings);
-        Assert.AreEqual(500, casings.Count());
-    }
-
-    [TestMethod]
-    public async Task GetAsyncFiltersCasingsBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with casing and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newCompletion = new Completion()
-        {
-            BoreholeId = newBorehole.Id,
-            Name = "Test Completion",
-            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
-        };
-        await context.Completions.AddAsync(newCompletion);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        await context.Casings.AddAsync(new Casing()
-        {
-            CompletionId = newCompletion.Id,
-            Name = "Test Casing",
-        });
-
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<Casing>? casingsForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(casingsForAdmin);
-        Assert.AreEqual(501, casingsForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<Casing>? casingsForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(casingsForEditor);
-        Assert.AreEqual(496, casingsForEditor.Count());
     }
 
     [TestMethod]
@@ -96,9 +42,25 @@ public class CasingControllerTest
             .Where(g => g.Count() == 2)
             .First().Key;
 
-        IEnumerable<Casing>? casings = await controller.GetAsync(completionId).ConfigureAwait(false);
-        Assert.IsNotNull(casings);
+        var response = await controller.GetAsync(completionId).ConfigureAwait(false);
+        IEnumerable<Casing>? casings = response.Value; Assert.IsNotNull(casings);
         Assert.AreEqual(2, casings.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsNotFoundForUnknonwCompletion()
+    {
+        var notFoundResponse = await controller.GetAsync(651335213).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Completions.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
