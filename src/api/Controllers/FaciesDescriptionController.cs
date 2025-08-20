@@ -35,7 +35,7 @@ public class FaciesDescriptionController : BoreholeControllerBase<FaciesDescript
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await Context.FaciesDescriptions.Where(l => l.StratigraphyId == stratigraphyId).ToListAsync().ConfigureAwait(false); ;
+        return await Context.FaciesDescriptions.Where(l => l.StratigraphyId == stratigraphyId).ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
