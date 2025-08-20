@@ -58,6 +58,47 @@ public class BdmsContext : DbContext
 
     public DbSet<Models.File> Files { get; set; }
 
+    public DbSet<Lithology> Lithologies { get; set; }
+
+    /// <summary>
+    /// Extends the provided <see cref="IQueryable"/> of type <see cref="Lithology"/> with all includes.
+    /// </summary>
+    public IQueryable<Lithology> LithologiesWithIncludes
+        => Lithologies
+        .Include(l => l.Description)
+        .Include(l => l.ColorPrimary)
+        .Include(l => l.ColorSecondary)
+        .Include(l => l.AlterationDegree)
+        .Include(l => l.LithologyUnconMain)
+        .Include(l => l.LithologyUncon2)
+        .Include(l => l.LithologyUncon3)
+        .Include(l => l.LithologyUncon4)
+        .Include(l => l.LithologyUncon5)
+        .Include(l => l.LithologyUncon6)
+        .Include(l => l.LithologyOrganicComponentCodes)
+        .Include(l => l.LithologyDebrisCodes)
+        .Include(l => l.LithologyGrainShapeCodes)
+        .Include(l => l.LithologyGrainAngularityCodes)
+        .Include(l => l.LithologyUnconCoarseCodes)
+        .Include(l => l.Compactness)
+        .Include(l => l.Cohesion)
+        .Include(l => l.Humidity)
+        .Include(l => l.Consistency)
+        .Include(l => l.Plasticity)
+        .Include(l => l.LithologyUscsTypeCodes)
+        .Include(l => l.UscsDetermination)
+        .Include(l => l.LithologyRockConditionCodes)
+        .Include(l => l.LithologyCon)
+        .Include(l => l.LithologyComponentConParticleCodes)
+        .Include(l => l.LithologyComponentConMineralCodes)
+        .Include(l => l.GrainSize)
+        .Include(l => l.GrainAngularity)
+        .Include(l => l.Gradation)
+        .Include(l => l.Cementation)
+        .Include(l => l.LithologyStructureSynGenCodes)
+        .Include(l => l.LithologyStructurePostGenCodes)
+        .Include(l => l.LithologyTextureMetaCodes);
+
     public DbSet<Layer> Layers { get; set; }
 
     /// <summary>
