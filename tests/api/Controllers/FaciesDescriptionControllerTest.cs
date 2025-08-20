@@ -26,29 +26,28 @@ public class FaciesDescriptionControllerTest
     [TestCleanup]
     public async Task TestCleanup() => await context.DisposeAsync();
 
+
     [TestMethod]
-    public async Task GetAllEntriesAsync()
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        var response = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<FaciesDescription>? faciesDescriptions = response;
-        Assert.IsNotNull(faciesDescriptions);
-        Assert.AreEqual(30_000, faciesDescriptions.Count());
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByStratigraphyIdForInexistentId()
     {
-        var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<FaciesDescription>? faciesDescriptions = response;
-        Assert.IsNotNull(faciesDescriptions);
-        Assert.AreEqual(0, faciesDescriptions.Count());
+        var notFoundResponse = await controller.GetAsync(651335213).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByStratigraphyId()
     {
         var response = await controller.GetAsync(6_000_095).ConfigureAwait(false);
-        IEnumerable<FaciesDescription>? faciesDescriptions = response;
+        IEnumerable<FaciesDescription>? faciesDescriptions = response.Value;
         Assert.IsNotNull(faciesDescriptions);
         Assert.AreEqual(10, faciesDescriptions.Count());
     }

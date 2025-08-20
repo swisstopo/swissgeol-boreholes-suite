@@ -16,36 +16,26 @@ public class FaciesDescriptionController : BoreholeControllerBase<FaciesDescript
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="FaciesDescription"/>s, optionally filtered by <paramref name="stratigraphyId"/>.
+    /// Asynchronously gets the <see cref="FaciesDescription"/>s, filtered by <paramref name="stratigraphyId"/>.
     /// </summary>
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the facies descriptions to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<FaciesDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
+    public async Task<ActionResult<IEnumerable<FaciesDescription>>> GetAsync([FromQuery] int stratigraphyId)
     {
-        var user = await Context.UsersWithIncludes
+        var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
             .ConfigureAwait(false);
 
-        var faciesDescriptions = Context.FaciesDescriptions.AsNoTracking();
-
-        if (!user.IsAdmin)
+        if (stratigraphy == null)
         {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            faciesDescriptions = faciesDescriptions
-                .Where(f => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == f.Stratigraphy.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
+            return NotFound();
         }
 
-        if (stratigraphyId != null)
-        {
-            faciesDescriptions = faciesDescriptions.Where(l => l.StratigraphyId == stratigraphyId);
-        }
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await faciesDescriptions.ToListAsync().ConfigureAwait(false);
+        return await Context.FaciesDescriptions.Where(l => l.StratigraphyId == stratigraphyId).ToListAsync().ConfigureAwait(false); ;
     }
 
     /// <summary>
