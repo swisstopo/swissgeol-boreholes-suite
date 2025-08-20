@@ -24,7 +24,7 @@ public class BackfillControllerTest
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync("sub_editor", It.IsAny<int?>()))
+            .Setup(x => x.CanViewBoreholeAsync("sub_unauthorized", It.IsAny<int?>()))
             .ReturnsAsync(false);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
@@ -53,7 +53,7 @@ public class BackfillControllerTest
         Assert.IsNotNull(backfills);
         Assert.AreEqual(2, backfills.Count());
 
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
         var unauthorizedResponse = await controller.GetAsync(completionId).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
