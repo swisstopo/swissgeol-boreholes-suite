@@ -41,7 +41,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
       { fieldName: "restriction", type: FormValueType.Domain },
       { fieldName: "workgroup", type: FormValueType.Workgroup },
       {
-        fieldName: "restriction_until",
+        fieldName: "restriction_until_date",
         type: FormValueType.Date,
       },
       { fieldName: "national_interest", type: FormValueType.Boolean },
