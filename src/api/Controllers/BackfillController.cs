@@ -25,7 +25,7 @@ public class BackfillController : BoreholeControllerBase<Backfill>
     {
         var completion = await Context.Completions
             .AsNoTracking()
-            .SingleOrDefaultAsync(b => b.Id == completionId)
+            .SingleOrDefaultAsync(x => x.Id == completionId)
             .ConfigureAwait(false);
 
         if (completion == null)

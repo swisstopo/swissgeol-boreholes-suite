@@ -52,10 +52,14 @@ public class BackfillControllerTest
         IEnumerable<Backfill>? backfills = response.Value;
         Assert.IsNotNull(backfills);
         Assert.AreEqual(2, backfills.Count());
+    }
 
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
         controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
-        var unauthorizedResponse = await controller.GetAsync(completionId).ConfigureAwait(false);
+        var unauthorizedResponse = await controller.GetAsync(context.Completions.First().Id).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
