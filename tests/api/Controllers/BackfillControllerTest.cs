@@ -1,6 +1,5 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,6 +24,9 @@ public class BackfillControllerTest
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_editor", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+        boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
         controller = new BackfillController(context, new Mock<ILogger<BackfillController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
@@ -37,14 +39,6 @@ public class BackfillControllerTest
     }
 
     [TestMethod]
-    public async Task GetAsync()
-    {
-        IEnumerable<Backfill>? backfills = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(backfills);
-        Assert.AreEqual(500, backfills.Count());
-    }
-
-    [TestMethod]
     public async Task GetAsyncFilterByCompletionId()
     {
         // Precondition: Find a group of two backfills with the same completion id.
@@ -54,48 +48,15 @@ public class BackfillControllerTest
             .Where(g => g.Count() == 2)
             .First().Key;
 
-        IEnumerable<Backfill>? backfills = await controller.GetAsync(completionId).ConfigureAwait(false);
+        var response = await controller.GetAsync(completionId).ConfigureAwait(false);
+        IEnumerable<Backfill>? backfills = response.Value;
         Assert.IsNotNull(backfills);
         Assert.AreEqual(2, backfills.Count());
-    }
-
-    [TestMethod]
-    public async Task GetAsyncFiltersBackfillsBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with backfill and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newCompletion = new Completion()
-        {
-            BoreholeId = newBorehole.Id,
-            Name = "Test Completion",
-            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
-        };
-        await context.Completions.AddAsync(newCompletion);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        await context.Backfills.AddAsync(new Backfill()
-        {
-            CompletionId = newCompletion.Id,
-        });
-
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<Backfill>? backfillsForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(backfillsForAdmin);
-        Assert.AreEqual(501, backfillsForAdmin.Count());
 
         controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
 
-        IEnumerable<Backfill>? backfillsForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(backfillsForEditor);
-        Assert.AreEqual(500, backfillsForEditor.Count());
+        var unauthorizedResponse = await controller.GetAsync(completionId).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]

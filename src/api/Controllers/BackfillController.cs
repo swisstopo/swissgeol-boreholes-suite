@@ -16,36 +16,26 @@ public class BackfillController : BoreholeControllerBase<Backfill>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Backfill"/>s, optionally filtered by <paramref name="completionId"/>.
+    /// Asynchronously gets the <see cref="Backfill"/>s, filtered by <paramref name="completionId"/>.
     /// </summary>
     /// <param name="completionId">The id of the completion containing the <see cref="Backfill"/> to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Backfill>> GetAsync([FromQuery] int? completionId = null)
+    public async Task<ActionResult<IEnumerable<Backfill>>> GetAsync([FromQuery] int completionId)
     {
-        var user = await Context.UsersWithIncludes
+        var completion = await Context.Completions
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(b => b.Id == completionId)
             .ConfigureAwait(false);
 
-        var backfills = GetBackfillsWithIncludes();
-
-        if (!user.IsAdmin)
+        if (completion == null)
         {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            backfills = backfills
-                .Where(bf => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == bf.Completion.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
+            return NotFound();
         }
 
-        if (completionId != null)
-        {
-            backfills = backfills.Where(b => b.CompletionId == completionId);
-        }
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), completion.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await backfills.ToListAsync().ConfigureAwait(false);
+        return await GetBackfillsWithIncludes().Where(b => b.CompletionId == completionId).ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
