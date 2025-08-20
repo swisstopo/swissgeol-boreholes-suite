@@ -134,7 +134,7 @@ describe("completion crud tests", () => {
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);
 
       cy.wait("@completion_GET");
-      cy.contains("no borehole architecture available");
+      cy.contains("No borehole architecture available");
 
       startBoreholeEditing();
       // eslint-disable-next-line cypress/no-unnecessary-waiting

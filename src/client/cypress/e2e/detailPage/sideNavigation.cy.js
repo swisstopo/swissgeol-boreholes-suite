@@ -95,7 +95,7 @@ describe("Test for the detail page side navigation.", () => {
     // Add completion
     navigateInSidebar(SidebarMenuItem.completion);
     isActiveMenuItem(SidebarMenuItem.completion, false);
-    cy.contains("no borehole architecture available").should("exist");
+    cy.contains("No borehole architecture available").should("exist");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500);
     addItem("addCompletion");
