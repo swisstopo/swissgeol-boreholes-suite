@@ -23,25 +23,50 @@ public class CasingController : BoreholeControllerBase<Casing>
     /// <param name="boreholeId">The id of the borehole containing the <see cref="Casing"/>s to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<Casing>>> GetAsync([FromQuery] int completionId, [FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<Casing>>> GetAsync([FromQuery] int? completionId = null, [FromQuery] int? boreholeId = null)
     {
-        var completion = await Context.Completions
-            .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id == completionId)
-            .ConfigureAwait(false);
 
-        if (completion == null)
-        {
-            return NotFound();
-        }
+        if (completionId == null && boreholeId == null) return BadRequest("Either completionId or boreholeId must be provided");
+        if (completionId != null && boreholeId != null) return BadRequest("Only completionId or boreholeId can be provided");
 
-        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), completion.BoreholeId).ConfigureAwait(false)) return Unauthorized();
-
-        return await Context.Casings
+        var casings = Context.Casings
             .Include(c => c.CasingElements)
             .Include(c => c.Completion)
-            .Where(b => b.CompletionId == completionId)
-            .AsNoTracking()
+            .AsNoTracking();
+
+        if (completionId != null)
+        {
+            var completion = await Context.Completions
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == completionId)
+                .ConfigureAwait(false);
+
+            if (completion == null)
+            {
+                return NotFound();
+            }
+
+            if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), completion.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+            casings = casings.Where(c => c.Completion.Id == completionId);
+
+        }
+        else if (boreholeId != null)
+        {
+            var borehole = await Context.Boreholes
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == boreholeId)
+                .ConfigureAwait(false);
+
+            if (borehole == null)
+            {
+                return NotFound();
+            }
+
+            if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId.Value).ConfigureAwait(false)) return Unauthorized();
+            casings = casings.Where(c => c.Completion.BoreholeId == boreholeId);
+        }
+
+        return await casings
             .ToListAsync()
             .ConfigureAwait(false);
     }

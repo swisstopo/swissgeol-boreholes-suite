@@ -49,9 +49,48 @@ public class CasingControllerTest
     }
 
     [TestMethod]
+    public async Task GetAsyncFilterByBoreholeId()
+    {
+        // Precondition: Find a group of two casings with the same completion id.
+        var completions = await context.Casings.ToListAsync();
+        var completionId = completions
+            .GroupBy(i => i.CompletionId)
+            .Where(g => g.Count() == 2)
+            .First().Key;
+
+        var completion = await context.Completions.SingleOrDefaultAsync(c => c.Id == completionId).ConfigureAwait(false);
+
+        var response = await controller.GetAsync(null, completion.BoreholeId).ConfigureAwait(false);
+        IEnumerable<Casing>? casings = response.Value;
+        Assert.IsNotNull(casings);
+        Assert.AreEqual(5, casings.Count());
+    }
+
+    [TestMethod]
     public async Task GetAsyncReturnsNotFoundForUnknonwCompletion()
     {
         var notFoundResponse = await controller.GetAsync(651335213).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsBadRequestWhenProvidingBothParameters()
+    {
+        var badRequestResponse = await controller.GetAsync(1,2).ConfigureAwait(false);
+        ActionResultAssert.IsBadRequest(badRequestResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsBadRequestWhenProvidingNoParameters()
+    {
+        var badRequestResponse = await controller.GetAsync(null, null).ConfigureAwait(false);
+        ActionResultAssert.IsBadRequest(badRequestResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsNotFoundForUnknonwBorehole()
+    {
+        var notFoundResponse = await controller.GetAsync(null, 851335213).ConfigureAwait(false);
         ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
