@@ -49,7 +49,7 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
           />
           <FormInput
             fieldName={"restrictionUntil"}
-            label="restriction_until"
+            label="restriction_until_date"
             disabled={!restrictionUntilEnabled}
             readonly={!editingEnabled || !restrictionUntilEnabled}
             value={borehole.restrictionUntil as Date}

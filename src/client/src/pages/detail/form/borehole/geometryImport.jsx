@@ -28,7 +28,7 @@ import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { FileDropzone } from "../../attachments/fileDropzone.jsx";
 
 const GeometryImport = ({ boreholeId }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { showAlert } = useContext(AlertContext);
 
   const {
@@ -116,6 +116,7 @@ const GeometryImport = ({ boreholeId }) => {
                   control={formMethods.control}
                   render={({ field }) => (
                     <FileDropzone
+                      key={i18n.language}
                       onHandleFileChange={field.onChange}
                       defaultText={"dropZoneGeometryText"}
                       acceptedFileTypes={["text/csv"]}

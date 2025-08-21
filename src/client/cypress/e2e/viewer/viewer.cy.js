@@ -74,7 +74,7 @@ describe("Viewer tests", () => {
     navigateInStratigraphy(StratigraphyTab.lithostratigraphy);
     cy.contains("Surbrunnen-Flysch").should("exist");
     navigateInSidebar(SidebarMenuItem.completion);
-    cy.contains("No completion available").should("exist");
+    cy.contains("No borehole architecture available").should("exist");
     navigateInSidebar(SidebarMenuItem.hydrogeology);
     navigateInSidebar(SidebarMenuItem.waterIngress);
     cy.contains("No water ingresses available").should("exist");
