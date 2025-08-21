@@ -95,7 +95,12 @@ const CompletionHeaderInput = props => {
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
           <FormContainer>
-            <FormContainer direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap">
+            <FormContainer
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              flexWrap="wrap"
+              marginRight={"10px"}>
               <FormInput
                 fieldName="name"
                 label="name"
@@ -103,27 +108,14 @@ const CompletionHeaderInput = props => {
                 value={selectedCompletion?.name}
                 sx={{ flex: "1 1 180px" }}
               />
-              <FormContainer
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                flex={"0 0 400px"}
-                marginRight={"10px"}>
-                <FormDomainSelect
-                  fieldName="kindId"
-                  label="completionKind"
-                  selected={selectedCompletion?.kindId}
-                  required={true}
-                  schemaName={completionSchemaConstants.completionKind}
-                  prefilteredDomains={schemaData}
-                />
-                <FormCheckbox
-                  fieldName="isPrimary"
-                  label="mainCompletion"
-                  checked={completion.isPrimary}
-                  disabled={completion.isPrimary}
-                />
-              </FormContainer>
+              <FormDomainSelect
+                fieldName="kindId"
+                label="completionKind"
+                selected={selectedCompletion?.kindId}
+                required={true}
+                schemaName={completionSchemaConstants.completionKind}
+                prefilteredDomains={schemaData}
+              />
             </FormContainer>
             <FormContainer direction="row" justifyContent="space-between" flexWrap="wrap">
               <FormInput
@@ -138,7 +130,14 @@ const CompletionHeaderInput = props => {
                 label="dateAbandonmentCompletion"
                 type={FormValueType.Date}
                 value={selectedCompletion?.abandonDate}
-                sx={{ flex: "0 0 400px" }}
+              />
+            </FormContainer>
+            <FormContainer direction="row-reverse" justifyContent="space-between" flexWrap="wrap">
+              <FormCheckbox
+                fieldName="isPrimary"
+                label="mainCompletion"
+                checked={completion.isPrimary}
+                disabled={completion.isPrimary}
               />
             </FormContainer>
             <SaveAndCancelButtons

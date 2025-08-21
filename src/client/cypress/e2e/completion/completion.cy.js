@@ -60,7 +60,7 @@ const copyCompletion = () => {
 const deleteCompletion = isLastCompletion => {
   toggleHeaderOpen();
   deleteItem("completion-header");
-  handlePrompt("Do you really want to delete this completion?", "delete");
+  handlePrompt("Do you really want to delete this borehole architecture?", "delete");
 
   cy.wait("@completion_DELETE");
   if (!isLastCompletion) {
@@ -74,7 +74,7 @@ const setHeaderTab = (index, promptHandler) => {
   cy.get(selector).click({ force: true });
 
   if (promptHandler && promptHandler.length > 0) {
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", promptHandler);
+    handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", promptHandler);
   } else {
     cy.get('[data-cy="prompt"]').should("not.exist");
   }
@@ -134,7 +134,7 @@ describe("completion crud tests", () => {
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);
 
       cy.wait("@completion_GET");
-      cy.contains("No completion available");
+      cy.contains("No borehole architecture available");
 
       startBoreholeEditing();
       // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -311,7 +311,7 @@ describe("completion crud tests", () => {
           getElementByDataCy(selector).focus();
           getElementByDataCy(selector).click({ force: true });
           getElementByDataCy("prompt").find('[data-cy="save-button"]').should("be.disabled");
-          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "cancel");
+          handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "cancel");
 
           // new to existing: changes can be reverted in prompt
           setSelect("kindId", 1);
@@ -351,7 +351,7 @@ describe("completion crud tests", () => {
           startEditHeader();
           setInput("name", "Reset compl-1");
           addCompletion();
-          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "reset");
+          handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "reset");
           assertNewCompletionCreated(boreholeId);
           cy.contains("Reset compl-1").should("not.exist");
           cy.contains("Not specified").should("be.visible"); // title of newly added completion
@@ -363,7 +363,7 @@ describe("completion crud tests", () => {
           startEditHeader();
           setInput("name", "Reset compl-1");
           addCompletion();
-          handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "save");
+          handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "save");
           assertNewCompletionCreated(boreholeId);
           isHeaderTabSelected(2);
           cy.contains("Reset compl-1").should("be.visible");
@@ -496,7 +496,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "cancel");
+    handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "cancel");
     cy.get('[data-cy="prompt"]').should("not.exist");
     isHeaderTabSelected(0);
     isContentTabSelected("instrumentation");
@@ -506,7 +506,7 @@ describe("completion crud tests", () => {
 
     // reset header changes, cancel content changes
     addCompletion();
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "reset");
+    handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "reset");
 
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
@@ -521,7 +521,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "reset");
+    handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "reset");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "reset");
@@ -545,7 +545,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "reset");
+    handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "reset");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "save");
@@ -563,7 +563,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "save");
+    handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "save");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "cancel");
@@ -576,7 +576,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated again", "completion-header");
     addCompletion();
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "save");
+    handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "save");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "reset");
@@ -596,7 +596,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated again and again", "completion-header");
     addCompletion();
-    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "save");
+    handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "save");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "save");
