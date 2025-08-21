@@ -47,6 +47,11 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
 
     internal bool CanEditBorehole(User user, Borehole borehole)
     {
+        if (IsBoreholeReviewedOrPublished(borehole))
+        {
+            return false;
+        }
+
         if (user.IsAdmin)
         {
             return true;
@@ -124,6 +129,11 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         }
 
         return false;
+    }
+
+    private bool IsBoreholeReviewedOrPublished(Borehole borehole)
+    {
+        return borehole.Workflow?.Status is WorkflowStatus.Reviewed or WorkflowStatus.Published;
     }
 
     private async Task<Borehole> GetBoreholeAsync(int? boreholeId)
