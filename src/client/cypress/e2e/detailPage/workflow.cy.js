@@ -186,6 +186,19 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
+  it("Cannot publish a borehole with nothing approved", () => {
+    createBorehole({
+      originalName: "Grocery Wagon",
+      restrictionId: restrictionFreeCode,
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      requestReviewFromValidator();
+      finishReview();
+      cy.get("sgc-button[disabled]").contains("Publish");
+    });
+  });
+
   it("Can update tab status on publish tab and publish a borehole", () => {
     createBorehole({
       originalName: "Waterpark",
