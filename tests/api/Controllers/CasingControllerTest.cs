@@ -76,7 +76,7 @@ public class CasingControllerTest
     [TestMethod]
     public async Task GetAsyncReturnsBadRequestWhenProvidingBothParameters()
     {
-        var badRequestResponse = await controller.GetAsync(1,2).ConfigureAwait(false);
+        var badRequestResponse = await controller.GetAsync(1, 2).ConfigureAwait(false);
         ActionResultAssert.IsBadRequest(badRequestResponse.Result);
     }
 

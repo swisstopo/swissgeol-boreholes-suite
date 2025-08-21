@@ -25,7 +25,6 @@ public class CasingController : BoreholeControllerBase<Casing>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<Casing>>> GetAsync([FromQuery] int? completionId = null, [FromQuery] int? boreholeId = null)
     {
-
         if (completionId == null && boreholeId == null) return BadRequest("Either completionId or boreholeId must be provided");
         if (completionId != null && boreholeId != null) return BadRequest("Only completionId or boreholeId can be provided");
 
@@ -48,7 +47,6 @@ public class CasingController : BoreholeControllerBase<Casing>
 
             if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), completion.BoreholeId).ConfigureAwait(false)) return Unauthorized();
             casings = casings.Where(c => c.Completion.Id == completionId);
-
         }
         else if (boreholeId != null)
         {
