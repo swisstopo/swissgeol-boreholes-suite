@@ -12,8 +12,7 @@ public class PermissionsControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
+        var boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new PermissionsController(boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 

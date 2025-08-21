@@ -187,7 +187,7 @@ public class LithostratigraphyControllerTest
         await CreateLayer(createdLayerIds, new LithostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 120, ToDepth = 130 });
 
         var response = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
-        var layers = response.Value as IEnumerable<LithostratigraphyLayer>;
+        var layers = response.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(13, layers.Count());
         for (int i = 1; i < layers.Count(); i++)

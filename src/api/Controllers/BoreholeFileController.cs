@@ -121,7 +121,7 @@ public class BoreholeFileController : ControllerBase
                 return Unauthorized("You are missing permissions to view the borehole file.");
             }
 
-            if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
+            if (boreholeFile.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
 
             var fileUuid = boreholeFile.File.NameUuid.Replace(".pdf", "", StringComparison.OrdinalIgnoreCase);
             var fileCount = await boreholeFileCloudService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
