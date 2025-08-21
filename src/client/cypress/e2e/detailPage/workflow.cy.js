@@ -195,7 +195,7 @@ describe("Tests the publication workflow.", () => {
       navigateToWorkflowAndStartEditing(id);
       requestReviewFromValidator();
       finishReview();
-      cy.get("sgc-button").contains("Publish").should("be.disabled");
+      cy.get("sgc-button[disabled]").contains("Publish");
     });
   });
 
