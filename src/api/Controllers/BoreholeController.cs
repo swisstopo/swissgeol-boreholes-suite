@@ -139,11 +139,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         if (!user.IsAdmin)
         {
             var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            boreholes = boreholes
-                .Where(f => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == f.Id && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
+            boreholes = boreholes.Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value));
         }
 
         pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
