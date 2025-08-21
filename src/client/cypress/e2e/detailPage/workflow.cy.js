@@ -25,11 +25,16 @@ import {
   goToDetailRouteAndAcceptTerms,
   loginAsEditor,
   selectInputFile,
+  selectLanguage,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers.js";
 
 describe("Tests the publication workflow.", () => {
+  beforeEach(() => {
+    selectLanguage("de");
+  });
+
   function navigateToWorkflowAndStartEditing(id) {
     goToDetailRouteAndAcceptTerms(`/${id}/status`);
     cy.wait("@borehole_by_id");
