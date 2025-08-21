@@ -25,7 +25,6 @@ import {
   goToDetailRouteAndAcceptTerms,
   loginAsEditor,
   selectInputFile,
-  selectLanguage,
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers.js";
@@ -34,7 +33,6 @@ describe("Tests the publication workflow.", () => {
   function navigateToWorkflowAndStartEditing(id) {
     goToDetailRouteAndAcceptTerms(`/${id}/status`);
     cy.wait("@borehole_by_id");
-    selectLanguage("de");
     startBoreholeEditing();
     getElementByDataCy("workflow-status-chip").should("contain", "Draft");
     assertWorkflowSteps("Draft");
