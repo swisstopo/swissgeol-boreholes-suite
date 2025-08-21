@@ -30,49 +30,19 @@ public class StratigraphyControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAsyncReturnsAllEntities()
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        var stratigraphies = await controller.GetAsync();
-        Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(3000, stratigraphies.Count());
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
-    public async Task GetAsyncFiltersStratigraphiesBasedOnWorkgroupPermissions()
+    public async Task GetEntriesByBoreholIdForInexistentId()
     {
-        // Add a new borehole with stratigraphies and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newStratigraphy = new Stratigraphy()
-        {
-            BoreholeId = newBorehole.Id,
-        };
-        await context.Stratigraphies.AddAsync(newStratigraphy);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<Stratigraphy>? stratigraphiesForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(stratigraphiesForAdmin);
-        Assert.AreEqual(3001, stratigraphiesForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<Stratigraphy>? stratigraphiesForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(stratigraphiesForEditor);
-        Assert.AreEqual(2850, stratigraphiesForEditor.Count());
-    }
-
-    [TestMethod]
-    public async Task GetEntriesByBoreholeIdForInexistentId()
-    {
-        var stratigraphies = await controller.GetAsync(81294572).ConfigureAwait(false);
-        Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(0, stratigraphies.Count());
+        var notFoundResponse = await controller.GetAsync(94578122).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
     [TestMethod]
@@ -82,7 +52,8 @@ public class StratigraphyControllerTest
         context.Boreholes.Add(emptyBorehole);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var layers = await controller.GetAsync(emptyBorehole.Id).ConfigureAwait(false);
+        var response = await controller.GetAsync(emptyBorehole.Id).ConfigureAwait(false);
+        var layers = response.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(0, layers.Count());
     }
@@ -90,7 +61,8 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task GetStratigraphyByBoreholeId()
     {
-        var stratigraphies = await controller.GetAsync(1000017).ConfigureAwait(false);
+        var response = await controller.GetAsync(1000017).ConfigureAwait(false);
+        var stratigraphies = response.Value;
         Assert.IsNotNull(stratigraphies);
         Assert.AreEqual(1, stratigraphies.Count());
         var stratigraphy = stratigraphies.Single();
@@ -247,7 +219,7 @@ public class StratigraphyControllerTest
     public async Task DeleteMainStratigraphySetsLatestStratigraphyAsPrimary()
     {
         // Precondition: Find a group of three stratigraphies with one main stratigraphy
-        var stratigraphies = await controller.GetAsync();
+        var stratigraphies = await context.Stratigraphies.ToListAsync();
         var stratigraphyTestCandidates = stratigraphies
             .Where(x => x.BoreholeId != null)
             .GroupBy(x => x.BoreholeId)

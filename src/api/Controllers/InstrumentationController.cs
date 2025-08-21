@@ -16,36 +16,29 @@ public class InstrumentationController : BoreholeControllerBase<Instrumentation>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Instrumentation"/>s, optionally filtered by <paramref name="completionId"/>.
+    /// Asynchronously gets the <see cref="Instrumentation"/>s, filtered by <paramref name="completionId"/>.
     /// </summary>
     /// <param name="completionId">The id of the completion containing the <see cref="Instrumentation"/> to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Instrumentation>> GetAsync([FromQuery] int? completionId = null)
+    public async Task<ActionResult<IEnumerable<Instrumentation>>> GetAsync([FromQuery] int completionId)
     {
-        var user = await Context.UsersWithIncludes
+        var completion = await Context.Completions
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(x => x.Id == completionId)
             .ConfigureAwait(false);
 
-        var instrumentations = GetInstrumentationsWithIncludes();
-
-        if (!user.IsAdmin)
+        if (completion == null)
         {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            instrumentations = instrumentations
-                .Where(i => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == i.Completion.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
+            return NotFound();
         }
 
-        if (completionId != null)
-        {
-            instrumentations = instrumentations.Where(i => i.CompletionId == completionId);
-        }
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), completion.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await instrumentations.ToListAsync().ConfigureAwait(false);
+        return await GetInstrumentationsWithIncludes()
+            .Where(x => x.CompletionId == completionId)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>

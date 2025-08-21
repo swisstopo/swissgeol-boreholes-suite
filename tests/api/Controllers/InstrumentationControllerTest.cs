@@ -31,14 +31,6 @@ public class InstrumentationControllerTest
     }
 
     [TestMethod]
-    public async Task GetAsync()
-    {
-        IEnumerable<Instrumentation>? instrumentations = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(instrumentations);
-        Assert.AreEqual(500, instrumentations.Count());
-    }
-
-    [TestMethod]
     public async Task GetAsyncFilterByCompletionId()
     {
         // Precondition: Find a group of two instrumentations with the same completion id.
@@ -48,49 +40,26 @@ public class InstrumentationControllerTest
             .Where(g => g.Count() == 2)
             .First().Key;
 
-        IEnumerable<Instrumentation>? instrumentations = await controller.GetAsync(completionId).ConfigureAwait(false);
+        var response = await controller.GetAsync(completionId).ConfigureAwait(false);
+        IEnumerable<Instrumentation>? instrumentations = response.Value;
         Assert.IsNotNull(instrumentations);
         Assert.AreEqual(2, instrumentations.Count());
     }
 
     [TestMethod]
-    public async Task GetAsyncFiltersInstrumentationsBasedOnWorkgroupPermissions()
+    public async Task GetAsyncReturnsNotFoundForUnknonwCompletion()
     {
-        // Add a new borehole with instrumentation and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
+        var notFoundResponse = await controller.GetAsync(651335213).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
+    }
 
-        var newCompletion = new Completion()
-        {
-            BoreholeId = newBorehole.Id,
-            Name = "Test Completion",
-            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
-        };
-        await context.Completions.AddAsync(newCompletion);
-        await context.SaveChangesAsync().ConfigureAwait(false);
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
-        await context.Instrumentations.AddAsync(new Instrumentation()
-        {
-            CompletionId = newCompletion.Id,
-            Name = "Test Instrumentation",
-        });
-
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<Instrumentation>? instrumentationsForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(instrumentationsForAdmin);
-        Assert.AreEqual(501, instrumentationsForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<Instrumentation>? instrumentationsForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(instrumentationsForEditor);
-        Assert.AreEqual(496, instrumentationsForEditor.Count());
+        var unauthorizedResponse = await controller.GetAsync(context.Completions.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]

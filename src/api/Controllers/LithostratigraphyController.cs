@@ -21,29 +21,26 @@ public class LithostratigraphyController : BoreholeControllerBase<Lithostratigra
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the lithostratigraphy to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<LithostratigraphyLayer>> GetAsync([FromQuery] int stratigraphyId)
+    public async Task<ActionResult<IEnumerable<LithostratigraphyLayer>>> GetAsync([FromQuery] int stratigraphyId)
     {
-        var user = await Context.UsersWithIncludes
+        var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
             .ConfigureAwait(false);
 
-        var lithostratigraphyLayers = Context.LithostratigraphyLayers
-            .Include(c => c.Lithostratigraphy)
-            .AsNoTracking()
-            .Where(l => l.StratigraphyId == stratigraphyId);
-
-        if (!user.IsAdmin)
+        if (stratigraphy == null)
         {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            lithostratigraphyLayers = lithostratigraphyLayers
-                .Where(l => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == l.Stratigraphy.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
+            return NotFound();
         }
 
-        return await lithostratigraphyLayers.OrderBy(l => l.FromDepth).ToListAsync().ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.LithostratigraphyLayers
+            .Include(l => l.Lithostratigraphy)
+            .Where(l => l.StratigraphyId == stratigraphyId)
+            .OrderBy(l => l.FromDepth)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>

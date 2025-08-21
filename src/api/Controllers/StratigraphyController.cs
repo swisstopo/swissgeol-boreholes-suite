@@ -40,36 +40,29 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Stratigraphy"/>s, optionally filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets the <see cref="Stratigraphy"/>s, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole containing the stratigraphies to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Stratigraphy>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<Stratigraphy>>> GetAsync([FromQuery] int boreholeId)
     {
-        var user = await Context.UsersWithIncludes
+        var borehole = await Context.Boreholes
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(b => b.Id == boreholeId)
             .ConfigureAwait(false);
 
-        var stratigraphies = Context.Stratigraphies.AsNoTracking();
-
-        if (!user.IsAdmin)
+        if (borehole == null)
         {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            stratigraphies = stratigraphies
-                .Where(s => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == s.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
+            return NotFound();
         }
 
-        if (boreholeId != null)
-        {
-            stratigraphies = stratigraphies.Where(l => l.BoreholeId == boreholeId);
-        }
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await stratigraphies.ToListAsync().ConfigureAwait(false);
+        return await Context.Stratigraphies
+            .Where(x => x.BoreholeId == boreholeId)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>

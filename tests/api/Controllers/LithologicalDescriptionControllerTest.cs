@@ -27,65 +27,26 @@ public class LithologicalDescriptionControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAllEntriesAsync()
-    {
-        var response = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<LithologicalDescription>? lithologicalDescriptions = response;
-        Assert.IsNotNull(lithologicalDescriptions);
-        Assert.AreEqual(30_000, lithologicalDescriptions.Count());
-    }
-
-    [TestMethod]
-    public async Task GetAsyncFiltersLithologicalDescriptionsBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with lithologicalDescription and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newStratigraphy = new Stratigraphy()
-        {
-            BoreholeId = newBorehole.Id,
-        };
-        await context.Stratigraphies.AddAsync(newStratigraphy);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var lithologicalDescription = new LithologicalDescription()
-        {
-            StratigraphyId = newStratigraphy.Id,
-        };
-        await context.LithologicalDescriptions.AddAsync(lithologicalDescription);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<LithologicalDescription>? descriptionsForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(descriptionsForAdmin);
-        Assert.AreEqual(30001, descriptionsForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<LithologicalDescription>? descriptionsForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(descriptionsForEditor);
-        Assert.AreEqual(28500, descriptionsForEditor.Count());
-    }
-
-    [TestMethod]
     public async Task GetEntriesByStratigraphyIdForInexistentId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<LithologicalDescription>? lithologicalDescriptions = response;
-        Assert.IsNotNull(lithologicalDescriptions);
-        Assert.AreEqual(0, lithologicalDescriptions.Count());
+        ActionResultAssert.IsNotFound(response.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByStratigraphyId()
     {
         var response = await controller.GetAsync(6_000_095).ConfigureAwait(false);
-        IEnumerable<LithologicalDescription>? lithologicalDescriptions = response;
+        IEnumerable<LithologicalDescription>? lithologicalDescriptions = response.Value;
         Assert.IsNotNull(lithologicalDescriptions);
         Assert.AreEqual(10, lithologicalDescriptions.Count());
     }

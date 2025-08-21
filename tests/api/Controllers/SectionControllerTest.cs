@@ -32,45 +32,6 @@ public class SectionControllerTest
     }
 
     [TestMethod]
-    public async Task GetAsync()
-    {
-        IEnumerable<Section>? sections = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(sections);
-        Assert.AreEqual(500, sections.Count());
-    }
-
-    [TestMethod]
-    public async Task GetAsyncFiltersSectionsBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with section and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var section = new Section()
-        {
-            BoreholeId = newBorehole.Id,
-            Name = "Test Section",
-        };
-        await context.Sections.AddAsync(section);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        IEnumerable<Section>? sectionsForAdmin = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(sectionsForAdmin);
-        Assert.AreEqual(501, sectionsForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        IEnumerable<Section>? sectionsForEditor = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(sectionsForEditor);
-        Assert.AreEqual(495, sectionsForEditor.Count());
-    }
-
-    [TestMethod]
     public async Task GetAsyncFilterByBoreholeId()
     {
         // Precondition: Find a group of two sections with the same borehole id.
@@ -80,9 +41,26 @@ public class SectionControllerTest
             .Where(g => g.Count() == 5)
             .First().Key;
 
-        IEnumerable<Section>? sections = await controller.GetAsync(boreholeId).ConfigureAwait(false);
+        var response = await controller.GetAsync(boreholeId).ConfigureAwait(false);
+        IEnumerable<Section>? sections = response.Value;
         Assert.IsNotNull(sections);
         Assert.AreEqual(5, sections.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetEntriesByBoreholIdForInexistentId()
+    {
+        var notFoundResponse = await controller.GetAsync(94578122).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
     [TestMethod]

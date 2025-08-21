@@ -28,61 +28,10 @@ public class LayerControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    [TestCategory("LongRunning")]
-    public async Task GetAllEntriesAsync()
-    {
-        var response = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<Layer>? layers = response?.Value;
-        Assert.IsNotNull(layers);
-        Assert.AreEqual(30_000, layers.Count());
-    }
-
-    [TestMethod]
-    public async Task GetAsyncFiltersLayersBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with layers and workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newStratigraphy = new Stratigraphy()
-        {
-            BoreholeId = newBorehole.Id,
-        };
-        await context.Stratigraphies.AddAsync(newStratigraphy);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var newLithologyLayer = new Layer()
-        {
-            StratigraphyId = newStratigraphy.Id,
-        };
-        await context.Layers.AddAsync(newLithologyLayer);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var layersResponse = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<Layer>? layersForAdmin = layersResponse.Value;
-        Assert.IsNotNull(layersForAdmin);
-        Assert.AreEqual(30001, layersForAdmin.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        var layersResponse2 = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<Layer>? layersForEditor = layersResponse2.Value;
-        Assert.IsNotNull(layersForEditor);
-        Assert.AreEqual(28500, layersForEditor.Count());
-    }
-
-    [TestMethod]
     public async Task GetEntriesByProfileIdInexistentId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        var layers = response?.Value;
-        Assert.IsNotNull(layers);
-        Assert.AreEqual(0, layers.Count());
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
@@ -97,6 +46,15 @@ public class LayerControllerTest
         var layers = response?.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(0, layers.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]

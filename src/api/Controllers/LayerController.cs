@@ -21,31 +21,24 @@ public class LayerController : BoreholeControllerBase<Layer>
     /// <param name="profileId">The id of the profile containing the layers to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<Layer>>> GetAsync([FromQuery] int? profileId = null)
+    public async Task<ActionResult<IEnumerable<Layer>>> GetAsync([FromQuery] int profileId)
     {
-        var user = await Context.UsersWithIncludes
+        var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(x => x.Id == profileId)
             .ConfigureAwait(false);
 
-        var layers = Context.LayersWithIncludes.AsNoTracking();
-
-        if (!user.IsAdmin)
+        if (stratigraphy == null)
         {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            layers = layers
-                .Where(l => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == l.Stratigraphy.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
+            return NotFound();
         }
 
-        if (profileId != null)
-        {
-            layers = layers.Where(l => l.StratigraphyId == profileId);
-        }
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await layers.ToListAsync().ConfigureAwait(false);
+        return await Context.LayersWithIncludes
+            .Where(x => x.StratigraphyId == profileId)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>

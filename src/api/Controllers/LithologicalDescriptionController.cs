@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Amazon;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,36 +17,29 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="LithologicalDescription"/>s, optionally filtered by <paramref name="stratigraphyId"/>.
+    /// Asynchronously gets the <see cref="LithologicalDescription"/>s, filtered by <paramref name="stratigraphyId"/>.
     /// </summary>
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the lithological descriptions to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<LithologicalDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
+    public async Task<ActionResult<IEnumerable<LithologicalDescription>>> GetAsync([FromQuery] int stratigraphyId)
     {
-        var user = await Context.UsersWithIncludes
+        var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
             .ConfigureAwait(false);
 
-        var lithologicalDescriptions = Context.LithologicalDescriptions.AsNoTracking();
-
-        if (!user.IsAdmin)
+        if (stratigraphy == null)
         {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            lithologicalDescriptions = lithologicalDescriptions
-                .Where(l => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == l.Stratigraphy.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
+            return NotFound();
         }
 
-        if (stratigraphyId != null)
-        {
-            lithologicalDescriptions = lithologicalDescriptions.Where(l => l.StratigraphyId == stratigraphyId);
-        }
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await lithologicalDescriptions.ToListAsync().ConfigureAwait(false);
+        return await Context.LithologicalDescriptions
+            .Where(x => x.StratigraphyId == stratigraphyId)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>

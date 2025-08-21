@@ -15,35 +15,32 @@ public class SectionController : BoreholeControllerBase<Section>
     {
     }
 
+    /// <summary>
+    /// Asynchronously gets the <see cref="Section"/>s of the specified <paramref name="boreholeId"/>.
+    /// </summary>
+    /// <param name="boreholeId">The id of the borehole referenced in the sections to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Section>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<Section>>> GetAsync([FromQuery] int boreholeId)
     {
-        var user = await Context.UsersWithIncludes
+        var borehole = await Context.Boreholes
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(b => b.Id == boreholeId)
             .ConfigureAwait(false);
 
-        var sections = Context.Sections
+        if (borehole == null)
+        {
+            return NotFound();
+        }
+
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.Sections
             .Include(s => s.SectionElements)
-            .AsNoTracking();
-
-        if (!user.IsAdmin)
-        {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            sections = sections
-                .Where(s => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == s.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
-        }
-
-        if (boreholeId != null)
-        {
-            sections = sections.Where(s => s.BoreholeId == boreholeId);
-        }
-
-        return await sections.OrderBy(s => s.Name).ToListAsync().ConfigureAwait(false);
+            .Where(s => s.BoreholeId == boreholeId)
+            .OrderBy(s => s.Name)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>
