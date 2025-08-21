@@ -87,7 +87,7 @@ describe("Tests the publication workflow.", () => {
       cy.contains("Weiterleiten").click(); // click on dialog title to close dropdown again
 
       cy.get("sgc-text-area").find("textarea").type("I wanted to request a review, but then cancelled");
-      clickSgcButtonWithContent("Abbrechen");
+      clickSgcButtonWithContent("Cancel");
       // no comment should be added
       cy.get("sgc-workflow-change-template").find(".comment").should("not.exist");
       clickSgcButtonWithContent("Review anfordern");
@@ -106,7 +106,7 @@ describe("Tests the publication workflow.", () => {
 
       cy.get("sgc-workflow-change-template")
         .find("li")
-        .contains("Status von Draft zu Review geändert")
+        .contains("EN Status von EN Draft zu EN Review geändert")
         .should("be.visible");
 
       evaluateComment("I requested a review!", true);
@@ -134,20 +134,20 @@ describe("Tests the publication workflow.", () => {
       cy.get("sgc-tab").contains("Review").click();
 
       isUncheckedTabStatusBox("review", "Instrumentation");
-      isUncheckedTabStatusBox("review", "Completion");
+      isUncheckedTabStatusBox("review", "Borehole architecture");
 
       // check then uncheck all checkboxes
       clickCheckAllCheckbox("review");
       isCheckedTabStatusBox("review", "Borehole");
       isCheckedTabStatusBox("review", "Stratigraphy");
-      isCheckedTabStatusBox("review", "Completion");
+      isCheckedTabStatusBox("review", "Borehole architecture");
       isCheckedTabStatusBox("review", "Hydrogeology");
       isCheckedTabStatusBox("review", "Attachments");
 
       clickCheckAllCheckbox("review");
       isUncheckedTabStatusBox("review", "Borehole");
       isUncheckedTabStatusBox("review", "Stratigraphy");
-      isUncheckedTabStatusBox("review", "Completion");
+      isUncheckedTabStatusBox("review", "Borehole architecture");
       isUncheckedTabStatusBox("review", "Hydrogeology");
       isUncheckedTabStatusBox("review", "Attachments");
 
@@ -155,7 +155,7 @@ describe("Tests the publication workflow.", () => {
       clickTabStatusCheckbox("review", "Instrumentation");
 
       isCheckedTabStatusBox("review", "Instrumentation");
-      isIndeterminateTabStatusBox("review", "Completion");
+      isIndeterminateTabStatusBox("review", "Borehole architecture");
 
       // click all remaining completion children
       clickTabStatusCheckbox("review", "Casing");
@@ -164,7 +164,7 @@ describe("Tests the publication workflow.", () => {
       isCheckedTabStatusBox("review", "Casing");
       isCheckedTabStatusBox("review", "Sealing/Backfilling");
       isCheckedTabStatusBox("review", "Instrumentation");
-      isCheckedTabStatusBox("review", "Completion");
+      isCheckedTabStatusBox("review", "Borehole architecture");
 
       // navigate away and return to assert state has been saved
       navigateInSidebar(SidebarMenuItem.borehole);
@@ -174,7 +174,7 @@ describe("Tests the publication workflow.", () => {
       isCheckedTabStatusBox("review", "Casing");
       isCheckedTabStatusBox("review", "Sealing/Backfilling");
       isCheckedTabStatusBox("review", "Instrumentation");
-      isCheckedTabStatusBox("review", "Completion");
+      isCheckedTabStatusBox("review", "Borehole architecture");
 
       //uncheck one checkbox
       clickTabStatusCheckbox("review", "Sealing/Backfilling");
@@ -182,7 +182,20 @@ describe("Tests the publication workflow.", () => {
       isCheckedTabStatusBox("review", "Casing");
       isUncheckedTabStatusBox("review", "Sealing/Backfilling");
       isCheckedTabStatusBox("review", "Instrumentation");
-      isIndeterminateTabStatusBox("review", "Completion");
+      isIndeterminateTabStatusBox("review", "Borehole architecture");
+    });
+  });
+
+  it("Cannot publish a borehole with nothing approved", () => {
+    createBorehole({
+      originalName: "Grocery Wagon",
+      restrictionId: restrictionFreeCode,
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      requestReviewFromValidator();
+      finishReview();
+      cy.get("sgc-button[disabled]").contains("Publish");
     });
   });
 
@@ -208,16 +221,16 @@ describe("Tests the publication workflow.", () => {
 
       cy.get("sgc-tab").contains("Freigabe").click();
 
-      // Check one child checkbox (Location) and one parent checkbox (Completion)
+      // Check one child checkbox (Location) and one parent checkbox (Borehole architecture)
       clickTabStatusCheckbox("approval", "Location");
-      clickTabStatusCheckbox("approval", "Completion");
+      clickTabStatusCheckbox("approval", "Borehole architecture");
 
       isIndeterminateTabStatusBox("approval", "Borehole");
       isCheckedTabStatusBox("approval", "Location");
       isUncheckedTabStatusBox("approval", "Section");
-      isUncheckedTabStatusBox("approval", "Geometry");
+      isUncheckedTabStatusBox("approval", "Borehole trajectory");
 
-      isCheckedTabStatusBox("approval", "Completion");
+      isCheckedTabStatusBox("approval", "Borehole architecture");
       isCheckedTabStatusBox("approval", "Instrumentation");
       isCheckedTabStatusBox("approval", "Casing");
       isCheckedTabStatusBox("approval", "Sealing/Backfilling");
@@ -233,7 +246,11 @@ describe("Tests the publication workflow.", () => {
       getElementByDataCy("restricted-chip").should("not.exist");
 
       cy.get("sgc-tab").contains("Verlauf").click();
-      checkWorkflowChangeContent("Admin User", "Status von Reviewed zu Published geändert", "I published a borehole!");
+      checkWorkflowChangeContent(
+        "Admin User",
+        "EN Status von EN Reviewed zu EN Published geändert",
+        "I published a borehole!",
+      );
     });
   });
 
@@ -434,12 +451,12 @@ describe("Tests the publication workflow.", () => {
 
       cy.get("sgc-tab").contains("Review").click();
       isUncheckedTabStatusBox("review", "Sections");
-      isUncheckedTabStatusBox("review", "Geometry");
+      isUncheckedTabStatusBox("review", "Borehole trajectory");
       isUncheckedTabStatusBox("review", "Borehole");
 
       cy.get("sgc-tab").contains("Freigabe").click();
       isUncheckedTabStatusBox("approval", "Sections");
-      isUncheckedTabStatusBox("approval", "Geometry");
+      isUncheckedTabStatusBox("approval", "Borehole trajectory");
       isUncheckedTabStatusBox("approval", "Borehole");
 
       navigateInSidebar(SidebarMenuItem.stratigraphy);
@@ -474,7 +491,7 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("review", "Lithology");
       isUncheckedTabStatusBox("review", "Chronostratigraphy");
       isUncheckedTabStatusBox("review", "Lithostratigraphy");
-      isUncheckedTabStatusBox("review", "Completion");
+      isUncheckedTabStatusBox("review", "Borehole architecture");
       isUncheckedTabStatusBox("review", "Casing");
       isUncheckedTabStatusBox("review", "Instrumentation");
       isUncheckedTabStatusBox("review", "Sealing/Backfilling");
@@ -484,7 +501,7 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("approval", "Lithology");
       isUncheckedTabStatusBox("approval", "Chronostratigraphy");
       isUncheckedTabStatusBox("approval", "Lithostratigraphy");
-      isUncheckedTabStatusBox("approval", "Completion");
+      isUncheckedTabStatusBox("approval", "Borehole architecture");
       isUncheckedTabStatusBox("approval", "Casing");
       isUncheckedTabStatusBox("approval", "Instrumentation");
       isUncheckedTabStatusBox("approval", "Sealing/Backfilling");

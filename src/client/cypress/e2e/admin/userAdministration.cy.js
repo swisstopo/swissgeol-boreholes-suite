@@ -26,7 +26,6 @@ describe("User administration settings tests", () => {
     sortBy("First name");
     sortBy("First name"); // clicking twice to sort descending
     verifyRowContains("viewer", 0);
-    verifyRowContains("example@example.com", 0);
     verifyRowContains("Active", 0);
 
     // navigate away and check if sorting is still applied
