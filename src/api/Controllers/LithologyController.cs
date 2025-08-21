@@ -81,106 +81,12 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-            if (entity.HasBedding && entity.Share == null)
-            {
-                return BadRequest("Share must be set when bedding is true.");
-            }
-            else
-            {
-                entity.Share = null; // Reset share if bedding is false
-                entity.LithologyDescriptions = entity.LithologyDescriptions?.Take(1).ToList() ?? [];
-            }
-
-            if (entity.IsUnconsolidated)
-            {
-                entity.LithologyDescriptions?.ToList().ForEach(async (ld) =>
-                {
-                    // Reset the consolidated lithology values
-                    ld.LithologyConId = null;
-                    ld.GrainSizeId = null;
-                    ld.GrainAngularityId = null;
-                    ld.GradationId = null;
-                    ld.CementationId = null;
-                    ld.LithologyDescriptionComponentConParticleCodes = [];
-                    ld.LithologyDescriptionComponentConMineralCodes = [];
-                    ld.LithologyDescriptionStructureSynGenCodes = [];
-                    ld.LithologyDescriptionStructurePostGenCodes = [];
-
-                    // Set the unconsolidated lithology codes
-                    var organicComponentCodes = await Context.Codelists.Where(c => ld.OrganicComponentCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionOrganicComponentCodes = organicComponentCodes.Select(c => new LithologyDescriptionOrganicComponentCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var debrisCodes = await Context.Codelists.Where(c => ld.DebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionDebrisCodes = debrisCodes.Select(c => new LithologyDescriptionDebrisCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var grainShapeCodes = await Context.Codelists.Where(c => ld.DebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionGrainShapeCodes = grainShapeCodes.Select(c => new LithologyDescriptionGrainShapeCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var grainAngularityCodes = await Context.Codelists.Where(c => ld.GrainAngularityCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionGrainAngularityCodes = grainAngularityCodes.Select(c => new LithologyDescriptionGrainAngularityCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var unconCoarseCodes = await Context.Codelists.Where(c => ld.LithologyUnconCoarseCodeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionUnconCoarseCodes = unconCoarseCodes.Select(c => new LithologyDescriptionUnconCoarseCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-                });
-
-                // Reset the unconsolidated lithology values
-                entity.LithologyTextureMetaCodes = [];
-
-                // Set the unconsolidated lithology codes
-                var uscsTypeCodes = await Context.Codelists.Where(c => entity.UscsTypeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                entity.LithologyUscsTypeCodes = uscsTypeCodes.Select(c => new LithologyUscsTypeCodes { Codelist = c, CodelistId = c.Id }).ToList();
-
-                var rockConditionCodes = await Context.Codelists.Where(c => entity.RockConditionCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                entity.LithologyRockConditionCodes = rockConditionCodes.Select(c => new LithologyRockConditionCodes { Codelist = c, CodelistId = c.Id }).ToList();
-            }
-            else
-            {
-                entity.LithologyDescriptions?.ToList().ForEach(async (ld) =>
-                {
-                    // Reset the consolidated lithology values
-                    ld.LithologyUnconMainId = null;
-                    ld.LithologyUncon2Id = null;
-                    ld.LithologyUncon3Id = null;
-                    ld.LithologyUncon4Id = null;
-                    ld.LithologyUncon5Id = null;
-                    ld.LithologyUncon6Id = null;
-                    ld.HasStriae = false;
-                    ld.LithologyDescriptionOrganicComponentCodes = [];
-                    ld.LithologyDescriptionDebrisCodes = [];
-                    ld.LithologyDescriptionGrainShapeCodes = [];
-                    ld.LithologyDescriptionGrainAngularityCodes = [];
-                    ld.LithologyDescriptionUnconCoarseCodes = [];
-
-                    // Set the consolidated lithology codes
-                    var componentConParticleCodes = await Context.Codelists.Where(c => ld.ComponentConParticleCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionComponentConParticleCodes = componentConParticleCodes.Select(c => new LithologyDescriptionComponentConParticleCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var componentConMineralCodes = await Context.Codelists.Where(c => ld.ComponentConMineralCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionComponentConMineralCodes = componentConMineralCodes.Select(c => new LithologyDescriptionComponentConMineralCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var structureSynGenCodes = await Context.Codelists.Where(c => ld.StructureSynGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionStructureSynGenCodes = structureSynGenCodes.Select(c => new LithologyDescriptionStructureSynGenCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var structurePostGenCodes = await Context.Codelists.Where(c => ld.StructurePostGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionStructurePostGenCodes = [.. structurePostGenCodes.Select(c => new LithologyDescriptionStructurePostGenCodes() { Codelist = c, CodelistId = c.Id })];
-                });
-
-                // Reset the unconsolidated lithology values
-                entity.CompactnessId = null;
-                entity.CohesionId = null;
-                entity.HumidityId = null;
-                entity.ConsistencyId = null;
-                entity.PlasticityId = null;
-                entity.UscsDeterminationId = null;
-                entity.LithologyUscsTypeCodes = [];
-                entity.LithologyRockConditionCodes = [];
-
-                // Set the consolidated lithology codes
-                var textureMetaCodes = await Context.Codelists.Where(c => entity.TextureMetaCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                entity.LithologyTextureMetaCodes = textureMetaCodes.Select(c => new LithologyTextureMetaCodes { Codelist = c, CodelistId = c.Id }).ToList();
-            }
-
+            await PrepareLithologyForSaveAsync(entity).ConfigureAwait(false);
             return await base.CreateAsync(entity).ConfigureAwait(false);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -199,6 +105,9 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             return BadRequest(ModelState);
         }
 
+        var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         var existingLithology = Context.LithologiesWithIncludes
             .SingleOrDefault(l => l.Id == entity.Id);
 
@@ -207,151 +116,16 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             return NotFound();
         }
 
-        var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
-        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
-
-        if (entity.HasBedding && entity.Share == null)
-        {
-            return BadRequest("Share must be set when bedding is true.");
-        }
-        else
-        {
-            entity.Share = null; // Reset share if bedding is false
-            entity.LithologyDescriptions = entity.LithologyDescriptions?.Take(1).ToList() ?? [];
-        }
-
-        if (entity.IsUnconsolidated)
-        {
-            entity.LithologyDescriptions?.ToList().ForEach(async (ld) =>
-            {
-                // Reset the consolidated lithology values
-                ld.LithologyConId = null;
-                ld.GrainSizeId = null;
-                ld.GrainAngularityId = null;
-                ld.GradationId = null;
-                ld.CementationId = null;
-                ld.LithologyDescriptionComponentConParticleCodes = [];
-                ld.LithologyDescriptionComponentConMineralCodes = [];
-                ld.LithologyDescriptionStructureSynGenCodes = [];
-                ld.LithologyDescriptionStructurePostGenCodes = [];
-
-                // Set the unconsolidated lithology codes
-                if (ld.Id == 0)
-                {
-                    var organicComponentCodes = await Context.Codelists.Where(c => ld.OrganicComponentCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionOrganicComponentCodes = organicComponentCodes.Select(c => new LithologyDescriptionOrganicComponentCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var debrisCodes = await Context.Codelists.Where(c => ld.DebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionDebrisCodes = debrisCodes.Select(c => new LithologyDescriptionDebrisCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var grainShapeCodes = await Context.Codelists.Where(c => ld.DebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionGrainShapeCodes = grainShapeCodes.Select(c => new LithologyDescriptionGrainShapeCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var grainAngularityCodes = await Context.Codelists.Where(c => ld.GrainAngularityCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionGrainAngularityCodes = grainAngularityCodes.Select(c => new LithologyDescriptionGrainAngularityCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var unconCoarseCodes = await Context.Codelists.Where(c => ld.LithologyUnconCoarseCodeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionUnconCoarseCodes = unconCoarseCodes.Select(c => new LithologyDescriptionUnconCoarseCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-                }
-                else
-                {
-                    var existingLithologyDescription = existingLithology.LithologyDescriptions?.SingleOrDefault(x => x.Id == ld.Id);
-
-                    var organicComponentCodes = existingLithologyDescription?.LithologyDescriptionOrganicComponentCodes ?? [];
-                    await UpdateLithologyDescriptionCodesAsync(ld.Id, organicComponentCodes!, ld.OrganicComponentCodelistIds!).ConfigureAwait(false);
-
-                    var debrisCodes = existingLithologyDescription?.LithologyDescriptionDebrisCodes ?? [];
-                    await UpdateLithologyDescriptionCodesAsync(ld.Id, debrisCodes!, ld.DebrisCodelistIds!).ConfigureAwait(false);
-
-                    var grainShapeCodes = existingLithologyDescription?.LithologyDescriptionGrainShapeCodes ?? [];
-                    await UpdateLithologyDescriptionCodesAsync(ld.Id, grainShapeCodes!, ld.GrainShapeCodelistIds!).ConfigureAwait(false);
-
-                    var grainAngularityCodes = existingLithologyDescription?.LithologyDescriptionGrainAngularityCodes ?? [];
-                    await UpdateLithologyDescriptionCodesAsync(ld.Id, grainAngularityCodes!, ld.GrainAngularityCodelistIds!).ConfigureAwait(false);
-
-                    var unconCoarseCodes = existingLithologyDescription?.LithologyDescriptionUnconCoarseCodes ?? [];
-                    await UpdateLithologyDescriptionCodesAsync(ld.Id, unconCoarseCodes!, ld.LithologyUnconCoarseCodeCodelistIds!).ConfigureAwait(false);
-                }
-            });
-
-            // Reset the unconsolidated lithology values
-            entity.LithologyTextureMetaCodes = [];
-
-            // Set the unconsolidated lithology codes
-            await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyUscsTypeCodes!, entity.UscsTypeCodelistIds!).ConfigureAwait(false);
-            await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyRockConditionCodes!, entity.RockConditionCodelistIds!).ConfigureAwait(false);
-        }
-        else
-        {
-            entity.LithologyDescriptions?.ToList().ForEach(async (ld) =>
-            {
-                // Reset the consolidated lithology values
-                ld.LithologyUnconMainId = null;
-                ld.LithologyUncon2Id = null;
-                ld.LithologyUncon3Id = null;
-                ld.LithologyUncon4Id = null;
-                ld.LithologyUncon5Id = null;
-                ld.LithologyUncon6Id = null;
-                ld.HasStriae = false;
-                ld.LithologyDescriptionOrganicComponentCodes = [];
-                ld.LithologyDescriptionDebrisCodes = [];
-                ld.LithologyDescriptionGrainShapeCodes = [];
-                ld.LithologyDescriptionGrainAngularityCodes = [];
-                ld.LithologyDescriptionUnconCoarseCodes = [];
-
-                // Set the consolidated lithology codes
-                if (ld.Id == 0)
-                {
-                    var componentConParticleCodes = await Context.Codelists.Where(c => ld.ComponentConParticleCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionComponentConParticleCodes = componentConParticleCodes.Select(c => new LithologyDescriptionComponentConParticleCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var componentConMineralCodes = await Context.Codelists.Where(c => ld.ComponentConMineralCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionComponentConMineralCodes = componentConMineralCodes.Select(c => new LithologyDescriptionComponentConMineralCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var structureSynGenCodes = await Context.Codelists.Where(c => ld.StructureSynGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionStructureSynGenCodes = structureSynGenCodes.Select(c => new LithologyDescriptionStructureSynGenCodes() { Codelist = c, CodelistId = c.Id }).ToList();
-
-                    var structurePostGenCodes = await Context.Codelists.Where(c => ld.StructurePostGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                    ld.LithologyDescriptionStructurePostGenCodes = [.. structurePostGenCodes.Select(c => new LithologyDescriptionStructurePostGenCodes() { Codelist = c, CodelistId = c.Id })];
-                }
-                else
-                {
-                    var existingLithologyDescription = existingLithology.LithologyDescriptions?.SingleOrDefault(x => x.Id == ld.Id);
-
-                    var componentConParticleCodes = existingLithologyDescription?.LithologyDescriptionComponentConParticleCodes ?? [];
-                    await UpdateLithologyDescriptionCodesAsync(ld.Id, componentConParticleCodes!, ld.ComponentConParticleCodelistIds!).ConfigureAwait(false);
-
-                    var componentConMineralCodes = existingLithologyDescription?.LithologyDescriptionComponentConMineralCodes ?? [];
-                    await UpdateLithologyDescriptionCodesAsync(ld.Id, componentConMineralCodes!, ld.ComponentConMineralCodelistIds!).ConfigureAwait(false);
-
-                    var structureSynGenCodes = existingLithologyDescription?.LithologyDescriptionStructureSynGenCodes ?? [];
-                    await UpdateLithologyDescriptionCodesAsync(ld.Id, structureSynGenCodes!, ld.StructureSynGenCodelistIds!).ConfigureAwait(false);
-
-                    var structurePostGenCodes = existingLithologyDescription?.LithologyDescriptionStructurePostGenCodes ?? [];
-                    await UpdateLithologyDescriptionCodesAsync(ld.Id, structurePostGenCodes!, ld.StructurePostGenCodelistIds!).ConfigureAwait(false);
-                }
-            });
-
-            // Reset the unconsolidated lithology values
-            entity.CompactnessId = null;
-            entity.CohesionId = null;
-            entity.HumidityId = null;
-            entity.ConsistencyId = null;
-            entity.PlasticityId = null;
-            entity.UscsDeterminationId = null;
-            entity.LithologyUscsTypeCodes = [];
-            entity.LithologyRockConditionCodes = [];
-
-            // Set the consolidated lithology codes
-            await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMetaCodes!, entity.TextureMetaCodelistIds!).ConfigureAwait(false);
-        }
-
-        Context.Entry(existingLithology).CurrentValues.SetValues(entity);
-
         try
         {
+            await PrepareLithologyForSaveAsync(entity, existingLithology).ConfigureAwait(false);
+            Context.Entry(existingLithology).CurrentValues.SetValues(entity);
             await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
             return await GetByIdAsync(entity.Id).ConfigureAwait(false);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -364,6 +138,168 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<IActionResult> DeleteAsync(int id) => base.DeleteAsync(id);
+
+    private async Task PrepareLithologyForSaveAsync(Lithology entity, Lithology? existingLithology = null)
+    {
+        if (entity.HasBedding && entity.Share == null)
+        {
+            throw new InvalidOperationException("Share must be set when bedding is true.");
+        }
+        else if (!entity.HasBedding)
+        {
+            entity.Share = null; // Reset share if bedding is false
+            entity.LithologyDescriptions = entity.LithologyDescriptions?.Take(1).ToList() ?? [];
+        }
+
+        if (entity.IsUnconsolidated)
+        {
+            if (entity.LithologyDescriptions != null)
+            {
+                foreach (var ld in entity.LithologyDescriptions)
+                {
+                    // Reset the consolidated lithology values
+                    ld.LithologyConId = null;
+                    ld.GrainSizeId = null;
+                    ld.GrainAngularityId = null;
+                    ld.GradationId = null;
+                    ld.CementationId = null;
+                    ld.LithologyDescriptionComponentConParticleCodes = [];
+                    ld.LithologyDescriptionComponentConMineralCodes = [];
+                    ld.LithologyDescriptionStructureSynGenCodes = [];
+                    ld.LithologyDescriptionStructurePostGenCodes = [];
+
+                    // Set the unconsolidated lithology codes
+                    if (ld.Id == 0 || existingLithology == null)
+                    {
+                        var organicComponentCodes = await Context.Codelists.Where(c => ld.OrganicComponentCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                        ld.LithologyDescriptionOrganicComponentCodes = organicComponentCodes.Select(c => new LithologyDescriptionOrganicComponentCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+
+                        var debrisCodes = await Context.Codelists.Where(c => ld.DebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                        ld.LithologyDescriptionDebrisCodes = debrisCodes.Select(c => new LithologyDescriptionDebrisCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+
+                        var grainShapeCodes = await Context.Codelists.Where(c => ld.DebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                        ld.LithologyDescriptionGrainShapeCodes = grainShapeCodes.Select(c => new LithologyDescriptionGrainShapeCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+
+                        var grainAngularityCodes = await Context.Codelists.Where(c => ld.GrainAngularityCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                        ld.LithologyDescriptionGrainAngularityCodes = grainAngularityCodes.Select(c => new LithologyDescriptionGrainAngularityCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+
+                        var unconCoarseCodes = await Context.Codelists.Where(c => ld.LithologyUnconCoarseCodeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                        ld.LithologyDescriptionUnconCoarseCodes = unconCoarseCodes.Select(c => new LithologyDescriptionUnconCoarseCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+                    }
+                    else
+                    {
+                        var existingLithologyDescription = existingLithology.LithologyDescriptions?.SingleOrDefault(x => x.Id == ld.Id);
+                        var organicComponentCodes = existingLithologyDescription?.LithologyDescriptionOrganicComponentCodes ?? [];
+                        await UpdateLithologyDescriptionCodesAsync(ld.Id, organicComponentCodes!, ld.OrganicComponentCodelistIds!).ConfigureAwait(false);
+
+                        var debrisCodes = existingLithologyDescription?.LithologyDescriptionDebrisCodes ?? [];
+                        await UpdateLithologyDescriptionCodesAsync(ld.Id, debrisCodes!, ld.DebrisCodelistIds!).ConfigureAwait(false);
+
+                        var grainShapeCodes = existingLithologyDescription?.LithologyDescriptionGrainShapeCodes ?? [];
+                        await UpdateLithologyDescriptionCodesAsync(ld.Id, grainShapeCodes!, ld.GrainShapeCodelistIds!).ConfigureAwait(false);
+
+                        var grainAngularityCodes = existingLithologyDescription?.LithologyDescriptionGrainAngularityCodes ?? [];
+                        await UpdateLithologyDescriptionCodesAsync(ld.Id, grainAngularityCodes!, ld.GrainAngularityCodelistIds!).ConfigureAwait(false);
+
+                        var unconCoarseCodes = existingLithologyDescription?.LithologyDescriptionUnconCoarseCodes ?? [];
+                        await UpdateLithologyDescriptionCodesAsync(ld.Id, unconCoarseCodes!, ld.LithologyUnconCoarseCodeCodelistIds!).ConfigureAwait(false);
+                    }
+                }
+            }
+
+            // Reset the unconsolidated lithology values
+            entity.LithologyTextureMetaCodes = [];
+
+            // Set the unconsolidated lithology codes
+            if (existingLithology == null)
+            {
+                var uscsTypeCodes = await Context.Codelists.Where(c => entity.UscsTypeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                entity.LithologyUscsTypeCodes = uscsTypeCodes.Select(c => new LithologyUscsTypeCodes { Codelist = c, CodelistId = c.Id }).ToList();
+
+                var rockConditionCodes = await Context.Codelists.Where(c => entity.RockConditionCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                entity.LithologyRockConditionCodes = rockConditionCodes.Select(c => new LithologyRockConditionCodes { Codelist = c, CodelistId = c.Id }).ToList();
+            }
+            else
+            {
+                await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyUscsTypeCodes!, entity.UscsTypeCodelistIds!).ConfigureAwait(false);
+                await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyRockConditionCodes!, entity.RockConditionCodelistIds!).ConfigureAwait(false);
+            }
+        }
+        else
+        {
+            if (entity.LithologyDescriptions != null)
+            {
+                foreach (var ld in entity.LithologyDescriptions)
+                {
+                    // Reset the consolidated lithology values
+                    ld.LithologyUnconMainId = null;
+                    ld.LithologyUncon2Id = null;
+                    ld.LithologyUncon3Id = null;
+                    ld.LithologyUncon4Id = null;
+                    ld.LithologyUncon5Id = null;
+                    ld.LithologyUncon6Id = null;
+                    ld.HasStriae = false;
+                    ld.LithologyDescriptionOrganicComponentCodes = [];
+                    ld.LithologyDescriptionDebrisCodes = [];
+                    ld.LithologyDescriptionGrainShapeCodes = [];
+                    ld.LithologyDescriptionGrainAngularityCodes = [];
+                    ld.LithologyDescriptionUnconCoarseCodes = [];
+
+                    // Set the consolidated lithology codes
+                    if (ld.Id == 0 || existingLithology == null)
+                    {
+                        var componentConParticleCodes = await Context.Codelists.Where(c => ld.ComponentConParticleCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                        ld.LithologyDescriptionComponentConParticleCodes = componentConParticleCodes.Select(c => new LithologyDescriptionComponentConParticleCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+
+                        var componentConMineralCodes = await Context.Codelists.Where(c => ld.ComponentConMineralCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                        ld.LithologyDescriptionComponentConMineralCodes = componentConMineralCodes.Select(c => new LithologyDescriptionComponentConMineralCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+
+                        var structureSynGenCodes = await Context.Codelists.Where(c => ld.StructureSynGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                        ld.LithologyDescriptionStructureSynGenCodes = structureSynGenCodes.Select(c => new LithologyDescriptionStructureSynGenCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+
+                        var structurePostGenCodes = await Context.Codelists.Where(c => ld.StructurePostGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                        ld.LithologyDescriptionStructurePostGenCodes = [.. structurePostGenCodes.Select(c => new LithologyDescriptionStructurePostGenCodes() { Codelist = c, CodelistId = c.Id })];
+                    }
+                    else
+                    {
+                        var existingLithologyDescription = existingLithology.LithologyDescriptions?.SingleOrDefault(x => x.Id == ld.Id);
+                        var componentConParticleCodes = existingLithologyDescription?.LithologyDescriptionComponentConParticleCodes ?? [];
+                        await UpdateLithologyDescriptionCodesAsync(ld.Id, componentConParticleCodes!, ld.ComponentConParticleCodelistIds!).ConfigureAwait(false);
+
+                        var componentConMineralCodes = existingLithologyDescription?.LithologyDescriptionComponentConMineralCodes ?? [];
+                        await UpdateLithologyDescriptionCodesAsync(ld.Id, componentConMineralCodes!, ld.ComponentConMineralCodelistIds!).ConfigureAwait(false);
+
+                        var structureSynGenCodes = existingLithologyDescription?.LithologyDescriptionStructureSynGenCodes ?? [];
+                        await UpdateLithologyDescriptionCodesAsync(ld.Id, structureSynGenCodes!, ld.StructureSynGenCodelistIds!).ConfigureAwait(false);
+
+                        var structurePostGenCodes = existingLithologyDescription?.LithologyDescriptionStructurePostGenCodes ?? [];
+                        await UpdateLithologyDescriptionCodesAsync(ld.Id, structurePostGenCodes!, ld.StructurePostGenCodelistIds!).ConfigureAwait(false);
+                    }
+                }
+            }
+
+            // Reset the unconsolidated lithology values
+            entity.CompactnessId = null;
+            entity.CohesionId = null;
+            entity.HumidityId = null;
+            entity.ConsistencyId = null;
+            entity.PlasticityId = null;
+            entity.UscsDeterminationId = null;
+            entity.LithologyUscsTypeCodes = [];
+            entity.LithologyRockConditionCodes = [];
+
+            // Set the consolidated lithology codes
+            if (existingLithology == null)
+            {
+                var textureMetaCodes = await Context.Codelists.Where(c => entity.TextureMetaCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                entity.LithologyTextureMetaCodes = textureMetaCodes.Select(c => new LithologyTextureMetaCodes { Codelist = c, CodelistId = c.Id }).ToList();
+            }
+            else
+            {
+                await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMetaCodes!, entity.TextureMetaCodelistIds!).ConfigureAwait(false);
+            }
+        }
+    }
 
     private async Task UpdateLithologyCodesAsync<T>(int lithologyId, IList<T> existingCodes, ICollection<int> newCodelistIds)
         where T : class, ILithologyCode, new()
