@@ -40,6 +40,17 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
     }
 
     /// <summary>
+    /// Asynchronously gets the <see cref="Stratigraphy"/>s. This endpoint is only avaiable for administrators to get all stratigraphies during testing.
+    /// </summary>
+    [HttpGet("getAll")]
+    public async Task<ActionResult<IEnumerable<Stratigraphy>>> GetAllsync()
+    {
+        return await Context.Stratigraphies
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Asynchronously gets the <see cref="Stratigraphy"/>s, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole containing the stratigraphies to get.</param>
