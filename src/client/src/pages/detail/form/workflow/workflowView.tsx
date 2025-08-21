@@ -161,6 +161,8 @@ export const WorkflowView = () => {
     }
   };
 
+  const isAnythingApproved = Object.entries(workflow.publishedTabs).some(([, value]) => value === true);
+
   return (
     <Box sx={{ minHeight: "100dvh" }}>
       <SgcWorkflow
@@ -179,7 +181,7 @@ export const WorkflowView = () => {
         availableAssignees={availableAssignees}
         selection={makeSelectionEntries()}
         canChangeStatus={editableByCurrentUser}
-        isRestricted={borehole.restrictionId !== restrictionFreeCode}
+        isRestricted={borehole.restrictionId !== restrictionFreeCode || !isAnythingApproved}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
           handleTabStatusUpdate(e, TabType.Reviewed)
         }
