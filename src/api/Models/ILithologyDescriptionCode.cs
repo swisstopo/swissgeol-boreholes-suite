@@ -3,19 +3,19 @@
 namespace BDMS.Models;
 
 /// <summary>
-/// Interface for join table entities for a <see cref="Models.Codelist"/> attached to a <see cref="Models.Lithology"/>.
+/// Interface for join table entities for a <see cref="Models.Codelist"/> attached to a <see cref="Models.LithologyDescription"/>.
 /// </summary>
-public interface ILithologyCode
+public interface ILithologyDescriptionCode
 {
     /// <summary>
-    /// Gets or sets the ID of the lithology in the join table.
+    /// Gets or sets the ID of the lithology description in the join table.
     /// </summary>
-    int LithologyId { get; set; }
+    int LithologyDescriptionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the lithology in the join table.
+    /// Gets or sets the lithology description in the join table.
     /// </summary>
-    Lithology? Lithology { get; set; }
+    LithologyDescription? LithologyDescription { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the codelist in the join table.

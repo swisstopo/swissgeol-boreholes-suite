@@ -1,4 +1,4 @@
-namespace BDMS.Models;
+﻿namespace BDMS.Models;
 
 /// <summary>
 /// A lithology inside a <see cref="Models.StratigraphyV2"/> with defined depth.
