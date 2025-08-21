@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Azure;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,15 @@ public class StratigraphyControllerTest
 
     [TestCleanup]
     public async Task TestCleanup() => await context.DisposeAsync();
+
+    [TestMethod]
+    public async Task GetAll()
+    {
+        var response = await controller.GetAllAsync().ConfigureAwait(false);
+        IEnumerable<Stratigraphy>? stratigraphies = response.Value;
+        Assert.IsNotNull(stratigraphies);
+        Assert.AreEqual(3000, stratigraphies.Count());
+    }
 
     [TestMethod]
     public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
