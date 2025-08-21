@@ -71,6 +71,7 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return await Context.Stratigraphies
+            .AsNoTracking()
             .Where(x => x.BoreholeId == boreholeId)
             .ToListAsync()
             .ConfigureAwait(false);

@@ -36,6 +36,7 @@ public class LayerController : BoreholeControllerBase<Layer>
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return await Context.LayersWithIncludes
+            .AsNoTracking()
             .Where(x => x.StratigraphyId == profileId)
             .ToListAsync()
             .ConfigureAwait(false);

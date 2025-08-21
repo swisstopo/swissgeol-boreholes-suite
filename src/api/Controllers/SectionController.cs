@@ -37,6 +37,7 @@ public class SectionController : BoreholeControllerBase<Section>
 
         return await Context.Sections
             .Include(s => s.SectionElements)
+            .AsNoTracking()
             .Where(s => s.BoreholeId == boreholeId)
             .OrderBy(s => s.Name)
             .ToListAsync()

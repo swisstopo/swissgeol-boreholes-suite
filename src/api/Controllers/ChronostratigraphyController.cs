@@ -37,6 +37,7 @@ public class ChronostratigraphyController : BoreholeControllerBase<Chronostratig
 
         return await Context.ChronostratigraphyLayers
             .Include(c => c.Chronostratigraphy)
+            .AsNoTracking()
             .Where(l => l.StratigraphyId == stratigraphyId)
             .OrderBy(l => l.FromDepth)
             .ToListAsync()

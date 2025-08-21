@@ -29,6 +29,7 @@ public class CompletionController : BoreholeControllerBase<Completion>
 
         return await Context.Completions
             .Include(c => c.Kind)
+            .AsNoTracking()
             .Where(c => c.BoreholeId == boreholeId)
             .OrderBy(c => c.Created)
             .ToListAsync().ConfigureAwait(false);

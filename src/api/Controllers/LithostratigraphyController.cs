@@ -37,6 +37,7 @@ public class LithostratigraphyController : BoreholeControllerBase<Lithostratigra
 
         return await Context.LithostratigraphyLayers
             .Include(l => l.Lithostratigraphy)
+            .AsNoTracking()
             .Where(l => l.StratigraphyId == stratigraphyId)
             .OrderBy(l => l.FromDepth)
             .ToListAsync()

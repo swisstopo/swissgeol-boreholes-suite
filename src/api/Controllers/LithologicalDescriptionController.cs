@@ -37,6 +37,7 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return await Context.LithologicalDescriptions
+            .AsNoTracking()
             .Where(x => x.StratigraphyId == stratigraphyId)
             .ToListAsync()
             .ConfigureAwait(false);

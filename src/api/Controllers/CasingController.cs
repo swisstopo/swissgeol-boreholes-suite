@@ -41,6 +41,7 @@ public class CasingController : BoreholeControllerBase<Casing>
             .Include(c => c.CasingElements)
             .Include(c => c.Completion)
             .Where(b => b.CompletionId == completionId)
+            .AsNoTracking()
             .ToListAsync()
             .ConfigureAwait(false);
     }
