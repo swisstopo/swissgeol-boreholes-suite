@@ -12,7 +12,7 @@ import {
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
 import { Role as LegacyRole } from "../../../../api/apiInterfaces.ts";
-import { useBorehole, useBoreholeEditable } from "../../../../api/borehole.ts";
+import { useBorehole, useBoreholeStatusEditable } from "../../../../api/borehole.ts";
 import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { restrictionFreeCode } from "../../../../components/codelist.ts";
@@ -34,7 +34,7 @@ export const WorkflowView = () => {
   const { data: workflow, isLoading } = useWorkflow(parseInt(boreholeId));
   const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
   const { t } = useTranslation();
-  const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(boreholeId));
+  const { data: editableByCurrentUser } = useBoreholeStatusEditable(parseInt(boreholeId));
   const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole.workgroup?.id ?? 0);
   const { navigateTo } = useBoreholesNavigate();
   const { showAlert } = useContext(AlertContext);

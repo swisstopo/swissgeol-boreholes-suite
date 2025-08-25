@@ -139,6 +139,9 @@ export const deleteBorehole = async (id: number) => await fetchApiV2(`borehole?i
 export const canUserEditBorehole = async (id: number) =>
   await fetchApiV2(`permissions/canedit?boreholeId=${id}`, "GET");
 
+export const canUserUpdateBoreholeStatus = async (id: number) =>
+  await fetchApiV2(`permissions/canchangestatus?boreholeId=${id}`, "GET");
+
 export const boreholeQueryKey = "boreholes";
 
 export const useBorehole = (id: number) => {
@@ -161,6 +164,21 @@ export const useBoreholeEditable = (id: number) => {
     queryKey: [canEditQueryKey, currentUser?.id, id],
     queryFn: async () => {
       return await canUserEditBorehole(id);
+    },
+    enabled: !!id,
+  });
+
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
+
+export const canUpdateStatusQueryKey = "canUpdateBoreholeStatus";
+export const useBoreholeStatusEditable = (id: number) => {
+  const { data: currentUser } = useCurrentUser();
+  const query = useQuery({
+    queryKey: [canUpdateStatusQueryKey, currentUser?.id, id],
+    queryFn: async () => {
+      return await canUserUpdateBoreholeStatus(id);
     },
     enabled: !!id,
   });
