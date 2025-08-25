@@ -5,6 +5,7 @@ import { Autocomplete, Chip, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { getFormFieldError } from "./form";
+import { FormSelectMenuItem } from "./formSelect.tsx";
 import { getFieldBorderColor } from "./formUtils.ts";
 
 export interface FormMultiSelectProps {
@@ -23,13 +24,6 @@ export interface FormMultiSelectProps {
 export interface FormMultiSelectValue {
   key: number;
   name: string;
-}
-
-export interface FormMultiSelectMenuItem {
-  key: number;
-  value: number;
-  label: string;
-  italic?: boolean;
 }
 
 export const FormMultiSelect: FC<FormMultiSelectProps> = ({
@@ -57,8 +51,10 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
 
   const formFieldError = getFormFieldError(fieldName, formState.errors);
 
-  const menuItems: FormMultiSelectMenuItem[] = [];
-
+  const menuItems: FormSelectMenuItem[] = [];
+  if (!required) {
+    menuItems.push({ key: 0, value: null, label: t("reset"), italic: true });
+  }
   if (values) {
     values.forEach(value => {
       menuItems.push({
@@ -85,7 +81,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
         <>
           {Array.isArray(values) && values.length > 0 ? (
             <Autocomplete
-              sx={{ ...(isReadOnly ? readonlyStyles : {}) }}
+              sx={{ ...(isReadOnly ? readonlyStyles : {}), width: "100%" }}
               key={`${fieldName}-${fieldValue ? fieldValue.join("-") : "empty"}`}
               multiple
               options={menuItems}
@@ -99,10 +95,15 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                     menuItems.find(item => item.value === val) || { key: val, value: val, label: val.toString() },
                 ) || []
               }
-              onChange={(_, newValue) => {
-                const selectedValues = newValue.map(item => item.value);
-                field.onChange(selectedValues);
-                setValue(fieldName, selectedValues, { shouldValidate: true, shouldDirty: true });
+              onChange={(_, newValues: FormSelectMenuItem[]) => {
+                if (newValues.some(m => m.label.toLowerCase() === t("reset").toLowerCase())) {
+                  // Clear autocomplete if reset option is clicked
+                  field.onChange([]);
+                } else {
+                  const selectedValues = newValues.map(item => item.value);
+                  field.onChange(selectedValues);
+                  setValue(fieldName, selectedValues, { shouldValidate: true, shouldDirty: true });
+                }
               }}
               renderTags={(tagValue, getTagProps) => {
                 return tagValue.map((option, index) => (

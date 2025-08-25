@@ -1,4 +1,4 @@
-import { createBaseSelector } from "./testHelpers";
+import { createBaseSelector, getElementByDataCy } from "./testHelpers";
 
 /**
  * Checks if a form element has an error.
@@ -223,16 +223,15 @@ export const toggleMultiSelect = (fieldName, indices, expected, parent) => {
  */
 export const evaluateMultiSelect = (fieldName, expectedValues, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formMultiSelect"] input`;
-  cy.get(selector)
-    .filter((k, input) => {
-      if (expectedValues.length === 0) {
-        return input.value === "";
-      } else {
-        var values = input.value.split(",");
-        return values.length === expectedValues.length && values.every(v => expectedValues.includes(v));
-      }
-    })
-    .should("have.length", 1);
+  cy.get(selector).within(() => {
+    if (expectedValues.length === 0) {
+      cy.get('[data-cy^="chip-"]').should("not.exist");
+    } else {
+      expectedValues.forEach(v => {
+        getElementByDataCy(`chip-${v}`).should("be.visible");
+      });
+    }
+  });
 };
 
 /**
