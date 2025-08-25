@@ -9,6 +9,7 @@ import {
   SgcWorkflowCustomEvent,
   SgcWorkflowSelectionChangeEventDetails,
   SgcWorkflowSelectionEntry,
+  WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
 import { Role as LegacyRole } from "../../../../api/apiInterfaces.ts";
@@ -19,6 +20,7 @@ import { restrictionFreeCode } from "../../../../components/codelist.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { EditStateContext } from "../../editStateContext.tsx";
 import {
   TabStatusChangeRequest,
   TabType,
@@ -35,6 +37,7 @@ export const WorkflowView = () => {
   const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
   const { t } = useTranslation();
   const { data: canChangeStatus } = useBoreholeStatusEditable(parseInt(boreholeId));
+  const { setEditingEnabled } = useContext(EditStateContext);
   const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole.workgroup?.id ?? 0);
   const { navigateTo } = useBoreholesNavigate();
   const { showAlert } = useContext(AlertContext);
@@ -119,6 +122,9 @@ export const WorkflowView = () => {
       newStatus: changes.toStatus,
     };
     updateWorkflow(workflowChangeRequest);
+    if (changes.toStatus === WorkflowStatus.Reviewed || changes.toStatus === WorkflowStatus.Published) {
+      setEditingEnabled(false);
+    }
   };
 
   const revokePublicationIfReviewTabChanges = (changes: Partial<GenericWorkflowSelection>) => {
