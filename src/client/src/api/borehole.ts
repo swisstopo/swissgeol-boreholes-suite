@@ -191,9 +191,14 @@ export const useBoreholeMutations = () => {
     mutationFn: async (borehole: BoreholeV2) => {
       return await updateBorehole(borehole);
     },
-    onSuccess: () => {
+    onSuccess: (_, borehole) => {
       queryClient.invalidateQueries({
         queryKey: [boreholeQueryKey],
+      });
+      // force immediate background refetch to have the borehole's lock status up to date on next render and prevent button flickering
+      queryClient.refetchQueries({
+        queryKey: [boreholeQueryKey, borehole.id],
+        exact: true,
       });
     },
   });
