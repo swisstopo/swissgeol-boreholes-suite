@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useMemo } from "react";
+import { FC, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -28,6 +28,7 @@ import { SaveContext, SaveContextProps } from "../../saveContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
 
 export const StratigraphyPanel: FC = () => {
+  const justCopiedRef = useRef(false);
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
@@ -132,6 +133,7 @@ export const StratigraphyPanel: FC = () => {
 
   const onCopy = useCallback(async () => {
     if (selectedStratigraphy) {
+      justCopiedRef.current = true;
       const newStratigraphyId: number = await copyStratigraphy(selectedStratigraphy);
       navigateToStratigraphy(newStratigraphyId, true);
     }
@@ -204,6 +206,12 @@ export const StratigraphyPanel: FC = () => {
   }, [deleteSelectedStratigraphy, selectedStratigraphy, showPrompt]);
 
   useEffect(() => {
+    if (!boreholeId) return;
+    // Prevents default navigation after copying
+    if (justCopiedRef.current) {
+      justCopiedRef.current = false;
+      return;
+    }
     if (
       sortedStratigraphies?.length &&
       (stratigraphyId === undefined ||
