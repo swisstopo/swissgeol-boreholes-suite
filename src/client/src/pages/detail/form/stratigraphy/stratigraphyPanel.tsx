@@ -18,7 +18,6 @@ import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyCha
 import { PromptContext } from "../../../../components/prompt/promptContext";
 import { FullPageCentered } from "../../../../components/styledComponents";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents";
-import { useBlockNavigation } from "../../../../hooks/useBlockNavigation";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
@@ -41,7 +40,6 @@ export const StratigraphyPanel: FC = () => {
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
   const { registerSaveHandler, registerResetHandler, unMount } = useContext<SaveContextProps>(SaveContext);
-  useBlockNavigation();
   const formMethods = useForm<Stratigraphy>({ mode: "all" });
   const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
