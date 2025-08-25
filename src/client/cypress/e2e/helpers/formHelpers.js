@@ -118,6 +118,7 @@ export const openDropdown = selector => {
  * @param {number} index The index of the option to select.
  */
 export const selectDropdownOption = index => {
+  cy.get('.MuiPaper-elevation [role="listbox"]').find("li").eq(index).scrollIntoView();
   cy.get('.MuiPaper-elevation [role="listbox"]').find("li").eq(index).click();
 };
 
