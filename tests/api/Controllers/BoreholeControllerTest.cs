@@ -19,6 +19,7 @@ public class BoreholeControllerTest
     private BoreholeController controller;
     private static int testBoreholeId = 1000068;
     private static int noPermissionWorkgroupId = 91350978;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
@@ -29,7 +30,10 @@ public class BoreholeControllerTest
 
     private BoreholeController GetTestController(BdmsContext testContext)
     {
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -61,6 +65,37 @@ public class BoreholeControllerTest
         }
 
         await cleanupContext.DisposeAsync();
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFiltersBoreholesBasedOnWorkgroupPermissions()
+    {
+        // Add a new borehole with workgroup that is not default
+        var newBorehole = new Borehole()
+        {
+            Name = "Test Borehole",
+            WorkgroupId = 4,
+        };
+        await context.Boreholes.AddAsync(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var response = await controller.GetAllAsync([newBorehole.Id], 1, 100);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        PaginatedBoreholeResponse paginatedResponse = (PaginatedBoreholeResponse)okResult.Value!;
+        Assert.IsNotNull(paginatedResponse.Boreholes);
+        Assert.AreEqual(1, paginatedResponse.Boreholes.Count());
+
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        var responseForEditor = await controller.GetAllAsync([newBorehole.Id], 1, 100);
+
+        ActionResultAssert.IsOk(responseForEditor.Result);
+        OkObjectResult okResultForEditor = (OkObjectResult)responseForEditor.Result!;
+        PaginatedBoreholeResponse paginatedResponseForEditor = (PaginatedBoreholeResponse)okResultForEditor.Value!;
+        Assert.IsNotNull(paginatedResponseForEditor.Boreholes);
+        Assert.AreEqual(0, paginatedResponseForEditor.Boreholes.Count());
     }
 
     [TestMethod]
@@ -226,6 +261,17 @@ public class BoreholeControllerTest
 
         var boreholeWithDeletedIdentifiers = ActionResultAssert.IsOkObjectResult<Borehole>(deletedIdentifiersResponse.Result);
         Assert.AreEqual(0, boreholeWithDeletedIdentifiers.BoreholeCodelists.Count);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var response = await controller.GetByIdAsync(testBoreholeId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

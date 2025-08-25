@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,15 +15,13 @@ public class SectionControllerTest
 
     private BdmsContext context;
     private SectionController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new SectionController(context, new Mock<ILogger<SectionController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -30,14 +29,6 @@ public class SectionControllerTest
     public async Task TestCleanup()
     {
         await context.DisposeAsync();
-    }
-
-    [TestMethod]
-    public async Task GetAsync()
-    {
-        IEnumerable<Section>? sections = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(sections);
-        Assert.AreEqual(500, sections.Count());
     }
 
     [TestMethod]
@@ -50,9 +41,26 @@ public class SectionControllerTest
             .Where(g => g.Count() == 5)
             .First().Key;
 
-        IEnumerable<Section>? sections = await controller.GetAsync(boreholeId).ConfigureAwait(false);
+        var response = await controller.GetAsync(boreholeId).ConfigureAwait(false);
+        IEnumerable<Section>? sections = response.Value;
         Assert.IsNotNull(sections);
         Assert.AreEqual(5, sections.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetEntriesByBoreholIdForInexistentId()
+    {
+        var notFoundResponse = await controller.GetAsync(94578122).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
     [TestMethod]
@@ -63,6 +71,19 @@ public class SectionControllerTest
         var response = await controller.GetByIdAsync(sectionId).ConfigureAwait(false);
         var section = ActionResultAssert.IsOkObjectResult<Section>(response.Result);
         Assert.AreEqual(sectionId, section.Id);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var sectionId = context.Sections.First().Id;
+
+        var response = await controller.GetByIdAsync(sectionId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

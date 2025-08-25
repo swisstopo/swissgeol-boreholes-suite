@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +13,7 @@ public class LithostratigraphyControllerTest
 {
     private BdmsContext context;
     private LithostratigraphyController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     private LithostratigraphyLayer GetLithostratigraphy() => new LithostratigraphyLayer
     {
@@ -29,10 +31,7 @@ public class LithostratigraphyControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new LithostratigraphyController(context, new Mock<ILogger<LithostratigraphyController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -40,19 +39,26 @@ public class LithostratigraphyControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
+    }
+
+    [TestMethod]
     public async Task GetEntriesByStratigraphyIdForInexistentId()
     {
-        var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<LithostratigraphyLayer>? lithostratigraphies = response;
-        Assert.IsNotNull(lithostratigraphies);
-        Assert.AreEqual(0, lithostratigraphies.Count());
+        var notFoundResponse = await controller.GetAsync(94578122).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByStratigraphyId()
     {
         var response = await controller.GetAsync(6_000_095).ConfigureAwait(false);
-        IEnumerable<LithostratigraphyLayer>? lithostratigraphies = response;
+        IEnumerable<LithostratigraphyLayer>? lithostratigraphies = response.Value;
         Assert.IsNotNull(lithostratigraphies);
         Assert.AreEqual(10, lithostratigraphies.Count());
     }
@@ -75,6 +81,18 @@ public class LithostratigraphyControllerTest
         Assert.AreEqual(50, lithostratigraphy.ToDepth);
         Assert.AreEqual(15_302_431, lithostratigraphy.LithostratigraphyId);
         Assert.AreEqual(6_000_001, lithostratigraphy.StratigraphyId);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var response = await controller.GetByIdAsync(14_000_014).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]
@@ -168,7 +186,8 @@ public class LithostratigraphyControllerTest
         await CreateLayer(createdLayerIds, new LithostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 100, ToDepth = 110 });
         await CreateLayer(createdLayerIds, new LithostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 120, ToDepth = 130 });
 
-        var layers = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
+        var response = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
+        var layers = response.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(13, layers.Count());
         for (int i = 1; i < layers.Count(); i++)

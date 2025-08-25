@@ -380,7 +380,7 @@ export const loginAndResetState = () => {
     // Reset stratigraphies
     cy.request({
       method: "GET",
-      url: "/api/v2/stratigraphy",
+      url: "/api/v2/stratigraphy/getall",
       auth: bearerAuth(token),
     }).then(response => {
       response.body

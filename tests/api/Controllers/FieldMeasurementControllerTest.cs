@@ -1,6 +1,5 @@
-﻿using BDMS.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -13,15 +12,13 @@ public class FieldMeasurementControllerTest
 {
     private BdmsContext context;
     private FieldMeasurementController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new FieldMeasurementController(context, new Mock<ILogger<FieldMeasurementController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -29,27 +26,28 @@ public class FieldMeasurementControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAsyncReturnsAllEntities()
-    {
-        var result = await controller.GetAsync();
-        Assert.IsNotNull(result);
-        Assert.AreEqual(102, result.Count());
-    }
-
-    [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<FieldMeasurement>? fieldMeasurements = response;
+        IEnumerable<FieldMeasurement>? fieldMeasurements = response.Value;
         Assert.IsNotNull(fieldMeasurements);
         Assert.AreEqual(0, fieldMeasurements.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
         var response = await controller.GetAsync(1000007).ConfigureAwait(false);
-        IEnumerable<FieldMeasurement>? fieldMeasurements = response;
+        IEnumerable<FieldMeasurement>? fieldMeasurements = response.Value;
         Assert.IsNotNull(fieldMeasurements);
         Assert.AreEqual(1, fieldMeasurements.Count());
         var fieldMeasurement = fieldMeasurements.Single();

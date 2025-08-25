@@ -115,7 +115,7 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
-    public async Task DownloadFileShouldReturnDownloadedFile()
+    public async Task DownloadFileShouldReturnDownloadedFileIfHasPermissions()
     {
         var fileName = $"{Guid.NewGuid()}.pdf";
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
@@ -138,6 +138,13 @@ public class BoreholeFileControllerTest
         var fileContentResult = (FileContentResult)response;
         string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
         Assert.AreEqual(content, contentResult);
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var unauthorizedResponse = await controller.Download(uploadedBoreholeFile.FileId);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse);
     }
 
     [TestMethod]
@@ -167,6 +174,19 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(secondFileName, secondBoreholeFile.File.Name);
         Assert.AreEqual(adminUser.SubjectId, secondBoreholeFile.User.SubjectId);
         Assert.AreEqual(boreholeFilesBeforeUpload + 2, boreholeFilesOfBorehole.Value?.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAllForBoreholeReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+
+        var response = await controller.GetAllOfBorehole(minBoreholeId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

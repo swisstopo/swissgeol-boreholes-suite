@@ -16,21 +16,26 @@ public class BackfillController : BoreholeControllerBase<Backfill>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Backfill"/>s, optionally filtered by <paramref name="completionId"/>.
+    /// Asynchronously gets the <see cref="Backfill"/>s, filtered by <paramref name="completionId"/>.
     /// </summary>
     /// <param name="completionId">The id of the completion containing the <see cref="Backfill"/> to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Backfill>> GetAsync([FromQuery] int? completionId = null)
+    public async Task<ActionResult<IEnumerable<Backfill>>> GetAsync([FromQuery] int completionId)
     {
-        var backfills = GetBackfillsWithIncludes();
+        var completion = await Context.Completions
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == completionId)
+            .ConfigureAwait(false);
 
-        if (completionId != null)
+        if (completion == null)
         {
-            backfills = backfills.Where(b => b.CompletionId == completionId);
+            return NotFound();
         }
 
-        return await backfills.ToListAsync().ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), completion.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await GetBackfillsWithIncludes().Where(b => b.CompletionId == completionId).ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -40,6 +45,9 @@ public class BackfillController : BoreholeControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Backfill>> GetByIdAsync(int id)
     {
+        var boreholeId = await GetBoreholeId(new Backfill { Id = id }).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         var backfill = await GetBackfillsWithIncludes().SingleOrDefaultAsync(i => i.Id == id).ConfigureAwait(false);
 
         if (backfill == null)

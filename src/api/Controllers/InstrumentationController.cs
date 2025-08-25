@@ -16,21 +16,29 @@ public class InstrumentationController : BoreholeControllerBase<Instrumentation>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Instrumentation"/>s, optionally filtered by <paramref name="completionId"/>.
+    /// Asynchronously gets the <see cref="Instrumentation"/>s, filtered by <paramref name="completionId"/>.
     /// </summary>
     /// <param name="completionId">The id of the completion containing the <see cref="Instrumentation"/> to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Instrumentation>> GetAsync([FromQuery] int? completionId = null)
+    public async Task<ActionResult<IEnumerable<Instrumentation>>> GetAsync([FromQuery] int completionId)
     {
-        var instrumentations = GetInstrumentationsWithIncludes();
+        var completion = await Context.Completions
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == completionId)
+            .ConfigureAwait(false);
 
-        if (completionId != null)
+        if (completion == null)
         {
-            instrumentations = instrumentations.Where(i => i.CompletionId == completionId);
+            return NotFound();
         }
 
-        return await instrumentations.ToListAsync().ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), completion.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await GetInstrumentationsWithIncludes()
+            .Where(x => x.CompletionId == completionId)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -48,6 +56,9 @@ public class InstrumentationController : BoreholeControllerBase<Instrumentation>
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(instrumentation).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(instrumentation);
     }

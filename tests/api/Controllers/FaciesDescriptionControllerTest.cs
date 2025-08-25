@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,15 +13,13 @@ public class FaciesDescriptionControllerTest
 {
     private BdmsContext context;
     private FaciesDescriptionController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new FaciesDescriptionController(context, new Mock<ILogger<FaciesDescriptionController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -28,28 +27,26 @@ public class FaciesDescriptionControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAllEntriesAsync()
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        var response = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<FaciesDescription>? faciesDescriptions = response;
-        Assert.IsNotNull(faciesDescriptions);
-        Assert.AreEqual(30_000, faciesDescriptions.Count());
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByStratigraphyIdForInexistentId()
     {
-        var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<FaciesDescription>? faciesDescriptions = response;
-        Assert.IsNotNull(faciesDescriptions);
-        Assert.AreEqual(0, faciesDescriptions.Count());
+        var notFoundResponse = await controller.GetAsync(651335213).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByStratigraphyId()
     {
         var response = await controller.GetAsync(6_000_095).ConfigureAwait(false);
-        IEnumerable<FaciesDescription>? faciesDescriptions = response;
+        IEnumerable<FaciesDescription>? faciesDescriptions = response.Value;
         Assert.IsNotNull(faciesDescriptions);
         Assert.AreEqual(10, faciesDescriptions.Count());
     }
@@ -72,6 +69,19 @@ public class FaciesDescriptionControllerTest
         Assert.AreEqual(50, faciesDescription.ToDepth);
         Assert.AreEqual("Hawaii radical Technician", faciesDescription.Description);
         Assert.AreEqual(6_000_001, faciesDescription.StratigraphyId);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var faciesDescriptionId = context.FaciesDescriptions.First().Id;
+        var response = await controller.GetByIdAsync(faciesDescriptionId).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

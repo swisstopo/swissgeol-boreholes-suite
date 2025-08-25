@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Amazon;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,22 +17,30 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="LithologicalDescription"/>s, optionally filtered by <paramref name="stratigraphyId"/>.
+    /// Asynchronously gets the <see cref="LithologicalDescription"/>s, filtered by <paramref name="stratigraphyId"/>.
     /// </summary>
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the lithological descriptions to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<LithologicalDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
+    public async Task<ActionResult<IEnumerable<LithologicalDescription>>> GetAsync([FromQuery] int stratigraphyId)
     {
-        var lithologicalDescriptions = Context.LithologicalDescriptions
-            .AsNoTracking();
+        var stratigraphy = await Context.Stratigraphies
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
+            .ConfigureAwait(false);
 
-        if (stratigraphyId != null)
+        if (stratigraphy == null)
         {
-            lithologicalDescriptions = lithologicalDescriptions.Where(l => l.StratigraphyId == stratigraphyId);
+            return NotFound();
         }
 
-        return await lithologicalDescriptions.ToListAsync().ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.LithologicalDescriptions
+            .AsNoTracking()
+            .Where(x => x.StratigraphyId == stratigraphyId)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -51,6 +60,9 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(lithologicalDescription).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(lithologicalDescription);
     }

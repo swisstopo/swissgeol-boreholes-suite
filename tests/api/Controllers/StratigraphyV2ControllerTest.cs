@@ -21,12 +21,7 @@ public class StratigraphyV2ControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
-
+        var boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new StratigraphyV2Controller(context, new Mock<ILogger<StratigraphyV2Controller>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 

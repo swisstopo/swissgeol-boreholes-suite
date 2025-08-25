@@ -16,27 +16,24 @@ public class GroundwaterLevelMeasurementController : BoreholeControllerBase<Grou
     }
 
     /// <summary>
-    /// Asynchronously gets all groundwater level measurement records optionally filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets all groundwater level measurement records, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole referenced in the observations to get.</param>
     /// <returns>An IEnumerable of type <see cref="GroundwaterLevelMeasurement"/>.</returns>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<GroundwaterLevelMeasurement>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<GroundwaterLevelMeasurement>>> GetAsync([FromQuery] int boreholeId)
     {
-        var groundwaterLevelMeasurements = Context.GroundwaterLevelMeasurements
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.GroundwaterLevelMeasurements
             .Include(w => w.Kind)
             .Include(w => w.Reliability)
             .Include(w => w.Casing)
             .ThenInclude(c => c.Completion)
-            .AsNoTracking();
-
-        if (boreholeId != null)
-        {
-            groundwaterLevelMeasurements = groundwaterLevelMeasurements.Where(g => g.BoreholeId == boreholeId);
-        }
-
-        return await groundwaterLevelMeasurements.ToListAsync().ConfigureAwait(false);
+            .Where(x => x.BoreholeId == boreholeId)
+            .AsNoTracking()
+            .ToListAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />

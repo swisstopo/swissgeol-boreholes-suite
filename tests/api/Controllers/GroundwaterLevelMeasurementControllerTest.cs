@@ -1,6 +1,8 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -14,43 +16,33 @@ public class GroundwaterLevelMeasurementControllerTest
 {
     private BdmsContext context;
     private GroundwaterLevelMeasurementController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
-        controller = new GroundwaterLevelMeasurementController(context, new Mock<ILogger<GroundwaterLevelMeasurementController>>().Object, boreholePermissionServiceMock.Object)
-        {
-            ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "TestUser") })),
-                },
-            },
-        };
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
+        controller = new GroundwaterLevelMeasurementController(context, new Mock<ILogger<GroundwaterLevelMeasurementController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAsyncReturnsAllEntities()
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        var result = await controller.GetAsync();
-        Assert.IsNotNull(result);
-        Assert.AreEqual(111, result.Count());
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response;
+        IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response.Value;
         Assert.IsNotNull(groundwaterLevelMeasurements);
         Assert.AreEqual(0, groundwaterLevelMeasurements.Count());
     }
@@ -59,7 +51,7 @@ public class GroundwaterLevelMeasurementControllerTest
     public async Task GetEntriesByBoreholeId()
     {
         var response = await controller.GetAsync(1000098).ConfigureAwait(false);
-        IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response;
+        IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response.Value;
         Assert.IsNotNull(groundwaterLevelMeasurements);
         Assert.AreEqual(2, groundwaterLevelMeasurements.Count());
         var groundwaterLevelMeasurement = groundwaterLevelMeasurements.OrderBy(m => m.Id).First();
