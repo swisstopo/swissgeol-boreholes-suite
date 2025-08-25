@@ -92,20 +92,15 @@ export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelecti
   return await fetchApiV2(`export/json?${getIdQuery(boreholeIds)}`, "GET");
 };
 
-export const exportGeoPackageBoreholes = async (boreholeIds: number[] | GridRowSelectionModel) => {
-  return await fetchApiV2(`export/gpkg?${getIdQuery(boreholeIds)}`, "GET");
-};
-
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-export const importBoreholesCsv = async (workgroupId: number | null, combinedFormData: any) => {
+export const importBoreholesCsv = async (workgroupId: number | null, combinedFormData: FormData) => {
   return await upload(`import/csv?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-export const importBoreholesJson = async (workgroupId: number | null, combinedFormData: any) => {
+export const importBoreholesJson = async (workgroupId: number | null, combinedFormData: FormData) => {
   return await upload(`import/json?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-export const importBoreholesZip = async (workgroupId: number | null, combinedFormData: any) => {
+export const importBoreholesZip = async (workgroupId: number | null, combinedFormData: FormData) => {
   return await upload(`import/zip?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
@@ -115,10 +110,6 @@ export const createBorehole = async (workgroupId: number): Promise<BoreholeV2> =
 
 export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
   return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
-};
-
-export const getAllBoreholes = async (ids: number[] | GridRowSelectionModel, pageNumber: number, pageSize: number) => {
-  return await fetchApiV2(`borehole?${getIdQuery(ids)}&pageNumber=${pageNumber}&pageSize=${pageSize}`, "GET");
 };
 
 export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel) => {
@@ -138,6 +129,9 @@ export const deleteBorehole = async (id: number) => await fetchApiV2(`borehole?i
 
 export const canUserEditBorehole = async (id: number) =>
   await fetchApiV2(`permissions/canedit?boreholeId=${id}`, "GET");
+
+export const canUserUpdateBoreholeStatus = async (id: number) =>
+  await fetchApiV2(`permissions/canchangestatus?boreholeId=${id}`, "GET");
 
 export const boreholeQueryKey = "boreholes";
 
@@ -169,6 +163,21 @@ export const useBoreholeEditable = (id: number) => {
   return query;
 };
 
+export const canUpdateStatusQueryKey = "canUpdateBoreholeStatus";
+export const useBoreholeStatusEditable = (id: number) => {
+  const { data: currentUser } = useCurrentUser();
+  const query = useQuery({
+    queryKey: [canUpdateStatusQueryKey, currentUser?.id, id],
+    queryFn: async () => {
+      return await canUserUpdateBoreholeStatus(id);
+    },
+    enabled: !!id,
+  });
+
+  useShowAlertOnError(query.isError, query.error);
+  return query;
+};
+
 export const useBoreholeMutations = () => {
   const queryClient = useQueryClient();
 
@@ -182,9 +191,14 @@ export const useBoreholeMutations = () => {
     mutationFn: async (borehole: BoreholeV2) => {
       return await updateBorehole(borehole);
     },
-    onSuccess: () => {
+    onSuccess: (_, borehole) => {
       queryClient.invalidateQueries({
         queryKey: [boreholeQueryKey],
+      });
+      // force immediate background refetch to have the borehole's lock status up to date on next render and prevent button flickering
+      queryClient.refetchQueries({
+        queryKey: [boreholeQueryKey, borehole.id],
+        exact: true,
       });
     },
   });

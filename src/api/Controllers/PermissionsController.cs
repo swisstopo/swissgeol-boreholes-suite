@@ -35,4 +35,20 @@ public class PermissionsController : ControllerBase
 
         return await permissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Gets whether the currently authenticated user has permission to change the status of the <see cref="Borehole"/>.
+    /// </summary>
+    /// <param name="boreholeId">The id of the borehole to get the edit permissions for.</param>
+    [HttpGet("canChangeStatus")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<bool> CanChangeStatus([FromQuery] int? boreholeId)
+    {
+        if (!boreholeId.HasValue || boreholeId <= 0)
+        {
+            return false;
+        }
+
+        return await permissionService.CanChangeBoreholeStatusAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false);
+    }
 }
