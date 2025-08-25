@@ -28,7 +28,7 @@ public interface IBoreholePermissionService
 
     /// <summary>
     /// Checks whether the <see cref="User"/> with <paramref name="subjectId"/> can edit the <paramref name="boreholeId"/>.
-    /// Takes into account if the borehole in a status that allows editing, is locked or the user lacks permission.
+    /// Takes into account if the borehole is in a status that allows editing, is locked or the user lacks permission.
     /// </summary>
     /// <param name="subjectId">The <see cref="User.SubjectId" /> of the current user.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to check locks for.</param>
