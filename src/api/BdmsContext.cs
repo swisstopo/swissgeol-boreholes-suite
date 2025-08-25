@@ -58,6 +58,69 @@ public class BdmsContext : DbContext
 
     public DbSet<Models.File> Files { get; set; }
 
+    public DbSet<Lithology> Lithologies { get; set; }
+
+    /// <summary>
+    /// Extends the provided <see cref="IQueryable"/> of type <see cref="Lithology"/> with all includes.
+    /// </summary>
+    public IQueryable<Lithology> LithologiesWithIncludes
+        => Lithologies
+        .Include(l => l.Description)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ColorPrimary)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ColorSecondary)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUnconMain)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUncon2)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUncon3)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUncon4)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUncon5)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUncon6)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionOrganicComponentCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionDebrisCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionGrainShapeCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionGrainAngularityCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionUnconCoarseCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyCon)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionComponentConParticleCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionComponentConMineralCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.GrainSize)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.GrainAngularity)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.Gradation)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.Cementation)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionStructureSynGenCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionStructurePostGenCodes)
+        .Include(l => l.AlterationDegree)
+        .Include(l => l.Compactness)
+        .Include(l => l.Cohesion)
+        .Include(l => l.Humidity)
+        .Include(l => l.Consistency)
+        .Include(l => l.Plasticity)
+        .Include(l => l.LithologyUscsTypeCodes)
+        .Include(l => l.UscsDetermination)
+        .Include(l => l.LithologyRockConditionCodes)
+        .Include(l => l.LithologyTextureMetaCodes);
+
     public DbSet<Layer> Layers { get; set; }
 
     /// <summary>
