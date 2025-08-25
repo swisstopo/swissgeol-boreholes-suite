@@ -405,6 +405,7 @@ describe("Tests the publication workflow.", () => {
 
       // edit borehole on location and borehole tab
       navigateInSidebar(SidebarMenuItem.location);
+      startBoreholeEditing();
       setSelect("locationPrecisionId", 2);
       saveWithSaveBar();
 
