@@ -14,7 +14,6 @@ import { FormDomainSelect } from "../../../../../components/form/formDomainSelec
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
 import { useFormDirtyChanges } from "../../../../../components/form/useFormDirtyChanges.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
-import { useBlockNavigation } from "../../../../../hooks/useBlockNavigation.tsx";
 import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
@@ -31,7 +30,6 @@ import {
 export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, parentId }) => {
   const { t } = useTranslation();
   const { triggerReload } = useContext(DataCardContext);
-  useBlockNavigation();
   const codelists = useCodelists();
   const reloadBoreholes = useReloadBoreholes();
   const resetTabStatus = useResetTabStatus(["fieldMeasurement"]);
