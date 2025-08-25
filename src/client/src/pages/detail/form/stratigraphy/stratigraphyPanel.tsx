@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useMemo } from "react";
+import { FC, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -18,7 +18,6 @@ import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyCha
 import { PromptContext } from "../../../../components/prompt/promptContext";
 import { FullPageCentered } from "../../../../components/styledComponents";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents";
-import { useBlockNavigation } from "../../../../hooks/useBlockNavigation";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
@@ -28,6 +27,7 @@ import { SaveContext, SaveContextProps } from "../../saveContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
 
 export const StratigraphyPanel: FC = () => {
+  const justCopiedRef = useRef(false);
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
@@ -41,7 +41,6 @@ export const StratigraphyPanel: FC = () => {
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
   const { registerSaveHandler, registerResetHandler, unMount } = useContext<SaveContextProps>(SaveContext);
-  useBlockNavigation();
   const formMethods = useForm<Stratigraphy>({ mode: "all" });
   const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
@@ -132,6 +131,7 @@ export const StratigraphyPanel: FC = () => {
 
   const onCopy = useCallback(async () => {
     if (selectedStratigraphy) {
+      justCopiedRef.current = true;
       const newStratigraphyId: number = await copyStratigraphy(selectedStratigraphy);
       navigateToStratigraphy(newStratigraphyId, true);
     }
@@ -204,6 +204,12 @@ export const StratigraphyPanel: FC = () => {
   }, [deleteSelectedStratigraphy, selectedStratigraphy, showPrompt]);
 
   useEffect(() => {
+    if (!boreholeId) return;
+    // Prevents default navigation after copying
+    if (justCopiedRef.current) {
+      justCopiedRef.current = false;
+      return;
+    }
     if (
       sortedStratigraphies?.length &&
       (stratigraphyId === undefined ||

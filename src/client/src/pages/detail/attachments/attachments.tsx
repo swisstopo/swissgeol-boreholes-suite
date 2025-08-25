@@ -2,7 +2,6 @@ import { FC, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 import { Tab, TabPanel } from "../../../components/tabs/tabPanel.tsx";
-import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { Documents } from "./tabs/documents.tsx";
 import { Photos } from "./tabs/photos.tsx";
@@ -12,7 +11,6 @@ export const Attachments: FC = () => {
   const { t } = useTranslation();
   const { id } = useRequiredParams<{ id: string }>();
   const boreholeId = parseInt(id);
-  useBlockNavigation();
 
   const tabs = useMemo<Tab[]>(
     () => [
