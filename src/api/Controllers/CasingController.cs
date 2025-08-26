@@ -25,8 +25,8 @@ public class CasingController : BoreholeControllerBase<Casing>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<Casing>>> GetAsync([FromQuery] int? completionId = null, [FromQuery] int? boreholeId = null)
     {
-        if (completionId == null && boreholeId == null) return BadRequest("Either completionId or boreholeId must be provided");
-        if (completionId != null && boreholeId != null) return BadRequest("Only completionId or boreholeId can be provided");
+        if (completionId == null && boreholeId == null) return BadRequest($"Either {nameof(completionId)} or {nameof(boreholeId)} must be provided");
+        if (completionId != null && boreholeId != null) return BadRequest($"Only {nameof(completionId)} or {nameof(boreholeId)} can be provided");
 
         var casings = Context.Casings
             .Include(c => c.CasingElements)
