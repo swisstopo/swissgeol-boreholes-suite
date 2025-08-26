@@ -390,15 +390,16 @@ describe("Tests for the layer form.", () => {
 
     // remove some chips
     getElementByDataCy("chip-beige").scrollIntoView();
-    getElementByDataCy("chip-beige").find(() => {
+    getElementByDataCy("chip-beige").within(() => {
       cy.get(".MuiChip-deleteIcon").click();
     });
+
     getElementByDataCy("chip-cubic").scrollIntoView();
-    getElementByDataCy("chip-cubic").find(() => {
+    getElementByDataCy("chip-cubic").within(() => {
       cy.get(".MuiChip-deleteIcon").click();
     });
     getElementByDataCy("chip-sharp").scrollIntoView();
-    getElementByDataCy("chip-sharp").find(() => {
+    getElementByDataCy("chip-sharp").within(() => {
       cy.get(".MuiChip-deleteIcon").click();
     });
 
