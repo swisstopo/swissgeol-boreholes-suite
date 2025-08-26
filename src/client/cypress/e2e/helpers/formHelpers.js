@@ -1,4 +1,4 @@
-import { createBaseSelector, getElementByDataCy } from "./testHelpers";
+import { createBaseSelector } from "./testHelpers";
 
 /**
  * Checks if a form element has an error.
@@ -223,7 +223,7 @@ export const evaluateMultiSelect = (fieldName, expectedValues, parent) => {
         cy.get('[data-cy^="chip-"]').should("not.exist");
       } else {
         expectedValues.forEach(v => {
-          getElementByDataCy(`chip-${v}`).should("be.visible");
+          cy.get(`[data-cy="chip-${v}"]`).should("be.visible");
         });
       }
     });
