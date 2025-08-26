@@ -189,7 +189,7 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Codelist"/>s with schema name 'uscs_type' used by the <see cref="Lithology"/>.
     /// </summary>
-    public ICollection<Codelist>? UscsTypeCodelist { get; set; }
+    public ICollection<Codelist>? UscsTypeCodelists { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Lithology"/>'s uscs determination.
@@ -218,7 +218,7 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Codelist"/>s with schema name 'rock_condition' used by the <see cref="Lithology"/>.
     /// </summary>
-    public ICollection<Codelist>? RockConditionCodelist { get; set; }
+    public ICollection<Codelist>? RockConditionCodelists { get; set; }
 
     /*
      * Consolidated properties
