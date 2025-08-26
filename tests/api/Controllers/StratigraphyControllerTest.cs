@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Azure;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,17 +17,13 @@ public class StratigraphyControllerTest
 
     private BdmsContext context;
     private StratigraphyController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
-
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -34,19 +31,28 @@ public class StratigraphyControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAsyncReturnsAllEntities()
+    public async Task GetAll()
     {
-        var stratigraphies = await controller.GetAsync();
+        var response = await controller.GetAllAsync().ConfigureAwait(false);
+        IEnumerable<Stratigraphy>? stratigraphies = response.Value;
         Assert.IsNotNull(stratigraphies);
         Assert.AreEqual(3000, stratigraphies.Count());
     }
 
     [TestMethod]
-    public async Task GetEntriesByBoreholeIdForInexistentId()
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        var stratigraphies = await controller.GetAsync(81294572).ConfigureAwait(false);
-        Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(0, stratigraphies.Count());
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetEntriesByBoreholIdForInexistentId()
+    {
+        var notFoundResponse = await controller.GetAsync(94578122).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
     [TestMethod]
@@ -56,7 +62,8 @@ public class StratigraphyControllerTest
         context.Boreholes.Add(emptyBorehole);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var layers = await controller.GetAsync(emptyBorehole.Id).ConfigureAwait(false);
+        var response = await controller.GetAsync(emptyBorehole.Id).ConfigureAwait(false);
+        var layers = response.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(0, layers.Count());
     }
@@ -64,7 +71,8 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task GetStratigraphyByBoreholeId()
     {
-        var stratigraphies = await controller.GetAsync(1000017).ConfigureAwait(false);
+        var response = await controller.GetAsync(1000017).ConfigureAwait(false);
+        var stratigraphies = response.Value;
         Assert.IsNotNull(stratigraphies);
         Assert.AreEqual(1, stratigraphies.Count());
         var stratigraphy = stratigraphies.Single();
@@ -86,6 +94,19 @@ public class StratigraphyControllerTest
         Assert.AreEqual(1002423, stratigraphy.BoreholeId);
         Assert.AreEqual("Marcellus Kshlerin", stratigraphy.Name);
         Assert.AreEqual("this product is tasty.", stratigraphy.Notes);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var stratrigraphyId = context.Stratigraphies.First().Id;
+
+        var response = await controller.GetByIdAsync(stratrigraphyId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]
@@ -208,7 +229,7 @@ public class StratigraphyControllerTest
     public async Task DeleteMainStratigraphySetsLatestStratigraphyAsPrimary()
     {
         // Precondition: Find a group of three stratigraphies with one main stratigraphy
-        var stratigraphies = await controller.GetAsync();
+        var stratigraphies = await context.Stratigraphies.ToListAsync();
         var stratigraphyTestCandidates = stratigraphies
             .Where(x => x.BoreholeId != null)
             .GroupBy(x => x.BoreholeId)
@@ -460,7 +481,6 @@ public class StratigraphyControllerTest
 
     private void SetupControllerWithAlwaysLockedBorehole()
     {
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);

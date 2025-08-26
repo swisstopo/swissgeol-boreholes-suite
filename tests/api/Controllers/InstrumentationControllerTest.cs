@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,15 +14,13 @@ public class InstrumentationControllerTest
 {
     private BdmsContext context;
     private InstrumentationController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new InstrumentationController(context, new Mock<ILogger<InstrumentationController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -29,14 +28,6 @@ public class InstrumentationControllerTest
     public async Task TestCleanup()
     {
         await context.DisposeAsync();
-    }
-
-    [TestMethod]
-    public async Task GetAsync()
-    {
-        IEnumerable<Instrumentation>? instrumentations = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(instrumentations);
-        Assert.AreEqual(500, instrumentations.Count());
     }
 
     [TestMethod]
@@ -49,9 +40,26 @@ public class InstrumentationControllerTest
             .Where(g => g.Count() == 2)
             .First().Key;
 
-        IEnumerable<Instrumentation>? instrumentations = await controller.GetAsync(completionId).ConfigureAwait(false);
+        var response = await controller.GetAsync(completionId).ConfigureAwait(false);
+        IEnumerable<Instrumentation>? instrumentations = response.Value;
         Assert.IsNotNull(instrumentations);
         Assert.AreEqual(2, instrumentations.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsNotFoundForUnknownCompletion()
+    {
+        var notFoundResponse = await controller.GetAsync(651335213).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Completions.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
@@ -62,6 +70,19 @@ public class InstrumentationControllerTest
         var response = await controller.GetByIdAsync(instrumentationId).ConfigureAwait(false);
         var instrumentation = ActionResultAssert.IsOkObjectResult<Instrumentation>(response.Result);
         Assert.AreEqual(instrumentationId, instrumentation.Id);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var instrumentationId = context.Instrumentations.First().Id;
+
+        var response = await controller.GetByIdAsync(instrumentationId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]
