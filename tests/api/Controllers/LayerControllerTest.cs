@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,15 +14,13 @@ public class LayerControllerTest
 {
     private BdmsContext context;
     private LayerController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new LayerController(context, new Mock<ILogger<LayerController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -29,22 +28,10 @@ public class LayerControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    [TestCategory("LongRunning")]
-    public async Task GetAllEntriesAsync()
-    {
-        var response = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<Layer>? layers = response?.Value;
-        Assert.IsNotNull(layers);
-        Assert.AreEqual(30_000, layers.Count());
-    }
-
-    [TestMethod]
     public async Task GetEntriesByProfileIdInexistentId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        var layers = response?.Value;
-        Assert.IsNotNull(layers);
-        Assert.AreEqual(0, layers.Count());
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
@@ -59,6 +46,15 @@ public class LayerControllerTest
         var layers = response?.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(0, layers.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
@@ -86,6 +82,19 @@ public class LayerControllerTest
         Assert.AreEqual(7_000_005, layer.Id);
         Assert.AreEqual("transform mesh Brand Fantastic", layer.Notes);
         Assert.AreEqual(15104811, layer.LithologyId);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var layerId = context.Layers.First().Id;
+
+        var response = await controller.GetByIdAsync(layerId).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

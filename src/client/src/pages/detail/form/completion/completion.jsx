@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { useReloadBoreholes } from "../../../../api/borehole.ts";

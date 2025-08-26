@@ -54,13 +54,7 @@ public class PhotoControllerTest
 
         photoCloudService = new PhotoCloudService(loggerMock.Object, s3ClientMock.Object, configuration, contextAccessorMock.Object, context);
 
-        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
-            .ReturnsAsync(true);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
 
         var controllerLoggerMock = new Mock<ILogger<PhotoController>>();
         controller = new PhotoController(context, controllerLoggerMock.Object, boreholePermissionServiceMock.Object, photoCloudService);

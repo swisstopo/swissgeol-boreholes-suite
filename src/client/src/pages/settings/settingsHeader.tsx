@@ -1,6 +1,6 @@
 import { FC, MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { Chip, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useSelectedUser, useUserMutations } from "../../api/user.ts";
 import { useSelectedWorkgroup, useWorkgroupMutations } from "../../api/workgroup.ts";

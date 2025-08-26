@@ -22,13 +22,7 @@ public class WorkflowControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new WorkflowController(context, boreholePermissionServiceMock.Object, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
