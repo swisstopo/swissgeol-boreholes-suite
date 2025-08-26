@@ -1,7 +1,7 @@
 import { FC, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { Box, Card, Chip, CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";

@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren, useEffect, useState } from "react";
 import { AuthProviderProps, AuthProvider as OidcAuthProvider } from "react-oidc-context";
-import { DataRouter } from "react-router-dom";
+import { DataRouter } from "react-router";
 import { CircularProgress } from "@mui/material";
 import { User, WebStorageStateStore } from "oidc-client-ts";
 import { useSettings } from "../api/useSettings";
