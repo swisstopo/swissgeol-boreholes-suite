@@ -3,6 +3,7 @@
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class UpdateExistingLithologyCodelists : Migration
@@ -204,3 +205,4 @@ public partial class UpdateExistingLithologyCodelists : Migration
         ");
     }
 }
+#pragma warning restore CA1505

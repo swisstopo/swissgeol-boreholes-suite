@@ -3,6 +3,7 @@
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class AddLithologyConCodelist : Migration
@@ -660,3 +661,4 @@ public partial class AddLithologyConCodelist : Migration
         ");
     }
 }
+#pragma warning restore CA1505
