@@ -133,13 +133,6 @@ export const evaluateDropdownOptionsLength = length => {
 };
 
 /**
- * Closes the dropdown for a select or multi-select form element.
- */
-export const closeDropdown = () => {
-  cy.get("body").click();
-};
-
-/**
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the select field.
  * @param {number} index The index of the option to select.
@@ -206,14 +199,13 @@ export const evaluateSelect = (fieldName, expectedText, parent = null, editable 
  */
 export const toggleMultiSelect = (fieldName, indices, expected, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formMultiSelect"]`;
-  openDropdown(selector);
-  if (expected != null) {
-    evaluateDropdownOptionsLength(expected);
-  }
   indices.forEach(index => {
+    openDropdown(selector);
+    if (expected != null) {
+      evaluateDropdownOptionsLength(expected);
+    }
     selectDropdownOption(index);
   });
-  closeDropdown();
 };
 
 /**
