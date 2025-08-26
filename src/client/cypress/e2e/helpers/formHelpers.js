@@ -216,15 +216,17 @@ export const toggleMultiSelect = (fieldName, indices, expected, parent) => {
  */
 export const evaluateMultiSelect = (fieldName, expectedValues, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formMultiSelect"] input`;
-  cy.get(selector).within(() => {
-    if (expectedValues.length === 0) {
-      cy.get('[data-cy^="chip-"]').should("not.exist");
-    } else {
-      expectedValues.forEach(v => {
-        getElementByDataCy(`chip-${v}`).should("be.visible");
-      });
-    }
-  });
+  cy.get(selector)
+    .parent()
+    .within(() => {
+      if (expectedValues.length === 0) {
+        cy.get('[data-cy^="chip-"]').should("not.exist");
+      } else {
+        expectedValues.forEach(v => {
+          getElementByDataCy(`chip-${v}`).should("be.visible");
+        });
+      }
+    });
 };
 
 /**
