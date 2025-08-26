@@ -40,7 +40,7 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Stratigraphy"/>s. This endpoint is only avaiable for administrators to get all stratigraphies during testing.
+    /// Asynchronously gets the <see cref="Stratigraphy"/>s. This endpoint is only available for administrators to get all stratigraphies during testing.
     /// </summary>
     [HttpGet("getAll")]
     public async Task<ActionResult<IEnumerable<Stratigraphy>>> GetAllAsync()
