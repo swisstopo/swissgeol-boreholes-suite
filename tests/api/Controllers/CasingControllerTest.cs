@@ -88,7 +88,7 @@ public class CasingControllerTest
     }
 
     [TestMethod]
-    public async Task GetAsyncReturnsNotFoundForUnknonwBorehole()
+    public async Task GetAsyncReturnsNotFoundForUnknownBorehole()
     {
         var notFoundResponse = await controller.GetAsync(null, 851335213).ConfigureAwait(false);
         ActionResultAssert.IsNotFound(notFoundResponse.Result);
