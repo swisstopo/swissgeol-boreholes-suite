@@ -21,15 +21,25 @@ public class LayerController : BoreholeControllerBase<Layer>
     /// <param name="profileId">The id of the profile containing the layers to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<Layer>>> GetAsync([FromQuery] int? profileId = null)
+    public async Task<ActionResult<IEnumerable<Layer>>> GetAsync([FromQuery] int profileId)
     {
-        var layers = Context.LayersWithIncludes.AsNoTracking();
-        if (profileId != null)
+        var stratigraphy = await Context.Stratigraphies
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == profileId)
+            .ConfigureAwait(false);
+
+        if (stratigraphy == null)
         {
-            layers = layers.Where(l => l.StratigraphyId == profileId);
+            return NotFound();
         }
 
-        return await layers.ToListAsync().ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.LayersWithIncludes
+            .AsNoTracking()
+            .Where(x => x.StratigraphyId == profileId)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -49,6 +59,9 @@ public class LayerController : BoreholeControllerBase<Layer>
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(layer).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(layer);
     }

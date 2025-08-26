@@ -21,10 +21,22 @@ public class LithostratigraphyController : BoreholeControllerBase<Lithostratigra
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the lithostratigraphy to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<LithostratigraphyLayer>> GetAsync([FromQuery] int stratigraphyId)
+    public async Task<ActionResult<IEnumerable<LithostratigraphyLayer>>> GetAsync([FromQuery] int stratigraphyId)
     {
+        var stratigraphy = await Context.Stratigraphies
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
+            .ConfigureAwait(false);
+
+        if (stratigraphy == null)
+        {
+            return NotFound();
+        }
+
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
         return await Context.LithostratigraphyLayers
-            .Include(c => c.Lithostratigraphy)
+            .Include(l => l.Lithostratigraphy)
             .AsNoTracking()
             .Where(l => l.StratigraphyId == stratigraphyId)
             .OrderBy(l => l.FromDepth)
@@ -50,6 +62,9 @@ public class LithostratigraphyController : BoreholeControllerBase<Lithostratigra
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(lithostratigraphyLayer).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(lithostratigraphyLayer);
     }

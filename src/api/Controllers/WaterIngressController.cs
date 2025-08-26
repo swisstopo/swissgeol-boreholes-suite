@@ -17,28 +17,25 @@ public class WaterIngressController : BoreholeControllerBase<WaterIngress>
     }
 
     /// <summary>
-    /// Asynchronously gets all water ingress records optionally filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets all water ingress records, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole referenced in the observations to get.</param>
     /// <returns>An IEnumerable of type <see cref="WaterIngress"/>.</returns>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<WaterIngress>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<WaterIngress>>> GetAsync([FromQuery] int boreholeId)
     {
-        var waterIngresses = Context.WaterIngresses
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.WaterIngresses
             .Include(w => w.Quantity)
             .Include(w => w.Reliability)
             .Include(w => w.Conditions)
             .Include(w => w.Casing)
             .ThenInclude(c => c.Completion)
-            .AsNoTracking();
-
-        if (boreholeId != null)
-        {
-            waterIngresses = waterIngresses.Where(w => w.BoreholeId == boreholeId);
-        }
-
-        return await waterIngresses.ToListAsync().ConfigureAwait(false);
+            .Where(x => x.BoreholeId == boreholeId)
+            .AsNoTracking()
+            .ToListAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />

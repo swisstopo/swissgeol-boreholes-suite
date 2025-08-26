@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,15 +16,13 @@ public class CasingControllerTest
 
     private BdmsContext context;
     private CasingController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new CasingController(context, new Mock<ILogger<CasingController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -31,14 +30,6 @@ public class CasingControllerTest
     public async Task TestCleanup()
     {
         await context.DisposeAsync();
-    }
-
-    [TestMethod]
-    public async Task GetAsync()
-    {
-        IEnumerable<Casing>? casings = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(casings);
-        Assert.AreEqual(500, casings.Count());
     }
 
     [TestMethod]
@@ -51,9 +42,65 @@ public class CasingControllerTest
             .Where(g => g.Count() == 2)
             .First().Key;
 
-        IEnumerable<Casing>? casings = await controller.GetAsync(completionId).ConfigureAwait(false);
+        var response = await controller.GetAsync(completionId).ConfigureAwait(false);
+        IEnumerable<Casing>? casings = response.Value;
         Assert.IsNotNull(casings);
         Assert.AreEqual(2, casings.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFilterByBoreholeId()
+    {
+        // Precondition: Find a group of two casings with the same completion id.
+        var completions = await context.Casings.ToListAsync();
+        var completionId = completions
+            .GroupBy(i => i.CompletionId)
+            .Where(g => g.Count() == 2)
+            .First().Key;
+
+        var completion = await context.Completions.SingleOrDefaultAsync(c => c.Id == completionId).ConfigureAwait(false);
+
+        var response = await controller.GetAsync(null, completion.BoreholeId).ConfigureAwait(false);
+        IEnumerable<Casing>? casings = response.Value;
+        Assert.IsNotNull(casings);
+        Assert.AreEqual(5, casings.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsNotFoundForUnknownCompletion()
+    {
+        var notFoundResponse = await controller.GetAsync(651335213).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsBadRequestWhenProvidingBothParameters()
+    {
+        var badRequestResponse = await controller.GetAsync(1, 2).ConfigureAwait(false);
+        ActionResultAssert.IsBadRequest(badRequestResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsBadRequestWhenProvidingNoParameters()
+    {
+        var badRequestResponse = await controller.GetAsync(null, null).ConfigureAwait(false);
+        ActionResultAssert.IsBadRequest(badRequestResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsNotFoundForUnknownBorehole()
+    {
+        var notFoundResponse = await controller.GetAsync(null, 851335213).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Completions.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
@@ -64,6 +111,19 @@ public class CasingControllerTest
         var response = await controller.GetByIdAsync(casingId).ConfigureAwait(false);
         var casing = ActionResultAssert.IsOkObjectResult<Casing>(response.Result);
         Assert.AreEqual(casingId, casing.Id);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var casingId = context.Casings.First().Id;
+
+        var response = await controller.GetByIdAsync(casingId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

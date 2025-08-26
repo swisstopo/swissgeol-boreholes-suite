@@ -16,28 +16,25 @@ public class FieldMeasurementController : BoreholeControllerBase<FieldMeasuremen
     }
 
     /// <summary>
-    /// Asynchronously gets all field measurement records optionally filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets all field measurement records, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole referenced in the observations to get.</param>
     /// <returns>An IEnumerable of type <see cref="FieldMeasurement"/>.</returns>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<FieldMeasurement>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<FieldMeasurement>>> GetAsync([FromQuery] int boreholeId)
     {
-        var fieldMeasurements = Context.FieldMeasurements
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.FieldMeasurements
             .Include(f => f.FieldMeasurementResults).ThenInclude(f => f.SampleType)
             .Include(f => f.FieldMeasurementResults).ThenInclude(f => f.Parameter)
             .Include(f => f.Reliability)
             .Include(f => f.Casing)
             .ThenInclude(c => c.Completion)
-            .AsNoTracking();
-
-        if (boreholeId != null)
-        {
-            fieldMeasurements = fieldMeasurements.Where(f => f.BoreholeId == boreholeId);
-        }
-
-        return await fieldMeasurements.ToListAsync().ConfigureAwait(false);
+            .Where(x => x.BoreholeId == boreholeId)
+            .AsNoTracking()
+            .ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>

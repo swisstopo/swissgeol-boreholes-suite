@@ -16,22 +16,26 @@ public class FaciesDescriptionController : BoreholeControllerBase<FaciesDescript
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="FaciesDescription"/>s, optionally filtered by <paramref name="stratigraphyId"/>.
+    /// Asynchronously gets the <see cref="FaciesDescription"/>s, filtered by <paramref name="stratigraphyId"/>.
     /// </summary>
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the facies descriptions to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<FaciesDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
+    public async Task<ActionResult<IEnumerable<FaciesDescription>>> GetAsync([FromQuery] int stratigraphyId)
     {
-        var faciesDescriptions = Context.FaciesDescriptions
-            .AsNoTracking();
+        var stratigraphy = await Context.Stratigraphies
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
+            .ConfigureAwait(false);
 
-        if (stratigraphyId != null)
+        if (stratigraphy == null)
         {
-            faciesDescriptions = faciesDescriptions.Where(l => l.StratigraphyId == stratigraphyId);
+            return NotFound();
         }
 
-        return await faciesDescriptions.ToListAsync().ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.FaciesDescriptions.AsNoTracking().Where(l => l.StratigraphyId == stratigraphyId).ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -51,6 +55,9 @@ public class FaciesDescriptionController : BoreholeControllerBase<FaciesDescript
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(faciesDescription).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(faciesDescription);
     }
