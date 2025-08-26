@@ -162,7 +162,8 @@ export const isMenuItemWithoutContent = menuItem => {
 
 export const navigateInSidebar = (menuItem, promptSelector) => {
   checkThatParentOpen(menuItem);
-  getElementByDataCy(`${menuItem}-menu-item`).click({ force: true });
+  getElementByDataCy(`${menuItem}-menu-item`).should("be.visible");
+  getElementByDataCy(`${menuItem}-menu-item`).click();
 
   if (promptSelector) {
     handlePrompt(null, promptSelector);
