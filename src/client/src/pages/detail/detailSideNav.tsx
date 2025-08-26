@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
 import { BoreholeV2, useBoreholeStatusEditable } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
@@ -86,20 +86,14 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   };
 
   return (
-    <Box
-      style={{
-        display: "flex",
-        flexDirection: "column",
+    <Stack
+      sx={{
         width: "250px",
         height: "100%",
         position: "relative",
       }}>
-      <Box
-        key="sb-em-2"
-        style={{
-          flex: "1 1 100%",
-          display: "flex",
-          flexDirection: "column",
+      <Stack
+        sx={{
           overflow: "auto",
         }}>
         <Box>
@@ -224,7 +218,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             </>
           )}
         </Box>
-      </Box>
-    </Box>
+      </Stack>
+    </Stack>
   );
 };
