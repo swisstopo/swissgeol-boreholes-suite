@@ -111,13 +111,11 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
     if (editingEnabled) {
       if (hasChanges) {
         stopEditingWithUnsavedChanges();
-      } else {
-        if (
-          borehole.workflow?.status !== WorkflowStatus.Published &&
-          borehole.workflow?.status !== WorkflowStatus.Reviewed
-        )
-          changeBoreholeLockStatus(false);
-      }
+      } else if (
+        borehole.workflow?.status !== WorkflowStatus.Published &&
+        borehole.workflow?.status !== WorkflowStatus.Reviewed
+      )
+        changeBoreholeLockStatus(false);
     }
     navigateTo({ path: "/" });
   };
