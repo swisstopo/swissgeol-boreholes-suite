@@ -74,7 +74,9 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   ]);
 
   useEffect(() => {
-    setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
+    if (id !== undefined) {
+      setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
+    }
   }, [location, id]);
 
   if (!borehole.workflow) return null;
