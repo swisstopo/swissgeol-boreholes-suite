@@ -1,5 +1,5 @@
 import React from "react";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Language, SwissgeolCoreI18n } from "@swissgeol/ui-core";

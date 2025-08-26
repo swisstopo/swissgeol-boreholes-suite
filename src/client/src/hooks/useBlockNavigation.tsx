@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useRef } from "react";
-import { useBlocker } from "react-router-dom";
+import { useBlocker } from "react-router";
 import { Trash2, X } from "lucide-react";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
 import { SaveContext, SaveContextProps } from "../pages/detail/saveContext.tsx";

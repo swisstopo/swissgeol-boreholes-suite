@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 
 /**
  * useRequiredParams - safely read URL parameters, throw if missing
