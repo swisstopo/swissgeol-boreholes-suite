@@ -33,24 +33,48 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
             return NotFound();
         }
 
+        var boreholeId = await GetBoreholeId(stratigraphy).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
         return Ok(stratigraphy);
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Stratigraphy"/>s, optionally filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets the <see cref="Stratigraphy"/>s. This endpoint is only available for administrators to get all stratigraphies during testing.
+    /// </summary>
+    [HttpGet("getAll")]
+    public async Task<ActionResult<IEnumerable<Stratigraphy>>> GetAllAsync()
+    {
+        return await Context.Stratigraphies
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Asynchronously gets the <see cref="Stratigraphy"/>s, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole containing the stratigraphies to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Stratigraphy>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<Stratigraphy>>> GetAsync([FromQuery] int boreholeId)
     {
-        var stratigraphies = Context.Stratigraphies.AsNoTracking();
-        if (boreholeId != null)
+        var borehole = await Context.Boreholes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(b => b.Id == boreholeId)
+            .ConfigureAwait(false);
+
+        if (borehole == null)
         {
-            stratigraphies = stratigraphies.Where(l => l.BoreholeId == boreholeId);
+            return NotFound();
         }
 
-        return await stratigraphies.ToListAsync().ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.Stratigraphies
+            .AsNoTracking()
+            .Where(x => x.BoreholeId == boreholeId)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>
