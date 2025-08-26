@@ -85,7 +85,7 @@ const layerAttributes = [
     value: "uscs_3",
     type: "MultiSelect",
     initial: [],
-    updated: ["fat clay'", "silty clay"],
+    updated: ["fat clay", "silty clay"],
   },
   {
     value: "grain_shape",
