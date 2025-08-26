@@ -67,7 +67,7 @@ public class CasingControllerTest
     }
 
     [TestMethod]
-    public async Task GetAsyncReturnsNotFoundForUnknonwCompletion()
+    public async Task GetAsyncReturnsNotFoundForUnknownCompletion()
     {
         var notFoundResponse = await controller.GetAsync(651335213).ConfigureAwait(false);
         ActionResultAssert.IsNotFound(notFoundResponse.Result);
