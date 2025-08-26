@@ -5,6 +5,7 @@ import { useCurrentUser } from "../../api/user.ts";
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
 import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";
 import { FullPageCentered, LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
+import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsContext.tsx";
 import DetailHeader from "./detailHeader.tsx";
@@ -24,6 +25,7 @@ export const DetailPage: FC = () => {
   const { id } = useRequiredParams<{ id: string }>();
   const { data: borehole, isLoading } = useBorehole(parseInt(id));
   const { data: currentUser } = useCurrentUser();
+  useBlockNavigation();
 
   useEffect(() => {
     setEditingEnabled(borehole?.locked !== null && borehole?.lockedById === currentUser?.id);

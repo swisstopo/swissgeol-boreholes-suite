@@ -2,7 +2,6 @@ import { ReactNode, useContext } from "react";
 import { FieldValues, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { DevTool } from "../../../hookformDevtools";
 import { useReloadBoreholes } from "../../api/borehole.ts";
-import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
 import { useResetTabStatus } from "../../hooks/useResetTabStatus.ts";
 import { useSaveOnCtrlS } from "../../hooks/useSaveOnCtrlS";
 import { TabName } from "../../pages/detail/form/workflow/workflow.ts";
@@ -31,7 +30,6 @@ export const DataInputCard = <T extends FieldValues>({
   children,
 }: DataInputCardProps<T>) => {
   const { triggerReload } = useContext(DataCardContext);
-  useBlockNavigation();
   const formMethods = useForm<T>({ mode: "all" });
   const { formState, handleSubmit, control } = formMethods;
   const reloadBoreholes = useReloadBoreholes();
