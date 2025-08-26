@@ -4,6 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class AddLithology : Migration
@@ -872,3 +873,4 @@ public partial class AddLithology : Migration
             schema: "bdms");
     }
 }
+#pragma warning restore CA1505
