@@ -100,7 +100,7 @@ public class UserController : ControllerBase
         var allUsersWithRoleOnWorkgroup = await context
             .UsersWithIncludes
             .AsNoTracking()
-            .Where(u => u.WorkgroupRoles.Any(r => r.WorkgroupId == workgroupId))
+            .Where(u => u.DisabledAt == null && u.WorkgroupRoles.Any(r => r.WorkgroupId == workgroupId))
             .OrderBy(x => x.Name)
             .ToListAsync()
             .ConfigureAwait(false);
