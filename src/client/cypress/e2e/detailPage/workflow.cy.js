@@ -87,7 +87,7 @@ describe("Tests the publication workflow.", () => {
       cy.contains("Weiterleiten").click(); // click on dialog title to close dropdown again
 
       cy.get("sgc-text-area").find("textarea").type("I wanted to request a review, but then cancelled");
-      clickSgcButtonWithContent("Abbrechen");
+      clickSgcButtonWithContent("Cancel");
       // no comment should be added
       cy.get("sgc-workflow-change-template").find(".comment").should("not.exist");
       clickSgcButtonWithContent("Review anfordern");
@@ -106,7 +106,7 @@ describe("Tests the publication workflow.", () => {
 
       cy.get("sgc-workflow-change-template")
         .find("li")
-        .contains("Status von Draft zu Review geändert")
+        .contains("EN Status von EN Draft zu EN Review geändert")
         .should("be.visible");
 
       evaluateComment("I requested a review!", true);
@@ -186,6 +186,19 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
+  it("Cannot publish a borehole with nothing approved", () => {
+    createBorehole({
+      originalName: "Grocery Wagon",
+      restrictionId: restrictionFreeCode,
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      requestReviewFromValidator();
+      finishReview();
+      cy.get("sgc-button[disabled]").contains("Publish");
+    });
+  });
+
   it("Can update tab status on publish tab and publish a borehole", () => {
     createBorehole({
       originalName: "Waterpark",
@@ -233,7 +246,11 @@ describe("Tests the publication workflow.", () => {
       getElementByDataCy("restricted-chip").should("not.exist");
 
       cy.get("sgc-tab").contains("Verlauf").click();
-      checkWorkflowChangeContent("Admin User", "Status von Reviewed zu Published geändert", "I published a borehole!");
+      checkWorkflowChangeContent(
+        "Admin User",
+        "EN Status von EN Reviewed zu EN Published geändert",
+        "I published a borehole!",
+      );
     });
   });
 

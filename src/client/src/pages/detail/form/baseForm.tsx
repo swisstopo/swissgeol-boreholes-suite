@@ -4,7 +4,6 @@ import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
 import { useBorehole, useBoreholeMutations } from "../../../api/borehole.ts";
 import { useFormDirtyChanges } from "../../../components/form/useFormDirtyChanges.tsx";
-import { useBlockNavigation } from "../../../hooks/useBlockNavigation.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
@@ -36,7 +35,6 @@ export const BaseForm = <T extends FieldValues>({
   } = useBoreholeMutations();
   const resetTabStatus = useResetTabStatus([tabStatusToReset]);
   const { getValues, reset, formState } = formMethods;
-  useBlockNavigation();
   useFormDirtyChanges({ formState });
 
   const onSubmit = useCallback(

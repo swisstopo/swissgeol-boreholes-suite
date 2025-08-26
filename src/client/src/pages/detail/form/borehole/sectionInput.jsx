@@ -14,7 +14,6 @@ import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
-import { useBlockNavigation } from "../../../../hooks/useBlockNavigation.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
 
@@ -22,7 +21,6 @@ const SectionInput = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
   const { data: codelists } = useCodelists();
   const { i18n, t } = useTranslation();
-  useBlockNavigation();
   const resetTabStatus = useResetTabStatus(["sections"]);
 
   const sectionElementDefaults = {
