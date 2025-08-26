@@ -223,6 +223,7 @@ export const evaluateMultiSelect = (fieldName, expectedValues, parent) => {
         cy.get('[data-cy^="chip-"]').should("not.exist");
       } else {
         expectedValues.forEach(v => {
+          cy.get(`[data-cy="chip-${v}"]`).scrollIntoView();
           cy.get(`[data-cy="chip-${v}"]`).should("be.visible");
         });
       }
