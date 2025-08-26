@@ -389,9 +389,18 @@ describe("Tests for the layer form.", () => {
     cy.wait("@get-layer-by-id");
 
     // remove some chips
-    getElementByDataCy("remove-beige-chip").click();
-    getElementByDataCy("remove-cubic-chip").click();
-    getElementByDataCy("remove-sharp-chip").click();
+    getElementByDataCy("chip-beige").scrollIntoView();
+    getElementByDataCy("chip-beige").find(() => {
+      cy.get(".MuiChip-deleteIcon").click();
+    });
+    getElementByDataCy("chip-cubic").scrollIntoView();
+    getElementByDataCy("chip-cubic").find(() => {
+      cy.get(".MuiChip-deleteIcon").click();
+    });
+    getElementByDataCy("chip-sharp").scrollIntoView();
+    getElementByDataCy("chip-sharp").find(() => {
+      cy.get(".MuiChip-deleteIcon").click();
+    });
 
     // verify updated code values
     multiSelectAttributes.forEach(attribute => {
