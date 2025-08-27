@@ -107,7 +107,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         var existingLithology = await Context.LithologiesWithIncludes
-            .SingleOrDefaultAsync(l => l.Id == entity.Id);
+            .SingleOrDefaultAsync(l => l.Id == entity.Id).ConfigureAwait(false);
 
         if (existingLithology == null)
         {

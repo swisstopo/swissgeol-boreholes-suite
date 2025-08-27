@@ -288,9 +288,11 @@ public class LithologyControllerTest
         // Verify sorting
         for (int i = 1; i < layers.Count(); i++)
         {
-            Assert.IsTrue(layers.ElementAt(i - 1).FromDepth <= layers.ElementAt(i).FromDepth,
+            Assert.IsTrue(
+                layers.ElementAt(i - 1).FromDepth <= layers.ElementAt(i).FromDepth,
                 "Expected layers to be sorted by FromDepth but after {0} followed {1}",
-                layers.ElementAt(i - 1).FromDepth, layers.ElementAt(i).FromDepth);
+                layers.ElementAt(i - 1).FromDepth,
+                layers.ElementAt(i).FromDepth);
         }
     }
 
