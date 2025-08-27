@@ -24,7 +24,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<Lithology>>> GetAsync([FromQuery] int stratigraphyId)
     {
-        var stratigraphy = await Context.Stratigraphies
+        var stratigraphy = await Context.StratigraphiesV2
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
             .ConfigureAwait(false);

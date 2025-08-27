@@ -93,26 +93,7 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task EditLithologyWithCompleteLithology()
     {
-        // Todo simplify when seeddata is available
-        // Get a valid stratigraphy ID
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
-
-        var existingLithology = new Lithology
-        {
-            CreatedById = 2,
-            UpdatedById = 2,
-            Created = new DateTime(2022, 10, 4, 13, 19, 34).ToUniversalTime(),
-            StratigraphyId = stratigraphyId,
-            FromDepth = 25.5,
-            ToDepth = 30.0,
-            IsUnconsolidated = true,
-            HasBedding = false,
-            Notes = "Test lithology",
-        };
-
-        await controller.CreateAsync(existingLithology);
-
-        // var existingLithology = context.Lithologies.First();
+        var existingLithology = context.Lithologies.First();
         var id = existingLithology.Id;
 
         var originalValues = new
@@ -258,7 +239,7 @@ public class LithologyControllerTest
         var getResponse = await controller.GetByIdAsync(lithology.Id);
         ActionResultAssert.IsOk(getResponse.Result);
 
-        // Reset permissions for cleanup
+        // Reset permissions to delete
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(true);
@@ -267,31 +248,13 @@ public class LithologyControllerTest
 
         // Verify the lithology no longer exists
         var notFoundResponse = await controller.GetByIdAsync(lithology.Id);
-        ActionResultAssert.IsNotFound(getResponse.Result);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
     }
 
     [TestMethod]
     public async Task CreateAsyncWithExistingId()
     {
-        // Todo simplify when seeddata is available
-        // Get a valid stratigraphy ID
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
-
-        var existingLithology = new Lithology
-        {
-            CreatedById = 2,
-            UpdatedById = 2,
-            Created = new DateTime(2022, 10, 4, 13, 19, 34).ToUniversalTime(),
-            StratigraphyId = stratigraphyId,
-            FromDepth = 25.5,
-            ToDepth = 30.0,
-            IsUnconsolidated = true,
-            HasBedding = false,
-            Notes = "Test lithology",
-        };
-
-        await controller.CreateAsync(existingLithology);
-        // var existingLithology = context.Lithologies.First();
+        var existingLithology = context.Lithologies.First();
         var lithology = new Lithology
         {
             Id = existingLithology.Id,
