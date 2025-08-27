@@ -380,9 +380,4 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     /// Gets the <see cref="Codelist"/>s with schema name 'strucutre_post_gen' used by the <see cref="LithologyDescription"/>.
     /// </summary>
     public ICollection<Codelist>? StructurePostGenCodelists { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="LithologyTextureMetaCodes"/> join table entities.
-    /// </summary>
-    public IList<LithologyTextureMetaCodes>? LithologyTextureMetaCodes { get; set; }
 }
