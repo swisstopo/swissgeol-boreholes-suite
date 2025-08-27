@@ -1180,7 +1180,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ColorPrimary, _ => default!)
             .RuleFor(o => o.ColorSecondaryId, f => f.PickRandom(colorIds).OrNull(f, .3f))
             .RuleFor(o => o.ColorSecondary, _ => default!)
-            .RuleFor(o => o.LithologyTextureMetaCodes, _ => new List<LithologyTextureMetaCodes>())
             .RuleFor(o => o.LithologyUnconMainId, f => null)
             .RuleFor(o => o.LithologyUnconMain, _ => default!)
             .RuleFor(o => o.LithologyUncon2Id, f => null)
