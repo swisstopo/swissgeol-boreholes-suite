@@ -24,26 +24,24 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<Lithology>>> GetAsync([FromQuery] int stratigraphyId)
     {
-        var user = await Context.UsersWithIncludes
-                    .AsNoTracking()
-                    .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
-                    .ConfigureAwait(false);
+        var stratigraphy = await Context.Stratigraphies
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
+            .ConfigureAwait(false);
 
-        var lithologies = Context.LithologiesWithIncludes.AsNoTracking();
-
-        if (!user.IsAdmin)
+        if (stratigraphy == null)
         {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            lithologies = lithologies
-                .Where(l => Context.Boreholes
-                .Where(b => b.WorkgroupId.HasValue)
-                .Any(b => b.Id == l.Stratigraphy.BoreholeId && allowedWorkgroupIds
-                .Contains(b.WorkgroupId!.Value)));
+            return NotFound();
         }
 
-        lithologies = lithologies.Where(l => l.StratigraphyId == stratigraphyId);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await lithologies.ToListAsync().ConfigureAwait(false);
+        return await Context.LithologiesWithIncludes
+            .AsNoTracking()
+            .Where(l => l.StratigraphyId == stratigraphyId)
+            .OrderBy(l => l.FromDepth)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>
