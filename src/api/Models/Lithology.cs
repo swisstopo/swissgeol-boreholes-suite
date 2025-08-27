@@ -1,6 +1,7 @@
 ﻿using BDMS.Json;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -15,10 +16,12 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
      */
 
     /// <inheritdoc />
+    [JsonRequired]
     [Column("id")]
     public int Id { get; set; }
 
     /// <inheritdoc />
+    [JsonRequired]
     [Column("stratigraphy_id")]
     public int StratigraphyId { get; set; }
 
@@ -49,11 +52,13 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
 
     /// <inheritdoc />
     [IncludeInExport]
+    [JsonRequired]
     [Column("depth_from")]
     public double FromDepth { get; set; }
 
     /// <inheritdoc />
     [IncludeInExport]
+    [JsonRequired]
     [Column("depth_to")]
     public double ToDepth { get; set; }
 
