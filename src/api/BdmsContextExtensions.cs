@@ -408,7 +408,7 @@ public static class BdmsContextExtensions
         var stratigraphyV2Range = Enumerable.Range(stratigraphyV2_ids, boreholeRange.Count).ToList();
         var fakeStratigraphiesV2 = new Faker<StratigraphyV2>()
             .StrictMode(true)
-            .RuleFor(o => o.Id, f => stratigraphy_ids++)
+            .RuleFor(o => o.Id, f => stratigraphyV2_ids++)
             .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
             .RuleFor(o => o.Borehole, _ => default!)
             .RuleFor(o => o.Name, f => f.Name.FullName())
@@ -1105,11 +1105,159 @@ public static class BdmsContextExtensions
         context.BulkInsert(geometryElementsToInsert, bulkConfig);
         context.SaveChanges();
 
+        // Seed Lithologies
+        var lithology_ids = 22_000_000;
+        var stratigraphyV2ForLithologies = stratigraphyV2Range.Take(100).ToList();
+
+        // Seed a mix of consolidated and unconsolidated lithologies
+        var fakeLithologies = new Faker<Lithology>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => lithology_ids++)
+            .RuleFor(o => o.StratigraphyId, f => f.PickRandom(stratigraphyV2ForLithologies))
+            .RuleFor(o => o.Stratigraphy, _ => default!)
+            .RuleFor(o => o.FromDepth, f => f.Random.Double(0, 50))
+            .RuleFor(o => o.ToDepth, (f, l) => l.FromDepth + f.Random.Double(1, 10))
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.Notes, f => f.Lorem.Sentence().OrNull(f, .3f))
+            .RuleFor(o => o.DescriptionId, _ => null)
+            .RuleFor(o => o.Description, _ => default!)
+            .RuleFor(o => o.IsUnconsolidated, f => lithology_ids % 3 != 0)
+            .RuleFor(o => o.HasBedding, (f, l) => l.IsUnconsolidated ? f.Random.Bool(.2f) : false)
+            .RuleFor(o => o.Share, (f, l) => l.HasBedding ? f.Random.Int(1, 100) : null)
+            .RuleFor(o => o.AlterationDegreeId, f => f.PickRandom(alterationIds).OrNull(f, .3f))
+            .RuleFor(o => o.AlterationDegree, _ => default!)
+            .RuleFor(o => o.LithologyDescriptions, _ => new List<LithologyDescription>())
+            .RuleFor(o => o.CompactnessId, (f, l) => l.IsUnconsolidated ? f.PickRandom(compactnessIds).OrNull(f, .2f) : null) // Unconsolidated properties
+            .RuleFor(o => o.Compactness, _ => default!)
+            .RuleFor(o => o.CohesionId, (f, l) => l.IsUnconsolidated ? f.PickRandom(cohesionIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.Cohesion, _ => default!)
+            .RuleFor(o => o.HumidityId, (f, l) => l.IsUnconsolidated ? f.PickRandom(humidityIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.Humidity, _ => default!)
+            .RuleFor(o => o.ConsistencyId, (f, l) => l.IsUnconsolidated ? f.PickRandom(consistanceIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.Consistency, _ => default!)
+            .RuleFor(o => o.PlasticityId, (f, l) => l.IsUnconsolidated ? f.PickRandom(plasticityIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.Plasticity, _ => default!)
+            .RuleFor(o => o.UscsDeterminationId, (f, l) => l.IsUnconsolidated ? f.PickRandom(uscsDeterminationIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.UscsDetermination, _ => default!)
+            .RuleFor(o => o.UscsTypeCodelistIds, (f, l) => l.IsUnconsolidated ? f.PickRandom(uscsIds, f.Random.Int(0, 3)).ToList() : new List<int>())
+            .RuleFor(o => o.UscsTypeCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.RockConditionCodelistIds, (f, l) => l.IsUnconsolidated ? f.PickRandom(lithologyTopBedrockIds, f.Random.Int(0, 2)).ToList() : new List<int>()) // Consolidated properties
+            .RuleFor(o => o.RockConditionCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.TextureMetaCodelistIds, (f, l) => !l.IsUnconsolidated ? f.PickRandom(grainShapeIds, f.Random.Int(0, 3)).ToList() : new List<int>())
+            .RuleFor(o => o.TextureMetaCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.LithologyUscsTypeCodes, _ => new List<LithologyUscsTypeCodes>())
+            .RuleFor(o => o.LithologyRockConditionCodes, _ => new List<LithologyRockConditionCodes>())
+            .RuleFor(o => o.LithologyTextureMetaCodes, _ => new List<LithologyTextureMetaCodes>());
+
+        Lithology SeededLithologies(int seed) => fakeLithologies.UseSeed(seed).Generate();
+
+        var lithologyRange = Enumerable.Range(1, 300);
+        var lithologiesToInsert = lithologyRange.Select(SeededLithologies).ToList();
+        context.BulkInsert(lithologiesToInsert, bulkConfig);
+
+        // Seed LithologyDescriptions
+        var lithologyDescription_ids = 8_500_000;
+        var lithologyDescriptionsToInsert = new List<LithologyDescription>();
+
+        var fakeLithologyDescriptions = new Faker<LithologyDescription>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => lithologyDescription_ids++)
+            .RuleFor(o => o.LithologyId, f => lithologiesToInsert[f.IndexFaker % lithologiesToInsert.Count].Id)
+            .RuleFor(o => o.Lithology, _ => default!)
+            .RuleFor(o => o.IsFirst, f => true)
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.ColorPrimaryId, f => f.PickRandom(colorIds).OrNull(f, .2f))
+            .RuleFor(o => o.ColorPrimary, _ => default!)
+            .RuleFor(o => o.ColorSecondaryId, f => f.PickRandom(colorIds).OrNull(f, .3f))
+            .RuleFor(o => o.ColorSecondary, _ => default!)
+            .RuleFor(o => o.LithologyTextureMetaCodes, _ => new List<LithologyTextureMetaCodes>())
+            .RuleFor(o => o.LithologyUnconMainId, f => null)
+            .RuleFor(o => o.LithologyUnconMain, _ => default!)
+            .RuleFor(o => o.LithologyUncon2Id, f => null)
+            .RuleFor(o => o.LithologyUncon2, _ => default!)
+            .RuleFor(o => o.LithologyUncon3Id, f => null)
+            .RuleFor(o => o.LithologyUncon3, _ => default!)
+            .RuleFor(o => o.LithologyUncon4Id, f => null)
+            .RuleFor(o => o.LithologyUncon4, _ => default!)
+            .RuleFor(o => o.LithologyUncon5Id, f => null)
+            .RuleFor(o => o.LithologyUncon5, _ => default!)
+            .RuleFor(o => o.LithologyUncon6Id, f => null)
+            .RuleFor(o => o.LithologyUncon6, _ => default!)
+            .RuleFor(o => o.HasStriae, f => f.Random.Bool())
+            .RuleFor(o => o.OrganicComponentCodelistIds, f => null)
+            .RuleFor(o => o.OrganicComponentCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.DebrisCodelistIds, f => null)
+            .RuleFor(o => o.DebrisCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.GrainShapeCodelistIds, f => null)
+            .RuleFor(o => o.GrainShapeCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.GrainAngularityCodelistIds, f => null)
+            .RuleFor(o => o.GrainAngularityCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.LithologyUnconCoarseCodeCodelistIds, f => null)
+            .RuleFor(o => o.LithologyUnconCoarseCodeCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.LithologyConId, f => null)
+            .RuleFor(o => o.LithologyCon, _ => default!)
+            .RuleFor(o => o.GrainSizeId, f => null)
+            .RuleFor(o => o.GrainSize, _ => default!)
+            .RuleFor(o => o.GrainAngularityId, f => null)
+            .RuleFor(o => o.GrainAngularity, _ => default!)
+            .RuleFor(o => o.GradationId, f => null)
+            .RuleFor(o => o.Gradation, _ => default!)
+            .RuleFor(o => o.CementationId, f => null)
+            .RuleFor(o => o.Cementation, _ => default!)
+            .RuleFor(o => o.ComponentConParticleCodelistIds, f => null)
+            .RuleFor(o => o.ComponentConParticleCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.ComponentConMineralCodelistIds, f => null)
+            .RuleFor(o => o.ComponentConMineralCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.StructureSynGenCodelistIds, f => null)
+            .RuleFor(o => o.StructureSynGenCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.StructurePostGenCodelistIds, f => null)
+            .RuleFor(o => o.StructurePostGenCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.LithologyDescriptionComponentConParticleCodes, _ => new List<LithologyDescriptionComponentConParticleCodes>())
+            .RuleFor(o => o.LithologyDescriptionComponentConMineralCodes, _ => new List<LithologyDescriptionComponentConMineralCodes>())
+            .RuleFor(o => o.LithologyDescriptionStructureSynGenCodes, _ => new List<LithologyDescriptionStructureSynGenCodes>())
+            .RuleFor(o => o.LithologyDescriptionStructurePostGenCodes, _ => new List<LithologyDescriptionStructurePostGenCodes>())
+            .RuleFor(o => o.LithologyDescriptionOrganicComponentCodes, _ => new List<LithologyDescriptionOrganicComponentCodes>())
+            .RuleFor(o => o.LithologyDescriptionDebrisCodes, _ => new List<LithologyDescriptionDebrisCodes>())
+            .RuleFor(o => o.LithologyDescriptionGrainShapeCodes, _ => new List<LithologyDescriptionGrainShapeCodes>())
+            .RuleFor(o => o.LithologyDescriptionGrainAngularityCodes, _ => new List<LithologyDescriptionGrainAngularityCodes>())
+            .RuleFor(o => o.LithologyDescriptionUnconCoarseCodes, _ => new List<LithologyDescriptionUnconCoarseCodes>());
+
+        // Generate lithology descriptions
+        // First create one description for each lithology
+        for (int i = 0; i < lithologiesToInsert.Count; i++)
+        {
+            var description = fakeLithologyDescriptions.UseSeed(i).Generate();
+            lithologyDescriptionsToInsert.Add(description);
+
+            // For lithologies with bedding, add a second description
+            var lithology = lithologiesToInsert[i % lithologiesToInsert.Count];
+            if (lithology.HasBedding)
+            {
+                var secondDescription = fakeLithologyDescriptions.UseSeed(i + 10000).Generate();
+                secondDescription.LithologyId = lithology.Id;
+                secondDescription.IsFirst = false;
+                lithologyDescriptionsToInsert.Add(secondDescription);
+            }
+        }
+
+        context.BulkInsert(lithologyDescriptionsToInsert, bulkConfig);
+
         // Sync all database sequences
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.borehole', 'id_bho'), {borehole_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.files', 'id_fil'), {file_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.stratigraphy', 'id_sty'), {stratigraphy_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.stratigraphy_v2', 'id'), {stratigraphyV2_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.layer', 'id_lay'), {layer_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.observation', 'id'), {observation_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.hydrotest_result', 'id'), {hydrotestResult_ids - 1})");
@@ -1123,6 +1271,8 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow', 'id'), {workflow_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_change', 'workflow_change_id'), {workflowChange_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.document', 'id'), {document_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.lithology', 'id'), {lithology_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.lithology_description', 'id'), {lithologyDescription_ids - 1})");
     }
 }
 #pragma warning restore CA1505
