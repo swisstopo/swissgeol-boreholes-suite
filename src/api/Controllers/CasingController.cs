@@ -17,14 +17,17 @@ public class CasingController : BoreholeControllerBase<Casing>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Casing"/>s, optionally filtered either by <paramref name="completionId"/> or <paramref name="boreholeId"/>.
+    /// Asynchronously gets the <see cref="Casing"/>s, filtered either by <paramref name="completionId"/> or <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="completionId">The id of the completion containing the <see cref="Casing"/> to get.</param>
     /// <param name="boreholeId">The id of the borehole containing the <see cref="Casing"/>s to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Casing>> GetAsync([FromQuery] int? completionId = null, [FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<Casing>>> GetAsync([FromQuery] int? completionId = null, [FromQuery] int? boreholeId = null)
     {
+        if (completionId == null && boreholeId == null) return BadRequest($"Either {nameof(completionId)} or {nameof(boreholeId)} must be provided");
+        if (completionId != null && boreholeId != null) return BadRequest($"Only {nameof(completionId)} or {nameof(boreholeId)} can be provided");
+
         var casings = Context.Casings
             .Include(c => c.CasingElements)
             .Include(c => c.Completion)
@@ -32,14 +35,38 @@ public class CasingController : BoreholeControllerBase<Casing>
 
         if (completionId != null)
         {
-            casings = casings.Where(c => c.CompletionId == completionId);
+            var completion = await Context.Completions
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == completionId)
+                .ConfigureAwait(false);
+
+            if (completion == null)
+            {
+                return NotFound();
+            }
+
+            if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), completion.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+            casings = casings.Where(c => c.Completion.Id == completionId);
         }
         else if (boreholeId != null)
         {
+            var borehole = await Context.Boreholes
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == boreholeId)
+                .ConfigureAwait(false);
+
+            if (borehole == null)
+            {
+                return NotFound();
+            }
+
+            if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId.Value).ConfigureAwait(false)) return Unauthorized();
             casings = casings.Where(c => c.Completion.BoreholeId == boreholeId);
         }
 
-        return await casings.ToListAsync().ConfigureAwait(false);
+        return await casings
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -59,6 +86,9 @@ public class CasingController : BoreholeControllerBase<Casing>
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(casing).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(casing);
     }

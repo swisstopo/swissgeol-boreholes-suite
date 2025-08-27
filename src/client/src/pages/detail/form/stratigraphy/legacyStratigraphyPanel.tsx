@@ -1,6 +1,6 @@
 import { FC, useCallback, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { Box, Card, CircularProgress, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useLegacyStratigraphiesByBoreholeId, useLegacyStratigraphyMutations } from "../../../../api/stratigraphy.ts";

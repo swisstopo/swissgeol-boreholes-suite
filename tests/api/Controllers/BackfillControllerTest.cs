@@ -1,5 +1,5 @@
-﻿using BDMS.Models;
-using Microsoft.AspNetCore.Http;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,15 +13,13 @@ public class BackfillControllerTest
 {
     private BdmsContext context;
     private BackfillController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new BackfillController(context, new Mock<ILogger<BackfillController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -29,14 +27,6 @@ public class BackfillControllerTest
     public async Task TestCleanup()
     {
         await context.DisposeAsync();
-    }
-
-    [TestMethod]
-    public async Task GetAsync()
-    {
-        IEnumerable<Backfill>? backfills = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(backfills);
-        Assert.AreEqual(500, backfills.Count());
     }
 
     [TestMethod]
@@ -49,9 +39,26 @@ public class BackfillControllerTest
             .Where(g => g.Count() == 2)
             .First().Key;
 
-        IEnumerable<Backfill>? backfills = await controller.GetAsync(completionId).ConfigureAwait(false);
+        var response = await controller.GetAsync(completionId).ConfigureAwait(false);
+        IEnumerable<Backfill>? backfills = response.Value;
         Assert.IsNotNull(backfills);
         Assert.AreEqual(2, backfills.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsNotFoundForUnknownCompletion()
+    {
+        var notFoundResponse = await controller.GetAsync(651335213).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(notFoundResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Completions.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
     [TestMethod]
@@ -62,6 +69,19 @@ public class BackfillControllerTest
         var response = await controller.GetByIdAsync(backfillId).ConfigureAwait(false);
         var backfill = ActionResultAssert.IsOkObjectResult<Backfill>(response.Result);
         Assert.AreEqual(backfillId, backfill.Id);
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var backfillId = context.Backfills.First().Id;
+
+        var response = await controller.GetByIdAsync(backfillId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]

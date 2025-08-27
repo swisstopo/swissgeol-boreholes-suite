@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { Workgroup } from "../../api-lib/ReduxStateInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";

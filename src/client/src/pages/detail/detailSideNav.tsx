@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { Box, Stack } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
 import { BoreholeV2, useBoreholeEditable } from "../../api/borehole.ts";
@@ -74,7 +74,9 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   ]);
 
   useEffect(() => {
-    setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
+    if (id !== undefined) {
+      setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
+    }
   }, [location, id]);
 
   if (!borehole.workflow) return null;

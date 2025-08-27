@@ -15,20 +15,33 @@ public class SectionController : BoreholeControllerBase<Section>
     {
     }
 
+    /// <summary>
+    /// Asynchronously gets the <see cref="Section"/>s of the specified <paramref name="boreholeId"/>.
+    /// </summary>
+    /// <param name="boreholeId">The id of the borehole referenced in the sections to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Section>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<Section>>> GetAsync([FromQuery] int boreholeId)
     {
-        var sections = Context.Sections
-            .Include(s => s.SectionElements)
-            .AsNoTracking();
+        var borehole = await Context.Boreholes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(b => b.Id == boreholeId)
+            .ConfigureAwait(false);
 
-        if (boreholeId != null)
+        if (borehole == null)
         {
-            sections = sections.Where(s => s.BoreholeId == boreholeId);
+            return NotFound();
         }
 
-        return await sections.OrderBy(s => s.Name).ToListAsync().ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await Context.Sections
+            .Include(s => s.SectionElements)
+            .AsNoTracking()
+            .Where(s => s.BoreholeId == boreholeId)
+            .OrderBy(s => s.Name)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -48,6 +61,9 @@ public class SectionController : BoreholeControllerBase<Section>
         {
             return NotFound();
         }
+
+        var boreholeId = await GetBoreholeId(section).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(section);
     }

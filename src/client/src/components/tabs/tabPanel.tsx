@@ -1,5 +1,5 @@
 import { FC, ReactNode, SyntheticEvent, useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { Box } from "@mui/system";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { AddWorkgroupDialog } from "../../pages/settings/admin/dialogs/AddWorkgroupDialog.tsx";
