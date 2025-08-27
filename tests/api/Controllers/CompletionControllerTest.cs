@@ -16,15 +16,13 @@ public class CompletionControllerTest
 
     private BdmsContext context;
     private CompletionController controller;
+    private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
-            .ReturnsAsync(true);
+        boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new CompletionController(context, new Mock<ILogger<CompletionController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
@@ -32,14 +30,6 @@ public class CompletionControllerTest
     public async Task TestCleanup()
     {
         await context.DisposeAsync();
-    }
-
-    [TestMethod]
-    public async Task GetAsync()
-    {
-        var completions = await controller.GetAsync().ConfigureAwait(false);
-        Assert.IsNotNull(completions);
-        Assert.AreEqual(500, completions.Count());
     }
 
     [TestMethod]
@@ -66,18 +56,41 @@ public class CompletionControllerTest
         context.Completions.Add(completion2);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var completions = await controller.GetAsync(borehole.Id).ConfigureAwait(false);
-
+        var response = await controller.GetAsync(borehole.Id).ConfigureAwait(false);
+        var completions = response.Value;
         Assert.IsNotNull(completions);
         Assert.AreEqual(2, completions.Count());
     }
 
     [TestMethod]
+    public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
+
+        var unauthorizedResponse = await controller.GetAsync(context.Completions.First().Id).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
+    }
+
+    [TestMethod]
     public async Task GetByInexistentBoreholeId()
     {
-        var completions = await controller.GetAsync(81294572).ConfigureAwait(false);
+        var response = await controller.GetAsync(81294572).ConfigureAwait(false);
+        var completions = response.Value;
         Assert.IsNotNull(completions);
         Assert.AreEqual(0, completions.Count());
+    }
+
+    [TestMethod]
+    public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var completionId = context.Completions.First().Id;
+
+        var response = await controller.GetByIdAsync(completionId);
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]
@@ -453,7 +466,6 @@ public class CompletionControllerTest
 
     private void SetupControllerWithAlwaysLockedBorehole()
     {
-        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
