@@ -29,7 +29,6 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task GetAsyncReturnsUnauthorizedWithInsufficientRights()
     {
-        // Todo update once seed data is available
         controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
         var unauthorizedResponse = await controller.GetAsync(context.StratigraphiesV2.First().Id).ConfigureAwait(false);
@@ -177,7 +176,7 @@ public class LithologyControllerTest
         {
             CreatedById = 2,
             UpdatedById = 2,
-            Created = new DateTime(2022, 10, 4, 13, 19, 34).ToUniversalTime(),
+            Created = new DateTime(2022, 10, 4, 13, 19, 34, DateTimeKind.Utc),
             StratigraphyId = stratigraphyId,
             FromDepth = 25.5,
             ToDepth = 30.0,
