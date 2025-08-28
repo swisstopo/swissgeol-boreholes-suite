@@ -85,7 +85,7 @@ const layerAttributes = [
     value: "uscs_3",
     type: "MultiSelect",
     initial: [],
-    updated: ["23101001", "23101003"],
+    updated: ["fat clay", "silty clay"],
   },
   {
     value: "grain_shape",
@@ -313,43 +313,43 @@ describe("Tests for the layer form.", () => {
         value: "uscs_3",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
-        codeValues: ["23101001", "23101003"],
-        updatedCodeValues: ["23101001", "23101003"],
+        codeValues: ["fat clay", "silty clay"],
+        updatedCodeValues: ["fat clay", "silty clay"],
       },
       {
         value: "grain_shape",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
-        codeValues: ["21110002", "21110004"],
-        updatedCodeValues: ["21110004"],
+        codeValues: ["cubic", "columnar"],
+        updatedCodeValues: ["columnar"],
       },
       {
         value: "grain_granularity",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
-        codeValues: ["21115001", "21115004"],
-        updatedCodeValues: ["21115004"],
+        codeValues: ["sharp", "sub-angular"],
+        updatedCodeValues: ["sub-angular"],
       },
       {
         value: "organic_component",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
-        codeValues: ["21108001", "21108003"],
-        updatedCodeValues: ["21108001", "21108003"],
+        codeValues: ["earth", "undifferenciated organic material"],
+        updatedCodeValues: ["earth", "undifferenciated organic material"],
       },
       {
         value: "debris",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
-        codeValues: ["9100", "9102"],
-        updatedCodeValues: ["9100", "9102"],
+        codeValues: ["erratic block", "bed load"],
+        updatedCodeValues: ["erratic block", "bed load"],
       },
       {
         value: "color",
         type: "MultiSelect",
         dropdownPosition: [1, 3],
-        codeValues: ["21112001", "21112003"],
-        updatedCodeValues: ["21112003"],
+        codeValues: ["beige", "dark brown"],
+        updatedCodeValues: ["dark brown"],
       },
     ];
 
@@ -389,9 +389,19 @@ describe("Tests for the layer form.", () => {
     cy.wait("@get-layer-by-id");
 
     // remove some chips
-    getElementByDataCy("remove-beige-chip").click();
-    getElementByDataCy("remove-cubic-chip").click();
-    getElementByDataCy("remove-sharp-chip").click();
+    getElementByDataCy("chip-beige").scrollIntoView();
+    getElementByDataCy("chip-beige").within(() => {
+      cy.get(".MuiChip-deleteIcon").click();
+    });
+
+    getElementByDataCy("chip-cubic").scrollIntoView();
+    getElementByDataCy("chip-cubic").within(() => {
+      cy.get(".MuiChip-deleteIcon").click();
+    });
+    getElementByDataCy("chip-sharp").scrollIntoView();
+    getElementByDataCy("chip-sharp").within(() => {
+      cy.get(".MuiChip-deleteIcon").click();
+    });
 
     // verify updated code values
     multiSelectAttributes.forEach(attribute => {
@@ -424,7 +434,7 @@ describe("Tests for the layer form.", () => {
     evaluateInput("fromDepth", "80");
     evaluateInput("toDepth", "90");
     evaluateSelect("descriptionQualityId", "good", null, false);
-    evaluateMultiSelect("grain_shape", ["21110003"]);
+    evaluateMultiSelect("grain_shape", ["platy"]);
     evaluateYesNoSelect("isStriae", "No");
     evaluateInput("notes", "hacking Analyst Investment Account index");
 
@@ -437,7 +447,7 @@ describe("Tests for the layer form.", () => {
     evaluateInput("fromDepth", "70");
     evaluateInput("toDepth", "80");
     evaluateSelect("descriptionQualityId", "very good", null, false);
-    evaluateMultiSelect("grain_shape", ["21110002"]);
+    evaluateMultiSelect("grain_shape", ["cubic"]);
     evaluateYesNoSelect("isStriae", "Yes", false);
     evaluateInput("notes", "full-range circuit Cambridgeshire Senior");
   });

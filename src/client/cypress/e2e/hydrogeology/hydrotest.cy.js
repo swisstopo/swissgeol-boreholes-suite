@@ -52,7 +52,7 @@ describe("Tests for the hydrotest editor.", () => {
     setSelect("reliabilityId", 2);
     setInput("startTime", "2012-11-14T12:06");
     setSelect("casingId", 2);
-    toggleMultiSelect("testKindId", [3]);
+    toggleMultiSelect("testKindId", [2]);
 
     saveForm();
     cy.wait("@hydrotest_GET");
@@ -69,12 +69,12 @@ describe("Tests for the hydrotest editor.", () => {
     addItem("addHydrotestResult");
     setSelect("hydrotestResults.0.parameterId", 1);
 
-    toggleMultiSelect("testKindId", [3]);
+    toggleMultiSelect("testKindId", [2]);
     evaluateMultiSelect("flowDirectionId", []);
     evaluateMultiSelect("evaluationMethodId", []);
     cy.get('[data-cy="hydrotestResult-0"]').should("not.exist");
 
-    toggleMultiSelect("testKindId", [3]);
+    toggleMultiSelect("testKindId", [2]);
     toggleMultiSelect("flowDirectionId", [2, 1], 4);
     toggleMultiSelect("evaluationMethodId", [2, 1], 5);
     addItem("addHydrotestResult");
@@ -156,7 +156,7 @@ describe("Tests for the hydrotest editor.", () => {
     cy.get('[data-cy="addhydrotest-button"]').should("be.disabled");
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 2);
-    toggleMultiSelect("testKindId", [3]);
+    toggleMultiSelect("testKindId", [2]);
     saveForm();
     cy.get('[data-cy="addhydrotest-button"]').should("be.enabled");
 
@@ -192,7 +192,7 @@ describe("Tests for the hydrotest editor.", () => {
     addItem("addHydrotest");
     setInput("startTime", "2013-10-02T14:06");
     setSelect("reliabilityId", 2);
-    toggleMultiSelect("testKindId", [4]);
+    toggleMultiSelect("testKindId", [3]);
     startEditing();
     handlePrompt("Hydrotest: You have unsaved changes. How would you like to proceed?", "save");
     cy.get('[data-cy="hydrotest-card.0.edit"]').should("exist");

@@ -118,6 +118,7 @@ export const openDropdown = selector => {
  * @param {number} index The index of the option to select.
  */
 export const selectDropdownOption = index => {
+  cy.get('.MuiPaper-elevation [role="listbox"]').find("li").eq(index).scrollIntoView();
   cy.get('.MuiPaper-elevation [role="listbox"]').find("li").eq(index).click();
 };
 
@@ -129,13 +130,6 @@ export const evaluateDropdownOptionsLength = length => {
   cy.get('.MuiPaper-elevation [role="listbox"]').should($listbox => {
     expect($listbox.find('[role="option"]')).to.have.length(length);
   });
-};
-
-/**
- * Closes the dropdown for a select or multi-select form element.
- */
-export const closeDropdown = () => {
-  cy.get("body").click();
 };
 
 /**
@@ -205,14 +199,13 @@ export const evaluateSelect = (fieldName, expectedText, parent = null, editable 
  */
 export const toggleMultiSelect = (fieldName, indices, expected, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formMultiSelect"]`;
-  openDropdown(selector);
-  if (expected != null) {
-    evaluateDropdownOptionsLength(expected);
-  }
   indices.forEach(index => {
+    openDropdown(selector);
+    if (expected != null) {
+      evaluateDropdownOptionsLength(expected);
+    }
     selectDropdownOption(index);
   });
-  closeDropdown();
 };
 
 /**
@@ -224,15 +217,17 @@ export const toggleMultiSelect = (fieldName, indices, expected, parent) => {
 export const evaluateMultiSelect = (fieldName, expectedValues, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formMultiSelect"] input`;
   cy.get(selector)
-    .filter((k, input) => {
+    .parent()
+    .within(() => {
       if (expectedValues.length === 0) {
-        return input.value === "";
+        cy.get('[data-cy^="chip-"]').should("not.exist");
       } else {
-        var values = input.value.split(",");
-        return values.length === expectedValues.length && values.every(v => expectedValues.includes(v));
+        expectedValues.forEach(v => {
+          cy.get(`[data-cy="chip-${v}"]`).scrollIntoView();
+          cy.get(`[data-cy="chip-${v}"]`).should("be.visible");
+        });
       }
-    })
-    .should("have.length", 1);
+    });
 };
 
 /**
