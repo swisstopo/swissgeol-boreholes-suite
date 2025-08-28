@@ -27,7 +27,7 @@ public static class LithologySchemas
     public const string RockConditionSchema = "rock_condition";
     public const string StructurePostGenSchema = "structure_post_gen";
     public const string StructureSynGenSchema = "structure_syn_gen";
-    public const string TextureMetaSchema = "texture_meta";
+    public const string TextureMataSchema = "texture_mata";
     public const string UscsDeterminationSchema = "uscs_determination";
     public const string UscsTypeSchema = "uscs_type";
 }

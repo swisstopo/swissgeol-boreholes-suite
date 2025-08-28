@@ -539,32 +539,25 @@ public partial class AddLithology : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "lithology_texture_meta_codelist",
+            name: "lithology_texture_mata_codelist",
             schema: "bdms",
             columns: table => new
             {
                 lithology_id = table.Column<int>(type: "integer", nullable: false),
-                lithology_texture_meta_id = table.Column<int>(type: "integer", nullable: false),
-                LithologyDescriptionId = table.Column<int>(type: "integer", nullable: true),
+                lithology_texture_mata_id = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_lithology_texture_meta_codelist", x => new { x.lithology_id, x.lithology_texture_meta_id });
+                table.PrimaryKey("PK_lithology_texture_mata_codelist", x => new { x.lithology_id, x.lithology_texture_mata_id });
                 table.ForeignKey(
-                    name: "FK_lithology_texture_meta_codelist_codelist_lithology_texture_~",
-                    column: x => x.lithology_texture_meta_id,
+                    name: "FK_lithology_texture_mata_codelist_codelist_lithology_texture_~",
+                    column: x => x.lithology_texture_mata_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
                     principalColumn: "id_cli",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "FK_lithology_texture_meta_codelist_lithology_description_Litho~",
-                    column: x => x.LithologyDescriptionId,
-                    principalSchema: "bdms",
-                    principalTable: "lithology_description",
-                    principalColumn: "id");
-                table.ForeignKey(
-                    name: "FK_lithology_texture_meta_codelist_lithology_lithology_id",
+                    name: "FK_lithology_texture_mata_codelist_lithology_lithology_id",
                     column: x => x.lithology_id,
                     principalSchema: "bdms",
                     principalTable: "lithology",
@@ -795,16 +788,10 @@ public partial class AddLithology : Migration
             column: "rock_condition_id");
 
         migrationBuilder.CreateIndex(
-            name: "IX_lithology_texture_meta_codelist_lithology_texture_meta_id",
+            name: "IX_lithology_texture_mata_codelist_lithology_texture_mata_id",
             schema: "bdms",
-            table: "lithology_texture_meta_codelist",
-            column: "lithology_texture_meta_id");
-
-        migrationBuilder.CreateIndex(
-            name: "IX_lithology_texture_meta_codelist_LithologyDescriptionId",
-            schema: "bdms",
-            table: "lithology_texture_meta_codelist",
-            column: "LithologyDescriptionId");
+            table: "lithology_texture_mata_codelist",
+            column: "lithology_texture_mata_id");
 
         migrationBuilder.CreateIndex(
             name: "IX_lithology_uscs_type_codelist_uscs_type_id",
@@ -857,7 +844,7 @@ public partial class AddLithology : Migration
             schema: "bdms");
 
         migrationBuilder.DropTable(
-            name: "lithology_texture_meta_codelist",
+            name: "lithology_texture_mata_codelist",
             schema: "bdms");
 
         migrationBuilder.DropTable(

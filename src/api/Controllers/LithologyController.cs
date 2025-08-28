@@ -206,7 +206,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             }
 
             // Reset the unconsolidated lithology values
-            entity.LithologyTextureMetaCodes = [];
+            entity.LithologyTextureMataCodes = [];
 
             // Set the unconsolidated lithology codes
             if (existingLithology == null)
@@ -289,12 +289,12 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             // Set the consolidated lithology codes
             if (existingLithology == null)
             {
-                var textureMetaCodes = await Context.Codelists.Where(c => entity.TextureMetaCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                entity.LithologyTextureMetaCodes = textureMetaCodes.Select(c => new LithologyTextureMetaCodes { Codelist = c, CodelistId = c.Id }).ToList();
+                var textureMataCodes = await Context.Codelists.Where(c => entity.TextureMataCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                entity.LithologyTextureMataCodes = textureMataCodes.Select(c => new LithologyTextureMataCodes { Codelist = c, CodelistId = c.Id }).ToList();
             }
             else
             {
-                await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMetaCodes!, entity.TextureMetaCodelistIds!).ConfigureAwait(false);
+                await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMataCodes!, entity.TextureMataCodelistIds!).ConfigureAwait(false);
             }
         }
     }

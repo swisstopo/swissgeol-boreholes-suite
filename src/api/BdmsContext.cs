@@ -119,7 +119,7 @@ public class BdmsContext : DbContext
         .Include(l => l.LithologyUscsTypeCodes)
         .Include(l => l.UscsDetermination)
         .Include(l => l.LithologyRockConditionCodes)
-        .Include(l => l.LithologyTextureMetaCodes);
+        .Include(l => l.LithologyTextureMataCodes);
 
     public DbSet<Layer> Layers { get; set; }
 
@@ -730,16 +730,16 @@ public class BdmsContext : DbContext
 
         // Join table for lithology and codelists with schema name 'lithology_texture_meta'
         modelBuilder.Entity<Lithology>()
-            .HasMany(l => l.TextureMetaCodelists)
+            .HasMany(l => l.TextureMataCodelists)
             .WithMany()
-            .UsingEntity<LithologyTextureMetaCodes>(
+            .UsingEntity<LithologyTextureMataCodes>(
                 j => j
                     .HasOne(lc => lc.Codelist)
-                    .WithMany(c => c.LithologyTextureMetaCodes)
+                    .WithMany(c => c.LithologyTextureMataCodes)
                     .HasForeignKey(lc => lc.CodelistId),
                 j => j
                     .HasOne(lc => lc.Lithology)
-                    .WithMany(b => b.LithologyTextureMetaCodes)
+                    .WithMany(b => b.LithologyTextureMataCodes)
                     .HasForeignKey(l => l.LithologyId),
                 j => j.HasKey(lc => new { lc.LithologyId, lc.CodelistId }));
     }
