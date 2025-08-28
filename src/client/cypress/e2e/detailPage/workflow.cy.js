@@ -29,6 +29,20 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers.js";
 
+function manuallyResetStatusToDraft() {
+  clickSgcButtonWithContent("Status manuell ändern");
+  cy.get(".select-trigger").eq(0).click();
+  cy.get(".select-option").contains(WorkflowStatus.Draft).click();
+  cy.get(".select-trigger").eq(1).click();
+  // all users with editor privileges should be selectable
+  cy.get(".select-option").should("have.length", 7);
+  cy.get(".select-option").contains("viewer user").should("not.exist");
+  cy.get(".select-option").contains("Editor User").should("exist");
+  cy.get(".select-option").contains("Admin User").click();
+  cy.get("sgc-modal-wrapper").find("sgc-button").contains("Status manuell ändern").click();
+  cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+}
+
 describe("Tests the publication workflow.", () => {
   function navigateToWorkflowAndStartEditing(id) {
     goToDetailRouteAndAcceptTerms(`/${id}/status`);
@@ -320,18 +334,7 @@ describe("Tests the publication workflow.", () => {
       cy.get("sgc-modal-wrapper").find("sgc-button").contains("Publish").click();
       AssertHeaderChips(WorkflowStatus.Published);
       getElementByDataCy("workflow-additional-reviewed-chip").should("be.visible");
-
-      clickSgcButtonWithContent("Status manuell ändern");
-      cy.get(".select-trigger").eq(0).click();
-      cy.get(".select-option").contains(WorkflowStatus.Draft).click();
-      cy.get(".select-trigger").eq(1).click();
-      // all users with editor privileges should be selectable
-      cy.get(".select-option").should("have.length", 7);
-      cy.get(".select-option").contains("viewer user").should("not.exist");
-      cy.get(".select-option").contains("Editor User").should("exist");
-      cy.get(".select-option").contains("Admin User").click();
-      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Status manuell ändern").click();
-      cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+      manuallyResetStatusToDraft();
 
       AssertHeaderChips(WorkflowStatus.Draft, "Admin User");
       getElementByDataCy("review-button").should("exist");
@@ -402,8 +405,11 @@ describe("Tests the publication workflow.", () => {
       getElementByDataCy("hydrogeology-menu-item").click(); // open hydrogeology menu items
       assertAllMenuItemsHaveReviewStatus("true");
 
+      manuallyResetStatusToDraft();
+
       // edit borehole on location and borehole tab
       navigateInSidebar(SidebarMenuItem.location);
+      startBoreholeEditing();
       setSelect("locationPrecisionId", 2);
       saveWithSaveBar();
 

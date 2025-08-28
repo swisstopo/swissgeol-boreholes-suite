@@ -24,6 +24,9 @@ public class WorkflowControllerTest
         context = ContextFactory.GetTestContext();
         boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new WorkflowController(context, boreholePermissionServiceMock.Object, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        boreholePermissionServiceMock
+            .Setup(x => x.CanChangeBoreholeStatusAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(true);
     }
 
     [TestCleanup]
@@ -157,7 +160,7 @@ public class WorkflowControllerTest
     public async Task WorkflowChangeRequestByUserWithoutEditPermissions()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var request = new WorkflowChangeRequest
@@ -344,7 +347,7 @@ public class WorkflowControllerTest
     public async Task TabStatusChangeUserWithoutEditPermissionReturnsUnauthorized()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var request = new WorkflowTabStatusChangeRequest
