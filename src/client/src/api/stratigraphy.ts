@@ -20,9 +20,9 @@ export interface StratigraphyLegacy {
   name: string;
   qualityId?: number;
   notes?: string;
-  layers: Layer[] | null;
-  chronostratigraphyLayers: Chronostratigraphy[] | null;
-  lithostratigraphyLayers: Lithostratigraphy[] | null;
+  layers: Layer[];
+  chronostratigraphyLayers: Chronostratigraphy[];
+  lithostratigraphyLayers: Lithostratigraphy[];
 }
 
 export interface Stratigraphy {
@@ -38,6 +38,9 @@ export interface Stratigraphy {
   updated: Date | string | null;
   updatedById: number | null;
   updatedBy?: User;
+  lithologies: Lithology[];
+  lithostratigraphies: Lithostratigraphy[];
+  chronostratigraphies: Chronostratigraphy[];
 }
 
 export interface Layer {
@@ -45,6 +48,11 @@ export interface Layer {
   stratigraphyId: number;
   updatedBy?: User;
   createdBy?: User;
+}
+
+export interface Lithology {
+  id: number;
+  stratigraphyId: number;
 }
 
 export interface Chronostratigraphy {

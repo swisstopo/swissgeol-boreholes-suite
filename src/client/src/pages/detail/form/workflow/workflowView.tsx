@@ -17,6 +17,7 @@ import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { restrictionFreeCode } from "../../../../components/codelist.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
+import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailablilty.ts";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import {
@@ -38,6 +39,27 @@ export const WorkflowView = () => {
   const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole.workgroup?.id ?? 0);
   const { navigateTo } = useBoreholesNavigate();
   const { showAlert } = useContext(AlertContext);
+  const {
+    hasStratigraphy,
+    hasSections,
+    hasGeometry,
+    hasCompletion,
+    hasObservation,
+    hasWaterIngress,
+    hasGroundwaterLevelMeasurement,
+    hasHydroTest,
+    hasFieldMeasurement,
+    hasAttachments,
+    hasBoreholeFiles,
+    hasPhotos,
+    hasDocuments,
+    hasCasings,
+    hasBackfills,
+    hasInstrumentations,
+    hasLithology,
+    hasLithostratigraphy,
+    hasChronostratigraphy,
+  } = useBoreholeDataAvailability(borehole);
 
   const {
     updateWorkflow: { mutate: updateWorkflow },
@@ -52,35 +74,48 @@ export const WorkflowView = () => {
   }, [editableByCurrentUser, showAlert, navigateTo, t, boreholeId]);
 
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
-    const field = (name: string) => ({
+    const field = (name: string, isDisabled: boolean = !hasStratigraphy) => ({
       field: name,
+      isDisabled: isDisabled,
       name: () => t(name),
     });
     return [
       {
         name: () => t("borehole"),
-        fields: [field("location"), field("general"), field("sections"), field("geometry")],
+        fields: [field("location"), field("general"), field("sections", !hasSections), field("geometry", !hasGeometry)],
       },
       {
         name: () => t("stratigraphy"),
-        fields: [field("lithology"), field("lithostratigraphy"), field("chronostratigraphy")],
+        isDisabled: !hasStratigraphy,
+        fields: [
+          field("lithology", !hasLithology),
+          field("lithostratigraphy", !hasLithostratigraphy),
+          field("chronostratigraphy", !hasChronostratigraphy),
+        ],
       },
       {
         name: () => t("completion"),
-        fields: [field("casing"), field("instrumentation"), field("backfill")],
+        isDisabled: !hasCompletion,
+        fields: [
+          field("casing", !hasCasings),
+          field("instrumentation", !hasInstrumentations),
+          field("backfill", !hasBackfills),
+        ],
       },
       {
         name: () => t("hydrogeology"),
+        isDisabled: !hasObservation,
         fields: [
-          field("waterIngress"),
-          field("groundwaterLevelMeasurement"),
-          field("fieldMeasurement"),
-          field("hydrotest"),
+          field("waterIngress", !hasWaterIngress),
+          field("groundwaterLevelMeasurement", !hasGroundwaterLevelMeasurement),
+          field("fieldMeasurement", !hasFieldMeasurement),
+          field("hydrotest", !hasHydroTest),
         ],
       },
       {
         name: () => t("attachments"),
-        fields: [field("profiles"), field("photos"), field("documents")],
+        isDisabled: !hasAttachments,
+        fields: [field("profiles", !hasBoreholeFiles), field("photos", !hasPhotos), field("documents", !hasDocuments)],
       },
     ];
   };

@@ -6,7 +6,7 @@ import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
-import { Photo, User, Workgroup } from "./apiInterfaces.ts";
+import { Document, Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
 import { download, fetchApiV2, upload } from "./fetchApiV2.ts";
@@ -84,6 +84,8 @@ export interface BoreholeV2 {
   boreholeGeometry: BoreholeGeometry[] | null;
   boreholeFiles: BoreholeFile[] | null;
   photos: Photo[] | null;
+  documents: Document[] | null;
+  geometry: BoreholeGeometry | null;
 }
 
 const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");
