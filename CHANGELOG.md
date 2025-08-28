@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- Upgraded swissgeol OCR service to version 1.1.0.
 - Added new workflow UI and backend to manage the borehole's publication status. Removed legacy workflow UI and backend.
 
 ### Fixed
