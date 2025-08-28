@@ -229,7 +229,7 @@ describe("Search filter tests", () => {
 
     // check content of table
     verifyPaginationText("1–100 of 196");
-    cy.get(".MuiDataGrid-row").contains("Alta Sauer").should("exist");
+    cy.get(".MuiDataGrid-row").contains("Aisha Thiel").should("exist");
   });
 
   it("filters boreholes by original lithology in editor mode", () => {
