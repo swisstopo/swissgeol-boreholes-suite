@@ -24,6 +24,9 @@ public class WorkflowControllerTest
         context = ContextFactory.GetTestContext();
         boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new WorkflowController(context, boreholePermissionServiceMock.Object, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        boreholePermissionServiceMock
+            .Setup(x => x.CanChangeBoreholeStatusAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(true);
     }
 
     [TestCleanup]
