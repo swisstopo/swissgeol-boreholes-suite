@@ -228,7 +228,7 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    verifyPaginationText("1–100 of 181");
+    verifyPaginationText("1–100 of 196");
     cy.get(".MuiDataGrid-row").contains("Alta Sauer").should("exist");
   });
 

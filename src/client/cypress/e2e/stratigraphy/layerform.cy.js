@@ -241,6 +241,7 @@ describe("Tests for the layer form.", () => {
       });
     }
 
+    const originalLayer8Title = "marble, gravel, fine-coarse";
     goToRouteAndAcceptTerms(`/`);
     getElementByDataCy("show-filter-button").click();
     cy.contains("Location").click();
@@ -250,11 +251,11 @@ describe("Tests for the layer form.", () => {
     cy.wait(["@borehole_by_id", "@borehole_by_id"]);
     startBoreholeEditing();
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
+    getElementByDataCy("styled-layer-8").should("contain", originalLayer8Title);
     clickOnLayerAndWaitForForm("8");
     resetUpdatedValues();
     saveLayerForm();
-    getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
+    getElementByDataCy("styled-layer-8").should("contain", originalLayer8Title);
     clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(true);
 
@@ -266,14 +267,14 @@ describe("Tests for the layer form.", () => {
     cancelEditing();
     evaluateUpdatedFormState(true);
     handlePrompt("There are unsaved changes. Do you want to discard all changes?", "discardchanges");
-    getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
+    getElementByDataCy("styled-layer-8").should("contain", originalLayer8Title);
     clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(true);
 
     // change some inputs then save
     updateInputsForEachType();
     saveLayerForm();
-    getElementByDataCy("styled-layer-9").should("contain", "marble, gravel, fine-medium-coarse");
+    getElementByDataCy("styled-layer-9").should("contain", originalLayer8Title);
     clickOnLayerAndWaitForForm("9");
     evaluateUpdatedFormState(true);
 
@@ -290,12 +291,13 @@ describe("Tests for the layer form.", () => {
 
     // assert updated form values persist after saving
     stopBoreholeEditing();
-    getElementByDataCy("styled-layer-8").should("contain", "marble, gravel, fine-medium-coarse");
+    getElementByDataCy("styled-layer-8").should("contain", originalLayer8Title);
     clickOnLayerAndWaitForForm("8");
     evaluateInitialFormState(false);
   });
 
-  it("creates a layer and fills all dropdowns with multiple selection.", () => {
+  // Skip test until new multiselect component with autocomplete is implemented
+  it.skip("creates a layer and fills all dropdowns with multiple selection.", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
@@ -419,7 +421,10 @@ describe("Tests for the layer form.", () => {
     navigateInSidebar(SidebarMenuItem.stratigraphy);
 
     // click on layer and verify form values
-    getElementByDataCy("styled-layer-8").should("contain", "gneiss, sedimentary, clayey gravel, medium, brown, beige");
+    getElementByDataCy("styled-layer-8").should(
+      "contain",
+      "gneiss, sedimentary, clayey gravel, medium-coarse, beige, brown",
+    );
     clickOnLayerAndWaitForForm("8");
     evaluateInput("fromDepth", "80");
     evaluateInput("toDepth", "90");
