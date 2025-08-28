@@ -402,7 +402,7 @@ describe("Tests the publication workflow.", () => {
       finishReview();
       cy.get("sgc-tab").contains("Freigabe").click();
       clickCheckAllCheckbox("approval");
-      getElementByDataCy("hydrogeology-menu-item").click(); // open hydrogeology menu items//
+      getElementByDataCy("hydrogeology-menu-item").click(); // open hydrogeology menu items
       assertAllMenuItemsHaveReviewStatus("true");
 
       manuallyResetStatusToDraft();
