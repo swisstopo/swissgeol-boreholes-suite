@@ -12,7 +12,7 @@ namespace BDMS.Controllers;
 [TestClass]
 public class StratigraphyV2ControllerTest
 {
-    private const int StratigraphyId = 6_003_002;
+    private const int StratigraphyId = 6_502_992;
 
     private BdmsContext context;
     private StratigraphyV2Controller controller;
@@ -71,9 +71,9 @@ public class StratigraphyV2ControllerTest
         Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
         var copiedStratigraphy = GetStratigraphy((int)copiedStratigraphyId);
 
-        Assert.AreEqual("Hazle Braun (Clone)", copiedStratigraphy.Name);
+        Assert.AreEqual("Nadia Blick (Clone)", copiedStratigraphy.Name);
         Assert.AreEqual("sub_validator", copiedStratigraphy.CreatedBy.SubjectId);
-        Assert.AreEqual("sub_publisher", copiedStratigraphy.UpdatedBy.SubjectId);
+        Assert.AreEqual("sub_editor", copiedStratigraphy.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
         Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
     }
