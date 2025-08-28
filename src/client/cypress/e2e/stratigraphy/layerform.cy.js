@@ -198,7 +198,9 @@ function saveLayerForm() {
 }
 
 describe("Tests for the layer form.", () => {
-  it("updates the layer form and saves", () => {
+  // Todo:
+  // Skip test, legacy form will be removed with new lithology form
+  it.skip("updates the layer form and saves", () => {
     function evaluateInitialFormState(editable) {
       layerAttributes.forEach(attribute => {
         if (attribute.type === "MultiSelect") {
@@ -296,7 +298,8 @@ describe("Tests for the layer form.", () => {
     evaluateInitialFormState(false);
   });
 
-  // Skip test until new multiselect component with autocomplete is implemented
+  // Todo:
+  // Skip test, legacy form will be removed with new lithology form
   it.skip("creates a layer and fills all dropdowns with multiple selection.", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
@@ -411,7 +414,9 @@ describe("Tests for the layer form.", () => {
     });
   });
 
-  it("updates layer form values when changing layer", () => {
+  // Todo:
+  // Skip test, legacy form will be removed with new lithology form
+  it.skip("updates layer form values when changing layer", () => {
     goToRouteAndAcceptTerms(`/`);
     getElementByDataCy("show-filter-button").click();
     cy.contains("Location").click();
