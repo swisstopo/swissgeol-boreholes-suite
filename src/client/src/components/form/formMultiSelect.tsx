@@ -1,10 +1,12 @@
-import { FC, useState } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { FC, useContext } from "react";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import CancelIcon from "@mui/icons-material/Cancel";
-import { Box, Chip, MenuItem, SxProps } from "@mui/material";
+import { Autocomplete, Chip, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
+import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { getFormFieldError } from "./form";
+import { FormSelectMenuItem } from "./formSelect.tsx";
+import { getFieldBorderColor } from "./formUtils.ts";
 
 export interface FormMultiSelectProps {
   fieldName: string;
@@ -37,52 +39,35 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
   className,
 }) => {
   const { t } = useTranslation();
-  const { formState, register, setValue, getValues, control } = useFormContext();
-  const [open, setOpen] = useState(false);
+  const { formState, register, setValue, control } = useFormContext();
+  const { editingEnabled } = useContext(EditStateContext);
+  const isReadOnly = readonly ?? !editingEnabled;
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  // Synchronize Autocomplete with react hook form state
+  const fieldValue = useWatch({
+    control,
+    name: fieldName,
+  });
 
   const formFieldError = getFormFieldError(fieldName, formState.errors);
 
-  const ChipBox = (selection: number[]) => {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 0.5,
-        }}>
-        {selection.map(selectedValue => {
-          const selectedOption = values?.find(value => value.key === selectedValue);
-          const label = selectedOption ? selectedOption.name : selectedValue;
-          return (
-            <Chip
-              sx={{ height: "26px" }}
-              key={selectedValue}
-              label={label}
-              title={tooltipLabel ? t(tooltipLabel) : undefined}
-              deleteIcon={<CancelIcon data-cy={`remove-${label}-chip`} onMouseDown={e => e.stopPropagation()} />}
-              onDelete={
-                !readonly
-                  ? e => {
-                      e.stopPropagation();
-                      const selectedValues = getValues()[fieldName];
-                      const updatedValues = selectedValues.filter((value: number) => value !== selectedValue);
-                      setValue(fieldName, updatedValues, { shouldValidate: true, shouldDirty: true });
-                    }
-                  : undefined
-              }
-            />
-          );
-        })}
-      </Box>
-    );
+  const menuItems: FormSelectMenuItem[] = [];
+  if (!required) {
+    menuItems.push({ key: 0, value: null, label: t("reset"), italic: true });
+  }
+  if (values) {
+    values.forEach(value => {
+      menuItems.push({
+        key: value.key,
+        value: value.key,
+        label: value.name,
+      });
+    });
+  }
+
+  const readonlyStyles = {
+    pointerEvents: "none",
+    "& .MuiAutocomplete-endAdornment": { display: "none !important" },
   };
 
   // Without the controller the textfield is not updated when a value is removed by clicking the delete icon on the chip.
@@ -95,47 +80,61 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
       render={({ field }) => (
         <>
           {Array.isArray(values) && values.length > 0 ? (
-            <TextField
-              {...field}
-              select
-              SelectProps={{
-                multiple: true,
-                open: open,
-                onClose: handleClose,
-                onOpen: handleOpen,
-                // @ts-expect-error renderValue is used to render the selected values as chips
-                renderValue: (selection: number[]) => ChipBox(selection),
+            <Autocomplete
+              sx={{ ...(isReadOnly ? readonlyStyles : {}), width: "100%" }}
+              key={`${fieldName}-${fieldValue ? fieldValue.join("-") : "empty"}`}
+              multiple
+              options={menuItems}
+              disableCloseOnSelect
+              readOnly={isReadOnly}
+              getOptionLabel={option => option.label}
+              isOptionEqualToValue={(option, value) => option.key === value.key}
+              value={
+                field.value?.map(
+                  (val: number) =>
+                    menuItems.find(item => item.value === val) || { key: val, value: val, label: val.toString() },
+                ) || []
+              }
+              onChange={(_, newValues: FormSelectMenuItem[]) => {
+                if (newValues.some(m => m.label.toLowerCase() === t("reset").toLowerCase())) {
+                  // Clear autocomplete if reset option is clicked
+                  field.onChange([]);
+                } else {
+                  const selectedValues = newValues.map(item => item.value);
+                  field.onChange(selectedValues);
+                  setValue(fieldName, selectedValues, { shouldValidate: true, shouldDirty: true });
+                }
               }}
-              InputProps={{ readOnly: readonly, disabled: disabled }}
-              required={required || false}
-              sx={{ ...sx }}
-              className={`${readonly ? "readonly" : ""} ${className ?? ""}`}
-              label={t(label)}
-              {...register(fieldName, {
-                required: required || false,
-                onChange: e => {
-                  if (e.target.value.includes("reset")) {
-                    setValue(fieldName, [], { shouldValidate: true });
-                    handleClose();
-                  } else {
-                    setValue(fieldName, e.target.value, { shouldValidate: true });
-                  }
-                },
-              })}
-              value={field.value || []}
-              error={!!formFieldError}
-              helperText={formFieldError?.message ? t(formFieldError.message) : ""}
-              disabled={disabled || false}
-              data-cy={fieldName + "-formMultiSelect"}>
-              <MenuItem key="reset" value="reset">
-                <em>{t("reset")}</em>
-              </MenuItem>
-              {values?.map(item => (
-                <MenuItem key={item.key} value={item.key}>
-                  {item.name}
-                </MenuItem>
-              ))}
-            </TextField>
+              renderTags={(tagValue, getTagProps) => {
+                return tagValue.map((option, index) => (
+                  // eslint-disable-next-line react/jsx-key -- Key is provided by getTagProps
+                  <Chip
+                    sx={{ height: "26px" }}
+                    label={option.label}
+                    title={tooltipLabel ? t(tooltipLabel) : undefined}
+                    {...getTagProps({ index })}
+                    data-cy={`chip-${option.label}`}
+                  />
+                ));
+              }}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label={t(label)}
+                  required={required}
+                  error={!!formFieldError}
+                  helperText={formFieldError?.message ? t(formFieldError.message) : ""}
+                  sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
+                  className={className}
+                  data-cy={fieldName + "-formMultiSelect"}
+                  disabled={disabled}
+                />
+              )}
+              renderOption={(props, option) => (
+                <li {...props}>{option.italic ? <em>{option.label}</em> : option.label}</li>
+              )}
+              disabled={disabled}
+            />
           ) : (
             <TextField
               {...field}
