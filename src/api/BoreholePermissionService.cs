@@ -42,11 +42,24 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
-        return CanEditBorehole(user, borehole);
+        return CanEditBorehole(user, borehole, checkForStatus: true);
     }
 
-    internal bool CanEditBorehole(User user, Borehole borehole)
+    /// <inheritdoc />
+    public async Task<bool> CanChangeBoreholeStatusAsync(string? subjectId, int? boreholeId)
     {
+        var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
+        var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
+        return CanEditBorehole(user, borehole, checkForStatus: false);
+    }
+
+    internal bool CanEditBorehole(User user, Borehole borehole, bool checkForStatus)
+    {
+        if (checkForStatus && IsBoreholeReviewedOrPublished(borehole))
+        {
+            return false;
+        }
+
         if (user.IsAdmin)
         {
             return true;
@@ -124,6 +137,11 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         }
 
         return false;
+    }
+
+    private static bool IsBoreholeReviewedOrPublished(Borehole borehole)
+    {
+        return borehole.Workflow?.Status is WorkflowStatus.Reviewed or WorkflowStatus.Published;
     }
 
     private async Task<Borehole> GetBoreholeAsync(int? boreholeId)
