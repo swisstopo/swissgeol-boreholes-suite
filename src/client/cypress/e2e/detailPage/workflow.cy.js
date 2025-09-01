@@ -125,7 +125,7 @@ describe("Tests the publication workflow.", () => {
   });
 
   it("Can update tab status on review tab", () => {
-    createBoreholeWithCompleteDataset({ restrictionId: restrictionFreeCode }).as("borehole_id");
+    createBoreholeWithCompleteDataset().as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       requestReviewFromValidator();

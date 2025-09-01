@@ -1,3 +1,4 @@
+import { restrictionFreeCode } from "../../../src/components/codelist.ts";
 import { ObservationType } from "../../../src/pages/detail/form/hydrogeology/Observation.ts";
 import adminUser from "../../fixtures/adminUser.json";
 import editorUser from "../../fixtures/editorUser.json";
@@ -303,9 +304,10 @@ export const createBorehole = borehole => {
   });
 };
 
-export const createBoreholeWithCompleteDataset = (additionalData = null) => {
-  const baseBorehole = {
+export const createBoreholeWithCompleteDataset = () => {
+  return createBorehole({
     originalName: "Complete Test Borehole",
+    restrictionId: restrictionFreeCode,
     // Location and geometry data
     boreholeGeometry: [],
 
@@ -345,8 +347,7 @@ export const createBoreholeWithCompleteDataset = (additionalData = null) => {
     boreholeFiles: [{ name: "Test Profile File", file: { name: "testfile", url: "testurl", type: "text/csv" } }],
     photos: [{ name: "Test Photo", nameUuid: "uuid1234", fileType: "image/tiff" }],
     documents: [{ name: "Test Document", url: "testurl" }],
-  };
-  return createBorehole(additionalData ? { ...baseBorehole, ...additionalData } : baseBorehole);
+  });
 };
 
 export const startBoreholeEditing = () => {
