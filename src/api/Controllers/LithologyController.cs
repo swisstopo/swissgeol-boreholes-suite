@@ -175,7 +175,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                         var debrisCodes = await Context.Codelists.Where(c => ld.DebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
                         ld.LithologyDescriptionDebrisCodes = debrisCodes.Select(c => new LithologyDescriptionDebrisCodes() { Codelist = c, CodelistId = c.Id }).ToList();
 
-                        var grainShapeCodes = await Context.Codelists.Where(c => ld.DebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                        var grainShapeCodes = await Context.Codelists.Where(c => ld.GrainShapeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
                         ld.LithologyDescriptionGrainShapeCodes = grainShapeCodes.Select(c => new LithologyDescriptionGrainShapeCodes() { Codelist = c, CodelistId = c.Id }).ToList();
 
                         var grainAngularityCodes = await Context.Codelists.Where(c => ld.GrainAngularityCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
