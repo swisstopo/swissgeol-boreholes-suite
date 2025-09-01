@@ -20,6 +20,7 @@ import {
 } from "../helpers/swissgeolCoreHelpers.js";
 import {
   createBorehole,
+  createBoreholeWithCompleteDataset,
   dropGeometryCSVFile,
   getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
@@ -124,9 +125,7 @@ describe("Tests the publication workflow.", () => {
   });
 
   it("Can update tab status on review tab", () => {
-    createBorehole({
-      originalName: "Zoo director",
-    }).as("borehole_id");
+    createBoreholeWithCompleteDataset().as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       requestReviewFromValidator();
@@ -200,10 +199,7 @@ describe("Tests the publication workflow.", () => {
   });
 
   it("Can update tab status on publish tab and publish a borehole", () => {
-    createBorehole({
-      originalName: "Waterpark",
-      restrictionId: restrictionFreeCode,
-    }).as("borehole_id");
+    createBoreholeWithCompleteDataset().as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       assertWorkflowSteps("Draft");
@@ -352,9 +348,7 @@ describe("Tests the publication workflow.", () => {
   }
 
   it("Displays checkmarks on side menu", () => {
-    createBorehole({
-      originalName: "Mouse mermaid",
-    }).as("borehole_id");
+    createBoreholeWithCompleteDataset().as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       requestReviewFromValidator();
@@ -388,9 +382,7 @@ describe("Tests the publication workflow.", () => {
   });
 
   it("Resets reviewed and published checkboxes when borehole tabs change", () => {
-    createBorehole({
-      originalName: "Creamy window squash",
-    }).as("borehole_id");
+    createBoreholeWithCompleteDataset().as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       requestReviewFromValidator();

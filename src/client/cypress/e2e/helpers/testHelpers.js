@@ -303,6 +303,50 @@ export const createBorehole = borehole => {
   });
 };
 
+export const createBoreholeWithCompleteDataset = () => {
+  return createBorehole({
+    originalName: "Complete Test Borehole",
+    // Location and geometry data
+    geometry: { type: "Point", coordinates: [2600000, 1200000] },
+
+    // Section data
+    sections: [{ name: "Test Section", fromDepth: 0, toDepth: 10 }],
+
+    // Stratigraphy data with all required components
+    stratigraphies: [
+      {
+        name: "Test Stratigraphy",
+        layers: [{ from: 0, to: 10, lithology: "Test Lithology" }],
+        lithostratigraphyLayers: [{ from: 0, to: 10, name: "Test Lithostratigraphy" }],
+        chronostratigraphyLayers: [{ from: 0, to: 10, name: "Test Chronostratigraphy" }],
+      },
+    ],
+
+    // Completion data with all required components
+    completions: [
+      {
+        name: "Test Completion",
+        casings: [{ name: "Test Casing", fromDepth: 0, toDepth: 10 }],
+        backfills: [{ kindId: 1, materialId: 1, fromDepth: 0, toDepth: 10 }],
+        instrumentations: [{ name: "Test Instrument", kindId: 1, fromDepth: 0, toDepth: 10 }],
+      },
+    ],
+
+    // All required observation types
+    observations: [
+      { type: ObservationType.waterIngress, startTime: "2023-01-01" },
+      { type: ObservationType.groundwaterLevelMeasurement, startTime: "2023-01-02" },
+      { type: ObservationType.hydrotest, startTime: "2023-01-03" },
+      { type: ObservationType.fieldMeasurement, startTime: "2023-01-04" },
+    ],
+
+    // File attachments of all types
+    boreholeFiles: [{ id: 1, name: "Test Profile File" }],
+    photos: [{ id: 2, name: "Test Photo" }],
+    documents: [{ id: 3, name: "Test Document" }],
+  });
+};
+
 export const startBoreholeEditing = () => {
   startEditing("detail-header");
   cy.wait(["@update-borehole", "@borehole_by_id"]);
