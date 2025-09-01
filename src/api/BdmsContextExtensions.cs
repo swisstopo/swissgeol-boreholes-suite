@@ -1256,11 +1256,13 @@ public static class BdmsContextExtensions
         // First create one description for each lithology
         for (int i = 0; i < lithologiesToInsert.Count; i++)
         {
+            var lithology = lithologiesToInsert[i];
             var description = fakeLithologyDescriptions.UseSeed(i).Generate();
+            description.LithologyId = lithology.Id;
+            description.IsFirst = true;
             lithologyDescriptionsToInsert.Add(description);
 
-            // For lithologies with bedding, add a second description
-            var lithology = lithologiesToInsert[i % lithologiesToInsert.Count];
+            // Only add a second description if HasBedding is true
             if (lithology.HasBedding)
             {
                 var secondDescription = fakeLithologyDescriptions.UseSeed(i + 10000).Generate();
