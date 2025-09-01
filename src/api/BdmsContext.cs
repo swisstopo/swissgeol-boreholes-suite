@@ -66,6 +66,16 @@ public class BdmsContext : DbContext
     public IQueryable<Lithology> LithologiesWithIncludes
         => Lithologies
         .Include(l => l.Description)
+        .Include(l => l.AlterationDegree)
+        .Include(l => l.Compactness)
+        .Include(l => l.Cohesion)
+        .Include(l => l.Humidity)
+        .Include(l => l.Consistency)
+        .Include(l => l.Plasticity)
+        .Include(l => l.LithologyUscsTypeCodes)
+        .Include(l => l.UscsDetermination)
+        .Include(l => l.LithologyRockConditionCodes)
+        .Include(l => l.LithologyTextureMataCodes)
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.ColorPrimary)
         .Include(l => l.LithologyDescriptions)
@@ -109,17 +119,9 @@ public class BdmsContext : DbContext
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionStructureSynGenCodes)
         .Include(l => l.LithologyDescriptions)
-        .ThenInclude(ld => ld.LithologyDescriptionStructurePostGenCodes)
-        .Include(l => l.AlterationDegree)
-        .Include(l => l.Compactness)
-        .Include(l => l.Cohesion)
-        .Include(l => l.Humidity)
-        .Include(l => l.Consistency)
-        .Include(l => l.Plasticity)
-        .Include(l => l.LithologyUscsTypeCodes)
-        .Include(l => l.UscsDetermination)
-        .Include(l => l.LithologyRockConditionCodes)
-        .Include(l => l.LithologyTextureMataCodes);
+        .ThenInclude(ld => ld.LithologyDescriptionStructurePostGenCodes);
+
+    public DbSet<LithologyDescription> LithologyDescriptions { get; set; }
 
     public DbSet<Layer> Layers { get; set; }
 
