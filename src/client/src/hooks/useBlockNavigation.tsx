@@ -42,10 +42,14 @@ export const useBlockNavigation = () => {
           },
         },
       ]);
-    } else if (blocker.state === "blocked" && !hasChanges) {
+    } else if (!hasChanges) {
       // If there are no changes, don't block the navigation. This check is necessary because sometimes the blocker
       // is not yet reset even though the changes are gone.
-      blocker.proceed?.();
+      setTimeout(() => {
+        if (blocker.state === "blocked") {
+          blocker.proceed?.();
+        }
+      }, 100);
     }
   }, [blocker, hasChanges, showPrompt]);
 };
