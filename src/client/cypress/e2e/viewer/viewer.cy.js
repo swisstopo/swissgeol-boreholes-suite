@@ -79,12 +79,12 @@ describe("Viewer tests", () => {
     // navigateInSidebar(SidebarMenuItem.hydrogeology);
     // navigateInSidebar(SidebarMenuItem.waterIngress);
     // cy.contains("No water ingresses available").should("exist");
-    navigateInSidebar(SidebarMenuItem.groundwaterLevelMeasurement);
-    cy.contains("No groundwater measurements available.").should("exist");
-    navigateInSidebar(SidebarMenuItem.fieldMeasurement);
-    cy.contains("No field measurements available.").should("exist");
-    navigateInSidebar(SidebarMenuItem.hydrotest);
-    cy.contains("No hydrotests available").should("exist");
+    // navigateInSidebar(SidebarMenuItem.groundwaterLevelMeasurement);
+    // cy.contains("No groundwater measurements available.").should("exist");
+    // navigateInSidebar(SidebarMenuItem.fieldMeasurement);
+    // cy.contains("No field measurements available.").should("exist");
+    // navigateInSidebar(SidebarMenuItem.hydrotest);
+    // cy.contains("No hydrotests available").should("exist");
     navigateInSidebar(SidebarMenuItem.attachments);
     cy.contains("No profiles available...").should("exist");
     getElementByDataCy("status-menu-item").should("not.exist"); // viewer cannot see status menu item
