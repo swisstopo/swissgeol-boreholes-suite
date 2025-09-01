@@ -307,18 +307,18 @@ export const createBoreholeWithCompleteDataset = () => {
   return createBorehole({
     originalName: "Complete Test Borehole",
     // Location and geometry data
-    geometry: { type: "Point", coordinates: [2600000, 1200000] },
+    boreholeGeometry: [],
 
     // Section data
-    sections: [{ name: "Test Section", fromDepth: 0, toDepth: 10 }],
+    sections: [{ name: "Test Section", fromDepth: 0, toDepth: 10, SectionElements: [] }],
 
     // Stratigraphy data with all required components
     stratigraphies: [
       {
         name: "Test Stratigraphy",
-        layers: [{ from: 0, to: 10, lithology: "Test Lithology" }],
-        lithostratigraphyLayers: [{ from: 0, to: 10, name: "Test Lithostratigraphy" }],
-        chronostratigraphyLayers: [{ from: 0, to: 10, name: "Test Chronostratigraphy" }],
+        layers: [{ from: 0, to: 10 }],
+        lithostratigraphyLayers: [{ from: 0, to: 10 }],
+        chronostratigraphyLayers: [{ from: 0, to: 10 }],
       },
     ],
 
@@ -326,24 +326,25 @@ export const createBoreholeWithCompleteDataset = () => {
     completions: [
       {
         name: "Test Completion",
-        casings: [{ name: "Test Casing", fromDepth: 0, toDepth: 10 }],
-        backfills: [{ kindId: 1, materialId: 1, fromDepth: 0, toDepth: 10 }],
-        instrumentations: [{ name: "Test Instrument", kindId: 1, fromDepth: 0, toDepth: 10 }],
+        kindId: 16000001,
+        casings: [{ name: "Test Casing", fromDepth: 0, toDepth: 10, casingElements: [] }],
+        backfills: [{ notes: "backfill notes" }],
+        instrumentations: [{ fromDepth: 0, toDepth: 10 }],
       },
     ],
 
     // All required observation types
     observations: [
-      { type: ObservationType.waterIngress, startTime: "2023-01-01" },
-      { type: ObservationType.groundwaterLevelMeasurement, startTime: "2023-01-02" },
-      { type: ObservationType.hydrotest, startTime: "2023-01-03" },
-      { type: ObservationType.fieldMeasurement, startTime: "2023-01-04" },
+      { type: ObservationType.waterIngress },
+      { type: ObservationType.groundwaterLevelMeasurement },
+      { type: ObservationType.hydrotest },
+      { type: ObservationType.fieldMeasurement },
     ],
 
     // File attachments of all types
-    boreholeFiles: [{ id: 1, name: "Test Profile File" }],
-    photos: [{ id: 2, name: "Test Photo" }],
-    documents: [{ id: 3, name: "Test Document" }],
+    boreholeFiles: [{ name: "Test Profile File", file: { name: "testfile", url: "testurl", type: "text/csv" } }],
+    photos: [{ name: "Test Photo", nameUuid: "uuid1234", fileType: "image/tiff" }],
+    documents: [{ name: "Test Document", url: "testurl" }],
   });
 };
 

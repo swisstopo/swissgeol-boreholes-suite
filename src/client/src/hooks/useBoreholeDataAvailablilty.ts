@@ -12,7 +12,7 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
     const hasCompletion = (borehole.completions?.length ?? 0) > 0;
     const hasObservation = (borehole.observations?.length ?? 0) > 0;
     const hasSections = borehole.sections?.length ?? 0;
-    const hasGeometry = borehole.geometry !== undefined && borehole.geometry !== null;
+    const hasGeometry = borehole.boreholeGeometry !== undefined && borehole.boreholeGeometry !== null;
     const hasWaterIngress =
       hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.waterIngress) ?? false);
     const hasGroundwaterLevelMeasurement =
