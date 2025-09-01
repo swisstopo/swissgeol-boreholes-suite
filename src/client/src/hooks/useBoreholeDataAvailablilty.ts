@@ -81,9 +81,9 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
     };
   }, [
     borehole.boreholeFiles?.length,
+    borehole.boreholeGeometry,
     borehole.completions,
     borehole.documents?.length,
-    borehole.geometry,
     borehole.observations,
     borehole.photos?.length,
     borehole.sections?.length,
