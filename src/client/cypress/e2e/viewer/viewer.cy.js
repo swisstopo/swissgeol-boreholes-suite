@@ -49,7 +49,7 @@ describe("Viewer tests", () => {
     getElementByDataCy("export-button").click();
     getElementByDataCy("csv-button").should("exist");
     getElementByDataCy("json-button").should("exist");
-    getElementByDataCy("json + pdf-button").should("exist");
+    cy.get('[data-cy="json + pdf-button"]').should("exist");
     getElementByDataCy("cancel-button").click();
     clickOnRowWithText("Aaron Rempel");
     getElementByDataCy("edit-button").should("not.exist");
