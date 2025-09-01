@@ -353,14 +353,14 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     public IList<LithologyDescriptionStructureSynGenCodes>? LithologyDescriptionStructureSynGenCodes { get; set; }
 
     /// <summary>
-    /// Gets or sets the code list ids with schema name 'strucutre_syn_gen' of the <see cref="LithologyDescription"/>'s many to many code list relations.
+    /// Gets or sets the code list ids with schema name 'structure_syn_gen' of the <see cref="LithologyDescription"/>'s many to many code list relations.
     /// </summary>
     [NotMapped]
     [IncludeInExport]
     public ICollection<int>? StructureSynGenCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
-    /// Gets the <see cref="Codelist"/>s with schema name 'strucutre_syn_gen' used by the <see cref="LithologyDescription"/>.
+    /// Gets the <see cref="Codelist"/>s with schema name 'structure_syn_gen' used by the <see cref="LithologyDescription"/>.
     /// </summary>
     public ICollection<Codelist>? StructureSynGenCodelists { get; set; }
 
@@ -370,14 +370,14 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     public IList<LithologyDescriptionStructurePostGenCodes>? LithologyDescriptionStructurePostGenCodes { get; set; }
 
     /// <summary>
-    /// Gets or sets the code list ids with schema name 'strucutre_post_gen' of the <see cref="LithologyDescription"/>'s many to many code list relations.
+    /// Gets or sets the code list ids with schema name 'structure_post_gen' of the <see cref="LithologyDescription"/>'s many to many code list relations.
     /// </summary>
     [NotMapped]
     [IncludeInExport]
     public ICollection<int>? StructurePostGenCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
-    /// Gets the <see cref="Codelist"/>s with schema name 'strucutre_post_gen' used by the <see cref="LithologyDescription"/>.
+    /// Gets the <see cref="Codelist"/>s with schema name 'structure_post_gen' used by the <see cref="LithologyDescription"/>.
     /// </summary>
     public ICollection<Codelist>? StructurePostGenCodelists { get; set; }
 }
