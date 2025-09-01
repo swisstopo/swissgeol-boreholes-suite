@@ -303,8 +303,8 @@ export const createBorehole = borehole => {
   });
 };
 
-export const createBoreholeWithCompleteDataset = () => {
-  return createBorehole({
+export const createBoreholeWithCompleteDataset = (additionalData = null) => {
+  const baseBorehole = {
     originalName: "Complete Test Borehole",
     // Location and geometry data
     boreholeGeometry: [],
@@ -345,7 +345,8 @@ export const createBoreholeWithCompleteDataset = () => {
     boreholeFiles: [{ name: "Test Profile File", file: { name: "testfile", url: "testurl", type: "text/csv" } }],
     photos: [{ name: "Test Photo", nameUuid: "uuid1234", fileType: "image/tiff" }],
     documents: [{ name: "Test Document", url: "testurl" }],
-  });
+  };
+  return createBorehole(additionalData ? { ...baseBorehole, ...additionalData } : baseBorehole);
 };
 
 export const startBoreholeEditing = () => {

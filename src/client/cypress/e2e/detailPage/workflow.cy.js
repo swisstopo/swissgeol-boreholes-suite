@@ -125,7 +125,7 @@ describe("Tests the publication workflow.", () => {
   });
 
   it("Can update tab status on review tab", () => {
-    createBoreholeWithCompleteDataset().as("borehole_id");
+    createBoreholeWithCompleteDataset({ restrictionId: restrictionFreeCode }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
       requestReviewFromValidator();
@@ -454,7 +454,8 @@ describe("Tests the publication workflow.", () => {
       navigateInSidebar(SidebarMenuItem.stratigraphy);
 
       // add new empty stratigraphy
-      addItem("addEmptyStratigraphy");
+      getElementByDataCy("addStratigraphy-button-select").click();
+      getElementByDataCy("addEmpty-button-select-item").click();
       cy.wait([
         "@stratigraphy_POST",
         "@stratigraphy_by_borehole_GET",
