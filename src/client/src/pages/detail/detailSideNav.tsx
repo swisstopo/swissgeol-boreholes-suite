@@ -5,7 +5,7 @@ import { Box, Stack } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
 import { BoreholeV2, useBoreholeStatusEditable } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
-import { useBoreholeDataAvailability } from "../../hooks/useBoreholeDataAvailablilty.ts";
+import { useBoreholeDataAvailability } from "../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../utils";

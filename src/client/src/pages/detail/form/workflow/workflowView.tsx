@@ -18,7 +18,7 @@ import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { restrictionFreeCode } from "../../../../components/codelist.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
-import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailablilty.ts";
+import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";

@@ -11,7 +11,7 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
       (runsDevMode ? (borehole.stratigraphiesV2?.length ?? 0) : (borehole.stratigraphies?.length ?? 0)) > 0;
     const hasCompletion = (borehole.completions?.length ?? 0) > 0;
     const hasObservation = (borehole.observations?.length ?? 0) > 0;
-    const hasSections = borehole.sections?.length ?? 0;
+    const hasSections = (borehole.sections?.length ?? 0) > 0;
     const hasGeometry = borehole.boreholeGeometry !== undefined && borehole.boreholeGeometry !== null;
     const hasWaterIngress =
       hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.waterIngress) ?? false);
@@ -26,10 +26,12 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
     const hasDocuments = (borehole.documents?.length ?? 0) > 0;
     const hasPhotos = (borehole.photos?.length ?? 0) > 0;
     const hasAttachments = hasBoreholeFiles || hasPhotos;
-    const hasCasings = hasCompletion && borehole.completions?.some(completion => completion.casings?.length > 0);
-    const hasBackfills = hasCompletion && borehole.completions?.some(completion => completion.backfills?.length > 0);
+    const hasCasings =
+      hasCompletion && (borehole.completions?.some(completion => completion.casings?.length > 0) ?? false);
+    const hasBackfills =
+      hasCompletion && (borehole.completions?.some(completion => completion.backfills?.length > 0) ?? false);
     const hasInstrumentations =
-      hasCompletion && borehole.completions?.some(completion => completion.instrumentations?.length > 0);
+      hasCompletion && (borehole.completions?.some(completion => completion.instrumentations?.length > 0) ?? false);
 
     let hasLithology = false;
     let hasLithostratigraphy = false;
@@ -39,7 +41,8 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
         (hasStratigraphy && borehole.stratigraphiesV2?.some(stratigraphy => stratigraphy.lithologies?.length > 0)) ??
         false;
       hasLithostratigraphy =
-        (hasStratigraphy && borehole.stratigraphiesV2?.some(stratigraphy => stratigraphy.lithologies?.length > 0)) ??
+        (hasStratigraphy &&
+          borehole.stratigraphiesV2?.some(stratigraphy => stratigraphy.lithostratigraphies?.length > 0)) ??
         false;
       hasChronostratigraphy =
         (hasStratigraphy &&
