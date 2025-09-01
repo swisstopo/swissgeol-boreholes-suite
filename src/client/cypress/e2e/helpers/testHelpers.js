@@ -308,13 +308,8 @@ export const createBoreholeWithCompleteDataset = () => {
   return createBorehole({
     originalName: "Complete Test Borehole",
     restrictionId: restrictionFreeCode,
-    // Location and geometry data
     boreholeGeometry: [],
-
-    // Section data
     sections: [{ name: "Test Section", fromDepth: 0, toDepth: 10, SectionElements: [] }],
-
-    // Stratigraphy data with all required components
     stratigraphies: [
       {
         name: "Test Stratigraphy",
@@ -323,8 +318,6 @@ export const createBoreholeWithCompleteDataset = () => {
         chronostratigraphyLayers: [{ from: 0, to: 10 }],
       },
     ],
-
-    // Completion data with all required components
     completions: [
       {
         name: "Test Completion",
@@ -334,16 +327,12 @@ export const createBoreholeWithCompleteDataset = () => {
         instrumentations: [{ fromDepth: 0, toDepth: 10 }],
       },
     ],
-
-    // All required observation types
     observations: [
       { type: ObservationType.waterIngress },
       { type: ObservationType.groundwaterLevelMeasurement },
       { type: ObservationType.hydrotest },
       { type: ObservationType.fieldMeasurement },
     ],
-
-    // File attachments of all types
     boreholeFiles: [{ name: "Test Profile File", file: { name: "testfile", url: "testurl", type: "text/csv" } }],
     photos: [{ name: "Test Photo", nameUuid: "uuid1234", fileType: "image/tiff" }],
     documents: [{ name: "Test Document", url: "testurl" }],
