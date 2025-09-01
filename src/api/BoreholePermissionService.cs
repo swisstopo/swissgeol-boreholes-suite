@@ -42,7 +42,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
-        return CanEditBorehole(user, borehole, checkForStatus: true);
+        return CanEditBorehole(user, borehole);
     }
 
     /// <inheritdoc />
@@ -50,16 +50,51 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
-        return CanEditBorehole(user, borehole, checkForStatus: false);
+        return CanChangeBoreholeStatus(user, borehole);
     }
 
-    internal bool CanEditBorehole(User user, Borehole borehole, bool checkForStatus)
+    /// <summary>
+    /// Determines if a user can change the workflow status of a borehole.
+    /// This allows status transitions regardless of the current status (including Reviewed/Published),
+    /// but still checks for admin privileges, lock status, and proper permissions.
+    /// </summary>
+    /// <param name="user">The user attempting to change the borehole status.</param>
+    /// <param name="borehole">The borehole whose status is to be changed.</param>
+    /// <returns>True if the user can change the borehole status; otherwise, false.</returns>
+    internal bool CanChangeBoreholeStatus(User user, Borehole borehole)
     {
-        if (checkForStatus && IsBoreholeReviewedOrPublished(borehole))
+        return IsBoreholeEditableByUser(user, borehole);
+    }
+
+    /// <summary>
+    /// Determines if a user can edit a borehole.
+    /// This checks if the borehole is not in Reviewed or Published status,
+    /// and if the user has appropriate permissions to edit the borehole.
+    /// </summary>
+    /// <param name="user">The user attempting to edit the borehole.</param>
+    /// <param name="borehole">The borehole to be edited.</param>
+    /// <returns>True if the user can edit the borehole; otherwise, false.</returns>
+    internal bool CanEditBorehole(User user, Borehole borehole)
+    {
+        var isReviewedOrPublished = borehole.Workflow?.Status is WorkflowStatus.Reviewed or WorkflowStatus.Published;
+        if (isReviewedOrPublished)
         {
             return false;
         }
 
+        return IsBoreholeEditableByUser(user, borehole);
+    }
+
+    /// <summary>
+    /// Determines if a borehole can be edited by the specified user.
+    /// Checks if the user has admin privileges, if the borehole is not locked by another user,
+    /// and if the user has both view and edit permissions for the borehole.
+    /// </summary>
+    /// <param name="user">The user attempting to edit the borehole.</param>
+    /// <param name="borehole">The borehole to be edited.</param>
+    /// <returns>True if the borehole can be edited by the user; otherwise, false.</returns>
+    private bool IsBoreholeEditableByUser(User user, Borehole borehole)
+    {
         if (user.IsAdmin)
         {
             return true;
@@ -139,11 +174,6 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         return false;
     }
 
-    private static bool IsBoreholeReviewedOrPublished(Borehole borehole)
-    {
-        return borehole.Workflow?.Status is WorkflowStatus.Reviewed or WorkflowStatus.Published;
-    }
-
     private async Task<Borehole> GetBoreholeAsync(int? boreholeId)
     {
         return await context.Boreholes
@@ -162,6 +192,17 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
             .ConfigureAwait(false) ?? throw new InvalidOperationException($"Current user with subjectId <{subjectId}> does not exist.");
     }
 
+    /// <summary>
+    /// Maps workflow statuses to the minimum role required to edit a borehole in that status.
+    /// Roles have a hierarchical relationship (Publisher > Validator > Controller > Editor > View),
+    /// where a higher role includes all permissions of lower roles.
+    ///
+    /// This mapping defines which role is needed to edit a borehole based on its current workflow status:
+    /// - Draft: Requires at least Editor role
+    /// - InReview: Requires at least Controller role
+    /// - Reviewed: Requires at least Controller role
+    /// - Published: Requires Publisher role.
+    /// </summary>
     internal static readonly Dictionary<WorkflowStatus, Role?> EditPermissionsStatusRoleMap = new()
     {
         { WorkflowStatus.Draft, Role.Editor },
