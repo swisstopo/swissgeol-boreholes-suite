@@ -92,11 +92,19 @@ public class BoreholePermissionServiceTest
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
 
+        // Check if user can edit borehole
         Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
         Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+
+        // Check if user can change borehole status
+        Assert.IsFalse(boreholePermissionService.CanChangeBoreholeStatus(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanChangeBoreholeStatus(GetOtherWorkgroupUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanChangeBoreholeStatus(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanChangeBoreholeStatus(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanChangeBoreholeStatus(GetAdminUser(), borehole));
     }
 
     [TestMethod]
@@ -119,11 +127,19 @@ public class BoreholePermissionServiceTest
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetPublisherUser(), borehole));
         Assert.IsTrue(boreholePermissionService.CanViewBorehole(GetAdminUser(), borehole));
 
+        // Check if user can edit borehole
         Assert.IsFalse(boreholePermissionService.CanEditBorehole(new User(), borehole));
         Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetOtherWorkgroupUser(), borehole));
         Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetEditorUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
-        Assert.IsTrue(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetPublisherUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanEditBorehole(GetAdminUser(), borehole));
+
+        // Check if user can change borehole status
+        Assert.IsFalse(boreholePermissionService.CanChangeBoreholeStatus(new User(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanChangeBoreholeStatus(GetOtherWorkgroupUser(), borehole));
+        Assert.IsFalse(boreholePermissionService.CanChangeBoreholeStatus(GetEditorUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanChangeBoreholeStatus(GetPublisherUser(), borehole));
+        Assert.IsTrue(boreholePermissionService.CanChangeBoreholeStatus(GetAdminUser(), borehole));
     }
 
     [TestMethod]

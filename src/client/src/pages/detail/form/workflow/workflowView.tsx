@@ -9,10 +9,11 @@ import {
   SgcWorkflowCustomEvent,
   SgcWorkflowSelectionChangeEventDetails,
   SgcWorkflowSelectionEntry,
+  WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
 import { Role as LegacyRole } from "../../../../api/apiInterfaces.ts";
-import { useBorehole, useBoreholeEditable } from "../../../../api/borehole.ts";
+import { useBorehole, useBoreholeStatusEditable } from "../../../../api/borehole.ts";
 import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { restrictionFreeCode } from "../../../../components/codelist.ts";
@@ -20,6 +21,7 @@ import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailablilty.ts";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { EditStateContext } from "../../editStateContext.tsx";
 import {
   TabStatusChangeRequest,
   TabType,
@@ -35,7 +37,8 @@ export const WorkflowView = () => {
   const { data: workflow, isLoading } = useWorkflow(parseInt(boreholeId));
   const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
   const { t } = useTranslation();
-  const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(boreholeId));
+  const { data: canChangeStatus } = useBoreholeStatusEditable(parseInt(boreholeId));
+  const { setEditingEnabled } = useContext(EditStateContext);
   const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole.workgroup?.id ?? 0);
   const { navigateTo } = useBoreholesNavigate();
   const { showAlert } = useContext(AlertContext);
@@ -67,11 +70,11 @@ export const WorkflowView = () => {
   } = useWorkflowMutation();
 
   useEffect(() => {
-    if (editableByCurrentUser === false) {
+    if (canChangeStatus === false) {
       showAlert(t("boreholeStatusChangedNoMorePermissions"), "success");
       navigateTo({ path: "/" + boreholeId + "/location" });
     }
-  }, [editableByCurrentUser, showAlert, navigateTo, t, boreholeId]);
+  }, [canChangeStatus, showAlert, navigateTo, t, boreholeId]);
 
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
     const field = (name: string, isDisabled: boolean = !hasStratigraphy) => ({
@@ -154,6 +157,9 @@ export const WorkflowView = () => {
       newStatus: changes.toStatus,
     };
     updateWorkflow(workflowChangeRequest);
+    if (changes.toStatus === WorkflowStatus.Reviewed || changes.toStatus === WorkflowStatus.Published) {
+      setEditingEnabled(false);
+    }
   };
 
   const revokePublicationIfReviewTabChanges = (changes: Partial<GenericWorkflowSelection>) => {
@@ -215,7 +221,7 @@ export const WorkflowView = () => {
         isReadOnly={false}
         availableAssignees={availableAssignees}
         selection={makeSelectionEntries()}
-        canChangeStatus={editableByCurrentUser}
+        canChangeStatus={canChangeStatus}
         isRestricted={borehole.restrictionId !== restrictionFreeCode || !isAnythingApproved}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
           handleTabStatusUpdate(e, TabType.Reviewed)

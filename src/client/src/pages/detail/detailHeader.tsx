@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Trash2, X } from "lucide-react";
+import { WorkflowStatus } from "@swissgeol/ui-core";
 import { BoreholeV2, useBoreholeEditable, useBoreholeMutations } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
@@ -42,13 +43,17 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
     delete: { mutate: deleteBorehole },
   } = useBoreholeMutations();
 
-  const toggleEditing = (editing: boolean) => {
+  const changeBoreholeLockStatus = (editing: boolean) => {
     if (!currentUser) return;
     if (!editing) {
       updateBorehole({ ...borehole, locked: null, lockedById: null });
     } else {
       updateBorehole({ ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id });
     }
+  };
+
+  const toggleEditing = (editing: boolean) => {
+    changeBoreholeLockStatus(editing);
     setEditingEnabled(editing);
   };
 
@@ -106,9 +111,11 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
     if (editingEnabled) {
       if (hasChanges) {
         stopEditingWithUnsavedChanges();
-      } else {
-        stopEditing();
-      }
+      } else if (
+        borehole.workflow?.status !== WorkflowStatus.Published &&
+        borehole.workflow?.status !== WorkflowStatus.Reviewed
+      )
+        changeBoreholeLockStatus(false);
     }
     navigateTo({ path: "/" });
   };
@@ -133,7 +140,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
           label="export"
           onClick={hasChanges ? startExportWithUnsavedChanges : () => setIsExporting(true)}
         />
-        {editableByCurrentUser && (
+        {id && editableByCurrentUser && (
           <>
             {editingEnabled ? (
               <>
