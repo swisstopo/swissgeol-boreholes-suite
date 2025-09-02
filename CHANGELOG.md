@@ -5,6 +5,8 @@
 ### Changed
 - Upgraded swissgeol OCR service to version 1.1.0.
 - Added new workflow UI and backend to manage the borehole's publication status. Removed legacy workflow UI and backend.
+- Filters for workgroup and status are now hidden on the view instance.
+- Attachments can now be exported without editor privileges.
 
 ### Fixed
 - Boreholes that were locked by any user could not be edited by others, including administrators, even after lock timeout expiration.

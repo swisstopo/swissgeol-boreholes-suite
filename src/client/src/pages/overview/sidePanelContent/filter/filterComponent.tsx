@@ -7,6 +7,7 @@ import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
 import { Filters, ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
+import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import FilterChips from "./FilterChips.tsx";
 import { FilterContext } from "./filterContext.tsx";
@@ -37,6 +38,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const filters = useSelector((state: ReduxRootState) => state.filters);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const settings = useSelector((state: ReduxRootState) => state.setting);
+  const auth = useAuth();
 
   const [activeFilters, setActiveFilters] = useState<Filter[]>();
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
@@ -46,6 +48,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       translationId: "workgroup",
       isSelected: false,
       searchData: [{ value: "workgroup", hideShowAllFields: true }],
+      isHidden: auth.anonymousModeEnabled,
     },
     {
       id: 1,
@@ -53,6 +56,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       translationId: "status",
       isSelected: false,
       searchData: [{ value: "workflow", hideShowAllFields: true }],
+      isHidden: auth.anonymousModeEnabled,
     },
     {
       id: 2,
@@ -204,7 +208,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
           const activeFilterLength = activeFilters?.filter(f =>
             currentFilterInputConfig?.searchData.some(d => d.value === f.key),
           )?.length;
-          return (
+          return filter.isHidden ? null : (
             <StyledAccordion key={filter.id} expanded={filter?.isSelected}>
               <AccordionSummary
                 expandIcon={<ChevronDown />}

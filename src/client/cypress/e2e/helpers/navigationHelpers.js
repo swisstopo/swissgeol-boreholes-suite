@@ -200,7 +200,6 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       });
       break;
     case SidebarMenuItem.completion:
-      cy.wait("@completion_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/completion$/);
       });
