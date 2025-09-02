@@ -1,6 +1,6 @@
 export function assertWorkflowSteps(activeStep: string) {
   cy.get("sgc-workflow-step").find("sgc-translate").should("contain", "Draft");
-  cy.get("sgc-workflow-step").find("sgc-translate").should("contain", "Review");
+  cy.get("sgc-workflow-step").find("sgc-translate").should("contain", "In review");
   cy.get("sgc-workflow-step").find("sgc-translate").should("contain", "Reviewed");
   cy.get("sgc-workflow-step.is-active").find("sgc-translate").should("contain", activeStep);
 }
