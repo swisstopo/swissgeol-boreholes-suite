@@ -55,6 +55,33 @@ public class LithologyControllerTest
     }
 
     [TestMethod]
+    public async Task GetEntriesByStratigraphyIdLithologySorting()
+    {
+        // Find a stratigraphy to use
+        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var createdLithologyIds = new List<int>();
+
+        // Create lithologies out of order
+        await CreateLithology(createdLithologyIds, new Lithology { StratigraphyId = stratigraphyId, FromDepth = 130, ToDepth = 140 });
+        await CreateLithology(createdLithologyIds, new Lithology { StratigraphyId = stratigraphyId, FromDepth = 100, ToDepth = 110 });
+        await CreateLithology(createdLithologyIds, new Lithology { StratigraphyId = stratigraphyId, FromDepth = 120, ToDepth = 130 });
+
+        var response = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
+        var lithologies = response.Value;
+        Assert.IsNotNull(lithologies);
+
+        // Verify sorting
+        for (int i = 1; i < lithologies.Count(); i++)
+        {
+            Assert.IsTrue(
+                lithologies.ElementAt(i - 1).FromDepth <= lithologies.ElementAt(i).FromDepth,
+                "Expected lithologies to be sorted by FromDepth but after {0} followed {1}",
+                lithologies.ElementAt(i - 1).FromDepth,
+                lithologies.ElementAt(i).FromDepth);
+        }
+    }
+
+    [TestMethod]
     public async Task GetLithologyByInexistentId()
     {
         var response = await controller.GetByIdAsync(9263667).ConfigureAwait(false);
@@ -90,117 +117,163 @@ public class LithologyControllerTest
     }
 
     [TestMethod]
-    public async Task EditLithologyWithCompleteLithology()
+    public async Task CreateAsyncWithExistingId()
     {
         var existingLithology = context.Lithologies.First();
-        var id = existingLithology.Id;
-
-        var originalValues = new
-        {
-            existingLithology.CreatedById,
-            existingLithology.UpdatedById,
-            existingLithology.StratigraphyId,
-            existingLithology.FromDepth,
-            existingLithology.ToDepth,
-            existingLithology.IsUnconsolidated,
-        };
-
-        var newLithology = new Lithology
-        {
-            Id = id,
-            CreatedById = 3,
-            UpdatedById = 3,
-            Created = DateTime.UtcNow,
-            StratigraphyId = existingLithology.StratigraphyId,
-            FromDepth = existingLithology.FromDepth + 5,
-            ToDepth = existingLithology.ToDepth + 5,
-            IsUnconsolidated = !existingLithology.IsUnconsolidated,
-            Notes = "Updated in test",
-        };
-
-        var lithologyToEdit = context.Lithologies.Single(c => c.Id == id);
-        Assert.AreEqual(originalValues.CreatedById, lithologyToEdit.CreatedById);
-        Assert.AreEqual(originalValues.UpdatedById, lithologyToEdit.UpdatedById);
-        Assert.AreEqual(originalValues.StratigraphyId, lithologyToEdit.StratigraphyId);
-        Assert.AreEqual(originalValues.FromDepth, lithologyToEdit.FromDepth);
-        Assert.AreEqual(originalValues.ToDepth, lithologyToEdit.ToDepth);
-        Assert.AreEqual(originalValues.IsUnconsolidated, lithologyToEdit.IsUnconsolidated);
-
-        // Update Lithology
-        var response = await controller.EditAsync(newLithology);
-        ActionResultAssert.IsOk(response.Result);
-
-        // Assert Updates and unchanged values
-        var updatedLithology = context.Lithologies.Single(c => c.Id == id);
-
-        Assert.AreEqual(3, updatedLithology.CreatedById);
-        Assert.AreEqual(1, updatedLithology.UpdatedById);
-        Assert.AreEqual(originalValues.StratigraphyId, updatedLithology.StratigraphyId);
-        Assert.AreEqual(newLithology.FromDepth, updatedLithology.FromDepth);
-        Assert.AreEqual(newLithology.ToDepth, updatedLithology.ToDepth);
-        Assert.AreEqual(newLithology.IsUnconsolidated, updatedLithology.IsUnconsolidated);
-        Assert.AreEqual("Updated in test", updatedLithology.Notes);
-    }
-
-    [TestMethod]
-    public async Task EditWithInexistentId()
-    {
-        var id = 9815784;
         var lithology = new Lithology
         {
-            Id = id,
-            StratigraphyId = 6000001,
-            FromDepth = 10,
-            ToDepth = 20,
+            Id = existingLithology.Id,
+            StratigraphyId = existingLithology.StratigraphyId,
+            FromDepth = 40,
+            ToDepth = 50,
         };
 
-        // Update Lithology
-        var response = await controller.EditAsync(lithology);
-        ActionResultAssert.IsNotFound(response.Result);
+        var getResponse = await controller.GetByIdAsync(lithology.Id);
+        ActionResultAssert.IsOk(getResponse.Result);
+
+        var response = await controller.CreateAsync(lithology);
+        ActionResultAssert.IsBadRequest(response.Result);
     }
 
     [TestMethod]
-    public async Task EditWithoutLithologyReturnsBadRequest()
+    public async Task CreateLithologyWithInvalidValuesReturnsBadRequest()
     {
-        var response = await controller.EditAsync(null);
+        // Test with bedding=true but no share value
+        var lithology = new Lithology
+        {
+            StratigraphyId = context.StratigraphiesV2.First().Id,
+            FromDepth = 10,
+            ToDepth = 20,
+            HasBedding = true,  // This requires Share to be set
+            Share = null, // This will cause the validation to fail
+        };
+
+        var response = await controller.CreateAsync(lithology);
         ActionResultAssert.IsBadRequest(response.Result);
     }
 
     [TestMethod]
     public async Task CreateAndDeleteAsync()
     {
-        // Get a valid stratigraphy ID
         var stratigraphyId = context.StratigraphiesV2.First().Id;
-
-        var lithology = new Lithology
-        {
-            CreatedById = 2,
-            UpdatedById = 2,
-            Created = new DateTime(2022, 10, 4, 13, 19, 34, DateTimeKind.Utc),
-            StratigraphyId = stratigraphyId,
-            FromDepth = 25.5,
-            ToDepth = 30.0,
-            IsUnconsolidated = true,
-            HasBedding = false,
-            Notes = "Test lithology",
-        };
+        var lithology = GetCompleteLithology(stratigraphyId);
+        lithology.HasBedding = false;
 
         var response = await controller.CreateAsync(lithology);
         ActionResultAssert.IsOk(response.Result);
-        lithology = await context.Lithologies.FindAsync(lithology.Id);
-        Assert.IsNotNull(lithology);
-        Assert.AreEqual(25.5, lithology.FromDepth);
-        Assert.AreEqual(30.0, lithology.ToDepth);
-        Assert.AreEqual("Test lithology", lithology.Notes);
+        var okObjectResult = response.Result as OkObjectResult;
+        Assert.IsNotNull(okObjectResult);
+        var createdLithology = okObjectResult.Value as Lithology;
+        Assert.IsNotNull(createdLithology);
+        Assert.AreEqual(25.5, createdLithology.FromDepth);
+        Assert.AreEqual(30.0, createdLithology.ToDepth);
+        Assert.IsTrue(createdLithology.IsUnconsolidated);
+        Assert.IsFalse(createdLithology.HasBedding);
+        Assert.IsNull(createdLithology.Share);
+        Assert.AreEqual("Test lithology", createdLithology.Notes);
+        Assert.AreEqual(100000175, createdLithology.AlterationDegreeId);
+        Assert.AreEqual(21102002, createdLithology.CompactnessId);
+        Assert.AreEqual(21116001, createdLithology.CohesionId);
+        Assert.AreEqual(21105001, createdLithology.HumidityId);
+        Assert.AreEqual(21103010, createdLithology.ConsistencyId);
+        Assert.AreEqual(21101002, createdLithology.PlasticityId);
+        CollectionAssert.AreEquivalent(new List<int> { 23101004, 23101015 }, createdLithology.LithologyUscsTypeCodes.Select(c => c.CodelistId).ToList());
+        Assert.AreEqual(100000493, createdLithology.UscsDeterminationId);
+        CollectionAssert.AreEquivalent(new List<int> { 100000167 }, createdLithology.LithologyRockConditionCodes.Select(c => c.CodelistId).ToList());
+        Assert.AreEqual(0, createdLithology.LithologyTextureMataCodes.Count);
+        Assert.AreEqual(1, createdLithology.LithologyDescriptions.Count); // Only one description should be saved since HasBedding is false
+        var lithologyDescription = createdLithology.LithologyDescriptions.First();
+        Assert.IsTrue(lithologyDescription.IsFirst);
+        Assert.AreEqual(100000077, lithologyDescription.ColorPrimaryId);
+        Assert.AreEqual(100000083, lithologyDescription.ColorSecondaryId);
+        Assert.AreEqual(100000022, lithologyDescription.LithologyUnconMainId);
+        Assert.AreEqual(100000051, lithologyDescription.LithologyUncon2Id);
+        Assert.AreEqual(100000054, lithologyDescription.LithologyUncon3Id);
+        Assert.AreEqual(100000045, lithologyDescription.LithologyUncon4Id);
+        Assert.AreEqual(100000039, lithologyDescription.LithologyUncon5Id);
+        Assert.AreEqual(100000049, lithologyDescription.LithologyUncon6Id);
+        CollectionAssert.AreEquivalent(new List<int> { 21108004, 21108008 }, lithologyDescription.LithologyDescriptionOrganicComponentCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 9102 }, lithologyDescription.LithologyDescriptionDebrisCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 21110002, 21110004, 21110003 }, lithologyDescription.LithologyDescriptionGrainShapeCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 21115001 }, lithologyDescription.LithologyDescriptionGrainAngularityCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 100000503, 100000513 }, lithologyDescription.LithologyDescriptionUnconCoarseCodes.Select(c => c.CodelistId).ToList());
+        Assert.IsNull(lithologyDescription.LithologyConId);
+        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionComponentConParticleCodes.Count);
+        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionComponentConMineralCodes.Count);
+        Assert.IsNull(lithologyDescription.GrainAngularityId);
+        Assert.IsNull(lithologyDescription.GrainSizeId);
+        Assert.IsNull(lithologyDescription.GradationId);
+        Assert.IsNull(lithologyDescription.CementationId);
+        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionStructureSynGenCodes.Count);
+        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionStructurePostGenCodes.Count);
 
-        var deleteResponse = await controller.DeleteAsync(lithology.Id);
+        var deleteResponse = await controller.DeleteAsync(createdLithology.Id);
         ActionResultAssert.IsOk(deleteResponse);
 
-        deleteResponse = await controller.DeleteAsync(lithology.Id);
+        deleteResponse = await controller.DeleteAsync(createdLithology.Id);
         ActionResultAssert.IsNotFound(deleteResponse);
 
-        var getResponse = await controller.GetByIdAsync(lithology.Id);
+        var getResponse = await controller.GetByIdAsync(createdLithology.Id);
         ActionResultAssert.IsNotFound(getResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateConsolidatedLithologyAsync()
+    {
+        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var lithology = GetCompleteLithology(stratigraphyId);
+        lithology.IsUnconsolidated = false;
+
+        var response = await controller.CreateAsync(lithology);
+        ActionResultAssert.IsOk(response.Result);
+        var okObjectResult = response.Result as OkObjectResult;
+        Assert.IsNotNull(okObjectResult);
+        var createdLithology = okObjectResult.Value as Lithology;
+        Assert.IsNotNull(createdLithology);
+        Assert.AreEqual(25.5, createdLithology.FromDepth);
+        Assert.AreEqual(30.0, createdLithology.ToDepth);
+        Assert.IsFalse(createdLithology.IsUnconsolidated);
+        Assert.IsTrue(createdLithology.HasBedding);
+        Assert.AreEqual(70, createdLithology.Share);
+        Assert.AreEqual("Test lithology", createdLithology.Notes);
+        Assert.AreEqual(100000175, createdLithology.AlterationDegreeId);
+        Assert.IsNull(createdLithology.CompactnessId);
+        Assert.IsNull(createdLithology.CohesionId);
+        Assert.IsNull(createdLithology.HumidityId);
+        Assert.IsNull(createdLithology.ConsistencyId);
+        Assert.IsNull(createdLithology.PlasticityId);
+        Assert.AreEqual(0, createdLithology.LithologyUscsTypeCodes.Count);
+        Assert.IsNull(createdLithology.UscsDeterminationId);
+        Assert.AreEqual(0, createdLithology.LithologyRockConditionCodes.Count);
+        CollectionAssert.AreEquivalent(new List<int> { 100000470, 100000477 }, createdLithology.LithologyTextureMataCodes.Select(c => c.CodelistId).ToList());
+        Assert.AreEqual(2, createdLithology.LithologyDescriptions.Count);
+        var firstLithologyDescription = createdLithology.LithologyDescriptions.First();
+        Assert.IsTrue(firstLithologyDescription.IsFirst);
+        Assert.AreEqual(100000077, firstLithologyDescription.ColorPrimaryId);
+        Assert.AreEqual(100000083, firstLithologyDescription.ColorSecondaryId);
+        Assert.IsNull(firstLithologyDescription.LithologyUnconMainId);
+        Assert.IsNull(firstLithologyDescription.LithologyUncon2Id);
+        Assert.IsNull(firstLithologyDescription.LithologyUncon3Id);
+        Assert.IsNull(firstLithologyDescription.LithologyUncon4Id);
+        Assert.IsNull(firstLithologyDescription.LithologyUncon5Id);
+        Assert.IsNull(firstLithologyDescription.LithologyUncon6Id);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionOrganicComponentCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionDebrisCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionGrainShapeCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionGrainAngularityCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionUnconCoarseCodes.Count);
+        Assert.AreEqual(100000508, firstLithologyDescription.LithologyConId);
+        CollectionAssert.AreEquivalent(new List<int> { 100000186, 100000181 }, firstLithologyDescription.LithologyDescriptionComponentConParticleCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 100000260 }, firstLithologyDescription.LithologyDescriptionComponentConMineralCodes.Select(c => c.CodelistId).ToList());
+        Assert.AreEqual(21115007, firstLithologyDescription.GrainAngularityId);
+        Assert.AreEqual(21109007, firstLithologyDescription.GrainSizeId);
+        Assert.AreEqual(30000015, firstLithologyDescription.GradationId);
+        Assert.AreEqual(100000360, firstLithologyDescription.CementationId);
+        CollectionAssert.AreEquivalent(new List<int> { 100000377, 100000365, 100000399 }, firstLithologyDescription.LithologyDescriptionStructureSynGenCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 100000428, 100000435 }, firstLithologyDescription.LithologyDescriptionStructurePostGenCodes.Select(c => c.CodelistId).ToList());
+
+        var deleteResponse = await controller.DeleteAsync(createdLithology.Id);
+        ActionResultAssert.IsOk(deleteResponse);
     }
 
     [TestMethod]
@@ -251,74 +324,191 @@ public class LithologyControllerTest
     }
 
     [TestMethod]
-    public async Task CreateAsyncWithExistingId()
+    public async Task EditLithologyWithCompleteLithology()
     {
-        var existingLithology = context.Lithologies.First();
-        var lithology = new Lithology
+        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var existingUnconsolidatedLithology = GetCompleteLithology(stratigraphyId);
+        var createResponse = await controller.CreateAsync(existingUnconsolidatedLithology);
+        ActionResultAssert.IsOk(createResponse.Result);
+        var okObjectResult = createResponse.Result as OkObjectResult;
+        Assert.IsNotNull(okObjectResult);
+        existingUnconsolidatedLithology = okObjectResult.Value as Lithology;
+
+        var newLithology = new Lithology
         {
-            Id = existingLithology.Id,
-            StratigraphyId = existingLithology.StratigraphyId,
-            FromDepth = 40,
-            ToDepth = 50,
+            Id = existingUnconsolidatedLithology.Id,
+            UpdatedById = 3,
+            StratigraphyId = existingUnconsolidatedLithology.StratigraphyId,
+            FromDepth = existingUnconsolidatedLithology.FromDepth + 5,
+            ToDepth = existingUnconsolidatedLithology.ToDepth + 5,
+            IsUnconsolidated = false,
+            HasBedding = false,
+            Notes = "Updated in test",
+            AlterationDegreeId = 100000176,
+            CompactnessId = 21102002,
+            CohesionId = 21116001,
+            RockConditionCodelistIds = new List<int> { 100000167 },
+            TextureMataCodelistIds = new List<int> { 100000469, 100000482 },
+            LithologyDescriptions = existingUnconsolidatedLithology.LithologyDescriptions.Where(ld => ld.IsFirst).ToList(),
         };
 
-        var getResponse = await controller.GetByIdAsync(lithology.Id);
-        ActionResultAssert.IsOk(getResponse.Result);
+        // Update Lithology
+        var response = await controller.EditAsync(newLithology);
+        ActionResultAssert.IsOk(response.Result);
+        var updatedOkObjectResult = response.Result as OkObjectResult;
+        var updatedLithology = updatedOkObjectResult.Value as Lithology;
 
-        var response = await controller.CreateAsync(lithology);
-        ActionResultAssert.IsBadRequest(response.Result);
+        Assert.AreEqual(1, updatedLithology.UpdatedById);
+        Assert.AreEqual(existingUnconsolidatedLithology.StratigraphyId, updatedLithology.StratigraphyId);
+        Assert.AreEqual(newLithology.FromDepth, updatedLithology.FromDepth);
+        Assert.AreEqual(newLithology.ToDepth, updatedLithology.ToDepth);
+        Assert.AreEqual(newLithology.IsUnconsolidated, updatedLithology.IsUnconsolidated);
+        Assert.IsFalse(updatedLithology.HasBedding);
+        Assert.IsNull(updatedLithology.Share);
+        Assert.AreEqual(newLithology.Notes, updatedLithology.Notes);
+        Assert.AreEqual(newLithology.AlterationDegreeId, updatedLithology.AlterationDegreeId);
+        Assert.IsNull(updatedLithology.CompactnessId);
+        Assert.IsNull(updatedLithology.CohesionId);
+        Assert.IsNull(updatedLithology.HumidityId);
+        Assert.IsNull(updatedLithology.ConsistencyId);
+        Assert.IsNull(updatedLithology.PlasticityId);
+        Assert.AreEqual(0, updatedLithology.LithologyUscsTypeCodes.Count);
+        Assert.IsNull(updatedLithology.UscsDeterminationId);
+        Assert.AreEqual(0, updatedLithology.LithologyRockConditionCodes.Count);
+        CollectionAssert.AreEquivalent(new List<int> { 100000469, 100000482 }, updatedLithology.LithologyTextureMataCodes.Select(c => c.CodelistId).ToList());
+        Assert.AreEqual(1, updatedLithology.LithologyDescriptions.Count);
+        var lithologyDescription = updatedLithology.LithologyDescriptions.First();
+        Assert.IsTrue(lithologyDescription.IsFirst);
+        Assert.AreEqual(existingUnconsolidatedLithology.LithologyDescriptions.First().Id, lithologyDescription.Id);
+        Assert.AreEqual(existingUnconsolidatedLithology.LithologyDescriptions.First().ColorPrimaryId, lithologyDescription.ColorPrimaryId);
+        Assert.AreEqual(existingUnconsolidatedLithology.LithologyDescriptions.First().ColorSecondaryId, lithologyDescription.ColorSecondaryId);
+        Assert.IsNull(lithologyDescription.LithologyUnconMainId);
+        Assert.IsNull(lithologyDescription.LithologyUncon2Id);
+        Assert.IsNull(lithologyDescription.LithologyUncon3Id);
+        Assert.IsNull(lithologyDescription.LithologyUncon4Id);
+        Assert.IsNull(lithologyDescription.LithologyUncon5Id);
+        Assert.IsNull(lithologyDescription.LithologyUncon6Id);
+        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionOrganicComponentCodes.Count);
+        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionDebrisCodes.Count);
+        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionGrainShapeCodes.Count);
+        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionGrainAngularityCodes.Count);
+        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionUnconCoarseCodes.Count);
+
+        var oldLithologyDescriptions = context.LithologyDescriptions.Where(ld => ld.LithologyId == existingUnconsolidatedLithology.Id).ToList();
+        Assert.AreEqual(1, oldLithologyDescriptions.Count);
+        Assert.AreEqual(lithologyDescription.Id, oldLithologyDescriptions.First().Id);
     }
 
     [TestMethod]
-    public async Task GetEntriesByStratigraphyIdLayerSorting()
+    public async Task EditWithInexistentId()
     {
-        // Find a stratigraphy to use
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
-        var createdLayerIds = new List<int>();
-
-        // Create layers out of order
-        await CreateLayer(createdLayerIds, new Lithology { StratigraphyId = stratigraphyId, FromDepth = 130, ToDepth = 140 });
-        await CreateLayer(createdLayerIds, new Lithology { StratigraphyId = stratigraphyId, FromDepth = 100, ToDepth = 110 });
-        await CreateLayer(createdLayerIds, new Lithology { StratigraphyId = stratigraphyId, FromDepth = 120, ToDepth = 130 });
-
-        var response = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
-        var layers = response.Value;
-        Assert.IsNotNull(layers);
-
-        // Verify sorting
-        for (int i = 1; i < layers.Count(); i++)
-        {
-            Assert.IsTrue(
-                layers.ElementAt(i - 1).FromDepth <= layers.ElementAt(i).FromDepth,
-                "Expected layers to be sorted by FromDepth but after {0} followed {1}",
-                layers.ElementAt(i - 1).FromDepth,
-                layers.ElementAt(i).FromDepth);
-        }
-    }
-
-    [TestMethod]
-    public async Task CreateLithologyWithInvalidValuesReturnsBadRequest()
-    {
-        // Test with bedding=true but no share value
+        var id = 9815784;
         var lithology = new Lithology
         {
-            StratigraphyId = context.StratigraphiesV2.First().Id,
+            Id = id,
+            StratigraphyId = 6000001,
             FromDepth = 10,
             ToDepth = 20,
-            HasBedding = true,  // This requires Share to be set
-            Share = null, // This will cause the validation to fail
         };
 
-        var response = await controller.CreateAsync(lithology);
+        // Update Lithology
+        var response = await controller.EditAsync(lithology);
+        ActionResultAssert.IsNotFound(response.Result);
+    }
+
+    [TestMethod]
+    public async Task EditWithoutLithologyReturnsBadRequest()
+    {
+        var response = await controller.EditAsync(null);
         ActionResultAssert.IsBadRequest(response.Result);
     }
 
-    private async Task CreateLayer(List<int> layerIds, Lithology layer)
-    {
-        var response = await controller.CreateAsync(layer);
-        if (response.Result is OkObjectResult && response.Value is IIdentifyable responseLayer)
+    private static Lithology GetCompleteLithology(int stratigraphyId)
+        => new Lithology
         {
-            layerIds.Add(responseLayer.Id);
+            CreatedById = 2,
+            UpdatedById = 2,
+            Created = new DateTime(2022, 10, 4, 13, 19, 34, DateTimeKind.Utc),
+            StratigraphyId = stratigraphyId,
+            FromDepth = 25.5,
+            ToDepth = 30.0,
+            IsUnconsolidated = true,
+            HasBedding = true,
+            Share = 70,
+            Notes = "Test lithology",
+            AlterationDegreeId = 100000175,
+            CompactnessId = 21102002,
+            CohesionId = 21116001,
+            HumidityId = 21105001,
+            ConsistencyId = 21103010,
+            PlasticityId = 21101002,
+            UscsTypeCodelistIds = new List<int> { 23101004, 23101015 },
+            UscsDeterminationId = 100000493,
+            RockConditionCodelistIds = new List<int> { 100000167 },
+            TextureMataCodelistIds = new List<int> { 100000470, 100000477 },
+            LithologyDescriptions = new List<LithologyDescription>
+            {
+                new LithologyDescription
+                {
+                    IsFirst = false,
+                    ColorPrimaryId = 100000124,
+                    ColorSecondaryId = 100000117,
+                    LithologyUnconMainId = 100000033,
+                    LithologyUncon2Id = 100000044,
+                    LithologyUncon3Id = 100000041,
+                    LithologyUncon4Id = 100000052,
+                    LithologyUncon5Id = 100000037,
+                    LithologyUncon6Id = 100000053,
+                    OrganicComponentCodelistIds = new List<int> { 21108003, 21108006, 21108008 },
+                    DebrisCodelistIds = new List<int> { 9100, 9100 },
+                    GrainShapeCodelistIds = new List<int> { 21110002, 21110003 },
+                    GrainAngularityCodelistIds = new List<int> { 21115007, 21115001 },
+                    LithologyUnconCoarseCodeCodelistIds = new List<int> { 100000536, 100000556, 100000570 },
+                    LithologyConId = 100000540,
+                    ComponentConParticleCodelistIds = new List<int> { 100000183 },
+                    ComponentConMineralCodelistIds = new List<int> { 100000251, 100000262 },
+                    GrainAngularityId = 21115001,
+                    GrainSizeId = 100000499,
+                    GradationId = 100000494,
+                    CementationId = 100000357,
+                    StructureSynGenCodelistIds = new List<int> { 100000372, 100000391 },
+                    StructurePostGenCodelistIds = new List<int> { 100000426, 100000463, 100000456 },
+                },
+                new LithologyDescription
+                {
+                    IsFirst = true,
+                    ColorPrimaryId = 100000077,
+                    ColorSecondaryId = 100000083,
+                    LithologyUnconMainId = 100000022,
+                    LithologyUncon2Id = 100000051,
+                    LithologyUncon3Id = 100000054,
+                    LithologyUncon4Id = 100000045,
+                    LithologyUncon5Id = 100000039,
+                    LithologyUncon6Id = 100000049,
+                    OrganicComponentCodelistIds = new List<int> { 21108004, 21108008 },
+                    DebrisCodelistIds = new List<int> { 9102 },
+                    GrainShapeCodelistIds = new List<int> { 21110002, 21110004, 21110003 },
+                    GrainAngularityCodelistIds = new List<int> { 21115001 },
+                    LithologyUnconCoarseCodeCodelistIds = new List<int> { 100000503, 100000513 },
+                    LithologyConId = 100000508,
+                    ComponentConParticleCodelistIds = new List<int> { 100000186, 100000181 },
+                    ComponentConMineralCodelistIds = new List<int> { 100000260 },
+                    GrainAngularityId = 21115007,
+                    GrainSizeId = 21109007,
+                    GradationId = 30000015,
+                    CementationId = 100000360,
+                    StructureSynGenCodelistIds = new List<int> { 100000377, 100000365, 100000399 },
+                    StructurePostGenCodelistIds = new List<int> { 100000428, 100000435 },
+                },
+            },
+        };
+
+    private async Task CreateLithology(List<int> lithologyIds, Lithology lithology)
+    {
+        var response = await controller.CreateAsync(lithology);
+        if (response.Result is OkObjectResult && response.Value is IIdentifyable responseLithology)
+        {
+            lithologyIds.Add(responseLithology.Id);
         }
     }
 }
