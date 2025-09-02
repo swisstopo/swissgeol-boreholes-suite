@@ -264,6 +264,16 @@ DELETE FROM bdms.facies_description WHERE id_fac IN (
     WHERE t.lithology = false
 );
 
+-- Stratigraphy (if there is no Chronostratigraphy, Lithostratigraphy or Lithology)
+DELETE FROM bdms.stratigraphy WHERE id_bho_fk IS NULL;
+DELETE FROM bdms.stratigraphy WHERE id_sty IN (
+    SELECT s.id_sty FROM bdms.stratigraphy s
+    INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+    INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.chronostratigraphy = false AND t.lithostratigraphy = false AND t.lithology = false
+);
+
 -- Borehole: Geometry
 DELETE FROM bdms.borehole_geometry WHERE id IN (
     SELECT bg.id FROM bdms.borehole_geometry bg
