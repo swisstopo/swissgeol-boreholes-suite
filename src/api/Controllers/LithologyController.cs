@@ -17,7 +17,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Lithology"/>s, optionally filtered by <paramref name="stratigraphyId"/>.
+    /// Asynchronously gets the <see cref="Lithology"/>s, filtered by <paramref name="stratigraphyId"/>.
     /// </summary>
     /// <param name="stratigraphyId">The id of the stratigraphy containing the lithologies to get.</param>
     [HttpGet]
