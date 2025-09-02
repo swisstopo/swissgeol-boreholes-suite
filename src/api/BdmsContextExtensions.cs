@@ -1246,11 +1246,11 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.LithologyDescriptionComponentConMineralCodes, _ => new List<LithologyDescriptionComponentConMineralCodes>())
             .RuleFor(o => o.LithologyDescriptionStructureSynGenCodes, _ => new List<LithologyDescriptionStructureSynGenCodes>())
             .RuleFor(o => o.LithologyDescriptionStructurePostGenCodes, _ => new List<LithologyDescriptionStructurePostGenCodes>())
-            .RuleFor(o => o.LithologyDescriptionOrganicComponentCodes, _ => new List<LithologyDescriptionOrganicComponentCodes>())
-            .RuleFor(o => o.LithologyDescriptionDebrisCodes, _ => new List<LithologyDescriptionDebrisCodes>())
+            .RuleFor(o => o.LithologyDescriptionComponentUnconOrganicCodes, _ => new List<LithologyDescriptionComponentUnconOrganicCodes>())
+            .RuleFor(o => o.LithologyDescriptionComponentUnconDebrisCodes, _ => new List<LithologyDescriptionComponentUnconDebrisCodes>())
             .RuleFor(o => o.LithologyDescriptionGrainShapeCodes, _ => new List<LithologyDescriptionGrainShapeCodes>())
             .RuleFor(o => o.LithologyDescriptionGrainAngularityCodes, _ => new List<LithologyDescriptionGrainAngularityCodes>())
-            .RuleFor(o => o.LithologyDescriptionUnconCoarseCodes, _ => new List<LithologyDescriptionUnconCoarseCodes>());
+            .RuleFor(o => o.LithologyDescriptionLithologyUnconDebrisCodes, _ => new List<LithologyDescriptionLithologyUnconDebrisCodes>());
 
         // Generate lithology descriptions
         // First create one description for each lithology

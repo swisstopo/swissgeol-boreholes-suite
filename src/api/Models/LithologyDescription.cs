@@ -158,9 +158,9 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     public Codelist? LithologyUncon6 { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="LithologyDescriptionOrganicComponentCodes"/> join table entities.
+    /// Gets or sets the <see cref="LithologyDescriptionComponentUnconOrganicCodes"/> join table entities.
     /// </summary>
-    public IList<LithologyDescriptionOrganicComponentCodes>? LithologyDescriptionOrganicComponentCodes { get; set; }
+    public IList<LithologyDescriptionComponentUnconOrganicCodes>? LithologyDescriptionComponentUnconOrganicCodes { get; set; }
 
     /// <summary>
     /// Gets or sets the code list ids with schema name 'organic_components' of the <see cref="LithologyDescription"/>'s many to many code list relations.
@@ -175,9 +175,9 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     public ICollection<Codelist>? OrganicComponentCodelists { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="LithologyDescriptionDebrisCodes"/> join table entities.
+    /// Gets or sets the <see cref="LithologyDescriptionComponentUnconDebrisCodes"/> join table entities.
     /// </summary>
-    public IList<LithologyDescriptionDebrisCodes>? LithologyDescriptionDebrisCodes { get; set; }
+    public IList<LithologyDescriptionComponentUnconDebrisCodes>? LithologyDescriptionComponentUnconDebrisCodes { get; set; }
 
     /// <summary>
     /// Gets or sets the code list ids with schema name 'debris' of the <see cref="LithologyDescription"/>'s many to many code list relations.
@@ -233,9 +233,9 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     public bool HasStriae { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the <see cref="LithologyDescriptionUnconCoarseCodes"/> join table entities.
+    /// Gets or sets the <see cref="LithologyDescriptionLithologyUnconDebrisCodes"/> join table entities.
     /// </summary>
-    public IList<LithologyDescriptionUnconCoarseCodes>? LithologyDescriptionUnconCoarseCodes { get; set; }
+    public IList<LithologyDescriptionLithologyUnconDebrisCodes>? LithologyDescriptionLithologyUnconDebrisCodes { get; set; }
 
     /// <summary>
     /// Gets or sets the code list ids with schema name 'lithology_con' of the <see cref="LithologyDescription"/>'s many to many code list relations.

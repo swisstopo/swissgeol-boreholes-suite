@@ -93,15 +93,15 @@ public class BdmsContext : DbContext
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyUncon6)
         .Include(l => l.LithologyDescriptions)
-        .ThenInclude(ld => ld.LithologyDescriptionOrganicComponentCodes)
+        .ThenInclude(ld => ld.LithologyDescriptionComponentUnconOrganicCodes)
         .Include(l => l.LithologyDescriptions)
-        .ThenInclude(ld => ld.LithologyDescriptionDebrisCodes)
+        .ThenInclude(ld => ld.LithologyDescriptionComponentUnconDebrisCodes)
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionGrainShapeCodes)
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionGrainAngularityCodes)
         .Include(l => l.LithologyDescriptions)
-        .ThenInclude(ld => ld.LithologyDescriptionUnconCoarseCodes)
+        .ThenInclude(ld => ld.LithologyDescriptionLithologyUnconDebrisCodes)
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyCon)
         .Include(l => l.LithologyDescriptions)
@@ -599,14 +599,14 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<LithologyDescription>()
             .HasMany(l => l.OrganicComponentCodelists)
             .WithMany()
-            .UsingEntity<LithologyDescriptionOrganicComponentCodes>(
+            .UsingEntity<LithologyDescriptionComponentUnconOrganicCodes>(
                 j => j
                     .HasOne(lc => lc.Codelist)
-                    .WithMany(c => c.LithologyDescriptionOrganicComponentCodes)
+                    .WithMany(c => c.LithologyDescriptionComponentUnconOrganicCodes)
                     .HasForeignKey(lc => lc.CodelistId),
                 j => j
                     .HasOne(lc => lc.LithologyDescription)
-                    .WithMany(b => b.LithologyDescriptionOrganicComponentCodes)
+                    .WithMany(b => b.LithologyDescriptionComponentUnconOrganicCodes)
                     .HasForeignKey(l => l.LithologyDescriptionId),
                 j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
 
@@ -614,14 +614,14 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<LithologyDescription>()
             .HasMany(l => l.DebrisCodelists)
             .WithMany()
-            .UsingEntity<LithologyDescriptionDebrisCodes>(
+            .UsingEntity<LithologyDescriptionComponentUnconDebrisCodes>(
                 j => j
                     .HasOne(lc => lc.Codelist)
-                    .WithMany(c => c.LithologyDescriptionDebrisCodes)
+                    .WithMany(c => c.LithologyDescriptionComponentUnconDebrisCodes)
                     .HasForeignKey(lc => lc.CodelistId),
                 j => j
                     .HasOne(lc => lc.LithologyDescription)
-                    .WithMany(b => b.LithologyDescriptionDebrisCodes)
+                    .WithMany(b => b.LithologyDescriptionComponentUnconDebrisCodes)
                     .HasForeignKey(l => l.LithologyDescriptionId),
                 j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
 
@@ -659,14 +659,14 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<LithologyDescription>()
             .HasMany(l => l.LithologyUnconCoarseCodeCodelists)
             .WithMany()
-            .UsingEntity<LithologyDescriptionUnconCoarseCodes>(
+            .UsingEntity<LithologyDescriptionLithologyUnconDebrisCodes>(
                 j => j
                     .HasOne(lc => lc.Codelist)
-                    .WithMany(c => c.LithologyDescriptionUnconCoarseCodes)
+                    .WithMany(c => c.LithologyDescriptionLithologyUnconDebrisCodes)
                     .HasForeignKey(lc => lc.CodelistId),
                 j => j
                     .HasOne(lc => lc.LithologyDescription)
-                    .WithMany(b => b.LithologyDescriptionUnconCoarseCodes)
+                    .WithMany(b => b.LithologyDescriptionLithologyUnconDebrisCodes)
                     .HasForeignKey(l => l.LithologyDescriptionId),
                 j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
 

@@ -3,10 +3,10 @@
 namespace BDMS.Models;
 
 /// <summary>
-/// Join table entity for a <see cref="Models.Codelist"/> with the schemaName 'component_uncon_organic' attached to a <see cref="Models.LithologyDescription"/>.
+/// Join table entity for a <see cref="Models.Codelist"/> with the schemaName 'component_uncon_debris' attached to a <see cref="Models.LithologyDescription"/>.
 /// </summary>
-[Table("lithology_description_organic_component_codelist")]
-public class LithologyDescriptionOrganicComponentCodes : ILithologyDescriptionCode
+[Table("lithology_description_component_uncon_debris_codelist")]
+public class LithologyDescriptionComponentUnconDebrisCodes : ILithologyDescriptionCode
 {
     /// <inheritdoc/>
     [Column("lithology_description_id")]
@@ -16,7 +16,7 @@ public class LithologyDescriptionOrganicComponentCodes : ILithologyDescriptionCo
     public LithologyDescription? LithologyDescription { get; set; }
 
     /// <inheritdoc/>
-    [Column("organic_components_id")]
+    [Column("component_uncon_debris_id")]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>

@@ -179,16 +179,16 @@ public class Codelist : IIdentifyable
     public ICollection<LithologyDescriptionComponentConMineralCodes>? LithologyDescriptionComponentConMineralCodes { get; set; }
 
     /// <summary>
-    /// Gets the <see cref="LithologyDescriptionOrganicComponentCodes"/> join table entities.
+    /// Gets the <see cref="LithologyDescriptionComponentUnconOrganicCodes"/> join table entities.
     /// </summary>
     [JsonIgnore]
-    public ICollection<LithologyDescriptionOrganicComponentCodes>? LithologyDescriptionOrganicComponentCodes { get; set; }
+    public ICollection<LithologyDescriptionComponentUnconOrganicCodes>? LithologyDescriptionComponentUnconOrganicCodes { get; set; }
 
     /// <summary>
-    /// Gets the <see cref="LithologyDescriptionDebrisCodes"/> join table entities.
+    /// Gets the <see cref="LithologyDescriptionComponentUnconDebrisCodes"/> join table entities.
     /// </summary>
     [JsonIgnore]
-    public ICollection<LithologyDescriptionDebrisCodes>? LithologyDescriptionDebrisCodes { get; set; }
+    public ICollection<LithologyDescriptionComponentUnconDebrisCodes>? LithologyDescriptionComponentUnconDebrisCodes { get; set; }
 
     /// <summary>
     /// Gets the <see cref="LithologyDescriptionGrainShapeCodes"/> join table entities.
@@ -203,10 +203,10 @@ public class Codelist : IIdentifyable
     public ICollection<LithologyDescriptionGrainAngularityCodes>? LithologyDescriptionGrainAngularityCodes { get; set; }
 
     /// <summary>
-    /// Gets the <see cref="LithologyDescriptionUnconCoarseCodes"/> join table entities.
+    /// Gets the <see cref="LithologyDescriptionLithologyUnconDebrisCodes"/> join table entities.
     /// </summary>
     [JsonIgnore]
-    public ICollection<LithologyDescriptionUnconCoarseCodes>? LithologyDescriptionUnconCoarseCodes { get; set; }
+    public ICollection<LithologyDescriptionLithologyUnconDebrisCodes>? LithologyDescriptionLithologyUnconDebrisCodes { get; set; }
 
     /// <summary>
     /// Gets the <see cref="LithologyDescriptionStructureSynGenCodes"/> join table entities.

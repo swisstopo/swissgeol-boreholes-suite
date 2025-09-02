@@ -193,10 +193,10 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
                         // Set the unconsolidated lithology codes
                         var organicComponentCodes = await Context.Codelists.Where(c => ld.OrganicComponentCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                        ld.LithologyDescriptionOrganicComponentCodes = organicComponentCodes.Select(c => new LithologyDescriptionOrganicComponentCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+                        ld.LithologyDescriptionComponentUnconOrganicCodes = organicComponentCodes.Select(c => new LithologyDescriptionComponentUnconOrganicCodes() { Codelist = c, CodelistId = c.Id }).ToList();
 
                         var debrisCodes = await Context.Codelists.Where(c => ld.DebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                        ld.LithologyDescriptionDebrisCodes = debrisCodes.Select(c => new LithologyDescriptionDebrisCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+                        ld.LithologyDescriptionComponentUnconDebrisCodes = debrisCodes.Select(c => new LithologyDescriptionComponentUnconDebrisCodes() { Codelist = c, CodelistId = c.Id }).ToList();
 
                         var grainShapeCodes = await Context.Codelists.Where(c => ld.GrainShapeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
                         ld.LithologyDescriptionGrainShapeCodes = grainShapeCodes.Select(c => new LithologyDescriptionGrainShapeCodes() { Codelist = c, CodelistId = c.Id }).ToList();
@@ -205,7 +205,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                         ld.LithologyDescriptionGrainAngularityCodes = grainAngularityCodes.Select(c => new LithologyDescriptionGrainAngularityCodes() { Codelist = c, CodelistId = c.Id }).ToList();
 
                         var unconCoarseCodes = await Context.Codelists.Where(c => ld.LithologyUnconCoarseCodeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-                        ld.LithologyDescriptionUnconCoarseCodes = unconCoarseCodes.Select(c => new LithologyDescriptionUnconCoarseCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+                        ld.LithologyDescriptionLithologyUnconDebrisCodes = unconCoarseCodes.Select(c => new LithologyDescriptionLithologyUnconDebrisCodes() { Codelist = c, CodelistId = c.Id }).ToList();
                     }
                     else
                     {
@@ -225,10 +225,10 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                         await UpdateLithologyDescriptionCodesAsync(ld.Id, structurePostGenCodes!, []).ConfigureAwait(false);
 
                         // Set the unconsolidated lithology codes
-                        var organicComponentCodes = existingLithologyDescription?.LithologyDescriptionOrganicComponentCodes ?? [];
+                        var organicComponentCodes = existingLithologyDescription?.LithologyDescriptionComponentUnconOrganicCodes ?? [];
                         await UpdateLithologyDescriptionCodesAsync(ld.Id, organicComponentCodes!, ld.OrganicComponentCodelistIds!).ConfigureAwait(false);
 
-                        var debrisCodes = existingLithologyDescription?.LithologyDescriptionDebrisCodes ?? [];
+                        var debrisCodes = existingLithologyDescription?.LithologyDescriptionComponentUnconDebrisCodes ?? [];
                         await UpdateLithologyDescriptionCodesAsync(ld.Id, debrisCodes!, ld.DebrisCodelistIds!).ConfigureAwait(false);
 
                         var grainShapeCodes = existingLithologyDescription?.LithologyDescriptionGrainShapeCodes ?? [];
@@ -237,7 +237,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                         var grainAngularityCodes = existingLithologyDescription?.LithologyDescriptionGrainAngularityCodes ?? [];
                         await UpdateLithologyDescriptionCodesAsync(ld.Id, grainAngularityCodes!, ld.GrainAngularityCodelistIds!).ConfigureAwait(false);
 
-                        var unconCoarseCodes = existingLithologyDescription?.LithologyDescriptionUnconCoarseCodes ?? [];
+                        var unconCoarseCodes = existingLithologyDescription?.LithologyDescriptionLithologyUnconDebrisCodes ?? [];
                         await UpdateLithologyDescriptionCodesAsync(ld.Id, unconCoarseCodes!, ld.LithologyUnconCoarseCodeCodelistIds!).ConfigureAwait(false);
                     }
                 }
@@ -283,11 +283,11 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                     if (ld.Id == 0 || existingLithology == null)
                     {
                         // Reset the consolidated lithology values
-                        ld.LithologyDescriptionOrganicComponentCodes = [];
-                        ld.LithologyDescriptionDebrisCodes = [];
+                        ld.LithologyDescriptionComponentUnconOrganicCodes = [];
+                        ld.LithologyDescriptionComponentUnconDebrisCodes = [];
                         ld.LithologyDescriptionGrainShapeCodes = [];
                         ld.LithologyDescriptionGrainAngularityCodes = [];
-                        ld.LithologyDescriptionUnconCoarseCodes = [];
+                        ld.LithologyDescriptionLithologyUnconDebrisCodes = [];
 
                         // Set the consolidated lithology codes
                         var componentConParticleCodes = await Context.Codelists.Where(c => ld.ComponentConParticleCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
@@ -307,10 +307,10 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                         var existingLithologyDescription = existingLithology.LithologyDescriptions?.SingleOrDefault(x => x.Id == ld.Id);
 
                         // Reset the consolidated lithology values
-                        var organicComponentCodes = existingLithologyDescription?.LithologyDescriptionOrganicComponentCodes ?? [];
+                        var organicComponentCodes = existingLithologyDescription?.LithologyDescriptionComponentUnconOrganicCodes ?? [];
                         await UpdateLithologyDescriptionCodesAsync(ld.Id, organicComponentCodes!, []).ConfigureAwait(false);
 
-                        var debrisCodes = existingLithologyDescription?.LithologyDescriptionDebrisCodes ?? [];
+                        var debrisCodes = existingLithologyDescription?.LithologyDescriptionComponentUnconDebrisCodes ?? [];
                         await UpdateLithologyDescriptionCodesAsync(ld.Id, debrisCodes!, []).ConfigureAwait(false);
 
                         var grainShapeCodes = existingLithologyDescription?.LithologyDescriptionGrainShapeCodes ?? [];
@@ -319,7 +319,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                         var grainAngularityCodes = existingLithologyDescription?.LithologyDescriptionGrainAngularityCodes ?? [];
                         await UpdateLithologyDescriptionCodesAsync(ld.Id, grainAngularityCodes!, []).ConfigureAwait(false);
 
-                        var unconCoarseCodes = existingLithologyDescription?.LithologyDescriptionUnconCoarseCodes ?? [];
+                        var unconCoarseCodes = existingLithologyDescription?.LithologyDescriptionLithologyUnconDebrisCodes ?? [];
                         await UpdateLithologyDescriptionCodesAsync(ld.Id, unconCoarseCodes!, []).ConfigureAwait(false);
 
                         // Set the consolidated lithology codes
