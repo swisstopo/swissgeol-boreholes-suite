@@ -44,8 +44,13 @@ const BottomBar = ({
   const userIsEditor = user.data.roles.includes("EDIT");
   const auth = useAuth();
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
+
+  // Hotfix to display all workgroups with hierarchical roles =>  Todo: getting all workgroups for the user should be moved to the backend
   const enabledWorkgroups = useMemo(
-    () => user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT")),
+    () =>
+      user.data.workgroups.filter(
+        w => w.disabled === null && w.roles.some(role => ["EDIT", "CONTROL", "VALID", "PUBLIC"].includes(role)),
+      ),
     [user.data.workgroups],
   );
 
