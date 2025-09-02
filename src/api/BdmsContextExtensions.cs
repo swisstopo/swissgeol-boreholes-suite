@@ -1147,7 +1147,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.UpdatedBy, _ => default!)
             .RuleFor(o => o.Notes, f => f.Lorem.Sentence().OrNull(f, .3f))
             .RuleFor(o => o.IsUnconsolidated, f => lithology_ids % 3 != 0)
-            .RuleFor(o => o.HasBedding, (f, l) => l.IsUnconsolidated ? f.Random.Bool(.2f) : false)
+            .RuleFor(o => o.HasBedding, (f, l) => f.Random.Bool(.2f))
             .RuleFor(o => o.Share, (f, l) => l.HasBedding ? f.Random.Int(1, 100) : null)
             .RuleFor(o => o.AlterationDegreeId, f => f.PickRandom(alterationDegreeIds).OrNull(f, .3f))
             .RuleFor(o => o.AlterationDegree, _ => default!)
