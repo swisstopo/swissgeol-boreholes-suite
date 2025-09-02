@@ -13,4 +13,17 @@ export interface Completion {
   name: string;
   qualityId: number;
   notes: string;
+  casings: Casing[];
+  backfills: Backfill[];
+  instrumentations: Instrumentation[];
+}
+
+export interface Casing {
+  id: number;
+}
+export interface Backfill {
+  id: number;
+}
+export interface Instrumentation {
+  id: number;
 }
