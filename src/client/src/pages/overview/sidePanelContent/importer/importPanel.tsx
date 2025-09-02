@@ -7,7 +7,7 @@ import { downloadCodelistCsv } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
-import { useUserWorkgroups } from "../../WorkgroupUserContext.tsx";
+import { useUserWorkgroups } from "../../UserWorkgroupsContext.tsx";
 import { ErrorResponse, NewBoreholeProps } from "../commons/actionsInterfaces.ts";
 import WorkgroupSelect from "../commons/workgroupSelect.tsx";
 import { BoreholeImportDropzone } from "./boreholeImportDropzone.tsx";

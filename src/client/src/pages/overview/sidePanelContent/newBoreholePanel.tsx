@@ -3,7 +3,7 @@ import { Box, Button, Stack } from "@mui/material";
 import { useBoreholeMutations } from "../../../api/borehole.ts";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { SideDrawerHeader } from "../layout/sideDrawerHeader.tsx";
-import { useUserWorkgroups } from "../WorkgroupUserContext.tsx";
+import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 import { NewBoreholeProps } from "./commons/actionsInterfaces.ts";
 import WorkgroupSelect from "./commons/workgroupSelect.tsx";
 

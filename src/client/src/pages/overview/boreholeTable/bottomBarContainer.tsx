@@ -6,7 +6,7 @@ import { copyBorehole } from "../../../api/borehole.ts";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
-import { useUserWorkgroups } from "../WorkgroupUserContext.tsx";
+import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";

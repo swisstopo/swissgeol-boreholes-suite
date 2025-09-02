@@ -4,7 +4,7 @@ import { Box } from "@mui/material/";
 import { styled } from "@mui/material/styles";
 import { theme } from "../../../../AppTheme.ts";
 import { FormContainer, FormSelect } from "../../../../components/form/form.ts";
-import { useUserWorkgroups } from "../../WorkgroupUserContext.tsx";
+import { useUserWorkgroups } from "../../UserWorkgroupsContext.tsx";
 import { WorkgroupSelectProps } from "./actionsInterfaces.ts";
 
 const WorkgroupBox = styled(Box)({

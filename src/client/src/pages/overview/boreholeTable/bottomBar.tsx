@@ -12,7 +12,7 @@ import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../..
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
-import { useUserWorkgroups } from "../WorkgroupUserContext.tsx";
+import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 
 interface BottomBarProps {

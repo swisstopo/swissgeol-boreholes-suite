@@ -20,7 +20,7 @@ import { DevTool } from "../../../hookformDevtools.ts";
 import { patchBoreholes } from "../../api-lib";
 import { Workgroup } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
-import { useUserWorkgroups } from "../../pages/overview/WorkgroupUserContext.tsx";
+import { useUserWorkgroups } from "../../pages/overview/UserWorkgroupsContext.tsx";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
 import { FormSelect, FormValueType } from "../form/form.ts";

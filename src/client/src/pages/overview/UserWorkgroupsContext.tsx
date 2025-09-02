@@ -46,7 +46,7 @@ export const UserWorkgroupsProvider: React.FC<UserWorkgroupsProviderProps> = ({ 
 export const useUserWorkgroups = (): UserWorkgroupsContextType => {
   const context = useContext(UserWorkgroupsContext);
   if (context === undefined) {
-    throw new Error("useWorkgroups must be used within a UserWorkgroupsProvider");
+    throw new Error("useUserWorkgroups must be used within a UserWorkgroupsProvider");
   }
   return context;
 };

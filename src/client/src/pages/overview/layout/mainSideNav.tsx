@@ -11,7 +11,7 @@ import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { ImportErrorDialog } from "../sidePanelContent/importer/importErrorDialog.tsx";
-import { useUserWorkgroups } from "../WorkgroupUserContext.tsx";
+import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
