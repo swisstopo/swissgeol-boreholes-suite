@@ -60,7 +60,7 @@ describe("Tests the publication workflow.", () => {
     cy.get(".select-option").contains("validator user").click();
     cy.get("sgc-modal-wrapper").find("sgc-button").contains("Request review").click();
     cy.wait(["@workflow_by_id", "@borehole_by_id"]);
-    assertWorkflowSteps("Review");
+    assertWorkflowSteps("In Review");
   }
 
   function finishReview() {
@@ -121,13 +121,13 @@ describe("Tests the publication workflow.", () => {
 
       cy.get("sgc-workflow-change-template")
         .find("li")
-        .contains("Status changed from Draft to Review")
+        .contains("Status changed from Draft to In review")
         .should("be.visible");
 
       evaluateComment("I requested a review!", true);
 
       // assert status update
-      assertWorkflowSteps("Review");
+      assertWorkflowSteps("In review");
 
       // assert new assigned user
       cy.get(".assignee").should("contain", "validator user");
@@ -312,7 +312,7 @@ describe("Tests the publication workflow.", () => {
       getElementByDataCy("review-button").should("exist");
       getElementByDataCy("review-button").click();
       AssertHeaderChips(WorkflowStatus.InReview, "Admin User");
-      assertWorkflowSteps("Review");
+      assertWorkflowSteps("In review");
 
       ClickInteractionAndAssignNewUser("Request changes", "controller user");
       AssertHeaderChips(WorkflowStatus.Draft, "controller user", true);
