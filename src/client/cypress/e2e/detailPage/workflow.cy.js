@@ -60,7 +60,7 @@ describe("Tests the publication workflow.", () => {
     cy.get(".select-option").contains("validator user").click();
     cy.get("sgc-modal-wrapper").find("sgc-button").contains("Request review").click();
     cy.wait(["@workflow_by_id", "@borehole_by_id"]);
-    assertWorkflowSteps("In Review");
+    assertWorkflowSteps("In review");
   }
 
   function finishReview() {
