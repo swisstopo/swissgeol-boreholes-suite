@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useLayoutEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import { deleteBoreholes } from "../../../api-lib";
-import { Boreholes, Filters, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { Boreholes, Filters } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { copyBorehole } from "../../../api/borehole.ts";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
+import { useUserWorkgroups } from "../WorkgroupUserContext.tsx";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
@@ -41,13 +41,11 @@ const BottomBarContainer = ({
   setSelectionModel,
   setIsExporting,
 }: BottomBarContainerProps) => {
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const { navigateTo } = useBoreholesNavigate();
   const { featureIds } = useContext(FilterContext);
   const { bottomDrawerOpen } = useContext(OverViewContext);
-  const [workgroupId, setWorkgroupId] = useState<number | null>(
-    () => user.data.workgroups.find(w => w.roles.includes("EDIT"))?.id ?? null,
-  );
+  const { currentWorkgroupId } = useUserWorkgroups();
+
   const [isBusy, setIsBusy] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: boreholes.limit ?? 100,
@@ -78,10 +76,10 @@ const BottomBarContainer = ({
 
   const onCopyBorehole = useCallback(async () => {
     setIsBusy(true);
-    const newBoreholeId = await copyBorehole(selectionModel, workgroupId);
+    const newBoreholeId = await copyBorehole(selectionModel, currentWorkgroupId);
     setIsBusy(false);
     navigateTo({ path: `/${newBoreholeId}` });
-  }, [navigateTo, selectionModel, workgroupId]);
+  }, [navigateTo, selectionModel, currentWorkgroupId]);
 
   const onDeleteMultiple = useCallback(async () => {
     setIsBusy(true);
@@ -101,8 +99,6 @@ const BottomBarContainer = ({
         onDeleteMultiple={onDeleteMultiple}
         filters={filters}
         boreholes={boreholes}
-        workgroup={workgroupId}
-        setWorkgroup={setWorkgroupId}
         setIsExporting={setIsExporting}
       />
       <BottomDrawer drawerOpen={bottomDrawerOpen}>

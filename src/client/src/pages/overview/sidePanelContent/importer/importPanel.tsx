@@ -7,6 +7,7 @@ import { downloadCodelistCsv } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
+import { useUserWorkgroups } from "../../WorkgroupUserContext.tsx";
 import { ErrorResponse, NewBoreholeProps } from "../commons/actionsInterfaces.ts";
 import WorkgroupSelect from "../commons/workgroupSelect.tsx";
 import { BoreholeImportDropzone } from "./boreholeImportDropzone.tsx";
@@ -15,16 +16,10 @@ interface ImportPanelProps extends NewBoreholeProps {
   setErrorsResponse: React.Dispatch<React.SetStateAction<ErrorResponse | null>>;
   setErrorDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const ImportPanel = ({
-  workgroupId,
-  enabledWorkgroups,
-  setWorkgroupId,
-  toggleDrawer,
-  setErrorsResponse,
-  setErrorDialogOpen,
-}: ImportPanelProps) => {
+const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: ImportPanelProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const { enabledWorkgroups, currentWorkgroupId } = useUserWorkgroups();
 
   const { showAlert } = useContext(AlertContext);
 
@@ -76,16 +71,16 @@ const ImportPanel = ({
       combinedFormData.append("boreholesFile", file);
     }
     if (getFileExtension(file) === "csv") {
-      importBoreholesCsv(workgroupId, combinedFormData).then(response => {
+      importBoreholesCsv(currentWorkgroupId, combinedFormData).then(response => {
         handleImportResponse(response);
       });
     }
     if (getFileExtension(file) === "json") {
-      importBoreholesJson(workgroupId, combinedFormData).then(response => {
+      importBoreholesJson(currentWorkgroupId, combinedFormData).then(response => {
         handleImportResponse(response);
       });
     } else {
-      importBoreholesZip(workgroupId, combinedFormData).then(response => {
+      importBoreholesZip(currentWorkgroupId, combinedFormData).then(response => {
         handleImportResponse(response);
       });
     }
@@ -97,11 +92,7 @@ const ImportPanel = ({
         <SideDrawerHeader title={t("import")} toggleDrawer={toggleDrawer} />
         <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
           <Stack direction="column" spacing={3}>
-            <WorkgroupSelect
-              workgroupId={workgroupId}
-              enabledWorkgroups={enabledWorkgroups}
-              setWorkgroupId={setWorkgroupId}
-            />
+            <WorkgroupSelect />
             <BoreholeImportDropzone
               file={file}
               setFile={setFile}

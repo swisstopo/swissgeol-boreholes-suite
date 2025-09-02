@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router";
-import { Workgroup } from "../../api-lib/ReduxStateInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
@@ -19,8 +18,6 @@ import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 export const OverviewPage = () => {
   const [sideDrawerOpen, setSideDrawerOpen] = useState<boolean>(false);
   const location = useLocation();
-  const [workgroupId, setWorkgroupId] = useState<number | null>(null);
-  const [enabledWorkgroups, setEnabledWorkgroups] = useState<Workgroup[]>([]);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
@@ -39,21 +36,11 @@ export const OverviewPage = () => {
         <FilterComponent toggleDrawer={toggleSideDrawer} formMethods={formMethods} />
       </FormProvider>
     ),
-    newBorehole: (
-      <NewBoreholePanel
-        toggleDrawer={toggleSideDrawer}
-        workgroupId={workgroupId}
-        setWorkgroupId={setWorkgroupId}
-        enabledWorkgroups={enabledWorkgroups}
-      />
-    ),
+    newBorehole: <NewBoreholePanel toggleDrawer={toggleSideDrawer} />,
     customLayers: <CustomLayersPanel toggleDrawer={toggleSideDrawer} />,
     import: (
       <ImportPanel
         toggleDrawer={toggleSideDrawer}
-        workgroupId={workgroupId}
-        setWorkgroupId={setWorkgroupId}
-        enabledWorkgroups={enabledWorkgroups}
         setErrorsResponse={setErrorsResponse}
         setErrorDialogOpen={setErrorDialogOpen}
       />
@@ -70,8 +57,6 @@ export const OverviewPage = () => {
       <LayoutBox>
         <SidebarBox>
           <MainSideNav
-            setWorkgroupId={setWorkgroupId}
-            setEnabledWorkgroups={setEnabledWorkgroups}
             toggleDrawer={toggleSideDrawer}
             drawerOpen={sideDrawerOpen}
             setSideDrawerContent={setSideDrawerContent}

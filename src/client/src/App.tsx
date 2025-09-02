@@ -22,6 +22,7 @@ import { SaveProvider } from "./pages/detail/saveContext.tsx";
 import { OverviewProvider } from "./pages/overview/overViewContext";
 import { OverviewPage } from "./pages/overview/overviewPage";
 import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext";
+import { UserWorkgroupsProvider } from "./pages/overview/WorkgroupUserContext.tsx";
 import { DataLoader } from "./pages/settings/dataLoader";
 import { SettingsPage } from "./pages/settings/settingsPage";
 import { AcceptTerms } from "./term/accept";
@@ -101,14 +102,16 @@ class App extends React.Component {
                     <DataCardProvider>
                       <BasemapProvider>
                         <FilterProvider>
-                          <OverviewProvider>
-                            <QueryClientProvider client={queryClient}>
-                              <AppBox>
-                                <HeaderComponent />
-                                <RouterProvider router={router} />
-                              </AppBox>
-                            </QueryClientProvider>
-                          </OverviewProvider>
+                          <UserWorkgroupsProvider>
+                            <OverviewProvider>
+                              <QueryClientProvider client={queryClient}>
+                                <AppBox>
+                                  <HeaderComponent />
+                                  <RouterProvider router={router} />
+                                </AppBox>
+                              </QueryClientProvider>
+                            </OverviewProvider>
+                          </UserWorkgroupsProvider>
                         </FilterProvider>
                       </BasemapProvider>
                     </DataCardProvider>
