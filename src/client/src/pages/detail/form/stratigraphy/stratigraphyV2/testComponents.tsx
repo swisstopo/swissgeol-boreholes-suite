@@ -1,11 +1,11 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { useScale } from "../lithologyV2/scaleContext.tsx";
+import { useScale } from "./lithologyV2/scaleContext.tsx";
 
 /**
  * A simple scale component that shows depth markers
  */
-export const DepthScale: React.FC = () => {
+export const DepthScale: React.FC = ({ sx }) => {
   const scaleY = useScale();
   const pxPerMeter = 20; // Fixed value matching TestLayersPanel
 
@@ -25,7 +25,6 @@ export const DepthScale: React.FC = () => {
           top: `${yPosition}px`,
           width: "100%",
           height: "1px",
-          bgcolor: "grey.400",
           display: "flex",
           alignItems: "center",
           justifyContent: "flex-end",
@@ -45,10 +44,10 @@ export const DepthScale: React.FC = () => {
     );
   }
 
-  return <Box sx={{ position: "relative", height: "100%", width: "100%" }}>{markers}</Box>;
+  return <Box sx={{ position: "relative", height: "100%", width: "100%", ...sx }}>{markers}</Box>;
 };
 
-export const TestLayersPanel: React.FC = () => {
+export const TestLayersPanel: React.FC = ({ sx }) => {
   const layers = [
     { id: 1, fromDepth: 0, toDepth: 5, color: "#FFD700", name: "Sand" },
     { id: 2, fromDepth: 5, toDepth: 12, color: "#A52A2A", name: "Clay" },
@@ -60,7 +59,7 @@ export const TestLayersPanel: React.FC = () => {
   const pxPerMeter = 20;
 
   return (
-    <Box sx={{ position: "relative", height: "100%", width: "100%" }}>
+    <Box sx={{ position: "relative", height: "100%", width: "100%", ...sx }}>
       {layers.map(layer => {
         const top = layer.fromDepth * pxPerMeter;
         const height = (layer.toDepth - layer.fromDepth) * pxPerMeter;
