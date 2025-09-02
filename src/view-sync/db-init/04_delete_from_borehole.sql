@@ -244,6 +244,26 @@ DELETE FROM bdms.layer WHERE id_lay IN (
     WHERE t.lithology = false
 );
 
+-- Stratigraphy: Lithological description
+DELETE FROM bdms.lithological_description WHERE id_ldp IN (
+    SELECT ld.id_ldp FROM bdms.lithological_description ld
+    INNER JOIN bdms.stratigraphy s ON s.id_sty = ld.id_sty_fk
+    INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+    INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.lithology = false
+);
+
+-- Stratigraphy: Facies description
+DELETE FROM bdms.facies_description WHERE id_fac IN (
+    SELECT fd.id_fac FROM bdms.facies_description fd
+    INNER JOIN bdms.stratigraphy s ON s.id_sty = fd.id_sty_fk
+    INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+    INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.lithology = false
+);
+
 -- Borehole: Geometry
 DELETE FROM bdms.borehole_geometry WHERE id IN (
     SELECT bg.id FROM bdms.borehole_geometry bg
