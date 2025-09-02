@@ -63,17 +63,6 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
     public double ToDepth { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="Lithology"/>'s lithological description.
-    /// </summary>
-    [Column("description")]
-    public int? DescriptionId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Lithology"/>'s lithological description.
-    /// </summary>
-    public LithologicalDescription? Description { get; set; }
-
-    /// <summary>
     /// Gets or sets whether the <see cref="Lithology"/> is unconsolidated or consolidated.
     /// </summary>
     [Column("unconsolidated")]

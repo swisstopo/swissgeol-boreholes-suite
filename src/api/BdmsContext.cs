@@ -65,7 +65,6 @@ public class BdmsContext : DbContext
     /// </summary>
     public IQueryable<Lithology> LithologiesWithIncludes
         => Lithologies
-        .Include(l => l.Description)
         .Include(l => l.AlterationDegree)
         .Include(l => l.Compactness)
         .Include(l => l.Cohesion)
