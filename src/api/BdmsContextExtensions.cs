@@ -125,6 +125,7 @@ public static class BdmsContextExtensions
         List<int> structurePostGenIds = codelists.Where(c => c.Schema == LithologySchemas.StructurePostGenSchema).Select(s => s.Id).ToList();
         List<int> textureMataIds = codelists.Where(c => c.Schema == LithologySchemas.TextureMataSchema).Select(s => s.Id).ToList();
         List<int> lithologyConIds = codelists.Where(c => c.Schema == LithologySchemas.LithologyConSchema).Select(s => s.Id).ToList();
+        List<int> faciesConIds = codelists.Where(c => c.Schema == LithologySchemas.FaciesConSchema).Select(s => s.Id).ToList();
 
         // Completion codelists
         List<int> completionKindIds = codelists.Where(c => c.Schema == CompletionSchemas.CompletionKindSchema).Select(s => s.Id).ToList();
@@ -555,6 +556,8 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ToDepth, f => ((faciesDescription_ids % 10) + 1) * 10)
             .RuleFor(o => o.StratigraphyId, f => GetStratigraphyId(faciesDescription_ids, 10_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
+            .RuleFor(o => o.FaciesId, f => f.PickRandom(faciesConIds).OrNull(f, .3f))
+            .RuleFor(o => o.Facies, _ => default!)
             .RuleFor(o => o.Description, f => f.Random.Words(3).OrNull(f, .05f))
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
             .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
