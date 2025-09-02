@@ -396,7 +396,7 @@ public class LithologyControllerTest
 
         var oldLithologyDescriptions = context.LithologyDescriptions.Where(ld => ld.LithologyId == existingUnconsolidatedLithology.Id).ToList();
         Assert.AreEqual(1, oldLithologyDescriptions.Count);
-        Assert.AreEqual(lithologyDescription.Id, oldLithologyDescriptions.First().Id);
+        Assert.AreEqual(lithologyDescription.Id, oldLithologyDescriptions[0].Id);
     }
 
     [TestMethod]
