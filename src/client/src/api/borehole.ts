@@ -122,6 +122,8 @@ export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | 
   return await download(`export/zip?${getIdQuery(boreholeIds)}`);
 };
 
+export const fetchBoreholesByIds = async (ids: number[]) => await fetchApiV2(`borehole?${getIdQuery(ids)}`, "GET");
+
 export const fetchBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
 
 export const updateBorehole = async (borehole: BoreholeV2) => {

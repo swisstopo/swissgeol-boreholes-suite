@@ -62,6 +62,7 @@
   "boreholesImportLongRunning": "Der Import läuft im Hintergrund weiter, dies kann einige Minuten dauern. Nach Abschluss werden die Bohrungen in der Liste sichtbar.",
   "boreholesImported": "Bohrungen wurden importiert",
   "boreholestatus": "Bohrungsstatus",
+  "bulkEditPermissions": "Sie haben nicht die notwendigen Rechte, alle selektierten Bohrungen zu editieren.",
   "bulkEditing": "Mehrfachbearbeitung",
   "bulkExportMoreThan100": "Sie haben mehr als 100 Bohrungen selektiert und es können maximal 100 Bohrungen exportiert werden. Wollen Sie fortfahren?",
   "by": "durch",

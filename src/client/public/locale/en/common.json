@@ -62,6 +62,7 @@
   "boreholesImportLongRunning": "The import is running in the background, which may take a few minutes. Once completed, the boreholes will be visible in the list.",
   "boreholesImported": "boreholes were imported",
   "boreholestatus": "Borehole status",
+  "bulkEditPermissions": "You do not have the necessary permissions to edit all selected boreholes.",
   "bulkEditing": "Bulk editing",
   "bulkExportMoreThan100": "You have selected more than 100 boreholes and a maximum of 100 boreholes can be exported. Do you want to continue?",
   "by": "by",

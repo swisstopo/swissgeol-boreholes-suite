@@ -6,6 +6,7 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ArrowDownToLine, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
 import { Boreholes, Filters, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { BoreholeV2, fetchBoreholesByIds } from "../../../api/borehole.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
@@ -42,6 +43,7 @@ const BottomBar = ({
   const userIsEditor = user.data.roles.some(role => ["EDIT", "CONTROL", "VALID", "PUBLIC"].includes(role));
   const auth = useAuth();
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
+  const { enabledWorkgroups } = useUserWorkgroups();
 
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
     setCopyPromptOpen(true);
@@ -69,7 +71,19 @@ const BottomBar = ({
   }, [copyPromptOpen, promptIsOpen, showCopyPromptForSelectedWorkgroup, currentWorkgroupId]);
 
   function bulkEditSelected() {
-    multipleSelected(selectionModel, filters.filter);
+    fetchBoreholesByIds(selectionModel as number[]).then(boreholesResponse => {
+      const workgroupIds = boreholesResponse.boreholes.map((bh: BoreholeV2) => bh.workgroupId);
+      const allWorkgroupsEnabled = workgroupIds.every((id: number) => enabledWorkgroups.some(wg => wg.id === id));
+      if (allWorkgroupsEnabled) {
+        multipleSelected(selectionModel, filters.filter);
+      } else {
+        showPrompt("bulkEditPermissions", [
+          {
+            label: "cancel",
+          },
+        ]);
+      }
+    });
   }
 
   const showPromptExportMoreThan100 = (callback: () => void) => {

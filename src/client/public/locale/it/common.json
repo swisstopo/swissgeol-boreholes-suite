@@ -62,6 +62,7 @@
   "boreholesImportLongRunning": "L'import sta eseguendo in background. Questo processo potrebbe richiedere alcuni minuti. Una volta completato, le perforazioni saranno visibili nell'elenco.",
   "boreholesImported": "perforazioni Tre pozzi sono stati importati",
   "boreholestatus": "Stato della perforazione",
+  "bulkEditPermissions": "Non si dispone delle autorizzazioni necessarie per modificare tutte le perforazioni selezionate.",
   "bulkEditing": "Modifica in blocco",
   "bulkExportMoreThan100": "Sono stati selezionati più di 100 perforazioni e si possono esportare un massimo di 100 perforazioni. Vuoi continuare?",
   "by": "da",
