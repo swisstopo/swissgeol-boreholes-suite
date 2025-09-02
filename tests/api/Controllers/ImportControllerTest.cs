@@ -170,6 +170,7 @@ public class ImportControllerTest
         Assert.IsNull(borehole.ReferenceElevationType, nameof(Borehole.ReferenceElevationType).ShouldBeNullMessage());
         Assert.IsNotNull(borehole.Geometry, nameof(Borehole.Geometry).ShouldNotBeNullMessage());
         Assert.AreEqual(2056, borehole.Geometry.SRID, nameof(Borehole.Geometry.SRID));
+        Assert.AreEqual(WorkflowStatus.Draft, borehole.Workflow.Status, nameof(Borehole.Workflow.Status));
 
         // Assert borehole geometry
         Assert.AreEqual(2, borehole.BoreholeGeometry.Count, nameof(borehole.BoreholeGeometry.Count));
@@ -666,6 +667,7 @@ public class ImportControllerTest
         Assert.AreEqual(20101001, borehole.TypeId);
         Assert.AreEqual(827.8441205, borehole.TopBedrockFreshMd);
         Assert.AreEqual(759.7574008, borehole.TopBedrockWeatheredMd);
+        Assert.AreEqual(WorkflowStatus.Draft, borehole.Workflow.Status);
 
         Assert.AreEqual("POINT (2613116 1179127)", borehole.Geometry.ToString());
     }

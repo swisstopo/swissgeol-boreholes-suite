@@ -96,6 +96,15 @@ public class ImportController : ControllerBase
                 // Assign borehole id to the borehole import object to be able to map attachments to the borehole.
                 boreholeImport.Id = borehole.Id;
 
+                // Add new workflow with status draft.
+                borehole.Workflow = new Workflow
+                {
+                    Status = WorkflowStatus.Draft,
+                    ReviewedTabs = new TabStatus(),
+                    PublishedTabs = new TabStatus(),
+                    HasRequestedChanges = false,
+                };
+
                 // Set DateTime kind to UTC, since PSQL type 'timestamp with timezone' requires UTC as DateTime.Kind
                 borehole.RestrictionUntil = borehole.RestrictionUntil != null ? DateTime.SpecifyKind(borehole.RestrictionUntil.Value, DateTimeKind.Utc) : null;
                 borehole.WorkgroupId = workgroupId;
@@ -174,7 +183,6 @@ public class ImportController : ControllerBase
 
         var boreholes = await DeserializeBoreholeDataAsync(boreholesFile.OpenReadStream()).ConfigureAwait(false);
         if (boreholes == null) return BadRequest("The provided file is not an array of boreholes or is not in a valid JSON format.");
-
         return await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
     }
 
@@ -258,6 +266,15 @@ public class ImportController : ControllerBase
         {
             // Attachments are re-uploaded when importing from a zip file.
             borehole.BoreholeFiles?.Clear();
+
+            // Add new workflow with status draft.
+            borehole.Workflow = new Workflow
+            {
+                Status = WorkflowStatus.Draft,
+                ReviewedTabs = new TabStatus(),
+                PublishedTabs = new TabStatus(),
+                HasRequestedChanges = false,
+            };
         }
 
         await MarkBoreholeContentAsNew(user, workgroupId, boreholes).ConfigureAwait(false);
