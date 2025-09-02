@@ -1,13 +1,10 @@
 import React, { useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { Backdrop, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { ApiError } from "../../api/apiInterfaces.ts";
 import { exportCSVBorehole, exportJsonBoreholes, exportJsonWithAttachmentsBorehole } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
-import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { downloadData } from "../../utils.ts";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
@@ -20,10 +17,7 @@ interface ExportDialogProps {
 }
 export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, fileName }: ExportDialogProps) => {
   const { t } = useTranslation();
-  const auth = useAuth();
   const [inProgress, setInProgress] = useState(false);
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  const canExportAttachments = !auth.anonymousModeEnabled && user.data.roles.includes("EDIT");
   const { showAlert } = useContext(AlertContext);
 
   const closeExportDialog = useCallback(() => {
@@ -90,7 +84,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
           <Stack gap={1} sx={{ mt: 3 }}>
             <ExportButton label={"CSV"} onClick={onExportCsv} />
             <ExportButton label={"JSON"} onClick={onExportJson} />
-            {canExportAttachments && <ExportButton label={"JSON + PDF"} onClick={onExportJsonWithAttachments} />}
+            <ExportButton label={"JSON + PDF"} onClick={onExportJsonWithAttachments} />
           </Stack>
         </DialogContent>
         <DialogActions>
