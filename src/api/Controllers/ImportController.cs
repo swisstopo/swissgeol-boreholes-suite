@@ -621,10 +621,10 @@ public class ImportController : ControllerBase
             });
 
             // Set precision to both reference systems
-            Map(m => m.PrecisionLocationX).Convert(args => GetPrecision(args.Row, "location_x"));
-            Map(m => m.PrecisionLocationXLV03).Convert(args => GetPrecision(args.Row, "location_x"));
-            Map(m => m.PrecisionLocationY).Convert(args => GetPrecision(args.Row, "location_y"));
-            Map(m => m.PrecisionLocationYLV03).Convert(args => GetPrecision(args.Row, "location_y"));
+            Map(m => m.PrecisionLocationX).Convert(args => GetPrecision(args.Row, "LocationX"));
+            Map(m => m.PrecisionLocationXLV03).Convert(args => GetPrecision(args.Row, "LocationX"));
+            Map(m => m.PrecisionLocationY).Convert(args => GetPrecision(args.Row, "LocationY"));
+            Map(m => m.PrecisionLocationYLV03).Convert(args => GetPrecision(args.Row, "LocationY"));
         }
     }
 
