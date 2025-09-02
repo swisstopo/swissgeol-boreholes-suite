@@ -214,6 +214,15 @@ DELETE FROM bdms.casing WHERE id IN (
     WHERE t.casing  = false
 );
 
+-- Completion (if there is no Sealing/Backfilling, Instrumentation or Casing)
+DELETE FROM bdms.completion WHERE id IN (
+    SELECT c.id FROM bdms.completion c
+    INNER JOIN bdms.borehole b ON b.id_bho  = c.borehole_id
+    INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.backfill = false AND t.instrumentation = false AND t.casing = false
+);
+
 -- Stratigraphy: Chronostratigraphy
 DELETE FROM bdms.chronostratigraphy WHERE id_chr IN (
     SELECT cs.id_chr FROM bdms.chronostratigraphy cs
