@@ -1222,7 +1222,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.GrainAngularityCodelists, _ => new Collection<Codelist>())
             .RuleFor(o => o.LithologyUnconCoarseCodeCodelistIds, (f, ld) => ld.Lithology.IsUnconsolidated ? f.PickRandom(lithologyConIds, f.Random.Int(0, 2)).ToList() : new List<int>())
             .RuleFor(o => o.LithologyUnconCoarseCodeCodelists, _ => new Collection<Codelist>())
-            .RuleFor(o => o.LithologyConId, (f, ld) => !ld.Lithology.IsUnconsolidated ? f.PickRandom(lithologyConIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.LithologyConId, (f, ld) => !ld.Lithology.IsUnconsolidated ? f.PickRandom(lithologyConIds) : null)
             .RuleFor(o => o.LithologyCon, _ => default!)
             .RuleFor(o => o.GrainSizeId, (f, ld) => !ld.Lithology.IsUnconsolidated ? f.PickRandom(grainSizeIds).OrNull(f, .2f) : null)
             .RuleFor(o => o.GrainSize, _ => default!)
