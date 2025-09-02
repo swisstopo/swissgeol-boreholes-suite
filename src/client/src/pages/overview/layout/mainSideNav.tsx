@@ -46,7 +46,10 @@ const MainSideNav = ({
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
 
   useEffect(() => {
-    const wgs = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
+    // Hotfix to display all workgroups with hierarchical roles =>  Todo: getting all workgroups for the user should be moved to the backend
+    const wgs = user.data.workgroups.filter(
+      w => w.disabled === null && w.roles.some(role => ["EDIT", "CONTROL", "VALID", "PUBLIC"].includes(role)),
+    );
     setEnabledWorkgroups(wgs);
     setWorkgroupId(wgs.length > 0 ? wgs[0].id : null);
   }, [setEnabledWorkgroups, setWorkgroupId, user.data.workgroups]);

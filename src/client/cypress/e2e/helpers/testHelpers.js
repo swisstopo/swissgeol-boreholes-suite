@@ -1,3 +1,4 @@
+import { restrictionFreeCode } from "../../../src/components/codelist.ts";
 import { ObservationType } from "../../../src/pages/detail/form/hydrogeology/Observation.ts";
 import adminUser from "../../fixtures/adminUser.json";
 import editorUser from "../../fixtures/editorUser.json";
@@ -300,6 +301,41 @@ export const createBorehole = borehole => {
       .then(res => {
         return cy.wrap(res.body.id);
       });
+  });
+};
+
+export const createBoreholeWithCompleteDataset = () => {
+  return createBorehole({
+    originalName: "Complete Test Borehole",
+    restrictionId: restrictionFreeCode,
+    boreholeGeometry: [],
+    sections: [{ name: "Test Section", fromDepth: 0, toDepth: 10, SectionElements: [] }],
+    stratigraphies: [
+      {
+        name: "Test Stratigraphy",
+        layers: [{ from: 0, to: 10 }],
+        lithostratigraphyLayers: [{ from: 0, to: 10 }],
+        chronostratigraphyLayers: [{ from: 0, to: 10 }],
+      },
+    ],
+    completions: [
+      {
+        name: "Test Completion",
+        kindId: 16000001,
+        casings: [{ name: "Test Casing", fromDepth: 0, toDepth: 10, casingElements: [] }],
+        backfills: [{ notes: "backfill notes" }],
+        instrumentations: [{ fromDepth: 0, toDepth: 10 }],
+      },
+    ],
+    observations: [
+      { type: ObservationType.waterIngress },
+      { type: ObservationType.groundwaterLevelMeasurement },
+      { type: ObservationType.hydrotest },
+      { type: ObservationType.fieldMeasurement },
+    ],
+    boreholeFiles: [{ name: "Test Profile File", file: { name: "testfile", url: "testurl", type: "text/csv" } }],
+    photos: [{ name: "Test Photo", nameUuid: "uuid1234", fileType: "image/tiff" }],
+    documents: [{ name: "Test Document", url: "testurl" }],
   });
 };
 
