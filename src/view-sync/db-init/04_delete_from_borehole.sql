@@ -40,12 +40,6 @@ SET admin_usr = false,
     email = 'anonymous@example.com'
 WHERE username <> 'Anonymous';
 
--- Purge attachments
-DELETE FROM bdms.borehole_files WHERE true;
-DELETE FROM bdms.files WHERE true;
-DELETE FROM bdms.photo WHERE true;
-DELETE FROM bdms.document WHERE true;
-
 -- Purge non-free and non-published boreholes
 DELETE FROM bdms.borehole WHERE id_bho NOT IN (
     SELECT id_bho FROM bdms.borehole
@@ -55,6 +49,38 @@ DELETE FROM bdms.borehole WHERE id_bho NOT IN (
       AND codelist.schema_cli = 'restriction'
       AND codelist.code_cli = 'f' -- restriction: free
 );
+
+-- Purge non-public attachments
+DELETE FROM bdms.borehole_files WHERE public_bfi IS NOT true;
+DELETE FROM bdms.photo WHERE public is NOT true;
+DELETE FROM bdms.document WHERE public is NOT true;
+
+-- Purge non-published attachments
+DELETE FROM bdms.borehole_files WHERE id_bho_fk IN (
+    SELECT bf.id_bho_fk FROM bdms.borehole_files bf
+    INNER JOIN bdms.workflow w ON w.borehole_id = bf.id_bho_fk
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.profile = false
+);
+
+DELETE FROM bdms.photo WHERE id IN (
+    SELECT p.id FROM bdms.photo p
+    INNER JOIN bdms.workflow w ON w.borehole_id = p.borehole_id
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.photo = false
+);
+
+DELETE FROM bdms.document WHERE id IN (
+    SELECT d.id FROM bdms.document d
+    INNER JOIN bdms.workflow w ON w.borehole_id = d.borehole_id
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.document = false
+);
+
+-- Clean-up unreferenced files.
+-- Photos and documents gets deleted automatically when boreholes are deleted.
+DELETE FROM bdms.files
+WHERE id_fil NOT IN (SELECT id_fil_fk FROM bdms.borehole_files);
 
 -- Purge workflow data
 DELETE FROM bdms.workflow
