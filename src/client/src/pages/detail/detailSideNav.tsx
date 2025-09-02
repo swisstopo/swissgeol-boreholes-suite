@@ -159,18 +159,18 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 }}>
                 {capitalizeFirstLetter(t("hydrotest"))}
               </SgcMenuItem>
-              <SgcMenuItem
-                active={location.pathname === `/${id}/attachments`}
-                empty={!hasAttachments}
-                data-cy="attachments-menu-item"
-                isReviewed={!auth.anonymousModeEnabled && isReviewed(["profiles", "photos", "documents"])}
-                onClick={() => {
-                  navigateTo({ path: `/${id}/attachments` });
-                }}>
-                {capitalizeFirstLetter(t("attachments"))}
-              </SgcMenuItem>
             </>
           )}
+          <SgcMenuItem
+            active={location.pathname === `/${id}/attachments`}
+            empty={!hasAttachments}
+            data-cy="attachments-menu-item"
+            isReviewed={!auth.anonymousModeEnabled && isReviewed(["profiles", "photos", "documents"])}
+            onClick={() => {
+              navigateTo({ path: `/${id}/attachments` });
+            }}>
+            {capitalizeFirstLetter(t("attachments"))}
+          </SgcMenuItem>
           {!auth.anonymousModeEnabled && canChangeStatus && (
             <SgcMenuItem
               active={location.pathname === `/${id}/status`}
