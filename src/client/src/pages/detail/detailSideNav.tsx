@@ -63,7 +63,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
           <SgcMenuItem
             active={location.pathname === `/${id}/location`}
             data-cy="location-menu-item"
-            isReviewed={isReviewed(["location"])}
+            isReviewed={!auth.anonymousModeEnabled && isReviewed(["location"])}
             onClick={() => {
               navigateTo({ path: `/${id}/location` });
             }}>
@@ -72,7 +72,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
           <SgcMenuItem
             active={location.pathname === `/${id}/borehole`}
             data-cy="borehole-menu-item"
-            isReviewed={isReviewed(["general", "sections", "geometry"])}
+            isReviewed={!auth.anonymousModeEnabled && isReviewed(["general", "sections", "geometry"])}
             onClick={() => {
               navigateTo({ path: `/${id}/borehole` });
             }}>
@@ -81,7 +81,9 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
           <SgcMenuItem
             active={location.pathname.includes(`/${id}/stratigraphy`)}
             empty={!hasStratigraphy}
-            isReviewed={isReviewed(["lithology", "lithostratigraphy", "chronostratigraphy"])}
+            isReviewed={
+              !auth.anonymousModeEnabled && isReviewed(["lithology", "lithostratigraphy", "chronostratigraphy"])
+            }
             data-cy="stratigraphy-menu-item"
             onClick={() => {
               navigateTo({ path: `/${id}/stratigraphy` });
@@ -91,7 +93,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
           <SgcMenuItem
             active={location.pathname.includes(`/${id}/completion`)}
             empty={!hasCompletion}
-            isReviewed={isReviewed(["casing", "instrumentation", "backfill"])}
+            isReviewed={!auth.anonymousModeEnabled && isReviewed(["casing", "instrumentation", "backfill"])}
             data-cy="completion-menu-item"
             onClick={() => {
               navigateTo({ path: `/${id}/completion` });
@@ -101,7 +103,10 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
           <SgcMenuItem
             active={false}
             empty={!hasObservation}
-            isReviewed={isReviewed(["waterIngress", "groundwaterLevelMeasurement", "hydrotest", "fieldMeasurement"])}
+            isReviewed={
+              !auth.anonymousModeEnabled &&
+              isReviewed(["waterIngress", "groundwaterLevelMeasurement", "hydrotest", "fieldMeasurement"])
+            }
             data-cy="hydrogeology-menu-item"
             onClick={() => {
               setHydrogeologyIsVisible(!hydrogeologyIsVisible);
@@ -111,10 +116,10 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
           {hydrogeologyIsVisible && (
             <>
               <SgcMenuItem
-                active={location.pathname === `/${id}/hydrogeology/wateringress`}
+                active={!auth.anonymousModeEnabled && location.pathname === `/${id}/hydrogeology/wateringress`}
                 child
                 empty={!hasWaterIngress}
-                isReviewed={isReviewed(["waterIngress"])}
+                isReviewed={!auth.anonymousModeEnabled && isReviewed(["waterIngress"])}
                 data-cy="wateringress-menu-item"
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/wateringress` });
@@ -125,7 +130,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
                 child
                 empty={!hasGroundwaterLevelMeasurement}
-                isReviewed={isReviewed(["groundwaterLevelMeasurement"])}
+                isReviewed={!auth.anonymousModeEnabled && isReviewed(["groundwaterLevelMeasurement"])}
                 data-cy="groundwaterlevelmeasurement-menu-item"
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/groundwaterlevelmeasurement` });
@@ -136,7 +141,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
                 child
                 empty={!hasFieldMeasurement}
-                isReviewed={isReviewed(["fieldMeasurement"])}
+                isReviewed={!auth.anonymousModeEnabled && isReviewed(["fieldMeasurement"])}
                 data-cy="fieldmeasurement-menu-item"
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/fieldmeasurement` });
@@ -147,7 +152,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 active={location.pathname === `/${id}/hydrogeology/hydrotest`}
                 child
                 empty={!hasHydroTest}
-                isReviewed={isReviewed(["hydrotest"])}
+                isReviewed={!auth.anonymousModeEnabled && isReviewed(["hydrotest"])}
                 data-cy="hydrotest-menu-item"
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/hydrotest` });
@@ -156,29 +161,25 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
               </SgcMenuItem>
             </>
           )}
-          {!auth.anonymousModeEnabled && (
-            <>
-              <SgcMenuItem
-                active={location.pathname === `/${id}/attachments`}
-                empty={!hasAttachments}
-                data-cy="attachments-menu-item"
-                isReviewed={isReviewed(["profiles", "photos", "documents"])}
-                onClick={() => {
-                  navigateTo({ path: `/${id}/attachments` });
-                }}>
-                {capitalizeFirstLetter(t("attachments"))}
-              </SgcMenuItem>
-              {canChangeStatus && (
-                <SgcMenuItem
-                  active={location.pathname === `/${id}/status`}
-                  data-cy="status-menu-item"
-                  onClick={() => {
-                    navigateTo({ path: `/${id}/status` });
-                  }}>
-                  {capitalizeFirstLetter(t("status"))}
-                </SgcMenuItem>
-              )}
-            </>
+          <SgcMenuItem
+            active={location.pathname === `/${id}/attachments`}
+            empty={!hasAttachments}
+            data-cy="attachments-menu-item"
+            isReviewed={!auth.anonymousModeEnabled && isReviewed(["profiles", "photos", "documents"])}
+            onClick={() => {
+              navigateTo({ path: `/${id}/attachments` });
+            }}>
+            {capitalizeFirstLetter(t("attachments"))}
+          </SgcMenuItem>
+          {!auth.anonymousModeEnabled && canChangeStatus && (
+            <SgcMenuItem
+              active={location.pathname === `/${id}/status`}
+              data-cy="status-menu-item"
+              onClick={() => {
+                navigateTo({ path: `/${id}/status` });
+              }}>
+              {capitalizeFirstLetter(t("status"))}
+            </SgcMenuItem>
           )}
         </Box>
       </Stack>
