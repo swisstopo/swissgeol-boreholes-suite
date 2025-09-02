@@ -39,7 +39,7 @@ describe("Viewer tests", () => {
     getElementByDataCy("edit-button").should("not.exist");
   });
 
-  it("Assures viewer can export boreholes as CSV and JSON but no attachments", () => {
+  it("Assures viewer can export boreholes as CSV and JSON including attachments", () => {
     loginAsViewer();
     showTableAndWaitForData();
     checkRowWithText("Aaron Rempel");
@@ -49,11 +49,14 @@ describe("Viewer tests", () => {
     getElementByDataCy("export-button").click();
     getElementByDataCy("csv-button").should("exist");
     getElementByDataCy("json-button").should("exist");
+    cy.get('[data-cy="json + pdf-button"]').should("exist");
     getElementByDataCy("cancel-button").click();
     clickOnRowWithText("Aaron Rempel");
     getElementByDataCy("edit-button").should("not.exist");
-    getElementByDataCy("export-attachments-button").should("not.exist");
-    getElementByDataCy("export-button").should("exist");
+    getElementByDataCy("export-button").click();
+    getElementByDataCy("csv-button").should("exist");
+    getElementByDataCy("json-button").should("exist");
+    cy.get('[data-cy="json + pdf-button"]').should("exist");
   });
 
   it("Assures viewer can click on all borehole menu items and see something", () => {
