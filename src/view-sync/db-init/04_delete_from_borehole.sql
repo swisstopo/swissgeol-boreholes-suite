@@ -108,6 +108,15 @@ DELETE FROM bdms.hydrotest WHERE id IN (
     WHERE t.hydrotest = false
 );
 
+-- Hydrogeology: Hydrotest Observation
+DELETE FROM bdms.observation WHERE id IN (
+    SELECT o.id FROM bdms.observation o
+    INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
+    INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.hydrotest = false AND o.observation_type = 3 -- Hydrotest Observation
+);
+
 -- Hydrogeology: Water Ingress
 DELETE FROM bdms.water_ingress WHERE id IN (
     SELECT wi.id FROM bdms.water_ingress wi
@@ -116,6 +125,15 @@ DELETE FROM bdms.water_ingress WHERE id IN (
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
     WHERE t.water_ingress = false
+);
+
+-- Hydrogeology: Water Ingress Observation
+DELETE FROM bdms.observation WHERE id IN (
+    SELECT o.id FROM bdms.observation o
+    INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
+    INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.hydrotest = false AND o.observation_type = 1 -- Water Ingress Observation
 );
 
 -- Hydrogeology: Field Measurement
@@ -128,6 +146,15 @@ DELETE FROM bdms.field_measurement WHERE id IN (
     WHERE t.field_measurement = false
 );
 
+-- Hydrogeology: Field Measurement Observation
+DELETE FROM bdms.observation WHERE id IN (
+    SELECT o.id FROM bdms.observation o
+    INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
+    INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.hydrotest = false AND o.observation_type = 4 -- Field Measurement Observation
+);
+
 -- Hydrogeology: Groundwater Level Measurement
 DELETE FROM bdms.groundwater_level_measurement WHERE id IN (
     SELECT g.id FROM bdms.groundwater_level_measurement g
@@ -136,6 +163,15 @@ DELETE FROM bdms.groundwater_level_measurement WHERE id IN (
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
     WHERE t.groundwater = false
+);
+
+-- Hydrogeology: Groundwater Level Measurement Observation
+DELETE FROM bdms.observation WHERE id IN (
+    SELECT o.id FROM bdms.observation o
+    INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
+    INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.hydrotest = false AND o.observation_type = 2 -- Groundwater Level Measurement Observation
 );
 
 -- Completion: Sealing/Backfilling
