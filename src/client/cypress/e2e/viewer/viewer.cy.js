@@ -56,7 +56,7 @@ describe("Viewer tests", () => {
     getElementByDataCy("export-button").click();
     getElementByDataCy("csv-button").should("exist");
     getElementByDataCy("json-button").should("exist");
-    getElementByDataCy("json + pdf-button").should("exist");
+    cy.get('[data-cy="json + pdf-button"]').should("exist");
   });
 
   it("Assures viewer can click on all borehole menu items and see something", () => {
