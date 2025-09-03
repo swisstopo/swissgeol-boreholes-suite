@@ -7,6 +7,7 @@
 - Added new workflow UI and backend to manage the borehole's publication status. Removed legacy workflow UI and backend.
 - Filters for workgroup and status are now hidden on the view instance.
 - Attachments can now be exported without editor privileges.
+- Adding or importing boreholes is now explicitly disabled when no workgroup is selected.
 
 ### Fixed
 - Boreholes that were locked by any user could not be edited by others, including administrators, even after lock timeout expiration.
