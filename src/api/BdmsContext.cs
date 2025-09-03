@@ -72,9 +72,12 @@ public class BdmsContext : DbContext
         .Include(l => l.Consistency)
         .Include(l => l.Plasticity)
         .Include(l => l.LithologyUscsTypeCodes)
+        .Include(l => l.UscsTypeCodelists)
         .Include(l => l.UscsDetermination)
         .Include(l => l.LithologyRockConditionCodes)
+        .Include(l => l.RockConditionCodelists)
         .Include(l => l.LithologyTextureMataCodes)
+        .Include(l => l.TextureMataCodelists)
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.ColorPrimary)
         .Include(l => l.LithologyDescriptions)
@@ -94,19 +97,33 @@ public class BdmsContext : DbContext
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionComponentUnconOrganicCodes)
         .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ComponentUnconOrganicCodelists)
+        .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionComponentUnconDebrisCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ComponentUnconDebrisCodelists)
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionGrainShapeCodes)
         .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.GrainShapeCodelists)
+        .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionGrainAngularityCodes)
         .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.GrainAngularityCodelists)
+        .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionLithologyUnconDebrisCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUnconDebrisCodelists)
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyCon)
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionComponentConParticleCodes)
         .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ComponentConParticleCodelists)
+        .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionComponentConMineralCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ComponentConMineralCodelists)
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.GrainSize)
         .Include(l => l.LithologyDescriptions)
@@ -118,7 +135,11 @@ public class BdmsContext : DbContext
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionStructureSynGenCodes)
         .Include(l => l.LithologyDescriptions)
-        .ThenInclude(ld => ld.LithologyDescriptionStructurePostGenCodes);
+        .ThenInclude(ld => ld.StructureSynGenCodelists)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionStructurePostGenCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.StructurePostGenCodelists);
 
     public DbSet<LithologyDescription> LithologyDescriptions { get; set; }
 
@@ -598,7 +619,7 @@ public class BdmsContext : DbContext
 
         // Join table for lithology description and codelists with schema name 'organic_components'
         modelBuilder.Entity<LithologyDescription>()
-            .HasMany(l => l.OrganicComponentCodelists)
+            .HasMany(l => l.ComponentUnconOrganicCodelists)
             .WithMany()
             .UsingEntity<LithologyDescriptionComponentUnconOrganicCodes>(
                 j => j
@@ -613,7 +634,7 @@ public class BdmsContext : DbContext
 
         // Join table for lithology description and codelists with schema name 'debris'
         modelBuilder.Entity<LithologyDescription>()
-            .HasMany(l => l.DebrisCodelists)
+            .HasMany(l => l.ComponentUnconDebrisCodelists)
             .WithMany()
             .UsingEntity<LithologyDescriptionComponentUnconDebrisCodes>(
                 j => j
@@ -658,7 +679,7 @@ public class BdmsContext : DbContext
 
         // Join table for lithology description and codelists with schema name 'lithology_uncon_coarse'
         modelBuilder.Entity<LithologyDescription>()
-            .HasMany(l => l.LithologyUnconCoarseCodeCodelists)
+            .HasMany(l => l.LithologyUnconDebrisCodelists)
             .WithMany()
             .UsingEntity<LithologyDescriptionLithologyUnconDebrisCodes>(
                 j => j
