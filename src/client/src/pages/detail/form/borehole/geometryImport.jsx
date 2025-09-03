@@ -86,7 +86,7 @@ const GeometryImport = ({ boreholeId }) => {
                   <FormSelect
                     fieldName="geometryFormat"
                     label="boreholeGeometryFormat"
-                    values={geometryFormats}
+                    values={geometryFormats.map(f => ({ key: f.key, name: t(`geometryFormat${f.key}`), csvHeader: f.csvHeader }))}
                     required={true}
                   />
                   {expectedCSVHeader !== "" && (
