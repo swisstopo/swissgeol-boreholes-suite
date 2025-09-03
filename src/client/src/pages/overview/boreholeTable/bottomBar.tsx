@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { Box, Button, Stack, Typography } from "@mui/material";
@@ -12,6 +12,7 @@ import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../..
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
+import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 
 interface BottomBarProps {
@@ -21,8 +22,6 @@ interface BottomBarProps {
   filters: Filters;
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
-  workgroup: number | null;
-  setWorkgroup: Dispatch<SetStateAction<number | null>>;
   setIsExporting: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -33,26 +32,16 @@ const BottomBar = ({
   filters,
   onCopyBorehole,
   boreholes,
-  workgroup,
-  setWorkgroup,
   setIsExporting,
 }: BottomBarProps) => {
   const { t } = useTranslation();
   const { showPrompt, promptIsOpen } = useContext(PromptContext);
   const { bottomDrawerOpen, setBottomDrawerOpen } = useContext(OverViewContext);
+  const { currentWorkgroupId } = useUserWorkgroups();
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  const userIsEditor = user.data.roles.includes("EDIT");
+  const userIsEditor = user.data.roles.some(role => ["EDIT", "CONTROL", "VALID", "PUBLIC"].includes(role));
   const auth = useAuth();
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
-
-  // Hotfix to display all workgroups with hierarchical roles =>  Todo: getting all workgroups for the user should be moved to the backend
-  const enabledWorkgroups = useMemo(
-    () =>
-      user.data.workgroups.filter(
-        w => w.disabled === null && w.roles.some(role => ["EDIT", "CONTROL", "VALID", "PUBLIC"].includes(role)),
-      ),
-    [user.data.workgroups],
-  );
 
   const showCopyPromptForSelectedWorkgroup = useCallback(() => {
     setCopyPromptOpen(true);
@@ -69,20 +58,15 @@ const BottomBar = ({
           action: onCopyBorehole,
         },
       ],
-      <WorkgroupSelect
-        workgroupId={workgroup}
-        enabledWorkgroups={enabledWorkgroups}
-        setWorkgroupId={setWorkgroup}
-        sx={{ pt: 6, pb: 3 }}
-      />,
+      <WorkgroupSelect sx={{ pt: 6, pb: 3 }} />,
     );
-  }, [enabledWorkgroups, onCopyBorehole, setWorkgroup, showPrompt, workgroup]);
+  }, [onCopyBorehole, showPrompt]);
 
   //Ensures prompt content with the WorkgroupSelect is updated when a workgroup is selected.
   useEffect(() => {
     if (promptIsOpen && copyPromptOpen) showCopyPromptForSelectedWorkgroup();
     if (!promptIsOpen) setCopyPromptOpen(false);
-  }, [copyPromptOpen, promptIsOpen, showCopyPromptForSelectedWorkgroup, workgroup]);
+  }, [copyPromptOpen, promptIsOpen, showCopyPromptForSelectedWorkgroup, currentWorkgroupId]);
 
   function bulkEditSelected() {
     multipleSelected(selectionModel, filters.filter);
