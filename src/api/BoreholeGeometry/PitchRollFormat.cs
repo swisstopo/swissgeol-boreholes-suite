@@ -12,8 +12,6 @@ internal sealed class PitchRollFormat : IBoreholeGeometryFormat
 {
     public string Key => "PitchRoll";
 
-    public string Name => "Pitch Roll";
-
     private Lazy<string> expectedCsvHeader = new(CsvConfigHelper.GetCsvHeader<Geometry>);
 
     public string CsvHeader => expectedCsvHeader.Value;

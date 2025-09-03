@@ -13,11 +13,6 @@ public interface IBoreholeGeometryFormat
     string Key { get; }
 
     /// <summary>
-    /// Human readable name of the <see cref="IBoreholeGeometryFormat"/>.
-    /// </summary>
-    string Name { get; }
-
-    /// <summary>
     /// The expected header of the input CSV file.
     /// </summary>
     string CsvHeader { get; }
