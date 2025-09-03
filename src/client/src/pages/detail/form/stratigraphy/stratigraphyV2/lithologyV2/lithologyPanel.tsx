@@ -1,20 +1,43 @@
-import { Box, Stack } from "@mui/material";
+import { useContext } from "react";
+import { useTranslation } from "react-i18next";
+import { Box, CircularProgress, Stack } from "@mui/material";
+import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
+import { EditStateContext } from "../../../../editStateContext.tsx";
 import { useLithologies } from "../../lithology.ts";
 import { VerticalZoomPanWrapper } from "./VerticalZoomPanWrapper.tsx";
 
 export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) => {
+  const { t } = useTranslation();
+  const { editingEnabled } = useContext(EditStateContext);
   const { data: lithologies, isLoading } = useLithologies(stratigraphyId);
 
-  if (isLoading || lithologies?.length === 0) return null;
+  if (isLoading)
+    return (
+      <FullPageCentered>
+        <CircularProgress />
+      </FullPageCentered>
+    );
 
-  return (
-    <>
-      <Box sx={{ position: "relative", width: "100%" }}>Headers</Box>
-      <VerticalZoomPanWrapper>
-        <Stack direction={"row"} spacing={1.5} sx={{ height: "600px", width: "100%" }} justifyContent={"flex-start"}>
-          {lithologies?.map(l => l.id)}
-        </Stack>
-      </VerticalZoomPanWrapper>
-    </>
-  );
+  if (editingEnabled) {
+    return <div>edit</div>;
+  } else {
+    if (!lithologies || lithologies.length === 0) {
+      return <Box>{t("msgLithologyEmpty")}</Box>;
+    } else {
+      return (
+        <>
+          <Box sx={{ position: "relative", width: "100%" }}>Headers</Box>
+          <VerticalZoomPanWrapper>
+            <Stack
+              direction={"row"}
+              spacing={1.5}
+              sx={{ height: "600px", width: "100%" }}
+              justifyContent={"flex-start"}>
+              {lithologies?.map(l => l.id)}
+            </Stack>
+          </VerticalZoomPanWrapper>
+        </>
+      );
+    }
+  }
 };

@@ -385,6 +385,7 @@
   "msgIdentifierAlreadyUsed": "Il tipo di ID è già in uso",
   "msgIdentifierDeletionAlreadyUsed": "Questo tipo di ID è già in utilizzo e quindi non può essere cancellato",
   "msgInstrumentsEmpty": "Nessuna strumentazione disponibile",
+  "msgLithologyEmpty": "Nessuna litologia disponibile",
   "msgLithostratigraphyEmpty": "Nessun profilo litostratigrafico disponibile",
   "msgLithostratigraphyEmptyEditing": "Prima di creare un profilo litostratigrafico è necessario creare una stratigrafia",
   "msgNoBoreholesInSelection": "Non ci sono perforazioni nella selezione",

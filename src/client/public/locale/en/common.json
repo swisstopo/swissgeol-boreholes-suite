@@ -385,6 +385,7 @@
   "msgIdentifierAlreadyUsed": "ID type already in use",
   "msgIdentifierDeletionAlreadyUsed": "This ID type is used and therefore cannot be deleted",
   "msgInstrumentsEmpty": "No instrumentation available",
+  "msgLithologyEmpty": "No lithologies available",
   "msgLithostratigraphyEmpty": "No lithostratigraphic profile available",
   "msgLithostratigraphyEmptyEditing": "You should first create a stratigraphy before you can create a lithostratigraphy profile",
   "msgNoBoreholesInSelection": "There are no boreholes in the selection",
