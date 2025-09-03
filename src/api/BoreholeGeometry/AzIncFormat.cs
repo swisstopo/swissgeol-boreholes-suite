@@ -12,8 +12,6 @@ internal sealed class AzIncFormat : IBoreholeGeometryFormat
 {
     public string Key => "AzInc";
 
-    public string Name => "Azimuth Inclination";
-
     private Lazy<string> expectedCsvHeader = new(CsvConfigHelper.GetCsvHeader<Geometry>);
 
     public string CsvHeader => expectedCsvHeader.Value;

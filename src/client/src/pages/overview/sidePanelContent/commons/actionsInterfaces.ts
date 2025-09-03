@@ -1,6 +1,4 @@
-import React from "react";
 import { SxProps } from "@mui/material";
-import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
 
 export interface ErrorResponse {
   detail: string;
@@ -9,9 +7,6 @@ export interface ErrorResponse {
 }
 
 export interface WorkgroupSelectProps {
-  workgroupId: number | null;
-  enabledWorkgroups: Workgroup[];
-  setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
   sx?: SxProps;
 }
 
