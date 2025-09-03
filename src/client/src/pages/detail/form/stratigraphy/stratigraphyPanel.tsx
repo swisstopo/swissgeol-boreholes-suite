@@ -18,6 +18,7 @@ import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyCha
 import { PromptContext } from "../../../../components/prompt/promptContext";
 import { FullPageCentered } from "../../../../components/styledComponents";
 import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents";
+import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
@@ -25,6 +26,7 @@ import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { SaveContext, SaveContextProps } from "../../saveContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
+import { LithologyPanel } from "./stratigraphyV2/lithologyV2/lithologyPanel.tsx";
 
 export const StratigraphyPanel: FC = () => {
   const justCopiedRef = useRef(false);
@@ -397,6 +399,18 @@ export const StratigraphyPanel: FC = () => {
                   {selectedStratigraphy.date && <Chip color="info" label={formatDate(selectedStratigraphy.date)} />}
                 </Stack>
               )}
+            </Box>
+            <Box sx={{ position: "relative", mt: 2 }}>
+              <TabPanel
+                variant="list"
+                tabs={[
+                  {
+                    label: t("lithology"),
+                    hash: "#lithology",
+                    component: <LithologyPanel stratigraphyId={selectedStratigraphy.id} />,
+                  },
+                ]}
+              />
             </Box>
           </BoreholeTabContentBox>
         </Box>

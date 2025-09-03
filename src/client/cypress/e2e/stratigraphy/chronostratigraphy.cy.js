@@ -7,7 +7,7 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
-describe("Tests for the chronostratigraphy editor.", () => {
+describe("Tests for the chronostratigraphyLegacy editor.", () => {
   beforeEach(function () {
     // Add new borehole with some lithology layers
     createBorehole({ originalName: "INTEADAL" })
@@ -72,7 +72,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
         });
       });
 
-    // open chronostratigraphy editor
+    // open chronostratigraphyLegacy editor
     cy.get("@borehole_id").then(id => {
       cy.get("@stratigraphy_id").then(stratigraphyId => {
         goToDetailRouteAndAcceptTerms(`/${id}/stratigraphy/${stratigraphyId}#chronostratigraphy`);
@@ -85,23 +85,23 @@ describe("Tests for the chronostratigraphy editor.", () => {
     cy.wait("@chronostratigraphy_GET");
   });
 
-  it("Creates, updates and deletes chronostratigraphy layers", () => {
-    // create chronostratigraphy
+  it("Creates, updates and deletes chronostratigraphyLegacy layers", () => {
+    // create chronostratigraphyLegacy
     cy.get('[data-cy="add-layer-button"]').click({ force: true });
     cy.wait("@chronostratigraphy_POST");
 
-    // edit chronostratigraphy
+    // edit chronostratigraphyLegacy
     cy.get('[data-cy="layer-card"] [data-testid="EditIcon"]').click();
     cy.get('[data-cy="layer-card"] :nth-child(4)').click();
 
-    // Ensure clone and delete buttons in header are disabled for chronostratigraphy.
+    // Ensure clone and delete buttons in header are disabled for chronostratigraphyLegacy.
     cy.get('[data-cy="clone-and-delete-buttons"]').should("not.exist");
 
     cy.get('.MuiPaper-elevation [role="listbox"]').find('[role="option"]').eq(1).click();
     cy.wait("@chronostratigraphy_PUT");
     cy.get('[data-cy="layer-card"] [data-testid="CloseIcon"]').click();
 
-    // delete chronostratigraphy
+    // delete chronostratigraphyLegacy
     cy.get('[data-cy="layer-card"] [data-testid="DeleteIcon"]').click();
     cy.wait("@chronostratigraphy_DELETE");
     stopBoreholeEditing();

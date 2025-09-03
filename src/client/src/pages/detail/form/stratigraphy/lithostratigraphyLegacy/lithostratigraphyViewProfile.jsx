@@ -6,7 +6,7 @@ const handleColor = layer =>
   `rgb(${(JSON.parse(layer?.lithostratigraphy?.conf ?? null)?.color ?? [255, 255, 255]).join()})`;
 
 /**
- * Displays the lithostratigraphy layers.
+ * Displays the lithostratigraphyLegacy layers.
  */
 const LithostratigraphyViewProfile = ({ stratigraphyId, navState, setNavState }) => {
   const { data: layers } = useLithostratigraphies(stratigraphyId);

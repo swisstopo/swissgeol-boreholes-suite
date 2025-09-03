@@ -3,7 +3,7 @@ import { useLithostratigraphies, useLithostratigraphyMutations } from "../../../
 import HierarchicalDataEditProfile from "../hierarchicalDataEditProfile.jsx";
 
 /**
- * Manages the lithostratigraphy data and mutations.
+ * Manages the lithostratigraphyLegacy data and mutations.
  */
 const LithostratigraphyEditProfile = ({ selectedStratigraphyID, sx, navState, setNavState }) => {
   const { t } = useTranslation();

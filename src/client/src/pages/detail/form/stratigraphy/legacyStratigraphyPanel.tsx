@@ -12,9 +12,9 @@ import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { AddStratigraphyButton } from "./addStratigraphyButton.tsx";
-import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel.jsx";
+import ChronostratigraphyPanel from "./chronostratigraphyLegacy/chronostratigraphyPanel.jsx";
 import { Lithology } from "./lithology/lithology.tsx";
-import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel.jsx";
+import LithostratigraphyPanel from "./lithostratigraphyLegacy/lithostratigraphyPanel.jsx";
 import { StratigraphyForm } from "./stratigraphyForm.tsx";
 
 export const LegacyStratigraphyPanel: FC = () => {
@@ -122,12 +122,12 @@ export const LegacyStratigraphyPanel: FC = () => {
                     },
                     {
                       label: t("chronostratigraphy"),
-                      hash: "#chronostratigraphy",
+                      hash: "#chronostratigraphyLegacy",
                       component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
                     },
                     {
                       label: t("lithostratigraphy"),
-                      hash: "#lithostratigraphy",
+                      hash: "#lithostratigraphyLegacy",
                       component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
                     },
                   ]}
