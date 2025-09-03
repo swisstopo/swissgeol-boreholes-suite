@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useLayoutEffect, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useContext, useLayoutEffect, useState } from "react";
 import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import { deleteBoreholes } from "../../../api-lib";
 import { Boreholes, Filters } from "../../../api-lib/ReduxStateInterfaces.ts";
@@ -14,7 +14,7 @@ import { BottomDrawer } from "./bottomDrawer.tsx";
 interface BottomBarContainerProps {
   boreholes: Boreholes;
   filters: Filters;
-  setHover: React.Dispatch<React.SetStateAction<number | null>>;
+  setHover: Dispatch<SetStateAction<number | null>>;
   loadEditingBoreholes: (
     page: number,
     limit: number,
@@ -26,8 +26,8 @@ interface BottomBarContainerProps {
   multipleSelected: (selection: GridRowSelectionModel, filter: Record<string, unknown>) => void;
   rowsToHighlight: number[];
   selectionModel: GridRowSelectionModel;
-  setSelectionModel: React.Dispatch<React.SetStateAction<GridRowSelectionModel>>;
-  setIsExporting: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectionModel: Dispatch<SetStateAction<GridRowSelectionModel>>;
+  setIsExporting: Dispatch<SetStateAction<boolean>>;
 }
 
 const BottomBarContainer = ({

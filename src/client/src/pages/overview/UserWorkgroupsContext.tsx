@@ -1,11 +1,11 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ReduxRootState, User, Workgroup } from "../../api-lib/ReduxStateInterfaces";
 
 interface UserWorkgroupsContextType {
   enabledWorkgroups: Workgroup[];
   currentWorkgroupId: number | null;
-  setCurrentWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
+  setCurrentWorkgroupId: Dispatch<SetStateAction<number | null>>;
 }
 
 const UserWorkgroupsContext = createContext<UserWorkgroupsContextType | undefined>(undefined);
@@ -14,7 +14,7 @@ interface UserWorkgroupsProviderProps {
   children: ReactNode;
 }
 
-export const UserWorkgroupsProvider: React.FC<UserWorkgroupsProviderProps> = ({ children }) => {
+export const UserWorkgroupsProvider: FC<UserWorkgroupsProviderProps> = ({ children }) => {
   const [enabledWorkgroups, setEnabledWorkgroups] = useState<Workgroup[]>([]);
   const [currentWorkgroupId, setCurrentWorkgroupId] = useState<number | null>(null);
 
