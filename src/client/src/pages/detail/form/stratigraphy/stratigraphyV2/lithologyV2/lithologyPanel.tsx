@@ -20,24 +20,18 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
 
   if (editingEnabled) {
     return <div>edit</div>;
+  } else if (!lithologies || lithologies.length === 0) {
+    return <Box>{t("msgLithologyEmpty")}</Box>;
   } else {
-    if (!lithologies || lithologies.length === 0) {
-      return <Box>{t("msgLithologyEmpty")}</Box>;
-    } else {
-      return (
-        <>
-          <Box sx={{ position: "relative", width: "100%" }}>Headers</Box>
-          <VerticalZoomPanWrapper>
-            <Stack
-              direction={"row"}
-              spacing={1.5}
-              sx={{ height: "600px", width: "100%" }}
-              justifyContent={"flex-start"}>
-              {lithologies?.map(l => l.id)}
-            </Stack>
-          </VerticalZoomPanWrapper>
-        </>
-      );
-    }
+    return (
+      <>
+        <Box sx={{ position: "relative", width: "100%" }}>Headers</Box>
+        <VerticalZoomPanWrapper>
+          <Stack direction={"row"} spacing={1.5} sx={{ height: "600px", width: "100%" }} justifyContent={"flex-start"}>
+            {lithologies?.map(l => l.id)}
+          </Stack>
+        </VerticalZoomPanWrapper>
+      </>
+    );
   }
 };
