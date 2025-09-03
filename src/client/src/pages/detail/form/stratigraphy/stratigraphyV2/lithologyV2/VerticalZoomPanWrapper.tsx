@@ -6,7 +6,7 @@ interface VerticalZoomPanProps {
 }
 
 export const VerticalZoomPanWrapper: React.FC<VerticalZoomPanProps> = ({ children }) => {
-  const [isDragging, setIsDragging] = useState(false); // ← NEW
+  const [isDragging, setIsDragging] = useState(false);
   const [translateY, setTranslateY] = useState(0);
   const [scaleY, setScaleY] = useState(1);
 
@@ -96,7 +96,7 @@ export const VerticalZoomPanWrapper: React.FC<VerticalZoomPanProps> = ({ childre
           width: "100%",
           height: "100%",
         }}>
-        <ScaleContext.Provider value={scaleY}>{children}</ScaleContext.Provider>
+        <ScaleContext.Provider value={{ scaleY, translateY }}>{children}</ScaleContext.Provider>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import { TriangleAlert } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { formatNumberForDisplay } from "../../../../../../components/form/formUtils.ts";
 import { Lithology } from "../../lithology.ts";
-import { useScale } from "./scaleContext.tsx";
+import { useScaleContext } from "./scaleContext.tsx";
 
 interface LithologyLayersProps {
   lithologies: Lithology[];
@@ -20,7 +20,7 @@ export const LithologyLayers: FC<LithologyLayersProps> = ({
   colorAttribute,
   displayText = true,
 }) => {
-  const scaleY = useScale();
+  const { scaleY, translateY } = useScaleContext();
   const { t } = useTranslation();
   const pxPerMeter = 20;
   // Sort lithologies by fromDepth to process them in order

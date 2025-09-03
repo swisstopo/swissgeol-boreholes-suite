@@ -1,12 +1,12 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { useScale } from "./lithologyV2/scaleContext.tsx";
+import { useScaleContext } from "./lithologyV2/scaleContext.tsx";
 
 /**
  * A simple scale component that shows depth markers
  */
 export const DepthScale: React.FC = ({ sx }) => {
-  const scaleY = useScale();
+  const { scaleY } = useScaleContext();
   const pxPerMeter = 20; // Fixed value matching TestLayersPanel
 
   // Generate depth markers
@@ -55,7 +55,7 @@ export const TestLayersPanel: React.FC = ({ sx }) => {
     { id: 4, fromDepth: 18, toDepth: 30, color: "#D3D3D3", name: "Gravel" },
     { id: 5, fromDepth: 30, toDepth: 45, color: "#CD853F", name: "Sandy Clay" },
   ];
-  const scaleY = useScale();
+  const { scaleY } = useScaleContext();
   const pxPerMeter = 20;
 
   return (
