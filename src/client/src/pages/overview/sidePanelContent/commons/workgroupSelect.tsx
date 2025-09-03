@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material/";
@@ -13,8 +14,18 @@ const WorkgroupBox = styled(Box)({
 
 const WorkgroupSelect = ({ sx }: WorkgroupSelectProps) => {
   const { t } = useTranslation();
-  const formMethods = useForm();
+  const formMethods = useForm({
+    defaultValues: {
+      workgroup: null,
+    },
+  });
   const { enabledWorkgroups, currentWorkgroupId, setCurrentWorkgroupId } = useUserWorkgroups();
+
+  useEffect(() => {
+    return () => {
+      setCurrentWorkgroupId(null);
+    };
+  }, [formMethods, setCurrentWorkgroupId]);
 
   if (!enabledWorkgroups || enabledWorkgroups.length === 0) {
     return <WorkgroupBox>{t("disabled")}</WorkgroupBox>;
