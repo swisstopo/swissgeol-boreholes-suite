@@ -167,12 +167,12 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     /// </summary>
     [NotMapped]
     [IncludeInExport]
-    public ICollection<int>? OrganicComponentCodelistIds { get; set; } = new List<int>();
+    public ICollection<int>? ComponentUnconOrganicCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
     /// Gets the <see cref="Codelist"/>s with schema name 'organic_components' used by the <see cref="LithologyDescription"/>.
     /// </summary>
-    public ICollection<Codelist>? OrganicComponentCodelists { get; set; }
+    public ICollection<Codelist>? ComponentUnconOrganicCodelists { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="LithologyDescriptionComponentUnconDebrisCodes"/> join table entities.
@@ -184,12 +184,12 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     /// </summary>
     [NotMapped]
     [IncludeInExport]
-    public ICollection<int>? DebrisCodelistIds { get; set; } = new List<int>();
+    public ICollection<int>? ComponentUnconDebrisCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
     /// Gets the <see cref="Codelist"/>s with schema name 'debris' used by the <see cref="LithologyDescription"/>.
     /// </summary>
-    public ICollection<Codelist>? DebrisCodelists { get; set; }
+    public ICollection<Codelist>? ComponentUnconDebrisCodelists { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="LithologyDescriptionGrainShapeCodes"/> join table entities.
@@ -242,12 +242,12 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     /// </summary>
     [NotMapped]
     [IncludeInExport]
-    public ICollection<int>? LithologyUnconCoarseCodeCodelistIds { get; set; } = new List<int>();
+    public ICollection<int>? LithologyUnconDebrisCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
     /// Gets the <see cref="Codelist"/>s with schema name 'lithology_con' used by the <see cref="LithologyDescription"/>.
     /// </summary>
-    public ICollection<Codelist>? LithologyUnconCoarseCodeCodelists { get; set; }
+    public ICollection<Codelist>? LithologyUnconDebrisCodelists { get; set; }
 
     /*
      * Consolidated properties
