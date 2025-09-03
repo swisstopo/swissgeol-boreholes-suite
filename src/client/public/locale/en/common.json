@@ -134,6 +134,7 @@
   "deletelayer": "Delete this layer",
   "deletelayerconfirmation": "You are about to delete this layer, how do you want to proceed?",
   "deleting": "Deleting {{what}}",
+  "depth": "Depth",
   "depthMD": "Depth [m MD]",
   "depthTVD": "Depth [m TVD]",
   "description": "Description",

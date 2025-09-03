@@ -134,6 +134,7 @@
   "deletelayer": "Elimina questo livello",
   "deletelayerconfirmation": "Stai per eliminare questo livello, come vuoi procedere?",
   "deleting": "Eliminazione {{what}}",
+  "depth": "Profondità",
   "depthMD": "Profondità [m MD]",
   "depthTVD": "Profondità [m TVD]",
   "description": "Descrizione",

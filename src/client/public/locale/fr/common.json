@@ -134,6 +134,7 @@
   "deletelayer": "Supprimer cette couche",
   "deletelayerconfirmation": "Vous êtes sur le point de supprimer cette couche, comment voulez-vous procéder?",
   "deleting": "Suppression de {{what}}",
+  "depth": "Profondeur",
   "depthMD": "Profondeur [m MD]",
   "depthTVD": "Profondeur [m TVD]",
   "description": "Description",
