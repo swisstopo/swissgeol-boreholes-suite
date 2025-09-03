@@ -6,7 +6,7 @@ import { deleteWaterIngress, WaterIngress } from "./WaterIngress.ts";
 
 const WaterIngressDisplay: FC<{ item: WaterIngress }> = ({ item }) => {
   return (
-    <DataDisplayCard<WaterIngress> item={item} deleteData={deleteWaterIngress}>
+    <DataDisplayCard<WaterIngress> item={item} deleteData={deleteWaterIngress} entityName={"waterIngress"}>
       <ObservationDisplay observation={item} />
       <FormContainer direction="row">
         <FormDisplay label="quantity" value={item?.quantity} type={FormValueType.Domain} />
