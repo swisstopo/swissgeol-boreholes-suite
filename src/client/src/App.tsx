@@ -22,6 +22,7 @@ import { SaveProvider } from "./pages/detail/saveContext.tsx";
 import { OverviewProvider } from "./pages/overview/overViewContext";
 import { OverviewPage } from "./pages/overview/overviewPage";
 import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext";
+import { UserWorkgroupsProvider } from "./pages/overview/UserWorkgroupsContext.tsx";
 import { DataLoader } from "./pages/settings/dataLoader";
 import { SettingsPage } from "./pages/settings/settingsPage";
 import { AcceptTerms } from "./term/accept";
@@ -96,23 +97,25 @@ class App extends React.Component {
               <AcceptTerms>
                 <AlertProvider>
                   <AlertBanner />
-                  <PromptProvider>
-                    <Prompt />
-                    <DataCardProvider>
-                      <BasemapProvider>
-                        <FilterProvider>
-                          <OverviewProvider>
-                            <QueryClientProvider client={queryClient}>
-                              <AppBox>
-                                <HeaderComponent />
-                                <RouterProvider router={router} />
-                              </AppBox>
-                            </QueryClientProvider>
-                          </OverviewProvider>
-                        </FilterProvider>
-                      </BasemapProvider>
-                    </DataCardProvider>
-                  </PromptProvider>
+                  <UserWorkgroupsProvider>
+                    <PromptProvider>
+                      <Prompt />
+                      <DataCardProvider>
+                        <BasemapProvider>
+                          <FilterProvider>
+                            <OverviewProvider>
+                              <QueryClientProvider client={queryClient}>
+                                <AppBox>
+                                  <HeaderComponent />
+                                  <RouterProvider router={router} />
+                                </AppBox>
+                              </QueryClientProvider>
+                            </OverviewProvider>
+                          </FilterProvider>
+                        </BasemapProvider>
+                      </DataCardProvider>
+                    </PromptProvider>
+                  </UserWorkgroupsProvider>
                 </AlertProvider>
               </AcceptTerms>
             </AnalyticsProvider>
