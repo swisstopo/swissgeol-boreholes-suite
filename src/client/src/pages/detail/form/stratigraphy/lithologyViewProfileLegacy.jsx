@@ -9,7 +9,7 @@ const handlePattern = layer => `url(/img/lit/${JSON.parse(layer?.lithology?.conf
 /**
  * Displays the lithology layers.
  */
-const LithologyViewProfile = ({ stratigraphyId, navState, setNavState, minPixelHeightForDepthLabel = 30 }) => {
+const LithologyViewProfileLegacy = ({ stratigraphyId, navState, setNavState, minPixelHeightForDepthLabel = 30 }) => {
   const { data: layers } = useLayers(stratigraphyId);
 
   useEffect(() => {
@@ -61,4 +61,4 @@ const LithologyViewProfile = ({ stratigraphyId, navState, setNavState, minPixelH
   );
 };
 
-export default LithologyViewProfile;
+export default LithologyViewProfileLegacy;
