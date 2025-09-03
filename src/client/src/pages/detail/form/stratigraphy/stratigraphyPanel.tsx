@@ -389,18 +389,6 @@ export const StratigraphyPanel: FC = () => {
               </FormProvider>
             )}
             <Box sx={{ position: "relative" }}>
-              {sortedStratigraphies.length > 1 && !editingEnabled && (
-                <Stack
-                  direction="row"
-                  gap={0.75}
-                  justifyContent="flex-end"
-                  sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}>
-                  {selectedStratigraphy.isPrimary && <Chip color="info" label={t("mainStratigraphy")} />}
-                  {selectedStratigraphy.date && <Chip color="info" label={formatDate(selectedStratigraphy.date)} />}
-                </Stack>
-              )}
-            </Box>
-            <Box sx={{ position: "relative", mt: 2 }}>
               <TabPanel
                 variant="list"
                 tabs={[
@@ -411,6 +399,16 @@ export const StratigraphyPanel: FC = () => {
                   },
                 ]}
               />
+              {sortedStratigraphies.length > 1 && !editingEnabled && (
+                <Stack
+                  direction="row"
+                  gap={0.75}
+                  justifyContent="flex-end"
+                  sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}>
+                  {selectedStratigraphy.isPrimary && <Chip color="info" label={t("mainStratigraphy")} />}
+                  {selectedStratigraphy.date && <Chip color="info" label={formatDate(selectedStratigraphy.date)} />}
+                </Stack>
+              )}
             </Box>
           </BoreholeTabContentBox>
         </Box>
