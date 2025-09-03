@@ -195,6 +195,8 @@ public class BdmsContext : DbContext
 
     public DbSet<FaciesDescription> FaciesDescriptions { get; set; }
 
+    public IQueryable<FaciesDescription> FaciesDescriptionsWithIncludes => FaciesDescriptions.Include(fd => fd.Facies);
+
     public DbSet<ChronostratigraphyLayer> ChronostratigraphyLayers { get; set; }
 
     public DbSet<LithostratigraphyLayer> LithostratigraphyLayers { get; set; }

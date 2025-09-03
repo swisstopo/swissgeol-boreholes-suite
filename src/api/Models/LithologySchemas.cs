@@ -30,4 +30,5 @@ public static class LithologySchemas
     public const string TextureMataSchema = "texture_mata";
     public const string UscsDeterminationSchema = "uscs_determination";
     public const string UscsTypeSchema = "uscs_type";
+    public const string FaciesConSchema = "facies_con";
 }
