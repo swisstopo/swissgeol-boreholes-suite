@@ -178,8 +178,10 @@ public class LithologyControllerTest
         Assert.AreEqual(21103010, createdLithology.ConsistencyId);
         Assert.AreEqual(21101002, createdLithology.PlasticityId);
         CollectionAssert.AreEquivalent(new List<int> { 23101004, 23101015 }, createdLithology.LithologyUscsTypeCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 23101004, 23101015 }, createdLithology.UscsTypeCodelists.Select(c => c.Id).ToList());
         Assert.AreEqual(100000493, createdLithology.UscsDeterminationId);
         CollectionAssert.AreEquivalent(new List<int> { 100000167 }, createdLithology.LithologyRockConditionCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 100000167 }, createdLithology.RockConditionCodelists.Select(c => c.Id).ToList());
         Assert.AreEqual(0, createdLithology.LithologyTextureMataCodes.Count);
         Assert.AreEqual(1, createdLithology.LithologyDescriptions.Count); // Only one description should be saved since HasBedding is false
         var lithologyDescription = createdLithology.LithologyDescriptions.First();
@@ -193,10 +195,15 @@ public class LithologyControllerTest
         Assert.AreEqual(100000039, lithologyDescription.LithologyUncon5Id);
         Assert.AreEqual(100000049, lithologyDescription.LithologyUncon6Id);
         CollectionAssert.AreEquivalent(new List<int> { 21108004, 21108008 }, lithologyDescription.LithologyDescriptionComponentUnconOrganicCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 21108004, 21108008 }, lithologyDescription.ComponentUnconOrganicCodelists.Select(c => c.Id).ToList());
         CollectionAssert.AreEquivalent(new List<int> { 9102 }, lithologyDescription.LithologyDescriptionComponentUnconDebrisCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 9102 }, lithologyDescription.ComponentUnconDebrisCodelists.Select(c => c.Id).ToList());
         CollectionAssert.AreEquivalent(new List<int> { 21110002, 21110004, 21110003 }, lithologyDescription.LithologyDescriptionGrainShapeCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 21110002, 21110004, 21110003 }, lithologyDescription.GrainShapeCodelists.Select(c => c.Id).ToList());
         CollectionAssert.AreEquivalent(new List<int> { 21115001 }, lithologyDescription.LithologyDescriptionGrainAngularityCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 21115001 }, lithologyDescription.GrainAngularityCodelists.Select(c => c.Id).ToList());
         CollectionAssert.AreEquivalent(new List<int> { 100000503, 100000513 }, lithologyDescription.LithologyDescriptionLithologyUnconDebrisCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 100000503, 100000513 }, lithologyDescription.LithologyUnconDebrisCodelists.Select(c => c.Id).ToList());
         Assert.IsNull(lithologyDescription.LithologyConId);
         Assert.AreEqual(0, lithologyDescription.LithologyDescriptionComponentConParticleCodes.Count);
         Assert.AreEqual(0, lithologyDescription.LithologyDescriptionComponentConMineralCodes.Count);
@@ -463,7 +470,7 @@ public class LithologyControllerTest
                     ComponentUnconDebrisCodelistIds = new List<int> { 9100, 9100 },
                     GrainShapeCodelistIds = new List<int> { 21110002, 21110003 },
                     GrainAngularityCodelistIds = new List<int> { 21115007, 21115001 },
-                    LithologyUnconDebrisCodeCodelistIds = new List<int> { 100000536, 100000556, 100000570 },
+                    LithologyUnconDebrisCodelistIds = new List<int> { 100000536, 100000556, 100000570 },
                     LithologyConId = 100000540,
                     ComponentConParticleCodelistIds = new List<int> { 100000183 },
                     ComponentConMineralCodelistIds = new List<int> { 100000251, 100000262 },
@@ -489,7 +496,7 @@ public class LithologyControllerTest
                     ComponentUnconDebrisCodelistIds = new List<int> { 9102 },
                     GrainShapeCodelistIds = new List<int> { 21110002, 21110004, 21110003 },
                     GrainAngularityCodelistIds = new List<int> { 21115001 },
-                    LithologyUnconDebrisCodeCodelistIds = new List<int> { 100000503, 100000513 },
+                    LithologyUnconDebrisCodelistIds = new List<int> { 100000503, 100000513 },
                     LithologyConId = 100000508,
                     ComponentConParticleCodelistIds = new List<int> { 100000186, 100000181 },
                     ComponentConMineralCodelistIds = new List<int> { 100000260 },

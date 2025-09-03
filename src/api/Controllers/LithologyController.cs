@@ -312,7 +312,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                     var grainAngularityCodes = await Context.Codelists.Where(c => ld.GrainAngularityCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
                     ld.LithologyDescriptionGrainAngularityCodes = grainAngularityCodes.Select(c => new LithologyDescriptionGrainAngularityCodes() { Codelist = c, CodelistId = c.Id }).ToList();
 
-                    var unconCoarseCodes = await Context.Codelists.Where(c => ld.LithologyUnconDebrisCodeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+                    var unconCoarseCodes = await Context.Codelists.Where(c => ld.LithologyUnconDebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
                     ld.LithologyDescriptionLithologyUnconDebrisCodes = unconCoarseCodes.Select(c => new LithologyDescriptionLithologyUnconDebrisCodes() { Codelist = c, CodelistId = c.Id }).ToList();
                 }
                 else
@@ -332,7 +332,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                     await UpdateLithologyDescriptionCodesAsync(ld.Id, grainAngularityCodes!, ld.GrainAngularityCodelistIds!).ConfigureAwait(false);
 
                     var unconCoarseCodes = existingLithologyDescription?.LithologyDescriptionLithologyUnconDebrisCodes ?? [];
-                    await UpdateLithologyDescriptionCodesAsync(ld.Id, unconCoarseCodes!, ld.LithologyUnconDebrisCodeCodelistIds!).ConfigureAwait(false);
+                    await UpdateLithologyDescriptionCodesAsync(ld.Id, unconCoarseCodes!, ld.LithologyUnconDebrisCodelistIds!).ConfigureAwait(false);
                 }
             }
         }

@@ -242,12 +242,12 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     /// </summary>
     [NotMapped]
     [IncludeInExport]
-    public ICollection<int>? LithologyUnconDebrisCodeCodelistIds { get; set; } = new List<int>();
+    public ICollection<int>? LithologyUnconDebrisCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
     /// Gets the <see cref="Codelist"/>s with schema name 'lithology_con' used by the <see cref="LithologyDescription"/>.
     /// </summary>
-    public ICollection<Codelist>? LithologyUnconDebrisCodeCodelists { get; set; }
+    public ICollection<Codelist>? LithologyUnconDebrisCodelists { get; set; }
 
     /*
      * Consolidated properties

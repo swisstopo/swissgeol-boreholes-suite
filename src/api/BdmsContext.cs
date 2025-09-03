@@ -658,7 +658,7 @@ public class BdmsContext : DbContext
 
         // Join table for lithology description and codelists with schema name 'lithology_uncon_coarse'
         modelBuilder.Entity<LithologyDescription>()
-            .HasMany(l => l.LithologyUnconDebrisCodeCodelists)
+            .HasMany(l => l.LithologyUnconDebrisCodelists)
             .WithMany()
             .UsingEntity<LithologyDescriptionLithologyUnconDebrisCodes>(
                 j => j
