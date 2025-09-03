@@ -410,18 +410,6 @@ export const StratigraphyPanel: FC = () => {
                 </Stack>
               )}
             </Box>
-            <Box sx={{ position: "relative", mt: 2 }}>
-              <TabPanel
-                variant="list"
-                tabs={[
-                  {
-                    label: t("lithology"),
-                    hash: "#lithology",
-                    component: <LithologyPanel stratigraphyId={selectedStratigraphy.id} />,
-                  },
-                ]}
-              />
-            </Box>
           </BoreholeTabContentBox>
         </Box>
       </Box>
