@@ -130,6 +130,7 @@
   "deleteForever": "Elimina definitivamente",
   "deleteMainStratigraphy": "La stratigrafia principale non può essere cancellata. Si prega di impostare prima un'altra stratigrafia come stratigrafia principale.",
   "deleteMessage": "Volete davvero eliminare questa voce? La voce verrà eliminata definitivamente dal database.",
+  "deletePermissions": "Non si dispone delle autorizzazioni necessarie per eliminare tutte le perforazioni selezionate.",
   "deleteUser": "Elimina utente",
   "deleteWorkgroup": "Elimina gruppo di lavoro",
   "deletelayer": "Elimina questo livello",

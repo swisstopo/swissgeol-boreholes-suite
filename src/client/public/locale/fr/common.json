@@ -130,6 +130,7 @@
   "deleteForever": "Supprimer définitivement",
   "deleteMainStratigraphy": "La stratigraphie principale ne peut pas être supprimée. Veuillez d'abord définir une autre stratigraphie comme stratigraphie principale.",
   "deleteMessage": "Voulez-vous vraiment supprimer cette entrée? L'entrée sera définitivement supprimée de la base de données.",
+  "deletePermissions": "Vous n'avez pas les autorisations nécessaires pour supprimer tous les forages sélectionnés.",
   "deleteUser": "Supprimer utilisateur",
   "deleteWorkgroup": "Supprimer groupe de travail",
   "deletelayer": "Supprimer cette couche",

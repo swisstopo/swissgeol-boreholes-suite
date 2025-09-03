@@ -130,6 +130,7 @@
   "deleteForever": "Delete permanently",
   "deleteMainStratigraphy": "The main stratigraphy cannot be deleted. Please set another stratigraphy as the main stratigraphy first.",
   "deleteMessage": "Do you really want to delete this entry? The entry will be permanently deleted from the database.",
+  "deletePermissions": "You do not have the necessary permissions to delete all selected boreholes.",
   "deleteUser": "Delete user",
   "deleteWorkgroup": "Delete workgroup",
   "deletelayer": "Delete this layer",

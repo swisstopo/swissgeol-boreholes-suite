@@ -130,6 +130,7 @@
   "deleteForever": "Dauerhaft löschen",
   "deleteMainStratigraphy": "Die Hauptstratigraphie kann nicht gelöscht werden. Bitte setzen Sie zuerst eine andere Stratigraphie als Hauptstratigraphie.",
   "deleteMessage": "Wollen Sie diesen Eintrag wirklich löschen? Der Eintrag wird dauerhaft aus der Datenbank gelöscht.",
+  "deletePermissions": "Sie haben nicht die notwendigen Rechte, alle selektierten Bohrungen zu löschen.",
   "deleteUser": "Benutzer löschen",
   "deleteWorkgroup": "Arbeitsgruppe löschen",
   "deletelayer": "Bestehende Schicht löschen",

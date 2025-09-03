@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useCallback, useContext, useLayoutEffect, use
 import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import { deleteBoreholes } from "../../../api-lib";
 import { Boreholes, Filters } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { copyBorehole } from "../../../api/borehole.ts";
+import { BoreholeV2, copyBorehole, fetchBoreholesByIds } from "../../../api/borehole.ts";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
@@ -10,6 +10,7 @@ import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
+import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 
 interface BottomBarContainerProps {
   boreholes: Boreholes;
@@ -44,7 +45,8 @@ const BottomBarContainer = ({
   const { navigateTo } = useBoreholesNavigate();
   const { featureIds } = useContext(FilterContext);
   const { bottomDrawerOpen } = useContext(OverViewContext);
-  const { currentWorkgroupId } = useUserWorkgroups();
+  const { enabledWorkgroups, currentWorkgroupId } = useUserWorkgroups();
+  const { showPrompt } = useContext(PromptContext);
 
   const [isBusy, setIsBusy] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
@@ -82,13 +84,25 @@ const BottomBarContainer = ({
   }, [navigateTo, selectionModel, currentWorkgroupId]);
 
   const onDeleteMultiple = useCallback(async () => {
-    setIsBusy(true);
-    // @ts-expect-error legacy api calls not typed
-    await deleteBoreholes(selectionModel).then(() => {
-      reloadBoreholes();
+    fetchBoreholesByIds(selectionModel as number[]).then(boreholesResponse => {
+      const workgroupIds = boreholesResponse.boreholes.map((bh: BoreholeV2) => bh.workgroupId);
+      const allWorkgroupsEnabled = workgroupIds.every((id: number) => enabledWorkgroups.some(wg => wg.id === id));
+      if (allWorkgroupsEnabled) {
+        setIsBusy(true);
+        // @ts-expect-error legacy api calls not typed
+        await deleteBoreholes(selectionModel).then(() => {
+          reloadBoreholes();
+        });
+        setIsBusy(false);
+      } else {
+        showPrompt("deletePermissions", [
+          {
+            label: "cancel",
+          },
+        ]);
+      }
     });
-    setIsBusy(false);
-  }, [reloadBoreholes, selectionModel]);
+  }, [enabledWorkgroups, reloadBoreholes, selectionModel, showPrompt]);
 
   return (
     <>
