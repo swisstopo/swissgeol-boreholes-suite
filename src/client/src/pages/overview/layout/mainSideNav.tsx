@@ -1,11 +1,9 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { Badge, Stack } from "@mui/material";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
 import UploadIcon from "../../../assets/icons/upload.svg?react";
-import { ReduxRootState, User, Workgroup } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
@@ -13,12 +11,11 @@ import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { ImportErrorDialog } from "../sidePanelContent/importer/importErrorDialog.tsx";
+import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
   drawerOpen: boolean;
-  setWorkgroupId: React.Dispatch<React.SetStateAction<number | null>>;
-  setEnabledWorkgroups: React.Dispatch<React.SetStateAction<Workgroup[]>>;
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
   sideDrawerContent: DrawerContentTypes;
   errorsResponse: ErrorResponse | null;
@@ -29,8 +26,6 @@ export interface MainSideNavProps {
 const MainSideNav = ({
   toggleDrawer,
   drawerOpen,
-  setWorkgroupId,
-  setEnabledWorkgroups,
   setSideDrawerContent,
   sideDrawerContent,
   errorsResponse,
@@ -42,17 +37,7 @@ const MainSideNav = ({
   const { t } = useTranslation();
   const auth = useAuth();
   const filterContext = useContext(FilterContext);
-
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
-
-  useEffect(() => {
-    // Hotfix to display all workgroups with hierarchical roles =>  Todo: getting all workgroups for the user should be moved to the backend
-    const wgs = user.data.workgroups.filter(
-      w => w.disabled === null && w.roles.some(role => ["EDIT", "CONTROL", "VALID", "PUBLIC"].includes(role)),
-    );
-    setEnabledWorkgroups(wgs);
-    setWorkgroupId(wgs.length > 0 ? wgs[0].id : null);
-  }, [setEnabledWorkgroups, setWorkgroupId, user.data.workgroups]);
+  const { enabledWorkgroups } = useUserWorkgroups();
 
   const handleToggleFilter = () => {
     handleDrawer(DrawerContentTypes.Filters);
@@ -86,7 +71,7 @@ const MainSideNav = ({
   const isAddPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.NewBorehole;
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
   const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
-  const editingDisabled = user.data.roles.indexOf("EDIT") === -1;
+  const editingDisabled = enabledWorkgroups.length === 0;
   const activeFilterCount = filterContext.activeFilterLength + (filterContext.filterPolygon === null ? 0 : 1);
 
   return (

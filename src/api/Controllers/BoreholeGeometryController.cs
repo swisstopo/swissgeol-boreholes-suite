@@ -69,13 +69,13 @@ public class BoreholeGeometryController : ControllerBase
     /// <summary>
     /// Get available geometry formats for borehole geometry data.
     /// </summary>
-    /// <returns>A List of objects containing the format name, key, and CSV header.</returns>
+    /// <returns>A List of objects containing the key, and CSV header.</returns>
     [HttpGet("[action]")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public IActionResult GeometryFormats()
     {
         return Ok(geometryFormats
-            .Select(f => new { f.Name, f.Key, f.CsvHeader })
+            .Select(f => new { f.Key, f.CsvHeader })
             .ToList());
     }
 
