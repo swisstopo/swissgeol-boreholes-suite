@@ -32,6 +32,7 @@ const WorkgroupSelect = ({ sx }: WorkgroupSelectProps) => {
   }
 
   if (enabledWorkgroups.length === 1) {
+    setCurrentWorkgroupId(enabledWorkgroups[0].id);
     return <WorkgroupBox>{enabledWorkgroups[0].workgroup}</WorkgroupBox>;
   }
 
