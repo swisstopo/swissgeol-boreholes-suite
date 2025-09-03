@@ -25,7 +25,7 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
     const hasBoreholeFiles = (borehole.boreholeFiles?.length ?? 0) > 0;
     const hasDocuments = (borehole.documents?.length ?? 0) > 0;
     const hasPhotos = (borehole.photos?.length ?? 0) > 0;
-    const hasAttachments = hasBoreholeFiles || hasPhotos;
+    const hasAttachments = hasBoreholeFiles || hasPhotos || hasDocuments;
     const hasCasings =
       hasCompletion && (borehole.completions?.some(completion => completion.casings?.length > 0) ?? false);
     const hasBackfills =
