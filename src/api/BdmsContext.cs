@@ -598,7 +598,7 @@ public class BdmsContext : DbContext
 
         // Join table for lithology description and codelists with schema name 'organic_components'
         modelBuilder.Entity<LithologyDescription>()
-            .HasMany(l => l.OrganicComponentCodelists)
+            .HasMany(l => l.ComponentUnconOrganicCodelists)
             .WithMany()
             .UsingEntity<LithologyDescriptionComponentUnconOrganicCodes>(
                 j => j
@@ -613,7 +613,7 @@ public class BdmsContext : DbContext
 
         // Join table for lithology description and codelists with schema name 'debris'
         modelBuilder.Entity<LithologyDescription>()
-            .HasMany(l => l.DebrisCodelists)
+            .HasMany(l => l.ComponentUnconDebrisCodelists)
             .WithMany()
             .UsingEntity<LithologyDescriptionComponentUnconDebrisCodes>(
                 j => j
@@ -658,7 +658,7 @@ public class BdmsContext : DbContext
 
         // Join table for lithology description and codelists with schema name 'lithology_uncon_coarse'
         modelBuilder.Entity<LithologyDescription>()
-            .HasMany(l => l.LithologyUnconCoarseCodeCodelists)
+            .HasMany(l => l.LithologyUnconDebrisCodeCodelists)
             .WithMany()
             .UsingEntity<LithologyDescriptionLithologyUnconDebrisCodes>(
                 j => j
