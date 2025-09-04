@@ -1840,13 +1840,13 @@ namespace BDMS.Migrations
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("lithology_strucutre_post_gen_id");
+                        .HasColumnName("lithology_structure_post_gen_id");
 
                     b.HasKey("LithologyDescriptionId", "CodelistId");
 
                     b.HasIndex("CodelistId");
 
-                    b.ToTable("lithology_description_strucutre_post_gen_codelist", "bdms");
+                    b.ToTable("lithology_description_structure_post_gen_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.LithologyDescriptionStructureSynGenCodes", b =>
@@ -1857,13 +1857,13 @@ namespace BDMS.Migrations
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("lithology_strucutre_syn_gen_id");
+                        .HasColumnName("lithology_structure_syn_gen_id");
 
                     b.HasKey("LithologyDescriptionId", "CodelistId");
 
                     b.HasIndex("CodelistId");
 
-                    b.ToTable("lithology_description_strucutre_syn_gen_codelist", "bdms");
+                    b.ToTable("lithology_description_structure_syn_gen_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.LithologyDescriptionUnconCoarseCodes", b =>
