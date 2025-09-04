@@ -77,7 +77,7 @@ export const WorkflowView = () => {
   }, [canChangeStatus, showAlert, navigateTo, t, boreholeId]);
 
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
-    const field = (name: string, isDisabled: boolean = !hasStratigraphy) => ({
+    const field = (name: string, isDisabled: boolean = false) => ({
       field: name,
       isDisabled: isDisabled,
       name: () => t(name),
