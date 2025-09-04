@@ -7,6 +7,7 @@
 - Added new workflow UI and backend to manage the borehole's publication status. Removed legacy workflow UI and backend.
 - Filters for workgroup and status are now hidden on the view instance.
 - Attachments can now be exported without editor privileges.
+- _view-sync_ now also syncs published public attachments.
 - Adding or importing boreholes is now explicitly disabled when no workgroup is selected.
 - Moved geometry format names to localization files to support translations.
 
