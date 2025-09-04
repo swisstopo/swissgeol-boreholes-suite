@@ -3,6 +3,7 @@ import { GridRowSelectionModel, GridSortDirection, GridSortModel } from "@mui/x-
 import { deleteBoreholes } from "../../../api-lib";
 import { Boreholes, Filters } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { BoreholeV2, copyBorehole, fetchBoreholesByIds } from "../../../api/borehole.ts";
+import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
@@ -10,7 +11,6 @@ import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
-import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 
 interface BottomBarContainerProps {
   boreholes: Boreholes;
@@ -90,7 +90,7 @@ const BottomBarContainer = ({
       if (allWorkgroupsEnabled) {
         setIsBusy(true);
         // @ts-expect-error legacy api calls not typed
-        await deleteBoreholes(selectionModel).then(() => {
+        deleteBoreholes(selectionModel).then(() => {
           reloadBoreholes();
         });
         setIsBusy(false);
