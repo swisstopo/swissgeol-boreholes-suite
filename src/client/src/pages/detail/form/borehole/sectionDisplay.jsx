@@ -8,7 +8,7 @@ const SectionDisplay = ({ item }) => {
   const codelists = useCodelists();
 
   return (
-    <DataDisplayCard item={item} deleteData={deleteSection}>
+    <DataDisplayCard item={item} deleteData={deleteSection} entityName={"sections"}>
       <FormDisplay label="section_name" value={item?.name} />
 
       {item?.sectionElements

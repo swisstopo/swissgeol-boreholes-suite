@@ -6,7 +6,10 @@ import { deleteGroundwaterLevelMeasurement, GroundwaterLevelMeasurement } from "
 
 export const GroundwaterLevelMeasurementDisplay: FC<{ item: GroundwaterLevelMeasurement }> = ({ item }) => {
   return (
-    <DataDisplayCard item={item} deleteData={deleteGroundwaterLevelMeasurement}>
+    <DataDisplayCard
+      item={item}
+      deleteData={deleteGroundwaterLevelMeasurement}
+      entityName={"groundwaterLevelMeasurement"}>
       <ObservationDisplay observation={item} showDepthInputs={false} />
       <FormContainer direction="row">
         <FormDisplay label="gwlm_kind" value={item?.kind} type={FormValueType.Domain} />

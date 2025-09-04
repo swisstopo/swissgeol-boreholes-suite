@@ -1,7 +1,9 @@
 import { ReactNode, useContext } from "react";
 import { Trash2 } from "lucide-react";
 import { useReloadBoreholes } from "../../api/borehole.ts";
+import { useResetTabStatus } from "../../hooks/useResetTabStatus.ts";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
+import { TabName } from "../../pages/detail/form/workflow/workflow.ts";
 import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
 import { FormContainer } from "../form/form";
 import { PromptContext } from "../prompt/promptContext.tsx";
@@ -12,15 +14,22 @@ import { DataCardEntity } from "./dataCards.tsx";
 interface DataDisplayCardProps<T extends DataCardEntity> {
   item: T;
   deleteData: (id: number) => Promise<void>;
+  entityName: TabName;
   children?: ReactNode;
 }
 
-export const DataDisplayCard = <T extends DataCardEntity>({ item, deleteData, children }: DataDisplayCardProps<T>) => {
+export const DataDisplayCard = <T extends DataCardEntity>({
+  item,
+  deleteData,
+  entityName,
+  children,
+}: DataDisplayCardProps<T>) => {
   const { selectedCard, selectCard, triggerReload } = useContext(DataCardContext);
   const { switchToCard } = useContext(DataCardSwitchContext);
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(EditStateContext);
   const reloadBoreholes = useReloadBoreholes();
+  const resetTabStatus = useResetTabStatus([entityName]);
 
   return (
     <>
@@ -41,6 +50,7 @@ export const DataDisplayCard = <T extends DataCardEntity>({ item, deleteData, ch
                   action: () => {
                     if (item?.id) {
                       deleteData(item.id).then(() => {
+                        resetTabStatus();
                         triggerReload();
                         reloadBoreholes();
                       });

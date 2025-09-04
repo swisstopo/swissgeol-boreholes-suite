@@ -108,7 +108,7 @@ const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: Im
         <Button
           variant="contained"
           data-cy={"import-button"}
-          disabled={!file || enabledWorkgroups?.length === 0}
+          disabled={!file || enabledWorkgroups?.length === 0 || !currentWorkgroupId}
           onClick={handleBoreholeImport}>
           {t("import")}
         </Button>

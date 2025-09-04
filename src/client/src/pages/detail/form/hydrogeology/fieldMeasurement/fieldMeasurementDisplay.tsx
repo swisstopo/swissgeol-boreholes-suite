@@ -15,7 +15,7 @@ export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }
   const { t, i18n } = useTranslation();
 
   return (
-    <DataDisplayCard<FieldMeasurement> item={item} deleteData={deleteFieldMeasurement}>
+    <DataDisplayCard<FieldMeasurement> item={item} deleteData={deleteFieldMeasurement} entityName={"fieldMeasurement"}>
       <ObservationDisplay observation={item} />
       <FormResultTableDisplay<FieldMeasurementResult>
         title={t("fieldMeasurementResult")}

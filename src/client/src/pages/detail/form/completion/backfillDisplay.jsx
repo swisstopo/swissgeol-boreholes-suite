@@ -8,7 +8,7 @@ const BackfillDisplay = props => {
   const { getCasingNameWithCompletion } = useGetCasingName();
 
   return (
-    <DataDisplayCard item={item} deleteData={deleteBackfill}>
+    <DataDisplayCard item={item} deleteData={deleteBackfill} entityName={"backfill"}>
       <FormContainer direction="row">
         <FormDisplay label="fromdepth" value={item?.fromDepth} type={FormValueType.Number} />
         <FormDisplay label="todepth" value={item?.toDepth} type={FormValueType.Number} />
