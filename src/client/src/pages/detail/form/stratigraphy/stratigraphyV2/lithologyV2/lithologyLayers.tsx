@@ -4,7 +4,6 @@ import { Box, Chip, Stack, SxProps, Typography } from "@mui/material";
 import { TriangleAlert } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { formatNumberForDisplay } from "../../../../../../components/form/formUtils.ts";
-import { Lithology } from "../../lithology.ts";
 import { useScaleContext } from "./scaleContext.tsx";
 
 interface LithologyLayersProps {
@@ -23,35 +22,13 @@ export const LithologyLayers: FC<LithologyLayersProps> = ({
   const { scaleY } = useScaleContext();
   const { t } = useTranslation();
   const pxPerMeter = 20;
-  // Sort lithologies by fromDepth to process them in order
-  // Todo: Is sotring needed here or can we assume they come sorted
-  const sortedLithologies = [...lithologies].sort((a, b) => a.fromDepth - b.fromDepth);
-
-  const allLayers: (Lithology | { id: string; fromDepth: number; toDepth: number; isGap: boolean })[] = [];
-
-  // Todo: use common hook to fill gaps between layers (?)
-  let lastDepth = 0;
-  sortedLithologies?.forEach((lithology, index) => {
-    // If there's a gap between this layer and the previous depth, add a gap filler
-    if (lithology.fromDepth > lastDepth && index > 0) {
-      allLayers.push({
-        id: `gap-${index}`,
-        fromDepth: lastDepth,
-        toDepth: lithology.fromDepth,
-        isGap: true,
-      });
-    }
-
-    allLayers.push(lithology);
-    lastDepth = lithology.toDepth;
-  });
 
   return (
     <Box sx={{ position: "relative", height: "100%", width: "100%", ...sx, borderRight: "1px solid grey" }}>
-      {allLayers?.map((lithology: Lithology) => {
+      {lithologies?.map(lithology => {
         const colorArray =
           (colorAttribute &&
-            JSON.parse(lithology.lithologyDescriptions?.find(desc => desc.isFirst)?.[colorAttribute]?.conf ?? null)
+            JSON.parse(lithology?.lithologyDescriptions?.find(desc => desc.isFirst)?.[colorAttribute]?.conf ?? null)
               ?.color) ||
           null;
         const color = colorArray
@@ -84,7 +61,7 @@ export const LithologyLayers: FC<LithologyLayersProps> = ({
                     transform: `scaleY(${1 / scaleY})`,
                     transformOrigin: "center",
                   }}>
-                  {formatNumberForDisplay(lithology.fromDepth)} {t("mMd")}
+                  {formatNumberForDisplay(lithology.fromDepth, 1, 1)}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -92,7 +69,15 @@ export const LithologyLayers: FC<LithologyLayersProps> = ({
                     transform: `scaleY(${1 / scaleY})`,
                     transformOrigin: "center",
                   }}>
-                  {formatNumberForDisplay(lithology.toDepth)} {t("mMd")}
+                  {"placeholder Text"}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    transform: `scaleY(${1 / scaleY})`,
+                    transformOrigin: "center",
+                  }}>
+                  {formatNumberForDisplay(lithology.toDepth, 1, 1)}
                 </Typography>
               </>
             )}

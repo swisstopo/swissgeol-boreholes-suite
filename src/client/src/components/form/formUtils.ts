@@ -60,15 +60,16 @@ const formatWithScientificNotation = (value: number) => {
 /**
  * Formats a number with thousands separators.
  * @param {number} minDecimals The minimum number of decimal places to display.
+ * @param {number} maxDecimals The maximum number of decimal places to display.
  * @param {number} value The number to format.
  * @returns The formatted number.
  */
-const formatWithThousandsSeparator = (minDecimals: number, value: number) => {
+const formatWithThousandsSeparator = (minDecimals: number, maxDecimals: number, value: number) => {
   // Format number using de-CH
   const formatted = new Intl.NumberFormat("de-CH", {
     useGrouping: true,
     minimumFractionDigits: minDecimals,
-    maximumFractionDigits: Math.max(3, minDecimals),
+    maximumFractionDigits: Math.max(maxDecimals, minDecimals),
   }).format(value);
   // Ensure thousand separators are always a standard single quote (')
   return formatted.replace(/’/g, "'");
@@ -79,14 +80,15 @@ const formatWithThousandsSeparator = (minDecimals: number, value: number) => {
  * If the number is less than 0.001 and has more than 3 decimal places, the number is formatted with scientific notation.
  * @param {number} value The number to format.
  * @param {number} minDecimals The minimum number of decimal places to display (defaults to 0).
+ * @param {number} maxDecimals The maximum number of decimal places to display (defaults to 3).
  * @returns The formatted number.
  */
-export const formatNumberForDisplay = (value: number | null, minDecimals = 0): string => {
+export const formatNumberForDisplay = (value: number | null, minDecimals = 0, maxDecimals = 3): string => {
   if (value == null) return "-";
   if (Math.abs(value) < 0.001 && value !== 0) {
     return formatWithScientificNotation(value);
   }
-  return formatWithThousandsSeparator(minDecimals, value);
+  return formatWithThousandsSeparator(minDecimals, maxDecimals, value);
 };
 
 export const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);

@@ -86,6 +86,7 @@ export interface Lithology {
   rockConditionCodelists: Codelist[];
   textureMataCodelistIds: number[];
   textureMataCodelists: Codelist[];
+  isGap?: boolean;
 }
 
 export const fetchLithologiesByStratigraphyId = async (stratigraphyId: number): Promise<Lithology[]> =>
