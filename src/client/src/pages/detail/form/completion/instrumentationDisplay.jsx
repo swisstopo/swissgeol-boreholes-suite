@@ -8,7 +8,7 @@ const InstrumentationDisplay = props => {
   const { getCasingNameWithCompletion } = useGetCasingName();
 
   return (
-    <DataDisplayCard item={item} deleteData={deleteInstrumentation}>
+    <DataDisplayCard item={item} deleteData={deleteInstrumentation} entityName={"instrumentation"}>
       <FormContainer direction="row">
         <FormDisplay label="fromdepth" value={item?.fromDepth} type={FormValueType.Number} />
         <FormDisplay label="todepth" value={item?.toDepth} type={FormValueType.Number} />

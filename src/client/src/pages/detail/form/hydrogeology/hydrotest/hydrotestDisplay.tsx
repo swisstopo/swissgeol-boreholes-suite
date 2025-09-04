@@ -16,7 +16,7 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
   const codelists = useCodelists();
 
   return (
-    <DataDisplayCard<Hydrotest> item={item} deleteData={deleteHydrotest}>
+    <DataDisplayCard<Hydrotest> item={item} deleteData={deleteHydrotest} entityName={"hydrotest"}>
       <ObservationDisplay observation={item} />
       <FormContainer direction="row">
         <FormDisplay label="hydrotestKind" value={item?.kindCodelists ?? null} type={FormValueType.Domain} />
