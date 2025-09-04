@@ -3,9 +3,9 @@
 namespace BDMS.Models;
 
 /// <summary>
-/// Join table entity for a <see cref="Models.Codelist"/> with the schemaName 'strucutre_syn_gen' attached to a <see cref="Models.LithologyDescription"/>.
+/// Join table entity for a <see cref="Models.Codelist"/> with the schemaName 'structure_syn_gen' attached to a <see cref="Models.LithologyDescription"/>.
 /// </summary>
-[Table("lithology_description_strucutre_syn_gen_codelist")]
+[Table("lithology_description_structure_syn_gen_codelist")]
 public class LithologyDescriptionStructureSynGenCodes : ILithologyDescriptionCode
 {
     /// <inheritdoc/>
@@ -16,7 +16,7 @@ public class LithologyDescriptionStructureSynGenCodes : ILithologyDescriptionCod
     public LithologyDescription? LithologyDescription { get; set; }
 
     /// <inheritdoc/>
-    [Column("lithology_strucutre_syn_gen_id")]
+    [Column("lithology_structure_syn_gen_id")]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>

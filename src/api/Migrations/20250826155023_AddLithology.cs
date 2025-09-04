@@ -458,25 +458,25 @@ public partial class AddLithology : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "lithology_description_strucutre_post_gen_codelist",
+            name: "lithology_description_structure_post_gen_codelist",
             schema: "bdms",
             columns: table => new
             {
                 lithology_description_id = table.Column<int>(type: "integer", nullable: false),
-                lithology_strucutre_post_gen_id = table.Column<int>(type: "integer", nullable: false),
+                lithology_structure_post_gen_id = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_lithology_description_strucutre_post_gen_codelist", x => new { x.lithology_description_id, x.lithology_strucutre_post_gen_id });
+                table.PrimaryKey("PK_lithology_description_structure_post_gen_codelist", x => new { x.lithology_description_id, x.lithology_structure_post_gen_id });
                 table.ForeignKey(
-                    name: "FK_lithology_description_strucutre_post_gen_codelist_codelist_~",
-                    column: x => x.lithology_strucutre_post_gen_id,
+                    name: "FK_lithology_description_structure_post_gen_codelist_codelist_~",
+                    column: x => x.lithology_structure_post_gen_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
                     principalColumn: "id_cli",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "FK_lithology_description_strucutre_post_gen_codelist_lithology~",
+                    name: "FK_lithology_description_structure_post_gen_codelist_lithology~",
                     column: x => x.lithology_description_id,
                     principalSchema: "bdms",
                     principalTable: "lithology_description",
@@ -485,25 +485,25 @@ public partial class AddLithology : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "lithology_description_strucutre_syn_gen_codelist",
+            name: "lithology_description_structure_syn_gen_codelist",
             schema: "bdms",
             columns: table => new
             {
                 lithology_description_id = table.Column<int>(type: "integer", nullable: false),
-                lithology_strucutre_syn_gen_id = table.Column<int>(type: "integer", nullable: false),
+                lithology_structure_syn_gen_id = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_lithology_description_strucutre_syn_gen_codelist", x => new { x.lithology_description_id, x.lithology_strucutre_syn_gen_id });
+                table.PrimaryKey("PK_lithology_description_structure_syn_gen_codelist", x => new { x.lithology_description_id, x.lithology_structure_syn_gen_id });
                 table.ForeignKey(
-                    name: "FK_lithology_description_strucutre_syn_gen_codelist_codelist_l~",
-                    column: x => x.lithology_strucutre_syn_gen_id,
+                    name: "FK_lithology_description_structure_syn_gen_codelist_codelist_l~",
+                    column: x => x.lithology_structure_syn_gen_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
                     principalColumn: "id_cli",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "FK_lithology_description_strucutre_syn_gen_codelist_lithology_~",
+                    name: "FK_lithology_description_structure_syn_gen_codelist_lithology_~",
                     column: x => x.lithology_description_id,
                     principalSchema: "bdms",
                     principalTable: "lithology_description",
@@ -764,16 +764,16 @@ public partial class AddLithology : Migration
             column: "organic_components_id");
 
         migrationBuilder.CreateIndex(
-            name: "IX_lithology_description_strucutre_post_gen_codelist_lithology~",
+            name: "IX_lithology_description_structure_post_gen_codelist_lithology~",
             schema: "bdms",
-            table: "lithology_description_strucutre_post_gen_codelist",
-            column: "lithology_strucutre_post_gen_id");
+            table: "lithology_description_structure_post_gen_codelist",
+            column: "lithology_structure_post_gen_id");
 
         migrationBuilder.CreateIndex(
-            name: "IX_lithology_description_strucutre_syn_gen_codelist_lithology_~",
+            name: "IX_lithology_description_structure_syn_gen_codelist_lithology_~",
             schema: "bdms",
-            table: "lithology_description_strucutre_syn_gen_codelist",
-            column: "lithology_strucutre_syn_gen_id");
+            table: "lithology_description_structure_syn_gen_codelist",
+            column: "lithology_structure_syn_gen_id");
 
         migrationBuilder.CreateIndex(
             name: "IX_lithology_description_uncon_coarse_codelist_lithology_uncon~",
@@ -828,11 +828,11 @@ public partial class AddLithology : Migration
             schema: "bdms");
 
         migrationBuilder.DropTable(
-            name: "lithology_description_strucutre_post_gen_codelist",
+            name: "lithology_description_structure_post_gen_codelist",
             schema: "bdms");
 
         migrationBuilder.DropTable(
-            name: "lithology_description_strucutre_syn_gen_codelist",
+            name: "lithology_description_structure_syn_gen_codelist",
             schema: "bdms");
 
         migrationBuilder.DropTable(
