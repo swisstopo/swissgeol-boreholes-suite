@@ -20,16 +20,16 @@ export const LithologyLayers: FC<LithologyLayersProps> = ({
   colorAttribute,
   displayText = true,
 }) => {
-  const { scaleY, translateY } = useScaleContext();
+  const { scaleY } = useScaleContext();
   const { t } = useTranslation();
   const pxPerMeter = 20;
   // Sort lithologies by fromDepth to process them in order
+  // Todo: Is sotring needed here or can we assume they come sorted
   const sortedLithologies = [...lithologies].sort((a, b) => a.fromDepth - b.fromDepth);
 
-  // Array to hold all layers including gap fillers
   const allLayers: (Lithology | { id: string; fromDepth: number; toDepth: number; isGap: boolean })[] = [];
 
-  // Process lithologies and add gap fillers
+  // Todo: use common hook to fill gaps between layers (?)
   let lastDepth = 0;
   sortedLithologies?.forEach((lithology, index) => {
     // If there's a gap between this layer and the previous depth, add a gap filler
@@ -42,21 +42,21 @@ export const LithologyLayers: FC<LithologyLayersProps> = ({
       });
     }
 
-    // Add the actual lithology layer
     allLayers.push(lithology);
-
-    // Update the lastDepth
     lastDepth = lithology.toDepth;
   });
+
   return (
-    <Box sx={{ position: "relative", height: "100%", width: "100%", ...sx }}>
+    <Box sx={{ position: "relative", height: "100%", width: "100%", ...sx, borderRight: "1px solid grey" }}>
       {allLayers?.map((lithology: Lithology) => {
         const colorArray =
           (colorAttribute &&
             JSON.parse(lithology.lithologyDescriptions?.find(desc => desc.isFirst)?.[colorAttribute]?.conf ?? null)
               ?.color) ||
           null;
-        const color = colorArray ? `rgb(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]})` : "pink";
+        const color = colorArray
+          ? `rgb(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]})`
+          : theme.palette.background.lightgrey;
         const top = lithology.fromDepth * pxPerMeter;
         const height = (lithology.toDepth - lithology.fromDepth) * pxPerMeter;
         const isTooThinForText = height * scaleY < 50;
@@ -68,7 +68,8 @@ export const LithologyLayers: FC<LithologyLayersProps> = ({
             py={1 / scaleY}
             sx={{
               backgroundColor: lithology?.isGap ? "#FFEDEE" : color,
-              borderBottom: "1px solid black",
+              // Todo: account for scale in borderWidth
+              borderBottom: "1px solid grey",
               position: "absolute",
               top: `${top}px`,
               height: `${height}px`,
@@ -96,6 +97,7 @@ export const LithologyLayers: FC<LithologyLayersProps> = ({
               </>
             )}
             {lithology?.isGap && displayText && (
+              // Todo: use common layer gap component
               <Stack direction={"row"} spacing={1} justifyContent={"space-around"} sx={{ pt: 2 / scaleY }}>
                 <Box sx={{ transform: `scaleY(${1 / scaleY})` }}>
                   <Chip data-cy="gap-chip" color="error" label={t("gap")} />

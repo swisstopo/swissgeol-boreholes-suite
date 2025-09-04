@@ -9,9 +9,10 @@ export const OverviewScale = ({ lithologies }: { lithologies: Lithology[] }) => 
         lithologies={lithologies}
         displayText={false}
         colorAttribute={"lithologyCon"}
-        sx={{ width: "45px", flexShrink: 0, pr: theme.spacing(1.5) }}
+        sx={{ width: "45px", flexShrink: 0, mr: theme.spacing(1.5) }}
       />
-      <DepthScale sx={{ width: "45px", flexShrink: 0, backgroundColor: "white" }} />
+      {/*Todo change interval on scale based on zoom level*/}
+      <DepthScale maxDepth={lithologies[lithologies.length - 1].toDepth} />
     </>
   );
 };

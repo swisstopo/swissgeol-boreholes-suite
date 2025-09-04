@@ -2,13 +2,15 @@ import { FC } from "react";
 import { Box, Typography } from "@mui/material";
 import { useScaleContext } from "./scaleContext.tsx";
 
-export const DepthScale: FC = ({ sx }) => {
+interface DepthScaleProps {
+  maxDepth: number;
+}
+export const DepthScale: FC<DepthScaleProps> = ({ maxDepth }) => {
   const { scaleY } = useScaleContext();
   const pxPerMeter = 20; // Fixed value
 
   const markers = [];
   const step = 1; // Fixed step size // adapt based on view level!
-  const maxDepth = 45; // set according to the max depth of the Layers stacks
 
   for (let depth = 0; depth <= maxDepth; depth += step) {
     const yPosition = depth * pxPerMeter;
@@ -40,5 +42,16 @@ export const DepthScale: FC = ({ sx }) => {
     );
   }
 
-  return <Box sx={{ position: "relative", height: "100%", width: "100%", ...sx }}>{markers}</Box>;
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        height: "100%",
+        width: "45px",
+        flexShrink: 0,
+        backgroundColor: "white",
+      }}>
+      {markers}
+    </Box>
+  );
 };

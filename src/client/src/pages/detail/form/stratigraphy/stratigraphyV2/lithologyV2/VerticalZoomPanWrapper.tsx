@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Box } from "@mui/material";
 import { useScaleContext } from "./scaleContext.tsx";
 
@@ -6,7 +6,7 @@ interface VerticalZoomPanProps {
   children: ReactNode;
 }
 
-export const VerticalZoomPanWrapper: React.FC<VerticalZoomPanProps> = ({ children }) => {
+export const VerticalZoomPanWrapper: FC<VerticalZoomPanProps> = ({ children }) => {
   const [isDragging, setIsDragging] = useState(false);
   const { scaleY, setScaleY, translateY, setTranslateY } = useScaleContext();
 
@@ -89,7 +89,6 @@ export const VerticalZoomPanWrapper: React.FC<VerticalZoomPanProps> = ({ childre
         height: "100%",
         overflow: "hidden",
         userSelect: "none",
-        backgroundColor: "lightblue",
         cursor: isDragging ? "grabbing" : "grab",
         position: "relative",
       }}>
@@ -105,5 +104,3 @@ export const VerticalZoomPanWrapper: React.FC<VerticalZoomPanProps> = ({ childre
     </Box>
   );
 };
-
-// Maybe move context up and set valued from outside
