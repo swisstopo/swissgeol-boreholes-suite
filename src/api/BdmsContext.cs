@@ -692,7 +692,7 @@ public class BdmsContext : DbContext
                     .HasForeignKey(l => l.LithologyDescriptionId),
                 j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
 
-        // Join table for lithology description and codelists with schema name 'strucutre_syn_gen'
+        // Join table for lithology description and codelists with schema name 'structure_syn_gen'
         modelBuilder.Entity<LithologyDescription>()
             .HasMany(l => l.StructureSynGenCodelists)
             .WithMany()
@@ -707,7 +707,7 @@ public class BdmsContext : DbContext
                     .HasForeignKey(l => l.LithologyDescriptionId),
                 j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
 
-        // Join table for lithology description and codelists with schema name 'strucutre_post_gen'
+        // Join table for lithology description and codelists with schema name 'structure_post_gen'
         modelBuilder.Entity<LithologyDescription>()
             .HasMany(l => l.StructurePostGenCodelists)
             .WithMany()
