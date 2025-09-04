@@ -35,7 +35,7 @@ public class FaciesDescriptionController : BoreholeControllerBase<FaciesDescript
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await Context.FaciesDescriptions.AsNoTracking().Where(l => l.StratigraphyId == stratigraphyId).ToListAsync().ConfigureAwait(false);
+        return await Context.FaciesDescriptionsWithIncludes.AsNoTracking().Where(l => l.StratigraphyId == stratigraphyId).ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ public class FaciesDescriptionController : BoreholeControllerBase<FaciesDescript
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<FaciesDescription>> GetByIdAsync(int id)
     {
-        var faciesDescription = await Context.FaciesDescriptions
+        var faciesDescription = await Context.FaciesDescriptionsWithIncludes
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);
