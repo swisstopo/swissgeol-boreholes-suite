@@ -1,25 +1,97 @@
 import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { Language } from "@swissgeol/ui-core";
+import i18n from "i18next";
+import {
+  FaciesDescription,
+  LithologicalDescription,
+  useFaciesDescription,
+  useLithoDescription,
+} from "../../../../../../api/stratigraphy.ts";
 import { theme } from "../../../../../../AppTheme.ts";
+import { formatNumberForDisplay } from "../../../../../../components/form/formUtils.ts";
 import { Lithology } from "../../lithology.ts";
-import { LithologyLayers } from "./lithologyLayers.tsx";
+import { BaseLayer, BaseLayerColumn } from "./BaseLayerColumn.tsx";
 import { ScaleContext } from "./scaleContext.tsx";
-import { useFilledLayers } from "./useFilledLayers.tsx";
+import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { VerticalZoomPanWrapper } from "./VerticalZoomPanWrapper.tsx";
 
 interface LithologyViewProps {
   lithologies: Lithology[];
+  stratigraphyId: number;
 }
 
-export const LithologyView: FC<LithologyViewProps> = ({ lithologies }) => {
+export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraphyId }) => {
   const [translateY, setTranslateY] = useState(0);
   const [scaleY, setScaleY] = useState(1);
   const { t } = useTranslation();
-  const { filledLayers: completedLithologies } = useFilledLayers(lithologies);
+  const { data: lithologicalDescriptions } = useLithoDescription(stratigraphyId - 15000000); // workaround until there is seed data for stratigraphyV2
+  const { data: faciesDescriptions } = useFaciesDescription(stratigraphyId - 15000000);
+  const { completedLayers: completedLithologies } = useCompletedLayers(lithologies);
+  const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions);
+  const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(faciesDescriptions);
 
-  console.log(lithologies, completedLithologies);
+  const renderOverviewLayer = () => {
+    return <></>;
+  };
+
+  const renderDescription = (description: BaseLayer) => {
+    const desc = description as FaciesDescription | LithologicalDescription;
+    return (
+      <>
+        <Typography
+          variant="body2"
+          sx={{
+            py: 1 / scaleY,
+            transform: `scaleY(${1 / scaleY})`,
+            transformOrigin: "center",
+          }}>
+          {desc.description}
+        </Typography>
+      </>
+    );
+  };
+
+  const renderLithology = (layer: BaseLayer) => {
+    const lithology = layer as Lithology;
+    return (
+      <>
+        <Typography
+          variant="body2"
+          sx={{
+            transform: `scaleY(${1 / scaleY})`,
+            transformOrigin: "center",
+          }}>
+          {lithology?.lithologyDescriptions?.[0].lithologyUnconMain?.[i18n.language as Language] ?? "-"}
+        </Typography>
+      </>
+    );
+  };
+
+  const renderDepthColumnLayer = (lithology: BaseLayer) => {
+    return (
+      <>
+        <Typography
+          variant="body2"
+          sx={{
+            transform: `scaleY(${1 / scaleY})`,
+            transformOrigin: "center",
+          }}>
+          {formatNumberForDisplay(lithology.fromDepth, 1, 1)}
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            transform: `scaleY(${1 / scaleY})`,
+            transformOrigin: "center",
+          }}>
+          {formatNumberForDisplay(lithology.toDepth, 1, 1)}
+        </Typography>
+      </>
+    );
+  };
 
   return (
     <>
@@ -44,7 +116,8 @@ export const LithologyView: FC<LithologyViewProps> = ({ lithologies }) => {
           justifyContent="flex-start"
           direction="row"
           sx={{ height: theme.spacing(5), width: "100%", backgroundColor: theme.palette.background.listItemActive }}>
-          <Box sx={{ width: "110px", textAlign: "flex-start", px: 2, py: 1 }}>{`${t("depth")} ${t("mMd")}`}</Box>
+          {/*Todo: make depth column thinner while still displaying text in all languages*/}
+          <Box sx={{ width: "180px", textAlign: "flex-start", px: 2, py: 1 }}>{`${t("depth")} ${t("mMd")}`}</Box>
           <Box sx={{ flex: "1 0 0", textAlign: "flex-start", px: 2, py: 1 }}>{t("lithology")}</Box>
           <Box sx={{ flex: "1 0 0", textAlign: "flex-start", px: 2, py: 1 }}> {t("lithological_description")}</Box>
           <Box sx={{ flex: "1 0 0", textAlign: "flex-start", px: 2, py: 1 }}>{t("facies_description")}</Box>
@@ -59,18 +132,32 @@ export const LithologyView: FC<LithologyViewProps> = ({ lithologies }) => {
         }}>
         {/*Scrolling area*/}
         <VerticalZoomPanWrapper>
-          {/*Todo: Fix heigth based on available space*/}
+          {/*Todo: Fix height based on available space*/}
           <Stack justifyContent="flex-start" direction="row" sx={{ height: "500px", width: "100%" }}>
-            <LithologyLayers
-              lithologies={lithologies}
-              displayText={false}
-              colorAttribute={"lithologyCon"}
+            <BaseLayerColumn
+              layers={completedLithologies}
               sx={{ width: "45px", flexShrink: 0, mr: theme.spacing(1.5) }}
+              colorAttribute={"lithologyCon"}
+              isFirstColumn={true}
+              renderLayer={renderOverviewLayer}
             />
-            <LithologyLayers lithologies={completedLithologies} sx={{ width: "110px" }} />
-            <LithologyLayers lithologies={completedLithologies} sx={{ flex: "1 0 0" }} />
-            <LithologyLayers lithologies={completedLithologies} sx={{ flex: "1 0 0" }} />
-            <LithologyLayers lithologies={completedLithologies} sx={{ flex: "1 0 0" }} />
+            <BaseLayerColumn
+              layers={completedLithologies}
+              sx={{ width: "180px" }}
+              isFirstColumn={true}
+              renderLayer={renderDepthColumnLayer}
+            />
+            <BaseLayerColumn layers={completedLithologies} sx={{ flex: "1 0 0" }} renderLayer={renderLithology} />
+            <BaseLayerColumn
+              layers={completedLithologicalDescriptions}
+              sx={{ flex: "1 0 0" }}
+              renderLayer={renderDescription}
+            />
+            <BaseLayerColumn
+              layers={completedFaciesDescriptions}
+              sx={{ flex: "1 0 0" }}
+              renderLayer={renderDescription}
+            />
           </Stack>
         </VerticalZoomPanWrapper>
       </ScaleContext.Provider>

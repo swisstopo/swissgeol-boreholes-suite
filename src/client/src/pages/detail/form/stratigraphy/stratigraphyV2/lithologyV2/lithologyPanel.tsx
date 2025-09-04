@@ -23,6 +23,6 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
   } else if (!lithologies || lithologies.length === 0) {
     return <Box>{t("msgLithologyEmpty")}</Box>;
   } else {
-    return <LithologyView lithologies={lithologies} />;
+    return <LithologyView lithologies={lithologies} stratigraphyId={stratigraphyId} />;
   }
 };
