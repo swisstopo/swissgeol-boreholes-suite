@@ -31,7 +31,7 @@ import {
 } from "../helpers/testHelpers.js";
 
 function manuallyResetStatusToDraft() {
-  clickSgcButtonWithContent("Status manuell ändern");
+  clickSgcButtonWithContent("Change status manually");
   cy.get(".select-trigger").eq(0).click();
   cy.get(".select-option").contains(WorkflowStatus.Draft).click();
   cy.get(".select-trigger").eq(1).click();
@@ -40,7 +40,7 @@ function manuallyResetStatusToDraft() {
   cy.get(".select-option").contains("viewer user").should("not.exist");
   cy.get(".select-option").contains("Editor User").should("exist");
   cy.get(".select-option").contains("Admin User").click();
-  cy.get("sgc-modal-wrapper").find("sgc-button").contains("Status manuell ändern").click();
+  cy.get("sgc-modal-wrapper").find("sgc-button").contains("Change status manually").click();
   cy.wait(["@workflow_by_id", "@borehole_by_id"]);
 }
 
@@ -54,18 +54,18 @@ describe("Tests the publication workflow.", () => {
   }
 
   function requestReviewFromValidator() {
-    clickSgcButtonWithContent("Review anfordern");
+    clickSgcButtonWithContent("Request review");
     cy.get(".select-trigger").click();
     assertEmptyRequestReviewModal();
     cy.get(".select-option").contains("validator user").click();
-    cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
+    cy.get("sgc-modal-wrapper").find("sgc-button").contains("Request review").click();
     cy.wait(["@workflow_by_id", "@borehole_by_id"]);
-    assertWorkflowSteps("Review");
+    assertWorkflowSteps("In review");
   }
 
   function finishReview() {
-    clickSgcButtonWithContent("Review abschliessen");
-    cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review abschliessen").click();
+    clickSgcButtonWithContent("Complete review");
+    cy.get("sgc-modal-wrapper").find("sgc-button").contains("Complete review").click();
     AssertHeaderChips(WorkflowStatus.Reviewed);
     cy.wait(["@workflow_by_id", "@borehole_by_id"]);
     assertWorkflowSteps("Reviewed");
@@ -78,11 +78,11 @@ describe("Tests the publication workflow.", () => {
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
 
-      clickSgcButtonWithContent("Review anfordern");
+      clickSgcButtonWithContent("Request review");
       assertEmptyRequestReviewModal();
 
       // button in modal to request review should be disabled
-      cy.get("sgc-button[disabled]").contains("Review anfordern");
+      cy.get("sgc-button[disabled]").contains("Request review");
 
       cy.get(".select-trigger").click();
 
@@ -99,13 +99,13 @@ describe("Tests the publication workflow.", () => {
       cy.get(".select-option").contains("validator user").should("exist");
       cy.get(".select-option").contains("Admin User").should("exist");
 
-      cy.contains("Weiterleiten").click(); // click on dialog title to close dropdown again
+      cy.contains("Forward").click(); // click on dialog title to close dropdown again
 
       cy.get("sgc-text-area").find("textarea").type("I wanted to request a review, but then cancelled");
       clickSgcButtonWithContent("Cancel");
       // no comment should be added
       cy.get("sgc-workflow-change-template").find(".comment").should("not.exist");
-      clickSgcButtonWithContent("Review anfordern");
+      clickSgcButtonWithContent("Request review");
 
       assertEmptyRequestReviewModal();
 
@@ -113,7 +113,7 @@ describe("Tests the publication workflow.", () => {
       cy.get(".select-option").contains("validator user").click();
       cy.get("sgc-text-area").find("textarea").type("I requested a review!");
 
-      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Request review").click();
 
       // assert new history entry
       cy.get("sgc-workflow-change-template").find(".highlight").contains("Admin User").scrollIntoView();
@@ -121,13 +121,13 @@ describe("Tests the publication workflow.", () => {
 
       cy.get("sgc-workflow-change-template")
         .find("li")
-        .contains("EN Status von EN Draft zu EN Review geändert")
+        .contains("Status changed from Draft to In review")
         .should("be.visible");
 
       evaluateComment("I requested a review!", true);
 
       // assert status update
-      assertWorkflowSteps("Review");
+      assertWorkflowSteps("In review");
 
       // assert new assigned user
       cy.get(".assignee").should("contain", "validator user");
@@ -229,7 +229,7 @@ describe("Tests the publication workflow.", () => {
       finishReview();
       AssertHeaderChips(WorkflowStatus.Reviewed, null, false, "Free");
 
-      cy.get("sgc-tab").contains("Freigabe").click();
+      cy.get("sgc-tab").contains("Approval").click();
 
       // Check one child checkbox (Location) and one parent checkbox (Borehole architecture)
       clickTabStatusCheckbox("approval", "Location");
@@ -255,12 +255,8 @@ describe("Tests the publication workflow.", () => {
       // no restriction chip in published status
       getElementByDataCy("restricted-chip").should("not.exist");
 
-      cy.get("sgc-tab").contains("Verlauf").click();
-      checkWorkflowChangeContent(
-        "Admin User",
-        "EN Status von EN Reviewed zu EN Published geändert",
-        "I published a borehole!",
-      );
+      cy.get("sgc-tab").contains("History").click();
+      checkWorkflowChangeContent("Admin User", "Status changed from Reviewed to Published", "I published a borehole!");
     });
   });
 
@@ -296,7 +292,7 @@ describe("Tests the publication workflow.", () => {
   }
 
   function AssignNewUser(newAssignee) {
-    ClickInteractionAndAssignNewUser("Neue Person zuweisen", newAssignee);
+    ClickInteractionAndAssignNewUser("Assign new person", newAssignee);
   }
 
   it("Displays correct badges in detail header", () => {
@@ -316,12 +312,12 @@ describe("Tests the publication workflow.", () => {
       getElementByDataCy("review-button").should("exist");
       getElementByDataCy("review-button").click();
       AssertHeaderChips(WorkflowStatus.InReview, "Admin User");
-      assertWorkflowSteps("Review");
+      assertWorkflowSteps("In review");
 
-      ClickInteractionAndAssignNewUser("Änderungen anfordern", "controller user");
+      ClickInteractionAndAssignNewUser("Request changes", "controller user");
       AssertHeaderChips(WorkflowStatus.Draft, "controller user", true);
 
-      ClickInteractionAndAssignNewUser("Review anfordern", "publisher user");
+      ClickInteractionAndAssignNewUser("Request review", "publisher user");
       AssertHeaderChips(WorkflowStatus.InReview, "publisher user");
 
       finishReview();
@@ -392,7 +388,7 @@ describe("Tests the publication workflow.", () => {
       cy.get("sgc-tab").contains("Review").click();
       clickCheckAllCheckbox("review");
       finishReview();
-      cy.get("sgc-tab").contains("Freigabe").click();
+      cy.get("sgc-tab").contains("Approval").click();
       clickCheckAllCheckbox("approval");
       getElementByDataCy("hydrogeology-menu-item").click(); // open hydrogeology menu items
       assertAllMenuItemsHaveReviewStatus("true");
@@ -415,7 +411,7 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("review", "General");
       isIndeterminateTabStatusBox("review", "Borehole");
 
-      cy.get("sgc-tab").contains("Freigabe").click();
+      cy.get("sgc-tab").contains("Approval").click();
       isUncheckedTabStatusBox("approval", "Location");
       isUncheckedTabStatusBox("approval", "General");
       isIndeterminateTabStatusBox("approval", "Borehole");
@@ -452,7 +448,7 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("review", "Borehole trajectory");
       isUncheckedTabStatusBox("review", "Borehole");
 
-      cy.get("sgc-tab").contains("Freigabe").click();
+      cy.get("sgc-tab").contains("Approval").click();
       isUncheckedTabStatusBox("approval", "Sections");
       isUncheckedTabStatusBox("approval", "Borehole trajectory");
       isUncheckedTabStatusBox("approval", "Borehole");
@@ -495,7 +491,7 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("review", "Instrumentation");
       isUncheckedTabStatusBox("review", "Sealing/Backfilling");
 
-      cy.get("sgc-tab").contains("Freigabe").click();
+      cy.get("sgc-tab").contains("Approval").click();
       isUncheckedTabStatusBox("approval", "Stratigraphy");
       isUncheckedTabStatusBox("approval", "Lithology");
       isUncheckedTabStatusBox("approval", "Chronostratigraphy");
@@ -540,7 +536,7 @@ describe("Tests the publication workflow.", () => {
       isCheckedTabStatusBox("review", "Photos");
       isCheckedTabStatusBox("review", "Documents");
 
-      cy.get("sgc-tab").contains("Freigabe").click();
+      cy.get("sgc-tab").contains("Approval").click();
       isIndeterminateTabStatusBox("approval", "Hydrogeology");
       isUncheckedTabStatusBox("approval", "Water ingress");
       isCheckedTabStatusBox("approval", "Groundwater measurement");
@@ -562,11 +558,11 @@ describe("Tests the publication workflow.", () => {
       Cypress.session.clearAllSavedSessions();
       loginAsEditor();
       navigateToWorkflowAndStartEditing(id);
-      clickSgcButtonWithContent("Review anfordern");
+      clickSgcButtonWithContent("Request review");
       cy.get(".select-trigger").click();
       assertEmptyRequestReviewModal();
       cy.get(".select-option").contains("validator user").click();
-      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Review anfordern").click();
+      cy.get("sgc-modal-wrapper").find("sgc-button").contains("Request review").click();
       cy.get(".MuiAlert-message").contains(
         "The status of the borehole was changed. You no longer have permission to edit the borehole.",
       );

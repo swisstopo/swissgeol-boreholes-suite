@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Accordion,
   AccordionDetails,
@@ -18,8 +18,9 @@ import {
 import { ChevronDownIcon, RotateCcw } from "lucide-react";
 import { DevTool } from "../../../hookformDevtools.ts";
 import { patchBoreholes } from "../../api-lib";
-import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
+import { Workgroup } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
+import { useUserWorkgroups } from "../../pages/overview/UserWorkgroupsContext.tsx";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
 import { FormSelect, FormValueType } from "../form/form.ts";
@@ -33,6 +34,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
   const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[string, BulkEditFormValue]>>([]);
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
+  const { enabledWorkgroups } = useUserWorkgroups();
 
   // This data structure is needed because of discrepancies between translation keys (fieldName), field names in legacy Api (api) and codelist names (domain).
   const bulkEditFormFields: BulkEditFormField[] = useMemo(
@@ -89,9 +91,6 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
       return acc;
     }, {}),
   });
-
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  const enabledWorkgroups = user.data.workgroups.filter(w => w.disabled === null && w.roles.includes("EDIT"));
 
   const dispatch = useDispatch();
   const unselectBoreholes = () => {
@@ -191,12 +190,10 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
             readonly={false}
             fieldName={"workgroup"}
             label=""
-            values={enabledWorkgroups
-              .filter(w => w.roles.includes("EDIT"))
-              .map(wg => ({
-                key: wg.id,
-                name: wg.workgroup,
-              }))}
+            values={enabledWorkgroups.map((wg: Workgroup) => ({
+              key: wg.id,
+              name: wg.workgroup,
+            }))}
             onUpdate={e => {
               onFieldValueChange(field, e);
             }}

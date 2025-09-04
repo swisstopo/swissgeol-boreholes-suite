@@ -3,19 +3,21 @@ import { Box, Button, Stack } from "@mui/material";
 import { useBoreholeMutations } from "../../../api/borehole.ts";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { SideDrawerHeader } from "../layout/sideDrawerHeader.tsx";
+import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 import { NewBoreholeProps } from "./commons/actionsInterfaces.ts";
 import WorkgroupSelect from "./commons/workgroupSelect.tsx";
 
-const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, toggleDrawer }: NewBoreholeProps) => {
+const NewBoreholePanel = ({ toggleDrawer }: NewBoreholeProps) => {
   const { navigateTo } = useBoreholesNavigate();
   const {
     add: { mutateAsync: addBoreholeAsync },
   } = useBoreholeMutations();
   const { t } = useTranslation();
+  const { enabledWorkgroups, currentWorkgroupId } = useUserWorkgroups();
 
   const handleBoreholeCreate = async () => {
-    if (workgroupId) {
-      const borehole = await addBoreholeAsync(workgroupId);
+    if (currentWorkgroupId) {
+      const borehole = await addBoreholeAsync(currentWorkgroupId);
       navigateTo({ path: "/" + borehole.id });
     }
   };
@@ -24,16 +26,12 @@ const NewBoreholePanel = ({ workgroupId, enabledWorkgroups, setWorkgroupId, togg
     <Stack direction="column" height={"100%"}>
       <SideDrawerHeader title={t("newBorehole")} toggleDrawer={toggleDrawer} />
       <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
-        <WorkgroupSelect
-          workgroupId={workgroupId}
-          enabledWorkgroups={enabledWorkgroups}
-          setWorkgroupId={setWorkgroupId}
-        />
+        <WorkgroupSelect />
       </Box>
       <Button
         variant="contained"
         data-cy={"create-button"}
-        disabled={enabledWorkgroups?.length === 0}
+        disabled={enabledWorkgroups?.length === 0 || !currentWorkgroupId}
         onClick={handleBoreholeCreate}>
         {t("create")}
       </Button>
