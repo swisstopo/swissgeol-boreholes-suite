@@ -1636,7 +1636,7 @@ namespace BDMS.Migrations
 
                     b.Property<int?>("GrainAngularityId")
                         .HasColumnType("integer")
-                        .HasColumnName("grain_angularitye_id");
+                        .HasColumnName("grain_angularity_id");
 
                     b.Property<int?>("GrainSizeId")
                         .HasColumnType("integer")
