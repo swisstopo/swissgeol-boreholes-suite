@@ -1,5 +1,6 @@
 import React, { ReactNode, useEffect, useRef, useState } from "react";
-import { ScaleContext } from "./scaleContext.tsx";
+import { Box } from "@mui/material";
+import { useScaleContext } from "./scaleContext.tsx";
 
 interface VerticalZoomPanProps {
   children: ReactNode;
@@ -7,8 +8,7 @@ interface VerticalZoomPanProps {
 
 export const VerticalZoomPanWrapper: React.FC<VerticalZoomPanProps> = ({ children }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [translateY, setTranslateY] = useState(0);
-  const [scaleY, setScaleY] = useState(1);
+  const { scaleY, setScaleY, translateY, setTranslateY } = useScaleContext();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastY = useRef(0);
@@ -29,7 +29,10 @@ export const VerticalZoomPanWrapper: React.FC<VerticalZoomPanProps> = ({ childre
     const onMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
       const deltaY = e.clientY - lastY.current;
-      setTranslateY(prev => prev + deltaY);
+      setTranslateY(prev => {
+        const newValue = prev + deltaY;
+        return Math.min(newValue, 12);
+      });
       lastY.current = e.clientY;
     };
 
@@ -46,7 +49,7 @@ export const VerticalZoomPanWrapper: React.FC<VerticalZoomPanProps> = ({ childre
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, setTranslateY]);
 
   // Mouse wheel to zoom vertically
   useEffect(() => {
@@ -71,33 +74,36 @@ export const VerticalZoomPanWrapper: React.FC<VerticalZoomPanProps> = ({ childre
       const newTranslateY = mouseY - scaleRatio * (mouseY - translateY);
 
       setScaleY(nextScale);
-      setTranslateY(newTranslateY);
+      setTranslateY(Math.min(newTranslateY, 12));
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-  }, [scaleY, translateY]);
+  }, [scaleY, setScaleY, setTranslateY, translateY]);
 
   return (
-    <div
+    <Box
       ref={containerRef}
-      style={{
+      sx={{
         width: "100%",
         height: "100%",
         overflow: "hidden",
         userSelect: "none",
+        backgroundColor: "lightblue",
         cursor: isDragging ? "grabbing" : "grab",
         position: "relative",
       }}>
-      <div
-        style={{
+      <Box
+        sx={{
           transform: `translateY(${translateY}px) scaleY(${scaleY})`,
           transformOrigin: "top",
           width: "100%",
           height: "100%",
         }}>
-        <ScaleContext.Provider value={{ scaleY, translateY }}>{children}</ScaleContext.Provider>
-      </div>
-    </div>
+        {children}
+      </Box>
+    </Box>
   );
 };
+
+// Maybe move context up and set valued from outside

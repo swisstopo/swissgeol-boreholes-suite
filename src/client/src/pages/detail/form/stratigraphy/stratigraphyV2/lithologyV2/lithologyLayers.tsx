@@ -56,11 +56,10 @@ export const LithologyLayers: FC<LithologyLayersProps> = ({
             JSON.parse(lithology.lithologyDescriptions?.find(desc => desc.isFirst)?.[colorAttribute]?.conf ?? null)
               ?.color) ||
           null;
-        const color = colorArray ? `rgb(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]})` : "none";
+        const color = colorArray ? `rgb(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]})` : "pink";
         const top = lithology.fromDepth * pxPerMeter;
         const height = (lithology.toDepth - lithology.fromDepth) * pxPerMeter;
         const isTooThinForText = height * scaleY < 50;
-        console.log(height * scaleY);
         return (
           <Stack
             key={lithology.id}
