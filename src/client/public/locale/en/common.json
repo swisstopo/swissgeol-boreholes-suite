@@ -266,6 +266,7 @@
   "fromdepth_to": "From depth [m MD] (to)",
   "fromdiameter": "from diameter",
   "fromelevation": "from elevation",
+  "gap": "Gap",
   "general": "General",
   "geometry": "Borehole trajectory",
   "geometryChartNEScaleXLabel": "Relative offset, West - East",

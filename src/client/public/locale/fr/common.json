@@ -266,6 +266,7 @@
   "fromdepth_to": "De la profondeur [m MD] (à)",
   "fromdiameter": "à partir du diamètre",
   "fromelevation": "de l'altitude",
+  "gap": "Lacune",
   "general": "Général",
   "geometry": "Trajectoire du forage",
   "geometryChartNEScaleXLabel": "Offset relatif, Ouest - Est",

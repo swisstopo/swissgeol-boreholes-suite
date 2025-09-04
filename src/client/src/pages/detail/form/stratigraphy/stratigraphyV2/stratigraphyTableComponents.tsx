@@ -1,64 +1,172 @@
 import { FC, ReactNode } from "react";
-import { Box, IconButton, Stack, SxProps, Typography } from "@mui/material";
-import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Chip, IconButton, Stack, SxProps, Tooltip, Typography } from "@mui/material";
+import { styled } from "@mui/system";
+import { Plus, TriangleAlert } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 
-interface HeaderRowContainerProps {
-  children: ReactNode;
-  gridTemplateColumns: string;
-  sx?: SxProps;
-}
-
-export const HeaderRowContainer: FC<HeaderRowContainerProps> = ({ children, gridTemplateColumns, sx }) => (
-  <Box
-    sx={{
-      gridColumn: "1 / -1",
-      display: "grid",
-      gridTemplateColumns,
-      borderTopLeftRadius: theme.spacing(0.5),
-      borderTopRightRadius: theme.spacing(0.5),
-      backgroundColor: theme.palette.background.listItemActive,
-      borderBottom: `2px solid ${theme.palette.border.darker}`,
-      boxShadow: theme.shadows[3],
-      ...sx,
-    }}>
-    {children}
-  </Box>
-);
+export const StratigraphyTableHeader = styled(Stack)(() => ({
+  flexDirection: "row",
+  justifyContent: "space-between",
+  borderTopLeftRadius: theme.spacing(0.5),
+  borderTopRightRadius: theme.spacing(0.5),
+  backgroundColor: theme.palette.background.listItemActive,
+  borderBottom: `2px solid ${theme.palette.border.darker}`,
+  boxShadow: theme.shadows[3],
+}));
 
 interface HeaderCellProps {
-  children: ReactNode;
+  label: string;
   sx?: SxProps;
 }
 
-export const HeaderCell: FC<HeaderCellProps> = ({ children, sx }) => (
-  <Stack sx={{ justifyContent: "center", paddingX: 2, paddingY: 1, ...sx }}>
+export const StratigraphyTableHeaderCell: FC<HeaderCellProps> = ({ label, sx }) => (
+  <Stack sx={{ flex: "1", justifyContent: "center", paddingX: 2, paddingY: 1, ...sx }}>
     <Typography variant="body2" fontWeight="700">
-      {children}
+      {label}
     </Typography>
   </Stack>
 );
 
-interface DataCellProps {
+export const StratigraphyTableContent = styled(Stack)(() => ({
+  flexDirection: "row",
+  justifyContent: "space-between",
+  "& > *": {
+    borderLeft: `1px solid ${theme.palette.border.darker}`,
+  },
+  "& > *:last-child": {
+    borderRight: `1px solid ${theme.palette.border.darker}`,
+  },
+}));
+
+export const StratigraphyTableColumn = styled(Stack)(() => ({
+  flex: "1",
+}));
+
+export const StratigraphyTableCell = styled(Stack)(() => ({
+  justifyContent: "space-between",
+  padding: theme.spacing(2),
+  height: "240px",
+  borderBottom: `1px solid ${theme.palette.border.darker}`,
+}));
+
+export const StratigraphyTableCellRow = styled(Stack)(() => ({
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  height: "36px",
+}));
+
+interface StratigraphyTableLayerCellProps {
   children: ReactNode;
-  sx?: object;
-  isLastColumn?: boolean;
+  topLabel?: string;
+  bottomLabel?: string;
+  action?: { icon: ReactNode; label: string; onClick: () => void };
+  onClick?: () => void;
+  sx?: SxProps;
 }
 
-export const DataCell: FC<DataCellProps> = ({ children, sx, isLastColumn }) => (
-  <Stack
-    sx={{
-      padding: 2,
-      borderLeft: `1px solid ${theme.palette.border.darker}`,
-      borderRight: isLastColumn ? `1px solid ${theme.palette.border.darker}` : undefined,
-      borderBottom: `1px solid ${theme.palette.border.darker}`,
-      ...sx,
-    }}>
-    {children}
-  </Stack>
-);
+export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = ({
+  children,
+  topLabel,
+  bottomLabel,
+  action,
+  onClick,
+  sx,
+}) => {
+  const hasRows = topLabel || bottomLabel || action;
 
-export const AddButton = () => (
+  return (
+    <StratigraphyTableCell
+      sx={{
+        justifyContent: "center",
+
+        "& .hover-content": { visibility: "hidden" },
+
+        "&:hover": {
+          justifyContent: hasRows ? "space-between" : "center",
+          backgroundColor: theme.palette.background.grey,
+          cursor: "pointer",
+
+          "& .hover-content": { visibility: "visible" },
+        },
+        ...sx,
+      }}
+      onClick={onClick}>
+      {hasRows && (
+        <StratigraphyTableCellRow
+          className="hover-content"
+          sx={{
+            justifyContent: topLabel ? "space-between" : "flex-end",
+          }}>
+          {topLabel && <Typography variant="body1">{topLabel}</Typography>}
+          {action && (
+            <Tooltip title={action.label}>
+              <IconButton
+                color={"primaryInverse"}
+                sx={{
+                  borderRadius: theme.spacing(0.5),
+                  width: "36px",
+                  height: "36px",
+                }}
+                onClick={e => {
+                  e.stopPropagation();
+                  action.onClick();
+                }}>
+                {action.icon}
+              </IconButton>
+            </Tooltip>
+          )}
+        </StratigraphyTableCellRow>
+      )}
+      <Stack gap={1} sx={{ flex: "1 1 auto", minHeight: 0, overflow: "hidden" }}>
+        {children}
+      </Stack>
+      {hasRows && (
+        <StratigraphyTableCellRow className="hover-content">
+          {bottomLabel && <Typography variant="body1">{bottomLabel}</Typography>}
+        </StratigraphyTableCellRow>
+      )}
+    </StratigraphyTableCell>
+  );
+};
+
+interface StratigraphyTableGapProps {
+  canEdit?: boolean;
+  sx?: SxProps;
+}
+
+export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ canEdit, sx }) => {
+  const { t } = useTranslation();
+  return (
+    <StratigraphyTableCell
+      sx={{
+        padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+        backgroundColor: theme.palette.error.background,
+
+        ...(canEdit && {
+          "&:hover": {
+            backgroundColor: theme.palette.error.backgroundHover,
+            cursor: "pointer",
+          },
+        }),
+        ...sx,
+      }}>
+      <StratigraphyTableCellRow color={theme.palette.error.main}>
+        <Chip color="error" label={t("gap")} />
+        <TriangleAlert />
+      </StratigraphyTableCellRow>
+      {canEdit && (
+        <Stack direction="row" justifyContent="center" alignItems="center">
+          <LayerAddButton />
+        </Stack>
+      )}
+      <StratigraphyTableCellRow />
+    </StratigraphyTableCell>
+  );
+};
+
+export const LayerAddButton = () => (
   <IconButton
     sx={{
       borderRadius: "50%",
@@ -96,7 +204,7 @@ export const AddRowButton = () => {
           },
         },
       }}>
-      <AddButton />
+      <LayerAddButton />
     </Stack>
   );
 };

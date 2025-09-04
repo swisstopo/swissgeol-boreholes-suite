@@ -266,6 +266,7 @@
   "fromdepth_to": "Von Tiefe [m MD](bis)",
   "fromdiameter": "von Durchmesser",
   "fromelevation": "von Höhe",
+  "gap": "Lücke",
   "general": "Generell",
   "geometry": "Bohrlochpfad",
   "geometryChartNEScaleXLabel": "Relativer Abstand, West - Ost",

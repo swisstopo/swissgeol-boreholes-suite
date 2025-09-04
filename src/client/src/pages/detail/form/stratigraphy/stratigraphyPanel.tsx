@@ -26,6 +26,7 @@ import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { SaveContext, SaveContextProps } from "../../saveContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
+import { LithologyContentEdit } from "./stratigraphyV2/lithologyV2/lithologyContentEdit.tsx";
 import { LithologyPanel } from "./stratigraphyV2/lithologyV2/lithologyPanel.tsx";
 
 export const StratigraphyPanel: FC = () => {
@@ -395,7 +396,11 @@ export const StratigraphyPanel: FC = () => {
                   {
                     label: t("lithology"),
                     hash: "#lithology",
-                    component: <LithologyPanel stratigraphyId={selectedStratigraphy.id} />,
+                    component: editingEnabled ? (
+                      <LithologyContentEdit stratigraphyId={selectedStratigraphy.id} />
+                    ) : (
+                      <LithologyPanel stratigraphyId={selectedStratigraphy.id} />
+                    ),
                   },
                 ]}
               />
