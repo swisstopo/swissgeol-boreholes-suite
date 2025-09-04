@@ -315,7 +315,7 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     /// Gets or sets the id of the <see cref="LithologyDescription"/>'s grain angularity.
     /// </summary>
     [IncludeInExport]
-    [Column("grain_angularitye_id")]
+    [Column("grain_angularity_id")]
     public int? GrainAngularityId { get; set; }
 
     /// <summary>

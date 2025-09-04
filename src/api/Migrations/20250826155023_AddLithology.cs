@@ -135,7 +135,7 @@ public partial class AddLithology : Migration
                 striae = table.Column<bool>(type: "boolean", nullable: false),
                 lithology_con_id = table.Column<int>(type: "integer", nullable: true),
                 grain_size_id = table.Column<int>(type: "integer", nullable: true),
-                grain_angularitye_id = table.Column<int>(type: "integer", nullable: true),
+                grain_angularity_id = table.Column<int>(type: "integer", nullable: true),
                 gradation_id = table.Column<int>(type: "integer", nullable: true),
                 cementation_id = table.Column<int>(type: "integer", nullable: true),
             },
@@ -167,8 +167,8 @@ public partial class AddLithology : Migration
                     principalTable: "codelist",
                     principalColumn: "id_cli");
                 table.ForeignKey(
-                    name: "FK_lithology_description_codelist_grain_angularitye_id",
-                    column: x => x.grain_angularitye_id,
+                    name: "FK_lithology_description_codelist_grain_angularity_id",
+                    column: x => x.grain_angularity_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
                     principalColumn: "id_cli");
@@ -662,10 +662,10 @@ public partial class AddLithology : Migration
             column: "gradation_id");
 
         migrationBuilder.CreateIndex(
-            name: "IX_lithology_description_grain_angularitye_id",
+            name: "IX_lithology_description_grain_angularity_id",
             schema: "bdms",
             table: "lithology_description",
-            column: "grain_angularitye_id");
+            column: "grain_angularity_id");
 
         migrationBuilder.CreateIndex(
             name: "IX_lithology_description_grain_size_id",
