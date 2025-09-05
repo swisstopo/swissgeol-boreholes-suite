@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Codelist } from "../components/codelist.ts";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { User } from "./apiInterfaces.ts";
@@ -43,6 +44,15 @@ export interface Stratigraphy {
   chronostratigraphies: Chronostratigraphy[];
 }
 
+export interface BaseLayer {
+  id: number;
+  fromDepth: number;
+  toDepth: number;
+  stratigraphyId: number;
+  stratigraphy: Stratigraphy;
+  isGap?: boolean;
+}
+
 export interface Layer {
   id: number;
   stratigraphyId: number;
@@ -65,14 +75,14 @@ export interface Lithostratigraphy {
   stratigraphyId: number;
 }
 
-export interface LithologicalDescription {
-  id: number;
-  stratigraphyId: number;
+export interface LithologicalDescription extends BaseLayer {
+  description: string;
 }
 
-export interface FaciesDescription {
-  id: number;
-  stratigraphyId: number;
+export interface FaciesDescription extends BaseLayer {
+  description: string;
+  faciesId: number | null;
+  facies: Codelist | null;
 }
 
 // layers

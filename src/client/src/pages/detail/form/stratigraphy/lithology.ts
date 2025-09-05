@@ -1,6 +1,6 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
-import { Stratigraphy } from "../../../../api/stratigraphy.ts";
+import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 
 export interface LithologyDescription {
@@ -55,12 +55,7 @@ export interface LithologyDescription {
   structurePostGenCodelists: Codelist[];
 }
 
-export interface Lithology {
-  id: number;
-  stratigraphyId: number;
-  stratigraphy: Stratigraphy;
-  toDepth: number;
-  fromDepth: number;
+export interface Lithology extends BaseLayer {
   isUnconsolidated: boolean;
   hasBedding: boolean;
   share: number | null;
