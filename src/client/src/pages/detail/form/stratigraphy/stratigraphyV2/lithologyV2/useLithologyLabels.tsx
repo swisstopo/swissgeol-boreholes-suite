@@ -3,7 +3,11 @@ import { Typography } from "@mui/material";
 import type { TFunction } from "i18next";
 import { Lithology, LithologyDescription } from "../../lithology";
 
-const buildUnconsolidatedLithologyDescription = (
+const getBeddingShare = (lithology: Lithology, index: number) => {
+  return lithology.hasBedding && lithology.share ? (index === 0 ? lithology.share : 100 - lithology.share) : undefined;
+};
+
+const buildUnconsolidatedPrimaryString = (
   t: TFunction,
   language: string,
   description: LithologyDescription,
@@ -11,7 +15,7 @@ const buildUnconsolidatedLithologyDescription = (
 ) => {
   const codes = [];
   const primaryValues = [];
-  const secondaryValues = [];
+
   if (description.lithologyUnconMain) {
     codes.push(description.lithologyUnconMain.code);
     primaryValues.push(description.lithologyUnconMain[language]);
@@ -48,19 +52,8 @@ const buildUnconsolidatedLithologyDescription = (
   if (description.colorSecondary) {
     primaryValues.push(description.colorSecondary[language]);
   }
-  if (description.lithologyUnconDebrisCodelists.length > 0) {
-    secondaryValues.push(...description.lithologyUnconDebrisCodelists.map(c => c[language]));
-  }
-  if (description.grainShapeCodelists.length > 0) {
-    secondaryValues.push(...description.grainShapeCodelists.map(c => c[language]));
-  }
-  if (description.grainAngularityCodelists.length > 0) {
-    secondaryValues.push(...description.grainAngularityCodelists.map(c => c[language]));
-  }
-  secondaryValues.push(t(description.hasStriae ? "striae" : "noStriae"));
 
   const lithologyEnCode = codes.join("-");
-
   let primaryString = "";
   if (share) {
     primaryString += `${share}%`;
@@ -72,31 +65,31 @@ const buildUnconsolidatedLithologyDescription = (
   if (primaryValues.length > 0) {
     primaryString += `: ${primaryValues.join(", ")}`;
   }
-
-  if (secondaryValues.length > 0) primaryString += ", ";
-  const secondaryString = `${t("coarseComponent", { count: secondaryValues.length })}: ${secondaryValues.join(", ")}`;
-
-  return (
-    <Typography variant="body1" fontWeight={700}>
-      {primaryString}
-      {secondaryString.length > 0 && (
-        <Typography component="span" variant="body1">
-          {secondaryString}
-        </Typography>
-      )}
-    </Typography>
-  );
+  return primaryString;
 };
 
-const buildConsolidatedLithologyDescription = (
+const buildUnconsolidatedSecondaryString = (t: TFunction, language: string, description: LithologyDescription) => {
+  const secondaryValues = [];
+  if (description.lithologyUnconDebrisCodelists.length > 0) {
+    secondaryValues.push(...description.lithologyUnconDebrisCodelists.map(c => c[language]));
+  }
+  if (description.grainShapeCodelists.length > 0) {
+    secondaryValues.push(...description.grainShapeCodelists.map(c => c[language]));
+  }
+  if (description.grainAngularityCodelists.length > 0) {
+    secondaryValues.push(...description.grainAngularityCodelists.map(c => c[language]));
+  }
+  secondaryValues.push(t(description.hasStriae ? "striae" : "noStriae"));
+  return `${t("coarseComponent", { count: secondaryValues.length })}: ${secondaryValues.join(", ")}`;
+};
+
+const buildConsolidatedPrimaryString = (
   t: TFunction,
   language: string,
   description: LithologyDescription,
   share?: number,
 ) => {
   const primaryValues = [];
-  const secondaryValues = [];
-
   if (description.lithologyCon) {
     primaryValues.push(description.lithologyCon[language]);
   }
@@ -112,6 +105,20 @@ const buildConsolidatedLithologyDescription = (
   if (description.colorSecondary) {
     primaryValues.push(description.colorSecondary[language]);
   }
+
+  let primaryString = "";
+  if (share) {
+    primaryString += `${share}%: `;
+  }
+
+  if (primaryValues.length > 0) {
+    primaryString += `${primaryValues.join(", ")}`;
+  }
+  return primaryString;
+};
+
+const buildConsolidatedSecondaryString = (t: TFunction, language: string, description: LithologyDescription) => {
+  const secondaryValues = [];
   if (description.grainSize) {
     secondaryValues.push(description.grainSize[language]);
   }
@@ -131,28 +138,63 @@ const buildConsolidatedLithologyDescription = (
     secondaryValues.push(...description.structurePostGenCodelists.map(c => c[language]));
   }
 
-  let primaryString = "";
-  if (share) {
-    primaryString += `${share}%: `;
-  }
+  return secondaryValues.join(", ");
+};
 
-  if (primaryValues.length > 0) {
-    primaryString += `${primaryValues.join(", ")}`;
-  }
+const buildLithologyDescription = (
+  t: TFunction,
+  language: string,
+  description: LithologyDescription,
+  share: number | undefined,
+  buildPrimary: (t: TFunction, language: string, description: LithologyDescription, share?: number) => string,
+  buildSecondary: (t: TFunction, language: string, description: LithologyDescription) => string,
+) => {
+  let primaryString = buildPrimary(t, language, description, share);
+  const secondaryString = buildSecondary(t, language, description);
 
-  if (secondaryValues.length > 0) primaryString += ", ";
+  if (secondaryString.length > 0) primaryString += ", ";
 
   return (
     <Typography variant="body1" fontWeight={700}>
       {primaryString}
-      {secondaryValues.length > 0 && (
+      {secondaryString.length > 0 && (
         <Typography component="span" variant="body1">
-          {secondaryValues.join(", ")}
+          {secondaryString}
         </Typography>
       )}
     </Typography>
   );
 };
+
+const buildUnconsolidatedLithologyDescription = (
+  t: TFunction,
+  language: string,
+  description: LithologyDescription,
+  share?: number,
+) =>
+  buildLithologyDescription(
+    t,
+    language,
+    description,
+    share,
+    buildUnconsolidatedPrimaryString,
+    buildUnconsolidatedSecondaryString,
+  );
+
+const buildConsolidatedLithologyDescription = (
+  t: TFunction,
+  language: string,
+  description: LithologyDescription,
+  share?: number,
+) =>
+  buildLithologyDescription(
+    t,
+    language,
+    description,
+    share,
+    buildConsolidatedPrimaryString,
+    buildConsolidatedSecondaryString,
+  );
 
 export const useLithologyLabels = () => {
   const { t, i18n } = useTranslation();
@@ -183,16 +225,7 @@ export const useLithologyLabels = () => {
       return (
         <>
           {lithology.lithologyDescriptions.map((description, index) =>
-            buildUnconsolidatedLithologyDescription(
-              t,
-              language,
-              description,
-              lithology.hasBedding && lithology.share
-                ? index === 0
-                  ? lithology.share
-                  : 100 - lithology.share
-                : undefined,
-            ),
+            buildUnconsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index)),
           )}
           {details1.length > 0 && <Typography variant="body2">{details1.join(", ")}</Typography>}
           {details2.length > 0 && <Typography variant="body2">{details2.join(", ")}</Typography>}
@@ -209,16 +242,7 @@ export const useLithologyLabels = () => {
       return (
         <>
           {lithology.lithologyDescriptions.map((description, index) =>
-            buildConsolidatedLithologyDescription(
-              t,
-              language,
-              description,
-              lithology.hasBedding && lithology.share
-                ? index === 0
-                  ? lithology.share
-                  : 100 - lithology.share
-                : undefined,
-            ),
+            buildConsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index)),
           )}
           {details.length > 0 && <Typography variant="body2">{details.join(", ")}</Typography>}
           {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
