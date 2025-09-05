@@ -58,125 +58,135 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
   }
 
   return (
-    <>
-      <Stack gap={1.5}>
-        <Stack>
-          <StratigraphyTableHeader>
-            <StratigraphyTableHeaderCell sx={{ flex: "0 0 90px" }} label={t("depth")} />
-            <StratigraphyTableHeaderCell label={t("lithology")} />
-            <StratigraphyTableHeaderCell label={t("lithological_description")} />
-            <StratigraphyTableHeaderCell label={t("facies_description")} />
-          </StratigraphyTableHeader>
-          <StratigraphyTableContent>
-            <StratigraphyTableColumn sx={{ flex: "0 0 90px" }}>
-              {!completedLithologies || completedLithologies.length === 0 ? (
-                <StratigraphyTableCell>empty</StratigraphyTableCell>
-              ) : (
-                completedLithologies.map(lithology => (
-                  <StratigraphyTableCell key={`depth-${lithology.id}`} sx={{ height: `${defaultRowHeight}px` }}>
-                    <Typography>{`${lithology.fromDepth} m MD`}</Typography>
-                    <Typography>{`${lithology.toDepth} m MD`}</Typography>
-                  </StratigraphyTableCell>
-                ))
-              )}
-            </StratigraphyTableColumn>
-            <StratigraphyTableColumn>
-              {!completedLithologies || completedLithologies.length === 0 ? (
-                <StratigraphyTableGap />
-              ) : (
-                completedLithologies.map(lithology =>
-                  lithology.isGap ? (
-                    <StratigraphyTableGap
-                      key={`lithology-${lithology.id}`}
-                      canEdit={true}
-                      sx={{ height: `${defaultRowHeight}px` }}
-                    />
-                  ) : (
-                    <StratigraphyTableActionCell
-                      key={`lithology-${lithology.id}`}
-                      sx={{ height: `${defaultRowHeight}px` }}
-                      onClick={() => {
-                        console.log("start editing lithology", lithology.id);
-                      }}
-                      topLabel={`${lithology.fromDepth} m MD`}
-                      bottomLabel={`${lithology.toDepth} m MD`}
-                      action={{
-                        icon: <Trash2 />,
-                        label: "Delete",
-                        onClick: () => {
-                          console.log("clicked delete lithology", lithology.id);
-                        },
-                      }}>
-                      {buildLithologyLabels(lithology as Lithology)}
-                    </StratigraphyTableActionCell>
-                  ),
-                )
-              )}
-            </StratigraphyTableColumn>
-            <StratigraphyTableColumn>
-              {!completedLithologicalDescriptions || completedLithologicalDescriptions.length === 0 ? (
-                <StratigraphyTableGap />
-              ) : (
-                completedLithologicalDescriptions.map(description =>
-                  description.isGap ? (
-                    <StratigraphyTableGap
-                      key={`lithologicalDescription-${description.id}`}
-                      canEdit={true}
-                      sx={{
-                        height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
-                      }}
-                    />
-                  ) : (
-                    <StratigraphyTableActionCell
-                      key={`lithologicalDescription-${description.id}`}
-                      sx={{
-                        height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
-                      }}
-                      onClick={() => {
-                        console.log("start editing lithologicalDescription", description.id);
-                      }}>
-                      <Typography variant="body1" fontWeight={700}>
-                        {(description as LithologicalDescription).description}
-                      </Typography>
-                    </StratigraphyTableActionCell>
-                  ),
-                )
-              )}
-            </StratigraphyTableColumn>
-            <StratigraphyTableColumn>
-              {!completedFaciesDescriptions || completedFaciesDescriptions.length === 0 ? (
-                <StratigraphyTableGap />
-              ) : (
-                completedFaciesDescriptions.map(description =>
-                  description.isGap ? (
-                    <StratigraphyTableGap
-                      key={`faciesDescription-${description.id}`}
-                      canEdit={true}
-                      sx={{
-                        height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
-                      }}
-                    />
-                  ) : (
-                    <StratigraphyTableActionCell
-                      key={`faciesDescription-${description.id}`}
-                      sx={{
-                        height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
-                      }}
-                      onClick={() => {
-                        console.log("start editing faciesDescription", description.id);
-                      }}>
-                      <Typography variant="body1" fontWeight={700}>
-                        {(description as FaciesDescription).description}
-                      </Typography>
-                    </StratigraphyTableActionCell>
-                  ),
-                )
-              )}
-            </StratigraphyTableColumn>
-          </StratigraphyTableContent>
-        </Stack>
-        <AddRowButton />
+    <Stack gap={1.5}>
+      <Stack>
+        <StratigraphyTableHeader>
+          <StratigraphyTableHeaderCell sx={{ flex: "0 0 90px" }} label={t("depth")} />
+          <StratigraphyTableHeaderCell label={t("lithology")} />
+          <StratigraphyTableHeaderCell label={t("lithological_description")} />
+          <StratigraphyTableHeaderCell label={t("facies_description")} />
+        </StratigraphyTableHeader>
+        <StratigraphyTableContent>
+          <StratigraphyTableColumn sx={{ flex: "0 0 90px" }}>
+            {!completedLithologies || completedLithologies.length === 0 ? (
+              <StratigraphyTableCell>empty</StratigraphyTableCell>
+            ) : (
+              completedLithologies.map(lithology => (
+                <StratigraphyTableCell key={`depth-${lithology.id}`} sx={{ height: `${defaultRowHeight}px` }}>
+                  <Typography>{`${lithology.fromDepth} m MD`}</Typography>
+                  <Typography>{`${lithology.toDepth} m MD`}</Typography>
+                </StratigraphyTableCell>
+              ))
+            )}
+          </StratigraphyTableColumn>
+          <StratigraphyTableColumn>
+            {completedLithologies.length === 0 ? (
+              <StratigraphyTableGap key={`lithology-new`} canEdit={true} sx={{ height: `${defaultRowHeight}px` }} />
+            ) : (
+              completedLithologies.map(lithology =>
+                lithology.isGap ? (
+                  <StratigraphyTableGap
+                    key={`lithology-${lithology.id}`}
+                    canEdit={true}
+                    sx={{ height: `${defaultRowHeight}px` }}
+                  />
+                ) : (
+                  <StratigraphyTableActionCell
+                    key={`lithology-${lithology.id}`}
+                    sx={{ height: `${defaultRowHeight}px` }}
+                    onClick={() => {
+                      console.log("start editing lithology", lithology.id);
+                    }}
+                    topLabel={`${lithology.fromDepth} m MD`}
+                    bottomLabel={`${lithology.toDepth} m MD`}
+                    action={{
+                      icon: <Trash2 />,
+                      label: "Delete",
+                      onClick: () => {
+                        console.log("clicked delete lithology", lithology.id);
+                      },
+                    }}>
+                    {buildLithologyLabels(lithology as Lithology)}
+                  </StratigraphyTableActionCell>
+                ),
+              )
+            )}
+          </StratigraphyTableColumn>
+          <StratigraphyTableColumn>
+            {completedLithologicalDescriptions.length === 0 ? (
+              <StratigraphyTableGap
+                key={`lithologicalDescription-new`}
+                canEdit={true}
+                sx={{
+                  height: `${defaultRowHeight}px`,
+                }}
+              />
+            ) : (
+              completedLithologicalDescriptions.map(description =>
+                description.isGap ? (
+                  <StratigraphyTableGap
+                    key={`lithologicalDescription-${description.id}`}
+                    canEdit={true}
+                    sx={{
+                      height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
+                    }}
+                  />
+                ) : (
+                  <StratigraphyTableActionCell
+                    key={`lithologicalDescription-${description.id}`}
+                    sx={{
+                      height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
+                    }}
+                    onClick={() => {
+                      console.log("start editing lithologicalDescription", description.id);
+                    }}>
+                    <Typography variant="body1" fontWeight={700}>
+                      {(description as LithologicalDescription).description}
+                    </Typography>
+                  </StratigraphyTableActionCell>
+                ),
+              )
+            )}
+          </StratigraphyTableColumn>
+          <StratigraphyTableColumn>
+            {completedFaciesDescriptions.length === 0 ? (
+              <StratigraphyTableGap
+                key={`faciesDescription-new}`}
+                canEdit={true}
+                sx={{
+                  height: `${defaultRowHeight}px`,
+                }}
+              />
+            ) : (
+              completedFaciesDescriptions.map(description =>
+                description.isGap ? (
+                  <StratigraphyTableGap
+                    key={`faciesDescription-${description.id}`}
+                    canEdit={true}
+                    sx={{
+                      height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
+                    }}
+                  />
+                ) : (
+                  <StratigraphyTableActionCell
+                    key={`faciesDescription-${description.id}`}
+                    sx={{
+                      height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
+                    }}
+                    onClick={() => {
+                      console.log("start editing faciesDescription", description.id);
+                    }}>
+                    <Typography variant="body1" fontWeight={700}>
+                      {(description as FaciesDescription).description}
+                    </Typography>
+                  </StratigraphyTableActionCell>
+                ),
+              )
+            )}
+          </StratigraphyTableColumn>
+        </StratigraphyTableContent>
       </Stack>
-    </>
+      <AddRowButton />
+    </Stack>
   );
 };
