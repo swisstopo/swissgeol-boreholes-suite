@@ -110,6 +110,8 @@ export const interceptApiCalls = () => {
   });
   cy.intercept("/api/v2/stratigraphyv/copy*").as("stratigraphyV2_COPY");
 
+  cy.intercept("/api/v2/lithology?stratigraphyId=**").as("lithology_by_stratigraphyId_GET");
+
   cy.intercept("/api/v2/section?boreholeId=**").as("section_GET");
   cy.intercept("POST", "/api/v2/section").as("section_POST");
   cy.intercept("PUT", "/api/v2/section").as("section_PUT");

@@ -5,6 +5,7 @@ import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { AddWorkgroupDialog } from "../../pages/settings/admin/dialogs/AddWorkgroupDialog.tsx";
 import { AddButton } from "../buttons/buttons.tsx";
 import {
+  BoreholeListTabContentBox,
   BoreholeTab,
   BoreholeTabContentBox,
   BoreholeTabs,
@@ -33,7 +34,7 @@ export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card" }) => {
   const { Tabs, Tab, TabContent } = useMemo(
     () =>
       variant === "list"
-        ? { Tabs: TabsWithDivider, Tab: TabWithContent, TabContent: Box }
+        ? { Tabs: TabsWithDivider, Tab: TabWithContent, TabContent: BoreholeListTabContentBox }
         : { Tabs: BoreholeTabs, Tab: BoreholeTab, TabContent: BoreholeTabContentBox },
     [variant],
   );

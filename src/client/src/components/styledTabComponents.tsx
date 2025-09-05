@@ -10,6 +10,12 @@ export const BoreholeTabContentBox = styled(Box)(() => ({
   flexDirection: "column",
 }));
 
+export const BoreholeListTabContentBox = styled(Box)(() => ({
+  paddingTop: `${theme.spacing(3)}`,
+  display: "flex",
+  flexDirection: "column",
+}));
+
 export const BoreholeTabs = styled(Tabs)({
   overflow: "visible",
   margin: "0 4px",
