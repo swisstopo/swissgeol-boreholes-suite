@@ -1132,13 +1132,18 @@ public static class BdmsContextExtensions
 
         // Seed Lithologies
         var lithology_ids = 23_000_000;
-        var stratigraphyV2ForLithologies = stratigraphyV2Range.Take(100).ToList();
+
+        // Each ten layers should be associated with the one stratigraphy.
+        int GetStratigraphyV2Id(int currentLayerId, int startId)
+        {
+            return 21_000_000 + (int)Math.Floor((double)((currentLayerId - startId) / 10));
+        }
 
         // Seed a mix of consolidated and unconsolidated lithologies
         var fakeLithologies = new Faker<Lithology>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => lithology_ids++)
-            .RuleFor(o => o.StratigraphyId, f => f.PickRandom(stratigraphyV2ForLithologies))
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyV2Id(lithology_ids, 23_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.FromDepth, f => (lithology_ids % 10) * 10)
             .RuleFor(o => o.ToDepth, f => ((lithology_ids % 10) + 1) * 10)
@@ -1179,8 +1184,15 @@ public static class BdmsContextExtensions
 
         Lithology SeededLithologies(int seed) => fakeLithologies.UseSeed(seed).Generate();
 
-        var lithologyRange = Enumerable.Range(1, 300);
-        var lithologiesToInsert = lithologyRange.Select(SeededLithologies).ToList();
+        var lithologiesToInsert = new List<Lithology>();
+        for (int i = 0; i < stratigraphyV2Range.Count - 1; i++)
+        {
+            // Add 10 lithologies per stratigraphy
+            var start = (i * 10) + 1;
+            var range = Enumerable.Range(start, 10);  // ints in range must be different on each loop, so that properties are not repeated in dataset.
+            lithologiesToInsert.AddRange(range.Select(SeededLithologies));
+        }
+
         context.BulkInsert(lithologiesToInsert, bulkConfig);
 
         // Seed LithologyDescriptions
