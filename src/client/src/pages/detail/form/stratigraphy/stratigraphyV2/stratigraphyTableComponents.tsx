@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Chip, IconButton, Stack, SxProps, Tooltip, Typography } from "@mui/material";
 import { styled } from "@mui/system";
@@ -74,6 +74,15 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   sx,
 }) => {
   const hasRows = topLabel || bottomLabel || action;
+  const stackRef = useRef<HTMLDivElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = stackRef.current;
+    if (el) {
+      setIsOverflowing(el.scrollHeight > el.clientHeight);
+    }
+  }, [children]);
 
   return (
     <StratigraphyTableCell
@@ -118,7 +127,15 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
           )}
         </StratigraphyTableCellRow>
       )}
-      <Stack gap={1} sx={{ flex: "1 1 auto", minHeight: 0, overflow: "hidden" }}>
+      <Stack
+        ref={stackRef}
+        gap={1}
+        sx={{
+          flex: "1 1 auto",
+          minHeight: 0,
+          overflow: "hidden",
+          justifyContent: isOverflowing ? "flex-start" : "center",
+        }}>
         {children}
       </Stack>
       {hasRows && (
