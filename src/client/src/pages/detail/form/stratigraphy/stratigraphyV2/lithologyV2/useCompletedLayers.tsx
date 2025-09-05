@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { BaseLayer } from "../../../../api/stratigraphy.ts";
+import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
 
 export function useCompletedLayers(layers: BaseLayer[] = []) {
   const completedLayers = useMemo(() => {
