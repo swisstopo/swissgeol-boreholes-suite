@@ -21,7 +21,7 @@ export function useCompletedLayers(layers: BaseLayer[] = []) {
         resultLayers.push(gapLayer);
       }
 
-      resultLayers.push(layer as BaseLayer);
+      resultLayers.push(layer);
       lastDepth = layer.toDepth;
     });
 
