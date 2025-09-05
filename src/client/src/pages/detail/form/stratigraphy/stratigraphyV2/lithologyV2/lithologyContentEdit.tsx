@@ -81,14 +81,22 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
           </StratigraphyTableColumn>
           <StratigraphyTableColumn>
             {completedLithologies.length === 0 ? (
-              <StratigraphyTableGap key={`lithology-new`} canEdit={true} sx={{ height: `${defaultRowHeight}px` }} />
+              <StratigraphyTableGap
+                key={`lithology-new`}
+                sx={{ height: `${defaultRowHeight}px` }}
+                onClick={() => {
+                  console.log("start editing lithology new");
+                }}
+              />
             ) : (
               completedLithologies.map(lithology =>
                 lithology.isGap ? (
                   <StratigraphyTableGap
                     key={`lithology-${lithology.id}`}
-                    canEdit={true}
                     sx={{ height: `${defaultRowHeight}px` }}
+                    onClick={() => {
+                      console.log("start editing lithology", lithology.id);
+                    }}
                   />
                 ) : (
                   <StratigraphyTableActionCell
@@ -116,9 +124,11 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
             {completedLithologicalDescriptions.length === 0 ? (
               <StratigraphyTableGap
                 key={`lithologicalDescription-new`}
-                canEdit={true}
                 sx={{
                   height: `${defaultRowHeight}px`,
+                }}
+                onClick={() => {
+                  console.log("start editing lithologicalDescription new");
                 }}
               />
             ) : (
@@ -126,9 +136,11 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                 description.isGap ? (
                   <StratigraphyTableGap
                     key={`lithologicalDescription-${description.id}`}
-                    canEdit={true}
                     sx={{
                       height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
+                    }}
+                    onClick={() => {
+                      console.log("start editing lithologicalDescription", description.id);
                     }}
                   />
                 ) : (
@@ -152,9 +164,11 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
             {completedFaciesDescriptions.length === 0 ? (
               <StratigraphyTableGap
                 key={`faciesDescription-new}`}
-                canEdit={true}
                 sx={{
                   height: `${defaultRowHeight}px`,
+                }}
+                onClick={() => {
+                  console.log("start editing faciesDescription new");
                 }}
               />
             ) : (
@@ -162,9 +176,11 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                 description.isGap ? (
                   <StratigraphyTableGap
                     key={`faciesDescription-${description.id}`}
-                    canEdit={true}
                     sx={{
                       height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
+                    }}
+                    onClick={() => {
+                      console.log("start editing faciesDescription", description.id);
                     }}
                   />
                 ) : (

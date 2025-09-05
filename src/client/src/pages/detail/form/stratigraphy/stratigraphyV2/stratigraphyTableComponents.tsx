@@ -148,11 +148,11 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
 };
 
 interface StratigraphyTableGapProps {
-  canEdit?: boolean;
+  onClick?: () => void;
   sx?: SxProps;
 }
 
-export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ canEdit, sx }) => {
+export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ onClick, sx }) => {
   const { t } = useTranslation();
   return (
     <StratigraphyTableCell
@@ -160,19 +160,20 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ canEdit, s
         padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
         backgroundColor: theme.palette.error.background,
 
-        ...(canEdit && {
+        ...(onClick && {
           "&:hover": {
             backgroundColor: theme.palette.error.backgroundHover,
             cursor: "pointer",
           },
         }),
         ...sx,
-      }}>
+      }}
+      onClick={onClick}>
       <StratigraphyTableCellRow color={theme.palette.error.main}>
         <Chip color="error" label={t("gap")} />
         <TriangleAlert />
       </StratigraphyTableCellRow>
-      {canEdit && (
+      {onClick && (
         <Stack direction="row" justifyContent="center" alignItems="center">
           <LayerAddButton />
         </Stack>
