@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
+import { BaseLayer } from "../pages/detail/form/stratigraphy/stratigraphyV2/lithologyV2/BaseLayerColumn.tsx";
 import { User } from "./apiInterfaces.ts";
 import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
 import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
@@ -65,14 +66,12 @@ export interface Lithostratigraphy {
   stratigraphyId: number;
 }
 
-export interface LithologicalDescription {
-  id: number;
-  stratigraphyId: number;
+export interface LithologicalDescription extends BaseLayer {
+  description: string;
 }
 
-export interface FaciesDescription {
-  id: number;
-  stratigraphyId: number;
+export interface FaciesDescription extends BaseLayer {
+  description: string;
 }
 
 // layers

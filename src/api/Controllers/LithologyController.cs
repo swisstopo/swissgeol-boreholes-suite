@@ -36,12 +36,14 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await Context.LithologiesWithIncludes
+        var lithologies = Context.LithologiesWithIncludes;
+        var test = await Context.LithologiesWithIncludes
             .AsNoTracking()
-            .Where(l => l.StratigraphyId == stratigraphyId)
+            .Where(l => l.StratigraphyId == 21000029) // Fix
             .OrderBy(l => l.FromDepth)
             .ToListAsync()
             .ConfigureAwait(false);
+        return test;
     }
 
     /// <summary>

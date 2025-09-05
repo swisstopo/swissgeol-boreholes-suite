@@ -3,7 +3,7 @@ import { useChronostratigraphies, useChronostratigraphyMutations } from "../../.
 import HierarchicalDataEditProfile from "../hierarchicalDataEditProfile.jsx";
 
 /**
- * Manages the chronostratigraphy data and mutations.
+ * Manages the chronostratigraphyLegacy data and mutations.
  */
 const ChronostratigraphyEditProfile = ({ selectedStratigraphyID, sx, navState, setNavState }) => {
   const { t } = useTranslation();
