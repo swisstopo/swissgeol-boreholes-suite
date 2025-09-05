@@ -46,7 +46,6 @@ export const StratigraphyTableColumn = styled(Stack)(() => ({
 export const StratigraphyTableCell = styled(Stack)(() => ({
   justifyContent: "space-between",
   padding: theme.spacing(2),
-  height: "240px",
   borderBottom: `1px solid ${theme.palette.border.darker}`,
 }));
 

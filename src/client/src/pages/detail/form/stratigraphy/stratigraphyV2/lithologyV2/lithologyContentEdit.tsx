@@ -25,6 +25,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
   const { data: lithologies, isLoading } = useLithologies(stratigraphyId);
   const { buildLithologyLabels } = useLithologyLabels();
 
+  const defaultRowHeight = 240;
+
   if (isLoading) {
     return (
       <FullPageCentered>
@@ -49,7 +51,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                 <StratigraphyTableCell>empty</StratigraphyTableCell>
               ) : (
                 lithologies.map(lithology => (
-                  <StratigraphyTableCell key={`depth-${lithology.id}`}>
+                  <StratigraphyTableCell key={`depth-${lithology.id}`} sx={{ height: `${defaultRowHeight}px` }}>
                     <Typography>{`${lithology.fromDepth} m MD`}</Typography>
                     <Typography>{`${lithology.toDepth} m MD`}</Typography>
                   </StratigraphyTableCell>
@@ -63,6 +65,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                 lithologies.map(lithology => (
                   <StratigraphyTableActionCell
                     key={`lithology-${lithology.id}`}
+                    sx={{ height: `${defaultRowHeight}px` }}
                     onClick={() => {
                       console.log("start editing lithology", lithology.id);
                     }}
@@ -81,22 +84,19 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
               )}
             </StratigraphyTableColumn>
             <StratigraphyTableColumn>
-              <StratigraphyTableGap canEdit={true} />
-              <StratigraphyTableActionCell>
-                <Typography variant="body1">asdfas</Typography>
-              </StratigraphyTableActionCell>
-              <StratigraphyTableActionCell>
+              <StratigraphyTableGap canEdit={true} sx={{ height: `${defaultRowHeight}px` }} />
+              <StratigraphyTableActionCell sx={{ height: `${2 * defaultRowHeight}px` }}>
                 <Typography variant="body1">asdfas</Typography>
               </StratigraphyTableActionCell>
             </StratigraphyTableColumn>
             <StratigraphyTableColumn>
-              <StratigraphyTableActionCell>
+              <StratigraphyTableActionCell sx={{ height: `${defaultRowHeight}px` }}>
                 <Typography variant="body1">asdfas</Typography>
               </StratigraphyTableActionCell>
-              <StratigraphyTableActionCell>
+              <StratigraphyTableActionCell sx={{ height: `${defaultRowHeight}px` }}>
                 <Typography variant="body1">asdfas</Typography>
               </StratigraphyTableActionCell>
-              <StratigraphyTableGap canEdit={false} />
+              <StratigraphyTableGap canEdit={false} sx={{ height: `${defaultRowHeight}px` }} />
             </StratigraphyTableColumn>
           </StratigraphyTableContent>
         </Stack>
