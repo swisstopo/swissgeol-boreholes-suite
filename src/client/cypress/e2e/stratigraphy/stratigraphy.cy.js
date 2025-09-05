@@ -204,7 +204,7 @@ describe("Tests for stratigraphy", () => {
       createStratigraphyV2(boreholeId, "OLYMPIAGOAT").as("stratigraphy_id");
       cy.get("@stratigraphy_id").then(stratigraphyId => {
         goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
-        cy.wait("@stratigraphyV2_by_borehole_GET");
+        cy.wait(["@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
         startBoreholeEditing();
 
         // Should redirect to primary stratigraphy if no stratigraphy is selected
@@ -215,7 +215,7 @@ describe("Tests for stratigraphy", () => {
         // Can duplicate existing stratigraphy
         getElementByDataCy("duplicate-button").click();
         cy.wait("@stratigraphyV2_COPY").then(interception => {
-          cy.wait("@stratigraphyV2_by_borehole_GET");
+          cy.wait(["@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
           const copiedStratigraphyId = interception.response.body;
           // Should redirect to the copied stratigraphy
           cy.location().should(location => {
@@ -241,7 +241,7 @@ describe("Tests for stratigraphy", () => {
         createStratigraphyV2(boreholeId, "GATETRUCK", false).as("stratigraphy_id_2");
         cy.get("@stratigraphy_id_2").then(stratigraphyId2 => {
           goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
-          cy.wait("@stratigraphyV2_by_borehole_GET");
+          cy.wait(["@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
 
           // Should redirect to primary stratigraphy if no stratigraphy is selected
           cy.location().should(location => {
@@ -266,7 +266,7 @@ describe("Tests for stratigraphy", () => {
             "Do you really want to delete this entry? The entry will be permanently deleted from the database.",
             "delete",
           );
-          cy.wait(["@stratigraphyV2_DELETE", "@stratigraphyV2_by_borehole_GET"]);
+          cy.wait(["@stratigraphyV2_DELETE", "@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
           cy.contains("GATETRUCK").should("not.exist");
           cy.location().should(location => {
             expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${stratigraphyId1}`);
@@ -279,7 +279,7 @@ describe("Tests for stratigraphy", () => {
             "Do you really want to delete this entry? The entry will be permanently deleted from the database.",
             "delete",
           );
-          cy.wait(["@stratigraphyV2_DELETE", "@stratigraphyV2_by_borehole_GET"]);
+          cy.wait(["@stratigraphyV2_DELETE", "@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
           cy.location().should(location => {
             expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy`);
           });
