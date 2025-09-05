@@ -4,7 +4,11 @@ import type { TFunction } from "i18next";
 import { Lithology, LithologyDescription } from "../../lithology";
 
 const getBeddingShare = (lithology: Lithology, index: number) => {
-  return lithology.hasBedding && lithology.share ? (index === 0 ? lithology.share : 100 - lithology.share) : undefined;
+  let beddingShare: number | undefined;
+  if (lithology.hasBedding && lithology.share) {
+    beddingShare = index === 0 ? lithology.share : 100 - lithology.share;
+  }
+  return beddingShare;
 };
 
 const buildUnconsolidatedPrimaryString = (
@@ -83,6 +87,34 @@ const buildUnconsolidatedSecondaryString = (t: TFunction, language: string, desc
   return `${t("coarseComponent", { count: secondaryValues.length })}: ${secondaryValues.join(", ")}`;
 };
 
+const buildUnconsolidatedDetails1String = (t: TFunction, language: string, lithology: Lithology) => {
+  const details = [];
+  if (lithology.compactness) details.push(lithology.compactness[language]);
+  if (lithology.consistency) details.push(lithology.consistency[language]);
+  if (lithology.cohesion) details.push(lithology.cohesion[language]);
+  if (lithology.plasticity) details.push(lithology.plasticity[language]);
+  if (lithology.humidity) details.push(lithology.humidity[language]);
+  if (lithology.uscsTypeCodelists.length > 0) {
+    let uscsString = `${t("uscsClass", { count: lithology.uscsTypeCodelists.length })}: ${lithology.uscsTypeCodelists.map(c => c[language]).join(", ")}`;
+    if (lithology.uscsDetermination) {
+      uscsString += ` (${lithology.uscsDetermination[language]})`;
+    }
+    details.push(uscsString);
+  }
+
+  return details.join(", ");
+};
+
+const buildUnconsolidatedDetails2String = (language: string, lithology: Lithology) => {
+  const details = [];
+  if (lithology.rockConditionCodelists.length > 0) {
+    details.push(...lithology.rockConditionCodelists.map(c => c[language]));
+  }
+  if (lithology.alterationDegree) details.push(lithology.alterationDegree[language]);
+
+  return details.join(", ");
+};
+
 const buildConsolidatedPrimaryString = (
   t: TFunction,
   language: string,
@@ -139,6 +171,16 @@ const buildConsolidatedSecondaryString = (t: TFunction, language: string, descri
   }
 
   return secondaryValues.join(", ");
+};
+
+const buildConsolidatedDetailsString = (language: string, lithology: Lithology) => {
+  const details = [];
+  if (lithology.textureMataCodelists.length > 0) {
+    details.push(...lithology.textureMataCodelists.map(c => c[language]));
+  }
+  if (lithology.alterationDegree) details.push(lithology.alterationDegree[language]);
+
+  return details.join(", ");
 };
 
 const buildLithologyDescription = (
@@ -202,49 +244,26 @@ export const useLithologyLabels = () => {
   const buildLithologyLabels = (lithology: Lithology) => {
     const language = i18n.language;
     if (lithology.isUnconsolidated) {
-      const details1 = [];
-      if (lithology.compactness) details1.push(lithology.compactness[language]);
-      if (lithology.consistency) details1.push(lithology.consistency[language]);
-      if (lithology.cohesion) details1.push(lithology.cohesion[language]);
-      if (lithology.plasticity) details1.push(lithology.plasticity[language]);
-      if (lithology.humidity) details1.push(lithology.humidity[language]);
-      if (lithology.uscsTypeCodelists.length > 0) {
-        let uscsString = `${t("uscsClass", { count: lithology.uscsTypeCodelists.length })}: ${lithology.uscsTypeCodelists.map(c => c[language]).join(", ")}`;
-        if (lithology.uscsDetermination) {
-          uscsString += ` (${lithology.uscsDetermination[language]})`;
-        }
-        details1.push(uscsString);
-      }
-
-      const details2 = [];
-      if (lithology.rockConditionCodelists.length > 0) {
-        details2.push(...lithology.rockConditionCodelists.map(c => c[language]));
-      }
-      if (lithology.alterationDegree) details2.push(lithology.alterationDegree[language]);
-
+      const details1 = buildUnconsolidatedDetails1String(t, language, lithology);
+      const details2 = buildUnconsolidatedDetails2String(language, lithology);
       return (
         <>
           {lithology.lithologyDescriptions.map((description, index) =>
             buildUnconsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index)),
           )}
-          {details1.length > 0 && <Typography variant="body2">{details1.join(", ")}</Typography>}
-          {details2.length > 0 && <Typography variant="body2">{details2.join(", ")}</Typography>}
+          {details1.length > 0 && <Typography variant="body2">{details1}</Typography>}
+          {details2.length > 0 && <Typography variant="body2">{details2}</Typography>}
           {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
         </>
       );
     } else {
-      const details = [];
-      if (lithology.textureMataCodelists.length > 0) {
-        details.push(...lithology.textureMataCodelists.map(c => c[language]));
-      }
-      if (lithology.alterationDegree) details.push(lithology.alterationDegree[language]);
-
+      const details = buildConsolidatedDetailsString(language, lithology);
       return (
         <>
           {lithology.lithologyDescriptions.map((description, index) =>
             buildConsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index)),
           )}
-          {details.length > 0 && <Typography variant="body2">{details.join(", ")}</Typography>}
+          {details.length > 0 && <Typography variant="body2">{details}</Typography>}
           {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
         </>
       );
