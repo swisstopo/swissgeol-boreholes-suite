@@ -10,6 +10,7 @@
 - _view-sync_ now also syncs published public attachments.
 - Adding or importing boreholes is now explicitly disabled when no workgroup is selected.
 - Moved geometry format names to localization files to support translations.
+- _extern-sync_ now syncs all boreholes once they reach the `Reviewed` status.
 
 ### Fixed
 - Boreholes that were locked by any user could not be edited by others, including administrators, even after lock timeout expiration.
