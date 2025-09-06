@@ -2,7 +2,7 @@
 
 # ------------------------------------------------------------------------------
 # DESCRIPTION: As part of the docker-entrypoint initialization, this script
-#              sets the publication status for some boreholes to 'published'.
+#              sets the workflow status for some boreholes to 'reviewed'.
 #              Only lightweight boreholes, with an id greater than 1000100, are
 #              used, because the full blown do not meet the requirements
 #              regarding the use of casings.
@@ -26,7 +26,7 @@ psql \
       BEGIN
           -- Update workflow status
           UPDATE $SOURCE_DB_SCHEMA.workflow
-          SET status = 3
+          SET status = 2 -- workflow status 'reviewed'
           WHERE borehole_id = ANY(bho_ids);
 
           -- Update tab_status for all workflow entries related to these boreholes

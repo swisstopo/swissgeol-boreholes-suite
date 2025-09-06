@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace BDMS.ExternSync.Tasks;
 
 /// <summary>
-/// Sync <see cref="Borehole"/>s with publication status 'published' from a source to a destination context.
+/// Syncs <see cref="Borehole"/>s with workflow status 'reviewed' or 'published' from a source to a destination context.
 /// </summary>
 public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTask> logger, IConfiguration configuration)
     : SyncTask(syncContext, logger, configuration)
@@ -37,14 +37,14 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
         // Get published boreholes from the source database.
         var publishedBoreholes = Source.BoreholesWithIncludes
             .AsNoTrackingWithIdentityResolution()
-            .WithStatusPublished()
+            .WithStatusReviewedOrPublished()
             .ToList();
 
         // Skip this sync task if there are no published boreholes available.
         if (publishedBoreholes.Count == 0)
         {
             Logger.LogInformation(
-                "No (new) boreholes in publication status 'published' found on source database. Skipping task...");
+                "No (new) boreholes with workflow status 'reviewed' or 'published' found on source database. Skipping task...");
             return;
         }
 

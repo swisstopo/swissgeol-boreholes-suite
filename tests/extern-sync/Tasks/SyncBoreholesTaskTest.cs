@@ -16,26 +16,26 @@ public class SyncBoreholesTaskTest
         using var syncContext = await TestSyncContext.BuildAsync(seedTestDataInSourceContext: true);
         using var syncTask = new SyncBoreholesTask(syncContext, new Mock<ILogger<SyncBoreholesTask>>().Object, GetDefaultConfiguration());
 
-        // Set the publication status for some boreholes. By default all seeded boreholes have the publication
-        // status 'change in progress'.
+        // Set the workflow status for some boreholes. By default all seeded boreholes
+        // have the default workflow status 'draft'.
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
         await syncContext.Source.SetBoreholeStatusAsync(1_000_001, WorkflowStatus.Draft, cancellationToken);
         await syncContext.Source.SetBoreholeStatusAsync(1_000_202, WorkflowStatus.InReview, cancellationToken);
-        await syncContext.Source.SetBoreholeStatusAsync(1_001_404, WorkflowStatus.Reviewed, cancellationToken);
 
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_022, WorkflowStatus.Published, cancellationToken);
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_099, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_001_404, WorkflowStatus.Reviewed, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_022, WorkflowStatus.Reviewed, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_099, WorkflowStatus.Reviewed, cancellationToken);
         await syncContext.Source.SetBoreholeStatusAsync(1_000_101, WorkflowStatus.Published, cancellationToken);
 
         await syncContext.Source.FixCasingReferencesAsync(cancellationToken);
 
         await syncTask.ExecuteAndValidateAsync(cancellationToken);
 
-        // Get boreholes with publication status 'published' from both sources.
+        // Get boreholes with workflow status 'reviewed' or 'published' from both sources.
         var (originalBoreholes, syncedBoreholes) = GetPublishedBoreholes(syncContext.Source, syncContext.Target);
 
-        Assert.AreEqual(3, originalBoreholes.Count());
-        Assert.AreEqual(3, syncedBoreholes.Count());
+        Assert.AreEqual(4, originalBoreholes.Count());
+        Assert.AreEqual(4, syncedBoreholes.Count());
 
         // Serialize synced objects from both sources and compare all the data.
         foreach (var syncedBorehole in syncedBoreholes)
@@ -71,7 +71,7 @@ public class SyncBoreholesTaskTest
     public async Task SyncBoreholesShouldSkipDuplicates()
     {
         // By seeding the target context with the same boreholes as in the source context, we can check if the sync task
-        // correctly skips the duplicates. The seeded boreholes in the target context have the publication status 'published'.
+        // correctly skips the duplicates. The seeded boreholes in the target context have the workflow status 'Published'.
         using var syncContext = await TestSyncContext.BuildAsync(seedTestDataInSourceContext: true, seedTestDataInTargetContext: true);
         using var syncTask = new SyncBoreholesTask(syncContext, new Mock<ILogger<SyncBoreholesTask>>().Object, GetDefaultConfiguration());
 
@@ -83,7 +83,7 @@ public class SyncBoreholesTaskTest
 
         await syncTask.ExecuteAndValidateAsync(cancellationToken);
 
-        // Get boreholes with publication status 'published' from both sources.
+        // Get boreholes with workflow status 'reviewed' or 'published' from both sources.
         var (publishedSourceBoreholes, publishedTargetBoreholes) = GetPublishedBoreholes(syncContext.Source, syncContext.Target);
 
         // Expect an no boreholes to be synced to the target context, because they are already present in the target context.
@@ -100,7 +100,7 @@ public class SyncBoreholesTaskTest
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
         await syncTask.ExecuteAndValidateAsync(cancellationToken);
 
-        // Get boreholes with publication status 'published' from both sources.
+        // Get boreholes with workflow status 'reviewed' or 'published' from both sources.
         var (publishedSourceBoreholes, publishedTargetBoreholes) = GetPublishedBoreholes(syncContext.Source, syncContext.Target);
 
         // Expect an empty result set on both sources.
@@ -194,7 +194,7 @@ public class SyncBoreholesTaskTest
         BdmsContext sourceContext, BdmsContext targetContext)
     {
         return (
-            sourceContext.BoreholesWithIncludes.AsNoTracking().WithStatusPublished(),
-            targetContext.BoreholesWithIncludes.AsNoTracking().WithStatusPublished());
+            sourceContext.BoreholesWithIncludes.AsNoTracking().WithStatusReviewedOrPublished(),
+            targetContext.BoreholesWithIncludes.AsNoTracking().WithStatusReviewedOrPublished());
     }
 }

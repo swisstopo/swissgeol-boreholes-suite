@@ -28,21 +28,23 @@ public class SyncContextExtensionsTest
     }
 
     [TestMethod]
-    public async Task GetWithPublicationStatusPublished()
+    public async Task GetBoreholesWithStatusReviewedOrPublished()
     {
-        // Set the publication status for some boreholes. By default all seeded boreholes have the publication status 'change in progress'.
+        // Set the workflow status for some boreholes. By default all seeded boreholes
+        // have the default workflow status 'draft'.
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
         await context.SetBoreholeStatusAsync(1_000_001, WorkflowStatus.Draft, cancellationToken);
         await context.SetBoreholeStatusAsync(1_000_020, WorkflowStatus.InReview, cancellationToken);
-        await context.SetBoreholeStatusAsync(1_000_444, WorkflowStatus.Reviewed, cancellationToken);
 
-        await context.SetBoreholeStatusAsync(1_000_300, WorkflowStatus.Published, cancellationToken);
-        await context.SetBoreholeStatusAsync(1_001_555, WorkflowStatus.Published, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_444, WorkflowStatus.Reviewed, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_300, WorkflowStatus.Reviewed, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_001_555, WorkflowStatus.Reviewed, cancellationToken);
         await context.SetBoreholeStatusAsync(1_000_666, WorkflowStatus.Published, cancellationToken);
 
-        var boreholes = context.Boreholes.WithStatusPublished().ToList();
+        var boreholes = context.Boreholes.WithStatusReviewedOrPublished().ToList();
 
-        Assert.AreEqual(3, boreholes.Count);
+        Assert.AreEqual(4, boreholes.Count);
+        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_444));
         Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_300));
         Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_001_555));
         Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_666));

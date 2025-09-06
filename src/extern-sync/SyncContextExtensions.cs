@@ -50,10 +50,11 @@ public static class SyncContextExtensions
         new DbContextOptionsBuilder<BdmsContext>().UseNpgsql(connectionString, BdmsContextExtensions.SetDbContextOptions).Options;
 
     /// <summary>
-    /// Filters the given <paramref name="boreholes"/> and returns only those with status published.
+    /// Filters the given <paramref name="boreholes"/> and returns only those with status
+    /// <see cref="WorkflowStatus.Reviewed"/> or <see cref="WorkflowStatus.Published"/>.
     /// </summary>
-    internal static IEnumerable<Borehole> WithStatusPublished(this IEnumerable<Borehole> boreholes)
-        => boreholes.Where(b => b.Workflow?.Status == WorkflowStatus.Published);
+    internal static IEnumerable<Borehole> WithStatusReviewedOrPublished(this IEnumerable<Borehole> boreholes)
+        => boreholes.Where(b => b.Workflow?.Status == WorkflowStatus.Reviewed || b.Workflow?.Status == WorkflowStatus.Published);
 
     /// <summary>
     /// Recursively marks the given <paramref name="items"/> and all their dependencies as new.
