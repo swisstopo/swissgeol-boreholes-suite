@@ -35,7 +35,7 @@ const themePalette: AppThemePalette = {
     light: "#D8232A",
     contrastText: "#ffffff",
     background: "#ffebee",
-    backgroundHover: "#ffe4e6",
+    backgroundHover: "#fae1e2",
   },
   neutral: {
     main: "#d8d8d8",
