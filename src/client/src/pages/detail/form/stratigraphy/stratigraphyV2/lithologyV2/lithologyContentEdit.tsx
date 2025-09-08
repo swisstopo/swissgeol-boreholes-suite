@@ -1,4 +1,4 @@
-import { FC, useCallback } from "react";
+import { FC, ReactNode, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import {
@@ -79,6 +79,50 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
     console.log("delete faciesDescription", faciesDescription.id);
   }, []);
 
+  const renderTableCells = (
+    layers: BaseLayer[],
+    defaultRowHeight: number,
+    computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
+    onEdit: (layer: BaseLayer) => void,
+    onDelete: (layer: BaseLayer) => void,
+    buildContent: (layer: BaseLayer) => ReactNode,
+    keyPrefix: string,
+  ) => {
+    if (!layers || layers.length === 0) {
+      return (
+        <StratigraphyTableGap
+          key={`${keyPrefix}-new`}
+          sx={{ height: `${defaultRowHeight}px` }}
+          layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
+          onClick={onEdit}
+        />
+      );
+    }
+    return layers.map(layer =>
+      layer.isGap ? (
+        <StratigraphyTableGap
+          key={`${keyPrefix}-${layer.id}`}
+          sx={{
+            height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
+          }}
+          layer={layer}
+          onClick={onEdit}
+        />
+      ) : (
+        <StratigraphyTableActionCell
+          key={`${keyPrefix}-${layer.id}`}
+          sx={{
+            height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
+          }}
+          layer={layer}
+          onClick={onEdit}
+          onHoverClick={onDelete}>
+          {buildContent(layer)}
+        </StratigraphyTableActionCell>
+      ),
+    );
+  };
+
   if (isLoading) {
     return (
       <FullPageCentered>
@@ -110,109 +154,44 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
             )}
           </StratigraphyTableColumn>
           <StratigraphyTableColumn>
-            {completedLithologies.length === 0 ? (
-              <StratigraphyTableGap
-                key={`lithology-new`}
-                sx={{ height: `${defaultRowHeight}px` }}
-                layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
-                onClick={handleEditLithology}
-              />
-            ) : (
-              completedLithologies.map(lithology =>
-                lithology.isGap ? (
-                  <StratigraphyTableGap
-                    key={`lithology-${lithology.id}`}
-                    sx={{ height: `${defaultRowHeight}px` }}
-                    layer={lithology}
-                    onClick={handleEditLithology}
-                  />
-                ) : (
-                  <StratigraphyTableActionCell
-                    key={`lithology-${lithology.id}`}
-                    sx={{ height: `${defaultRowHeight}px` }}
-                    layer={lithology}
-                    onClick={handleEditLithology}
-                    onHoverClick={handleDeleteLithology}>
-                    {buildLithologyLabels(lithology as Lithology)}
-                  </StratigraphyTableActionCell>
-                ),
-              )
+            {renderTableCells(
+              completedLithologies,
+              defaultRowHeight,
+              null,
+              handleEditLithology,
+              handleDeleteLithology,
+              layer => buildLithologyLabels(layer as Lithology),
+              "lithology",
             )}
           </StratigraphyTableColumn>
           <StratigraphyTableColumn>
-            {completedLithologicalDescriptions.length === 0 ? (
-              <StratigraphyTableGap
-                key={`lithologicalDescription-new`}
-                sx={{
-                  height: `${defaultRowHeight}px`,
-                }}
-                layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
-                onClick={handleEditLithologicalDescription}
-              />
-            ) : (
-              completedLithologicalDescriptions.map(description =>
-                description.isGap ? (
-                  <StratigraphyTableGap
-                    key={`lithologicalDescription-${description.id}`}
-                    sx={{
-                      height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
-                    }}
-                    layer={description}
-                    onClick={handleEditLithologicalDescription}
-                  />
-                ) : (
-                  <StratigraphyTableActionCell
-                    key={`lithologicalDescription-${description.id}`}
-                    sx={{
-                      height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
-                    }}
-                    layer={description}
-                    onClick={handleEditLithologicalDescription}
-                    onHoverClick={handleDeleteLithologicalDescription}>
-                    <Typography variant="body1" fontWeight={700}>
-                      {(description as LithologicalDescription).description}
-                    </Typography>
-                  </StratigraphyTableActionCell>
-                ),
-              )
+            {renderTableCells(
+              completedLithologicalDescriptions,
+              defaultRowHeight,
+              computeCellHeight,
+              handleEditLithologicalDescription,
+              handleDeleteLithologicalDescription,
+              layer => (
+                <Typography variant="body1" fontWeight={700}>
+                  {(layer as LithologicalDescription).description}
+                </Typography>
+              ),
+              "lithologicalDescription",
             )}
           </StratigraphyTableColumn>
           <StratigraphyTableColumn>
-            {completedFaciesDescriptions.length === 0 ? (
-              <StratigraphyTableGap
-                key={`faciesDescription-new}`}
-                sx={{
-                  height: `${defaultRowHeight}px`,
-                }}
-                layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
-                onClick={handleEditFaciesDescription}
-              />
-            ) : (
-              completedFaciesDescriptions.map(description =>
-                description.isGap ? (
-                  <StratigraphyTableGap
-                    key={`faciesDescription-${description.id}`}
-                    sx={{
-                      height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
-                    }}
-                    layer={description}
-                    onClick={handleEditFaciesDescription}
-                  />
-                ) : (
-                  <StratigraphyTableActionCell
-                    key={`faciesDescription-${description.id}`}
-                    sx={{
-                      height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
-                    }}
-                    layer={description}
-                    onClick={handleEditFaciesDescription}
-                    onHoverClick={handleDeleteFaciesDescription}>
-                    <Typography variant="body1" fontWeight={700}>
-                      {(description as FaciesDescription).description}
-                    </Typography>
-                  </StratigraphyTableActionCell>
-                ),
-              )
+            {renderTableCells(
+              completedFaciesDescriptions,
+              defaultRowHeight,
+              computeCellHeight,
+              handleEditFaciesDescription,
+              handleDeleteFaciesDescription,
+              layer => (
+                <Typography variant="body1" fontWeight={700}>
+                  {(layer as FaciesDescription).description}
+                </Typography>
+              ),
+              "faciesDescription",
             )}
           </StratigraphyTableColumn>
         </StratigraphyTableContent>
