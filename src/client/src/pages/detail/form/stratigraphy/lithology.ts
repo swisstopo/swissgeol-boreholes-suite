@@ -1,7 +1,8 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
+import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { fetchApiV2, fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { Codelist } from "../../../../components/codelist.ts";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
 export interface LithologyDescription {
   id: number;
@@ -83,6 +84,8 @@ export interface Lithology extends BaseLayer {
   textureMataCodelists: Codelist[];
 }
 
+const lithologyController = "lithology";
+
 export const fetchLithologiesByStratigraphyId = async (stratigraphyId: number): Promise<Lithology[]> =>
   await fetchApiV2(`lithology?stratigraphyId=${stratigraphyId}`, "GET");
 
@@ -94,3 +97,44 @@ export const useLithologies = (stratigraphyId?: number): UseQueryResult<Litholog
     queryFn: () => fetchLithologiesByStratigraphyId(stratigraphyId!),
     enabled: !!stratigraphyId,
   });
+
+export const useLithologyMutations = () => {
+  const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["lithology"]);
+
+  const useAddLithology = useMutation({
+    mutationFn: async (lithology: Lithology) => {
+      return await fetchApiV2WithApiError(`${lithologyController}`, "POST", lithology);
+    },
+    onSuccess: () => {
+      resetTabStatus();
+      queryClient.invalidateQueries({ queryKey: [lithologyQueryKey] });
+    },
+  });
+
+  const useUpdateLithology = useMutation({
+    mutationFn: async (lithology: Lithology) => {
+      delete lithology.createdBy;
+      delete lithology.updatedBy;
+      delete lithology.stratigraphy;
+
+      return await fetchApiV2WithApiError(`${lithologyController}`, "PUT", lithology);
+    },
+    onSuccess: () => {
+      resetTabStatus();
+      queryClient.invalidateQueries({ queryKey: [lithologyQueryKey] });
+    },
+  });
+
+  const useDeleteLithology = useMutation({
+    mutationFn: async (lithology: Lithology) => {
+      return await fetchApiV2WithApiError(`${lithologyController}?id=${lithology.id}`, "DELETE");
+    },
+    onSuccess: () => {
+      resetTabStatus();
+      queryClient.invalidateQueries({ queryKey: [lithologyQueryKey] });
+    },
+  });
+
+  return { add: useAddLithology, update: useUpdateLithology, delete: useDeleteLithology };
+};

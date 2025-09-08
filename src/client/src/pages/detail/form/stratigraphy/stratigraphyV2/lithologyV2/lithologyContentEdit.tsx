@@ -1,15 +1,19 @@
-import { FC, ReactNode, useCallback } from "react";
+import { FC, ReactNode, useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Typography } from "@mui/material";
+import { Trash2 } from "lucide-react";
 import {
   BaseLayer,
   FaciesDescription,
   LithologicalDescription,
   useFaciesDescription,
+  useFaciesDescriptionMutations,
   useLithoDescription,
+  useLithologicalDescriptionMutations,
 } from "../../../../../../api/stratigraphy.ts";
+import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
-import { Lithology, useLithologies } from "../../lithology.ts";
+import { Lithology, useLithologies, useLithologyMutations } from "../../lithology.ts";
 import {
   AddRowButton,
   StratigraphyTableActionCell,
@@ -29,9 +33,19 @@ interface LithologyContentEditProps {
 
 export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigraphyId }) => {
   const { t } = useTranslation();
+  const { showPrompt } = useContext(PromptContext);
   const { data: lithologies, isLoading } = useLithologies(stratigraphyId);
+  const {
+    delete: { mutateAsync: deleteLithology },
+  } = useLithologyMutations();
   const { data: lithologicalDescriptions } = useLithoDescription(stratigraphyId);
+  const {
+    delete: { mutateAsync: deleteLithologicalDescription },
+  } = useLithologicalDescriptionMutations();
   const { data: faciesDescriptions } = useFaciesDescription(stratigraphyId);
+  const {
+    delete: { mutateAsync: deleteFaciesDescription },
+  } = useFaciesDescriptionMutations();
   const { completedLayers: completedLithologies } = useCompletedLayers(lithologies);
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions);
   const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(faciesDescriptions);
@@ -54,30 +68,39 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
     console.log("edit lithology", lithology.id);
   }, []);
 
-  const handleDeleteLithology = useCallback((layer: BaseLayer) => {
-    const lithology = layer as unknown as Lithology;
-    console.log("delete lithology", lithology.id);
-  }, []);
+  const handleDeleteLithology = useCallback(
+    (layer: BaseLayer) => {
+      const lithology = layer as unknown as Lithology;
+      deleteLithology(lithology);
+    },
+    [deleteLithology],
+  );
 
   const handleEditLithologicalDescription = useCallback((layer: BaseLayer) => {
     const lithologicalDescription = layer as unknown as LithologicalDescription;
     console.log("edit lithologicalDescription", lithologicalDescription.id);
   }, []);
 
-  const handleDeleteLithologicalDescription = useCallback((layer: BaseLayer) => {
-    const lithologicalDescription = layer as unknown as LithologicalDescription;
-    console.log("delete lithologicalDescription", lithologicalDescription.id);
-  }, []);
+  const handleDeleteLithologicalDescription = useCallback(
+    (layer: BaseLayer) => {
+      const lithologicalDescription = layer as unknown as LithologicalDescription;
+      deleteLithologicalDescription(lithologicalDescription);
+    },
+    [deleteLithologicalDescription],
+  );
 
   const handleEditFaciesDescription = useCallback((layer: BaseLayer) => {
     const faciesDescription = layer as unknown as FaciesDescription;
     console.log("edit faciesDescription", faciesDescription.id);
   }, []);
 
-  const handleDeleteFaciesDescription = useCallback((layer: BaseLayer) => {
-    const faciesDescription = layer as unknown as FaciesDescription;
-    console.log("delete faciesDescription", faciesDescription.id);
-  }, []);
+  const handleDeleteFaciesDescription = useCallback(
+    (layer: BaseLayer) => {
+      const faciesDescription = layer as unknown as FaciesDescription;
+      deleteFaciesDescription(faciesDescription);
+    },
+    [deleteFaciesDescription],
+  );
 
   const renderTableCells = (
     layers: BaseLayer[],
@@ -116,7 +139,19 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
           }}
           layer={layer}
           onClick={onEdit}
-          onHoverClick={onDelete}>
+          onHoverClick={layer => {
+            showPrompt("deleteMessage", [
+              {
+                label: "cancel",
+              },
+              {
+                label: "delete",
+                icon: <Trash2 />,
+                variant: "contained",
+                action: () => onDelete(layer),
+              },
+            ]);
+          }}>
           {buildContent(layer)}
         </StratigraphyTableActionCell>
       ),

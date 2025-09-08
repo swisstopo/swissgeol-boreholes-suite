@@ -338,6 +338,51 @@ export const useLithoDescription = (selectedStratigraphyID?: number) =>
     enabled: !!selectedStratigraphyID,
   });
 
+export const useLithologicalDescriptionMutations = () => {
+  const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["lithology"]);
+
+  const useAddLithologicalDescription = useMutation({
+    mutationFn: async (lithologicalDescription: LithologicalDescription) => {
+      return addLithologicalDescription(lithologicalDescription);
+    },
+    onSuccess: () => {
+      resetTabStatus();
+      queryClient.invalidateQueries({
+        queryKey: [lithologicalDescriptionQueryKey],
+      });
+    },
+  });
+  const useUpdateLithologicalDescription = useMutation({
+    mutationFn: async (lithologicalDescription: LithologicalDescription) => {
+      return updateLithologicalDescription(lithologicalDescription);
+    },
+    onSuccess: () => {
+      resetTabStatus();
+      queryClient.invalidateQueries({
+        queryKey: [lithologicalDescriptionQueryKey],
+      });
+    },
+  });
+  const useDeleteLithologicalDescription = useMutation({
+    mutationFn: async (lithologicalDescription: LithologicalDescription) => {
+      return deleteLithologicalDescription(lithologicalDescription.id);
+    },
+    onSuccess: () => {
+      resetTabStatus();
+      queryClient.invalidateQueries({
+        queryKey: [lithologicalDescriptionQueryKey],
+      });
+    },
+  });
+
+  return {
+    add: useAddLithologicalDescription,
+    update: useUpdateLithologicalDescription,
+    delete: useDeleteLithologicalDescription,
+  };
+};
+
 export const faciesDescriptionQueryKey = "faciesDesc";
 
 export const useFaciesDescription = (selectedStratigraphyID?: number) =>
@@ -346,6 +391,53 @@ export const useFaciesDescription = (selectedStratigraphyID?: number) =>
     queryFn: () => fetchFaciesDescriptionsByProfileId(selectedStratigraphyID!),
     enabled: !!selectedStratigraphyID,
   });
+
+export const useFaciesDescriptionMutations = () => {
+  const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["lithology"]);
+
+  const useAddFaciesDescription = useMutation({
+    mutationFn: async (faciesDescription: FaciesDescription) => {
+      return addFaciesDescription(faciesDescription);
+    },
+    onSuccess: () => {
+      resetTabStatus();
+      queryClient.invalidateQueries({
+        queryKey: [faciesDescriptionQueryKey],
+      });
+    },
+  });
+
+  const useUpdateFaciesDescription = useMutation({
+    mutationFn: async (faciesDescription: FaciesDescription) => {
+      return updateFaciesDescription(faciesDescription);
+    },
+    onSuccess: () => {
+      resetTabStatus();
+      queryClient.invalidateQueries({
+        queryKey: [faciesDescriptionQueryKey],
+      });
+    },
+  });
+
+  const useDeleteFaciesDescription = useMutation({
+    mutationFn: async (faciesDescription: FaciesDescription) => {
+      return deleteFaciesDescription(faciesDescription.id);
+    },
+    onSuccess: () => {
+      resetTabStatus();
+      queryClient.invalidateQueries({
+        queryKey: [faciesDescriptionQueryKey],
+      });
+    },
+  });
+
+  return {
+    add: useAddFaciesDescription,
+    update: useUpdateFaciesDescription,
+    delete: useDeleteFaciesDescription,
+  };
+};
 
 export const chronostratigraphiesQueryKey = "chronostratigraphies";
 
