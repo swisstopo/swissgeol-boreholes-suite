@@ -263,15 +263,6 @@ export const useStratigraphyMutations = () => {
   };
 };
 
-export const useReloadStratigraphies = () => {
-  const queryClient = useQueryClient();
-  const resetTabStatus = useResetTabStatus(["lithology", "lithostratigraphy", "chronostratigraphy"]);
-  return (boreholeId: number) => {
-    resetTabStatus();
-    queryClient.invalidateQueries({ queryKey: [stratigraphiesByBoreholeIdQueryKey, boreholeId] });
-  };
-};
-
 export const useLegacyStratigraphyMutations = () => {
   const queryClient = useQueryClient();
   const resetTabStatus = useResetTabStatus(["lithology", "lithostratigraphy", "chronostratigraphy"]);
