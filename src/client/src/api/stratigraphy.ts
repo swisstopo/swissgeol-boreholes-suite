@@ -50,6 +50,12 @@ export interface BaseLayer {
   toDepth: number;
   stratigraphyId: number;
   stratigraphy?: Stratigraphy;
+  created?: Date | string | null;
+  createdById?: number | null;
+  createdBy?: User;
+  updated?: Date | string | null;
+  updatedById?: number | null;
+  updatedBy?: User;
   isGap?: boolean;
 }
 
