@@ -121,41 +121,42 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
         />
       );
     }
-    return layers.map(layer =>
-      layer.isGap ? (
-        <StratigraphyTableGap
-          key={`${keyPrefix}-${layer.id}`}
-          sx={{
-            height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
-          }}
-          layer={layer}
-          onClick={onEdit}
-        />
-      ) : (
-        <StratigraphyTableActionCell
-          key={`${keyPrefix}-${layer.id}`}
-          sx={{
-            height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
-          }}
-          layer={layer}
-          onClick={onEdit}
-          onHoverClick={layer => {
-            showPrompt("deleteMessage", [
-              {
-                label: "cancel",
-              },
-              {
-                label: "delete",
-                icon: <Trash2 />,
-                variant: "contained",
-                action: () => onDelete(layer),
-              },
-            ]);
-          }}>
-          {buildContent(layer)}
-        </StratigraphyTableActionCell>
-      ),
+
+    const renderGap = (layer: BaseLayer) => (
+      <StratigraphyTableGap
+        key={`${keyPrefix}-${layer.id}`}
+        sx={{
+          height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
+        }}
+        layer={layer}
+        onClick={onEdit}
+      />
     );
+
+    const renderActionCell = (layer: BaseLayer) => (
+      <StratigraphyTableActionCell
+        key={`${keyPrefix}-${layer.id}`}
+        sx={{
+          height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
+        }}
+        layer={layer}
+        onClick={onEdit}
+        onHoverClick={layer => {
+          showPrompt("deleteMessage", [
+            { label: "cancel" },
+            {
+              label: "delete",
+              icon: <Trash2 />,
+              variant: "contained",
+              action: () => onDelete(layer),
+            },
+          ]);
+        }}>
+        {buildContent(layer)}
+      </StratigraphyTableActionCell>
+    );
+
+    return layers.map(layer => (layer.isGap ? renderGap(layer) : renderActionCell(layer)));
   };
 
   if (isLoading) {
