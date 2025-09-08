@@ -1,6 +1,6 @@
 import { FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Chip, IconButton, Stack, SxProps, Tooltip, Typography } from "@mui/material";
+import { Chip, IconButton, Stack, SxProps, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
@@ -112,21 +112,19 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         {layer?.fromDepth !== null && layer?.fromDepth !== undefined && (
           <Typography variant="body1">{layer?.fromDepth} m MD</Typography>
         )}
-        <Tooltip title={isEditing ? "delete" : "copy"}>
-          <IconButton
-            color={"primaryInverse"}
-            sx={{
-              borderRadius: theme.spacing(0.5),
-              width: "36px",
-              height: "36px",
-            }}
-            onClick={e => {
-              e.stopPropagation();
-              onHoverClick(layer);
-            }}>
-            {isEditing ? <Trash2 /> : <Copy />}
-          </IconButton>
-        </Tooltip>
+        <IconButton
+          color={"primaryInverse"}
+          sx={{
+            borderRadius: theme.spacing(0.5),
+            width: "36px",
+            height: "36px",
+          }}
+          onClick={e => {
+            e.stopPropagation();
+            onHoverClick(layer);
+          }}>
+          {isEditing ? <Trash2 /> : <Copy />}
+        </IconButton>
       </StratigraphyTableCellRow>
       <Stack
         ref={stackRef}
