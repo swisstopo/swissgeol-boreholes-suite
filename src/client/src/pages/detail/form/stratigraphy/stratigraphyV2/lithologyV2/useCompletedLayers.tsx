@@ -15,7 +15,6 @@ export function useCompletedLayers(layers: BaseLayer[] = []) {
           fromDepth: lastDepth,
           toDepth: layer.fromDepth,
           isGap: true,
-          stratigraphy: layer.stratigraphy,
           stratigraphyId: layer.stratigraphyId,
         };
         resultLayers.push(gapLayer);

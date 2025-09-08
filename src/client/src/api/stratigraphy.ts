@@ -49,7 +49,7 @@ export interface BaseLayer {
   fromDepth: number;
   toDepth: number;
   stratigraphyId: number;
-  stratigraphy: Stratigraphy;
+  stratigraphy?: Stratigraphy;
   isGap?: boolean;
 }
 

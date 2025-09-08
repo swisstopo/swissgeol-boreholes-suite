@@ -1,8 +1,8 @@
 import { FC, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Typography } from "@mui/material";
-import { Trash2 } from "lucide-react";
 import {
+  BaseLayer,
   FaciesDescription,
   LithologicalDescription,
   useFaciesDescription,
@@ -49,6 +49,36 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
     [completedLithologies],
   );
 
+  const handleEditLithology = useCallback((layer: BaseLayer) => {
+    const lithology = layer as unknown as Lithology;
+    console.log("edit lithology", lithology.id);
+  }, []);
+
+  const handleDeleteLithology = useCallback((layer: BaseLayer) => {
+    const lithology = layer as unknown as Lithology;
+    console.log("delete lithology", lithology.id);
+  }, []);
+
+  const handleEditLithologicalDescription = useCallback((layer: BaseLayer) => {
+    const lithologicalDescription = layer as unknown as LithologicalDescription;
+    console.log("edit lithologicalDescription", lithologicalDescription.id);
+  }, []);
+
+  const handleDeleteLithologicalDescription = useCallback((layer: BaseLayer) => {
+    const lithologicalDescription = layer as unknown as LithologicalDescription;
+    console.log("delete lithologicalDescription", lithologicalDescription.id);
+  }, []);
+
+  const handleEditFaciesDescription = useCallback((layer: BaseLayer) => {
+    const faciesDescription = layer as unknown as FaciesDescription;
+    console.log("edit faciesDescription", faciesDescription.id);
+  }, []);
+
+  const handleDeleteFaciesDescription = useCallback((layer: BaseLayer) => {
+    const faciesDescription = layer as unknown as FaciesDescription;
+    console.log("delete faciesDescription", faciesDescription.id);
+  }, []);
+
   if (isLoading) {
     return (
       <FullPageCentered>
@@ -84,9 +114,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
               <StratigraphyTableGap
                 key={`lithology-new`}
                 sx={{ height: `${defaultRowHeight}px` }}
-                onClick={() => {
-                  console.log("start editing lithology new");
-                }}
+                layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
+                onClick={handleEditLithology}
               />
             ) : (
               completedLithologies.map(lithology =>
@@ -94,26 +123,16 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                   <StratigraphyTableGap
                     key={`lithology-${lithology.id}`}
                     sx={{ height: `${defaultRowHeight}px` }}
-                    onClick={() => {
-                      console.log("start editing lithology", lithology.id);
-                    }}
+                    layer={lithology}
+                    onClick={handleEditLithology}
                   />
                 ) : (
                   <StratigraphyTableActionCell
                     key={`lithology-${lithology.id}`}
                     sx={{ height: `${defaultRowHeight}px` }}
-                    onClick={() => {
-                      console.log("start editing lithology", lithology.id);
-                    }}
-                    topLabel={`${lithology.fromDepth} m MD`}
-                    bottomLabel={`${lithology.toDepth} m MD`}
-                    action={{
-                      icon: <Trash2 />,
-                      label: "Delete",
-                      onClick: () => {
-                        console.log("clicked delete lithology", lithology.id);
-                      },
-                    }}>
+                    layer={lithology}
+                    onClick={handleEditLithology}
+                    onHoverClick={handleDeleteLithology}>
                     {buildLithologyLabels(lithology as Lithology)}
                   </StratigraphyTableActionCell>
                 ),
@@ -127,9 +146,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                 sx={{
                   height: `${defaultRowHeight}px`,
                 }}
-                onClick={() => {
-                  console.log("start editing lithologicalDescription new");
-                }}
+                layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
+                onClick={handleEditLithologicalDescription}
               />
             ) : (
               completedLithologicalDescriptions.map(description =>
@@ -139,9 +157,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                     sx={{
                       height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
                     }}
-                    onClick={() => {
-                      console.log("start editing lithologicalDescription", description.id);
-                    }}
+                    layer={description}
+                    onClick={handleEditLithologicalDescription}
                   />
                 ) : (
                   <StratigraphyTableActionCell
@@ -149,9 +166,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                     sx={{
                       height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
                     }}
-                    onClick={() => {
-                      console.log("start editing lithologicalDescription", description.id);
-                    }}>
+                    layer={description}
+                    onClick={handleEditLithologicalDescription}
+                    onHoverClick={handleDeleteLithologicalDescription}>
                     <Typography variant="body1" fontWeight={700}>
                       {(description as LithologicalDescription).description}
                     </Typography>
@@ -167,9 +184,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                 sx={{
                   height: `${defaultRowHeight}px`,
                 }}
-                onClick={() => {
-                  console.log("start editing faciesDescription new");
-                }}
+                layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
+                onClick={handleEditFaciesDescription}
               />
             ) : (
               completedFaciesDescriptions.map(description =>
@@ -179,9 +195,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                     sx={{
                       height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
                     }}
-                    onClick={() => {
-                      console.log("start editing faciesDescription", description.id);
-                    }}
+                    layer={description}
+                    onClick={handleEditFaciesDescription}
                   />
                 ) : (
                   <StratigraphyTableActionCell
@@ -189,9 +204,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
                     sx={{
                       height: `${computeCellHeight(description.fromDepth, description.toDepth)}px`,
                     }}
-                    onClick={() => {
-                      console.log("start editing faciesDescription", description.id);
-                    }}>
+                    layer={description}
+                    onClick={handleEditFaciesDescription}
+                    onHoverClick={handleDeleteFaciesDescription}>
                     <Typography variant="body1" fontWeight={700}>
                       {(description as FaciesDescription).description}
                     </Typography>
