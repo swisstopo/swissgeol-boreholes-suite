@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback, useContext } from "react";
+import { FC, ReactNode, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
@@ -13,7 +13,7 @@ import {
 } from "../../../../../../api/stratigraphy.ts";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
-import { Lithology, useLithologies, useLithologyMutations } from "../../lithology.ts";
+import { LayerDepth, Lithology, useLithologies, useLithologyMutations } from "../../lithology.ts";
 import {
   AddRowButton,
   StratigraphyTableActionCell,
@@ -51,16 +51,114 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
   const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(faciesDescriptions);
   const { buildLithologyLabels } = useLithologyLabels();
 
+  const depths = useMemo(() => {
+    const layers: LayerDepth[] = [];
+    lithologies?.forEach(l => {
+      layers.push({ fromDepth: l.fromDepth, toDepth: l.toDepth, lithologyId: l.id });
+    });
+    layers.sort((a, b) => a.fromDepth - b.fromDepth);
+
+    // TODO: Check this again when rules are finalized
+    function insertDescription(desc: { fromDepth: number; toDepth: number }) {
+      let i = 0;
+      while (i < layers.length) {
+        const layer = layers[i];
+        if (desc.toDepth <= layer.fromDepth) {
+          layers.splice(i, 0, { fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 });
+          return;
+        }
+        if (desc.fromDepth >= layer.toDepth) {
+          i++;
+          continue;
+        }
+        if (layer.lithologyId !== 0 && desc.fromDepth >= layer.fromDepth && desc.toDepth <= layer.toDepth) {
+          return;
+        }
+        if (layer.lithologyId === 0) {
+          if (desc.fromDepth === layer.fromDepth && desc.toDepth === layer.toDepth) {
+            return;
+          }
+          if (desc.fromDepth > layer.fromDepth && desc.toDepth < layer.toDepth) {
+            layers.splice(
+              i,
+              1,
+              { fromDepth: layer.fromDepth, toDepth: desc.fromDepth, lithologyId: 0 },
+              { fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 },
+              { fromDepth: desc.toDepth, toDepth: layer.toDepth, lithologyId: 0 },
+            );
+            return;
+          }
+          if (desc.fromDepth <= layer.fromDepth && desc.toDepth < layer.toDepth && desc.toDepth > layer.fromDepth) {
+            layers.splice(
+              i,
+              1,
+              { fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 },
+              { fromDepth: desc.toDepth, toDepth: layer.toDepth, lithologyId: 0 },
+            );
+            return;
+          }
+          if (desc.fromDepth > layer.fromDepth && desc.fromDepth < layer.toDepth && desc.toDepth >= layer.toDepth) {
+            layers.splice(
+              i,
+              1,
+              { fromDepth: layer.fromDepth, toDepth: desc.fromDepth, lithologyId: 0 },
+              { fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 },
+            );
+            return;
+          }
+        }
+        i++;
+      }
+      layers.push({ fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 });
+    }
+
+    // Insert descriptions
+    lithologicalDescriptions?.forEach(l => {
+      insertDescription({ fromDepth: l.fromDepth, toDepth: l.toDepth });
+    });
+    faciesDescriptions?.forEach(f => {
+      insertDescription({ fromDepth: f.fromDepth, toDepth: f.toDepth });
+    });
+
+    // Fill gaps between layers
+    layers.sort((a, b) => a.fromDepth - b.fromDepth);
+    const filledLayers: LayerDepth[] = [];
+    for (let i = 0; i < layers.length; i++) {
+      filledLayers.push(layers[i]);
+      if (i < layers.length - 1) {
+        const current = layers[i];
+        const next = layers[i + 1];
+        if (current.toDepth < next.fromDepth) {
+          filledLayers.push({ fromDepth: current.toDepth, toDepth: next.fromDepth, lithologyId: 0 });
+        }
+      }
+    }
+    return filledLayers;
+  }, [lithologies, lithologicalDescriptions, faciesDescriptions]);
+
+  const { completedLayers: completedLithologies } = useCompletedLayers(
+    lithologies?.filter((_, i) => i !== 1),
+    depths,
+  );
+  const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(
+    lithologicalDescriptions?.filter((_, i) => i !== 2).map((d, i) => ({ ...d, toDepth: i == 1 ? 30 : d.toDepth })),
+    depths,
+  );
+  const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(
+    faciesDescriptions?.filter((_, i) => i !== 3 && i !== 4),
+    depths,
+  );
+
   const defaultRowHeight = 240;
 
   const computeCellHeight = useCallback(
     (fromDepth: number, toDepth: number) => {
-      const startIndex = completedLithologies.findIndex(l => l.fromDepth === fromDepth);
-      const endIndex = completedLithologies.findIndex(l => l.toDepth === toDepth);
+      const startIndex = depths.findIndex(l => l.fromDepth === fromDepth);
+      const endIndex = depths.findIndex(l => l.toDepth === toDepth);
       if (startIndex === -1 || endIndex === -1) return defaultRowHeight;
       return (endIndex - startIndex + 1) * defaultRowHeight;
     },
-    [completedLithologies],
+    [depths],
   );
 
   const handleEditLithology = useCallback((layer: BaseLayer) => {
@@ -178,13 +276,13 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
         </StratigraphyTableHeader>
         <StratigraphyTableContent>
           <StratigraphyTableColumn sx={{ flex: "0 0 90px" }}>
-            {!completedLithologies || completedLithologies.length === 0 ? (
+            {!depths || depths.length === 0 ? (
               <StratigraphyTableCell>empty</StratigraphyTableCell>
             ) : (
-              completedLithologies.map(lithology => (
-                <StratigraphyTableCell key={`depth-${lithology.id}`} sx={{ height: `${defaultRowHeight}px` }}>
-                  <Typography>{`${lithology.fromDepth} m MD`}</Typography>
-                  <Typography>{`${lithology.toDepth} m MD`}</Typography>
+              depths.map((depth, index) => (
+                <StratigraphyTableCell key={`depth-${index}`} sx={{ height: `${defaultRowHeight}px` }}>
+                  <Typography>{`${depth.fromDepth} m MD`}</Typography>
+                  <Typography>{`${depth.toDepth} m MD`}</Typography>
                 </StratigraphyTableCell>
               ))
             )}
@@ -193,7 +291,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
             {renderTableCells(
               completedLithologies,
               defaultRowHeight,
-              null,
+              computeCellHeight,
               handleEditLithology,
               handleDeleteLithology,
               layer => buildLithologyLabels(layer as Lithology),

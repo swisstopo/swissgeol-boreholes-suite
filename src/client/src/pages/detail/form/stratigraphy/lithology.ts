@@ -84,6 +84,12 @@ export interface Lithology extends BaseLayer {
   textureMataCodelists: Codelist[];
 }
 
+export interface LayerDepth {
+  fromDepth: number;
+  toDepth: number;
+  lithologyId: number;
+}
+
 const lithologyController = "lithology";
 
 export const fetchLithologiesByStratigraphyId = async (stratigraphyId: number): Promise<Lithology[]> =>
