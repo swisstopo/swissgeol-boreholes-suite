@@ -13,6 +13,7 @@ export interface Codelist {
   it: string;
   conf: string;
   path: string;
+  code: string;
   [key: string]: string | number;
 }
 

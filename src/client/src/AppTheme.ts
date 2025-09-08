@@ -30,11 +30,12 @@ const themePalette: AppThemePalette = {
     main: "#46596B",
   },
   error: {
-    main: "#99191E",
+    main: "#BF1F25",
     dark: "#801519",
     light: "#D8232A",
     contrastText: "#ffffff",
     background: "#ffebee",
+    backgroundHover: "#fae1e2",
   },
   neutral: {
     main: "#d8d8d8",
@@ -73,6 +74,7 @@ const themePalette: AppThemePalette = {
     menuItemActive: "#A65462",
     filterItemActive: "#1C2834",
     listItemActive: "#DFE4E9",
+
     backdrop: "rgba(255,255,255,0.7)",
     tabFocus: "rgba(100, 95, 228, 0.32)",
   },
@@ -342,6 +344,31 @@ export const theme = createTheme({
           },
           "&:disabled": {
             backgroundColor: themePalette.buttonStates.contained.disabled.backgroundColor,
+          },
+        },
+        colorPrimaryInverse: {
+          color: themePalette.primary.main,
+          border: `1px solid ${themePalette.primary.main}`,
+
+          "&:hover": {
+            color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+            backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+            border: `1px solid ${themePalette.primary.main}`,
+          },
+          "&:focus-visible": {
+            color: themePalette.buttonStates.outlined.hoverOrFocus.color,
+            backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+            border: `1px solid ${themePalette.primary.main}`,
+          },
+          "&:active, &.Mui-active": {
+            color: themePalette.buttonStates.outlined.active.color,
+            backgroundColor: themePalette.buttonStates.outlined.active.backgroundColor,
+            border: `1px solid ${themePalette.primary.main}`,
+          },
+          "&:disabled": {
+            color: themePalette.buttonStates.outlined.disabled.color,
+            backgroundColor: themePalette.buttonStates.outlined.disabled.backgroundColor,
+            border: `1px solid ${themePalette.primary.main}`,
           },
         },
         colorError: {
