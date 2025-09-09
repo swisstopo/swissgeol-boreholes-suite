@@ -99,6 +99,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       translationId: "registration",
       isSelected: false,
       searchData: registrationSearchData,
+      isHidden: auth.anonymousModeEnabled,
     },
   ]);
 
