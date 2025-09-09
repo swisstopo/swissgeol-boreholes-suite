@@ -4,6 +4,7 @@ import { Box, FormControlLabel, Switch, TextField } from "@mui/material";
 import _ from "lodash";
 import { Filters } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { useCantons } from "../../../../api/fetchApiV2";
+import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
 import {
   FormBooleanSelect,
   FormContainer,
@@ -26,6 +27,7 @@ interface ListFilterProps {
 
 export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilter, settings }) => {
   const { t } = useTranslation();
+  const auth = useAuth();
   const { data: cantons } = useCantons();
 
   const { showAllActiveFields, setShowAllActiveFields } = useContext(FilterContext);
@@ -33,12 +35,14 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
   const searchData = inputConfig?.searchData;
 
   const isVisibleFunction = (filter?: string) => {
+    if (auth.anonymousModeEnabled) return true;
     if (!filter) return false;
     const filterValue = _.get(settings, filter);
     return !!filterValue;
   };
 
   const showCheckbox = () => {
+    if (auth.anonymousModeEnabled) return false;
     let isVisibleCounter = 0;
     for (let i = 0; i < searchData?.length; i++) {
       if (searchData[i]?.hideShowAllFields === true) {

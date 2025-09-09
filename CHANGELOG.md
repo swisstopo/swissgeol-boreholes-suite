@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+- Filters for registration are now hidden on the view instance.
+- The _show all_ switch in the filters is now hidden on the view instance and all fields are shown by default.
+
 ## v2.1.1325 - 2025-09-08
 
 ### Changed
