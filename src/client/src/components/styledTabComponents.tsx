@@ -2,12 +2,18 @@ import { Box, Tab, Tabs } from "@mui/material";
 import { styled } from "@mui/system";
 import { theme } from "../AppTheme";
 
-export const BoreholeTabContentBox = styled(Box)(() => ({
+export const BoreholeTabContentBox = styled(Box, {
+  shouldForwardProp: prop => prop !== "firstTabSelected",
+})<{ firstTabSelected?: boolean }>(({ firstTabSelected }) => ({
   backgroundColor: theme.palette.background.default,
-  border: `1px solid ${theme.palette.border.light}`,
-  padding: `${theme.spacing(3)}`,
+  border: `1px solid ${theme.palette.border.darker}`,
+  padding: theme.spacing(3),
   display: "flex",
   flexDirection: "column",
+  borderTopLeftRadius: firstTabSelected ? 0 : theme.spacing(1),
+  borderTopRightRadius: theme.spacing(1),
+  borderBottomRightRadius: theme.spacing(1),
+  borderBottomLeftRadius: theme.spacing(1),
 }));
 
 export const BoreholeTabs = styled(Tabs)({
@@ -39,11 +45,12 @@ export const BoreholeTab = styled(({ ...props }: BoreholeTabProps) => <Tab disab
   "&.Mui-selected": {
     color: theme.palette.background.menuItemActive,
     backgroundColor: theme.palette.background.default,
-    borderTop: `1px solid ${theme.palette.border.light}`,
-    borderRight: `1px solid ${theme.palette.border.light}`,
-    borderLeft: `1px solid ${theme.palette.border.light}`,
+    borderTop: `1px solid ${theme.palette.border.darker}`,
+    borderRight: `1px solid ${theme.palette.border.darker}`,
+    borderLeft: `1px solid ${theme.palette.border.darker}`,
     borderBottom: `1px solid ${theme.palette.background.default}`,
-    borderRadius: `${theme.spacing(0.5)} ${theme.spacing(0.5)} 0 0`,
+    borderTopLeftRadius: theme.spacing(1),
+    borderTopRightRadius: theme.spacing(1),
     top: "1px",
   },
   "&.Mui-focusVisible": {
@@ -52,7 +59,7 @@ export const BoreholeTab = styled(({ ...props }: BoreholeTabProps) => <Tab disab
 }));
 
 export const TabsWithDivider = styled(Tabs)(({ theme }) => ({
-  borderBottom: `1px solid ${theme.palette.border.light}`,
+  borderBottom: `1px solid ${theme.palette.border.darker}`,
   "& .MuiTabs-indicator": {
     transform: "translateY(1px)",
   },
