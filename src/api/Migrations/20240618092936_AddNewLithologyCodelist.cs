@@ -605,7 +605,7 @@ public partial class AddNewLithologyCodelist : Migration
           (15105035,NULL,'custom.lithology_top_bedrock',' ','Tuff, vulkanisch, Lapilli','tuf, volcanique, lapilli','tufo, vulcanico, lapilli','tuff, volcanic, lapilli',586, NULL, False, ''),
           (15105036,NULL,'custom.lithology_top_bedrock',' ','Tuffit','tuffite','tufite','tuffite',587, NULL, False, ''),
           (15105037,NULL,'custom.lithology_top_bedrock',' ','Unbekannt','Inconnu','Sconosciuto','Unknown',588, NULL, False, ''),
-          (15105038,NULL,'custom.lithology_top_bedrock',' ','andere','autre','altro','other ',589, NULL, False, ''),
+          (15105038,NULL,'custom.lithology_top_bedrock',' ','andere','autre','altro','other',589, NULL, False, ''),
           (15105039,NULL,'custom.lithology_top_bedrock',' ','keine Angabe','sans indication','senza indicazioni','not specified',590, NULL, False, '');
 
         UPDATE bdms.layer SET lithology_id_cli =15105037  WHERE lithology_id_cli = 4000;

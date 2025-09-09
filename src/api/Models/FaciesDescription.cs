@@ -51,6 +51,18 @@ public class FaciesDescription : ILayerDescription, IChangeTracking, IIdentifyab
     [Column("description")]
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Gets or sets the id of the <see cref="FaciesDescription"/>'s facies.
+    /// </summary>
+    [IncludeInExport]
+    [Column("facies_id")]
+    public int? FaciesId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="FaciesDescription"/>'s facies.
+    /// </summary>
+    public Codelist? Facies { get; set; }
+
     /// <inheritdoc />
     [IncludeInExport]
     [Column("depth_from")]

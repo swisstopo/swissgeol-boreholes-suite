@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20250826155023_AddLithology")]
+    partial class AddLithology
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -845,10 +848,6 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
-                    b.Property<int?>("FaciesId")
-                        .HasColumnType("integer")
-                        .HasColumnName("facies_id");
-
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
@@ -872,8 +871,6 @@ namespace BDMS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("FaciesId");
 
                     b.HasIndex("StratigraphyId");
 
@@ -1528,6 +1525,10 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("creator");
 
+                    b.Property<int?>("DescriptionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("description");
+
                     b.Property<double>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
@@ -1587,6 +1588,8 @@ namespace BDMS.Migrations
                     b.HasIndex("ConsistencyId");
 
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("DescriptionId");
 
                     b.HasIndex("HumidityId");
 
@@ -1761,7 +1764,7 @@ namespace BDMS.Migrations
                     b.ToTable("lithology_description_component_con_particle_codelist", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LithologyDescriptionComponentUnconDebrisCodes", b =>
+            modelBuilder.Entity("BDMS.Models.LithologyDescriptionDebrisCodes", b =>
                 {
                     b.Property<int>("LithologyDescriptionId")
                         .HasColumnType("integer")
@@ -1769,30 +1772,13 @@ namespace BDMS.Migrations
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("component_uncon_debris_id");
+                        .HasColumnName("debris_id");
 
                     b.HasKey("LithologyDescriptionId", "CodelistId");
 
                     b.HasIndex("CodelistId");
 
-                    b.ToTable("lithology_description_component_uncon_debris_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LithologyDescriptionComponentUnconOrganicCodes", b =>
-                {
-                    b.Property<int>("LithologyDescriptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("lithology_description_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("component_uncon_organic_id");
-
-                    b.HasKey("LithologyDescriptionId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("lithology_description_component_uncon_organic_codelist", "bdms");
+                    b.ToTable("lithology_description_description_debris_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.LithologyDescriptionGrainAngularityCodes", b =>
@@ -1829,7 +1815,7 @@ namespace BDMS.Migrations
                     b.ToTable("lithology_description_grain_shape_codelist", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LithologyDescriptionLithologyUnconDebrisCodes", b =>
+            modelBuilder.Entity("BDMS.Models.LithologyDescriptionOrganicComponentCodes", b =>
                 {
                     b.Property<int>("LithologyDescriptionId")
                         .HasColumnType("integer")
@@ -1837,13 +1823,13 @@ namespace BDMS.Migrations
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("lithology_uncon_debris_id");
+                        .HasColumnName("organic_components_id");
 
                     b.HasKey("LithologyDescriptionId", "CodelistId");
 
                     b.HasIndex("CodelistId");
 
-                    b.ToTable("lithology_description_lithology_uncon_debris_codelist", "bdms");
+                    b.ToTable("lithology_description_organic_component_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.LithologyDescriptionStructurePostGenCodes", b =>
@@ -1880,6 +1866,23 @@ namespace BDMS.Migrations
                     b.ToTable("lithology_description_structure_syn_gen_codelist", "bdms");
                 });
 
+            modelBuilder.Entity("BDMS.Models.LithologyDescriptionUnconCoarseCodes", b =>
+                {
+                    b.Property<int>("LithologyDescriptionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("lithology_description_id");
+
+                    b.Property<int>("CodelistId")
+                        .HasColumnType("integer")
+                        .HasColumnName("lithology_uncon_coarse_id");
+
+                    b.HasKey("LithologyDescriptionId", "CodelistId");
+
+                    b.HasIndex("CodelistId");
+
+                    b.ToTable("lithology_description_uncon_coarse_codelist", "bdms");
+                });
+
             modelBuilder.Entity("BDMS.Models.LithologyRockConditionCodes", b =>
                 {
                     b.Property<int>("LithologyId")
@@ -1907,9 +1910,14 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("lithology_texture_mata_id");
 
+                    b.Property<int?>("LithologyDescriptionId")
+                        .HasColumnType("integer");
+
                     b.HasKey("LithologyId", "CodelistId");
 
                     b.HasIndex("CodelistId");
+
+                    b.HasIndex("LithologyDescriptionId");
 
                     b.ToTable("lithology_texture_mata_codelist", "bdms");
                 });
@@ -3208,10 +3216,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "Facies")
-                        .WithMany()
-                        .HasForeignKey("FaciesId");
-
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("FaciesDescriptions")
                         .HasForeignKey("StratigraphyId")
@@ -3223,8 +3227,6 @@ namespace BDMS.Migrations
                         .HasForeignKey("UpdatedById");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("Facies");
 
                     b.Navigation("Stratigraphy");
 
@@ -3692,6 +3694,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
+                    b.HasOne("BDMS.Models.LithologicalDescription", "Description")
+                        .WithMany()
+                        .HasForeignKey("DescriptionId");
+
                     b.HasOne("BDMS.Models.Codelist", "Humidity")
                         .WithMany()
                         .HasForeignKey("HumidityId");
@@ -3723,6 +3729,8 @@ namespace BDMS.Migrations
                     b.Navigation("Consistency");
 
                     b.Navigation("CreatedBy");
+
+                    b.Navigation("Description");
 
                     b.Navigation("Humidity");
 
@@ -3874,35 +3882,16 @@ namespace BDMS.Migrations
                     b.Navigation("LithologyDescription");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LithologyDescriptionComponentUnconDebrisCodes", b =>
+            modelBuilder.Entity("BDMS.Models.LithologyDescriptionDebrisCodes", b =>
                 {
                     b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LithologyDescriptionComponentUnconDebrisCodes")
+                        .WithMany("LithologyDescriptionDebrisCodes")
                         .HasForeignKey("CodelistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.LithologyDescription", "LithologyDescription")
-                        .WithMany("LithologyDescriptionComponentUnconDebrisCodes")
-                        .HasForeignKey("LithologyDescriptionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("LithologyDescription");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LithologyDescriptionComponentUnconOrganicCodes", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LithologyDescriptionComponentUnconOrganicCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.LithologyDescription", "LithologyDescription")
-                        .WithMany("LithologyDescriptionComponentUnconOrganicCodes")
+                        .WithMany("LithologyDescriptionDebrisCodes")
                         .HasForeignKey("LithologyDescriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3950,16 +3939,16 @@ namespace BDMS.Migrations
                     b.Navigation("LithologyDescription");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LithologyDescriptionLithologyUnconDebrisCodes", b =>
+            modelBuilder.Entity("BDMS.Models.LithologyDescriptionOrganicComponentCodes", b =>
                 {
                     b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LithologyDescriptionLithologyUnconDebrisCodes")
+                        .WithMany("LithologyDescriptionOrganicComponentCodes")
                         .HasForeignKey("CodelistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.LithologyDescription", "LithologyDescription")
-                        .WithMany("LithologyDescriptionLithologyUnconDebrisCodes")
+                        .WithMany("LithologyDescriptionOrganicComponentCodes")
                         .HasForeignKey("LithologyDescriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4007,6 +3996,25 @@ namespace BDMS.Migrations
                     b.Navigation("LithologyDescription");
                 });
 
+            modelBuilder.Entity("BDMS.Models.LithologyDescriptionUnconCoarseCodes", b =>
+                {
+                    b.HasOne("BDMS.Models.Codelist", "Codelist")
+                        .WithMany("LithologyDescriptionUnconCoarseCodes")
+                        .HasForeignKey("CodelistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.LithologyDescription", "LithologyDescription")
+                        .WithMany("LithologyDescriptionUnconCoarseCodes")
+                        .HasForeignKey("LithologyDescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Codelist");
+
+                    b.Navigation("LithologyDescription");
+                });
+
             modelBuilder.Entity("BDMS.Models.LithologyRockConditionCodes", b =>
                 {
                     b.HasOne("BDMS.Models.Codelist", "Codelist")
@@ -4033,6 +4041,10 @@ namespace BDMS.Migrations
                         .HasForeignKey("CodelistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BDMS.Models.LithologyDescription", null)
+                        .WithMany("LithologyTextureMataCodes")
+                        .HasForeignKey("LithologyDescriptionId");
 
                     b.HasOne("BDMS.Models.Lithology", "Lithology")
                         .WithMany("LithologyTextureMataCodes")
@@ -4486,19 +4498,19 @@ namespace BDMS.Migrations
 
                     b.Navigation("LithologyDescriptionComponentConParticleCodes");
 
-                    b.Navigation("LithologyDescriptionComponentUnconDebrisCodes");
-
-                    b.Navigation("LithologyDescriptionComponentUnconOrganicCodes");
+                    b.Navigation("LithologyDescriptionDebrisCodes");
 
                     b.Navigation("LithologyDescriptionGrainAngularityCodes");
 
                     b.Navigation("LithologyDescriptionGrainShapeCodes");
 
-                    b.Navigation("LithologyDescriptionLithologyUnconDebrisCodes");
+                    b.Navigation("LithologyDescriptionOrganicComponentCodes");
 
                     b.Navigation("LithologyDescriptionStructurePostGenCodes");
 
                     b.Navigation("LithologyDescriptionStructureSynGenCodes");
+
+                    b.Navigation("LithologyDescriptionUnconCoarseCodes");
 
                     b.Navigation("LithologyRockConditionCodes");
 
@@ -4553,19 +4565,21 @@ namespace BDMS.Migrations
 
                     b.Navigation("LithologyDescriptionComponentConParticleCodes");
 
-                    b.Navigation("LithologyDescriptionComponentUnconDebrisCodes");
-
-                    b.Navigation("LithologyDescriptionComponentUnconOrganicCodes");
+                    b.Navigation("LithologyDescriptionDebrisCodes");
 
                     b.Navigation("LithologyDescriptionGrainAngularityCodes");
 
                     b.Navigation("LithologyDescriptionGrainShapeCodes");
 
-                    b.Navigation("LithologyDescriptionLithologyUnconDebrisCodes");
+                    b.Navigation("LithologyDescriptionOrganicComponentCodes");
 
                     b.Navigation("LithologyDescriptionStructurePostGenCodes");
 
                     b.Navigation("LithologyDescriptionStructureSynGenCodes");
+
+                    b.Navigation("LithologyDescriptionUnconCoarseCodes");
+
+                    b.Navigation("LithologyTextureMataCodes");
                 });
 
             modelBuilder.Entity("BDMS.Models.Section", b =>

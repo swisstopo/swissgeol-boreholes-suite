@@ -165,4 +165,76 @@ public class Codelist : IIdentifyable
     /// </summary>
     [JsonIgnore]
     public ICollection<HydrotestKindCode>? HydrotestKindCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyDescriptionComponentConParticleCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyDescriptionComponentConParticleCodes>? LithologyDescriptionComponentConParticleCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyDescriptionComponentConMineralCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyDescriptionComponentConMineralCodes>? LithologyDescriptionComponentConMineralCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyDescriptionComponentUnconOrganicCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyDescriptionComponentUnconOrganicCodes>? LithologyDescriptionComponentUnconOrganicCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyDescriptionComponentUnconDebrisCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyDescriptionComponentUnconDebrisCodes>? LithologyDescriptionComponentUnconDebrisCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyDescriptionGrainShapeCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyDescriptionGrainShapeCodes>? LithologyDescriptionGrainShapeCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyDescriptionGrainAngularityCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyDescriptionGrainAngularityCodes>? LithologyDescriptionGrainAngularityCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyDescriptionLithologyUnconDebrisCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyDescriptionLithologyUnconDebrisCodes>? LithologyDescriptionLithologyUnconDebrisCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyDescriptionStructureSynGenCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyDescriptionStructureSynGenCodes>? LithologyDescriptionStructureSynGenCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyDescriptionStructurePostGenCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyDescriptionStructurePostGenCodes>? LithologyDescriptionStructurePostGenCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyRockConditionCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyRockConditionCodes>? LithologyRockConditionCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyUscsTypeCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyUscsTypeCodes>? LithologyUscsTypeCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologyTextureMataCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LithologyTextureMataCodes>? LithologyTextureMataCodes { get; set; }
 }
