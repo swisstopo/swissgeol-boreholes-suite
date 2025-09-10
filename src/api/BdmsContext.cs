@@ -20,17 +20,11 @@ public class BdmsContext : DbContext
     /// </summary>
     public IQueryable<Borehole> BoreholesWithIncludes
         => Boreholes
-        .Include(b => b.StratigraphiesV2)
-        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
-        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
-        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
-        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
-        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
-        .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions)
         .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
         .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
-        .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
-        .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.Chronostratigraphies)
+        .Include(b => b.Stratigraphies).ThenInclude(s => s.Lithostratigraphies)
         .Include(b => b.Completions).ThenInclude(c => c.Casings).ThenInclude(c => c.CasingElements)
         .Include(b => b.Completions).ThenInclude(c => c.Instrumentations)
         .Include(b => b.Completions).ThenInclude(c => c.Backfills)
@@ -180,8 +174,6 @@ public class BdmsContext : DbContext
         .Include(l => l.OrganicComponentCodelists);
 
     public DbSet<Stratigraphy> Stratigraphies { get; set; }
-
-    public DbSet<StratigraphyV2> StratigraphiesV2 { get; set; }
 
     public DbSet<Term> Terms { get; set; }
 

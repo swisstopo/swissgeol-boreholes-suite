@@ -619,13 +619,13 @@ public class BoreholeControllerTest
             Assert.AreEqual(originalDescription.Updated, copiedDescription.Updated);
         }
 
-        Assert.AreNotSame(originalStratigraphy.ChronostratigraphyLayers, copiedstratigraphy.ChronostratigraphyLayers);
-        Assert.AreNotEqual(originalStratigraphy.ChronostratigraphyLayers.First().Id, copiedstratigraphy.ChronostratigraphyLayers.First().Id);
-        Assert.AreEqual(originalStratigraphy.ChronostratigraphyLayers.OrderBy(c => c.Id).First().ChronostratigraphyId, copiedstratigraphy.ChronostratigraphyLayers.OrderBy(c => c.Id).First().ChronostratigraphyId);
+        Assert.AreNotSame(originalStratigraphy.Chronostratigraphies, copiedstratigraphy.Chronostratigraphies);
+        Assert.AreNotEqual(originalStratigraphy.Chronostratigraphies.First().Id, copiedstratigraphy.Chronostratigraphies.First().Id);
+        Assert.AreEqual(originalStratigraphy.Chronostratigraphies.OrderBy(c => c.Id).First().ChronostratigraphyId, copiedstratigraphy.Chronostratigraphies.OrderBy(c => c.Id).First().ChronostratigraphyId);
 
-        Assert.AreNotSame(originalStratigraphy.LithostratigraphyLayers, copiedstratigraphy.LithostratigraphyLayers);
-        Assert.AreNotEqual(originalStratigraphy.LithostratigraphyLayers.First().Id, copiedstratigraphy.LithostratigraphyLayers.First().Id);
-        Assert.AreEqual(originalStratigraphy.LithostratigraphyLayers.OrderBy(l => l.Id).First().LithostratigraphyId, copiedstratigraphy.LithostratigraphyLayers.OrderBy(l => l.Id).First().LithostratigraphyId);
+        Assert.AreNotSame(originalStratigraphy.Lithostratigraphies, copiedstratigraphy.Lithostratigraphies);
+        Assert.AreNotEqual(originalStratigraphy.Lithostratigraphies.First().Id, copiedstratigraphy.Lithostratigraphies.First().Id);
+        Assert.AreEqual(originalStratigraphy.Lithostratigraphies.OrderBy(l => l.Id).First().LithostratigraphyId, copiedstratigraphy.Lithostratigraphies.OrderBy(l => l.Id).First().LithostratigraphyId);
 
         // Borehole attachments are not copied
         Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
@@ -765,8 +765,8 @@ public class BoreholeControllerTest
                 b.Stratigraphies.First().Layers.Any(x => x.LayerUscs3Codes != null && x.LayerUscs3Codes.Any()) &&
                 b.Stratigraphies.First().LithologicalDescriptions != null &&
                 b.Stratigraphies.First().FaciesDescriptions != null &&
-                b.Stratigraphies.First().ChronostratigraphyLayers != null &&
-                b.Stratigraphies.First().LithostratigraphyLayers != null &&
+                b.Stratigraphies.First().Chronostratigraphies != null &&
+                b.Stratigraphies.First().Lithostratigraphies != null &&
                 b.Completions.First() != null &&
                 b.Completions.First().Casings.First() != null &&
                 b.Completions.First().Casings.First().CasingElements.First() != null &&
@@ -778,7 +778,7 @@ public class BoreholeControllerTest
                 b.BoreholeGeometry.Any() &&
                 b.BoreholeFiles.First().File != null &&
                 b.Canton != null &&
-                b.Stratigraphies.First().ChronostratigraphyLayers.First().ChronostratigraphyId != null);
+                b.Stratigraphies.First().Chronostratigraphies.First().ChronostratigraphyId != null);
 
         Assert.IsNotNull(borehole != null, "Precondition: No borehole for conditions found.");
 

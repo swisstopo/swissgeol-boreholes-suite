@@ -26,7 +26,7 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
     public int StratigraphyId { get; set; }
 
     /// <inheritdoc />
-    public StratigraphyV2? Stratigraphy { get; set; }
+    public Stratigraphy? Stratigraphy { get; set; }
 
     /// <inheritdoc />
     [Column("creator")]

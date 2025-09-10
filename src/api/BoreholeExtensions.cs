@@ -136,7 +136,6 @@ public static class BoreholeExtensions
         borehole.MapCasingReferences();
 
         borehole.Stratigraphies?.MarkAsNew();
-        borehole.StratigraphiesV2?.MarkAsNew();
         borehole.Completions?.MarkAsNew();
         borehole.Sections?.MarkAsNew();
         borehole.Observations?.MarkAsNew();

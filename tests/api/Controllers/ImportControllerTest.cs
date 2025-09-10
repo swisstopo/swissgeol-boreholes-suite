@@ -181,7 +181,7 @@ public class ImportControllerTest
         Assert.AreEqual(0, borheoleGeometry.HAZI, nameof(borheoleGeometry.HAZI));
         Assert.AreEqual(0.1468618496717173, borheoleGeometry.DEVI, nameof(borheoleGeometry.DEVI));
 
-        // Assert stratigraphy's lithological descriptions
+        // Assert stratigraphies
         Assert.AreEqual(2, borehole.Stratigraphies.Count, nameof(borehole.Stratigraphies.Count));
         var stratigraphy = borehole.Stratigraphies.First();
         Assert.IsNotNull(stratigraphy.Borehole, nameof(stratigraphy.Borehole).ShouldNotBeNullMessage());
@@ -191,9 +191,6 @@ public class ImportControllerTest
         Assert.IsNotNull(stratigraphy.Created, nameof(stratigraphy.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(stratigraphy.CreatedById, nameof(stratigraphy.CreatedById).ShouldNotBeNullMessage());
         Assert.AreEqual("Marjolaine Hegmann", stratigraphy.Name, nameof(stratigraphy.Name));
-        Assert.AreEqual(9003, stratigraphy.QualityId, nameof(stratigraphy.QualityId));
-        Assert.IsNull(stratigraphy.Quality, nameof(stratigraphy.Quality).ShouldBeNullMessage());
-        Assert.AreEqual("My co-worker Ali has one of these. He says it looks towering.", stratigraphy.Notes, nameof(stratigraphy.Notes));
 
         // Assert stratigraphy’s layers
         Assert.AreEqual(2, stratigraphy.Layers.Count, nameof(stratigraphy.Layers.Count));
@@ -277,8 +274,8 @@ public class ImportControllerTest
         Assert.AreEqual(10, faciesDescription.ToDepth, nameof(faciesDescription.ToDepth));
 
         // Assert stratigraphy's chronostratigraphy layers
-        Assert.AreEqual(2, stratigraphy.ChronostratigraphyLayers.Count, nameof(stratigraphy.ChronostratigraphyLayers.Count));
-        var chronostratigraphyLayer = stratigraphy.ChronostratigraphyLayers.First(x => x.FromDepth == 0.1);
+        Assert.AreEqual(2, stratigraphy.Chronostratigraphies.Count, nameof(stratigraphy.Chronostratigraphies.Count));
+        var chronostratigraphyLayer = stratigraphy.Chronostratigraphies.First(x => x.FromDepth == 0.1);
         Assert.IsNotNull(chronostratigraphyLayer.Created, nameof(chronostratigraphyLayer.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(chronostratigraphyLayer.CreatedById, nameof(chronostratigraphyLayer.CreatedById).ShouldNotBeNullMessage());
         Assert.IsNotNull(chronostratigraphyLayer.Updated, nameof(chronostratigraphyLayer.Updated).ShouldNotBeNullMessage());
@@ -290,8 +287,8 @@ public class ImportControllerTest
         Assert.AreEqual(10, chronostratigraphyLayer.ToDepth, nameof(chronostratigraphyLayer.ToDepth));
 
         // Assert stratigraphy's lithostratigraphy layers
-        Assert.AreEqual(2, stratigraphy.LithostratigraphyLayers.Count, nameof(stratigraphy.LithostratigraphyLayers.Count));
-        var lithostratigraphyLayer = stratigraphy.LithostratigraphyLayers.First(x => x.FromDepth == 0.1);
+        Assert.AreEqual(2, stratigraphy.Lithostratigraphies.Count, nameof(stratigraphy.Lithostratigraphies.Count));
+        var lithostratigraphyLayer = stratigraphy.Lithostratigraphies.First(x => x.FromDepth == 0.1);
         Assert.IsNotNull(lithostratigraphyLayer.Created, nameof(lithostratigraphyLayer.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(lithostratigraphyLayer.CreatedById, nameof(lithostratigraphyLayer.CreatedById).ShouldNotBeNullMessage());
         Assert.IsNotNull(lithostratigraphyLayer.Updated, nameof(lithostratigraphyLayer.Updated).ShouldNotBeNullMessage());

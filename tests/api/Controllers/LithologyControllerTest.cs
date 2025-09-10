@@ -31,7 +31,7 @@ public class LithologyControllerTest
     {
         controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
-        var unauthorizedResponse = await controller.GetAsync(context.StratigraphiesV2.First().Id).ConfigureAwait(false);
+        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
@@ -58,7 +58,7 @@ public class LithologyControllerTest
     public async Task GetEntriesByStratigraphyIdLithologySorting()
     {
         // Find a stratigraphy to use
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var createdLithologyIds = new List<int>();
 
         // Create lithologies out of order
@@ -141,7 +141,7 @@ public class LithologyControllerTest
         // Test with bedding=true but no share value
         var lithology = new Lithology
         {
-            StratigraphyId = context.StratigraphiesV2.First().Id,
+            StratigraphyId = context.Stratigraphies.First().Id,
             FromDepth = 10,
             ToDepth = 20,
             HasBedding = true,  // This requires Share to be set
@@ -155,7 +155,7 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task CreateAndDeleteAsync()
     {
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var lithology = GetCompleteLithology(stratigraphyId);
         lithology.HasBedding = false;
 
@@ -227,7 +227,7 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task CreateConsolidatedLithologyAsync()
     {
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var lithology = GetCompleteLithology(stratigraphyId);
         lithology.IsUnconsolidated = false;
 
@@ -287,7 +287,7 @@ public class LithologyControllerTest
     public async Task DeleteAsyncWithandWithoutPermissions()
     {
         // Create a lithology to delete
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var lithology = new Lithology
         {
             StratigraphyId = stratigraphyId,
@@ -333,7 +333,7 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task EditLithologyWithCompleteLithology()
     {
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var existingUnconsolidatedLithology = GetCompleteLithology(stratigraphyId);
         var createResponse = await controller.CreateAsync(existingUnconsolidatedLithology);
         ActionResultAssert.IsOk(createResponse.Result);

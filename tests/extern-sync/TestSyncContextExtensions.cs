@@ -99,8 +99,8 @@ internal static class TestSyncContextExtensions
         {
             stratigraphy.LithologicalDescriptions = stratigraphy.LithologicalDescriptions?.OrderBy(l => l.FromDepth).ToList();
             stratigraphy.FaciesDescriptions = stratigraphy.FaciesDescriptions?.OrderBy(f => f.FromDepth).ToList();
-            stratigraphy.ChronostratigraphyLayers = stratigraphy.ChronostratigraphyLayers?.OrderBy(c => c.FromDepth).ToList();
-            stratigraphy.LithostratigraphyLayers = stratigraphy.LithostratigraphyLayers?.OrderBy(l => l.FromDepth).ToList();
+            stratigraphy.Chronostratigraphies = stratigraphy.Chronostratigraphies?.OrderBy(c => c.FromDepth).ToList();
+            stratigraphy.Lithostratigraphies = stratigraphy.Lithostratigraphies?.OrderBy(l => l.FromDepth).ToList();
 
             foreach (var layer in stratigraphy.Layers)
             {
