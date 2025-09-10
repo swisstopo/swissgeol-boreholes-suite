@@ -4,6 +4,8 @@ import { Box, CircularProgress } from "@mui/material";
 import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
 import { EditStateContext } from "../../../../editStateContext.tsx";
 import { useLithologies } from "../../lithology.ts";
+import { LithologyView } from "./lithologyView.tsx";
+import { ScaleContextProvider } from "./scaleContext.tsx";
 
 export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) => {
   const { t } = useTranslation();
@@ -19,11 +21,13 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
 
   if (editingEnabled) {
     return <div>edit</div>;
+  } else if (!lithologies || lithologies.length === 0) {
+    return <Box>{t("msgLithologyEmpty")}</Box>;
   } else {
-    if (!lithologies || lithologies.length === 0) {
-      return <Box>{t("msgLithologyEmpty")}</Box>;
-    } else {
-      return <div>view</div>;
-    }
+    return (
+      <ScaleContextProvider>
+        <LithologyView lithologies={lithologies} stratigraphyId={stratigraphyId} />
+      </ScaleContextProvider>
+    );
   }
 };
