@@ -46,9 +46,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
   const {
     delete: { mutateAsync: deleteFaciesDescription },
   } = useFaciesDescriptionMutations();
-  const { completedLayers: completedLithologies } = useCompletedLayers(lithologies);
-  const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions);
-  const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(faciesDescriptions);
   const { buildLithologyLabels } = useLithologyLabels();
 
   const depths = useMemo(() => {
