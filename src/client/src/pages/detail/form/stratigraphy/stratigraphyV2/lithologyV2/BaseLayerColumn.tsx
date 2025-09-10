@@ -1,6 +1,6 @@
 import { FC, ReactNode, useMemo } from "react";
 import { SxProps } from "@mui/material";
-import { Stratigraphy } from "../../../../../../api/stratigraphy.ts";
+import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
 import { theme } from "../../../../../../AppTheme.ts";
 import { Codelist } from "../../../../../../components/codelist.ts";
 import { Lithology, LithologyDescription } from "../../lithology.ts";
@@ -10,15 +10,6 @@ import {
   StratigraphyTableGap,
 } from "../stratigraphyTableComponents.tsx";
 import { useScaleContext } from "./scaleContext.tsx";
-
-export interface BaseLayer {
-  id: number;
-  fromDepth: number;
-  toDepth: number;
-  stratigraphyId: number;
-  stratigraphy: Stratigraphy;
-  isGap?: boolean;
-}
 
 interface BaseLayerColumnProps {
   layers: BaseLayer[];

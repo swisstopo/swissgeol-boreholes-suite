@@ -1,10 +1,10 @@
-import { createContext, FC, PropsWithChildren, useContext, useMemo, useState } from "react";
+import { createContext, Dispatch, FC, PropsWithChildren, SetStateAction, useContext, useMemo, useState } from "react";
 
 interface ScaleContextProps {
   scaleY: number;
   translateY: number;
-  setScaleY: (scaleY: number) => void;
-  setTranslateY: (translateY: number) => void;
+  setScaleY: Dispatch<SetStateAction<number>>;
+  setTranslateY: Dispatch<SetStateAction<number>>;
 }
 
 export const ScaleContext = createContext<ScaleContextProps>({
