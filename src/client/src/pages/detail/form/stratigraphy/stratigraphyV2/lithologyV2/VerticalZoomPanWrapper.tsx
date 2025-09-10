@@ -26,7 +26,7 @@ export const VerticalZoomPanWrapper: FC<VerticalZoomPanProps> = ({ children }) =
     (e: MouseEvent) => {
       if (!isDragging) return;
       const deltaY = e.clientY - lastY.current;
-      setTranslateY(prev => Math.min(prev + deltaY, maxTranslateY));
+      setTranslateY((prev: number) => Math.min(prev + deltaY, maxTranslateY));
       lastY.current = e.clientY;
     },
     [isDragging, setTranslateY],

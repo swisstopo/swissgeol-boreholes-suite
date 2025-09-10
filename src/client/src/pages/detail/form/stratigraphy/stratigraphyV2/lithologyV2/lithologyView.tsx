@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { Language } from "@swissgeol/ui-core";
 import i18n from "i18next";
 import {
+  BaseLayer,
   FaciesDescription,
   LithologicalDescription,
   useFaciesDescription,
@@ -18,7 +19,7 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
-import { BaseLayer, BaseLayerColumn } from "./BaseLayerColumn.tsx";
+import { BaseLayerColumn } from "./BaseLayerColumn.tsx";
 import { useScaleContext } from "./scaleContext.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { VerticalZoomPanWrapper } from "./VerticalZoomPanWrapper.tsx";
@@ -94,7 +95,7 @@ export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraph
           sx={{
             overflow: "hidden",
             display: "-webkit-box",
-            WebkitLineClamp: getMaxLinesToDisplay(lithology),
+            WebkitLineClamp: getMaxLinesToDisplay(layer),
             WebkitBoxOrient: "vertical",
             transform: `scaleY(${1 / scaleY})`,
             transformOrigin: "center",
