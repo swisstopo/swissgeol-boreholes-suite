@@ -1,6 +1,6 @@
 import { FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Chip, IconButton, Stack, SxProps, Typography } from "@mui/material";
+import { Box, Chip, IconButton, Stack, SxProps, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
@@ -50,19 +50,24 @@ export const StratigraphyTableCell = styled(Stack)(() => ({
   borderBottom: `1px solid ${theme.palette.border.darker}`,
 }));
 
-export const StratigraphyTableCellRow = styled(Stack)(() => ({
+interface StratigraphyTableCellRowProps {
+  height?: string;
+}
+
+export const StratigraphyTableCellRow = styled(Stack)<StratigraphyTableCellRowProps>(({ height = "36px" }) => ({
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
-  height: "36px",
+  height: height,
 }));
 
 interface StratigraphyTableLayerCellProps {
   children: ReactNode;
   layer: BaseLayer;
-  onHoverClick: (layer: BaseLayer) => void;
+  onHoverClick?: (layer: BaseLayer) => void;
   onClick?: (layer: BaseLayer) => void;
   sx?: SxProps;
+  scaleY?: number;
 }
 
 export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = ({
@@ -71,6 +76,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   onHoverClick,
   onClick,
   sx,
+  scaleY = 1,
 }) => {
   const stackRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -88,15 +94,16 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
       sx={{
         justifyContent: "center",
 
-        "& .hover-content": { visibility: "hidden" },
+        "& .hover-content": { display: "none" },
 
         "&:hover": {
           justifyContent: "space-between",
           backgroundColor: theme.palette.background.grey,
-          cursor: "pointer",
+          cursor: onHoverClick ? "pointer" : "inherit",
 
-          "& .hover-content": { visibility: "visible" },
+          "& .hover-content": { display: "inherit" },
         },
+        py: 2 / scaleY,
         ...sx,
       }}
       onClick={() => {
@@ -104,28 +111,34 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
           onClick(layer);
         }
       }}>
-      <StratigraphyTableCellRow
-        className="hover-content"
-        sx={{
-          justifyContent: layer?.fromDepth !== null && layer?.fromDepth !== undefined ? "space-between" : "flex-end",
-        }}>
-        {layer?.fromDepth !== null && layer?.fromDepth !== undefined && (
-          <Typography variant="body1">{layer?.fromDepth} m MD</Typography>
-        )}
-        <IconButton
-          color={"primaryInverse"}
+      {onHoverClick && (
+        <StratigraphyTableCellRow
+          className="hover-content"
+          height={`${36 / scaleY}px`}
           sx={{
-            borderRadius: theme.spacing(0.5),
-            width: "36px",
-            height: "36px",
-          }}
-          onClick={e => {
-            e.stopPropagation();
-            onHoverClick(layer);
+            justifyContent: layer?.fromDepth !== null && layer?.fromDepth !== undefined ? "space-between" : "flex-end",
           }}>
-          {isEditing ? <Trash2 /> : <Copy />}
-        </IconButton>
-      </StratigraphyTableCellRow>
+          {layer?.fromDepth !== null && layer?.fromDepth !== undefined && (
+            <Typography sx={{ transform: `scaleY(${1 / scaleY})` }} variant="body1">
+              {layer?.fromDepth} m MD
+            </Typography>
+          )}
+          <IconButton
+            color={"primaryInverse"}
+            sx={{
+              borderRadius: theme.spacing(0.5),
+              width: "36px",
+              height: "36px",
+              transform: `scaleY(${1 / scaleY})`,
+            }}
+            onClick={e => {
+              e.stopPropagation();
+              onHoverClick(layer);
+            }}>
+            {isEditing ? <Trash2 /> : <Copy />}
+          </IconButton>
+        </StratigraphyTableCellRow>
+      )}
       <Stack
         ref={stackRef}
         gap={1}
@@ -137,11 +150,15 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         }}>
         {children}
       </Stack>
-      <StratigraphyTableCellRow className="hover-content">
-        {layer?.toDepth !== null && layer?.toDepth !== undefined && (
-          <Typography variant="body1">{layer?.toDepth} m MD</Typography>
-        )}
-      </StratigraphyTableCellRow>
+      {onHoverClick && (
+        <StratigraphyTableCellRow className="hover-content" height={`${36 / scaleY}px`}>
+          {layer?.toDepth !== null && layer?.toDepth !== undefined && (
+            <Typography sx={{ transform: `scaleY(${1 / scaleY})` }} variant="body1">
+              {layer?.toDepth} m MD
+            </Typography>
+          )}
+        </StratigraphyTableCellRow>
+      )}
     </StratigraphyTableCell>
   );
 };
@@ -150,9 +167,10 @@ interface StratigraphyTableGapProps {
   layer: BaseLayer;
   onClick?: (layer: BaseLayer) => void;
   sx?: SxProps;
+  scaleY?: number;
 }
 
-export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ layer, onClick, sx }) => {
+export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ layer, onClick, sx, scaleY = 1 }) => {
   const { t } = useTranslation();
   return (
     <StratigraphyTableCell
@@ -173,9 +191,11 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ layer, onC
           onClick(layer);
         }
       }}>
-      <StratigraphyTableCellRow color={theme.palette.error.main}>
-        <Chip color="error" label={t("gap")} />
-        <TriangleAlert />
+      <StratigraphyTableCellRow color={theme.palette.error.main} mt={3 / scaleY}>
+        <Chip color="error" label={t("gap")} sx={{ transform: `scaleY(${1 / scaleY})` }} />
+        <Box sx={{ transform: `scaleY(${1 / scaleY})` }}>
+          <TriangleAlert />
+        </Box>
       </StratigraphyTableCellRow>
       {onClick && (
         <Stack direction="row" justifyContent="center" alignItems="center">

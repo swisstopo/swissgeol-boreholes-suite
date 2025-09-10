@@ -6,6 +6,8 @@ import { FullPageCentered } from "../../../../../../components/styledComponents.
 import { EditStateContext } from "../../../../editStateContext.tsx";
 import { useLithologies } from "../../lithology.ts";
 import { LithologyContentEdit } from "./lithologyContentEdit.tsx";
+import { LithologyView } from "./lithologyView.tsx";
+import { ScaleContextProvider } from "./scaleContext.tsx";
 
 export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) => {
   const { t } = useTranslation();
@@ -42,6 +44,8 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
   if (lithologies.length === 0 && lithologicalDescriptions.length === 0 && faciesDescriptions.length === 0) {
     return <Box>{t("msgLithologyEmpty")}</Box>;
   } else {
-    return <div>view</div>;
+    <ScaleContextProvider>
+      <LithologyView lithologies={lithologies} stratigraphyId={stratigraphyId} />
+    </ScaleContextProvider>
   }
 };
