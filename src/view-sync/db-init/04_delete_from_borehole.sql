@@ -133,7 +133,7 @@ DELETE FROM bdms.observation WHERE id IN (
     INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
-    WHERE t.hydrotest = false AND o.observation_type = 1 -- Water Ingress Observation
+    WHERE t.water_ingress = false AND o.observation_type = 1 -- Water Ingress Observation
 );
 
 -- Hydrogeology: Field Measurement
@@ -152,7 +152,7 @@ DELETE FROM bdms.observation WHERE id IN (
     INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
-    WHERE t.hydrotest = false AND o.observation_type = 4 -- Field Measurement Observation
+    WHERE t.field_measurement = false AND o.observation_type = 4 -- Field Measurement Observation
 );
 
 -- Hydrogeology: Groundwater Level Measurement
@@ -171,7 +171,7 @@ DELETE FROM bdms.observation WHERE id IN (
     INNER JOIN bdms.borehole b ON b.id_bho = o.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
-    WHERE t.hydrotest = false AND o.observation_type = 2 -- Groundwater Level Measurement Observation
+    WHERE t.groundwater = false AND o.observation_type = 2 -- Groundwater Level Measurement Observation
 );
 
 -- Completion: Sealing/Backfilling
