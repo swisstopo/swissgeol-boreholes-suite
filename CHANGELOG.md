@@ -6,6 +6,9 @@
 - Filters for registration are now hidden on the view instance.
 - The _show all_ switch in the filters is now hidden on the view instance and all fields are shown by default.
 
+### Fixed
+- _view-sync_ did not sync *Water ingresses*, *Groundwater measurements* and *Field measurements* correctly.
+
 ## v2.1.1325 - 2025-09-08
 
 ### Changed
