@@ -100,7 +100,14 @@ export const lithologyQueryKey = "lithologies";
 export const useLithologies = (stratigraphyId?: number): UseQueryResult<Lithology[]> =>
   useQuery({
     queryKey: [lithologyQueryKey, stratigraphyId],
-    queryFn: () => fetchLithologiesByStratigraphyId(stratigraphyId!),
+    queryFn: async () => {
+      try {
+        const result = await fetchLithologiesByStratigraphyId(stratigraphyId!);
+        return Array.isArray(result) ? result : [];
+      } catch {
+        return [];
+      }
+    },
     enabled: !!stratigraphyId,
   });
 

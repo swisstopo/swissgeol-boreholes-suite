@@ -24,24 +24,22 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
     );
   }
 
+  if (!lithologies || !lithologicalDescriptions || !faciesDescriptions) return null;
+
   // Edit mode
   if (editingEnabled) {
     return (
       <LithologyContentEdit
         stratigraphyId={stratigraphyId}
-        lithologies={lithologies ?? []}
-        lithologicalDescriptions={lithologicalDescriptions ?? []}
-        faciesDescriptions={faciesDescriptions ?? []}
+        lithologies={lithologies}
+        lithologicalDescriptions={lithologicalDescriptions}
+        faciesDescriptions={faciesDescriptions}
       />
     );
   }
 
   // View mode
-  if (
-    (!lithologies || lithologies.length === 0) &&
-    (!lithologicalDescriptions || lithologicalDescriptions.length === 0) &&
-    (!faciesDescriptions || faciesDescriptions.length === 0)
-  ) {
+  if (lithologies.length === 0 && lithologicalDescriptions.length === 0 && faciesDescriptions.length === 0) {
     return <Box>{t("msgLithologyEmpty")}</Box>;
   } else {
     return <div>view</div>;

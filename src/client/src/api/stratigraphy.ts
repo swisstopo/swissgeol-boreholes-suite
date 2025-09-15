@@ -331,11 +331,18 @@ export const useLayers = (profileId?: number) =>
 
 export const lithologicalDescriptionQueryKey = "lithoDesc";
 
-export const useLithoDescription = (selectedStratigraphyID?: number) =>
+export const useLithoDescription = (stratigraphyId?: number) =>
   useQuery({
-    queryKey: [lithologicalDescriptionQueryKey, selectedStratigraphyID],
-    queryFn: () => fetchLithologicalDescriptionsByProfileId(selectedStratigraphyID!),
-    enabled: !!selectedStratigraphyID,
+    queryKey: [lithologicalDescriptionQueryKey, stratigraphyId],
+    queryFn: async () => {
+      try {
+        const result = await fetchLithologicalDescriptionsByProfileId(stratigraphyId!);
+        return Array.isArray(result) ? result : [];
+      } catch {
+        return [];
+      }
+    },
+    enabled: !!stratigraphyId,
   });
 
 export const useLithologicalDescriptionMutations = () => {
@@ -385,11 +392,18 @@ export const useLithologicalDescriptionMutations = () => {
 
 export const faciesDescriptionQueryKey = "faciesDesc";
 
-export const useFaciesDescription = (selectedStratigraphyID?: number) =>
+export const useFaciesDescription = (stratigraphyId?: number) =>
   useQuery({
-    queryKey: [faciesDescriptionQueryKey, selectedStratigraphyID],
-    queryFn: () => fetchFaciesDescriptionsByProfileId(selectedStratigraphyID!),
-    enabled: !!selectedStratigraphyID,
+    queryKey: [faciesDescriptionQueryKey, stratigraphyId],
+    queryFn: async () => {
+      try {
+        const result = await fetchFaciesDescriptionsByProfileId(stratigraphyId!);
+        return Array.isArray(result) ? result : [];
+      } catch {
+        return [];
+      }
+    },
+    enabled: !!stratigraphyId,
   });
 
 export const useFaciesDescriptionMutations = () => {
