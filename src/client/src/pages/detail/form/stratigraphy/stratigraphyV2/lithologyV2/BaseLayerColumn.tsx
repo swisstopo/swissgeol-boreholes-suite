@@ -6,8 +6,10 @@ import { Codelist } from "../../../../../../components/codelist.ts";
 import { Lithology, LithologyDescription } from "../../lithology.ts";
 import {
   StratigraphyTableActionCell,
+  StratigraphyTableCellRow,
   StratigraphyTableColumn,
   StratigraphyTableGap,
+  StratigraphyViewTableCell,
 } from "../stratigraphyTableComponents.tsx";
 import { useScaleContext } from "./scaleContext.tsx";
 
@@ -80,14 +82,27 @@ export const BaseLayerColumn: FC<BaseLayerColumnProps> = ({
         };
 
         if (isGap) {
+          if (isFirstColumn)
+            return (
+              <StratigraphyViewTableCell
+                key={`gap-${id}-${index}`}
+                sx={{
+                  backgroundColor: theme.palette.error.background,
+                  ...viewCellStyles,
+                }}>
+                <StratigraphyTableCellRow color={theme.palette.error.main} mt={3 / scaleY} />
+              </StratigraphyViewTableCell>
+            );
+
           return (
             <StratigraphyTableGap
               key={`gap-${id}-${index}`}
               scaleY={scaleY}
+              layer={layer}
               sx={{
+                backgroundColor: theme.palette.error.background,
                 ...viewCellStyles,
               }}
-              layer={{ id: 0, stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
             />
           );
         }

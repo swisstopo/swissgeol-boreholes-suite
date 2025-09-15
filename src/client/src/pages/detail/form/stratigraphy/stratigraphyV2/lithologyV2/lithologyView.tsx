@@ -48,6 +48,10 @@ export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraph
   const renderDescription = useCallback(
     (description: BaseLayer) => {
       if (!isFaciesOrLithologicalDescription(description)) return null;
+      // Calculate the height of the enclosing div
+      const pxPerMeter = 20;
+      const height = (description.toDepth - description.fromDepth) * pxPerMeter * scaleY;
+      if (height < 36) return null;
       return (
         <Box sx={{ py: 1 / scaleY }}>
           <Typography

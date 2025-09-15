@@ -77,7 +77,7 @@ export const StratigraphyViewTable: FC<StratigraphyViewTableProps> = ({
   );
 
   return (
-    <Stack direction="row" justifyContent="flex-start" spacing={1.5}>
+    <Stack direction="row" justifyContent="flex-start" spacing={1.5} sx={{ height: "100%" }}>
       {/* Overview column */}
       {showOverviewColumn && (
         <Stack direction="column" sx={{ position: "relative", width: "45px", height: "100%" }}>
@@ -93,6 +93,7 @@ export const StratigraphyViewTable: FC<StratigraphyViewTableProps> = ({
           <VerticalZoomPanWrapper>
             <Stack sx={{ height: `${tableHeight}px` }}>
               <BaseLayerColumn
+                isFirstColumn={true}
                 layers={overviewLayers || depthLayers}
                 renderLayer={() => null}
                 sx={{ flex: `0 0 ${overviewColumnWidth}px` }}

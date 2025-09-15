@@ -3,7 +3,6 @@ import { Box } from "@mui/material";
 import { useScaleContext } from "./scaleContext";
 
 const minScaleY = 0.25;
-const maxScaleY = 5;
 const maxTranslateY = 12;
 
 interface VerticalZoomPanProps {
@@ -46,7 +45,7 @@ export const VerticalZoomPanWrapper: FC<VerticalZoomPanProps> = ({ children }) =
       else if (e.deltaMode === WheelEvent.DOM_DELTA_PAGE) delta *= window.innerHeight;
 
       const zoomFactor = 1 - delta * 0.001;
-      const nextScale = Math.max(minScaleY, Math.min(maxScaleY, scaleY * zoomFactor));
+      const nextScale = Math.max(minScaleY, scaleY * zoomFactor);
 
       const el = containerRef.current;
       if (!el) return;

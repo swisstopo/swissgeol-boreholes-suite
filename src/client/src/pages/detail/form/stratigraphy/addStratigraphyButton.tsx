@@ -18,7 +18,6 @@ enum Actions {
 export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
   addEmptyStratigraphy,
   extractStratigraphyFromProfile,
-  sx,
 }) => {
   const { t } = useTranslation();
 
@@ -43,7 +42,7 @@ export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
       }}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       transformOrigin={{ vertical: "top", horizontal: "right" }}
-      sx={{ height: "36px", ...sx }}
+      sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}
     />
   );
 };
