@@ -57,27 +57,42 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     });
     layers.sort((a, b) => a.fromDepth - b.fromDepth);
 
+    const isExactMatch = (desc: { fromDepth: number; toDepth: number }, layer: LayerDepth) =>
+      desc.fromDepth === layer.fromDepth && desc.toDepth === layer.toDepth;
+
+    const isWithinLayer = (desc: { fromDepth: number; toDepth: number }, layer: LayerDepth) =>
+      desc.fromDepth > layer.fromDepth && desc.toDepth < layer.toDepth;
+
+    const isPreviousOverlap = (desc: { fromDepth: number; toDepth: number }, layer: LayerDepth) =>
+      desc.fromDepth <= layer.fromDepth && desc.toDepth < layer.toDepth && desc.toDepth > layer.fromDepth;
+
+    const isNextOverlap = (desc: { fromDepth: number; toDepth: number }, layer: LayerDepth) =>
+      desc.fromDepth > layer.fromDepth && desc.fromDepth < layer.toDepth && desc.toDepth >= layer.toDepth;
+
     // TODO: Check this again when rules are finalized
-    function insertDescription(desc: { fromDepth: number; toDepth: number }) {
+    const insertDescription = (desc: { fromDepth: number; toDepth: number }) => {
       let i = 0;
       while (i < layers.length) {
         const layer = layers[i];
+
         if (desc.toDepth <= layer.fromDepth) {
           layers.splice(i, 0, { fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 });
           return;
         }
+
         if (desc.fromDepth >= layer.toDepth) {
           i++;
           continue;
         }
+
         if (layer.lithologyId !== 0 && desc.fromDepth >= layer.fromDepth && desc.toDepth <= layer.toDepth) {
           return;
         }
+
         if (layer.lithologyId === 0) {
-          if (desc.fromDepth === layer.fromDepth && desc.toDepth === layer.toDepth) {
-            return;
-          }
-          if (desc.fromDepth > layer.fromDepth && desc.toDepth < layer.toDepth) {
+          if (isExactMatch(desc, layer)) return;
+
+          if (isWithinLayer(desc, layer)) {
             layers.splice(
               i,
               1,
@@ -87,7 +102,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
             );
             return;
           }
-          if (desc.fromDepth <= layer.fromDepth && desc.toDepth < layer.toDepth && desc.toDepth > layer.fromDepth) {
+
+          if (isPreviousOverlap(desc, layer)) {
             layers.splice(
               i,
               1,
@@ -96,7 +112,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
             );
             return;
           }
-          if (desc.fromDepth > layer.fromDepth && desc.fromDepth < layer.toDepth && desc.toDepth >= layer.toDepth) {
+
+          if (isNextOverlap(desc, layer)) {
             layers.splice(
               i,
               1,
@@ -109,7 +126,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         i++;
       }
       layers.push({ fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 });
-    }
+    };
 
     // Insert descriptions
     lithologicalDescriptions?.forEach(l => {
