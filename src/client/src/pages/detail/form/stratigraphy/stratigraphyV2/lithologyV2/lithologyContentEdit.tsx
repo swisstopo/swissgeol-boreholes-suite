@@ -34,15 +34,16 @@ interface LithologyContentEditProps {
 export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigraphyId }) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
-  const { data: lithologies, isLoading } = useLithologies(stratigraphyId);
+  const { data: lithologies, isLoading: isLoadingLithologies } = useLithologies(stratigraphyId);
   const {
     delete: { mutateAsync: deleteLithology },
   } = useLithologyMutations();
-  const { data: lithologicalDescriptions } = useLithoDescription(stratigraphyId);
+  const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } =
+    useLithoDescription(stratigraphyId);
   const {
     delete: { mutateAsync: deleteLithologicalDescription },
   } = useLithologicalDescriptionMutations();
-  const { data: faciesDescriptions } = useFaciesDescription(stratigraphyId);
+  const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescription(stratigraphyId);
   const {
     delete: { mutateAsync: deleteFaciesDescription },
   } = useFaciesDescriptionMutations();
@@ -254,7 +255,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
     return layers.map(layer => (layer.isGap ? renderGap(layer) : renderActionCell(layer)));
   };
 
-  if (isLoading) {
+  if (isLoadingLithologies || isLoadingLithologicalDescriptions || isLoadingFaciesDescription) {
     return (
       <FullPageCentered>
         <CircularProgress />
