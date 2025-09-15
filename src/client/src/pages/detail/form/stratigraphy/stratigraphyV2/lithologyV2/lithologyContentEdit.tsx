@@ -1,19 +1,16 @@
 import { FC, ReactNode, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { CircularProgress, Stack, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import {
   BaseLayer,
   FaciesDescription,
   LithologicalDescription,
-  useFaciesDescription,
   useFaciesDescriptionMutations,
-  useLithoDescription,
   useLithologicalDescriptionMutations,
 } from "../../../../../../api/stratigraphy.ts";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
-import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
-import { LayerDepth, Lithology, useLithologies, useLithologyMutations } from "../../lithology.ts";
+import { LayerDepth, Lithology, useLithologyMutations } from "../../lithology.ts";
 import {
   AddRowButton,
   StratigraphyTableActionCell,
@@ -29,21 +26,25 @@ import { useLithologyLabels } from "./useLithologyLabels.tsx";
 
 interface LithologyContentEditProps {
   stratigraphyId: number;
+  lithologies?: Lithology[];
+  lithologicalDescriptions?: LithologicalDescription[];
+  faciesDescriptions?: FaciesDescription[];
 }
 
-export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigraphyId }) => {
+export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
+  stratigraphyId,
+  lithologies,
+  lithologicalDescriptions,
+  faciesDescriptions,
+}) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
-  const { data: lithologies, isLoading: isLoadingLithologies } = useLithologies(stratigraphyId);
   const {
     delete: { mutateAsync: deleteLithology },
   } = useLithologyMutations();
-  const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } =
-    useLithoDescription(stratigraphyId);
   const {
     delete: { mutateAsync: deleteLithologicalDescription },
   } = useLithologicalDescriptionMutations();
-  const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescription(stratigraphyId);
   const {
     delete: { mutateAsync: deleteFaciesDescription },
   } = useFaciesDescriptionMutations();
@@ -254,14 +255,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({ stratigrap
 
     return layers.map(layer => (layer.isGap ? renderGap(layer) : renderActionCell(layer)));
   };
-
-  if (isLoadingLithologies || isLoadingLithologicalDescriptions || isLoadingFaciesDescription) {
-    return (
-      <FullPageCentered>
-        <CircularProgress />
-      </FullPageCentered>
-    );
-  }
 
   return (
     <Stack gap={1.5}>

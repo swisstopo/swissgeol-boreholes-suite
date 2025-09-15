@@ -1,29 +1,49 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
+import { useFaciesDescription, useLithoDescription } from "../../../../../../api/stratigraphy.ts";
 import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
 import { EditStateContext } from "../../../../editStateContext.tsx";
 import { useLithologies } from "../../lithology.ts";
+import { LithologyContentEdit } from "./lithologyContentEdit.tsx";
 
 export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
-  const { data: lithologies, isLoading } = useLithologies(stratigraphyId);
+  const { data: lithologies, isLoading: isLoadingLithologies } = useLithologies(stratigraphyId);
+  const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } =
+    useLithoDescription(stratigraphyId);
+  const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescription(stratigraphyId);
 
-  if (isLoading)
+  // Loading state
+  if (isLoadingLithologies || isLoadingLithologicalDescriptions || isLoadingFaciesDescription) {
     return (
       <FullPageCentered>
         <CircularProgress />
       </FullPageCentered>
     );
+  }
 
+  // Edit mode
   if (editingEnabled) {
-    return <div>edit</div>;
+    return (
+      <LithologyContentEdit
+        stratigraphyId={stratigraphyId}
+        lithologies={lithologies}
+        lithologicalDescriptions={lithologicalDescriptions}
+        faciesDescriptions={faciesDescriptions}
+      />
+    );
+  }
+
+  // View mode
+  if (
+    (!lithologies || lithologies.length === 0) &&
+    (!lithologicalDescriptions || lithologicalDescriptions.length === 0) &&
+    (!faciesDescriptions || faciesDescriptions.length === 0)
+  ) {
+    return <Box>{t("msgLithologyEmpty")}</Box>;
   } else {
-    if (!lithologies || lithologies.length === 0) {
-      return <Box>{t("msgLithologyEmpty")}</Box>;
-    } else {
-      return <div>view</div>;
-    }
+    return <div>view</div>;
   }
 };
